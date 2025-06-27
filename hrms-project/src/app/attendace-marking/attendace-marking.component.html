@@ -1,0 +1,142 @@
+<div class="container" >
+    <div class="comapny_section">
+
+      <div class="header_section">
+
+        <div class="row">
+          <div class="col-md-3">
+            <h1>Attendance Marking</h1>
+          </div>
+  
+          <div class="col-md-4">
+  
+            <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
+  
+          </div>
+          <div class="col-md-5">
+            <div class="button-group pull-right">
+              <button type="button" class="btn-Create btn pull-right btn-danger" (click)="toggleBulkUpload()">
+                <span class="header-btn-icon">
+                  <mat-icon>{{ showBulkUpload ? 'cancel' : 'add_circle' }}</mat-icon>
+                </span>
+                {{ showBulkUpload ? 'Cancel Bulk Upload' : 'Bulk Upload Attendance' }}
+              </button>
+                           
+              <!-- <button type="button"  class="btn-Create btn btn-success " > <span class="header-btn-icon"><mat-icon>add_circle
+                          </mat-icon></span> Create</button> -->
+              <!-- <span *ngIf="!hasAddPermission"></span>
+  
+                          <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                              <span class="header-btn-icon">
+                               <mat-icon>draw
+                          </mat-icon></span> Edit</button>
+                          <span *ngIf="hasEditPermission"></span>
+                          <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                              <span class="header-btn-icon">
+                                  <mat-icon> delete
+                             </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                             <span *ngIf="!hasDeletePermission"></span> -->
+  
+  
+  
+            </div>
+          </div>
+  
+        </div>
+  
+  
+  
+      </div>
+  
+        <div class="com_list mt-4">
+    <div class="cpm-sec" *ngIf="hasViewPermission"    >
+
+    
+
+
+      <div *ngIf="!showBulkUpload">
+
+    <form>
+        <div class="row">
+         
+          
+          <div class="col-md-12">
+            <label>Employee</label>
+            <div class="custom-sel">
+              <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
+              <option disabled>--Select Employee--</option>
+                <option *ngFor="let employee of Employees" [value]="employee.id">{{ employee.emp_code }}</option>
+              </select>
+            </div>
+          </div>
+           
+
+      
+
+
+     
+
+
+
+
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+
+            </div>
+
+            <div class="col-md-3"   >
+                <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerCheckIn()">Check In</button>  
+             </div>
+
+             <div class="col-md-3"   >
+              <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="registerCheckOut()">Check Out</button>  
+           </div>
+             
+        </div>
+    </form>
+</div>
+  
+
+    <div class="bulk_upload_section" *ngIf="showBulkUpload">
+      <label class="mt-4">Upload Excel File for Attendance</label>
+    
+      <input
+        type="file"
+        (change)="onFileSelected($event)"
+        accept=".xlsx, .xls, .csv"
+        class="form-control mb-3"
+      />
+    
+      <button
+        class="btn-Create btn btn-success"
+        [disabled]="!selectedFile"
+        (click)="submitBulkUpload()"
+      >
+        Submit Bulk Upload
+      </button>
+    </div>
+  
+
+
+        </div>
+
+        </div>
+
+
+
+
+
+
+        
+  
+
+</div>
+
+
+
+</div>
+
+
+
+

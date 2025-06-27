@@ -1,0 +1,173 @@
+<nav id="sidebarMenu" class=" d-lg-block sidebar  bg-white" [class.menu-open]="isMenuOpen"
+  [class.menu-close]="!isMenuOpen" >
+  <!-- <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white" [class.menu-open]="isMenuOpen"
+  [class.menu-close]="!isMenuOpen" > -->
+
+
+  <div class="position-sticky">
+    <div class="list-group list-group-flush  mt-5">
+
+      <!-- <a routerLink="/main-sidebar" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="list-group-item list-group-item-action py-2 ripple ">
+        <span><mat-icon>home</mat-icon> <span class="sidenav-opt"> Dashboard
+
+          </span></span>
+
+      </a> -->
+
+      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple"
+      aria-current="true"  >
+      <span><mat-icon>home</mat-icon> <span class="sidenav-opt" routerLink="/main-sidebar/dashboard-contents"> Dashboard</span></span>
+    </a>
+      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple"
+        aria-current="true" routerLink="/main-sidebar/sub-sidebar/employee-master" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Employee Management</span></span>
+      </a>
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>account_tree</mat-icon> <span class="sidenav-opt" routerLink="/main-sidebar/leave-options/leave-master"> Leave Management</span></span>
+
+
+      </a>
+
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><i class="fa-solid fa-money-bill" style="color: white;"></i><span class="sidenav-opt" routerLink="/main-sidebar/salary-options/salary"> Payroll Management</span></span>
+
+
+      </a>
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>real_estate_agent </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/loan-sidebar/loan-type"> Loan Management</span></span>
+
+
+      </a>
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>work_update
+        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/asset-options"> Asset Management</span></span>
+
+
+      </a>
+
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>airplane_ticket
+        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/air-ticket-options"> Air Ticket Management</span></span>
+
+
+      </a>
+
+
+      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple" *ngIf="!hideButton" routerLink="/main-sidebar/settings/branch-master" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>settings</mat-icon> <span class="sidenav-opt" > Settings</span></span>
+      </a>
+     
+
+       
+    </div>
+  </div>
+</nav>
+<!-- Sidebar -->
+
+<!-- Navbar -->
+<nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+  <!-- Container wrapper -->
+  <div class="container-fluid">
+    <!-- Toggle button -->
+    <!-- <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#sidebarMenu"
+      aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button> -->
+
+    <!-- Brand -->
+
+
+    <div class="nav_mov">
+     <a class="navbar-brand">
+      <img src="assets/zeo_logo_new.png" height="70" width="100%" alt="MDB Logo" 
+        loading="lazy" />
+
+     </a>
+     <!-- <h1 class="pull-right menu_mob" >menubar</h1> -->
+
+     </div>
+ 
+   
+    <ul class="navbar-nav ms-auto d-flex flex-row">
+      <!-- Notification dropdown -->
+      <li class="nav-item dropdown">
+        <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow" (click)="redirectToExpiredDocuments()" role="button"
+        data-mdb-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+         <mat-icon class="mt-2">notifications</mat-icon>
+         <span class="badge rounded-pill badge-notification bg-danger" *ngIf="expiredDocumentsCount > 0"
+               style="position: absolute; margin-left: -10px; color: white;">{{ expiredDocumentsCount }}</span>
+     </a>
+       </li>
+   
+      <li class="nav-item dropdown" *ngIf="schemas.length > 0">
+        <div class="Company_pro" >
+          <div class="custom-sel drop_chosse opened" >
+            <select class="form-control form_conrtl_height" (change)="selectSchema($event)">
+              <option value="">Select Company</option>
+              <option *ngFor="let schema of schemas" [value]="schema">{{ schema }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="Company_pro company_bor" *ngIf="selectedSchema">
+          <div class="cmp_drop">
+            <mat-icon>apartment</mat-icon>
+            <h1>{{ selectedSchema }}</h1>
+            <mat-icon style="margin-left: 10px;">expand_more</mat-icon>
+          </div>
+        </div>
+        
+      </li>
+
+    
+
+     
+
+
+    <li>
+      <div class="user_logged_outer" *ngIf="userDetails">
+        <div class="user_logged_in">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="user_logged_out">
+          <h1>{{ userDetails.username }}</h1>
+        </div>
+
+      </div>
+    </li>
+      
+     
+    
+    
+
+      <!-- Avatar -->
+      <li class="nav-item dropdown">
+
+      
+        <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"  id="navbarDropdownMenuLink"
+          role="button" data-mdb-toggle="dropdown" aria-expanded="false">
+          <!-- <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp" class="rounded-circle" height="22"
+            alt="Avatar" loading="lazy" /> -->
+            <button type="button" (click)="logout()"  class="btn btn-danger" style="    border-radius: 0px;">Logout</button>
+
+        </a>
+
+      </li>
+    </ul>
+
+   
+  </div>
+  <!-- Container wrapper -->
+</nav>
+
+<router-outlet></router-outlet>
+
+
+    <!-- Loader -->
+    <div class="loader-container" [class.show]="isLoading">
+      <div class="loader"></div>
+    </div>

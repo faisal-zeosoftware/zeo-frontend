@@ -1,0 +1,109 @@
+<div class="container">
+    <div class="comapny_section" >
+
+        <div class="header_section">
+
+            <div class="row">
+                <div class="col-md-5">
+                    <h1>Leave Approval Reports</h1>
+                </div>
+
+                <div class="col-md-2">
+                 
+                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
+
+                </div>
+                <div class="col-md-5">
+                    <div class="button-group pull-right">
+
+                      
+                   
+                   
+                          </div>
+                </div>
+                 
+            </div>
+           
+           
+
+        </div>
+
+        <div class="tab_back mt-5">
+            <mat-tab-group> 
+                <mat-tab label="Standard Report">
+                    <div class="tab_boddy p-3">
+                      <button class="btn btn-primary mb-3" (click)="downloadExcel()">Download Excel</button>
+                      <table class="table table-bordered table-striped">
+                        <thead>
+                          <tr>
+                            <th>Employee</th>
+                            <th>Branch</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Category</th>
+                            <th>Leave Request</th>
+                            <th>Compensatory Request</th>
+                            <th>Level</th>
+
+                            <th>Approver</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Rejection Reason</th>
+                            <th>Note</th>
+                            <th>Updated At</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <ng-container *ngFor="let request of groupedApprovalData">
+                            <ng-container *ngFor="let approval of request.approvals; let i = index">
+                              <tr>
+                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_first_name || 'N/A' }}</td>
+                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_branch_id || '-' }}</td>
+                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_dept_id || '-' }}</td>
+                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_desgntn_id || '-' }}</td>
+                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_ctgry_id || '-' }}</td>
+                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.leave_request || '-' }}</td>
+                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.compensatory_request || '-' }}</td>
+                      
+                                <!-- Per-approval data -->
+                                <td>{{ approval.level || '-' }}</td>
+
+                                <td>{{ approval.approver || '-' }}</td>
+                                <td>{{ approval.role || '-' }}</td>
+                                <td>{{ approval.status || '-' }}</td>
+                                <td>{{ approval.rejection_reason || '-' }}</td>
+                                <td>{{ approval.note || '-' }}</td>
+                                <td>{{ approval.updated_at | date: 'short' }}</td>
+                              </tr>
+                            </ng-container>
+                          </ng-container>
+                        </tbody>
+                      </table>
+                      
+                      <p *ngIf="approvalReportData.length === 0">No report data available.</p>
+                    </div>
+                  </mat-tab>
+                  
+                  <mat-tab label="Custom Report ">
+      
+                    <div class="tab_boddy">
+                    
+                    </div>
+                      </mat-tab>
+      
+                 
+                      </mat-tab-group> 
+      
+                      </div>
+       
+        
+           
+  
+    </div>
+    
+
+
+    
+
+
+</div>

@@ -1,0 +1,92 @@
+<div mat-dialog-content class="">
+    <div class="cpm-sec">
+
+        <h1>Create Company</h1><hr>
+
+        <form >
+        <div class="row">
+            <!-- <div class="col-md-6" >
+               
+      <label>Schema Name</label>
+     <input type="text"  class="form-control" required  [(ngModel)]="schema_name"  placeholder="Enter schema name"
+      [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !schema_name}">
+     
+     <div *ngIf="registerButtonClicked && !schema_name" class="error-message">schema_name  is required.</div>
+</div> -->
+
+
+<div class="col-md-6" >
+               
+    <label>Company Name </label>
+   <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter Company  Name "
+    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
+   
+   <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div>
+</div>
+
+<div class="col-md-6">
+
+
+    <div class="custom-sel">
+        <label>Country</label>
+        <select class="form-control" id="country" required [(ngModel)]="country"  [ngModelOptions]="{standalone: true}"  >
+            <option value="" >Select</option>
+            <option *ngFor="let user of countries" [value]="user.id">{{ user.country_name }}</option>
+        </select>
+       
+    </div>
+                
+
+
+       
+       
+    
+</div>
+
+<div class="col-md-6" *ngIf="!owner">
+
+
+    <div class="custom-sel">
+        <label>Owner Name</label>
+        <select class="form-control" id="owner" required [(ngModel)]="owner"  [ngModelOptions]="{standalone: true}"  >
+            <option value="" >Select</option>
+            <option *ngFor="let user of users" [value]="user.id">{{ user.username }}</option>
+        </select>
+       
+    </div>
+                
+
+
+       
+       
+    
+</div>
+
+
+    <div class="row">
+        <div class="col-md-8"></div>
+        <div class="col-md-2">
+            <button (click)="ClosePopup()"   class="pull-right btn btn-danger btn-full mt-4" >Cancel</button>
+
+        </div>
+        <div class="col-md-2">
+            <button type="button" (click)="registerCatogary()"  mat-raised-button color="primary" class="pull-right btn-full mt-4" >Add</button>
+
+        </div>
+    </div>
+
+
+        </div>
+        </form>
+    </div>
+    </div>
+    
+<div mat-dialog-action>
+    
+</div>
+
+
+   <!-- Loader -->
+   <div class="loader-container" [class.show]="isLoading">
+    <div class="loader"></div>
+  </div>
