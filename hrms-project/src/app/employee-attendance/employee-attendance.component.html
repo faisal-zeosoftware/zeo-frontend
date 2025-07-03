@@ -74,13 +74,13 @@
 
 <div *ngIf="attendanceData">
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-8">
             <h2>Attendance Sheet for {{ attendanceData.employee_name }} - {{ attendanceData.month }}/{{ attendanceData.year }}</h2>
 
         </div>
 
-        <div class="col-md-10">
-            <button type="button" class="btn btn-success" (click)="exportToExcel()">Export</button>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-success pull-right" (click)="exportToExcel()">Export</button>
         </div>
     </div>
     <div class="table-container table-scroll">

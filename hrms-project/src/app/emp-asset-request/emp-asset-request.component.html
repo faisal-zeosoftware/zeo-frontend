@@ -1,0 +1,214 @@
+<div class="container" >
+    <div class="comapny_section " >
+      
+        <div class="tab_back ">
+            <mat-tab-group> 
+                <mat-tab label="Asset Request">
+                    
+                    <div class="tab_boddy">
+         
+                        <form >
+
+                            <div class="row">
+                               
+                
+                          
+                
+                  
+                
+                        
+                
+                          <div class="col-md-6" >
+                            <label>Select Asset Type</label>
+                            <div class="custom-sel">
+                              <select
+                                class="form-control"
+                                id="asset_type"
+                                name="asset_type"
+                                [(ngModel)]="asset_type"
+                                [ngModelOptions]="{ standalone: true }"
+                              >
+                                <option *ngFor="let employees of AssetTypes" [value]="employees.id">
+                                  {{ employees.name }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                        
+                
+                
+                
+                  <div class="col-md-6" >
+                    <label>Select Requested Asset </label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="requested_asset"
+                        name="requested_asset"
+                        [(ngModel)]="requested_asset"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let employees of Assets" [value]="employees.id">
+                          {{ employees.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+                  
+                  <div class="col-md-12" >
+                               
+                    <label>Reason</label>
+                    
+                   <textarea  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter reason"
+                    [ngModelOptions]="{standalone: true}" > </textarea>
+                   
+              </div>
+    
+                
+                     
+                  <div class="col-md-6" style="display: none;">
+                    <label>Select Employee </label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="employee"
+                        name="employee"
+                        [(ngModel)]="employee"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let employees of Employees" [value]="employees.id">
+                          {{ employees.emp_code }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                          
+                      
+                      
+                   
+                
+                
+                
+                    
+                            </div>
+                
+                
+                            <div class="row">
+                                <div class="col-md-10">
+                    
+                                </div>
+                    
+                                <div class="col-md-2">
+                                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="SentAssetRequest()">Save</button>  
+                                 </div>
+                            </div>
+                            
+                       
+                    </form>
+                
+        
+                     
+                </div>
+              </mat-tab>
+                  <mat-tab label="Requested Asset Status">
+       
+
+
+                    <div class="tab_boddy">
+                        <div *ngFor="let employee of Employees" class="row">
+                          <div class="col-md-12">
+                            <div class="">
+                              <!-- Check if there are any leave requests -->
+                              <div *ngIf="employee.assets_requests && employee.assets_requests.length > 0; else noLeaveRequests">
+                                <!-- Loop through leave requests -->
+                                <div  class="">
+                                  <div class="row">
+                                    <div class="col-md-5">
+                                      <div class="leave_box" *ngFor="let request of employee.assets_requests" (click)="selectRequest(request.id)"
+                                      [ngClass]="{'selected-request': selectedRequestId === request.id}">
+                                        <div class="row">
+                                          <div class="col-md-4">
+                                            <label>Asset Type</label>
+                                            <h6>{{ request.asset_type || 'N/A' }}</h6>
+                                          </div>
+                                          <div class="col-md-4">
+                                            <label>Requested Asset</label>
+                                            <h6>{{ request.requested_asset }}</h6>
+                                          </div>
+                                          <div class="col-md-4">
+                                            <label>Requested Date</label>
+                                            <h6>{{ request.request_date }}</h6>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                      
+                                    <div class="col-md-7" >
+                                        <div *ngFor="let request of employee.assets_requests">
+                                        
+                                      <div class="leave_box"  *ngIf="selectedRequestId === request.id">
+                                        <!-- Loop through approvals for the leave request -->
+                                        <div class="approval-steps" *ngIf="request.approvals && request.approvals.length > 0">
+                                          <h5>Leave Approval Status</h5><hr>
+                                          <div *ngFor="let approval of request.approvals" class="row">
+                                            <div class="col-md-3">
+                                              <label>Status</label>
+                                              <h6>{{ approval.status }}</h6>
+                                            </div>
+                                            <div class="col-md-3">
+                                              <label>Role</label>
+                                              <h6>{{ approval.role }}</h6>
+                                            </div>
+                                            <div class="col-md-3">
+                                              <label>Approver</label>
+                                              <h6>{{ approval.approver || 'N/A' }}</h6>
+                                            </div>
+                                            <div class="col-md-3">
+                                              <label>Note</label>
+                                              <h6>{{ approval.note || 'N/A' }}</h6>
+                                            </div>
+                                            <!-- <div class="col-md-2">
+                                              <label>Updated At</label>
+                                              <h6>{{ approval.updated_at }}</h6>
+                                            </div> -->
+                                          </div>
+                                        </div>
+                                      </div>
+                                      </div>
+                                    </div>
+                                  </div>  
+                                </div>
+                              </div>
+                              <!-- Template to show if no leave requests are present -->
+                              <ng-template #noLeaveRequests>
+                                <p>No leave requests available for this employee.</p>
+                              </ng-template>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      
+                      
+                      </mat-tab>
+      
+                 
+                      </mat-tab-group> 
+      
+                      </div>
+       
+       
+
+
+
+      
+    </div>
+</div>
+
+
+
+
+
+
+

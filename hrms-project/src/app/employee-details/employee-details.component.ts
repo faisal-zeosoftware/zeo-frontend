@@ -17,6 +17,8 @@ import { EmployeeFamilyComponent } from '../employee-family/employee-family.comp
 import { NotificationServiceService } from '../notification-service.service';
 import { EmployeeCreateLanguageComponent } from '../employee-create-language/employee-create-language.component';
 import { LeaveService } from '../leave-master/leave.service';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 
 @Component({
@@ -186,6 +188,76 @@ export class EmployeeDetailsComponent implements OnInit {
     }
 
 
+    exportToExcel(): void {
+      const data: any[][] = [];
+    
+      const reportTitle = `Attendance Report - ${this.attendanceData.month} /${this.attendanceData.year}`;
+      const headerRow = ['Employee Name', ...this.daysArray, 'Present Days', 'Absent Days'];
+      const titleRow = [reportTitle];
+    
+      data.push(titleRow);
+      data.push([]); // spacing row
+      data.push(headerRow);
+    
+      const employeeRow: any[] = [this.attendanceData.employee_name];
+      for (let day of this.daysArray) {
+        const status = this.getStatusForDay(day, this.attendanceData.summary_data);
+        employeeRow.push(status);
+      }
+      employeeRow.push(this.attendanceData.total_present);
+      employeeRow.push(this.attendanceData.total_absent);
+      data.push(employeeRow);
+    
+      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
+    
+      // Merge title row
+      const mergeRef = XLSX.utils.encode_range({
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: headerRow.length - 1 }
+      });
+      if (!worksheet['!merges']) worksheet['!merges'] = [];
+      worksheet['!merges'].push(XLSX.utils.decode_range(mergeRef));
+    
+      // Apply center style to merged title
+      worksheet['A1'].s = {
+        alignment: { horizontal: 'center', vertical: 'center' },
+        font: { bold: true, sz: 14 }
+      };
+    
+      // Apply styles to "Absent" or "A" cells
+      const dataRowIndex = 3; // since it's the 4th row (0-indexed)
+      for (let col = 1; col <= this.daysArray.length; col++) {
+        const cellRef = XLSX.utils.encode_cell({ r: dataRowIndex, c: col });
+        const cell = worksheet[cellRef];
+        if (cell && (cell.v === 'Absent' || cell.v === 'A')) {
+          cell.s = {
+            font: { color: { rgb: "FF0000" }, bold: true },
+            alignment: { horizontal: "center" }
+          };
+        }
+      }
+    
+      // Create workbook and save
+      const workbook: XLSX.WorkBook = {
+        Sheets: { 'Attendance Report': worksheet },
+        SheetNames: ['Attendance Report']
+      };
+    
+      const excelBuffer: any = XLSX.write(workbook, {
+        bookType: 'xlsx',
+        type: 'array',
+        cellStyles: true // Important for styles to apply
+      });
+    
+      const fileData: Blob = new Blob([excelBuffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+      });
+    
+      FileSaver.saveAs(
+        fileData,
+        `Attendance_Report_${this.attendanceData.employee_name}_${this.attendanceData.month}_${this.attendanceData.year}.xlsx`
+      );
+    }
 
     getLeaveBalance(typeId: number): number {
       const balanceItem = this.employeeLeaves.leave_balance.find(

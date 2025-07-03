@@ -107,6 +107,8 @@ import { AdvanceSalaryRequestComponent } from './advance-salary-request/advance-
 import { AdvanceSalaryApprovalsComponent } from './advance-salary-approvals/advance-salary-approvals.component';
 import { AirticketAllocationComponent } from './airticket-allocation/airticket-allocation.component';
 import { AirticketRequestComponent } from './airticket-request/airticket-request.component';
+import { EmpAttendanceComponent } from './emp-attendance/emp-attendance.component';
+import { EmpAssetRequestComponent } from './emp-asset-request/emp-asset-request.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -590,6 +592,14 @@ const routes: Routes = [
       {
         path:'employee-leave',
         component:EmployeeLeaveComponent,
+      },
+      {
+        path:'emp-attendance',
+        component:EmpAttendanceComponent,
+      },
+       {
+        path:'emp-asset-request',
+        component:EmpAssetRequestComponent,
       },
       
     ]

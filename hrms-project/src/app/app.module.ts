@@ -183,6 +183,8 @@ import { AdvanceSalaryApprovalLevelComponent } from './advance-salary-approval-l
 import { AdvanceSalaryApprovalsComponent } from './advance-salary-approvals/advance-salary-approvals.component';
 import { AirticketAllocationComponent } from './airticket-allocation/airticket-allocation.component';
 import { AirticketRequestComponent } from './airticket-request/airticket-request.component';
+import { EmpAttendanceComponent } from './emp-attendance/emp-attendance.component';
+import { EmpAssetRequestComponent } from './emp-asset-request/emp-asset-request.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -324,7 +326,9 @@ import { AirticketRequestComponent } from './airticket-request/airticket-request
      AdvanceSalaryApprovalLevelComponent,
      AdvanceSalaryApprovalsComponent,
      AirticketAllocationComponent,
-     AirticketRequestComponent
+     AirticketRequestComponent,
+     EmpAttendanceComponent,
+     EmpAssetRequestComponent
      
      
 
