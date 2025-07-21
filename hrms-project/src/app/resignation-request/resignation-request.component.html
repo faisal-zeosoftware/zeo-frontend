@@ -1,0 +1,152 @@
+<div class="container">
+    <div class="comapny_section">
+        <div class="com_list " >
+            <div class="cpm-sec">
+
+                <h2>Employee Resignation Request </h2>
+                <hr>
+                
+            
+                <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <label>Employee</label>
+                            <div class="custom-sel">
+                              <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
+                                <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
+                              </select>
+                            </div>
+                          </div>
+
+                      <div class="col-md-6">
+                        <label>Document date</label>
+                        <input type="date" class="form-control" required [(ngModel)]="document_date" placeholder="Enter document date"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+
+                      <div class="col-md-6">
+                        <label> resigned on</label>
+                        <input type="date" class="form-control" required [(ngModel)]="resigned_on" placeholder="Enter resigned on"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+                  
+                      <div class="col-md-6">
+                        <label>notice period</label>
+                        <input type="number" class="form-control" required [(ngModel)]="notice_period" placeholder="Enter notice period"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+
+                    
+                      <div class="col-md-6">
+                        <label>last working date</label>
+                        <input type="date" class="form-control" required [(ngModel)]="last_working_date" placeholder="Enter last working date"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+                    
+
+                      <div class="col-md-6">
+                        <label>location</label>
+                        <input type="text" class="form-control" required [(ngModel)]="location" placeholder="Enter location"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+                    
+
+                    
+                      <div class="col-md-6">
+                        <label>Type</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}">
+                            <option  value="resignation" >Resignation</option>
+                            <option  value="termination" >Termination</option>
+
+                            <option  value="retirement" >Retirement</option>
+
+                            <option  value="death_or_disablement" >Death or Disablement</option>
+                            
+                          </select>
+                        </div>
+                      </div>
+                      
+              
+                      <div class="col-md-12">
+                        <label>Reason</label>
+                        <textarea class="form-control" [(ngModel)]="reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
+                      </div>
+
+         
+                
+                 
+                      
+
+
+                  
+
+                
+                       
+                 
+                  
+                 
+                    </div>
+                  
+                    <div class="row" >
+                      <div class="col-md-9"></div>
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-success btn-full mt-4">Sent</button>
+                      </div>
+                    </div>
+                  </form>
+
+
+
+            </div>
+
+        </div>
+
+        <div style="overflow-x: auto; width: 100%;">
+        <table width="100%" >
+          <thead>
+            <tr>
+              <th>No</th>
+
+              <th> Document date  </th>
+              <th> Resigned on</th>
+              <th>Notice period</th>
+              <th>Last working date</th>
+              <th>Location</th>
+              <th>Termination type</th>
+             
+  
+              <th>Reason for leaving</th>
+              <th>Status</th>
+              <th>Employee</th>
+            </tr>
+          </thead>
+          <tbody>
+              
+            <tr *ngFor="let docs of DocRequest;let i = index">
+              <td>{{ i + 1 }}</td> 
+          
+              <td>{{ docs.document_date }}</td>
+              <td>{{ docs.resigned_on }}</td>
+              <td>{{ docs.notice_period }}</td> 
+              <td>{{ docs.last_working_date }}</td>
+              <td>{{ docs.location }}</td> 
+              <td>{{ docs.termination_type }}</td>
+              <td>{{ docs.reason_for_leaving }}</td>
+              <td>{{ docs.status }}</td> 
+              <td>{{ docs.employee }}</td>
+
+            </tr>
+        
+          </tbody>
+        </table>
+
+</div>
+
+  
+
+
+
+    </div>
+</div>

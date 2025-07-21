@@ -124,7 +124,7 @@
                                 <!-- Loop through leave requests -->
                                 <div  class="">
                                   <div class="row">
-                                    <div class="col-md-5">
+                                    <div class="col-md-12">
                                       <div class="leave_box" *ngFor="let request of employee.assets_requests" (click)="selectRequest(request.id)"
                                       [ngClass]="{'selected-request': selectedRequestId === request.id}">
                                         <div class="row">
@@ -137,46 +137,13 @@
                                             <h6>{{ request.requested_asset }}</h6>
                                           </div>
                                           <div class="col-md-4">
-                                            <label>Requested Date</label>
-                                            <h6>{{ request.request_date }}</h6>
+                                            <label>Approved Status</label>
+                                            <h6>{{ request.status }}</h6>
                                           </div>
                                         </div>
                                       </div>
                                     </div>
                       
-                                    <div class="col-md-7" >
-                                        <div *ngFor="let request of employee.assets_requests">
-                                        
-                                      <div class="leave_box"  *ngIf="selectedRequestId === request.id">
-                                        <!-- Loop through approvals for the leave request -->
-                                        <div class="approval-steps" *ngIf="request.approvals && request.approvals.length > 0">
-                                          <h5>Leave Approval Status</h5><hr>
-                                          <div *ngFor="let approval of request.approvals" class="row">
-                                            <div class="col-md-3">
-                                              <label>Status</label>
-                                              <h6>{{ approval.status }}</h6>
-                                            </div>
-                                            <div class="col-md-3">
-                                              <label>Role</label>
-                                              <h6>{{ approval.role }}</h6>
-                                            </div>
-                                            <div class="col-md-3">
-                                              <label>Approver</label>
-                                              <h6>{{ approval.approver || 'N/A' }}</h6>
-                                            </div>
-                                            <div class="col-md-3">
-                                              <label>Note</label>
-                                              <h6>{{ approval.note || 'N/A' }}</h6>
-                                            </div>
-                                            <!-- <div class="col-md-2">
-                                              <label>Updated At</label>
-                                              <h6>{{ approval.updated_at }}</h6>
-                                            </div> -->
-                                          </div>
-                                        </div>
-                                      </div>
-                                      </div>
-                                    </div>
                                   </div>  
                                 </div>
                               </div>

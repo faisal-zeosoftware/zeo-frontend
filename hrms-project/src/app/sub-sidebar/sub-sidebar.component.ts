@@ -240,6 +240,14 @@ if (this.userId !== null) {
     this.isMenuOpened = false;
   }
    
+
+   showAdvanceSalary = false;
+
+    toggleAdvanceSalary() {
+      this.showAdvanceSalary = !this.showAdvanceSalary;
+    }
+
+
   
 
 }

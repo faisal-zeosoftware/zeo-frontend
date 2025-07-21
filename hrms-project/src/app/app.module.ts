@@ -185,6 +185,10 @@ import { AirticketAllocationComponent } from './airticket-allocation/airticket-a
 import { AirticketRequestComponent } from './airticket-request/airticket-request.component';
 import { EmpAttendanceComponent } from './emp-attendance/emp-attendance.component';
 import { EmpAssetRequestComponent } from './emp-asset-request/emp-asset-request.component';
+import { EmpLoanComponent } from './emp-loan/emp-loan.component';
+import { ResignationApprovalLevelComponent } from './resignation-approval-level/resignation-approval-level.component';
+import { ResignationRequestComponent } from './resignation-request/resignation-request.component';
+import { ResignationApprovalsComponent } from './resignation-approvals/resignation-approvals.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -328,7 +332,11 @@ import { EmpAssetRequestComponent } from './emp-asset-request/emp-asset-request.
      AirticketAllocationComponent,
      AirticketRequestComponent,
      EmpAttendanceComponent,
-     EmpAssetRequestComponent
+     EmpAssetRequestComponent,
+     EmpLoanComponent,
+     ResignationApprovalLevelComponent,
+     ResignationRequestComponent,
+     ResignationApprovalsComponent
      
      
 

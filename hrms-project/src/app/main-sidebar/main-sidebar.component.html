@@ -49,6 +49,28 @@
 
       </a>
 
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" >
+        <span><mat-icon>event_upcoming
+
+        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/sub-sidebar/attendace-marking"> Attendance Management</span></span>
+
+
+      </a>
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>library_books
+          
+        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/asset-options"> Document Management</span></span>
+
+
+      </a>
+
+
+
+
+
+
+
 
       <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
         <span><mat-icon>airplane_ticket
@@ -57,10 +79,38 @@
 
       </a>
 
-
       <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple" *ngIf="!hideButton" routerLink="/main-sidebar/settings/branch-master" (click)="onToolbarMenuToggle()">
         <span><mat-icon>settings</mat-icon> <span class="sidenav-opt" > Settings</span></span>
       </a>
+
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon> speed
+        
+        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/dashboard-contents"> Performance Management</span></span>
+
+
+      </a>
+
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon> group_add
+        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/dashboard-contents"> Recruitmemt Management</span></span>
+
+
+      </a>
+      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>book_ribbon
+        
+        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/dashboard-contents">Learning  Management</span></span>
+
+
+      </a>
+
+
+
+
+
+ 
      
 
        

@@ -576,3 +576,13 @@ table thead th {
   .list-group a {
     border-bottom: solid 0px black;
 }
+
+#sidebarMenu {
+  overflow-y: scroll; /* enables vertical scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+#sidebarMenu::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

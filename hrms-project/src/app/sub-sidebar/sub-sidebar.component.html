@@ -36,6 +36,25 @@
 
                   <li routerLink="/main-sidebar/sub-sidebar/employee-overtime" *ngIf="hasViewNotification"><a ><mat-icon>peoples</mat-icon> Employee Overtime</a></li>
 
+                  <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
+                    <a>
+                      <mat-icon>peoples</mat-icon> Resignation 
+                      <mat-icon style="float: right;">{{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </a>
+                  </li>
+
+                  <ul *ngIf="showAdvanceSalary" style="padding-left: 20px;">
+                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approvals">
+                      <a> Approval List</a>
+                    </li>
+                    <li routerLink="/main-sidebar/sub-sidebar/resignation-request">
+                      <a> Resignation Request</a>
+                    </li>
+                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approval-level">
+                      <a>Resignation Approval Level</a>  
+                    </li>
+                  </ul>
+                  
               </ul> 
            
           </div>

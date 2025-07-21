@@ -109,6 +109,10 @@ import { AirticketAllocationComponent } from './airticket-allocation/airticket-a
 import { AirticketRequestComponent } from './airticket-request/airticket-request.component';
 import { EmpAttendanceComponent } from './emp-attendance/emp-attendance.component';
 import { EmpAssetRequestComponent } from './emp-asset-request/emp-asset-request.component';
+import { EmpLoanComponent } from './emp-loan/emp-loan.component';
+import { ResignationApprovalLevelComponent } from './resignation-approval-level/resignation-approval-level.component';
+import { ResignationRequestComponent } from './resignation-request/resignation-request.component';
+import { ResignationApprovalsComponent } from './resignation-approvals/resignation-approvals.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -183,6 +187,21 @@ const routes: Routes = [
           {
             path:'employee-overtime',
             component:EmployeeOvertimeComponent
+          },
+
+          {
+            path:'resignation-approval-level',
+            component:ResignationApprovalLevelComponent
+          },
+
+          {
+            path:'resignation-request',
+            component:ResignationRequestComponent
+          },
+
+            {
+            path:'resignation-approvals',
+            component:ResignationApprovalsComponent
           },
 
 
@@ -564,6 +583,11 @@ const routes: Routes = [
   path: 'dashboard-contents',
   component: DashboardContentsComponent,
 },
+{
+  path: 'attendace-marking',
+  component: AttendaceMarkingComponent,
+},
+
 
       {
         path: 'fiscal-year',
@@ -601,7 +625,10 @@ const routes: Routes = [
         path:'emp-asset-request',
         component:EmpAssetRequestComponent,
       },
-      
+      {
+        path:'emp-loan',
+        component:EmpLoanComponent,
+      },
     ]
   },
   

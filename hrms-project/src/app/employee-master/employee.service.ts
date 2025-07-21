@@ -2811,4 +2811,72 @@ registerAirTicketRequest(companyData: any): Observable<any> {
   );
 }
 
+
+
+
+
+
+// Resignation approval level
+
+
+registerResigantionApproverLevel(formData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/employee/api/resign-approval-level/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, formData).pipe(
+    catchError((error) => {
+      console.error('Error during leave type registration:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+
+getResigantionApprovalLevels(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/resign-approval-level/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
+
+
+
+
+// resignation appprovals
+
+
+
+getApprovalslistResignation(selectedSchema: string, userId: number): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/resign-approval/?schema=${selectedSchema}`;
+
+  // Fetch approvals for the user from the API
+  
+  return this.http.get(apiUrl);
+}
+
+
+
+approveApprovalRequestResignation(apiUrl: string, approvalData: { note: string; status: string }): Observable<any> {
+  // Sending a POST request to approve with note and status
+  return this.http.post(apiUrl, approvalData);
+}
+
+rejectApprovalRequestResignation(apiUrl: string, approvalData: { note: string; status: string }): Observable<any> {
+  // Sending a POST request to approve with note and status
+  return this.http.post(apiUrl, approvalData);
+}
+
+
+
+
 }
