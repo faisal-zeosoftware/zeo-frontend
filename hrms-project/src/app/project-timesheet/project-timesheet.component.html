@@ -1,0 +1,388 @@
+<div class="container" >
+    <div class="comapny_section">
+
+        <div class="header_section">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <h1> Project Timesheet</h1>
+                </div>
+
+                <div class="col-md-3">
+                    
+                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+                </div>
+                <div class="col-md-5">
+                    <div class="button-group pull-right">
+                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                        </mat-icon></span> Create</button>
+                      <span *ngIf="!hasAddPermission"></span>
+
+                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
+                            <span class="header-btn-icon">
+                             <mat-icon>draw
+                        </mat-icon></span> Edit</button>
+                        <span *ngIf="hasEditPermission"></span>
+                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                            <span class="header-btn-icon">
+                                <mat-icon> delete
+                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+                           <span *ngIf="!hasDeletePermission"></span>
+                    </div>
+                </div>
+            </div>
+           
+           
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+
+            </div>
+            <div class="col-md-3">
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+
+            </div>
+        </div>
+      
+
+      
+
+        <div *ngIf="iscreateLoanApp" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2>  Project Timesheet</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+          
+        <form >
+
+            <div class="row">
+               
+
+              <div class="col-md-6" >
+               
+                <label> Date</label>
+               <input type="date"  class="form-control" required  [(ngModel)]="date"  placeholder="Enter date"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
+
+          <div class="col-md-6" >
+               
+            <label> Time Spend</label>
+           <input type="time"  class="form-control" required  [(ngModel)]="time_spent"  placeholder="Enter time spent"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+
+          <div class="col-md-6" >
+            <label>Status</label>
+            <div class="custom-sel">
+              <select
+                class="form-control" [(ngModel)]="status" [ngModelOptions]="{ standalone: true }">
+                <option value="in_progress">In Progress </option>
+          
+                <option value="completed">Completed </option>
+          
+              
+          
+          
+              </select>
+            </div>
+          </div>
+
+         
+    
+
+
+  <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
+     
+
+
+
+<div class="col-md-6" >
+    <label>Select Projects</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="project"
+        name="project"
+        [(ngModel)]="project"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Projects" [value]="employees.id">
+          {{ employees.title }}
+        </option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="col-md-6" >
+    <label>Select Task</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="task"
+        name="task"
+        [(ngModel)]="task"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Tasks" [value]="employees.id">
+          {{ employees.title }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+
+  <div class="col-md-6" >
+    <label>Select Employee</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="employee"
+        name="employee"
+        [(ngModel)]="employee"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Employees" [value]="employees.id">
+          {{ employees.emp_code }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+
+      
+
+
+    
+            </div>
+
+    
+            <div class="row">
+                <div class="col-md-10">
+    
+                </div>
+    
+                <div class="col-md-2">
+                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateProject()">Save</button>  
+                 </div>
+            </div>
+            
+       
+    </form>
+
+            
+            </div>
+          </div>
+
+          <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col-md-10">
+          <h2>Edit Asset </h2>
+        </div>
+        <div class="col-md-2">
+          <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+        </div>
+      </div>
+      <hr />
+  
+      <form>
+      
+        <div class="row">
+               
+
+            <div class="col-md-6" >
+             
+              <label>Asset Name</label>
+             <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter name"
+              [ngModelOptions]="{standalone: true}" >
+             
+        </div>
+
+         <div class="col-md-6" >
+             
+              <label>Serial No</label>
+             <input type="text"  class="form-control" required  [(ngModel)]="editAsset.serial_number"  placeholder="Enter Serial no"
+              [ngModelOptions]="{standalone: true}" >
+             
+        </div>
+        <div class="col-md-6" >
+             
+          <label>Model</label>
+         <input type="text"  class="form-control" required  [(ngModel)]="editAsset.model"  placeholder="Enter Model"
+          [ngModelOptions]="{standalone: true}" >
+         
+    </div>
+
+    <div class="col-md-6" >
+             
+      <label>Purchase date</label>
+     <input type="date"  class="form-control" required  [(ngModel)]="editAsset.purchase_date"  placeholder="Enter Purchase date"
+      [ngModelOptions]="{standalone: true}" >
+     
+</div>
+
+<div class="col-md-6" >
+  <label>Status</label>
+  <div class="custom-sel">
+    <select
+      class="form-control" [(ngModel)]="editAsset.status" [ngModelOptions]="{ standalone: true }">
+      <option value="new">New </option>
+      <option value="in_progress">In Progress </option>
+
+      <option value="completed">Completed </option>
+
+      <option value="on_hold">On Hold </option>
+      <option value="cancelled">Cancelled </option>
+
+      <option value="expired">Expired</option>
+
+
+    </select>
+  </div>
+</div>
+
+
+<div class="col-md-6" >
+  <label>Condition</label>
+  <div class="custom-sel">
+    <select
+      class="form-control" [(ngModel)]="editAsset.condition" [ngModelOptions]="{ standalone: true }">
+      <option value="healthy">Healthy </option>
+      <option value="minor_damage">Minor Damage </option>
+      <option value="major_damage">Major Damage </option>
+
+  
+
+    </select>
+  </div>
+</div>
+
+
+
+
+<div class="col-md-6" >
+  <label>Select Asset Type</label>
+  <div class="custom-sel">
+    <select
+      class="form-control"
+      id="asset_type"
+      name="asset_type"
+      [(ngModel)]="editAsset.asset_type"
+      [ngModelOptions]="{ standalone: true }"
+    >
+      <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+        {{ employees.name }}
+      </option>
+    </select>
+  </div>
+</div>
+
+   
+        
+    
+    
+ 
+
+
+
+  
+          </div>
+
+
+        
+  
+        <div class="row">
+          <div class="col-md-10"></div>
+          <div class="col-md-2">
+            <button
+              type="button"
+              class="btn-Create btn-full mt-5 btn-success btn"
+              (click)="updateAssetType()"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+
+        <div class="com_list mt-4" *ngIf="hasViewPermission">
+
+            <div style="overflow-x: auto; width: 100%;">
+
+          <table width="100%" *ngIf="hasViewPermission">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th> Date</th>
+                <th> Time spent</th>
+                <th>Status</th>
+                <th>Description  </th>
+                <th> project</th>
+                <th>Task  </th>
+                <th>Employee</th>
+          
+               
+             
+                <th>Action</th>
+              </tr>
+            </thead>
+          
+            <tbody>
+              <tr *ngFor="let docs of Timesheets; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ docs.date }}</td>
+                <td>{{ docs.time_spent }}</td>
+
+                <td>{{ docs.status }}</td>
+                <td>{{ docs.description }}</td>
+                <td>{{ docs.project }}</td>
+                <td>{{ docs.task }}</td>
+                <td>{{ docs.employee }}</td>
+
+                      <!-- Dynamic custom field values -->
+            
+                <td>
+                  <button
+                    mat-fab
+
+                    color="primary"
+                    aria-label="Edit icon"
+                    *ngIf="showEditBtn"
+                    (click)="openEditModal(docs)"
+                  >
+                    <mat-icon style="color: white;">draw</mat-icon>
+                  </button>
+                  <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+
+        </div>
+        </div>
+        </div>
+        

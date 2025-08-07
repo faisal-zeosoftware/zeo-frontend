@@ -113,6 +113,11 @@ import { EmpLoanComponent } from './emp-loan/emp-loan.component';
 import { ResignationApprovalLevelComponent } from './resignation-approval-level/resignation-approval-level.component';
 import { ResignationRequestComponent } from './resignation-request/resignation-request.component';
 import { ResignationApprovalsComponent } from './resignation-approvals/resignation-approvals.component';
+import { ProjectOptionsComponent } from './project-options/project-options.component';
+import { ProjectMasterComponent } from './project-master/project-master.component';
+import { ProjectStagesComponent } from './project-stages/project-stages.component';
+import { ProjectTasksComponent } from './project-tasks/project-tasks.component';
+import { ProjectTimesheetComponent } from './project-timesheet/project-timesheet.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -571,6 +576,38 @@ const routes: Routes = [
     {
       path:'airticket-request',
       component:AirticketRequestComponent,
+    },
+
+
+  ]
+
+},
+
+
+
+{
+  path: 'project-options',
+  component: ProjectOptionsComponent,
+  children:[
+   
+    {
+      path:'project-master',
+      component:ProjectMasterComponent,
+    },
+    {
+      path:'project-stages',
+      component:ProjectStagesComponent,
+    },
+
+   
+    {
+      path:'project-tasks',
+      component:ProjectTasksComponent,
+    },
+
+    {
+      path:'project-timesheet',
+      component:ProjectTimesheetComponent,
     },
 
 

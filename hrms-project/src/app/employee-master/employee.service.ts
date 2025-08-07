@@ -2879,4 +2879,137 @@ rejectApprovalRequestResignation(apiUrl: string, approvalData: { note: string; s
 
 
 
+
+
+// Project Masters apis
+
+
+registerProject(companyData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/project/api/projects/?schema=${selectedSchema}`;
+
+  // ❌ Don't manually set Content-Type for FormData
+  return this.http.post(apiUrl, companyData).pipe(
+    catchError((error) => {
+      console.error('Error during company registration:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+getProjects(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/project/api/projects/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
+
+
+
+// Project stages apis
+
+
+registerProjectStages(companyData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/project/api/stages/?schema=${selectedSchema}`;
+
+  // ❌ Don't manually set Content-Type for FormData
+  return this.http.post(apiUrl, companyData).pipe(
+    catchError((error) => {
+      console.error('Error during company registration:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+getProjectsStages(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/project/api/stages/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
+
+
+// Project Masters Tasks apis
+
+
+registerProjectTask(companyData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/project/api/tasks/?schema=${selectedSchema}`;
+
+  // ❌ Don't manually set Content-Type for FormData
+  return this.http.post(apiUrl, companyData).pipe(
+    catchError((error) => {
+      console.error('Error during company registration:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+getProjectsTask(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/project/api/tasks/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
+
+
+// Project Masters Tasks apis
+
+
+registerProjectTimesheet(companyData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/project/api/timesheets/?schema=${selectedSchema}`;
+
+  // ❌ Don't manually set Content-Type for FormData
+  return this.http.post(apiUrl, companyData).pipe(
+    catchError((error) => {
+      console.error('Error during company registration:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+getProjectsTimesheet(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/project/api/timesheets/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
 }

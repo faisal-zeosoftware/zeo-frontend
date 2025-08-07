@@ -1,0 +1,63 @@
+<div class="sub-sidebar clickOutside">
+
+
+    <mat-sidenav-container>
+      <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
+  
+        <div class="wrapper">
+          <div class="sidebar">
+              <ul>
+                <li routerLink="/main-sidebar/project-options/project-master" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects</a></li>
+             
+              
+                <li routerLink="/main-sidebar/project-options/project-stages" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects Stages</a></li>
+               
+                <li routerLink="/main-sidebar/project-options/project-tasks" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects Tasks</a></li>
+
+                <li routerLink="/main-sidebar/project-options/project-timesheet" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects Timesheet</a></li>
+
+                  <mat-nav-list>
+     
+  
+  
+                    <div>
+            
+            
+                 
+                    </div>
+                    <style>
+                      .mat-expansion-panel-body {
+                        padding: 0 0px 16px !important;
+                      }
+                      .mat-expansion-panel{
+                background: transparent;
+               
+              }
+                    </style>
+            
+                  </mat-nav-list>
+                   
+              </ul> 
+  
+                   
+   
+          </div>
+    
+      </div>
+   
+  
+  
+  
+  
+  
+  
+      </mat-sidenav>
+  
+  
+      <router-outlet></router-outlet>
+  
+      <!-- <router-outlet></router-outlet> -->
+  
+    </mat-sidenav-container>
+  
+  </div>

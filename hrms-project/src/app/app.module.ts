@@ -189,6 +189,11 @@ import { EmpLoanComponent } from './emp-loan/emp-loan.component';
 import { ResignationApprovalLevelComponent } from './resignation-approval-level/resignation-approval-level.component';
 import { ResignationRequestComponent } from './resignation-request/resignation-request.component';
 import { ResignationApprovalsComponent } from './resignation-approvals/resignation-approvals.component';
+import { ProjectOptionsComponent } from './project-options/project-options.component';
+import { ProjectMasterComponent } from './project-master/project-master.component';
+import { ProjectStagesComponent } from './project-stages/project-stages.component';
+import { ProjectTasksComponent } from './project-tasks/project-tasks.component';
+import { ProjectTimesheetComponent } from './project-timesheet/project-timesheet.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -336,7 +341,12 @@ import { ResignationApprovalsComponent } from './resignation-approvals/resignati
      EmpLoanComponent,
      ResignationApprovalLevelComponent,
      ResignationRequestComponent,
-     ResignationApprovalsComponent
+     ResignationApprovalsComponent,
+     ProjectOptionsComponent,
+     ProjectMasterComponent,
+     ProjectStagesComponent,
+     ProjectTasksComponent,
+     ProjectTimesheetComponent
      
      
 

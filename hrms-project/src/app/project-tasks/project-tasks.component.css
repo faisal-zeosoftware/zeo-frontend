@@ -1,4 +1,5 @@
 
+
 .comapny_section{
 
     margin-top: 100px;
@@ -23,13 +24,48 @@
 
 }
 
+.btn-Create{
+     /* padding: 5px 15px; */
+     /* border: none; */
+margin-right: 10px;     
+   
+}
+
+.btn-Edit{
+    margin-right: 10px;
+}
+
+.btn-Delete{
+    margin-right: 10px;
+}
+
+.header-btn-icon{
+    vertical-align: middle;
+}
+
+.btn-Create .mat-icon{
+    margin-top: 4px;
+}
+.btn-Create .mat-icon{
+    margin-top: 2px;
+}
+
+
+
+.list_company_sec{
+    padding: 25px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    border-top: solid 3px navy;
+
+}
 
 .com_list{
     padding: 20px;
     width: 100%;
     background: white;
     box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    border-top: solid 3px navy;
+    border-bottom: solid 3px navy;
     margin-bottom: 20px;
 
 
@@ -37,77 +73,83 @@
 
 .com_list h2{
     font-size: 16px;
+    margin-top: 15px;
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
+}
+
+.comp_logo{
+    width: 40px;
+    height: 50px;
+    overflow: hidden;
+}
+
+.comapny_section p{
+    text-align: center;
+    color: grey;
+}
+
+.com_list .mat-icon{
+    color: #FDCC0D;
+    height: 20px;
+    width: 25px;
 }
 
 
 
-  
-table thead th {
-    color: #ffffff;
-    background: #004976;
-    padding: 15px;
-    border: 1px solid #ebebec;
-    font-weight: 500;
-  }
-  
-  table tr {
-    background: #ffffff;
-  }
-  
-  table tr td {
-    border: 1px solid #e6edf1;
-    padding: 15px;
-  }
-  
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
-  
 
-
-
-  p{
-    margin-bottom: 0px;
+/* Add your CSS styles here */
+.modal {
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    margin-left: auto;
+    margin-right: auto;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 70%; /* Could be more or less, depending on screen size */
+    margin-right: auto;
+    margin-left: 25%;
+    margin-top: 100px;
+    height: auto;
+  
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: red;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .modal h2{
+  
+    font-size: 16px;
+    text-transform: capitalize;
+    font-weight: 600;
+    font-family: math;
   }
 
 
-
-  /* Multiple select css */
+  /* multiple selection css */
+  
 
   .form-control-wrapper {
     display: flex;
@@ -214,46 +256,4 @@ input:focus-visible {
 ::ng-deep .mat-mdc-form-field-flex {
   padding: 4px 7px;
   height: 35px;
-}
-
-
-
-
-.search-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.search-input {
-  width: 0;
-  padding: 8px 15px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  outline: none;
-  transition: width 0.4s ease-in-out;
-  opacity: 0;
-  z-index: 0;
-}
-
-.search-input.expanded {
-  width: 300px; /* Adjust width as needed */
-  opacity: 1;
-}
-
-.search-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  margin-left: -40px;
-  border-radius: 100%;
-  background: #5c1e81;
-  width: 35px;
-  height: 35px;
-  z-index: 10;
-}
-
-.search-btn i {
-  color: #ffffff;
 }
