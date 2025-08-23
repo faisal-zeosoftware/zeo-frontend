@@ -1143,4 +1143,50 @@ getEmpResignationRequest(selectedSchema: string): Observable<any> {
 
 
 
+
+
+getEmployeeApprovedResignation(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/employee-resignation/approved_resignations/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+}
+
+
+createEndOfService(employeeId: number, selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/employee-resignation/create_eos_by_employee/${employeeId}/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, {}); // Empty body if backend doesn’t need payload
+}
+
+
+// createEndOfService(apiUrl: string): Observable<any> {
+//   return this.http.post(apiUrl, {}); // Sending empty body if API doesn’t require data
+// }
+
+
+
+
+getEmployeeEos(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/employee-resignation/employees_with_eos/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+}
+
+
+
+getEmployeeEndOfService(employeeId: number, selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/end-of-service/${employeeId}/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
+
+
+getFinalSettlementData(employeeId: number, selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/end-of-service/${employeeId}/final-settlement-data/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
 }

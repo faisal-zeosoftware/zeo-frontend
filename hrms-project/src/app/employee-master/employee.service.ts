@@ -3012,4 +3012,42 @@ getProjectsTimesheet(selectedSchema: string): Observable<any> {
 }
 
 
+// 
+
+
+registerGratuity(companyData: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+
+
+
+  const apiUrl = `${this.apiUrl}/organisation/api/gratuity/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.post(apiUrl, companyData, { headers }).pipe(
+    catchError((error) => {
+      // Handle errors here (you can log, show a user-friendly message, etc.)
+      console.error('Error during company registration:', error);
+      return throwError(error);
+
+    })
+  );
+}
+
+
+
+ // get method for loans
+
+ getGratuity(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/organisation/api/gratuity/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
 }

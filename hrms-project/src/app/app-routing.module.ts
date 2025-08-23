@@ -118,6 +118,9 @@ import { ProjectMasterComponent } from './project-master/project-master.componen
 import { ProjectStagesComponent } from './project-stages/project-stages.component';
 import { ProjectTasksComponent } from './project-tasks/project-tasks.component';
 import { ProjectTimesheetComponent } from './project-timesheet/project-timesheet.component';
+import { ResignationApprovedListComponent } from './resignation-approved-list/resignation-approved-list.component';
+import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
+import { GratuityComponent } from './gratuity/gratuity.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -207,6 +210,18 @@ const routes: Routes = [
             {
             path:'resignation-approvals',
             component:ResignationApprovalsComponent
+          },
+          {
+            path:'resignation-approved-list',
+            component:ResignationApprovedListComponent
+          },
+          {
+            path:'end-of-service',
+            component:EndOfServiceComponent
+          },
+          {
+            path:'gratyuity',
+            component:GratuityComponent
           },
 
 

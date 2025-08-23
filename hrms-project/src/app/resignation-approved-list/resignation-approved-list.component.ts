@@ -9,46 +9,32 @@ import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
-  selector: 'app-resignation-request',
-  templateUrl: './resignation-request.component.html',
-  styleUrl: './resignation-request.component.css'
+  selector: 'app-resignation-approved-list',
+  templateUrl: './resignation-approved-list.component.html',
+  styleUrl: './resignation-approved-list.component.css'
 })
-export class ResignationRequestComponent {
+export class ResignationApprovedListComponent {
 
-
-  
       
 
   allSelected=false;
 
 
 
-  document_date:any='';
-  resigned_on:any='' ;
-  notice_period:any='' ;
-
-  last_working_date:any='' ;
-  location: any = '';
-  termination_type: any = '';
-  reason_for_leaving: any = '';
-
-  employee:any='';
-
-  
-  created_by:any='';
+ 
 
   registerButtonClicked: boolean = false;
 
 
 
-  LeaveapprovalLevels: any[] = [];
 
-  Employee: any[] = [];
+  EmployeeResignation: any[] = [];
 
-  DocRequest: any[] = [];
+
+  selectedEmployeeId: number | null = null;
 
   Users: any[] = [];
-  DocType: any[] = [];
+
 
 
   hasAddPermission: boolean = false;
@@ -75,13 +61,8 @@ schemas: string[] = []; // Array to store schema names
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
-     
-      this.LoadUsers(selectedSchema);
-      this.LoadLeaveApprovalLevel(selectedSchema);
+        this.LoadEmployeeResignationApproved(selectedSchema);
 
-      this.LoadDocType(selectedSchema);
-      this.LoadEmployee(selectedSchema);
-      this.LoadDocRequest(selectedSchema);
 
       
       }
@@ -92,7 +73,7 @@ if (this.userId !== null) {
     async (userData: any) => {
       this.userDetails = userData; // Store user details in userDetails property
 
-this.userDetails = this.created_by;
+// this.userDetails = this.created_by;
       console.log('User ID:', this.userId); // Log user ID
       console.log('User Details:', this.userDetails); // Log user details
 
@@ -205,23 +186,7 @@ this.userDetails = this.created_by;
 
 
     
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leaveapprovallevels' ||'change_leaveapprovallevels' 
-//   ||'delete_leaveapprovallevels' ||'view_leaveapprovallevels';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
+
   
   
   
@@ -234,23 +199,11 @@ this.userDetails = this.created_by;
 
 
   
+
+  
  
   
-  
 
-    LoadLeaveApprovalLevel(selectedSchema: string) {
-      this.leaveService.getDocReqApprovalLevel(selectedSchema).subscribe(
-        (data: any) => {
-          this.LeaveapprovalLevels = data;
-        
-          console.log('employee:', this.LeaveapprovalLevels);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
-  
  
   
     LoadUsers(selectedSchema: string) {
@@ -267,96 +220,59 @@ this.userDetails = this.created_by;
     }
 
     
-    LoadEmployee(selectedSchema: string) {
-      this.leaveService.getEmployee(selectedSchema).subscribe(
+  
+    LoadEmployeeResignationApproved(selectedSchema: string) {
+      this.leaveService.getEmployeeApprovedResignation(selectedSchema).subscribe(
         (data: any) => {
-          this.Employee = data;
+          this.EmployeeResignation = data;
         
-          console.log('employee:', this.Employee);
+          console.log('employee:', this.EmployeeResignation);
         },
         (error: any) => {
           console.error('Error fetching Employee:', error);
         }
       );
     }
-  
-  
 
-    LoadDocType(selectedSchema: string) {
-      this.leaveService.getDocType(selectedSchema).subscribe(
-        (data: any) => {
-          this.DocType = data;
-        
-          console.log('DocType:', this.DocType);
-        },
-        (error: any) => {
-          console.error('Error fetching DocType:', error);
-        }
-      );
-    }
+ 
   
-
-
+    createEndOfService(): void {
+      if (!this.selectedEmployeeId) {
+        alert('Please select an employee.');
+        return;
+      }
     
-    LoadDocRequest(selectedSchema: string) {
-      this.leaveService.getEmpResignationRequest(selectedSchema).subscribe(
-        (data: any) => {
-          this.DocRequest = data;
-        
-          console.log('DocRequest:', this.DocRequest);
-        },
-        (error: any) => {
-          console.error('Error fetching DocType:', error);
-        }
-      );
-    }
-  
-
-
-
-    SetLeaveApprovaLevel(): void {
-      this.registerButtonClicked = true;
-      // if (!this.name || !this.code || !this.valid_to) {
-      //   return;
-      // }
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema) {
+        alert('No schema selected.');
+        return;
+      }
     
-      const formData = new FormData();
-      formData.append('document_date', this.document_date);
-      formData.append('resigned_on', this.resigned_on);
-
-
-  
-  
-      formData.append('notice_period', this.notice_period);
-    
-      formData.append('last_working_date', this.last_working_date);
-      formData.append('location', this.location);
-      formData.append('termination_type', this.termination_type);
-
-      formData.append('reason_for_leaving', this.reason_for_leaving);
-    
-      formData.append('employee', this.employee);
-
-
-  
-      
-    
-    
-      this.leaveService.CreateEmpResignationRequest(formData).subscribe(
+      this.leaveService.createEndOfService(this.selectedEmployeeId, selectedSchema).subscribe(
         (response) => {
-          console.log('Registration successful', response);
-  
-  
-          alert('Resignation Request  has been Sent');
-  
-          window.location.reload();
-        },  
+          console.log('End of service created:', response);
+          alert('End of service record has been created.');
+        },
         (error) => {
-          console.error('Added failed', error);
-          alert('Enter all required fields!');
+          console.error('Error creating end of service:', error);
+    
+          // ✅ Show backend error message if available
+          if (error.error && error.error.detail) {
+            alert(error.error.detail);
+          } else {
+            alert('Failed to create end of service.');
+          }
         }
       );
     }
+    
+
+    
+  
+
+
+
+  
 
 
 
@@ -364,10 +280,7 @@ this.userDetails = this.created_by;
 
 
 
-
-    isPauseModalOpen: boolean = false;
-    isResumeModalOpen: boolean = false;
-
+   
     iscreateLoanApp: boolean = false;
 
 
@@ -382,10 +295,6 @@ this.userDetails = this.created_by;
       this.iscreateLoanApp = false;
 
     }
-
-selectedLoanId: number | null = null;
-
-
 
 
 
