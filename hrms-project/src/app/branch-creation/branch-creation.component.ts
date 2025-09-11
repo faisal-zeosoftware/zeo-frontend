@@ -58,7 +58,6 @@ userDetails: any;
 userDetailss: any[] = [];
 username: any;
 
-// formData.append('emp_profile_pic', this.selectedFile);
 
 
 constructor(private countryService: CountryService ,
