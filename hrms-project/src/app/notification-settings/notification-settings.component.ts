@@ -38,7 +38,7 @@ export class NotificationSettingsComponent {
   Employees: any[] = [];
   LeaveBalances: any[] = [];
 
-
+  NotSettings :any[] = [];
 
   Users: any[] = [];
 
@@ -66,6 +66,8 @@ export class NotificationSettingsComponent {
     ) {}
 
     ngOnInit(): void {
+
+      this.loadLoanTypes();
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
@@ -217,6 +219,26 @@ if (this.userId !== null) {
 
 
  
+      loadLoanTypes(): void {
+    
+        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      
+        console.log('schemastore',selectedSchema )
+        // Check if selectedSchema is available
+        if (selectedSchema) {
+          this.leaveService.getNotificationSettings(selectedSchema).subscribe(
+            (result: any) => {
+              this.NotSettings = result;
+              console.log(' fetching Loantypes:');
+      
+            },
+            (error) => {
+              console.error('Error fetching Companies:', error);
+            }
+          );
+        }
+        }
+    
     
     
    
@@ -265,7 +287,7 @@ if (this.userId !== null) {
         this.leaveService.registerEmailNotification(companyData).subscribe(
           (response) => {
             console.log('Registration successful', response);
-            alert('Group Permission has been Assigned');
+            alert('Notification settings has been Assigned');
             window.location.reload();
           },
           (error) => {
@@ -283,6 +305,75 @@ if (this.userId !== null) {
       
 
 
+
+
+      // Variable to hold the selected document for editing
+  selectedDoc: any = {};
+  isDocumentnumbereditModalOpen: boolean = false;
+  
+    
+openEditDocModal(state: any): void {
+  // Clone the document (to avoid modifying the original before saving)
+  this.selectedDoc = { ...state };
+  this.isDocumentnumbereditModalOpen = true;
+}
+
+
+
+closeEditDocModal(): void {
+  this.isDocumentnumbereditModalOpen = false;
+}
+
+// Method to update the document number via API
+updateDocumentNumber(): void {
+  // Optionally convert the date input to a year integer if needed:
+  // Example: this.selectedDoc.year = new Date(this.selectedDoc.year).getFullYear();
+  
+  this.leaveService.updateNot(this.selectedDoc.id, this.selectedDoc).subscribe(
+    (response) => {
+      console.log('Document type updated successfully', response);
+      alert(' Notification updated successfully.');
+      // Optionally, refresh your list or reload the page
+      this.closeEditDocModal();
+       // re-fetch the list if needed
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Error updating document type', error);
+      const errorMessage = error.error?.error || 'Error updating document type.';
+      alert(errorMessage);
+    }
+  );
+}
+
+
+
+
+deleteDoc(permissionId: number): void {
+  if (confirm('Are you sure you want to delete this Notification Setting?')) {
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (selectedSchema) {
+    this.leaveService.deleteNotification(permissionId,selectedSchema).subscribe(
+      (response) => {
+        console.log('Document type deleted successfully', response);
+        alert('Notification deleted successfully');
+          
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return;
+    }
+    this.loadLoanTypes();
+        // this.fetchDesignations(selectedSchema); // Refresh the list after deletion
+      },
+      (error) => {
+        console.error('Error deleting Document type:', error);
+        alert('Failed to delete permission');
+      }
+    );
+  }
+  }
+}
 
 
 

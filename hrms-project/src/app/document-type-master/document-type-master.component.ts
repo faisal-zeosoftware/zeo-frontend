@@ -344,7 +344,7 @@ updateDocumentNumber(): void {
 
 
   deleteDoc(permissionId: number): void {
-    if (confirm('Are you sure you want to delete this permission?')) {
+    if (confirm('Are you sure you want to delete this Document type?')) {
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
       this.countryService.deleteAssignedPermission(permissionId,selectedSchema).subscribe(

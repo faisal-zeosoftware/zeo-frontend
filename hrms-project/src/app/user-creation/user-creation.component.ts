@@ -83,59 +83,65 @@ export class UserCreationComponent {
 
    registeruser(): void {
     this.registerButtonClicked = true;
-
-
-         // Basic validation for username and password fields
-  if (!this.username || !this.password ||this.email) {
-    if (!this.username) {
-      alert('Username field is blank.');
+  
+    // Basic validation for username, email, and password fields
+    if (!this.username || !this.password || !this.email) {
+      if (!this.username) {
+        alert('Username field is blank.');
+      }
+      if (!this.password) {
+        alert('Password field is blank.');
+      }
+      if (!this.email) {
+        alert('Email field is blank.');
+      }
+      return; // stop execution if required fields are empty
     }
-    if (!this.password) {
-      alert('Password field is blank.');
-    }
-    if (!this.email) {
-      alert('Password field is blank.');
-    }
-
-  }
-    
-
+  
     const companyData = {
       username: this.username,
-     
-      email:this.email,
-  
-      tenants:this.tenants,
-      password:this.password,
-      
+      email: this.email,
+      tenants: this.tenants,
+      password: this.password,
       is_ess: this.is_ess,
       is_superuser: this.is_superuser,
       is_staff: this.is_staff,
-
-     
     };
-    
-
+  
     this.UserMasterService.registeruser(companyData).subscribe(
       (response) => {
         console.log('Registration successful', response);
-       
-            alert('User has been Registered and logged in!');
-            const createdUserId = response.id; // Assume `response` contains the new user ID
-
-            
-              // Store the created user ID and open the modal
-            this.createdUserId = createdUserId;
-             this.isAddFieldsModalOpen = true;
-
+  
+        alert('User has been Registered and logged in!');
+        const createdUserId = response.id; // Assume backend returns new user ID
+  
+        // Store the created user ID and open the modal
+        this.createdUserId = createdUserId;
+        this.isAddFieldsModalOpen = true;
       },
       (error) => {
         console.error('Registration failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
+  
+        // ✅ Show backend error message in alert
+        if (error.error) {
+          if (typeof error.error === 'string') {
+            // If backend returns plain text
+            alert(error.error);
+          } else if (error.error.detail) {
+            // Django REST Framework common field
+            alert(error.error.detail);
+          } else {
+            // If backend returns object with validation errors
+            const messages = Object.values(error.error).flat().join('\n');
+            alert(messages);
+          }
+        } else {
+          alert('Registration failed. Please try again.');
+        }
       }
     );
   }
+  
 
   ngOnInit(): void {
    

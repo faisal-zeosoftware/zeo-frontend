@@ -275,6 +275,34 @@ export class LeaveService {
         })
       );
       }
+
+      getNotificationSettings(selectedSchema: string): Observable<any> {
+        const apiUrl = `${this.apiUrl}/employee/api/notification-settings/?schema=${selectedSchema}`;
+      
+        // Fetch employees from the API
+        return this.http.get(apiUrl);
+      
+        
+      }
+
+      
+      updateNot(docId: number, payload: any): Observable<any> {
+        const selectedSchema = localStorage.getItem('selectedSchema');
+        if (!selectedSchema) {
+          console.error('No schema selected.');
+          return throwError('No schema selected.');
+        }
+        const url = `${this.apiUrl}/employee/api/notification-settings/${docId}/?schema=${selectedSchema}`;
+        return this.http.put(url, payload);
+      }
+
+
+      deleteNotification(permissionId: number,selectedSchema: string): Observable<any> {
+        const apiUrl = `${this.apiUrl}/employee/api/notification-settings/${permissionId}/?schema=${selectedSchema}`;
+        return this.http.delete(apiUrl);
+      }
+    
+      
     
   updateEmailTemplateLeave(updatedTemplate: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
