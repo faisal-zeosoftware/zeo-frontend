@@ -137,7 +137,7 @@ setDropdownValues(): void {
       .subscribe((response) => {
         console.log('Document updated successfully', response);
         alert('Document updated successfully ');
-        // window.location.reload();
+        window.location.reload();
         // Redirect or perform other actions as needed
       }, (error) => {
         console.error('Failed to update document', error);
@@ -245,7 +245,9 @@ setDropdownValues(): void {
 
  
   ClosePopups(){
-    this.ref.close('Closed using function');
+    // this.ref.close('Closed using function');
+    window.location.reload();
+    
   }
 
 

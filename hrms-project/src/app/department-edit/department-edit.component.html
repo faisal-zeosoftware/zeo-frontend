@@ -43,10 +43,10 @@
         <select class="form-control" id="deparmentsec" required [(ngModel)]="department.branch_id"
         [ngModelOptions]="{standalone: true}" 
         [ngClass]="{'error-field': registerButtonClicked && !department.branch_id}">
-          <option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id"
-            [selected]="deparmentsec.id === department.branch_id">
-            {{ deparmentsec.branch_name }}
-          </option>
+        <option *ngFor="let deparmentsec of Departments" 
+        [ngValue]="deparmentsec.id">
+  {{ deparmentsec.branch_name }}
+</option>
       </select>
       
       <div *ngIf="registerButtonClicked && !department.branch_id" class="error-message">

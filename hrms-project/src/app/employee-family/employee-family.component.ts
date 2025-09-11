@@ -100,6 +100,9 @@ export class EmployeeFamilyComponent {
         this.postCustomFieldValuesFam(createdEmployeeId);
         console.log('Registration successful', response);
         alert('Employee Family added!');
+        // this.nextStep();
+        this.step++;
+
         // window.location.reload();
         // Optionally close the dialog or reset the form
       },
@@ -284,7 +287,7 @@ uploadEmployeeDocument(): void {
 
         console.log('Document upload successful', response);
         alert('Document upload successful');
-        // window.location.reload();
+        window.location.reload();
       },
       (error) => {
         console.error('Document upload failed', error);

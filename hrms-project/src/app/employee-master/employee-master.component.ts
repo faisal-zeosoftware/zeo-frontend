@@ -96,7 +96,7 @@ export class EmployeeMasterComponent {
   }
 
   deleteSelectedEmployees() { 
-    const selectedEmployeeIds = this.employees
+    const selectedEmployeeIds = this.filteredEmployees
       .filter(employee => employee.selected)
       .map(employee => employee.id);
 
@@ -111,7 +111,7 @@ export class EmployeeMasterComponent {
           () => {
             console.log('Employee deleted successfully:', employeeId);
             // Remove the deleted employee from the local list
-            this.employees = this.employees.filter(employee => employee.id !== employeeId);
+            this.filteredEmployees = this.filteredEmployees.filter(employee => employee.id !== employeeId);
             window.location.reload();
           },
           (error) => {
