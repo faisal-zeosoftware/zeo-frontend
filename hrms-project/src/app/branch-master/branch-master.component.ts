@@ -22,7 +22,7 @@ import { SessionService } from '../login/session.service';
                   
               </div>
               <div class="col-md-4">
-                    
+                     
                     <input type="text" class="form-control mt-1" placeholder="Search by branch or branch code " [(ngModel)]="searchQuery" (input)="filterEmployees()">
 
                 </div>
@@ -262,6 +262,9 @@ if (this.userId !== null) {
 } else {
   console.error('User ID is null.');
 }
+
+
+
 
 
    

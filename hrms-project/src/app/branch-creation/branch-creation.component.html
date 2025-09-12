@@ -6,6 +6,7 @@
     <div class="cpm-sec">
     
         <h1>Create  Branch</h1><hr>
+        
         <form >
         <div class="row">
             <div class="col-md-6" >
@@ -24,14 +25,7 @@
        
        <div *ngIf="registerButtonClicked && !branch_code" class="error-message">Branch Code is required.</div>
     </div>
-<!--     
-    <div class="col-md-6" >
-               
-        <label>Probation period days</label>
-       <input type="number"  class="form-control" required  [(ngModel)]="probation_period_days"  placeholder="Enter Branch Name" [ngModelOptions]="{standalone: true}" >
-       
-    </div> -->
-        
+
                    
                      
     <div class="col-md-6">
@@ -49,7 +43,7 @@
         <div class="custom-sel">
           <!-- Dynamically displaying the state_label from the API response -->
           <label>{{ state_label }}</label>
-          <select class="form-control" id="state" required [(ngModel)]="br_state_id" [ngModelOptions]="{standalone:true}">
+          <select class="form-control" id="state"  [(ngModel)]="br_state_id" [ngModelOptions]="{standalone:true}">
             <option value="">Select</option>
             <option *ngFor="let state of states" [value]="state.id">{{ state.state_name }}</option>
           </select>
@@ -128,9 +122,9 @@
     <div class="col-md-6"> 
         <label for="branch_logo">Branch Logo :</label>
         <input type="file" class="form-control" id="branch_logo" name="branch_logo" (change)="onFileSelected($event)">
-        <div *ngIf="registerButtonClicked && !branch_logo" class="error-message">
+        <!-- <div *ngIf="registerButtonClicked && !branch_logo" class="error-message">
           No file was selected for the Branch Logo.
-        </div>
+        </div> -->
       </div>
       
       

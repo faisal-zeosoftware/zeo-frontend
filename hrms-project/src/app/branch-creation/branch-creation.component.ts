@@ -56,7 +56,7 @@ schemas: string[] = []; // Array to store schema names
 userId: number | null | undefined;
 userDetails: any;
 userDetailss: any[] = [];
-username: any;
+username: any; 
 
 
 
@@ -142,22 +142,36 @@ registerBranch(): void {
   }
 
   const formData = new FormData();
-  // br_pincode
-  formData.append('branch_users', this.branch_users);
-  // formData.append('probation_period_days',this.probation_period_days);
-  formData.append('br_city',this.br_city);
-  formData.append('br_country',this.br_country);
-  formData.append('br_company_id',this.br_company_id);
-  formData.append('br_branch_nmbr_2',this.br_branch_nmbr_2);
-  formData.append('br_pincode', this.br_pincode);
-  formData.append('branch_name', this.branch_name);
-  formData.append('branch_code', this.branch_code);
-  formData.append('br_country', this.br_country);
-  formData.append('br_state_id', this.br_state_id);
 
-  formData.append('br_branch_mail', this.br_branch_mail);
-  formData.append('br_branch_nmbr_1', this.br_branch_nmbr_1);
-  formData.append('branch_logo', this.branch_logo, this.branch_logo.name);
+  // Users (if multiple)
+  if (this.branch_users && this.branch_users.length > 0) {
+    this.branch_users.forEach((userId: any) => {
+      formData.append('branch_users', userId.toString());
+    });
+  }
+  
+  formData.append('br_city', this.br_city || '');
+  formData.append('br_country', this.br_country || '');
+  formData.append('br_company_id', this.br_company_id || '');
+  formData.append('br_branch_nmbr_2', this.br_branch_nmbr_2 || '');
+  formData.append('br_pincode', this.br_pincode || '');
+  formData.append('branch_name', this.branch_name || '');
+  formData.append('branch_code', this.branch_code || '');
+  formData.append('br_branch_mail', this.br_branch_mail || '');
+  formData.append('br_branch_nmbr_1', this.br_branch_nmbr_1 || '');
+  
+  // ✅ Only append state if selected
+  if (this.br_state_id) {
+    formData.append('br_state_id', this.br_state_id.toString());
+  } else {
+    formData.append('br_state_id', '');  // backend will save null
+  }
+  
+  // ✅ Append file only if chosen
+  if (this.branch_logo) {
+    formData.append('branch_logo', this.branch_logo, this.branch_logo.name);
+  }
+  
   const selectedSchema = localStorage.getItem('selectedSchema');
       if (!selectedSchema) {
         console.error('No schema selected.');
