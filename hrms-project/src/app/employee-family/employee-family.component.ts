@@ -298,6 +298,8 @@ createempbankdetails():void{
     };
 
 
+    // ashik
+
     this.EmployeeService.registerbankdetails(this.emp_id, familyData).subscribe(
       (response) => {
         const createdEmployeeId = response.id; // Adjust based on your API response
