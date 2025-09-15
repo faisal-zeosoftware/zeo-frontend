@@ -477,8 +477,7 @@ ngOnInit(): void {
               );
             }
 
-
-
+          
 
             isExpanded = false;
             searchQuery = '';

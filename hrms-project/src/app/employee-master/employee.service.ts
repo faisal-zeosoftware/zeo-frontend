@@ -1864,6 +1864,7 @@ export class EmployeeService {
     return this.http.get(Url);
 
   }
+  
 
   getAssignHolcalendar(selectedSchema: string): Observable<any> {
     const Url = `${this.apiUrl}/calendars/api/assign-holiday/?schema=${selectedSchema}`;
@@ -1980,6 +1981,8 @@ export class EmployeeService {
 
     
   }
+
+  
 
 
   getLoanApplications(selectedSchema: string): Observable<any> {
@@ -3049,25 +3052,5 @@ registerGratuity(companyData: any): Observable<any> {
 
   
 }
-
-
-
- registerbankdetails(employeeId: number, familyData: any): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError('No schema selected.');
-    }
-
-    const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}//emp-bank-details/?schema=${selectedSchema}`;
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-    return this.http.post(apiUrl, familyData, { headers }).pipe(
-      catchError((error) => {
-        console.error('Error during family registration:', error);
-        return throwError(error);
-      })
-    );
-  }
 
 }
