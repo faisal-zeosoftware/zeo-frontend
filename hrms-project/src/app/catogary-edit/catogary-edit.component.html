@@ -25,7 +25,7 @@
 <div class="col-md-6" >
                
     <label>Catogary code</label>
-   <input type="text"  class="form-control" required  [(ngModel)]="ctgry_code"  placeholder="Enter Catogary code"
+   <input type="text"  class="form-control" required  [(ngModel)]="category.ctgry_code"  placeholder="Enter Catogary code"
     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !ctgry_code}">
    
    <div *ngIf="registerButtonClicked && !ctgry_code" class="error-message">category code is required.</div>

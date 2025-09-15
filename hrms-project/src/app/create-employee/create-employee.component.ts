@@ -1353,21 +1353,20 @@ export class CreateEmployeeComponent implements OnInit {
   }
 
 
-
   submitForm(): void {
     if (!this.selectedEmployeeId) {
       console.error('No employee selected');
       return;
     }
-
+  
     const empMasterId = this.selectedEmployeeId;
-
+  
     const customFieldValues = this.custom_fields.map(field => ({
       emp_custom_field: field.id,
       field_value: field.field_value,
       emp_master: empMasterId
     }));
-
+  
     // Post the custom field values to the backend
     this.EmployeeService.submitCustomFieldValues(customFieldValues).subscribe(
       response => {
@@ -1375,11 +1374,26 @@ export class CreateEmployeeComponent implements OnInit {
         alert('Form submitted successfully');
       },
       error => {
-        console.error('Error submitting custom field values', error);
-        alert('Failed to submit form');
+        console.error('Error submitting custom field values:', error);
+  
+        // 👇 Format backend error messages
+        if (error.error) {
+          let messages: string[] = [];
+          for (const key in error.error) {
+            if (error.error.hasOwnProperty(key)) {
+              // join multiple error messages for the same field
+              messages.push(`${key}: ${error.error[key].join(', ')}`);
+            }
+          }
+  
+          alert(messages.length ? messages.join('\n') : 'Failed to submit form');
+        } else {
+          alert('Failed to submit form');
+        }
       }
     );
   }
+  
 
 
 

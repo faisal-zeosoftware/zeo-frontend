@@ -167,7 +167,7 @@
                                         </div>
                                         <div class="col-md-3">
                                             <h2>{{cityFieldName}}</h2>
-                                            <h3>{{employee.emp_nationality}} </h3>
+                                            <h3>{{employee.emp_city}} </h3>
                                         </div>
                                     </div>
 
@@ -175,7 +175,7 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <h2>State</h2>
-                                            <h3>Kerala </h3>
+                                            <h3>{{employee.emp_state_id}} </h3>
                                         </div>
 
                                         <div class="col-md-3">
@@ -224,7 +224,10 @@
                                             <h3>{{employee.emp_nationality}}</h3>
                                         </div>
 
-
+                                        <div class="col-md-3">
+                                            <h2>OT Applicable to</h2>
+                                            <h3>{{ employee.emp_ot_applicable }} </h3>
+                                        </div>
 
 
                                     </div>
@@ -263,6 +266,9 @@
                                             <h2>Employee Family Company Expense</h2>
                                             <h3>{{ member.ef_company_expence }} </h3>
                                         </div>
+
+                                         
+
 
                                         <!-- Display each custom field -->
                                         <ng-container *ngFor="let field of member.fam_custom_fields">

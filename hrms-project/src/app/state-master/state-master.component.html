@@ -64,31 +64,29 @@
 
         </div>
 
-
-        <table width="100%" *ngIf="hasViewPermission">     
-      
+        <table width="100%" >
           <thead>
-              <tr>
-                <th>No</th>
-                <th> {{ stateLabel }}  Name</th>
-                <th>Country</th>
-               
-              </tr>
-            </thead>
-            
-            <tbody>
-                
-              <tr *ngFor="let state of States;let i = index">
-                <td>{{ i + 1 }}</td> 
-                <td>{{ state.state_name }}</td>
-           <td>{{state.country}}</td>
-              </tr>
-          
-            </tbody>
-
-            
-          </table>
-
+            <tr>
+              <th>No</th>
+              <th>{{ stateLabel }} Name</th>
+              <th>Country</th>
+            </tr>
+          </thead>
+        
+          <tbody>
+            <tr *ngFor="let state of States; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ state.state_name }}</td>
+              <td>{{ state.country }}</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <!-- Show message if no states -->
+        <div *ngIf="hasViewPermission && States?.length === 0">
+          No {{ stateLabel }} found.
+        </div>
+        
 
 
 

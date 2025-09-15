@@ -84,7 +84,7 @@ private sessionService: SessionService,
 
     // this.loadCompanies();
     
-this.loadstates();
+// this.loadstates();
 
 this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
@@ -99,12 +99,17 @@ if (this.userId !== null) {
 
       // Check if user is_superuser is true or false
       let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
-      const selectedSchema = this.authService.getSelectedSchema();
+      
+      
+       const selectedSchema = this.authService.getSelectedSchema();
       
       const selectedStateLabel = localStorage.getItem('selectedSchemaStateLabel');
       console.log("Retrieved state label:", selectedStateLabel);
 
-      this.stateLabel = selectedStateLabel ? selectedStateLabel : '';
+      this.stateLabel = selectedStateLabel ? selectedStateLabel : 'States';
+
+      
+
       if (!selectedSchema) {
         console.error('No schema selected.');
         return;
@@ -191,16 +196,32 @@ if (this.userId !== null) {
     // this.fetchingApprovals();
 
 
-    this.authService.getUserSchema(this.userId).subscribe(
-        (userData: any) => {
-            this.userDetailss = userData;
-            this.schemas = userData.map((schema: any) => schema.schema_name);
-            console.log('scehmas-de',userData)
-        },
-        (error) => {
-            console.error('Failed to fetch user schemas:', error);
-        }
-    );
+    const selectedSchema = this.authService.getSelectedSchema();
+if (!selectedSchema) {
+  console.error('No schema selected.');
+  return;
+}
+ // Step 3: Use getUserSchema to load states for the selected schema
+this.authService.getUserSchema(this.userId).subscribe(
+  (schemas: any[]) => {
+    console.log('Schemas from API:', schemas);
+
+    const tenant = schemas.find((s: any) => s.schema_name === selectedSchema);
+
+    if (tenant) {
+      this.States = tenant.states || [];
+      this.stateLabel = tenant.state_label || this.stateLabel;
+      console.log('Selected tenant details:', tenant);
+    } else {
+      this.States = [];
+      console.warn('Selected schema not found in user schemas');
+    }
+  },
+  (err) => {
+    console.error('Failed to fetch tenant details', err);
+  }
+);
+
 } else {
     console.error('User ID is null.');
 }
@@ -252,23 +273,23 @@ if (this.userId !== null) {
   }
 
   
-  loadstates(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  // loadstates(): void {
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
   
-    this.countryService.getstatescreated(selectedSchema).subscribe(
-      (result: any) => {
-        this.States = result;
-      },
-      (error: any) => {
-        console.error('Error fetching countries:', error);
-      }
-    );
-    }
-  }
+  //   this.countryService.getstatescreated(selectedSchema).subscribe(
+  //     (result: any) => {
+  //       this.States = result;
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching countries:', error);
+  //     }
+  //   );
+  //   }
+  // }
 
 
 

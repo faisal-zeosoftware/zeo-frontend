@@ -297,7 +297,7 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
         console.log('schemastore',selectedSchema )
         // Check if selectedSchema is available
         if (selectedSchema) {
-          this.employeeService.getemployees(selectedSchema).subscribe(
+          this.employeeService.getemployeesMaster(selectedSchema).subscribe(
             (result: any) => {
               this.employees = result;
               console.log(' fetching Companies:');

@@ -120,7 +120,7 @@ export class EmployeeEditComponent {
 
   is_ess: boolean = false;
 
-  emp_status: boolean = false;
+  emp_status: boolean = true;
   emp_id: number;
 
   selectedCustomField: any = {}; // To hold the selected custom field
@@ -200,7 +200,14 @@ export class EmployeeEditComponent {
     this.selectedFile = event.target.files[0];
 }
 
-
+private appendFormData(formData: FormData, key: string, value: any): void {
+  if (value === undefined || value === null) {
+    // Send null correctly
+    formData.append(key, '');
+  } else {
+    formData.append(key, value.toString()); // always string
+  }
+}
  
 updateEmp(): void {
   const formData = new FormData();
@@ -209,25 +216,13 @@ updateEmp(): void {
     formData.append('emp_profile_pic', this.selectedFile, this.selectedFile.name);
   }
 
-  // Format date_of_confirmation safely
-  let formattedDate = '';
-  if (this.emp_date_of_confirmation) {
-    const selectedDate = new Date(this.emp_date_of_confirmation);
-    if (!isNaN(selectedDate.getTime())) {
-      formattedDate = selectedDate.toISOString().split('T')[0];
-    }
-  }
+  const selectedDate = new Date(this.Emp.emp_date_of_confirmation);
+  const formattedDate = selectedDate.toISOString().split('T')[0]; 
 
-  // Format joined_date safely
-  let formattedJoinedDate = '';
-  if (this.emp_joined_date) {
-    const joinedDate = new Date(this.emp_joined_date);
-    if (!isNaN(joinedDate.getTime())) {
-      formattedJoinedDate = joinedDate.toISOString().split('T')[0];
-    }
-  }
+  const joinedDate = new Date(this.Emp.emp_joined_date);
+  const formattedJoinedDate = joinedDate.toISOString().split('T')[0];
 
-  // Append all other fields
+  // Append all fields
   formData.append('emp_code', this.Emp.emp_code);
   formData.append('emp_first_name', this.Emp.emp_first_name);
   formData.append('emp_last_name', this.Emp.emp_last_name);
@@ -240,24 +235,28 @@ updateEmp(): void {
   formData.append('emp_city', this.Emp.emp_city);
   formData.append('emp_permenent_address', this.Emp.emp_permenent_address);
   formData.append('emp_present_address', this.Emp.emp_present_address);
-  formData.append('emp_relegion', this.Emp.emp_relegion);
-  formData.append('emp_blood_group', this.Emp.emp_blood_group);
-  formData.append('emp_nationality', this.Emp.emp_nationality);
-  formData.append('emp_marital_status', this.Emp.emp_marital_status);
+
+  this.appendFormData(formData, 'emp_relegion', this.Emp.emp_relegion ? this.Emp.emp_relegion : null);
+  this.appendFormData(formData, 'emp_blood_group', this.Emp.emp_blood_group);
+  this.appendFormData(formData, 'emp_nationality', this.Emp.emp_nationality ? this.Emp.emp_nationality : null);
+  this.appendFormData(formData, 'emp_marital_status', this.Emp.emp_marital_status);
+
   formData.append('emp_father_name', this.Emp.emp_father_name);
   formData.append('emp_mother_name', this.Emp.emp_mother_name);
   formData.append('emp_posting_location', this.Emp.emp_posting_location);
+
   formData.append('emp_country_id', this.emp_country_id);
   formData.append('emp_state_id', this.emp_state_id);
   formData.append('emp_company_id', this.Emp.emp_company_id);
   formData.append('emp_branch_id', this.Emp.emp_branch_id);
+
   formData.append('emp_dept_id', this.Emp.emp_dept_id);
   formData.append('emp_desgntn_id', this.Emp.emp_desgntn_id);
   formData.append('emp_ctgry_id', this.Emp.emp_ctgry_id);
+
   formData.append('emp_date_of_confirmation', formattedDate);
   formData.append('emp_joined_date', formattedJoinedDate);
 
- 
   formData.append('is_ess', this.Emp.is_ess ? '1' : '0');
   formData.append('emp_status', this.Emp.emp_status ? '1' : '0');
 
@@ -273,8 +272,22 @@ updateEmp(): void {
       });
     },
     (error) => {
-      alert('Enter all fields correctly');
       console.error('Error updating employee:', error);
+
+      // 👇 Format backend error messages
+      if (error.error) {
+        let messages: string[] = [];
+        for (const key in error.error) {
+          if (error.error.hasOwnProperty(key)) {
+            messages.push(`${key}: ${error.error[key].join(', ')}`);
+          }
+        }
+
+        // Show all messages in one alert
+        alert(messages.length ? messages.join('\n') : 'Enter all fields correctly');
+      } else {
+        alert('Enter all fields correctly');
+      }
     }
   );
 }
