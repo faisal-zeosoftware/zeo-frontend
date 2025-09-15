@@ -57,7 +57,7 @@ export class DepartmentEditComponent {
 
     this.DepartmentServiceService.getCategoryById(this.data.departmentId).subscribe(
       (department) => {
-        this.department = department;
+        this.department = department.brach_id;
         this.department.branch_id = department.branch_id;  // Ensure branch_id is assigned
         console.log('branch',this.department.branch_id)
 

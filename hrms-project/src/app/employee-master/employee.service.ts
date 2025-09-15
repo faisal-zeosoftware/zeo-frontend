@@ -3050,4 +3050,24 @@ registerGratuity(companyData: any): Observable<any> {
   
 }
 
+
+
+ registerbankdetails(employeeId: number, familyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}//emp-bank-details/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post(apiUrl, familyData, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error during family registration:', error);
+        return throwError(error);
+      })
+    );
+  }
+
 }

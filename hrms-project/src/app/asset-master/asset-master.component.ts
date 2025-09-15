@@ -274,7 +274,7 @@ this.loadFormFieldsFam();
                 this.postCustomFieldValuesFam(createdEmployeeId);
                     alert('Asset  has been Added ');
                     // window.location.reload();
-                    // window.location.reload();
+                    window.location.reload();
                
         
               },
@@ -464,7 +464,7 @@ loadLAsset(): void {
           const fieldDef = this.custom_fieldsFam.find(f => f.id === fieldId);
           return {
             custom_field_id: fieldId,
-            custom_field_name: fieldDef ? fieldDef.custom_field : `Field ${fieldId}`
+            custom_field_name: fieldDef ? fieldDef.custom_field : `${fieldId}`
           };
         });
 

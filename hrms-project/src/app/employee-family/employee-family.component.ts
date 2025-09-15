@@ -70,6 +70,19 @@ export class EmployeeFamilyComponent {
   created_by:any='';
 
 
+
+  bank_name:string='';
+  branch_name:string='';
+  account_number:string='';
+  bank_address:string='';
+  route_code:string='';
+  iban_number:string='';
+  is_active: boolean = false;
+
+      
+
+
+
   constructor(private EmployeeService: EmployeeService ,
     private companyRegistrationService: CompanyRegistrationService, 
     private http: HttpClient,
@@ -263,6 +276,59 @@ createEmployeeLeaveReq():void{
     );
 
 }
+
+
+createempbankdetails():void{
+
+  this.registerButtonClicked1 = true;
+    const familyData = {
+      bank_name:this.bank_name,
+      branch_name:this.branch_name,
+      account_number:this.account_number,
+      bank_address:this.bank_address,
+      route_code:this.route_code,
+      iban_number:this.iban_number,
+      is_active:this.is_active,
+      emp_id:this.emp_id,
+
+
+   
+
+      // Add other form field values to the companyData object
+    };
+
+
+    this.EmployeeService.registerbankdetails(this.emp_id, familyData).subscribe(
+      (response) => {
+        const createdEmployeeId = response.id; // Adjust based on your API response
+        this.EmployeeService.setEmployeeId(createdEmployeeId);
+        // this.postCustomFieldValuesQual(createdEmployeeId);
+        this.step++;
+        
+        console.log('Registration successful', response);
+        // this.authService.login(this.cmpny_mail, this.cmpny_pincode).subscribe(
+        //   (loginResponse) => {
+        //     console.log('Login successful after registration', loginResponse);
+        //     // Optionally, you can navigate to another page or perform other actions upon successful login.
+            alert('Employee bank details uploaded!');
+            // window.location.reload();
+
+       
+
+      },
+      (error) => {
+        console.error('Registration failed', error);
+        alert('enter all field!')
+        // Handle the error appropriately, e.g., show a user-friendly error message.
+      }
+    );
+
+}
+
+
+
+
+
 
 
 onFileSelected(event: any): void {

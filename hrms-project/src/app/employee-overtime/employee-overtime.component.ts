@@ -4,6 +4,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
   selector: 'app-employee-overtime',
@@ -59,17 +60,19 @@ export class EmployeeOvertimeComponent {
     private sessionService: SessionService,
     private leaveService:LeaveService,
     private DesignationService: DesignationService,
+     private employeeService:EmployeeService,
   
     ) {}
 
     ngOnInit(): void {
+       this.LoadEmployee();
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
 
         this.LoadLeavetype(selectedSchema);
       this.LoadUsers(selectedSchema);
-      this.LoadEmployees(selectedSchema);
+     
       this.LoadLeavebalance(selectedSchema);
 
 
@@ -223,18 +226,26 @@ if (this.userId !== null) {
     
 
       
-      LoadEmployees(selectedSchema: string) {
-        this.leaveService.getEmployee(selectedSchema).subscribe(
-          (data: any) => {
-            this.Employees = data;
-          
-            console.log('employee:', this.Employees);
-          },
-          (error: any) => {
-            console.error('Error fetching Employees:', error);
-          }
-        );
-      }
+
+  LoadEmployee() {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+        (result: any) => {
+          this.Employees = result;
+          console.log(' fetching Employees:');
+  
+        },
+        (error) => {
+          console.error('Error fetching Employees:', error);
+        }
+      );
+    }
+
+  }
     
     
     
