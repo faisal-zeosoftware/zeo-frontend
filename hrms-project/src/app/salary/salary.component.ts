@@ -478,7 +478,7 @@ if (this.userId !== null) {
     
 
     LoadEmployee(selectedSchema: string) {
-      this.EmployeeService.getemployees(selectedSchema).subscribe(
+      this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
         (data: any) => {
           // Filtering employees where is_active is null or true
           this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
