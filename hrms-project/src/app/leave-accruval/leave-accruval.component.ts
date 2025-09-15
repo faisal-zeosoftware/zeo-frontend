@@ -175,7 +175,7 @@ export class LeaveAccruvalComponent {
 
   
   LoadEmployee(selectedSchema: string): void {
-    this.leaveService.getEmployee(selectedSchema).subscribe(
+    this.leaveService.getemployeesMaster(selectedSchema).subscribe(
       (data: any) => {
         // Filter only approved leave requests
         this.Employees = data;

@@ -434,6 +434,11 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
   
   }
 
+    getemployeesMaster(selectedSchema: string): Observable<any> {
+      const url = `${this.apiUrl}/employee/api/emplist/?schema=${selectedSchema}`;
+      return this.http.get(url);
+    }
+  
   getUsers(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/users/api/user/?schema=${selectedSchema}`;
   

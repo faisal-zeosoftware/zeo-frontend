@@ -384,7 +384,7 @@ ngOnInit(): void {
             console.log('schemastore',selectedSchema )
             // Check if selectedSchema is available
             if (selectedSchema) {
-              this.employeeService.getemployees(selectedSchema).subscribe(
+              this.employeeService.getemployeesMaster(selectedSchema).subscribe(
                 (result: any) => {
                   this.Employees = result;
                   console.log(' fetching Loantypes:');
