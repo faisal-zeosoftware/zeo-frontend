@@ -143,12 +143,12 @@ registerBranch(): void {
 
   const formData = new FormData();
 
-  // Users (if multiple)
-  if (this.branch_users && this.branch_users.length > 0) {
-    this.branch_users.forEach((userId: any) => {
-      formData.append('branch_users', userId.toString());
-    });
-  }
+  // // Users (if multiple)
+  // if (this.branch_users && this.branch_users.length > 0) {
+  //   this.branch_users.forEach((userId: any) => {
+  //     formData.append('branch_users', userId.toString());
+  //   });
+  // }
   
   formData.append('br_city', this.br_city || '');
   formData.append('br_country', this.br_country || '');
