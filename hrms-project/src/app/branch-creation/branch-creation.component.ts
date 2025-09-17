@@ -181,6 +181,8 @@ registerBranch(): void {
      
       // return this.http.put(apiUrl, formData);
   
+
+      // kopra
     
       this.http.post(`${this.apiUrl}/organisation/api/Branch/?schema=${selectedSchema}`, formData).subscribe(
   // this.http.post('http://abc.localhost:8000/organisation/api/Branch/', formData).subscribe(
