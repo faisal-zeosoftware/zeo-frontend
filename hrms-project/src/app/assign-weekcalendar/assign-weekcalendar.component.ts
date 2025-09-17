@@ -380,6 +380,27 @@ ngOnInit(): void {
               }
 
 
+              deleteAssignedWeekend(id: number): void {
+  if (confirm('Are you sure you want to delete this record?')) {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+
+    this.employeeService.deleteAssignWeekendcalendar(id, selectedSchema).subscribe(
+      () => {
+        alert('Deleted successfully!');
+        this.loadAssignedWeekendCalendar();
+      },
+      (error: any) => {   // ✅ Add explicit type here
+        console.error('Error deleting record:', error);
+        alert('Failed to delete record');
+      }
+    );
+  }
+}
+}
+
+
               SearchEmployee  = '';
 
               FilterEmployee(){

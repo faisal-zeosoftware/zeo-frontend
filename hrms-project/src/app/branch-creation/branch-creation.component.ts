@@ -136,7 +136,7 @@ loadBranch(): void {
 registerBranch(): void {
   this.registerButtonClicked = true;
 
-  if (!this.branch_name || !this.branch_code || !this.br_country || !this.br_branch_mail || !this.br_branch_nmbr_1 || !this.branch_logo) {
+  if (!this.branch_name || !this.branch_code || !this.br_country  ) {
     // Validation code
     return;
   }

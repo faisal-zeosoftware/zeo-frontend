@@ -237,6 +237,12 @@ export class EmployeeService {
   }
 
 
+  deleteAssignWeekendcalendar(id: number, selectedSchema: string): Observable<any> {
+    const url = `${this.apiUrl}/calendars/api/assign-weekend/${id}/?schema=${selectedSchema}`;
+    return this.http.delete(url);
+  }
+  
+
 
   registerEmaiCong(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
