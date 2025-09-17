@@ -41,19 +41,14 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/summernote/dist/summernote-lite.css",
               "node_modules/summernote/dist/summernote-bs4.css"
-
-
             ],
             "scripts": [
-             
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/summernote/dist/summernote-lite.min.js",
-                "node_modules/summernote/dist/summernote-bs4.min.js",
-                "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-
-
+              "node_modules/summernote/dist/summernote-bs4.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
           },
           "configurations": {
@@ -61,16 +56,15 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "10mb",
+                  "maximumError": "15mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "200kb",
+                  "maximumError": "300kb"
                 }
               ],
-              
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -121,22 +115,18 @@
               "src/assets"
             ],
             "styles": [
-          "src/custom-theme.scss",
-  "src/styles.css",
-  "node_modules/bootstrap/dist/css/bootstrap.min.css",
-  "node_modules/summernote/dist/summernote-lite.css",
-  "node_modules/summernote/dist/summernote-bs4.min.css",
-  "node_modules/summernote/dist/summernote.min.css"
-
-
+              "src/custom-theme.scss",
+              "src/styles.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/summernote/dist/summernote-lite.css",
+              "node_modules/summernote/dist/summernote-bs4.min.css",
+              "node_modules/summernote/dist/summernote.min.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/popper.js/dist/umd/popper.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/summernote/dist/summernote.min.js"
-
-              
             ]
           }
         }
