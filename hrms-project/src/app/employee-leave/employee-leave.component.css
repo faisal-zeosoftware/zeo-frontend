@@ -615,6 +615,17 @@ body {
   .card {
     max-width: 300px;
   }
+
+  .comapny_section{
+    padding: 20px 20px 20px 17px !important;
+     margin-top: 150px !important;
+
+
+  }
+
+
+
+
 }
 
 @media screen and (max-width: 500px) {

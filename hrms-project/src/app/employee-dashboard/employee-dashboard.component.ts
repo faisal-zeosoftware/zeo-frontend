@@ -36,7 +36,7 @@ export class EmployeeDashboardComponent {
     private route: ActivatedRoute,
     private sessionService: SessionService,
     ) { }
-  isMenuOpen = true;
+  
   // marginLeftValue = '200px';
   onToolbarMenuToggle(){
    
@@ -45,9 +45,16 @@ export class EmployeeDashboardComponent {
     // this.updateMarginLeft();
   }
 
+  isMenuOpen: boolean = true;
+
+   toggleSidebarMenu(): void {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
+
   // private updateMarginLeft() {
   //   this.marginLeftValue = this.isMenuOpen ? '200px' : '0px';
-  // }
+  // 
 
   ngOnInit(): void {
 

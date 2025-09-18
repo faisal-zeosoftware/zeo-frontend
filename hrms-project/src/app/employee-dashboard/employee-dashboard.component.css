@@ -217,7 +217,7 @@ body{
     
     
      .menu-open{
-        width: 19% !important;
+        width: 16% !important;
     }
 
     .sidebar{
@@ -482,3 +482,52 @@ width: 35px;
 
     background-color: transparent !important;
   }
+
+
+
+  .menu_mob{
+    display: none;
+  }
+
+
+
+/* media quries styles start here */
+
+@media only screen and (max-width:  768px) {
+  .menu-open {
+    width: 70% !important;
+    transition: all 0.3s ease;
+  }
+
+  .menu-close {
+    width: 0 !important;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .menu_mob {
+    display: block !important;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    background-color: #5205558e;
+    color: rgb(159, 141, 91);
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  .sidebar {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #fff;
+    transition: width 0.3s ease;
+  }
+
+  
+
+}
+
