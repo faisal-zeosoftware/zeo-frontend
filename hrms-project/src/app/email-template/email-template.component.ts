@@ -214,34 +214,7 @@ if (this.userId !== null) {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
   
-  // ngAfterViewInit(): void {
-  //   $(this.el.nativeElement).find('#summernote').summernote({
-  //     height: 150,  // Set editor height
-  //     placeholder: 'Type your text here...',
-  //     toolbar: [
-  //       ['style', ['bold', 'italic', 'underline']],
-  //       ['fontsize', ['fontsize']],  // Make sure fontsize is added here
-  //       ['color', ['color']],
-  //       ['para', ['ul', 'ol', 'paragraph']],
-  //       ['insert', ['link', 'picture', 'video']],
-  //       ['view', ['fullscreen', 'codeview', 'help']]
-  //     ],
-  //     fontsize: ['8', '9', '10', '11', '12', '14', '16', '18', '24', '36', '48', '64', '82', '150'],  // Font sizes to choose from
-  //     fontsizeUnit: 'px',  // Font size unit, you can also use 'pt' or other units
-  //     hint: {
-  //       mentions: ['Jayden Smith', 'Peter Pan', 'Lorca', 'David Summer'],
-  //       match: /\B@(\w*)$/,
-  //       search: function (keyword: string, callback: Function) {
-  //         callback($.grep(this.mentions, function (item: string | string[]) {
-  //           return item.indexOf(keyword) === 0;
-  //         }));
-  //       },
-  //       content: function (item: string) {
-  //         return '@' + item;
-  //       }
-  //     }
-  //   });
-  // }
+  
   
 
 
