@@ -27,3 +27,8 @@
     padding: 20px;
     margin-bottom: 20px;
   }
+  
+  
+  .note-editable {
+    font-size: inherit !important; /* Ensure that the font size changes according to Summernote settings */
+  }

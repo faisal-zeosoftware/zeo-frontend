@@ -151,37 +151,52 @@ export class EmployeeEditComponent {
 
 
   ngOnInit(): void {
+    // 1. Load employee details
     this.EmployeeService.getEmpById(this.data.employeeId).subscribe(
       (Emp) => {
         this.Emp = Emp;
-         this.EmpD.emp_master = Emp.id; // Assuming `Emp.id` corresponds to the employee ID
-
-            this.Emp.custom_fields.forEach((field: any) => {
-                this.customFieldValues[field.id] = field.field_value;
-            });
-         // Initialize selectedCustomField with the first custom field
-    if (this.Emp.custom_fields && this.Emp.custom_fields.length > 0) {
-      this.selectedCustomField = this.Emp.custom_fields[0]; // Initialize with the first field or as needed
-    } else {
-      console.error('No custom fields available');
-    }
-
-          console.log('Selected Custom Field after initialization:', this.selectedCustomField);
-
-        
+        this.EmpD.emp_master = Emp.id; // Assuming `Emp.id` corresponds to the employee ID
+  
+        // Handle custom fields
+        this.Emp.custom_fields.forEach((field: any) => {
+          this.customFieldValues[field.id] = field.field_value;
+        });
+  
+        if (this.Emp.custom_fields && this.Emp.custom_fields.length > 0) {
+          this.selectedCustomField = this.Emp.custom_fields[0];
+        } else {
+          console.error('No custom fields available');
+        }
+  
+        console.log('Selected Custom Field after initialization:', this.selectedCustomField);
+  
+        // 2. After loading dropdowns, map names → IDs
+        setTimeout(() => {
+          // Branch mapping
+          const branch = this.branches?.find(b => b.branch_name === Emp.emp_branch_id);
+          if (branch) this.Emp.emp_branch_id = branch.id;
+  
+          // Department mapping
+          const dept = this.departments?.find(d => d.dept_name === Emp.emp_dept_id);
+          if (dept) this.Emp.emp_dept_id = dept.id;
+  
+          // Designation mapping
+          const desg = this.designations?.find(ds => ds.desgntn_job_title === Emp.emp_desgntn_id);
+          if (desg) this.Emp.emp_desgntn_id = desg.id;
+  
+          // Category mapping
+          const cat = this.catogories?.find(c => c.ctgry_title === Emp.emp_ctgry_id);
+          if (cat) this.Emp.emp_ctgry_id = cat.id;
+        }, 500);
       },
       (error) => {
-        console.error('Error fetching category:', error);
+        console.error('Error fetching employee:', error);
       }
     );
-
-    
+  
+    // 3. Load all supporting dropdowns + data
     this.loadEmployeeDetails(this.data.employeeId);
-
-    // this.loadEmployeeDetailsFeilds(this.data.employeeId);
-
     this.loadCountries();
-
     this.loadCompanies();
     this.loadbranches();
     this.loadDepartments();
@@ -192,9 +207,8 @@ export class EmployeeEditComponent {
     this.loadEmployeecust_value();
     this.loadFieldNames();
     this.loadReligoin();
-
   }
-
+  
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
@@ -250,7 +264,7 @@ updateEmp(): void {
   formData.append('emp_company_id', this.Emp.emp_company_id);
   formData.append('emp_branch_id', this.Emp.emp_branch_id);
 
-  formData.append('emp_dept_id', this.Emp.emp_dept_id);
+  formData.append('emp_dept_id', this.Emp.emp_dept_id ? this.Emp.emp_dept_id.toString() : '');
   formData.append('emp_desgntn_id', this.Emp.emp_desgntn_id);
   formData.append('emp_ctgry_id', this.Emp.emp_ctgry_id);
 

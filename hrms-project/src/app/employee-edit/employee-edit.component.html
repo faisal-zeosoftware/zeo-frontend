@@ -217,11 +217,10 @@
         <div class="custom-sel">
             <label>{{locationFieldName}}</label>
             <select class="form-control" id="emp_posting_location" name="emp_posting_location" required [(ngModel)]="Emp.emp_posting_location"  [ngModelOptions]="{standalone: true}"
-             [ngClass]="{'error-field': registerButtonClicked && !emp_posting_location}" >
+              >
                 <option value="" >Select</option>
                 <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
             </select>
-            <div *ngIf="registerButtonClicked && !emp_posting_location" class="error-message">Please Select Your Branch</div>
         </div>
                     
     

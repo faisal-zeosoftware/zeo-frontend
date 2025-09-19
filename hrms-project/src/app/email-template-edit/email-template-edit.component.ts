@@ -31,8 +31,9 @@ export class EmailTemplateEditComponent {
     private userService: UserMasterService,
     private DepartmentServiceService: DepartmentServiceService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialogRef: MatDialogRef<EmailTemplateEditComponent>
+    private dialogRef: MatDialogRef<EmailTemplateEditComponent>,
 
+    private ref:MatDialogRef<EmailTemplateEditComponent>,
 
 ) {
   this.templateData = data.template; // Get the selected template data
@@ -74,28 +75,25 @@ loadEmailPlaceholders(): void {
   }
 }
 
-// Method to handle placeholder selection
+    selectedPlaceholders: string[] = []; // Store multiple placeholders
+
+
 selectPlaceholder(placeholder: string): void {
   const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
+  
+  const updatedContent = currentContent + ' ' + placeholder;
+  $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
 
-  // If a placeholder is already selected, replace it with the new one
-  if (this.selectedPlaceholder) {
-    const updatedContent = currentContent.replace(this.selectedPlaceholder, placeholder);
-    $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
-  } else {
-    // If no placeholder is selected yet, just append the new placeholder
-    $(this.el.nativeElement).find('#summernote').summernote('code', currentContent + placeholder);
-  }
-
-  // Update the selected placeholder
-  this.selectedPlaceholder = placeholder; // Store the latest selected placeholder
+  this.selectedPlaceholders.push(placeholder); // Allow duplicates
 }
 
 
+
 ngAfterViewInit(): void {
-  // Initialize Summernote
-  $(this.el.nativeElement).find('#summernote').summernote({
-    height: 150, // Set editor height
+  const editor = $(this.el.nativeElement).find('#summernote');
+
+  editor.summernote({
+    height: 150,
     placeholder: 'Type your text here...',
     toolbar: [
       ['style', ['bold', 'italic', 'underline']],
@@ -106,17 +104,24 @@ ngAfterViewInit(): void {
       ['view', ['fullscreen', 'codeview', 'help']]
     ],
     callbacks: {
-      onChange: () => this.onContentChange() // Track content changes
+      onChange: () => this.onContentChange()
     }
   });
+
+  // ✅ Set initial body content into Summernote
+  if (this.templateData && this.templateData.body) {
+    editor.summernote('code', this.templateData.body);
+  }
 }
+
 // Method to update the selected placeholder whenever the content changes
 onContentChange(): void {
-  const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
+  const editor = $(this.el.nativeElement).find('#summernote');
+  const currentContent = editor.summernote('code');
   
-  // Check if the currently selected placeholder exists in the content
+  this.templateData.body = currentContent; // keep in sync
+
   if (this.selectedPlaceholder && !currentContent.includes(this.selectedPlaceholder)) {
-    // If the selected placeholder is not found in the current content, reset it
     this.selectedPlaceholder = null;
   }
 }
@@ -138,6 +143,10 @@ getTextContent(): void {
     
     // After successful update, close the modal
     this.dialogRef.close(this.templateData);
+  }
+
+  ClosePopup(){
+    this.ref.close('Closed using function')
   }
 
 

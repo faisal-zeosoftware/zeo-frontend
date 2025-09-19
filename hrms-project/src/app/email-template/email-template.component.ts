@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ElementRef,ViewChild, AfterViewInit } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -19,6 +19,8 @@ import { SessionService } from '../login/session.service';
   styleUrl: './email-template.component.css'
 })
 export class EmailTemplateComponent implements AfterViewInit {
+
+    @ViewChild('summernoteEditor') summernoteEditor!: ElementRef;
 
 
   template_type: any = '';
@@ -72,7 +74,7 @@ ngOnInit(): void {
 
   this.loadtemp();
 
-this.ngAfterViewInit();
+// this.ngAfterViewInit();
 
 
 this.userId = this.sessionService.getUserId();
@@ -262,20 +264,8 @@ if (this.userId !== null) {
   
     selectedPlaceholders: string[] = []; // Store multiple placeholders
 
-  // // Method to handle placeholder selection
-  // selectPlaceholder(placeholder: string): void {
-  //   const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
-    
-  //   // If the placeholder is already inserted, prevent adding it again
-  //   if (!this.selectedPlaceholders.includes(placeholder)) {
-  //     // Append the new placeholder
-  //     const updatedContent = currentContent + ' ' + placeholder;
-  //     $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
 
-  //     // Add the placeholder to the selectedPlaceholders array
-  //     this.selectedPlaceholders.push(placeholder);
-  //   }
-  // }
+
 
 
   selectPlaceholder(placeholder: string): void {
@@ -289,37 +279,46 @@ if (this.userId !== null) {
   
 
   
-    ngAfterViewInit(): void {
-      // Initialize Summernote
-      $(this.el.nativeElement).find('#summernote').summernote({
-        height: 150, // Set editor height
-        placeholder: 'Type your text here...',
-        toolbar: [
-          ['style', ['bold', 'italic', 'underline']],
-          ['fontsize', ['fontsize']],
-          ['color', ['color']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['insert', ['link', 'picture', 'video']],
-          ['view', ['fullscreen', 'codeview', 'help']]
-        ],
-        callbacks: {
-          onChange: () => this.onContentChange()
+  
+  ngAfterViewInit(): void {
+    $(this.summernoteEditor.nativeElement).summernote({
+      height: 150,
+      placeholder: 'Type your text here...',
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ],
+      callbacks: {
+        onChange: (contents: string) => {
+          console.log('Editor content:', contents);
         }
-      });
-    }
-  
-    onContentChange(): void {
-      const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
-      if (this.selectedPlaceholder && !currentContent.includes(this.selectedPlaceholder)) {
-        this.selectedPlaceholder = null; // Reset if placeholder is not found
       }
-    }
+    });
+  }
   
-    getTextContent(): void {
-      this.body = $(this.el.nativeElement).find('#summernote').summernote('code');
-      console.log(this.body); // Debugging: log the content
-    }
+// Method to update the selected placeholder whenever the content changes
+onContentChange(): void {
+  const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
   
+  // Check if the currently selected placeholder exists in the content
+  if (this.selectedPlaceholder && !currentContent.includes(this.selectedPlaceholder)) {
+    // If the selected placeholder is not found in the current content, reset it
+    this.selectedPlaceholder = null;
+  }
+}
+
+
+
+
+getTextContent(): void {
+  this.body = $(this.el.nativeElement).find('#summernote').summernote('code');
+  console.log(this.body); // For debugging, to see what is captured
+}
+
 
     onclickEmailTemplate(): void {
       this.registerButtonClicked = true;
@@ -433,4 +432,83 @@ if (this.userId !== null) {
   }
        
 
+
+
+  
+
+  iscreateLoanApp: boolean = false;
+
+
+
+
+  openPopus():void{
+    this.iscreateLoanApp = true;
+
+  }
+
+  closeapplicationModal():void{
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelected: boolean = false;
+
+toggleCheckboxes() {
+  this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+this.tempEmails.forEach(employee => employee.selected = this.allSelected);
+
+}
+
+onCheckboxChange(employee:number) {
+  // No need to implement any logic here if you just want to change the style.
+  // You can add any additional logic if needed.
+}
+
+
+
+   deleteSelectedAssetType() { 
+      const selectedEmployeeIds = this.tempEmails
+        .filter(employee => employee.selected)
+        .map(employee => employee.id);
+    
+      if (selectedEmployeeIds.length === 0) {
+        alert('No Asset type selected for deletion.');
+        return;
+      }
+    
+      if (confirm('Are you sure you want to delete the selected Email Template?')) {
+        selectedEmployeeIds.forEach(categoryId => {
+          this.employeeService.deleteEmailTemplategenreq(categoryId).subscribe(
+            () => {
+              console.log('Email Configuration deleted successfully:', categoryId);
+              // Remove the deleted employee from the local list
+              this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
+              alert(' Email Template deleted successfully');
+              window.location.reload();
+    
+            },
+            (error) => {
+              console.error('Error deleting Email Configuration:', error);
+              alert(error)
+            }
+          );
+        });
+      }
+    }
+    
+    
 }
