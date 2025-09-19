@@ -66,12 +66,13 @@ export class AssetUdfComponent {
 
     deleteCustomFieldFam(fieldId: number): void {
       if (confirm('Are you sure you want to delete this custom field?')) {
-        this.EmployeeService.deleteEmpCustomFieldFam(fieldId).subscribe(
+        this.EmployeeService.deleteAssetCustomfiled(fieldId).subscribe(
           (response) => {
             console.log('Field deleted successfully', response);
             // Remove the deleted field from the custom_fields array
             this.custom_fields_fam = this.custom_fields_fam.filter(field => field.id !== fieldId);
             alert('Field deleted successfully');
+            window.location.reload();
           },
           (error) => {
             console.error('Field delete failed', error);
@@ -168,6 +169,7 @@ updateCustomField(field: any): void {
     (response) => {
       console.log('Field updated successfully', response);
       alert('Field updated successfully');
+      window.location.reload();
     },
     (error) => {
       console.error('Field update failed', error);

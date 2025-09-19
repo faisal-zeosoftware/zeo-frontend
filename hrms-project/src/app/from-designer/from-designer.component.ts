@@ -1401,6 +1401,7 @@ CreateEmployeeFeild(): void {
       (response) => {
           console.log('Field added successfully', response);
           alert('Field added successfully');
+          window.location.reload();
       },
       (error) => {
           console.error('Field addition failed', error);
@@ -1436,6 +1437,7 @@ CreateEmployeeFeildDoc(): void {
       (response) => {
           console.log('Field added successfully', response);
           alert('Field added successfully');
+          window.location.reload();
       },
       (error) => {
           console.error('Field addition failed', error);

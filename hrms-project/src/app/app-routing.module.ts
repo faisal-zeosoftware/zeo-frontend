@@ -121,6 +121,7 @@ import { ProjectTimesheetComponent } from './project-timesheet/project-timesheet
 import { ResignationApprovedListComponent } from './resignation-approved-list/resignation-approved-list.component';
 import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
 import { GratuityComponent } from './gratuity/gratuity.component';
+import { DocumentRequestEmailTemplateComponent } from './document-request-email-template/document-request-email-template.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -387,6 +388,12 @@ const routes: Routes = [
             path:'document-request-approval',
             component:DocumentRequestApprovalsComponent
           },
+          {
+            path:'document-request-email-template',
+            component:DocumentRequestEmailTemplateComponent
+          },
+
+
             {
       path:'leave-template',
       component:LeaveTemplateComponent,

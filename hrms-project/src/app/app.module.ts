@@ -197,6 +197,7 @@ import { ProjectTimesheetComponent } from './project-timesheet/project-timesheet
 import { ResignationApprovedListComponent } from './resignation-approved-list/resignation-approved-list.component';
 import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
 import { GratuityComponent } from './gratuity/gratuity.component';
+import { DocumentRequestEmailTemplateComponent } from './document-request-email-template/document-request-email-template.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -352,7 +353,8 @@ import { GratuityComponent } from './gratuity/gratuity.component';
      ProjectTimesheetComponent,
      ResignationApprovedListComponent,
      EndOfServiceComponent,
-     GratuityComponent
+     GratuityComponent,
+     DocumentRequestEmailTemplateComponent
      
      
 

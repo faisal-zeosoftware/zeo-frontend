@@ -1583,6 +1583,20 @@ export class EmployeeService {
   }
 
 
+
+
+
+  deleteAssetCustomfiled(fieldId: number): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+    const url = `${this.apiUrl}/organisation/api/asset-customfield/${fieldId}/?schema=${selectedSchema}`;
+    return this.http.delete(url);
+  }
+
+
   registerApproveLevel(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -2238,6 +2252,42 @@ deleteAssetType(categoryId: number): Observable<any> {
 
 
 
+
+// Email Configuration edit- and delete
+
+
+updateEmaiConfiguration(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/email-config/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating email-config:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+
+
+
+
+deleteEmailConfig(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/employee/api/email-config/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
 
 
 

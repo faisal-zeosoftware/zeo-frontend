@@ -74,6 +74,7 @@ ngOnInit(): void {
 
 this.ngAfterViewInit();
 
+
 this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
   this.authService.getUserData(this.userId).subscribe(
