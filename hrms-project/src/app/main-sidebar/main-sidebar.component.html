@@ -75,9 +75,6 @@
 
 
 
-
-
-
       <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
         <span><mat-icon>airplane_ticket
         </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/air-ticket-options"> Air Ticket Management</span></span>
@@ -125,6 +122,8 @@
 </nav>
 <!-- Sidebar -->
 
+
+
 <!-- Navbar -->
 <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
   <!-- Container wrapper -->
@@ -137,6 +136,13 @@
 
     <!-- Brand -->
 
+    
+
+     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
+          <span *ngIf="!isMenuOpen">☰</span>
+          <span *ngIf="isMenuOpen">×</span>
+    </button>
+
 
     <div class="nav_mov">
      <a class="navbar-brand">
@@ -147,6 +153,10 @@
      <!-- <h1 class="pull-right menu_mob" >menubar</h1> -->
 
      </div>
+
+
+
+
  
    
     <ul class="navbar-nav ms-auto d-flex flex-row">
@@ -214,6 +224,14 @@
 
       </li>
     </ul>
+
+
+
+
+
+
+
+
 
    
   </div>

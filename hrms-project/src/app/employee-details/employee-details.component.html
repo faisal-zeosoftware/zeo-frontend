@@ -289,6 +289,7 @@
                                         (click)="employeefamAdd()">Add Family</button>
                                 </div>
                             </mat-tab>
+
                             <mat-tab label="Qualification">
                                 <div class="tab_content  mt-3" *ngFor="let Qualification of Qualifications">
                                     <div class="row">
@@ -320,14 +321,92 @@
                                             </div>
                                         </ng-container>
                                     </div>
-
-
                                 </div>
                                 <div class=" mt-5">
                                     <button type="button" class="btn-Edit btn-info btn d-block mx-auto "
                                         (click)="employeefamAdd()">Add Qualification</button>
                                 </div>
                             </mat-tab>
+
+                            <!-- --------------------------------------------------------->
+                            
+                            <mat-tab label="Employee Bank details">
+                                <div class="tab_content  mt-3" *ngFor="let member of emp_bank_details">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <h2>Bank Name</h2>
+                                            <h3>{{member.bank_name }} </h3>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h2>Branch Name</h2>
+                                            <h3>{{member.branch_name }} </h3>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <h2>Account Number</h2>
+                                            <h3>{{ member.account_number }} </h3>
+                                        </div>
+                                         <div class="col-md-3">
+                                            <h2>Bank Address</h2>
+                                            <h3>{{ member.bank_address }} </h3>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h2>Route Code</h2>
+                                            <h3>{{ member.route_code }} </h3>
+                                        </div>
+                                         <div class="col-md-3">
+                                            <h2>Iban Number</h2>
+                                            <h3>{{ member.iban_number }} </h3>
+                                        </div>
+
+
+
+                               </div>
+
+
+                                </div>
+                                <div class=" mt-5">
+                                    <button type="button" class="btn-Edit btn-info btn d-block mx-auto "
+                                        (click)="employeefamAdd()">Add Bank</button>
+                                </div>
+                            </mat-tab>  
+
+
+
+                              <!-- --------------------------------------------------------->
+
+                                         
+
+<!--Display each custom field -->
+                                        <!-- <ng-container *ngFor="let field of member.fam_custom_fields">
+                                            <div class="col-md-3">
+                                                <h2>{{ field.emp_custom_field }}</h2>
+                                                <h3>{{ field.field_value }}</h3>
+                                            </div>
+                                        </ng-container> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                             <mat-tab label="Job History">
                                 <div class="tab_content  mt-3" *ngFor="let Jobhistory of Jobhistorys">
                                     <div class="row">
@@ -372,10 +451,11 @@
                                             </div>
                                         </ng-container>
 
-
-
-
                                     </div>
+
+
+
+                                    
 
 
                                 </div>

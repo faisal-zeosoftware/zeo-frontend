@@ -510,6 +510,29 @@ export class EmployeeService {
   }
 
 
+
+  getBankDetails(employeeId: number): Observable<any> {
+    // return this.http.get<any>(`http://localhost:8000/api/Employee/${employeeId}/emp_family/`);
+
+    // const url = `${this.baseUrl}/Employee/${employeeId}/emp_family/`;
+    // return this.http.get(url);
+
+
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_bank_details/?schema=${selectedSchema}`;
+
+    return this.http.get(apiUrl);
+  }
+
+
+
+
+
     getAssetDetails(employeeId: number): Observable<any> {
     // return this.http.get<any>(`http://localhost:8000/api/Employee/${employeeId}/emp_family/`);
 
@@ -1172,7 +1195,7 @@ export class EmployeeService {
       return throwError('No schema selected.');
     }
 
-    const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp-bank-details/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_bank_details/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.post(apiUrl, familyData, { headers }).pipe(

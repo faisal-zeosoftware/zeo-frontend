@@ -413,8 +413,6 @@ width: 35px;
     margin-top: 10px;
 }
 
-
-
   
 table thead th {
     color: #ffffff;
@@ -436,65 +434,7 @@ table thead th {
   .menu_mob{
     display: none;
   }
-  
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-
-
-    .comapny_section{
-      margin-left: 0px !important;
-    }
-
-    .menu_mob{
-      display: block;
-      color: white;
-    }
-
-    .nav_mov{
-      width: 95%;
-    }
-
-    .menu-open{
-      width: 70% !important;
-    }
-  }
-  
-
-
-
-
-
+ 
 
   /* dashboard page styles here 
   ----------------------------- */
@@ -586,3 +526,109 @@ table thead th {
 #sidebarMenu::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
+
+
+
+
+/* mobile responsive */
+
+
+
+  @media only screen and (max-width: 640px) {
+    table thead {
+      display: none;
+    }
+  
+    table tbody {
+      display: block;
+    }
+  
+    table tbody tr td {
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+  
+    table tbody tr {
+      margin-bottom: 20px;
+      display: block;
+      border: 1px solid #004976;
+      background: #f9f9f9;
+      overflow: hidden;
+    }
+  
+    table tbody td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      width: 30%;
+      display: flex;
+      background: #004976;
+      color: #fff;
+      padding: 15px;
+      margin-inline-end: 10px;
+    }
+
+
+    .comapny_section{
+      margin-left: 0px !important;
+    }
+
+    .nav_mov{
+      width: 95%;
+    }
+
+    .menu-open{
+      width: 70% !important;
+    }
+
+    /* Toggle button */
+  .menu_mob {
+    display: block;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #3a1c4f;
+    color: #f6e57a8e;
+    border: none;
+    border-radius: 4px;
+    z-index: 1100;
+  }
+
+  /* Sidebar collapsed (hidden) */
+  #sidebarMenu.menu-close {
+    transform: translateX(-100%);
+    width: 0;
+    overflow: hidden;
+  }
+
+  /* Sidebar open (visible) */
+  #sidebarMenu.menu-open {
+    transform: translateX(0);
+    width: 70% !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background: #fff;
+    z-index: 1000;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  }
+
+  /* Push main content when sidebar is open */
+  .content-shift {
+    margin-left: 70%;
+    transition: margin-left 0.3s ease-in-out;
+  }
+/* logo style */
+  .navbar-brand{
+    margin-left: 30px;
+
+
+  }
+
+
+
+
+  }
+  
+

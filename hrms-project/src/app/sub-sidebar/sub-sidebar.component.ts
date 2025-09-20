@@ -58,6 +58,13 @@ export class SubSidebarComponent {
      
     }
 
+    
+  isMenuOpen: boolean = true;
+
+   toggleSidebarMenu(): void {
+  this.isMenuOpen = !this.isMenuOpen;
+}
+
   ngOnInit(): void {
     this.hideButton = this.EmployeeService.getHideButton();
 

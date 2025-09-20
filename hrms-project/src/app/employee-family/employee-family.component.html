@@ -571,7 +571,7 @@
                 
 
 
-              <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
+              <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(2)" hideToggle>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Bank Details
@@ -596,11 +596,11 @@
 
                             <div class="col-md-6">
 
-                                <label>Brach Name</label>
+                                <label>Branch Name</label>
 
                                 <input type="text" class="form-control" required [(ngModel)]="branch_name"
 
-                                    placeholder="brach name" [ngModelOptions]="{standalone: true}">
+                                    placeholder="branch name" [ngModelOptions]="{standalone: true}">
 
                                 
                             </div>
@@ -653,35 +653,7 @@
                           </div>
                         </div>
                       </div>
-
-
-                            
-
-
-
-
-
-
-                            <!-- <div class="col-md-6">
-
-
-                                <div class="custom-sel">
-                                    <label>Select Employee ID</label>
-                                    <select class="form-control" id="country" required [(ngModel)]="emp_id"
-                                        [ngModelOptions]="{standalone: true}"
-                                        [ngClass]="{'error-field': registerButtonClicked1 && !emp_id}">
-                                        <option value="">Select</option>
-                                        <option *ngFor="let country of companies" [value]="country.id">{{
-                                            country.emp_first_name }} {{ country.emp_last_name }}</option>
-                                    </select>
-                                    <div *ngIf="registerButtonClicked1 && !emp_id" class="error-message">Please Select
-                                        Your Company</div>
-                                </div>
-
-
-                            </div> -->
-
-
+          
 
                         </div>
 

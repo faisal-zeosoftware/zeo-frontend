@@ -34,6 +34,7 @@ export class EmployeeDetailsComponent implements OnInit {
   employee: any;
   profilePicture: any;
   emp_family_details: any[] | undefined;
+  emp_bank_details: any[] | undefined;
   emp_asset_details: any[] | undefined;
   Qualifications: any[] | undefined;
   EmpSkills: any[] | undefined;
@@ -137,6 +138,7 @@ export class EmployeeDetailsComponent implements OnInit {
         this.loadMarprogramlang();
         this.loadEmpMarkSkills();
         this.loadFieldNames();
+        this.loadBankDetails();
 
 
       });
@@ -405,6 +407,18 @@ attendanceData: any = null; // Define this at the class level
         },
         error => {
           console.error('Error fetching family details:', error);
+        }
+      );
+    }
+
+    
+    loadBankDetails(): void {
+      this.EmployeeService.getBankDetails(this.employee).subscribe(
+        bank => {
+          this.emp_bank_details = bank;
+        },
+        error => {
+          console.error('Error fetching bank details:', error);
         }
       );
     }
