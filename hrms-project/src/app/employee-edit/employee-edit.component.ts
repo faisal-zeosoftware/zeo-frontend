@@ -195,13 +195,13 @@ export class EmployeeEditComponent {
           const desg = this.designations?.find(ds => ds.desgntn_job_title === Emp.emp_desgntn_id);
           if (desg) this.Emp.emp_desgntn_id = desg.id;
 
-                // Designation mapping
+                // religion mapping
                 const rel = this.Religions?.find(ds => ds.religion === Emp.emp_relegion);
                 if (rel) this.Emp.emp_relegion = rel.id;
   
-                          // Designation mapping
+                          // nationality mapping
                           const nat = this.Nationations?.find(ds => ds.N_name === Emp.emp_nationality);
-                          if (nat) this.Emp.emp_nationality = rel.id;
+                          if (nat) this.Emp.emp_nationality = nat.id;
   
           // Category mapping
           const cat = this.catogories?.find(c => c.ctgry_title === Emp.emp_ctgry_id);
