@@ -246,66 +246,69 @@ private appendFormData(formData: FormData, key: string, value: any): void {
 updateEmp(): void {
   const formData = new FormData();
 
+  // ✅ Profile Pic (optional)
   if (this.selectedFile) {
     formData.append('emp_profile_pic', this.selectedFile, this.selectedFile.name);
   }
 
-  const selectedDate = new Date(this.Emp.emp_date_of_confirmation);
-  const formattedDate = selectedDate.toISOString().split('T')[0]; 
+  // ✅ Safe Date Conversion
+  const formatDate = (date: any): string => {
+    if (!date) return '';
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+  };
 
-  const joinedDate = new Date(this.Emp.emp_joined_date);
-  const formattedJoinedDate = joinedDate.toISOString().split('T')[0];
+  // ✅ Helper for safe append
+  const safeAppend = (key: string, value: any) => {
+    formData.append(key, value !== null && value !== undefined ? value.toString() : '');
+  };
 
-  // Append all fields
-  formData.append('emp_code', this.Emp.emp_code);
-  formData.append('emp_first_name', this.Emp.emp_first_name);
-  formData.append('emp_last_name', this.Emp.emp_last_name);
-  formData.append('emp_gender', this.Emp.emp_gender);
-  formData.append('emp_date_of_birth', this.Emp.emp_date_of_birth);
-  formData.append('emp_personal_email', this.Emp.emp_personal_email);
-  formData.append('emp_company_email', this.emp_company_email);
-  formData.append('emp_mobile_number_1', this.Emp.emp_mobile_number_1);
-  formData.append('emp_mobile_number_2', this.Emp.emp_mobile_number_2);
-  formData.append('emp_city', this.Emp.emp_city);
-  formData.append('emp_permenent_address', this.Emp.emp_permenent_address);
-  formData.append('emp_present_address', this.Emp.emp_present_address);
+  // ✅ Append all fields safely
+  safeAppend('emp_code', this.Emp.emp_code);
+  safeAppend('emp_first_name', this.Emp.emp_first_name);
+  safeAppend('emp_last_name', this.Emp.emp_last_name);
+  safeAppend('emp_gender', this.Emp.emp_gender);
+  safeAppend('emp_date_of_birth', this.Emp.emp_date_of_birth);
+  safeAppend('emp_personal_email', this.Emp.emp_personal_email);
+  safeAppend('emp_company_email', this.Emp.emp_company_email);
+  safeAppend('emp_mobile_number_1', this.Emp.emp_mobile_number_1);
+  safeAppend('emp_mobile_number_2', this.Emp.emp_mobile_number_2);
+  safeAppend('emp_city', this.Emp.emp_city);
+  safeAppend('emp_permenent_address', this.Emp.emp_permenent_address);
+  safeAppend('emp_present_address', this.Emp.emp_present_address);
+  safeAppend('emp_blood_group', this.Emp.emp_blood_group);
+  safeAppend('emp_marital_status', this.Emp.emp_marital_status);
+  safeAppend('emp_father_name', this.Emp.emp_father_name);
+  safeAppend('emp_mother_name', this.Emp.emp_mother_name);
+  safeAppend('emp_posting_location', this.Emp.emp_posting_location);
 
-  this.appendFormData(formData, 'emp_blood_group', this.Emp.emp_blood_group);
-  this.appendFormData(formData, 'emp_marital_status', this.Emp.emp_marital_status);
+  safeAppend('emp_country_id', this.emp_country_id);
+  safeAppend('emp_state_id', this.emp_state_id);
+  safeAppend('emp_company_id', this.Emp.emp_company_id);
+  safeAppend('emp_branch_id', this.Emp.emp_branch_id);
 
-  formData.append('emp_father_name', this.Emp.emp_father_name);
-  formData.append('emp_mother_name', this.Emp.emp_mother_name);
-  formData.append('emp_posting_location', this.Emp.emp_posting_location);
+  safeAppend('emp_relegion', this.Emp.emp_relegion);
+  safeAppend('emp_nationality', this.Emp.emp_nationality);
 
-  formData.append('emp_country_id', this.emp_country_id);
-  formData.append('emp_state_id', this.emp_state_id);
-  formData.append('emp_company_id', this.Emp.emp_company_id);
-  formData.append('emp_branch_id', this.Emp.emp_branch_id);
+  safeAppend('emp_dept_id', this.Emp.emp_dept_id);
+  safeAppend('emp_desgntn_id', this.Emp.emp_desgntn_id);
+  safeAppend('emp_ctgry_id', this.Emp.emp_ctgry_id);
 
-  formData.append('emp_relegion', this.Emp.emp_relegion ? this.Emp.emp_relegion.toString() : '');
+  safeAppend('emp_date_of_confirmation', formatDate(this.Emp.emp_date_of_confirmation));
+  safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));
 
-  formData.append('emp_nationality', this.Emp.emp_nationality ? this.Emp.emp_nationality.toString() : '');
+  // ✅ Boolean values as 1/0
+  safeAppend('is_ess', this.Emp.is_ess ? '1' : '0');
+  safeAppend('emp_status', this.Emp.emp_status ? '1' : '0');
+  safeAppend('emp_ot_applicable', this.Emp.emp_ot_applicable ? '1' : '0');
+  safeAppend('is_active', this.Emp.is_active ? '1' : '0');
 
-  formData.append('emp_dept_id', this.Emp.emp_dept_id ? this.Emp.emp_dept_id.toString() : '');
-  formData.append('emp_desgntn_id', this.Emp.emp_desgntn_id ? this.Emp.emp_desgntn_id.toString() : '');
-  formData.append('emp_ctgry_id', this.Emp.emp_ctgry_id ? this.Emp.emp_ctgry_id.toString() : '');
-
-
-
-  formData.append('emp_date_of_confirmation', formattedDate);
-  formData.append('emp_joined_date', formattedJoinedDate);
-
-  formData.append('is_ess', this.Emp.is_ess ? '1' : '0');
-  formData.append('emp_status', this.Emp.emp_status ? '1' : '0');
-  formData.append('emp_ot_applicable', this.Emp.emp_ot_applicable.toString());
-
-  formData.append('is_active', this.Emp.is_active.toString());
-
-
+  // ✅ API Call
   this.EmployeeService.updateEmp(this.data.employeeId, formData).subscribe(
     (response) => {
       console.log('Employee updated successfully:', response);
       alert('Employee Details Edited');
+
       this.updateCustomFieldValues();
       this.dialogRef.close();
       this.dialog.open(SuccesModalComponent, {
@@ -324,8 +327,6 @@ updateEmp(): void {
             messages.push(`${key}: ${error.error[key].join(', ')}`);
           }
         }
-
-        // Show all messages in one alert
         alert(messages.length ? messages.join('\n') : 'Enter all fields correctly');
       } else {
         alert('Enter all fields correctly');
