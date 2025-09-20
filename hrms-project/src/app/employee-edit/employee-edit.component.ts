@@ -36,6 +36,7 @@ export class EmployeeEditComponent {
   languages:any[] = [];
   Fields:any[] = [];
   Religions: any[] = [];
+  Nationations: any[] = [];
 
 
   empCodeFieldName: string = 'Employee Code';
@@ -120,8 +121,13 @@ export class EmployeeEditComponent {
 
   is_ess: boolean = false;
 
-  emp_status: boolean = true;
+  emp_ot_applicable: boolean = false;
+
+  is_active: boolean = false;
+
+  emp_status: boolean = false;
   emp_id: number;
+
 
   selectedCustomField: any = {}; // To hold the selected custom field
   customFieldValues: { [key: number]: any } = {}; // Holds custom field values
@@ -148,7 +154,7 @@ export class EmployeeEditComponent {
     });
   }
 
-
+  profilePicUrl: string | null = null;
 
   ngOnInit(): void {
     // 1. Load employee details
@@ -157,6 +163,11 @@ export class EmployeeEditComponent {
         this.Emp = Emp;
         this.EmpD.emp_master = Emp.id; // Assuming `Emp.id` corresponds to the employee ID
   
+
+        // Bind profile picture
+      if (Emp.emp_profile_pic) {
+        this.profilePicUrl = Emp.emp_profile_pic; // Store image URL
+      }
         // Handle custom fields
         this.Emp.custom_fields.forEach((field: any) => {
           this.customFieldValues[field.id] = field.field_value;
@@ -183,6 +194,14 @@ export class EmployeeEditComponent {
           // Designation mapping
           const desg = this.designations?.find(ds => ds.desgntn_job_title === Emp.emp_desgntn_id);
           if (desg) this.Emp.emp_desgntn_id = desg.id;
+
+                // Designation mapping
+                const rel = this.Religions?.find(ds => ds.religion === Emp.emp_relegion);
+                if (rel) this.Emp.emp_relegion = rel.id;
+  
+                          // Designation mapping
+                          const nat = this.Nationations?.find(ds => ds.N_name === Emp.emp_nationality);
+                          if (nat) this.Emp.emp_nationality = rel.id;
   
           // Category mapping
           const cat = this.catogories?.find(c => c.ctgry_title === Emp.emp_ctgry_id);
@@ -207,6 +226,7 @@ export class EmployeeEditComponent {
     this.loadEmployeecust_value();
     this.loadFieldNames();
     this.loadReligoin();
+    this.loadNationality();
   }
   
 
@@ -250,9 +270,7 @@ updateEmp(): void {
   formData.append('emp_permenent_address', this.Emp.emp_permenent_address);
   formData.append('emp_present_address', this.Emp.emp_present_address);
 
-  this.appendFormData(formData, 'emp_relegion', this.Emp.emp_relegion ? this.Emp.emp_relegion : null);
   this.appendFormData(formData, 'emp_blood_group', this.Emp.emp_blood_group);
-  this.appendFormData(formData, 'emp_nationality', this.Emp.emp_nationality ? this.Emp.emp_nationality : null);
   this.appendFormData(formData, 'emp_marital_status', this.Emp.emp_marital_status);
 
   formData.append('emp_father_name', this.Emp.emp_father_name);
@@ -263,6 +281,10 @@ updateEmp(): void {
   formData.append('emp_state_id', this.emp_state_id);
   formData.append('emp_company_id', this.Emp.emp_company_id);
   formData.append('emp_branch_id', this.Emp.emp_branch_id);
+
+  formData.append('emp_relegion', this.Emp.emp_relegion ? this.Emp.emp_relegion.toString() : '');
+
+  formData.append('emp_nationality', this.Emp.emp_nationality ? this.Emp.emp_nationality.toString() : '');
 
   formData.append('emp_dept_id', this.Emp.emp_dept_id ? this.Emp.emp_dept_id.toString() : '');
   formData.append('emp_desgntn_id', this.Emp.emp_desgntn_id ? this.Emp.emp_desgntn_id.toString() : '');
@@ -275,6 +297,10 @@ updateEmp(): void {
 
   formData.append('is_ess', this.Emp.is_ess ? '1' : '0');
   formData.append('emp_status', this.Emp.emp_status ? '1' : '0');
+  formData.append('emp_ot_applicable', this.Emp.emp_ot_applicable.toString());
+
+  formData.append('is_active', this.Emp.is_active.toString());
+
 
   this.EmployeeService.updateEmp(this.data.employeeId, formData).subscribe(
     (response) => {
@@ -556,6 +582,25 @@ loadCountries(): void {
   );
   }
 }
+
+ loadNationality(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+
+      this.CountryService.getNationality(selectedSchema).subscribe(
+        (result: any) => {
+          this.Nationations = result;
+        },
+        (error: any) => {
+          console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
 
 
 

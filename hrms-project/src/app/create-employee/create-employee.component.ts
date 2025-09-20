@@ -37,6 +37,7 @@ export class CreateEmployeeComponent implements OnInit {
   catogories: any[] = [];
   languages: any[] = [];
   Religions: any[] = [];
+  Nationations: any[] = [];
 
 
   state_label: string = ''; // For dynamically storing state_label
@@ -87,6 +88,7 @@ export class CreateEmployeeComponent implements OnInit {
   is_ess: boolean = false;
 
   emp_status: boolean = false;
+  is_active: boolean = true;
 
   employee: any;
 
@@ -394,7 +396,7 @@ export class CreateEmployeeComponent implements OnInit {
 
     this.loadCountries();
     this.loadReligoin();
-
+this.loadNationality();
 
     this.loadCompanies();
     this.loadbranches();
@@ -611,6 +613,7 @@ export class CreateEmployeeComponent implements OnInit {
     formData.append('emp_status', this.emp_status ? '1' : '0');
     formData.append('emp_ot_applicable', this.emp_ot_applicable.toString());
 
+    formData.append('is_active', this.is_active.toString());
 
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -1417,6 +1420,26 @@ export class CreateEmployeeComponent implements OnInit {
       this.CountryService.getCountriesList(selectedSchema).subscribe(
         (result: any) => {
           this.countries = result;
+        },
+        (error: any) => {
+          console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
+  
+  
+  loadNationality(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+
+      this.CountryService.getNationality(selectedSchema).subscribe(
+        (result: any) => {
+          this.Nationations = result;
         },
         (error: any) => {
           console.error('Error fetching countries:', error);

@@ -147,6 +147,17 @@ export class CountryService {
     return this.http.get(Url);
   }
 
+  getNationality(selectedSchema: string): Observable<any> {
+    // const url = `${this.baseUrl}/Branch/`;
+    // return this.http.get(url);
+
+    const Url = `${this.apiUrl}/core/api/Nationality/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(Url);
+  }
+
+
   getReligionList(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/Branch/`;
     // return this.http.get(url);
