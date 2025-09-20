@@ -265,8 +265,10 @@ updateEmp(): void {
   formData.append('emp_branch_id', this.Emp.emp_branch_id);
 
   formData.append('emp_dept_id', this.Emp.emp_dept_id ? this.Emp.emp_dept_id.toString() : '');
-  formData.append('emp_desgntn_id', this.Emp.emp_desgntn_id);
-  formData.append('emp_ctgry_id', this.Emp.emp_ctgry_id);
+  formData.append('emp_desgntn_id', this.Emp.emp_desgntn_id ? this.Emp.emp_desgntn_id.toString() : '');
+  formData.append('emp_ctgry_id', this.Emp.emp_ctgry_id ? this.Emp.emp_ctgry_id.toString() : '');
+
+
 
   formData.append('emp_date_of_confirmation', formattedDate);
   formData.append('emp_joined_date', formattedJoinedDate);

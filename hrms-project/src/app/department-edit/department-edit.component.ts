@@ -47,30 +47,34 @@ export class DepartmentEditComponent {
   ) {
     this.DepartmentServiceService.getCategoryById(data.departmentId).subscribe(department => {
       this.department = department;
-      this.department.branch_id = department.branch_id;  // Ensure branch_id is assigned
+      this.department.branch_id = department.branch_id;
     });
   }
 
-
   ngOnInit(): void {
-
-
+    // 1. Fetch Department by ID
     this.DepartmentServiceService.getCategoryById(this.data.departmentId).subscribe(
       (department) => {
-        this.department = department.brach_id;
-        this.department.branch_id = department.branch_id;  // Ensure branch_id is assigned
-        console.log('branch',this.department.branch_id)
-
+        this.department = department;
+        console.log('Department fetched:', this.department);
+  
+        // 2. Load Branches, then map branch name → branch id
+        this.loadDeparmentBranch(() => {
+          const branch = this.Departments?.find(
+            (b: any) => b.branch_name === department.branch_id
+          );
+          if (branch) {
+            this.department.branch_id = branch.id; // map name to id for dropdown
+          }
+          console.log('Mapped branch_id:', this.department.branch_id);
+        });
       },
       (error) => {
         console.error('Error fetching department:', error);
       }
     );
-
-    this.loadDeparmentBranch();
   }
-
-
+  
 
   updateCategory(): void {
     // Update category
@@ -89,24 +93,26 @@ export class DepartmentEditComponent {
     );
   }
 
-  loadDeparmentBranch(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
+  loadDeparmentBranch(callback?: () => void): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+  
+    console.log('schemastore', selectedSchema);
+  
     if (selectedSchema) {
       this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any) => {
-        this.Departments = result;
-        console.log(' fetching Companies:');
-
-      },
-      (error) => {
-        console.error('Error fetching Companies:', error);
-      }
-    );
+        (result: any) => {
+          this.Departments = result;
+          console.log('Fetched Branches:', this.Departments);
+  
+          if (callback) callback(); // run mapping after data loads
+        },
+        (error) => {
+          console.error('Error fetching Branches:', error);
+        }
+      );
     }
   }
+  
  
   ClosePopup(){
     this.ref.close('Closed using function')
