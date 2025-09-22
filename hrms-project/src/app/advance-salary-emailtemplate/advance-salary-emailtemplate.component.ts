@@ -11,14 +11,13 @@ import { EmailTemplateEditComponent } from '../email-template-edit/email-templat
 import { MatDialog } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
-import { DocReqEmailtemplateEditComponent } from '../doc-req-emailtemplate-edit/doc-req-emailtemplate-edit.component';
-
+import { AdvanceSalaryEmailtemplateEditComponent } from '../advance-salary-emailtemplate-edit/advance-salary-emailtemplate-edit.component';
 @Component({
-  selector: 'app-document-request-email-template',
-  templateUrl: './document-request-email-template.component.html',
-  styleUrl: './document-request-email-template.component.css'
+  selector: 'app-advance-salary-emailtemplate',
+  templateUrl: './advance-salary-emailtemplate.component.html',
+  styleUrl: './advance-salary-emailtemplate.component.css'
 })
-export class DocumentRequestEmailTemplateComponent {
+export class AdvanceSalaryEmailtemplateComponent {
 
 
   
@@ -195,22 +194,6 @@ if (this.userId !== null) {
 }
 
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_emailtemplate' ||'change_emailtemplate' ||'delete_emailtemplate' ||'view_emailtemplate';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
   
   
   
@@ -343,7 +326,7 @@ getTextContent(): void {
       };
     
   
-      this.employeeService.registerEmailTemplateDocReq(companyData).subscribe(
+      this.employeeService.registerEmailTemplateAdvancesalary(companyData).subscribe(
         (response) => {
           console.log('Registration successful', response);
         
@@ -369,7 +352,7 @@ getTextContent(): void {
       console.log('schemastore',selectedSchema )
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.DepartmentServiceService.getEmailTemplatesDocReq(selectedSchema).subscribe(
+        this.DepartmentServiceService.getEmailTemplatesAdvanceSalary(selectedSchema).subscribe(
           (result: any) => {
             this.tempEmails = result;
             console.log(' fetching Companies:');
@@ -411,12 +394,11 @@ getTextContent(): void {
     };
 
     // Send updated data to backend API
-    this.employeeService.updateEmailTemplateDocReq(updatedTemplate).subscribe(
+    this.employeeService.updateEmailTemplateAdvanceSalary(updatedTemplate).subscribe(
       (response) => {
         console.log('Template updated successfully', response);
         alert('Email Template has been updated');
         this.loadtemp(); // Refresh the list of templates
-        window.location.reload();
       },
       (error) => {
         console.error('Error updating template:', error);
@@ -427,7 +409,7 @@ getTextContent(): void {
 
 
   openEditPopuss(selectedTemplate: any): void {
-    this.dialog.open(DocReqEmailtemplateEditComponent, {
+    this.dialog.open(AdvanceSalaryEmailtemplateEditComponent, {
       width: '80%',
       height: '700px',
       data: { template: selectedTemplate } // Passing the selected template data to the modal component
@@ -489,15 +471,15 @@ onCheckboxChange(employee:number) {
         .map(employee => employee.id);
     
       if (selectedEmployeeIds.length === 0) {
-        alert('No Asset type selected for deletion.');
+        alert('No Email Template selected for deletion.');
         return;
       }
     
       if (confirm('Are you sure you want to delete the selected Email Template?')) {
         selectedEmployeeIds.forEach(categoryId => {
-          this.employeeService.deleteEmailTemplateDocReq(categoryId).subscribe(
+          this.employeeService.deleteEmailTemplateAdvanceSalary(categoryId).subscribe(
             () => {
-              console.log('Email Template deleted successfully:', categoryId);
+              console.log('Email Configuration deleted successfully:', categoryId);
               // Remove the deleted employee from the local list
               this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
               alert(' Email Template deleted successfully');
@@ -505,14 +487,14 @@ onCheckboxChange(employee:number) {
     
             },
             (error) => {
-              console.error('Error deleting Email Template:', error);
+              console.error('Error deleting Email Configuration:', error);
               alert(error)
             }
           );
         });
-      }
+      }  
+
     }
-    
     
 
 }

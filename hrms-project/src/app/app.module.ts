@@ -198,6 +198,9 @@ import { ResignationApprovedListComponent } from './resignation-approved-list/re
 import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
 import { GratuityComponent } from './gratuity/gratuity.component';
 import { DocumentRequestEmailTemplateComponent } from './document-request-email-template/document-request-email-template.component';
+import { DocReqEmailtemplateEditComponent } from './doc-req-emailtemplate-edit/doc-req-emailtemplate-edit.component';
+import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtemplate/advance-salary-emailtemplate.component';
+import { AdvanceSalaryEmailtemplateEditComponent } from './advance-salary-emailtemplate-edit/advance-salary-emailtemplate-edit.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -354,7 +357,10 @@ import { DocumentRequestEmailTemplateComponent } from './document-request-email-
      ResignationApprovedListComponent,
      EndOfServiceComponent,
      GratuityComponent,
-     DocumentRequestEmailTemplateComponent
+     DocumentRequestEmailTemplateComponent,
+     DocReqEmailtemplateEditComponent,
+     AdvanceSalaryEmailtemplateComponent,
+     AdvanceSalaryEmailtemplateEditComponent
      
      
 

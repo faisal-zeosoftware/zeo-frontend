@@ -1670,6 +1670,33 @@ export class EmployeeService {
   }
 
 
+  
+  // post email template to  backend api
+
+  registerEmailTemplateAdvancesalary(companyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+
+
+    const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-email-template/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post(apiUrl, companyData, { headers }).pipe(
+      catchError((error) => {
+        // Handle errors here (you can log, show a user-friendly message, etc.)
+        console.error('Error during company registration:', error);
+        return throwError(error);
+
+      })
+    );
+  }
+
+
+
   registerEmailTemplateDocExp(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -1701,6 +1728,29 @@ export class EmployeeService {
 
 
     const apiUrl = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post(apiUrl, companyData, { headers }).pipe(
+      catchError((error) => {
+        // Handle errors here (you can log, show a user-friendly message, etc.)
+        console.error('Error during company registration:', error);
+        return throwError(error);
+
+      })
+    );
+  }
+
+
+  registerEmailTemplateDocReq(companyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+
+
+    const apiUrl = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.post(apiUrl, companyData, { headers }).pipe(
@@ -1787,6 +1837,45 @@ export class EmployeeService {
     }
 
     const apiUrl = `${this.apiUrl}/employee/api/email-template/${updatedTemplate.id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.put(apiUrl, updatedTemplate, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating template:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+
+  updateEmailTemplateDocReq(updatedTemplate: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+
+    const apiUrl = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/${updatedTemplate.id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.put(apiUrl, updatedTemplate, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating template:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+
+
+  updateEmailTemplateAdvanceSalary(updatedTemplate: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+
+    const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-email-template/${updatedTemplate.id}/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.put(apiUrl, updatedTemplate, { headers }).pipe(
@@ -2331,6 +2420,36 @@ deleteEmailTemplategenreq(categoryId: number): Observable<any> {
 
 
 
+deleteEmailTemplateDocReq(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+deleteEmailTemplateAdvanceSalary(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-email-template/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
 
 // asset module -------------------
 

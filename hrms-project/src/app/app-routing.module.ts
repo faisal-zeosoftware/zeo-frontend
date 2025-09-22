@@ -122,6 +122,7 @@ import { ResignationApprovedListComponent } from './resignation-approved-list/re
 import { EndOfServiceComponent } from './end-of-service/end-of-service.component';
 import { GratuityComponent } from './gratuity/gratuity.component';
 import { DocumentRequestEmailTemplateComponent } from './document-request-email-template/document-request-email-template.component';
+import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtemplate/advance-salary-emailtemplate.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -391,6 +392,10 @@ const routes: Routes = [
           {
             path:'document-request-email-template',
             component:DocumentRequestEmailTemplateComponent
+          },
+          {
+            path:'advance-salary-emailtemplate',
+            component:AdvanceSalaryEmailtemplateComponent
           },
 
 
