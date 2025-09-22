@@ -31,3 +31,23 @@
     color: white;
     
 }
+
+.close {
+    color:red !important;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: red;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+
+  .success-header{
+    margin-top: 35px;
+  }

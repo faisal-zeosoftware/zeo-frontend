@@ -33,5 +33,9 @@ export class SuccesModalComponent {
     });
    }
 
+     closeapplicationModal():void{
+      window.location.reload();
+     }
+
 
 }
