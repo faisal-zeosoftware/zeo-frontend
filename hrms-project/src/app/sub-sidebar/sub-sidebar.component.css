@@ -335,11 +335,14 @@
 
 /* media quries styles start here */
 
+
 @media only screen and (max-width:  768px) {
   .menu-open {
-    width: 70% !important;
+    
+    width: 49% !important;
     transition: all 0.3s ease;
-    margin-top: 142px;
+    margin-top: 121px;
+    margin-left: -11px;
  
   }
 
@@ -356,12 +359,10 @@
     background-color: #3a1c4f;
     color: #f6e57a8e;
     border: none;
-    padding: 10px;
     border-radius: 4px;
-    margin-top: -10px;
-    margin-left: -16px;
-
-
+    margin-top: -18px;
+    margin-left: -33px;
+  
   }
 
   .sidebar-top{
@@ -371,8 +372,6 @@
     width: 30px;
 
   }
-
-
   
 .mat-drawer-side {
     background: #f4f4f4 !important;
@@ -380,9 +379,6 @@
     width:0%;
     
 }
-
-
-  
-
 }
+
 

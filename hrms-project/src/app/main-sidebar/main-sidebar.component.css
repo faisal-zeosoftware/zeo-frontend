@@ -530,6 +530,13 @@ table thead th {
 
 
 
+
+
+
+/* mobile responsive */
+
+
+
 /* mobile responsive */
 
 
@@ -585,8 +592,8 @@ table thead th {
   .menu_mob {
     display: block;
     position: absolute;
-    top: 15px;
-    left: 15px;
+    margin-bottom: -70px;
+    left: 5px;
     background: #3a1c4f;
     color: #f6e57a8e;
     border: none;
@@ -606,7 +613,7 @@ table thead th {
     transform: translateX(0);
     width: 70% !important;
     position: fixed;
-    top: 0;
+    top: 54px;
     left: 0;
     height: 100vh;
     background: #fff;
@@ -626,9 +633,11 @@ table thead th {
 
   }
 
+  .notiicon{
 
+     margin-top: -68px;
+  }
 
 
   }
   
-

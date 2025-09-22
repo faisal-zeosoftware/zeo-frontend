@@ -1,3 +1,6 @@
+
+
+
 <nav id="sidebarMenu" class=" d-lg-block sidebar  bg-white" [class.menu-open]="isMenuOpen"
   [class.menu-close]="!isMenuOpen" >
   <!-- <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white" [class.menu-open]="isMenuOpen"
@@ -109,13 +112,6 @@
 
       </a>
 
-
-
-
-
- 
-     
-
        
     </div>
   </div>
@@ -164,7 +160,9 @@
       <li class="nav-item dropdown">
         <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow" (click)="redirectToExpiredDocuments()" role="button"
         data-mdb-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-         <mat-icon class="mt-2">notifications</mat-icon>
+        <div class="notiicon">
+           <mat-icon class="mt-2">notifications</mat-icon>
+        </div>   
          <span class="badge rounded-pill badge-notification bg-danger" *ngIf="expiredDocumentsCount > 0"
                style="position: absolute; margin-left: -10px; color: white;">{{ expiredDocumentsCount }}</span>
      </a>
@@ -224,14 +222,6 @@
 
       </li>
     </ul>
-
-
-
-
-
-
-
-
 
    
   </div>
