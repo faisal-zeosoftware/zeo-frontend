@@ -40,8 +40,10 @@ export class SalaryOptionsComponent {
     }
 
 
-
-
+    
+    isMenuOpen: boolean = true; 
+    toggleSidebarMenu(): void
+     { this.isMenuOpen = !this.isMenuOpen; }
 
 
     ngOnInit(): void {

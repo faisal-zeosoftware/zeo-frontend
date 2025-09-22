@@ -40,9 +40,11 @@ export class ProjectOptionsComponent {
      
     }
 
+    
 
-
-
+    isMenuOpen: boolean = true; 
+    toggleSidebarMenu(): void
+     { this.isMenuOpen = !this.isMenuOpen; }
 
 
     ngOnInit(): void {

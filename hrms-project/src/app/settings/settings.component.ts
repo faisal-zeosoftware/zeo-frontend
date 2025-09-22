@@ -73,6 +73,11 @@ export class SettingsComponent {
     }
 
 
+    isMenuOpen: boolean = true; 
+    toggleSidebarMenu(): void
+     { this.isMenuOpen = !this.isMenuOpen; }
+
+
   ngOnInit(): void {
 
     // Retrieve user ID

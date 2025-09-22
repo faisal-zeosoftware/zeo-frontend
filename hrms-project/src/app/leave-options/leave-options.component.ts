@@ -58,6 +58,12 @@ export class LeaveOptionsComponent {
      
     }
 
+
+    isMenuOpen: boolean = true; 
+    toggleSidebarMenu(): void
+     { this.isMenuOpen = !this.isMenuOpen; }
+
+
   ngOnInit(): void {
     this.hideButton = this.EmployeeService.getHideButton();
 

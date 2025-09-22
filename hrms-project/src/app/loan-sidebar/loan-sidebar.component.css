@@ -9,8 +9,6 @@
   }
    */
 
-
-
    .ico_set{
     margin-top: 10px;
 }
@@ -32,9 +30,6 @@
     margin-top: 1px;
     height: 100%;
 }
-
-
-
 
 
 
@@ -306,3 +301,56 @@
    .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled="true"]):hover{
     background: transparent !important;
 }
+
+
+
+
+/* media quries styles start here */
+
+
+@media only screen and (max-width:  768px) {
+  .menu-open {
+    
+    width: 49% !important;
+    transition: all 0.3s ease;
+    margin-top: 121px;
+    margin-left: -11px;
+ 
+  }
+
+  .menu-close {
+    width: 0 !important;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-top: 60px;
+
+  }
+
+  .menu_mob {
+    display: block !important;
+    background-color: #3a1c4f;
+    color: #f6e57a8e;
+    border: none;
+    border-radius: 4px;
+    margin-top: -18px;
+    margin-left: -33px;
+  
+  }
+
+  .sidebar-top{
+    padding:20px;
+    position: fixed;
+    margin-top: 81px;
+    width: 30px;
+
+  }
+  
+.mat-drawer-side {
+    background: #f4f4f4 !important;
+    box-shadow: 0px 0px 0px;
+    width:0%;
+    
+}
+}
+
+

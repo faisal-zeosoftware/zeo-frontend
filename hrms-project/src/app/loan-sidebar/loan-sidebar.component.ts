@@ -38,6 +38,12 @@ export class LoanSidebarComponent {
      
     }
 
+    
+    isMenuOpen: boolean = true; 
+    toggleSidebarMenu(): void
+     { this.isMenuOpen = !this.isMenuOpen; }
+
+
 
 
 

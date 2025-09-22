@@ -5,7 +5,21 @@
       <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
   
         <div class="wrapper">
-          <div class="sidebar">
+
+           <div class="sidebar-top"> 
+           <!-- Toggle Button (placed OUTSIDE sidebar) -->
+    <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
+      <span *ngIf="!isMenuOpen">☰</span>
+      <span *ngIf="isMenuOpen">×</span>
+    </button>
+    
+        </div>
+              
+  
+
+
+
+          <div class="sidebar"  [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
               <ul>
                 <li routerLink="/main-sidebar/project-options/project-master" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects</a></li>
              

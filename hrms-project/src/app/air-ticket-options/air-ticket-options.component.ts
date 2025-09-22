@@ -39,7 +39,10 @@ export class AirTicketOptionsComponent {
     }
 
 
-
+    
+    isMenuOpen: boolean = true; 
+    toggleSidebarMenu(): void
+     { this.isMenuOpen = !this.isMenuOpen; }
 
 
 
