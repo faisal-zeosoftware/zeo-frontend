@@ -201,6 +201,8 @@ import { DocumentRequestEmailTemplateComponent } from './document-request-email-
 import { DocReqEmailtemplateEditComponent } from './doc-req-emailtemplate-edit/doc-req-emailtemplate-edit.component';
 import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtemplate/advance-salary-emailtemplate.component';
 import { AdvanceSalaryEmailtemplateEditComponent } from './advance-salary-emailtemplate-edit/advance-salary-emailtemplate-edit.component';
+import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
+import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -360,7 +362,9 @@ import { AdvanceSalaryEmailtemplateEditComponent } from './advance-salary-emailt
      DocumentRequestEmailTemplateComponent,
      DocReqEmailtemplateEditComponent,
      AdvanceSalaryEmailtemplateComponent,
-     AdvanceSalaryEmailtemplateEditComponent
+     AdvanceSalaryEmailtemplateEditComponent,
+     LoanEmailTemplateComponent,
+     LoanEmailtemplateEditComponent
      
      
 

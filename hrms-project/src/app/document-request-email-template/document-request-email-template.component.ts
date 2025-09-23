@@ -252,7 +252,7 @@ if (this.userId !== null) {
       console.log('schemastore', selectedSchema);
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.employeeService.getEmailPlaceholder(selectedSchema).subscribe(
+        this.employeeService.getEmailPlaceholderDocReq(selectedSchema).subscribe(
           (result: any) => {
             this.EmailPlaceHolders = result.employee; // Assuming the response structure
             console.log('EmailPlaceHolders:', this.EmailPlaceHolders);

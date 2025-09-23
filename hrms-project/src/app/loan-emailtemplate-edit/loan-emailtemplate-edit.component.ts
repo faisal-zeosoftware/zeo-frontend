@@ -5,14 +5,16 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+
+
 declare var $: any;
 import 'summernote'; // Ensure you have summernote imported
 @Component({
-  selector: 'app-advance-salary-emailtemplate-edit',
-  templateUrl: './advance-salary-emailtemplate-edit.component.html',
-  styleUrl: './advance-salary-emailtemplate-edit.component.css'
+  selector: 'app-loan-emailtemplate-edit',
+  templateUrl: './loan-emailtemplate-edit.component.html',
+  styleUrl: './loan-emailtemplate-edit.component.css'
 })
-export class AdvanceSalaryEmailtemplateEditComponent {
+export class LoanEmailtemplateEditComponent {
 
   body: any;
   templateData: any;
@@ -29,9 +31,9 @@ export class AdvanceSalaryEmailtemplateEditComponent {
     private userService: UserMasterService,
     private DepartmentServiceService: DepartmentServiceService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private dialogRef: MatDialogRef<AdvanceSalaryEmailtemplateEditComponent>,
+    private dialogRef: MatDialogRef<LoanEmailtemplateEditComponent>,
 
-    private ref:MatDialogRef<AdvanceSalaryEmailtemplateEditComponent>,
+    private ref:MatDialogRef<LoanEmailtemplateEditComponent>,
 
 ) {
   this.templateData = data.template; // Get the selected template data
@@ -61,7 +63,7 @@ loadEmailPlaceholders(): void {
   console.log('schemastore', selectedSchema);
   // Check if selectedSchema is available
   if (selectedSchema) {
-    this.employeeService.getEmailPlaceholderAdvSalary(selectedSchema).subscribe(
+    this.employeeService.getEmailPlaceholderLoan(selectedSchema).subscribe(
       (result: any) => {
         this.EmailPlaceHolders = result.employee; // Assuming the response structure
         console.log('EmailPlaceHolders:', this.EmailPlaceHolders);

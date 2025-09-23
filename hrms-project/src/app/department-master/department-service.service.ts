@@ -299,6 +299,16 @@ export class DepartmentServiceService {
     
   }
 
+    getEmailTemplatesLoan(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+
 
   
 }

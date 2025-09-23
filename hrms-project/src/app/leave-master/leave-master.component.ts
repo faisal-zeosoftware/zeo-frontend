@@ -456,6 +456,7 @@ export class LeaveMasterComponent {
         console.log('Registration successful', response);
         alert('Leave Entitlement has been added');
         // window.location.reload();
+        this.loadLeaveEntitlements();
 
       },
       (error) => {

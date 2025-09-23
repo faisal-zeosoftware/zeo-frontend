@@ -464,6 +464,16 @@
             ><span class="side_option">Advance Salary Request</span>
           </a>
         </div>
+        
+        <div
+        class="mat-expansion-panel-body"
+        routerLink="/main-sidebar/settings/loan-email-template"
+        *ngIf="hasViewPermissionLeaveEmtemp"
+      > 
+        <a class="set_siding" mat-list-item
+          ><span class="side_option"> Loan Request</span>
+        </a>
+      </div>
         </mat-expansion-panel>
 
         <mat-expansion-panel>

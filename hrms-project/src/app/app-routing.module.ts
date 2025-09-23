@@ -123,6 +123,8 @@ import { EndOfServiceComponent } from './end-of-service/end-of-service.component
 import { GratuityComponent } from './gratuity/gratuity.component';
 import { DocumentRequestEmailTemplateComponent } from './document-request-email-template/document-request-email-template.component';
 import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtemplate/advance-salary-emailtemplate.component';
+import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
+import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -397,6 +399,11 @@ const routes: Routes = [
             path:'advance-salary-emailtemplate',
             component:AdvanceSalaryEmailtemplateComponent
           },
+          {
+            path:'loan-email-template',
+            component:LoanEmailTemplateComponent
+          },
+
 
 
             {

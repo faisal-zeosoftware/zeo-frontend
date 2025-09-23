@@ -11,13 +11,14 @@ import { EmailTemplateEditComponent } from '../email-template-edit/email-templat
 import { MatDialog } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
-import { AdvanceSalaryEmailtemplateEditComponent } from '../advance-salary-emailtemplate-edit/advance-salary-emailtemplate-edit.component';
+import { LoanEmailtemplateEditComponent } from '../loan-emailtemplate-edit/loan-emailtemplate-edit.component';
+
 @Component({
-  selector: 'app-advance-salary-emailtemplate',
-  templateUrl: './advance-salary-emailtemplate.component.html',
-  styleUrl: './advance-salary-emailtemplate.component.css'
+  selector: 'app-loan-email-template',
+  templateUrl: './loan-email-template.component.html',
+  styleUrl: './loan-email-template.component.css'
 })
-export class AdvanceSalaryEmailtemplateComponent {
+export class LoanEmailTemplateComponent {
 
 
   
@@ -194,6 +195,22 @@ if (this.userId !== null) {
 }
 
 
+// checkViewPermission(permissions: any[]): boolean {
+//   const requiredPermission = 'add_emailtemplate' ||'change_emailtemplate' ||'delete_emailtemplate' ||'view_emailtemplate';
+  
+  
+//   // Check user permissions
+//   if (permissions.some(permission => permission.codename === requiredPermission)) {
+//     return true;
+//   }
+  
+//   // Check group permissions (if applicable)
+//   // Replace `// TODO: Implement group permission check`
+//   // with your logic to retrieve and check group permissions
+//   // (consider using a separate service or approach)
+//   return false; // Replace with actual group permission check
+//   }
+  
   
   
   
@@ -235,7 +252,7 @@ if (this.userId !== null) {
       console.log('schemastore', selectedSchema);
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.employeeService.getEmailPlaceholderAdvSalary(selectedSchema).subscribe(
+        this.employeeService.getEmailPlaceholderLoan(selectedSchema).subscribe(
           (result: any) => {
             this.EmailPlaceHolders = result.employee; // Assuming the response structure
             console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
@@ -326,7 +343,7 @@ getTextContent(): void {
       };
     
   
-      this.employeeService.registerEmailTemplateAdvancesalary(companyData).subscribe(
+      this.employeeService.registerEmailTemplateLoan(companyData).subscribe(
         (response) => {
           console.log('Registration successful', response);
         
@@ -352,7 +369,7 @@ getTextContent(): void {
       console.log('schemastore',selectedSchema )
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.DepartmentServiceService.getEmailTemplatesAdvanceSalary(selectedSchema).subscribe(
+        this.DepartmentServiceService.getEmailTemplatesLoan(selectedSchema).subscribe(
           (result: any) => {
             this.tempEmails = result;
             console.log(' fetching Companies:');
@@ -394,7 +411,7 @@ getTextContent(): void {
     };
 
     // Send updated data to backend API
-    this.employeeService.updateEmailTemplateAdvanceSalary(updatedTemplate).subscribe(
+    this.employeeService.updateEmailTemplateLoan(updatedTemplate).subscribe(
       (response) => {
         console.log('Template updated successfully', response);
         alert('Email Template has been updated');
@@ -409,7 +426,7 @@ getTextContent(): void {
 
 
   openEditPopuss(selectedTemplate: any): void {
-    this.dialog.open(AdvanceSalaryEmailtemplateEditComponent, {
+    this.dialog.open(LoanEmailtemplateEditComponent, {
       width: '80%',
       height: '700px',
       data: { template: selectedTemplate } // Passing the selected template data to the modal component
@@ -471,13 +488,13 @@ onCheckboxChange(employee:number) {
         .map(employee => employee.id);
     
       if (selectedEmployeeIds.length === 0) {
-        alert('No Email Template selected for deletion.');
+        alert('No Asset type selected for deletion.');
         return;
       }
     
       if (confirm('Are you sure you want to delete the selected Email Template?')) {
         selectedEmployeeIds.forEach(categoryId => {
-          this.employeeService.deleteEmailTemplateAdvanceSalary(categoryId).subscribe(
+          this.employeeService.deleteEmailTemplateLoan(categoryId).subscribe(
             () => {
               console.log('Email Configuration deleted successfully:', categoryId);
               // Remove the deleted employee from the local list
@@ -492,8 +509,7 @@ onCheckboxChange(employee:number) {
             }
           );
         });
-      }  
-
+      }
     }
     
 

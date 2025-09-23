@@ -21,6 +21,7 @@ export class CreateLeavetypeComponent {
   unit: any = '';
   valid_to: any = '';
   valid_from: any = '';
+  branch: any = '';
 
   description: any = '';
   created_by: any = '';
@@ -52,6 +53,26 @@ export class CreateLeavetypeComponent {
 
 
 
+   ngOnInit(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (selectedSchema) {
+
+    
+      this.LoadBranch(selectedSchema);
+  
+
+
+
+
+    }
+
+  
+
+
+
+
+  }
+
    onFileSelected(event: any): void {
     this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
   }
@@ -80,6 +101,8 @@ export class CreateLeavetypeComponent {
     formData.append('valid_from', formattedValidFrom);  // ✅ Fixing Date Format
     formData.append('valid_to', formattedValidTo);      // ✅ Fixing Date Format
     formData.append('description', this.description);
+    formData.append('branch', this.branch);
+
     formData.append('created_by', this.created_by);
     formData.append('negative', this.negative.toString());
     formData.append('allow_half_day', this.allow_half_day.toString());
@@ -120,5 +143,23 @@ export class CreateLeavetypeComponent {
     );
   }
   
+
+  Branches: any[] = [];
+
+
+
+  LoadBranch(selectedSchema: string) {
+    this.leaveService.getBranches(selectedSchema).subscribe(
+      (data: any) => {
+        this.Branches = data;
+
+        console.log('employee:', this.Branches);
+      },
+      (error: any) => {
+        console.error('Error fetching categories:', error);
+      }
+    );
+  }
+
 
 }

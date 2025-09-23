@@ -1763,6 +1763,39 @@ export class EmployeeService {
     );
   }
 
+
+    // post email template to  backend api
+
+    registerEmailTemplateLoan(companyData: any): Observable<any> {
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema) {
+        console.error('No schema selected.');
+        return throwError('No schema selected.'); // Return an error observable if no schema is selected
+      }
+  
+  
+  
+      const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/?schema=${selectedSchema}`;
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+      return this.http.post(apiUrl, companyData, { headers }).pipe(
+        catchError((error) => {
+          // Handle errors here (you can log, show a user-friendly message, etc.)
+          console.error('Error during company registration:', error);
+          return throwError(error);
+  
+        })
+      );
+    }
+  
+
+
+
+
+
+
+
+
   registerEmployeeAttendenceCheckOut(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -1828,6 +1861,45 @@ export class EmployeeService {
 
   }
 
+  getEmailPlaceholderDocReq(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+  }
+
+  getEmailPlaceholderLoan(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+  }
+
+   getEmailPlaceholderAdvSalary(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-email-template/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+  }
+
+
+  
+  getEmailPlaceholderLeave(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/leave-template/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+  }
+
+
 
   updateEmailTemplate(updatedTemplate: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
@@ -1876,6 +1948,25 @@ export class EmployeeService {
     }
 
     const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-email-template/${updatedTemplate.id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.put(apiUrl, updatedTemplate, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating template:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+
+  updateEmailTemplateLoan(updatedTemplate: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/${updatedTemplate.id}/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.put(apiUrl, updatedTemplate, { headers }).pipe(
@@ -2450,6 +2541,23 @@ deleteEmailTemplateAdvanceSalary(categoryId: number): Observable<any> {
  
   return this.http.delete(apiUrl);
 }
+
+
+deleteEmailTemplateLoan(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
 
 // asset module -------------------
 
