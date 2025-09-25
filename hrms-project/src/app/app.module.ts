@@ -203,6 +203,7 @@ import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtempl
 import { AdvanceSalaryEmailtemplateEditComponent } from './advance-salary-emailtemplate-edit/advance-salary-emailtemplate-edit.component';
 import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
 import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
+import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -364,7 +365,8 @@ import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-e
      AdvanceSalaryEmailtemplateComponent,
      AdvanceSalaryEmailtemplateEditComponent,
      LoanEmailTemplateComponent,
-     LoanEmailtemplateEditComponent
+     LoanEmailtemplateEditComponent,
+     AirticketRuleComponent
      
      
 

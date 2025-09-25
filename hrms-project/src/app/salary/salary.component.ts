@@ -20,6 +20,8 @@ export class SalaryComponent {
   code:any='';
   description:any='';
   reason:any='';
+  branch:any='';
+
   is_fixed: boolean = true;
   deduct_leave: boolean = false;
   is_loan_component: boolean = false;
@@ -29,6 +31,11 @@ export class SalaryComponent {
   affected_by_halfpaid_leave: boolean = false;
   prorata_calculation: boolean = false;
   is_emi_deduction: boolean = false;
+
+  is_advance_salary: boolean = false;
+  is_air_ticket: boolean = false;
+  is_gratuity: boolean = false;
+
 
 
   amount:any='';
@@ -56,6 +63,8 @@ EmployeeSalarycomponent: any[] = [];
 
 
 filteredEmployees: any[] = [];
+Branches: any[] = [];
+
 
 // edit salary component
 
@@ -92,6 +101,8 @@ updateIdEmp: number | null = null;
 
       this.LoadEmployee(selectedSchema);
       this.LoadSalaryCom(selectedSchema);
+      this.LoadBranch(selectedSchema);
+
       this.LoadEmployeeSalaryCom(selectedSchema);
 
       
@@ -268,6 +279,8 @@ if (this.userId !== null) {
       formData.append('name', this.name);
       formData.append('component_type', this.component_type);
       formData.append('code', this.code);
+      formData.append('branch', this.branch);
+
       formData.append('description', this.description || '');
       formData.append('formula', this.formula || '');
     
@@ -280,6 +293,10 @@ if (this.userId !== null) {
       formData.append('affected_by_halfpaid_leave', (this.affected_by_halfpaid_leave ?? false).toString());
       formData.append('prorata_calculation', (this.prorata_calculation ?? false).toString());
       formData.append('is_emi_deduction', (this.is_emi_deduction ?? false).toString());
+
+      formData.append('is_advance_salary', (this.is_advance_salary ?? false).toString());
+      formData.append('is_air_ticket', (this.is_air_ticket ?? false).toString());
+      formData.append('is_gratuity', (this.is_gratuity ?? false).toString());
     
       if (this.isEditMode && this.updateId !== null) {
         this.leaveService.updateSalaryComponent(this.updateId, formData).subscribe(
@@ -343,6 +360,10 @@ if (this.userId !== null) {
       this.prorata_calculation = component.prorata_calculation;
       this.is_emi_deduction = component.is_emi_deduction;
     
+      this.is_advance_salary = component.is_advance_salary;
+      this.is_air_ticket = component.is_air_ticket;
+      this.is_gratuity = component.is_gratuity;
+
       this.updateId = component.id;
       this.isEditMode = true;
     }
@@ -507,6 +528,20 @@ if (this.userId !== null) {
         }
       );
     }
+
+    LoadBranch(selectedSchema: string) {
+      this.leaveService.getBranches(selectedSchema).subscribe(
+        (data: any) => {
+          this.Branches = data;
+        
+          console.log('employee:', this.Salarycomponent);
+        },
+        (error: any) => {
+          console.error('Error fetching categories:', error);
+        }
+      );
+    }
+
 
 
     LoadEmployeeSalaryCom(selectedSchema: string) {

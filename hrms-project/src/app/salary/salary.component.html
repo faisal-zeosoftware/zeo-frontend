@@ -5,7 +5,7 @@
 
       <div class="row">
         <div class="col-md-3">
-          <h1>Salary </h1>
+          <h1>Salary Master</h1>
         </div>
 
         <div class="col-md-4">
@@ -52,13 +52,13 @@
             <form (ngSubmit)="saveOrUpdateSalaryComponent()" enctype="multipart/form-data">
 
               <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label> Component Name</label>
                   <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter  name"
                     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
                   <div *ngIf="registerButtonClicked && !name" class="error-message"> name is required.</div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label>Component Type</label>
                   <div class="custom-sel">
                     <select class="form-control" id="component_type" name="component_type" [(ngModel)]="component_type"
@@ -70,13 +70,21 @@
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label>Code</label>
                   <input type="text" class="form-control" required [(ngModel)]="code" placeholder="Enter code "
                     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !code}">
                   <div *ngIf="registerButtonClicked && !code" class="error-message">code is required.</div>
                 </div>
-
+                <div class="col-md-6">
+                  <label>Select Branch</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="branch" name="branch" [(ngModel)]="branch"
+                      [ngModelOptions]="{standalone: true}">
+                      <option *ngFor="let employee of Branches" [value]="employee.id">{{ employee.branch_name }}</option>
+                    </select>
+                  </div>
+                </div>
 
                 <div class="col-md-12">
                   <label>Description</label>
@@ -86,7 +94,7 @@
 
 
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label></label>
                   <div class="check-box-selection-sec form-control mt-2">
                     <div class="mat-set">
@@ -100,7 +108,7 @@
 
                 </div>
 
-                     <div class="col-md-4">
+                     <div class="col-md-6">
                   <label></label>
                   <div class="check-box-selection-sec form-control mt-2">
                     <div class="mat-set">
@@ -115,7 +123,7 @@
                 </div>
 
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label></label>
                   <div class="check-box-selection-sec form-control mt-2">
                     <div class="mat-set">
@@ -129,8 +137,52 @@
 
                 </div>
 
+                <div class="col-md-6">
+                  <label></label>
+                  <div class="check-box-selection-sec form-control mt-2">
+                    <div class="mat-set">
+                      <mat-checkbox [(ngModel)]="is_gratuity" [ngModelOptions]="{standalone: true}">
+                        Is Gratuity</mat-checkbox>
+                    </div>
 
-                <div class="col-md-4">
+                  </div>
+
+
+
+                </div>
+                
+                <div class="col-md-6">
+                  <label></label>
+                  <div class="check-box-selection-sec form-control mt-2">
+                    <div class="mat-set">
+                      <mat-checkbox [(ngModel)]="is_air_ticket" [ngModelOptions]="{standalone: true}">
+                        Is Airticket</mat-checkbox>
+                    </div>
+
+                  </div>
+
+
+
+                </div>
+
+       
+                <div class="col-md-6">
+                  <label></label>
+                  <div class="check-box-selection-sec form-control mt-2">
+                    <div class="mat-set">
+                      <mat-checkbox [(ngModel)]="is_advance_salary" [ngModelOptions]="{standalone: true}">
+                        Is Advance Salary</mat-checkbox>
+                    </div>
+
+                  </div>
+
+
+
+                </div>
+
+               
+
+                <div class="col-md-6">
                   <label></label>
                   <div class="check-box-selection-sec form-control  mt-2">
                     <div class="mat-set">

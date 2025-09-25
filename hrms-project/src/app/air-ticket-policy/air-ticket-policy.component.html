@@ -92,6 +92,14 @@
             [ngModelOptions]="{standalone: true}" >
            
       </div>
+      <div class="col-md-6" >
+               
+        <label>Travel Class</label>
+       <input type="text"  class="form-control" required  [(ngModel)]="travel_class"  placeholder="Enter travel class"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
+
 
 
   <div class="col-md-6" >
@@ -110,15 +118,74 @@
   </div>
 
 
- 
-  <div class="col-md-6">
-    <label></label>
-    <div class="check-box-selection-sec form-control mt-3">
-      <div class="mat-set">
-        <mat-checkbox [(ngModel)]="allowed_in_probation" [ngModelOptions]="{standalone: true}">allowed in probation</mat-checkbox>
+    
+<div class="col-md-6" >
+    <label>Department</label>
+    <div class="custom-sel">
+        <div class="form-control-wrapper">
+          <mat-form-field>
+            <mat-select  placeholder="Select" [(ngModel)]="eligible_departments" [ngModelOptions]="{standalone: true}" #selectDept  multiple>
+              <div class="select-all">
+                <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                  Select All
+                </mat-checkbox>
+              </div>
+              <mat-option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">
+                {{ deparmentsec.dept_name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+    
       </div>
+</div>
+
+<div class="col-md-6" >
+    <label>Category</label>
+    <div class="custom-sel">
+        <div class="form-control-wrapper">
+          <mat-form-field>
+            <mat-select  placeholder="Select" [(ngModel)]="eligible_categories" [ngModelOptions]="{standalone: true}" #selectCat multiple>
+              <div class="select-all">
+                <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                  Select All
+                </mat-checkbox>
+              </div>
+             
+              <mat-option *ngFor="let deparmentsec of Categories" [value]="deparmentsec.id">
+                {{ deparmentsec.ctgry_title }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+       
+      </div>
+</div>
+
+<div class="col-md-6" >
+  <label>Designation</label>
+  <div class="custom-sel">
+      <div class="form-control-wrapper">
+        <mat-form-field>
+          <mat-select  placeholder="Select" [(ngModel)]="eligible_designations" [ngModelOptions]="{standalone: true}" #selectDes multiple>
+            <div class="select-all">
+              <mat-checkbox [(ngModel)]="allSelectedDes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDes()">
+                Select All
+              </mat-checkbox>
+            </div>
+           
+            <mat-option *ngFor="let deparmentsec of Designations" [value]="deparmentsec.id">
+              {{ deparmentsec.desgntn_job_title }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    
     </div>
-  </div>
+</div>
+
+ 
+
      
   <div class="col-md-6">
 
@@ -139,6 +206,22 @@
     
 </div> 
       
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="allowed_in_probation" [ngModelOptions]="{standalone: true}">allowed in probation</mat-checkbox>
+    </div>
+  </div>
+</div>
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
       
    
 
@@ -299,6 +382,7 @@
 
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
+          <div style="overflow-x: auto; width: 100%;">
 
           <table width="100%" *ngIf="hasViewPermission">
             <thead>
@@ -309,6 +393,12 @@
                 <th>Amount</th>
                 <th> Allowance Type</th>
                 <th> Country </th>
+                <th> Department </th>
+                <th> Designation </th>
+
+                <th> Category </th>
+
+
 
                 <th>Allowed in probation</th>
           
@@ -326,6 +416,12 @@
                 <td>{{ docs.amount }}</td>
                 <td>{{ docs.allowance_type }}</td>
                 <td>{{ docs.country }}</td>
+                <td>{{ docs.eligible_departments }}</td>
+
+                <td>{{ docs.eligible_designations }}</td>
+
+                <td>{{ docs.eligible_categories }}</td>
+
 
                 <td>{{ docs.allowed_in_probation }}</td>
 
@@ -348,7 +444,7 @@
               </tr>
             </tbody>
           </table>
-          
+          </div>
 
         </div>
         </div>

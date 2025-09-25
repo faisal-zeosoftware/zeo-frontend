@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -8,21 +8,16 @@ import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
 import {  HttpErrorResponse } from '@angular/common/http';
 import { CountryService } from '../country.service';
-import { MatSelect } from '@angular/material/select';
-import { DepartmentServiceService } from '../department-master/department-service.service';
-import { CatogaryService } from '../catogary-master/catogary.service';
-import { MatOption } from '@angular/material/core';
-
 @Component({
-  selector: 'app-air-ticket-policy',
-  templateUrl: './air-ticket-policy.component.html',
-  styleUrl: './air-ticket-policy.component.css'
+  selector: 'app-airticket-rule',
+  templateUrl: './airticket-rule.component.html',
+  styleUrl: './airticket-rule.component.css'
 })
-export class AirTicketPolicyComponent {
+export class AirticketRuleComponent {
 
 
-  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
-
+  
+  
    
 
   hasAddPermission: boolean = false;
@@ -31,33 +26,26 @@ export class AirTicketPolicyComponent {
   hasEditPermission: boolean = false;
 
   
-  name: any = '';
-  frequency_years: any = '';
-  amount: any = '';
-  allowance_type: any = '';
-  country: any = '';
-  travel_class: any = '';
+  employee: any = '';
+  policy: any = '';
+  rule_type: any = '';
+  required_service_years: any = '';
+  remarks: any = '';
+
+  allocated_by: any = '';
 
 
-  eligible_departments: number[] = [];
-    eligible_designations: number[] = [];
-  eligible_categories: number[] = [];  
+  apply_in_next_payroll:  boolean = false;
 
-
-
-  allowed_in_probation:  boolean = false;
-
-  is_active:  boolean = false;
 
 
   Users:any []=[];
-  LoanTypes:any []=[];
+  Policies:any []=[];
+  Allocations:any []=[];
 
 
-  Assets:any []=[];
 
 
-  customFieldHeaders: { custom_field_id: number, custom_field_name: string }[] = [];
 
 
 
@@ -68,31 +56,13 @@ export class AirTicketPolicyComponent {
 
   schemas: string[] = []; // Array to store schema names
 
-  use_common_workflow:  boolean = false;
 
 
 
   registerButtonClicked = false;
 
 
-  custom_fieldsFam :any[] = [];
-  Departments :any[] = [];
 
-  Categories :any[] = [];
-
-    Designations :any[] = [];
-
-
-  @ViewChild('selectDept') selectDept: MatSelect | undefined;
-    @ViewChild('selectdes') selectDes: MatSelect | undefined;
-
-      @ViewChild('selectCat') selectCat: MatSelect | undefined;
-
-
-
-  allSelecteddept=false;
-  allSelectedcat=false;
-  allSelectedDes=false;
 
 
   constructor(
@@ -104,10 +74,6 @@ export class AirTicketPolicyComponent {
     private sessionService: SessionService,
     private DesignationService: DesignationService,
     private countryService:CountryService,
-    private categoryService: CatogaryService,
-
-    private DepartmentServiceService: DepartmentServiceService,
-
 
 
     
@@ -119,11 +85,9 @@ ngOnInit(): void {
  
   this.loadUsers();
   this.loadLAssetType();
+  this.loadAllocations();
 
-  this.loadCountries();
-  this.loadCAtegory();
-  this.loadDEpartments();
-  this.loadDesignation();
+  this.loadEmployee();
 
   this.userId = this.sessionService.getUserId();
   
@@ -256,99 +220,7 @@ ngOnInit(): void {
 //   }
   
   
-
-toggleAllSelectiondept(): void {
-  if (this.selectDept) {
-    if (this.allSelecteddept) {
-      this.selectDept.options.forEach((item: MatOption) => item.select());
-    } else {
-      this.selectDept.options.forEach((item: MatOption) => item.deselect());
-    }
-  }
-}
-
-toggleAllSelectioncat(): void {
-  if (this.selectCat) {
-    if (this.allSelectedcat) {
-      this.selectCat.options.forEach((item: MatOption) => item.select());
-    } else {
-      this.selectCat.options.forEach((item: MatOption) => item.deselect());
-    }
-  }
-}
-toggleAllSelectionDes(): void {
-  if (this.selectDes) {
-    if (this.allSelectedDes) {
-      this.selectDes.options.forEach((item: MatOption) => item.select());
-    } else {
-      this.selectDes.options.forEach((item: MatOption) => item.deselect());
-    }
-  }
-}
-
-
- 
-
-    loadDEpartments(): void {
-
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.DepartmentServiceService.getDepartments(selectedSchema).subscribe(
-          (result: any) => {
-            this.Departments = result;
-            console.log(' fetching Companies:');
-    
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
-      }
-      }
-
-      loadCAtegory(): void {
-
-        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-      
-        console.log('schemastore',selectedSchema )
-        // Check if selectedSchema is available
-        if (selectedSchema) {
-          this.categoryService.getcatogarys(selectedSchema).subscribe(
-            (result: any) => {
-              this.Categories = result;
-              console.log(' fetching Companies:');
-      
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
-        }
-        }
   
-        loadDesignation(): void {
-
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-        
-          console.log('schemastore',selectedSchema )
-          // Check if selectedSchema is available
-          if (selectedSchema) {
-            this.employeeService.getDesignations(selectedSchema).subscribe(
-              (result: any) => {
-                this.Designations = result;
-                console.log(' fetching Companies:');
-        
-              },
-              (error) => {
-                console.error('Error fetching Companies:', error);
-              }
-            );
-          }
-          }
-    
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
@@ -377,22 +249,15 @@ toggleAllSelectionDes(): void {
 
 
 
-          CreateAssetType(): void {
+          CreateAirticketAllocation(): void {
             this.registerButtonClicked = true;
             const companyData = {
-              name: this.name,
             
-              allowed_in_probation:this.allowed_in_probation,
-              frequency_years:this.frequency_years,
-              amount:this.amount,
-              allowance_type:this.allowance_type,
-              country:this.country,
-
-              eligible_departments:this.eligible_departments,
-              eligible_designations:this.eligible_designations,
-              eligible_categories:this.eligible_categories,
-              travel_class:this.travel_class,
-              is_active:this.is_active,
+              policy:this.policy,
+              rule_type:this.rule_type,
+              required_service_years:this.required_service_years,
+              apply_in_next_payroll:this.apply_in_next_payroll,
+              remarks:this.remarks,
 
 
 
@@ -401,10 +266,10 @@ toggleAllSelectionDes(): void {
           
 
         
-            this.employeeService.registerAirTicketPolicy(companyData).subscribe(
+            this.employeeService.registerAirTicketRule(companyData).subscribe(
               (response) => {
                 console.log('Registration successful', response);
-                    alert('policy  has been Added ');
+                    alert('airticket Rule  has been Added  ');
                     window.location.reload();
                
         
@@ -430,7 +295,7 @@ toggleAllSelectionDes(): void {
             if (selectedSchema) {
               this.employeeService.getairticketpolicy(selectedSchema).subscribe(
                 (result: any) => {
-                  this.LoanTypes = result;
+                  this.Policies = result;
                   console.log(' fetching Loantypes:');
           
                 },
@@ -442,6 +307,50 @@ toggleAllSelectionDes(): void {
             }
         
 
+
+            loadAllocations(): void {
+    
+              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            
+              console.log('schemastore',selectedSchema )
+              // Check if selectedSchema is available
+              if (selectedSchema) {
+                this.employeeService.getairticketRule(selectedSchema).subscribe(
+                  (result: any) => {
+                    this.Allocations = result;
+                    console.log(' fetching Loantypes:');
+            
+                  },
+                  (error) => {
+                    console.error('Error fetching Companies:', error);
+                  }
+                );
+              }
+              }
+
+
+              Employee:any[]=[];
+
+
+              loadEmployee(): void {
+    
+                const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+              
+                console.log('schemastore',selectedSchema )
+                // Check if selectedSchema is available
+                if (selectedSchema) {
+                  this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+                    (result: any) => {
+                      this.Employee = result;
+                      console.log(' fetching Loantypes:');
+              
+                    },
+                    (error) => {
+                      console.error('Error fetching Companies:', error);
+                    }
+                  );
+                }
+                }
 
 
                iscreateLoanApp: boolean = false;
@@ -483,7 +392,7 @@ toggleAllSelectionDes(): void {
   
     toggleSelectAllEmployees() {
         this.allSelected = !this.allSelected;
-    this.LoanTypes.forEach(employee => employee.selected = this.allSelected);
+    this.Policies.forEach(employee => employee.selected = this.allSelected);
 
     }
   
@@ -530,7 +439,7 @@ updateAssetType(): void {
 
 
 deleteSelectedAssetType() { 
-  const selectedEmployeeIds = this.LoanTypes
+  const selectedEmployeeIds = this.Policies
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
@@ -545,7 +454,7 @@ deleteSelectedAssetType() {
         () => {
           console.log('policy  deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
-          this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+          this.Policies = this.Policies.filter(employee => employee.id !== categoryId);
           alert(' policy  deleted successfully');
           window.location.reload();
 
@@ -558,42 +467,9 @@ deleteSelectedAssetType() {
   }
 }
 
-// loadLAsset(): void {
-    
-//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-//   console.log('schemastore',selectedSchema )
-//   // Check if selectedSchema is available
-//   if (selectedSchema) {
-//     this.employeeService.getAsset(selectedSchema).subscribe(
-//       (result: any) => {
-//         this.Assets = result;
-//         console.log(' fetching Loantypes:');
-
-//       },
-//       (error) => {
-//         console.error('Error fetching Companies:', error);
-//       }
-//     );
-//   }
-//   }
 
 
 
-countries:any[]=[];
-loadCountries(): void {
-  this.countryService.getCountries().subscribe(
-    (result: any) => {
-      this.countries = result;
-    },
-    (error) => {
-      console.error('Error fetching countries:', error);
-    }
-  );
-}
 
-
-
-  
 
 }

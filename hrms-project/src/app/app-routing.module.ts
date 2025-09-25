@@ -125,6 +125,7 @@ import { DocumentRequestEmailTemplateComponent } from './document-request-email-
 import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtemplate/advance-salary-emailtemplate.component';
 import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
 import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
+import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -610,6 +611,10 @@ const routes: Routes = [
     {
       path:'airticket-request',
       component:AirticketRequestComponent,
+    },
+    {
+      path:'airticket-rule',
+      component:AirticketRuleComponent,
     },
 
 
