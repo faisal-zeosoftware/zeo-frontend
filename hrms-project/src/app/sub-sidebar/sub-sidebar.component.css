@@ -117,16 +117,6 @@
     justify-content: left;
   }
 
-  /* #sidenav{
-    width: 15% ;
-    height: 400px;
-    position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  } */
 
   #sidenav .menu-close{
     width: 5% !important;
@@ -138,20 +128,6 @@
     width: 18% !important;
 }
 
-/* .cdk-overlay-pane {
-
-    margin-left: 6%;
-    position: fixed;
-} */
-
-/* .cdk-overlay-connected-position-bounding-box{
-    top: 65 !important;
-    left: 6% !important;
-    box-sizing: border-box;
-    bottom: 0;
-    overflow-y: auto;
-    max-height: 400px !important;
-} */
 
 .mat-drawer.mat-drawer-side{
     margin-left: 3%;
@@ -336,13 +312,13 @@
 /* media quries styles start here */
 
 
-@media only screen and (max-width:  768px) {
+@media only screen and (max-width:  640px) {
   .menu-open {
-    
-    width: 49% !important;
+
+    width: 50% !important;
     transition: all 0.3s ease;
     margin-top: 121px;
-    margin-left: -11px;
+    
  
   }
 

@@ -3,19 +3,13 @@
 
 <nav id="sidebarMenu" class=" d-lg-block sidebar  bg-white" [class.menu-open]="isMenuOpen"
   [class.menu-close]="!isMenuOpen" >
-  <!-- <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white" [class.menu-open]="isMenuOpen"
-  [class.menu-close]="!isMenuOpen" > -->
+  
 
 
   <div class="position-sticky">
     <div class="list-group list-group-flush  mt-5">
 
-      <!-- <a routerLink="/main-sidebar" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="list-group-item list-group-item-action py-2 ripple ">
-        <span><mat-icon>home</mat-icon> <span class="sidenav-opt"> Dashboard
-
-          </span></span>
-
-      </a> -->
+    
 
       <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple"
       aria-current="true"  >
@@ -124,19 +118,12 @@
 <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
   <!-- Container wrapper -->
   <div class="container-fluid">
-    <!-- Toggle button -->
-    <!-- <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#sidebarMenu"
-      aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-      <i class="fas fa-bars"></i>
-    </button> -->
 
     <!-- Brand -->
 
-    
-
      <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
           <span *ngIf="!isMenuOpen">☰</span>
-          <span *ngIf="isMenuOpen">×</span>
+          <span *ngIf="isMenuOpen">X</span>
     </button>
 
 
@@ -214,8 +201,7 @@
       
         <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"  id="navbarDropdownMenuLink"
           role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-          <!-- <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp" class="rounded-circle" height="22"
-            alt="Avatar" loading="lazy" /> -->
+
             <button type="button" (click)="logout()"  class="btn btn-danger" style="    border-radius: 0px;">Logout</button>
 
         </a>

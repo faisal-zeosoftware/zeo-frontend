@@ -8,7 +8,7 @@
            <!-- Toggle Button (placed OUTSIDE sidebar) -->
     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
       <span *ngIf="!isMenuOpen">☰</span>
-      <span *ngIf="isMenuOpen">×</span>
+      <span *ngIf="isMenuOpen">X</span>
     </button>
               
   
@@ -35,10 +35,6 @@
                   <li routerLink="/main-sidebar/sub-sidebar/approval-level" *ngIf="hasViewPermissionAprvlvl"><a ><mat-icon>peoples</mat-icon> Approval Level</a></li>
                  
                   <li routerLink="/main-sidebar/sub-sidebar/attendace-marking" *ngIf="hasViewPermissionAttd"><a ><mat-icon>peoples</mat-icon> Attendance Marking</a></li>
-<!--                  
-                  <li routerLink="/main-sidebar/sub-sidebar/salary" *ngIf="hasViewPermissionAttd"><a ><mat-icon>peoples</mat-icon> Salary Master</a></li>
-                  
-                  <li routerLink="/main-sidebar/sub-sidebar/pay-roll" *ngIf="hasViewPermissionAttd"><a ><mat-icon>peoples</mat-icon> Pay Roll</a></li> -->
 
                   <li routerLink="/main-sidebar/sub-sidebar/document-expired" *ngIf="hasViewNotification"><a ><mat-icon>peoples</mat-icon> Expired Documents</a></li>
 
@@ -81,9 +77,8 @@
  
       <router-outlet></router-outlet>
   
-  <!-- <router-outlet></router-outlet> -->
+  </mat-sidenav-container>
 
   
-  </mat-sidenav-container>
   
     </div>

@@ -4,7 +4,7 @@
 
         <h1>Employee Details</h1><hr>
 
-        <form (submit)="updateEmp" enctype="multipart/form-data">
+        <form (submit)="updateEmp"z enctype="multipart/form-data">
             <div class="row">
 
                   <div class="col-md-6" >
@@ -231,9 +231,9 @@
     
         <div class="custom-sel">
             <label>{{nationFieldName}}</label>
-            <select class="form-control" id="emp_nationality" name="emp_nationality" required [(ngModel)]="Emp.emp_nationality"  [ngModelOptions]="{standalone: true}"  >
+            <select class="form-control" id="emp_nationality" name="emp_nationality" required [(ngModel)]="emp_nationality"  [ngModelOptions]="{standalone: true}"  >
                 <option value="" >Select</option>
-                <option *ngFor="let emp_nationality of Nationations" [value]="emp_nationality.id">{{ emp_nationality.N_name }}</option>
+                <option *ngFor="let emp_nationality of countries" [value]="emp_nationality.id">{{ emp_nationality.country_name }}</option>
             </select>
         </div>
                     
@@ -386,24 +386,13 @@
         </div> -->
     
 
-      
+        <div class="col-md-6">
+            <label>Profile Picture</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
+        </div>
+       <div class="col-md-6"></div>
 
-       <div class="col-md-6">
-        <label></label>
-        <div class="check-box-selection-sec form-control mt-3">
-          <div class="mat-set">
-            <mat-checkbox [(ngModel)]="Emp.emp_ot_applicable" [ngModelOptions]="{standalone: true}">OT Applicable To</mat-checkbox>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <label></label>
-        <div class="check-box-selection-sec form-control mt-3">
-          <div class="mat-set">
-            <mat-checkbox [(ngModel)]="Emp.is_active" [ngModelOptions]="{standalone: true}">Employee Is Active</mat-checkbox>
-          </div>
-        </div>
-      </div>
+
         <div class="row mt-4">
             <div class="col-md-12"> 
              
@@ -426,20 +415,6 @@
             
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-6">
-                <label>Profile Picture</label>
-                
-                <!-- Preview current profile picture -->
-                <div *ngIf="profilePicUrl" class="mb-2">
-                  <img [src]="profilePicUrl" alt="Profile Picture" width="120" height="120" class="rounded" />
-                </div>
-              
-                <!-- Upload new picture -->
-                <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
-              </div>
-            </div>
     
         <!-- <div class="col-md-6">
             <label>Profile Picture</label>
