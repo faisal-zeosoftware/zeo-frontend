@@ -50,6 +50,11 @@ export class EmployeeMasterComponent {
   schemas: string[] = []; // Array to store schema names
 
   employees: any[] = [];
+  branches: any[] = [];
+  departments: any[] = [];
+
+
+  selectedBranches: string[] = []; // store selected branch names
 
   filteredEmployees: any[] = [];
   searchQuery: string = '';
@@ -81,6 +86,37 @@ export class EmployeeMasterComponent {
 
     hideButton = false;
 
+    isAllSelected(): boolean {
+      return this.selectedBranches.length === this.branches.length;
+    }
+    
+    toggleAllBranches(): void {
+      if (this.isAllSelected()) {
+        // Unselect all
+        this.selectedBranches = [];
+      } else {
+        // Select all
+        this.selectedBranches = this.branches.map(b => b.branch_name);
+      }
+      this.filterByBranches();
+    }
+    
+    onBranchSelectionChange(): void {
+      // Remove "all" value if Angular accidentally adds it
+      this.selectedBranches = this.selectedBranches.filter(v => v !== 'all');
+      this.filterByBranches();
+    }
+
+
+    filterByBranches(): void {
+      if (this.selectedBranches.length === 0) {
+        this.filteredEmployees = this.employees; // Show all
+      } else {
+        this.filteredEmployees = this.employees.filter(emp =>
+          this.selectedBranches.includes(emp.emp_branch_id)
+        );
+      }
+    }
   toggleCheckboxes() {
     this.Delete = !this.Delete;
   }
@@ -125,6 +161,8 @@ export class EmployeeMasterComponent {
     ngOnInit(): void {
 
    
+      this.loadbranches();
+      this.loadDepartments();
 
  // Get the selected schema
  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -136,7 +174,7 @@ export class EmployeeMasterComponent {
   //  const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/`;
 
    // Fetch employees from the API
-   this.EmployeeService.getEmployees(selectedSchema).subscribe(
+   this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
      (data: any) => {
        this.employees = data;
        console.log('All Employees:' ,this.employees)
@@ -350,6 +388,13 @@ if (this.userId !== null) {
   );
 }
 
+
+
+isTableView = false; // default grid view
+
+toggleView() {
+  this.isTableView = !this.isTableView;
+}
 
 
   toggleSearchOptions(): void {
@@ -699,5 +744,46 @@ closeBulkuploadModal():void{
       }
     }
     
+
+
+
+    loadbranches(): void {
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+      console.log('schemastore', selectedSchema)
+      // Check if selectedSchema is available
+      if (selectedSchema) {
+        this.companyRegistrationService.getBranchesList(selectedSchema).subscribe(
+          (result: any) => {
+            this.branches = result;
+          },
+          (error: any) => {
+            console.error('Error fetching countries:', error);
+          }
+        );
+      }
+    }
+
+
+    
+  loadDepartments(): void {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+
+      this.companyRegistrationService.getDepartmentsList(selectedSchema).subscribe(
+        (result: any) => {
+          this.departments = result;
+        },
+        (error: any) => {
+          console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
+
+  
 
 }

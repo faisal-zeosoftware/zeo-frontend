@@ -231,3 +231,58 @@ margin-right: 10px;
     font-weight: 600;
     font-family: math;
   }
+
+  
+
+  .tabe_outer{
+    background: white;
+    padding: 25px;
+  }
+
+  ::ng-deep .custom-branch-select .mat-select-trigger {
+    font-size: 12px !important;        /* smaller font in input field */
+    min-height: 28px !important;       /* reduce height of the field */
+    padding: 2px 6px !important;
+  }
+  
+  ::ng-deep .mat-select-panel {
+    max-height: 200px !important; /* reduce dropdown height */
+  }
+  
+  ::ng-deep .mat-option {
+    font-size: 12px !important;   /* smaller option text */
+    min-height: 28px !important;  /* reduce option row height */
+    padding: 0 10px !important;
+  }
+  
+
+  ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix{
+    padding-top: 5px !important;
+    padding-bottom: 10px !important;
+
+  }
+
+
+  ::ng-deep .mat-mdc-form-field-type-mat-select:not(.mat-form-field-disabled) .mat-mdc-text-field-wrapper{
+    height: 38px;
+  }
+
+
+  ::ng-deep .mat-pseudo-checkbox {
+    width: 11px !important;
+    height: 12px !important;
+}
+
+::ng-deep .mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked::after {
+    width: 5px !important;
+    height: 2px !important;
+    top: -0.828427px !important;
+}
+
+::ng-deep .mat-mdc-option .mdc-list-item__primary-text{
+    font-size: 14px !important;
+}
+
+::ng-deep .mat-mdc-select-placeholder {
+    font-size: 14px !important;
+}

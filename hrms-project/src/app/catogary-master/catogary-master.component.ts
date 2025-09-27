@@ -352,7 +352,7 @@ if (this.userId !== null) {
   filterEmployees(): void {
     const query = this.searchQuery.toLowerCase();
     this.filteredEmployees = this.Catogaries.filter(Catogaries =>
-      Catogaries.catogary_title.toLowerCase().includes(query) 
+      Catogaries.ctgry_title.toLowerCase().includes(query) 
     );
   }
 

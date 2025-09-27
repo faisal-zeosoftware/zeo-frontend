@@ -73,6 +73,7 @@
                     </div>
 
                 </div>
+                
             </div>
            
            
@@ -95,7 +96,24 @@
         <!-- <div class="list_company_sec mt-4">
             
         </div> -->
-        <div class="row mt-4">
+
+<!-- Toggle Button -->
+ <div class="row">
+    <div class="col-md-12">
+     <!-- Toggle Button -->
+<button class="pull-right mt-2" mat-raised-button color="primary" (click)="toggleView()">
+    <mat-icon>{{ isTableView ? 'view_module' : 'table_chart' }}</mat-icon>
+ 
+  </button>
+  
+    </div>
+
+    
+ </div>
+
+
+
+        <div class="row mt-4" *ngIf="!isTableView">
          
             <div class="col-md-4" *ngFor="let employeesec of filteredEmployees"    >
                 <div class="emp-list mt-2"  [ngClass]="{ 'selected-item': employeesec.selected }">
@@ -141,8 +159,78 @@
 
         </div>
       
+<!-- Table View -->
 
-      
+<div class="mt-4" *ngIf="isTableView">
+    <div class="tabe_outer">
+      <div class="row mb-3">
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <mat-form-field appearance="outline" class="w-100 custom-branch-select">
+                <mat-select placeholder="Select Branches"
+                            multiple
+                            [(value)]="selectedBranches"
+                            (selectionChange)="onBranchSelectionChange()">
+              
+                  <!-- ✅ Select All option -->
+                  <mat-option (click)="toggleAllBranches()" [value]="'all'">
+                    <mat-pseudo-checkbox 
+                        class="mat-option-pseudo-checkbox"
+                        [state]="isAllSelected() ? 'checked' : (selectedBranches.length > 0 ? 'indeterminate' : 'unchecked')">
+                    </mat-pseudo-checkbox>
+                    Select All
+                  </mat-option>
+              
+                  <mat-option *ngFor="let branch of branches" [value]="branch.branch_name">
+                    {{ branch.branch_name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              
+              
+              
+        </div>
+      </div>
+  
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Profile</th>
+            <th>Employee Code</th>
+            <th>Name</th>
+            <th>Branch</th>
+            <th>Department</th>
+            <th>Category</th>
+            <th>Designation</th>
+            <th>Active</th>
+            <th *ngIf="showEditBtn">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of filteredEmployees">
+            <td>
+              <img [src]="emp.emp_profile_pic" alt="Profile"
+                   style="width: 40px; height: 40px; border-radius: 50%;">
+            </td>
+            <td>{{ emp.emp_code }}</td>
+            <td>{{ emp.emp_first_name }} {{ emp.emp_last_name }}</td>
+            <td>{{ emp.emp_branch_id }}</td>
+            <td>{{ emp.emp_dept_id }}</td>
+            <td>{{ emp.emp_ctgry_id }}</td>
+            <td>{{ emp.emp_desgntn_id }}</td>
+            <td>{{ emp.is_active ? 'Yes' : 'No' }}</td>
+            <td *ngIf="showEditBtn">
+              <button mat-icon-button color="primary" (click)="openEditEmpPopuss(emp.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
     </div>
 </div>
 
