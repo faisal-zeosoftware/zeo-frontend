@@ -101,7 +101,7 @@
  <div class="row">
     <div class="col-md-12">
      <!-- Toggle Button -->
-<button class="pull-right mt-2" mat-raised-button color="primary" (click)="toggleView()">
+<button class="pull-right btn-gridview mt-2" mat-raised-button color="primary" (click)="toggleView()">
     <mat-icon>{{ isTableView ? 'view_module' : 'table_chart' }}</mat-icon>
  
   </button>
@@ -164,8 +164,8 @@
 <div class="mt-4" *ngIf="isTableView">
     <div class="tabe_outer">
       <div class="row mb-3">
-        <div class="col-md-3"></div>
-        <div class="col-md-3">
+        <div class="col-md-3 "></div>
+        <div class="col-md-3 col-6">
             <mat-form-field appearance="outline" class="w-100 custom-branch-select">
                 <mat-select placeholder="Select Branches"
                             multiple
@@ -191,9 +191,67 @@
               
               
         </div>
+
+     
+
+        <div class="col-md-3 col-6">
+            <mat-form-field appearance="outline" class="w-100 custom-branch-select">
+                <mat-select placeholder="Select Department "
+                            multiple
+                            [(value)]="selectedDepartment"
+                            (selectionChange)="onDepartmentSelectionChange()">
+              
+                  <!-- ✅ Select All option -->
+                  <mat-option (click)="toggleAllDepartment()" [value]="'all'">
+                    <mat-pseudo-checkbox 
+                        class="mat-option-pseudo-checkbox"
+                        [state]="isAllSelectedDepartment() ? 'checked' : (selectedDepartment.length > 0 ? 'indeterminateDepartment' : 'uncheckedDepartment')">
+                    </mat-pseudo-checkbox>
+                    Select All
+                  </mat-option>
+              
+                  <mat-option *ngFor="let branch of departments" [value]="branch.dept_name">
+                    {{ branch.dept_name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              
+              
+              
+        </div>
+
+
+        <div class="col-md-3 col-6">
+            <mat-form-field appearance="outline" class="w-100 custom-branch-select">
+                <mat-select placeholder="Select Designation "
+                            multiple
+                            [(value)]="selectedDesignations"
+                            (selectionChange)="onDesignationsSelectionChange()">
+              
+                  <!-- ✅ Select All option -->
+                  <mat-option (click)="toggleAllDesignations()" [value]="'all'">
+                    <mat-pseudo-checkbox 
+                        class="mat-option-pseudo-checkbox"
+                        [state]="isAllSelectedDesignations() ? 'checkedDesignations' : (selectedDesignations.length > 0 ? 'indeterminateDesignations' : 'uncheckedDesignations')">
+                    </mat-pseudo-checkbox>
+                    Select All
+                  </mat-option>
+              
+                  <mat-option *ngFor="let branch of Designations" [value]="branch.desgntn_job_title">
+                    {{ branch.desgntn_job_title }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+              
+              
+              
+        </div>
+      
       </div>
   
-      <table class="table table-striped">
+      <table class="table  table-striped">
         <thead>
           <tr>
             <th>Profile</th>

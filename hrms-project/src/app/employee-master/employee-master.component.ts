@@ -53,6 +53,7 @@ export class EmployeeMasterComponent {
   branches: any[] = [];
   departments: any[] = [];
 
+  Designations: any[] = [];
 
   selectedBranches: string[] = []; // store selected branch names
 
@@ -163,6 +164,7 @@ export class EmployeeMasterComponent {
    
       this.loadbranches();
       this.loadDepartments();
+      this.loadDesignations();
 
  // Get the selected schema
  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -780,6 +782,104 @@ closeBulkuploadModal():void{
         (error: any) => {
           console.error('Error fetching countries:', error);
         }
+      );
+    }
+  }
+
+
+      
+  loadDesignations(): void {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+
+      this.companyRegistrationService.getDesignationList(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+        },
+        (error: any) => {
+          console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
+
+
+  selectedDepartment: string[] = []; // store selected branch names
+
+
+  
+  isAllSelectedDepartment(): boolean {
+    return this.selectedDepartment.length === this.departments.length;
+  }
+  
+  toggleAllDepartment(): void {
+    if (this.isAllSelectedDepartment()) {
+      // Unselect all
+      this.selectedDepartment = [];
+    } else {
+      // Select all
+      this.selectedDepartment = this.departments.map(b => b.dept_name);
+    }
+    this.filterByDepartment();
+  }
+  
+  onDepartmentSelectionChange(): void {
+    // Remove "all" value if Angular accidentally adds it
+    this.selectedDepartment = this.selectedDepartment.filter(v => v !== 'all');
+    this.filterByDepartment();
+  }
+
+
+  filterByDepartment(): void {
+    if (this.selectedDepartment.length === 0) {
+      this.filteredEmployees = this.employees; // Show all
+    } else {
+      this.filteredEmployees = this.employees.filter(emp =>
+        this.selectedDepartment.includes(emp.emp_dept_id)
+      );
+    }
+  }
+
+  
+
+
+
+  
+  selectedDesignations: string[] = []; // store selected branch names
+
+
+  
+  isAllSelectedDesignations(): boolean {
+    return this.selectedDesignations.length === this.Designations.length;
+  }
+  
+  toggleAllDesignations(): void {
+    if (this.isAllSelectedDesignations()) {
+      // Unselect all
+      this.selectedDesignations = [];
+    } else {
+      // Select all
+      this.selectedDesignations = this.Designations.map(b => b.desgntn_job_title);
+    }
+    this.filterByDesignations();
+  }
+  
+  onDesignationsSelectionChange(): void {
+    // Remove "all" value if Angular accidentally adds it
+    this.selectedDesignations = this.selectedDesignations.filter(v => v !== 'all');
+    this.filterByDesignations();
+  }
+
+
+  filterByDesignations(): void {
+    if (this.selectedDesignations.length === 0) {
+      this.filteredEmployees = this.employees; // Show all
+    } else {
+      this.filteredEmployees = this.employees.filter(emp =>
+        this.selectedDesignations.includes(emp.emp_desgntn_id)
       );
     }
   }
