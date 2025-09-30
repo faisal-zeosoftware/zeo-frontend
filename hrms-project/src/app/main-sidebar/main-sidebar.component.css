@@ -1,4 +1,5 @@
-/* main-sidebar.component.css */
+
+
 
 body{
     background: whitesmoke !important;
@@ -511,16 +512,22 @@ table thead th {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
 }
+ /* .lap_view{
+    display: block;
+  } */
 
 #sidebarMenu::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
 
+ 
+
+  .mobview {
+    display: none;
+  }
 
 
 /* mobile responsive */
-
-
 
   @media only screen and (max-width: 640px) {
     table thead {
@@ -561,9 +568,9 @@ table thead th {
       margin-left: 0px !important;
     }
 
-    .nav_mov{
+    /* .nav_mov{
       width: 95%;
-    }
+    } */
 
     .menu-open{
       width: 70% !important;
@@ -614,11 +621,33 @@ table thead th {
 
   }
 
-  .notiicon{
+  /* .notiicon{
 
      margin-top: -68px;
+  } */
+
+  .lap_view{
+    display: none;
+  }
+  .mobview{
+    display: block;
+    padding: 8px 20px 3px 20px;
   }
 
+
+  .mobview .Company_pro h1{
+    font-size: 12px;
+  }
+
+  .col-9 {
+    flex: 0 0 auto;
+    width: 40%;
+}
+
+.col-3 {
+    flex: 1 0 auto;
+    width: 25%;
+}
 
   }
   

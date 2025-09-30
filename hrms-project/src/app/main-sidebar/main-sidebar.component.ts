@@ -191,28 +191,6 @@ showsidebarclick() {
   }
 
 
-  // logout(): void {
-  //   this.authService.logout().subscribe(() => {
-  //     // Clear any user-related data
-  //     localStorage.removeItem('token'); // Example: Remove authentication token
-  //     localStorage.removeItem('selectedSchema'); // Remove selected schema
-
-  //      // Remove schema-related subdomain
-  //   const currentUrl = window.location.href;
-  //   const baseUrl = new URL(currentUrl);
-  //   baseUrl.hostname = environment.apiBaseUrl
-
-  //      // Redirect to the login page
-  //      this.router.navigate(['/login']).then(() => {
-  //       window.location.href = baseUrl.origin + '/login';
-  //     });
-  //   }, (error: HttpErrorResponse) => { // Specify the type of error as HttpErrorResponse
-  //     console.error('Logout failed:', error);
-  //   });
-
-    
-  // }
-
   logout(): void {
     this.authService.logout().subscribe(() => {
       // Clear any user-related data
