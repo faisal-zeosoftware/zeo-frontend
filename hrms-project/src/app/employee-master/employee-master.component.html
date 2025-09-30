@@ -266,7 +266,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let emp of filteredEmployees">
+          <tr *ngFor="let emp of filteredEmployees" (click)="showEmployeeDetails(emp.id)">
             <td>
               <img [src]="emp.emp_profile_pic" alt="Profile"
                    style="width: 40px; height: 40px; border-radius: 50%;">
@@ -298,9 +298,11 @@
 
     <div class="modal-content">
 
+       
+
         <div class="row">
             <div class="col-md-8">
-                <h2>Employee Bulk Upload</h2> 
+                <h2>Employee Bulk Upload & Download Details</h2> 
             </div>
             <div class="col-md-4">
                 <span class="close pull-right" (click)="closeBulkuploadModal()">&times;</span>
@@ -308,44 +310,62 @@
             </div>
         </div><hr>
 
-    
-                <form (ngSubmit)="bulkuploaddocument()"  #documentForm="ngForm" >
-                   
-        
-                <div class="row">
-                    '    <div class="col-md-12">
-                        <label for="emp_profile_pic">Upload Employee Details:</label>
-            
-                        <input
-                        type="file"
-                        accept=".xlsx"
-                        class="form-control"
-                        id="file"
-                        name="myfile"
-                        (change)="onFileSelect($event)"
-                        #UploadFileInput
-                      />
-                <!-- <input type="file"                accept=".xlsx"
-                (change) ="onChangeFile($event)" > -->
-                
-            </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-10"></div>
-                
-                    <div class="col-md-2">
-                        <button  type="submit" 
-                           mat-raised-button color="primary"   class="pull-right btn-full mt-4" >Save</button>
-                           
-            
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="vn-wisteria" >
+                    <a  class="btn-wrap" (click)="downloadEmployeeExcel()">DOWNLOAD EXCEL FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
                     </div>
                 </div>
-            
-                   
-                </form>
+
+                <div class="col-md-4">
+                    <div class="vn-wisteria vn-green" >
+                        <a  class="btn-wrap"  (click)="downloadEmployeeCsv()">DOWNLOAD CSV FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="vn-wisteria  vn-blue" >
+                            <a class="btn-wrap" (click)="toggleUploadForm()">
+                                EMPLOYEE BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
+                              </a>                            </div>
+                        </div>
+            </div>
+
+          <!-- Upload Form (shown only when showUploadForm = true) -->
+<div *ngIf="showUploadForm">
+    <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
+      <div class="row">
+        <div class="col-md-12">
+          <label for="emp_profile_pic">Upload Employee Details:</label>
+          <input
+            type="file"
+            accept=".xlsx"
+            class="form-control"
+            id="file"
+            name="myfile"
+            (change)="onFileSelect($event)"
+            #UploadFileInput
+          />
+        </div>
+      </div>
+  
+      <div class="row mt-3">
+        <div class="col-md-8"></div>
+        <div class="col-md-2">
+            <button type="button" mat-raised-button color="warn"   class="pull-right btn-danger btn-full"  (click)="closeUploadForm()">
+              close
+            </button>
+          </div>
         
-       
+        <div class="col-md-2">
+          <button type="submit" mat-raised-button color="primary" class="pull-right btn-full">
+            Save
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 
             
    

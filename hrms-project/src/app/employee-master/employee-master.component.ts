@@ -747,6 +747,47 @@ closeBulkuploadModal():void{
     }
     
 
+    downloadEmployeeCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadEmployeeCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'employee_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+    
+
+    
+    downloadEmployeeExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadEmployeeExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'employee_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+    
+    showUploadForm: boolean = false;
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+    
 
 
     loadbranches(): void {

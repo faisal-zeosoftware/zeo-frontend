@@ -176,7 +176,17 @@ export class CompanyRegistrationService {
 // }
 
 
+downloadEmployeeCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/employee/api/emp-bulkupload/download_default_csv_file/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
 
+
+
+downloadEmployeeExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/employee/api/emp-bulkupload/download_default_excel_file/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
 
 
   }
