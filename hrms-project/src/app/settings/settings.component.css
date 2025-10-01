@@ -181,8 +181,8 @@
 .menu_mob {
   display: none;
   position: fixed;
-  top: 165px;              /* adjust as needed */
-  left: 1px;
+  top: 168px;              /* adjust as needed */
+  left: 5px;
   z-index: 2000 !important;  /* ensure it stays on top */
   background-color: #3a1c4f;
   color: #f6e57a8e;
@@ -268,8 +268,6 @@
 
 
   }
-
-  
 
 
 }

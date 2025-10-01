@@ -377,7 +377,8 @@
   .menu-open {
     width: 50% !important;
     transition: all 0.3s ease;
-    margin-top: 121px;
+    margin-top: 126px;
+     margin-left: -12px;
   }
 
   .menu-close {
@@ -393,8 +394,8 @@
     color: #f6e57a8e;
     border: none;
     border-radius: 4px;
-    margin-top: -18px;
-    margin-left: -33px;
+    margin-top: -14px;
+    margin-left: -31px;
   }
 
   .sidebar-top {

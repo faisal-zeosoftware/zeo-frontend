@@ -326,17 +326,18 @@
 
 
 
-/* media quries styles start here */
 
+/* ==============================
+   RESPONSIVE FIXES
+================================*/
 
-@media only screen and (max-width:  768px) {
+/* Tablets (portrait and landscape up to 991px) */
+@media (max-width: 991px) {
+  /* Sidebar takes less width on tablets */
   .menu-open {
-    
-    width: 49% !important;
+    width: 40% !important;
     transition: all 0.3s ease;
-    margin-top: 121px;
-    margin-left: -11px;
- 
+    margin-top: 100px;
   }
 
   .menu-close {
@@ -344,7 +345,6 @@
     overflow: hidden;
     transition: all 0.3s ease;
     margin-top: 60px;
-
   }
 
   .menu_mob {
@@ -353,26 +353,123 @@
     color: #f6e57a8e;
     border: none;
     border-radius: 4px;
-    margin-top: -18px;
-    margin-left: -33px;
-  
+    margin-top: -15px;
+    margin-left: -28px;
   }
 
-  .sidebar-top{
-    padding:20px;
+  .navbar-brand img {
+    height: 55px;
+    width: auto;
+  }
+
+  /* Notification sits neatly beside logo */
+  .notiicon {
+    margin-top: -50px;
+  }
+
+  /* Company dropdown a bit smaller */
+  .Company_pro select {
+    max-width: 150px;
+  }
+
+  .user_logged_out h1 {
+    font-size: 13px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Logout button shrinks slightly */
+  .btn-danger {
+    font-size: 13px;
+    padding: 5px 12px;
+    white-space: nowrap;
+  }
+
+
+}
+
+/* Phones (up to 640px) */
+@media (max-width: 640px) {
+  .menu-open {
+    width: 50% !important;
+    transition: all 0.3s ease;
+    margin-top: 115px;
+     margin-left: -12px;
+  }
+
+  .menu-close {
+    width: 0 !important;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-top: 60px;
+  }
+
+  .menu_mob {
+    display: block !important;
+    background-color: #3a1c4f;
+    color: #f6e57a8e;
+    border: none;
+    border-radius: 4px;
+    margin-top: -29px;
+    margin-left: -30px;
+  }
+
+  .sidebar-top {
+    padding: 20px;
     position: fixed;
     margin-top: 81px;
     width: 30px;
-
   }
   
-.mat-drawer-side {
+  .mat-drawer-side {
     background: #f4f4f4 !important;
     box-shadow: 0px 0px 0px;
-    width:0%;
-    
+    width: 0%;
+  }
+
+  /* Navbar brand spacing */
+  .navbar-brand {
+    margin-left: 30px;
+  }
+
+  /* Notification inline with logo */
+  .notiicon {
+    margin-top: -68px;
+  }
+
+
+
 }
+
+/* Extra small devices (like iPhone SE, narrow screens up to 400px) */
+@media (max-width: 400px) {
+  /* Reduce button sizes so logout doesn’t overflow */
+  .btn-danger {
+    font-size: 11px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .Company_pro select {
+    font-size: 11px;
+    max-width: 100px;
+  }
+
+  .user_logged_out h1 {
+    font-size: 11px;
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .navbar-brand img {
+    height: 40px;
+  }
+
+  .notiicon {
+    margin-top: -55px; /* adjust for smaller height */
+  }
 }
-
-
-

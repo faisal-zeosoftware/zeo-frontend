@@ -301,7 +301,7 @@ option { width: 200px; }
 
   .comapny_section {
     margin-left: 0 !important;
-    margin-top: 170px !important; /* smaller top margin */
+    margin-top: 200px !important; /* smaller top margin */
     padding: 12px;
   }
   .comapny_section {
@@ -328,7 +328,7 @@ option { width: 200px; }
 /* Extra small devices (≤400px) */
 @media (max-width: 400px) {
   .comapny_section {
-    margin-top: 150px !important;
+    margin-top: 200px !important;
     padding: 8px;
   }
 

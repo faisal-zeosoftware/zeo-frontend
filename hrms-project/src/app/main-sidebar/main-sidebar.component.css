@@ -580,7 +580,7 @@ table thead th {
   .menu_mob {
     display: block;
     position: absolute;
-    margin-bottom: -70px;
+    margin-top: 10px;
     left: 5px;
     background: #3a1c4f;
     color: #f6e57a8e;
@@ -647,6 +647,14 @@ table thead th {
 .col-3 {
     flex: 1 0 auto;
     width: 25%;
+}
+
+.user_logged_outer[_ngcontent-ng-c683336099] h1[_ngcontent-ng-c683336099] {
+    font-size: 14px;
+    color: white;
+    margin-top: 8px;
+    margin-left: 5px;
+    margin-right: 10px;
 }
 
   }
