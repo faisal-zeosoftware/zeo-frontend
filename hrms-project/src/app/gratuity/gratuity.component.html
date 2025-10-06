@@ -15,7 +15,7 @@
                     <div class="button-group pull-right">
                         <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
                         </span> Create</button>
-                        <!-- <span *ngIf="!hasAddPermission"></span>
+                        <span *ngIf="!hasAddPermission"></span>
 
                         <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
                             <span class="header-btn-icon">
@@ -28,7 +28,7 @@
                                 <mat-icon> delete
                            </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
                            
-                           <span *ngIf="!hasDeletePermission"></span> -->
+                           <span *ngIf="!hasDeletePermission"></span>
                     </div>
                 </div>
             </div>
@@ -37,7 +37,17 @@
 
         </div>
 
-
+        <div class="row">
+          <div class="col-md-2">
+              
+              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+  
+          </div>
+          <div class="col-md-3">
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+  
+          </div>
+      </div>
       
 
         <div *ngIf="iscreateLoanApp" class="modal">
@@ -123,6 +133,85 @@
             </div>
           </div>
 
+                 <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+  <div class="modal-content">
+    <div class="row">
+      <div class="col-md-10">
+        <h2>Edit  Gratuity Type</h2>
+      </div>
+      <div class="col-md-2">
+        <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+      </div>
+    </div>
+    <hr />
+  
+    <form >
+      <div class="row">
+        <div class="col-md-6" >
+       
+            <label>Minimum value</label>
+           <input type="text"  class="form-control" required  [(ngModel)]="editAsset.minimum_value"  placeholder="Enter minimum value"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+      
+
+      <div class="col-md-6" >
+       
+        <label>Maximum value</label>
+       <input type="text"  class="form-control" required  [(ngModel)]="editAsset.maximum_value"  placeholder="Enter Maximum value"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
+
+  
+  <div class="col-md-6" >
+       
+    <label>Resignation days</label>
+   <input type="number"  class="form-control" required  [(ngModel)]="editAsset.resignation_days"  placeholder="Enter Repayment period"
+    [ngModelOptions]="{standalone: true}" >
+   
+</div>
+
+
+<div class="col-md-6" >
+       
+<label>Termination days</label>
+<input type="number"  class="form-control" required  [(ngModel)]="editAsset.termination_days"  placeholder="Enter Repayment period"
+[ngModelOptions]="{standalone: true}" >
+
+</div>
+
+
+  <div class="col-md-6 mt-4">
+    <div class="check-box-selection-sec form-control">
+        <div class="mat-set">
+            <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">is active</mat-checkbox>
+        </div>
+       
+    </div>
+</div>
+
+
+
+
+    </div>
+
+      <div class="row" >
+        <div class="col-md-9"></div>
+        <div class="col-md-3">
+          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+        </div>
+      </div>
+    </form>
+    
+  
+  
+  </div>
+  </div>
+
+
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
 
@@ -136,7 +225,7 @@
                     <th>Termination days</th>
                     <th>Active Status</th>
 
-        
+        <th>Action</th>
                    
                   </tr>
                 </thead>
@@ -149,7 +238,22 @@
                     <td>{{ docs.resignation_days }}</td>
                     <td>{{ docs.termination_days }}</td>
                     <td>{{ docs.is_active }}</td>
-
+                    <td>
+                      <button
+                        mat-fab
+                        color="primary"
+                        aria-label="Edit icon"
+                        *ngIf="showEditBtn"
+      
+                        
+                        (click)="openEditModal(docs)"
+                      >
+                        <mat-icon style="color: white;">draw</mat-icon>
+                      </button>
+      
+                      <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+      
+                    </td>
                   </tr>
               
                 </tbody>

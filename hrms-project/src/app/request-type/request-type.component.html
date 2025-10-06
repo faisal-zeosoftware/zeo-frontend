@@ -1,11 +1,73 @@
 <div class="container" >
     <div class="comapny_section">
-        <div class="com_list " *ngIf="hasAddPermission">
-    <div class="cpm-sec">
 
-        <h2> Request Type Master</h2><hr>
 
-        <form >
+
+      <div class="header_section">
+
+        <div class="row">
+            <div class="col-md-4">
+                <h1>  Request Type Master</h1>
+            </div>
+
+            <div class="col-md-3">
+                
+                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+            </div>
+            <div class="col-md-5">
+                <div class="button-group pull-right">
+                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                    </mat-icon></span> Create</button>
+                  <span *ngIf="!hasAddPermission"></span>
+
+                    <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
+                        <span class="header-btn-icon">
+                         <mat-icon>draw
+                    </mat-icon></span> Edit</button>
+                    <span *ngIf="hasEditPermission"></span>
+                    <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                        <span class="header-btn-icon">
+                            <mat-icon> delete
+                       </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+                       <span *ngIf="!hasDeletePermission"></span>
+                </div>
+            </div>
+        </div>
+       
+       
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-2">
+            
+            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+
+        </div>
+        <div class="col-md-3">
+            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+
+        </div>
+    </div>
+  
+
+  
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+        <div class="modal-content">  
+          <div class="row">
+            <div class="col-md-10">
+              <h2> Create Request Type</h2>
+            </div>
+            <div class="col-md-2">
+              <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+            </div>
+          </div>
+          <hr />
+      
+          <form >
 
             <div class="row">
                 <div class="col-md-6" >
@@ -81,81 +143,99 @@
     </form>
 
 
-        <!-- <mat-tab-group>
-            <mat-tab label="Create Request Type">
-  
+        
+        </div>
+      </div>
+
+
+         <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+<div class="modal-content">
+  <div class="row">
+    <div class="col-md-10">
+      <h2>Edit  Request Type</h2>
+    </div>
+    <div class="col-md-2">
+      <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+    </div>
+  </div>
+  <hr />
+
+  <form >
+
+    <div class="row">
+        <div class="col-md-6" >
+       
+            <label>Name</label>
+           <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter name"
+            [ngModelOptions]="{standalone: true}">
            
-         
-          </mat-tab>
-              <mat-tab label="Create Request Type Common Work Flow">
-  
-                  <form >
-  
-                      <div class="row">
-                          <div class="col-md-6" >
-                         
-                              <label>Level</label>
-                             <input type="Number"  class="form-control" required  [(ngModel)]="level"  placeholder="Enter level "
-                              [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !level}">
-                             
-                             <div *ngIf="registerButtonClicked && !level" class="error-message">level is required.</div>
-                        </div>
-          
-          
-                        <div class="col-md-6" >
-                         
-                          <label>Role</label>
-                         <input type="text"  class="form-control" required  [(ngModel)]="role"  placeholder="Enter role "
-                          [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !role}">
-                         
-                         <div *ngIf="registerButtonClicked && !role" class="error-message">role  is required.</div>
-                    </div>
-          
-                
-                    <div class="col-md-6" *ngIf="!created_by" >
-        
-        
-                        <div class="custom-sel">
-                            <label>Created by</label>
-                            <select class="form-control" id="created_by" required [(ngModel)]="created_by"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !created_by}" >
-                                <option value="" >Select</option>
-                                <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
-                            </select>
-                            <div *ngIf="registerButtonClicked && !created_by" class="error-message">Please Select Created by </div>
-                        </div>
-                                    
-                
-                    </div>
-             
-                      </div>
-          
-                  
-          
-          <div class="row">
-              <div class="col-md-10">
-          
-              </div>
-          
-              <div class="col-md-2">
-                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerRequestTyopecmnwrkflow()">Create</button>  
-               </div>
-          </div>
-               
-              </form>
-                  </mat-tab>
-  
-             
-                  </mat-tab-group> 
-   -->
+      </div>
+      
 
-  
+      <div class="col-md-6" >
+       
+        <label>Description</label>
+       <input type="text"  class="form-control" required  [(ngModel)]="editAsset.description"  placeholder="Enter description"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
 
+
+
+<div class="col-md-6">
+    <label>Salary Component</label>
+    <div class="custom-sel">
+      <select class="form-control" id="salary_component" name="salary_component" [(ngModel)]="editAsset.salary_component"
+        [ngModelOptions]="{standalone: true}" >
+        <option *ngFor="let component of Salarycomponent" [value]="component.id">
+          {{ component.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+
+<div class="col-md-6" *ngIf="!created_by">
+
+
+<div class="custom-sel">
+    <label>Created by</label>
+    <select class="form-control" id="created_by" required [(ngModel)]="editAsset.created_by"  [ngModelOptions]="{standalone: true}" >
+        <option value="" >Select</option>
+        <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
+    </select>
+</div>
+            
+
+</div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-10">
 
         </div>
 
-        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateAssetType()">Save</button>  
+         </div>
+    </div>
+    
 
-        <div class="" *ngIf="hasViewPermission">
+</form>
+
+
+
+</div>
+</div>
+
+
+
+
+
+    
+        <div class=" mt-4" *ngIf="hasViewPermission">
 
 
             <table width="100%" *ngIf="hasViewPermission">
@@ -167,7 +247,7 @@
       
                     <th>Salary Component</th>
 
-                   
+                   <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -177,13 +257,30 @@
                     <td>{{ docs.name }}</td>
                     <td>{{ docs.description }}</td> 
                     <td>{{ docs.salary_component }}</td> 
-
+                    <td>
+                      <button
+                        mat-fab
+                        color="primary"
+                        aria-label="Edit icon"
+                        *ngIf="showEditBtn"
+  
+                        
+                        (click)="openEditModal(docs)"
+                      >
+                        <mat-icon style="color: white;">draw</mat-icon>
+                      </button>
+  
+                      <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+  
+                    </td>
                   </tr>
               
                 </tbody>
               </table>
 
         </div>
+
+
         </div>
         </div>
         
