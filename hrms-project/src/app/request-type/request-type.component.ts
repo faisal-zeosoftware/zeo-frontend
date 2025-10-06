@@ -347,5 +347,121 @@ ngOnInit(): void {
               }
             );
           }
+
+
+
+
+          
+
+iscreateLoanApp: boolean = false;
+
+
+
+
+openPopus():void{
+  this.iscreateLoanApp = true;
+
+}
+
+closeapplicationModal():void{
+  this.iscreateLoanApp = false;
+
+}
+
+
+
+showEditBtn: boolean = false;
+  
+EditShowButtons() {
+  this.showEditBtn = !this.showEditBtn;
+}
+
+
+Delete: boolean = false;
+allSelected: boolean = false;
+
+toggleCheckboxes() {
+this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+  this.allSelected = !this.allSelected;
+this.ReqTypes.forEach(employee => employee.selected = this.allSelected);
+
+}
+
+onCheckboxChange(employee:number) {
+// No need to implement any logic here if you just want to change the style.
+// You can add any additional logic if needed.
+}
+
+
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+openEditModal(asset: any): void {
+this.editAsset = { ...asset }; // copy asset data
+this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+deleteSelectedAssetType() { 
+  const selectedEmployeeIds = this.ReqTypes
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedEmployeeIds.length === 0) {
+    alert('No General Request selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected  Request Type?')) {
+    selectedEmployeeIds.forEach(categoryId => {
+      this.employeeService.deleterequestType(categoryId).subscribe(
+        () => {
+          console.log(' type deleted successfully:', categoryId);
+          // Remove the deleted employee from the local list
+          this.ReqTypes = this.ReqTypes.filter(employee => employee.id !== categoryId);
+          alert(' Request Type deleted successfully');
+          window.location.reload();
+
+        },
+        (error) => {
+          console.error('Error deleting General Request:', error);
+          alert(error)
+        }
+      );
+    });
+  }
+}
+
+
+updateAssetType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  this.employeeService.updateRequestType(this.editAsset.id, this.editAsset).subscribe(
+    (response) => {
+      alert(' Request Type updated successfully!');
+      this.closeEditModal();
+      this.loadReqTypes(); // reload updated list
+    },
+    (error) => {
+      console.error('Error updating asset:', error);
+      alert('Update failed');
+    }
+  );
+}
+
+
       
 }
