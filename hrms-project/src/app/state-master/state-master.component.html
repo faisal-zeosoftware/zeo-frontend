@@ -64,23 +64,25 @@
 
         </div>
 
-        <table width="100%" >
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>{{ stateLabel }} Name</th>
-              <th>Country</th>
-            </tr>
-          </thead>
-        
-          <tbody>
-            <tr *ngFor="let state of States; let i = index">
-              <td>{{ i + 1 }}</td>
-              <td>{{ state.state_name }}</td>
-              <td>{{ state.country }}</td>
-            </tr>
-          </tbody>
-        </table>
+       <div class="table-responsive">
+  <table class="table table-striped custom-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Name</th>
+        <th>Country</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let state of States; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Name">{{ state.state_name }}</td>
+        <td data-label="Country">{{ state.country }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
         
         <!-- Show message if no states -->
         <div *ngIf="hasViewPermission && States?.length === 0">

@@ -80,37 +80,40 @@
             </div>
         </div>
 
-        <table width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>User</th>
-                <th>Group Name</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let per of UserPermissions; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ per.user }}</td> <!-- Display User Name -->
-                <td>
-                  <span *ngFor="let group of per.groups; let last = last">
-                    {{ group.name }}{{ last ? '' : ', ' }}
-                  </span> 
-                </td> <!-- Display Group Name(s) -->
-                <td>
-                    <span class="table-btns">
-                        <button type="button" class="btn-zeo btn" (click)="openEditPerModal(per)">
-                            <i class="fa-solid fa-edit"></i>
-                          </button>
-                        <button type="button" class="btn-zeo btn " (click)="deleteAssignedPermission(per.id)"><i class="fa-solid fa-trash"></i></button>
-                    </span>
-                </td>
-              
-              </tr>
-            </tbody>
-          </table>
-          
+        <div class="table-responsive" *ngIf="hasViewPermission">
+  <table class="table table-striped custom-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>User</th>
+        <th>Group Name</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let per of UserPermissions; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="User">{{ per.user }}</td>
+        <td data-label="Group Name">
+          <span *ngFor="let group of per.groups; let last = last">
+            {{ group.name }}{{ last ? '' : ', ' }}
+          </span>
+        </td>
+        <td data-label="Action">
+          <span class="table-btns">
+            <button type="button" class="btn btn-sm btn-info" (click)="openEditPerModal(per)">
+              <i class="fa-solid fa-edit"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-danger" (click)="deleteAssignedPermission(per.id)">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 
  <!-- Edit Modal Popup -->
 <div *ngIf="isUserPereditModalOpen" class="modal">

@@ -183,44 +183,41 @@
         </div>
 
         </div>
+<div class="table-responsive" *ngIf="hasViewPermission">
+  <table class="table table-striped custom-table" width="100%">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Prefix</th>
+        <th>Suffix</th>
+        <th>Current No</th>
+        <th>Branch</th>
+        <th>Type</th>
+        <th>Total Length</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of docsNumbers; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Prefix">{{ docs.prefix }}</td>
+        <td data-label="Suffix">{{ docs.suffix }}</td>
+        <td data-label="Current No">{{ docs.current_number }}</td>
+        <td data-label="Branch">{{ docs.branch_id }}</td>
+        <td data-label="Type">{{ docs.type }}</td>
+        <td data-label="Total Length">{{ docs.total_length }}</td>
+        <td data-label="Start Date">{{ docs.start_date }}</td>
+        <td data-label="End Date">{{ docs.end_date }}</td>
+        <td data-label="Action">
+          <i class="fa-solid fa-edit" style="cursor:pointer;" (click)="openEditDocModal(docs)"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-        <table width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Preffix</th>
-                <th>Suffix</th>
-                <th>Current No</th>
-                <th>Branch</th>
-                <th>Type</th>
-                <th>Total Length</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let docs of docsNumbers; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.prefix }}</td>
-                <td>{{ docs.suffix }}</td>
-                <td>{{ docs.current_number }}</td>
-                <td>{{ docs.branch_id }}</td>
-                <td>{{ docs.type }}</td>
-
-                <td>{{ docs.total_length }}</td>
-
-                <td>{{ docs.start_date }}</td>
-
-                <td>{{ docs.end_date }}</td>
-
-                <td>
-                  <i class="fa-solid fa-edit" (click)="openEditDocModal(docs)"></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
 
 
           <!-- Edit Modal Popup -->

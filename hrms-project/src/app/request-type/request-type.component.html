@@ -155,35 +155,29 @@
 
         </div>
 
-        <div class="" *ngIf="hasViewPermission">
+    <div *ngIf="hasViewPermission">
+  <div class="table-responsive">
+    <table class="table table-striped custom-table" *ngIf="hasViewPermission">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Request Name</th>
+          <th>Description</th>
+          <th>Salary Component</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let docs of ReqTypes; let i = index">
+          <td data-label="No">{{ i + 1 }}</td>
+          <td data-label="Request Name">{{ docs.name }}</td>
+          <td data-label="Description">{{ docs.description }}</td>
+          <td data-label="Salary Component">{{ docs.salary_component }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-
-            <table width="100%" *ngIf="hasViewPermission">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th> Request Name </th>
-                    <th>Description</th>
-      
-                    <th>Salary Component</th>
-
-                   
-                  </tr>
-                </thead>
-                <tbody>
-                    
-                  <tr *ngFor="let docs of ReqTypes;let i = index">
-                    <td>{{ i + 1 }}</td> 
-                    <td>{{ docs.name }}</td>
-                    <td>{{ docs.description }}</td> 
-                    <td>{{ docs.salary_component }}</td> 
-
-                  </tr>
-              
-                </tbody>
-              </table>
-
-        </div>
         </div>
         </div>
         
