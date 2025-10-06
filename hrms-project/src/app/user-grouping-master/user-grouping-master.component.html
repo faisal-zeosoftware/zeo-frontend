@@ -52,41 +52,37 @@
             <div class="col-md-12">
             
 
-                <table class="responsive-table">
-                    <!-- Responsive Table Header Section -->
-                    <thead class="responsive-table__head">
-                        <tr class="responsive-table__row">
-                            <!-- <th class="responsive-table__head__title responsive-table__head__title--name">Group Name -->
-                                <th>No</th>
+            <div class="table-responsive">
+  <table class="table table-striped custom-table">
+    <thead>
+      <tr>
+        <th style="color: white;">No</th>
+        <th style="color: white;">Group Name</th>
+        <th style="color: white;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let Rolegroup of Groups; let i = index" 
+          [ngClass]="{ 'selected-item': Rolegroup.selected }">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Group Name">{{ Rolegroup.name }}</td>
+        <td data-label="Action">
+          <button type="button" 
+                  class="btn btn-info btn-sm" 
+                  (click)="openEditPopuss(Rolegroup.id)" 
+                  *ngIf="showEditBtn">
+            <mat-icon>draw</mat-icon>
+          </button>
+          <mat-checkbox *ngIf="Delete" 
+                        [(ngModel)]="Rolegroup.selected" 
+                        (change)="onCheckboxChange(Rolegroup.id)">
+          </mat-checkbox>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                            <th >Group Name
-                               
-                            </th>
-                            <th>Action</th>
-                          
-                        </tr>
-                    </thead>
-                    <!-- Responsive Table Body Section -->
-                    <tbody class="responsive-table__body">
-                        <tr class="responsive-table__row" *ngFor="let Rolegroup of Groups; let i = index" [ngClass]="{ 'selected-item': Rolegroup.selected }"  >
-
-                            <td>{{ i + 1 }}</td> 
-                            <td class="responsive-table__body__text responsive-table__body__text--name">
-                              
-                                {{ Rolegroup.name }}
-                            </td>
-                            <td class="responsive-table__body__text responsive-table__body__text--status">
-                               
-                                <button type="button" class="btn btn-Edit btn-info btn-list-edit" (click)="openEditPopuss(Rolegroup.id)"  *ngIf="showEditBtn">                          <mat-icon>draw</mat-icon>
-                                </button>
-                                <mat-checkbox *ngIf="Delete" [(ngModel)]="Rolegroup.selected" (change)="onCheckboxChange(Rolegroup.id)"></mat-checkbox>
-
-                            </td>
-                          
-                        </tr>
-                   
-                    </tbody>
-                </table>
               
             </div>
 

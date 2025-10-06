@@ -339,3 +339,13 @@ background-color:#8e44ad;
     background-color:#2980b9;
 }
 
+
+
+/* shrink font size a bit on mobile */
+@media (max-width: 640px) {
+  .table th, 
+  .table td {
+    font-size: 12px;
+    white-space: nowrap; /* prevent text from breaking weirdly */
+  }
+}

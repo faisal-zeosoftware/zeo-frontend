@@ -79,33 +79,34 @@
               
             </div>
           </div>
-          <table class="mt-4" width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Employee Document Type</th>
-                <th>Description</th>
-                <th>Action</th>
-               
-              </tr>
-            </thead>
-            <tbody>
-                
-              <tr *ngFor="let state of filteredDocuments; let i = index">
-                <td>{{ i + 1 }}</td> 
-                <td>{{ state.type_name }}</td>
-                <td>{{ state.description }}</td>
-                <td> 
-                  <span class="table-btns">          
-                 <i class="fa-solid fa-edit" (click)="openEditDocModal(state)"></i>
-                 <i class="fa-solid fa-trash" (click)="deleteDoc(state.id)"></i>
-                 </span>
+         <div class="table-responsive" *ngIf="hasViewPermission">
+         <table class="table table-striped custom-table mt-4">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Employee Document Type</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let state of filteredDocuments; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Employee Document Type">{{ state.type_name }}</td>
+        <td data-label="Description">{{ state.description }}</td>
+        <td data-label="Action">
+          <span class="table-btns">
+            <i class="fa-solid fa-edit" style="cursor:pointer; margin-right:8px;" 
+               (click)="openEditDocModal(state)"></i>
+            <i class="fa-solid fa-trash" style="cursor:pointer;" 
+               (click)="deleteDoc(state.id)"></i>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+         </table>
+         </div>
 
-                </td>
-              </tr>
-          
-            </tbody>
-          </table>
         </div>
     
 

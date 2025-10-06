@@ -422,6 +422,10 @@
   }
 
 
+.ulmob-scroll{
+      margin-bottom: 120px !important;
+}
+
 
 }
 
@@ -454,4 +458,10 @@
   .notiicon {
     margin-top: -55px; /* adjust for smaller height */
   }
+
+.ulmob-scroll{
+      margin-bottom: 100px !important;
+}
+
+
 }

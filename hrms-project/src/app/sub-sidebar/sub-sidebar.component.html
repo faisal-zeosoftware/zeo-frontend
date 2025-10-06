@@ -15,13 +15,11 @@
         </div>
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
 
-          
-          <ul>
+          <ul class="ulmob-scroll">
      
 
                   <li routerLink="/main-sidebar/sub-sidebar/employee-master" *ngIf="hasViewPermissionEmp"><a><mat-icon>peoples</mat-icon> Employee Master </a></li>
                 
-
                   <li routerLink="/main-sidebar/sub-sidebar/department-master" *ngIf="hasViewPermissiondept"><a ><mat-icon>peoples</mat-icon> Department Master </a></li>
                  
                   <li routerLink="/main-sidebar/sub-sidebar/designation-master" *ngIf="hasViewPermissiondesg"><a ><mat-icon>peoples</mat-icon> Designation Master</a></li>

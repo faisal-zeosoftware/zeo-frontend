@@ -397,52 +397,44 @@
 
 
           <div class="end_section"></div>
-          <table width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
+         <div class="table-responsive" *ngIf="hasViewPermission">
+        <table class="table table-striped custom-table">
+        <thead>
+      <tr>
+        <th>No</th>
+        <th>Name</th>
+        <th>Component Type</th>
+        <th>Code</th>
+        <th>Is Fixed</th>
+        <th>Formula</th>
+        <th>Description</th>
+        <th>Is Loan Component</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of Salarycomponent; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Name">{{ docs.name }}</td>
+        <td data-label="Component Type">{{ docs.component_type }}</td>
+        <td data-label="Code">{{ docs.code }}</td>
+        <td data-label="Is Fixed">{{ docs.is_fixed }}</td>
+        <td data-label="Formula">{{ docs.formula }}</td>
+        <td data-label="Description">{{ docs.description }}</td>
+        <td data-label="Is Loan Component">{{ docs.is_loan_component }}</td>
+        <td data-label="Action">
+          <i class="fa-solid fa-edit" style="cursor:pointer;"
+             (click)="editSalaryComponent(docs)"></i>
+          <i class="fa-solid fa-trash"
+             style="cursor:pointer; margin-left:10px;"
+             (click)="deletePayroll(docs.id)"
+             title="Delete Component"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                <th>Name</th>
-                <th>Component Type</th>
-                <th>Code</th>
-                <th>Is Fixed</th>
-                <th>Formula</th>
-                <th>Description</th>
-                <th>is Loan Component</th>
-                <!-- <th>Show in Payslip</th> -->
-
-
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let docs of Salarycomponent; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.name }}</td>
-                <td>{{ docs.component_type }}</td>
-                <td>{{ docs.code }}</td>
-                <td>{{ docs.is_fixed }}</td>
-                <td>{{ docs.formula }}</td>
-
-                <td>{{ docs.description }}</td>
-                <td>{{ docs.is_loan_component }}</td>
-
-                <!-- <td>{{ docs.show_in_payslip }}</td> -->
-
-
-
-                <td>
-                  <i class="fa-solid fa-edit" (click)="editSalaryComponent(docs)"></i>
-                  <i  
-                          class="fa-solid fa-trash"
-                          style="cursor: pointer;  margin-left: 10px;"
-                          (click)="deletePayroll(docs.id)"
-                          title="Delete Component " 
-                        ></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
         </mat-tab>
 
         <mat-tab label="Employee Salary ">
@@ -515,35 +507,32 @@
           </div>
 
           <div class="end_section"></div>
-          <table width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
+       <div class="table-responsive" *ngIf="hasViewPermission">
+  <table class="table table-striped custom-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Amount</th>
+        <th>Employee</th>
+        <th>Component</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of EmployeeSalarycomponent; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Amount">{{ docs.amount }}</td>
+        <td data-label="Employee">{{ docs.employee }}</td>
+        <td data-label="Component">{{ docs.component }}</td>
+        <td data-label="Action">
+          <i class="fa-solid fa-edit" style="cursor:pointer;"
+             (click)="editSalaryComponentEmp(docs)"></i>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                <th>Amount</th>
-                <th>Employee</th>
-                <th>component</th>
-
-
-
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let docs of EmployeeSalarycomponent; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.amount }}</td>
-                <td>{{ docs.employee }}</td>
-                <td>{{ docs.component }}</td>
-
-
-
-                <td>
-                  <i class="fa-solid fa-edit" (click)="editSalaryComponentEmp(docs)"></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
         </mat-tab>
 
 

@@ -114,25 +114,23 @@
       
         </div>
 
+<div class="table-responsive">
+  <table class="table table-striped custom-table" width="100%">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Company</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let schema of Schemas; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Company">{{ schema.schema_name }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-        <table width="100%">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th> Company</th>
-               
-              </tr>
-            </thead>
-            <tbody>
-                
-              <tr *ngFor="let schema of Schemas;let i = index">
-                <td>{{ i + 1 }}</td> 
-                <td>{{ schema.schema_name }}</td>
-           
-              </tr>
-          
-            </tbody>
-          </table>
 
 </div>
 </div>
