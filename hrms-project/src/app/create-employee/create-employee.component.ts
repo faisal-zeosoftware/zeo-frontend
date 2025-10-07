@@ -83,6 +83,9 @@ export class CreateEmployeeComponent implements OnInit {
   emp_languages: any = '';
   emp_date_of_confirmation: any = '';
   emp_joined_date: any = '';
+  person_id: any = '';
+  work_location: any = '';
+  visa_location: any = '';
   emp_profile_pic: string | undefined;
 
   is_ess: boolean = false;
@@ -597,6 +600,11 @@ this.loadNationality();
     formData.append('emp_company_id', this.emp_company_id);
     formData.append('emp_branch_id', this.emp_branch_id);
     formData.append('emp_dept_id', this.emp_dept_id);
+
+
+        formData.append('person_id', this.person_id);
+    formData.append('work_location', this.work_location);
+    formData.append('visa_location', this.visa_location);
 
     formData.append('emp_desgntn_id', this.emp_desgntn_id);
     formData.append('emp_ctgry_id', this.emp_ctgry_id);

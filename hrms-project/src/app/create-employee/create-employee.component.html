@@ -835,9 +835,46 @@
        <div *ngIf="registerButtonClicked && !emp_date_of_confirmation" class="error-message">Active date .</div>
     </div>
 
- 
+    <div class="col-md-6">
+               
+        <label>Personal ID</label>
+       <input type="date"  class="form-control" required id="person_id"  [(ngModel)]="person_id"  placeholder="Enter person id"
+        [ngModelOptions]="{standalone: true}" >
+       
+    </div>
+
+
+    <div class="col-md-6">
+    
+    
+        <div class="custom-sel">
+            <label>Select work location</label>
+            <select class="form-control" id="empwork_location_branch_id" name="work_location" required [(ngModel)]="work_location"  [ngModelOptions]="{standalone: true}"
+              >
+                <option value="" >Select</option>
+                <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
+            </select>
+        </div>
+                    
+
+    </div>
 
    
+ 
+    <div class="col-md-6">
+
+
+        <div class="custom-sel">
+            <label>Select  visa location</label>
+            <select class="form-control" id="visa_location" name="visa_location" required [(ngModel)]="visa_location"  [ngModelOptions]="{standalone: true}"
+              >
+                <option value="" >Select</option>
+                <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
+            </select>
+        </div>
+                    
+
+    </div>
 
 
     <div class="col-md-6">
@@ -1338,9 +1375,37 @@
            <div *ngIf="registerButtonClicked && !emp_date_of_confirmation" class="error-message">Active date .</div>
         </div>
     
+        <div class="col-md-6">
+    
+    
+            <div class="custom-sel">
+                <label>Select work location</label>
+                <select class="form-control" id="empwork_location_branch_id" name="work_location" required [(ngModel)]="work_location"  [ngModelOptions]="{standalone: true}"
+                  >
+                    <option value="" >Select</option>
+                    <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
+                </select>
+            </div>
+                        
+    
+        </div>
     
        
+     
+        <div class="col-md-6">
     
+    
+            <div class="custom-sel">
+                <label>Select  visa location</label>
+                <select class="form-control" id="visa_location" name="visa_location" required [(ngModel)]="visa_location"  [ngModelOptions]="{standalone: true}"
+                  >
+                    <option value="" >Select</option>
+                    <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
+                </select>
+            </div>
+                        
+    
+        </div>
     
         <div class="col-md-6">
             <label for="emp_profile_pic">Employee Profile Picture:</label>
@@ -1349,8 +1414,7 @@
                 <!-- No file was selected for the profile picture. -->
             </div>
     
-            <div class="col-md-6">
-            </div>
+        
         
    
      

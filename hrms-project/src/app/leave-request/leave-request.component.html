@@ -1,145 +1,338 @@
 <div class="container">
     <div class="comapny_section">
-        <div class="com_list " *ngIf="hasViewPermission">
-            <div class="cpm-sec">
 
-                <h2>Leave Request</h2>
-                <hr>
+      <div class="header_section">
+
+        <div class="row">
+            <div class="col-md-4">
+                <h1> Employee Leave Request</h1>
+            </div>
+            <div class="col-md-3">
                 
-            
-
-    
-                <form (ngSubmit)="requestLeave()" enctype="multipart/form-data">
-                    <div class="row">
-
-                      <div class="col-md-3">
-                        <label>Employee</label>
-                        <div class="custom-sel">
-                          <select class="form-control" id="employee" name="employee" [(ngModel)]="selectedEmployee"
-                                  (change)="onEmployeeChange()" [ngModelOptions]="{standalone: true}">
-                            <option *ngFor="let employee of Employees" [value]="employee.id">{{ employee.emp_code }}</option>
-                          </select>
-                        </div>
-                      </div>
-                      
-                      <div class="col-md-3">
-                        <label>Leave Type</label>
-                        <div class="custom-sel">
-                          <select class="form-control" id="leave_type" name="leave_type"
-                          [(ngModel)]="leave_type" [ngModelOptions]="{standalone: true}" required>
-                    <option value="">-- Select Leave Type --</option>
-                    <option *ngFor="let leavetype of LeaveTypes" [ngValue]="leavetype.id">
-                      {{ leavetype.name }}
-                    </option>
-                  </select>
-                  
-                        </div>
-                      </div>
-                      
-
-                      <!-- <div class="col-md-3">
-                        <label>Document Number</label>
-                        <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter Document number"
-                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !document_number}">
-                        <div *ngIf="registerButtonClicked && !document_number" class="error-message">Document number is required.</div>
-                      </div> -->
-                  
-
-
-                    
-                     
-
-
-                      <div class="col-md-3">
-                        <label>Start Date</label>
-                        <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter Start Date" (change)="calculateTotalDays()"
-                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
-                        <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
-                      </div>
-                  
-                      <div class="col-md-3">
-                        <label>End Date</label>
-                        <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter End Date" (change)="calculateTotalDays()"
-                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
-                        <div *ngIf="registerButtonClicked && !end_date" class="error-message">End Date is required.</div>
-                      </div>
-
-
-                      <div class="col-m-3">
-                        <label>total days</label>
-                        <input type="text" class="form-control" [value]="totalDays" readonly>
-                      </div>
-
-
-                      <div class="col-md-12">
-                        <label>Reason</label>
-                        <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}"></textarea>
-                      </div>
-
-
-                 
-
-                      <!-- <div class="col-md-6">
-                        <label>Approved On</label>
-                        <input type="date" class="form-control" required [(ngModel)]="approved_on" placeholder="Enter date of approved on"
-                               [ngModelOptions]="{standalone: true}" >
-                      </div> -->
-
-                      <div class="col-md-3">
-                        <label></label>
-                        <div class="check-box-selection-sec form-control mt-3">
-                          <div class="mat-set">
-                            <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Dis Half Day</mat-checkbox>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div class="col-md-3" *ngIf="dis_half_day">
-                        <label>Half Day Period</label>
-                        <div class="custom-sel">
-                          <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="half_day_period" [ngModelOptions]="{standalone: true}">
-                            <option value="first_half">First Half</option>
-                            <option value="second_half">Second Half</option>
-                          </select>
-                        </div>
-                      </div>
-
-
-                      <!-- <div class="col-md-6">
-                        <label>Created By</label>
-                        <div class="custom-sel">
-                          <select class="form-control" id="approved_by" name="approved_by" [(ngModel)]="approved_by" [ngModelOptions]="{standalone: true}">
-                            <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.email }}</option>
-                          </select>
-                        </div>
-                      </div> -->
-
-                  
-                 
-                  
-                 
-                    </div>
-                  
-                    <div class="row" *ngIf="hasAddPermission"
-                    >
-                      <div class="col-md-9"></div>
-                      <div class="col-md-3">
-                        <button type="submit" class="btn btn-success btn-full mt-4">Send Leave Request</button>
-                      </div>
-                    </div>
-                  </form>
-
-
+                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
 
             </div>
+            <div class="col-md-5">
+                <div class="button-group pull-right">
+                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                    </span> Create</button>
+                    <span *ngIf="!hasAddPermission"></span>
 
+                    <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                        <span class="header-btn-icon">
+                         <mat-icon>draw
+                    </mat-icon></span> Edit</button>
+                    <span *ngIf="hasEditPermission"></span>
 
-        
-
+                    <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                        <span class="header-btn-icon">
+                            <mat-icon> delete
+                       </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                       
+                       <span *ngIf="!hasDeletePermission"></span>
+                </div>
+            </div>
         </div>
+       
+       
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+          
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+
+      </div>
+  </div>
+  
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+        <div class="modal-content">
+          <div class="row">
+            <div class="col-md-10">
+              <h2> Employee Leave Request </h2>
+            </div>
+            <div class="col-md-2">
+              <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+            </div>
+          </div>
+          <hr />
+      
+
+          <form (ngSubmit)="requestLeave()" enctype="multipart/form-data">
+            <div class="row">
+
+              <div class="col-md-3">
+                <label>Employee</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="employee" name="employee" [(ngModel)]="selectedEmployee"
+                          (change)="onEmployeeChange()" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let employee of Employees" [value]="employee.id">{{ employee.emp_code }}</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="col-md-3">
+                <label>Leave Type</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="leave_type" name="leave_type"
+                  [(ngModel)]="leave_type" [ngModelOptions]="{standalone: true}" required>
+            <option value="">-- Select Leave Type --</option>
+            <option *ngFor="let leavetype of LeaveTypes" [ngValue]="leavetype.id">
+              {{ leavetype.name }}
+            </option>
+          </select>
+          
+                </div>
+              </div>
+              
+
+              <!-- <div class="col-md-3">
+                <label>Document Number</label>
+                <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter Document number"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !document_number}">
+                <div *ngIf="registerButtonClicked && !document_number" class="error-message">Document number is required.</div>
+              </div> -->
+          
 
 
-        <table width="100%" *ngIf="hasViewPermission">
+            
+             
+
+
+              <div class="col-md-3">
+                <label>Start Date</label>
+                <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter Start Date" (change)="calculateTotalDays()"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
+                <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
+              </div>
+          
+              <div class="col-md-3">
+                <label>End Date</label>
+                <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter End Date" (change)="calculateTotalDays()"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+                <div *ngIf="registerButtonClicked && !end_date" class="error-message">End Date is required.</div>
+              </div>
+
+
+              <div class="col-m-3">
+                <label>total days</label>
+                <input type="text" class="form-control" [value]="totalDays" readonly>
+              </div>
+
+
+              <div class="col-md-12">
+                <label>Reason</label>
+                <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}"></textarea>
+              </div>
+
+
+         
+
+              <!-- <div class="col-md-6">
+                <label>Approved On</label>
+                <input type="date" class="form-control" required [(ngModel)]="approved_on" placeholder="Enter date of approved on"
+                       [ngModelOptions]="{standalone: true}" >
+              </div> -->
+
+              <div class="col-md-3">
+                <label></label>
+                <div class="check-box-selection-sec form-control mt-3">
+                  <div class="mat-set">
+                    <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Dis Half Day</mat-checkbox>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-3" *ngIf="dis_half_day">
+                <label>Half Day Period</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="half_day_period" [ngModelOptions]="{standalone: true}">
+                    <option value="first_half">First Half</option>
+                    <option value="second_half">Second Half</option>
+                  </select>
+                </div>
+              </div>
+
+
+              <!-- <div class="col-md-6">
+                <label>Created By</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="approved_by" name="approved_by" [(ngModel)]="approved_by" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.email }}</option>
+                  </select>
+                </div>
+              </div> -->
+
+          
+         
+          
+         
+            </div>
+          
+            <div class="row" *ngIf="hasAddPermission"
+            >
+              <div class="col-md-9"></div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-success btn-full mt-4">Send Leave Request</button>
+              </div>
+            </div>
+          </form>
+        
+        </div>
+      </div>
+
+             <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+<div class="modal-content">
+<div class="row">
+  <div class="col-md-10">
+    <h2>Edit  Employee Leave Request</h2>
+  </div>
+  <div class="col-md-2">
+    <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+  </div>
+</div>
+<hr />
+
+<form >
+  <div class="row">
+
+    <div class="col-md-3">
+      <label>Employee</label>
+      <div class="custom-sel">
+        <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.selectedEmployee"
+                (change)="onEmployeeChange()" [ngModelOptions]="{standalone: true}">
+          <option *ngFor="let employee of Employees" [value]="employee.id">{{ employee.emp_code }}</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <label>Leave Type</label>
+      <div class="custom-sel">
+        <select class="form-control" id="leave_type" name="leave_type"
+        [(ngModel)]="editAsset.leave_type" [ngModelOptions]="{standalone: true}" required>
+  <option value="">-- Select Leave Type --</option>
+  <option *ngFor="let leavetype of LeaveTypes" [ngValue]="leavetype.id">
+    {{ leavetype.name }}
+  </option>
+</select>
+
+      </div>
+    </div>
+    
+
+    <!-- <div class="col-md-3">
+      <label>Document Number</label>
+      <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter Document number"
+             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !document_number}">
+      <div *ngIf="registerButtonClicked && !document_number" class="error-message">Document number is required.</div>
+    </div> -->
+
+
+
+  
+   
+
+
+    <div class="col-md-3">
+      <label>Start Date</label>
+      <input type="date" class="form-control" required [(ngModel)]="editAsset.start_date" placeholder="Enter Start Date" (change)="calculateTotalDays()"
+             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
+      <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
+    </div>
+
+    <div class="col-md-3">
+      <label>End Date</label>
+      <input type="date" class="form-control" required [(ngModel)]="editAsset.end_date" placeholder="Enter End Date" (change)="calculateTotalDays()"
+             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+      <div *ngIf="registerButtonClicked && !end_date" class="error-message">End Date is required.</div>
+    </div>
+
+
+    <div class="col-m-3">
+      <label>total days</label>
+      <input type="text" class="form-control" [value]="totalDays" readonly>
+    </div>
+
+
+    <div class="col-md-12">
+      <label>Reason</label>
+      <textarea class="form-control" [(ngModel)]="editAsset.reason" [ngModelOptions]="{standalone: true}"></textarea>
+    </div>
+
+
+
+
+    <!-- <div class="col-md-6">
+      <label>Approved On</label>
+      <input type="date" class="form-control" required [(ngModel)]="approved_on" placeholder="Enter date of approved on"
+             [ngModelOptions]="{standalone: true}" >
+    </div> -->
+
+    <div class="col-md-3">
+      <label></label>
+      <div class="check-box-selection-sec form-control mt-3">
+        <div class="mat-set">
+          <mat-checkbox [(ngModel)]="editAsset.dis_half_day" [ngModelOptions]="{standalone: true}">Dis Half Day</mat-checkbox>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3" *ngIf="dis_half_day">
+      <label>Half Day Period</label>
+      <div class="custom-sel">
+        <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="editAsset.half_day_period" [ngModelOptions]="{standalone: true}">
+          <option value="first_half">First Half</option>
+          <option value="second_half">Second Half</option>
+        </select>
+      </div>
+    </div>
+
+
+    <!-- <div class="col-md-6">
+      <label>Created By</label>
+      <div class="custom-sel">
+        <select class="form-control" id="approved_by" name="approved_by" [(ngModel)]="approved_by" [ngModelOptions]="{standalone: true}">
+          <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.email }}</option>
+        </select>
+      </div>
+    </div> -->
+
+
+
+
+
+  </div>
+  <div class="row" >
+    <div class="col-md-9"></div>
+    <div class="col-md-3">
+      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+    </div>
+  </div>
+</form>
+
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+        <table class="mt-4" width="100%" *ngIf="hasViewPermission">
           <thead>
             <tr>
               <th>No</th>
@@ -153,7 +346,7 @@
               <!-- <th>Total</th> -->
               <th>Approval Status</th>
 
-             
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -168,7 +361,22 @@
               <td>{{ docs.document_number }}</td>
        
               <td>{{ docs.status }}</td>
-         
+              <td>
+                <button
+                  mat-fab
+                  color="primary"
+                  aria-label="Edit icon"
+                  *ngIf="showEditBtn"
+
+                  
+                  (click)="openEditModal(docs)"
+                >
+                  <mat-icon style="color: white;">draw</mat-icon>
+                </button>
+
+                <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+
+              </td>
             </tr>
         
           </tbody>
