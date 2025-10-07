@@ -150,39 +150,36 @@
         
                 </div>
         
-                <table width="100%" *ngIf="hasViewPermission">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th> Days before expiry</th>
-                        <th> Days after expiry</th>
-                        <th> Branch</th>
-                        <th>Notify users</th>
-            <th>Action</th>
-            
-                       
-                      </tr>
-                    </thead>
-                    <tbody>
-                        
-                      <tr *ngFor="let docs of NotSettings;let i = index">
-                        <td>{{ i + 1 }}</td> 
-                        <td>{{ docs.days_before_expiry }}</td>
-                        <td>{{ docs.days_after_expiry }}</td>
-                        <td>{{ docs.branch }}</td> 
-                        <td>{{ docs.notify_users }}</td>
-                        <td> 
-                          <span class="table-btns">          
-                         <i class="fa-solid fa-edit" (click)="openEditDocModal(docs)"></i>
-                         <i class="fa-solid fa-trash" (click)="deleteDoc(docs.id)"></i>
-                         </span>
-        
-                        </td>
-                       
-                      </tr>
-                  
-                    </tbody>
-                  </table> 
+              <div class="table-responsive" *ngIf="hasViewPermission">
+  <table class="table table-striped custom-table" width="100%">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Days Before Expiry</th>
+        <th>Days After Expiry</th>
+        <th>Branch</th>
+        <th>Notify Users</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of NotSettings; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Days Before Expiry">{{ docs.days_before_expiry }}</td>
+        <td data-label="Days After Expiry">{{ docs.days_after_expiry }}</td>
+        <td data-label="Branch">{{ docs.branch }}</td>
+        <td data-label="Notify Users">{{ docs.notify_users }}</td>
+        <td data-label="Action">
+          <span class="table-btns">
+            <i class="fa-solid fa-edit" (click)="openEditDocModal(docs)"></i>
+            <i class="fa-solid fa-trash" (click)="deleteDoc(docs.id)"></i>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
             
   
     </div>

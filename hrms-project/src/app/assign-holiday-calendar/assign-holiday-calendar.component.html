@@ -245,28 +245,39 @@
         </div>
 
 
-        <table class="table mt-4" >
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Holiday Calendar</th>
-              <th>Branch</th>
-              <th>Department</th>
-              <th>Category</th>
-              <th>Employee</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let detail of AssignHolCalendar; let i = index">
-              <td>{{ i + 1 }}</td>
-              <td>{{ detail.holiday_model }}</td>
-              <td>{{ (detail.branch && detail.branch.length > 0) ? detail.branch.join(', ') : 'Null' }}</td>
-              <td>{{ (detail.department && detail.department.length > 0) ? detail.department.join(', ') : 'Null' }}</td>
-              <td>{{ (detail.category && detail.category.length > 0) ? detail.category.join(', ') : 'Null' }}</td>
-              <td>{{ (detail.employee && detail.employee.length > 0) ? detail.employee.join(', ') : 'Null' }}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="table-responsive mt-4">
+  <table class="table table-striped custom-table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Holiday Calendar</th>
+        <th>Branch</th>
+        <th>Department</th>
+        <th>Category</th>
+        <th>Employee</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let detail of AssignHolCalendar; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Holiday Calendar">{{ detail.holiday_model }}</td>
+        <td data-label="Branch">
+          {{ (detail.branch && detail.branch.length > 0) ? detail.branch.join(', ') : 'Null' }}
+        </td>
+        <td data-label="Department">
+          {{ (detail.department && detail.department.length > 0) ? detail.department.join(', ') : 'Null' }}
+        </td>
+        <td data-label="Category">
+          {{ (detail.category && detail.category.length > 0) ? detail.category.join(', ') : 'Null' }}
+        </td>
+        <td data-label="Employee">
+          {{ (detail.employee && detail.employee.length > 0) ? detail.employee.join(', ') : 'Null' }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
   
 
 </div>

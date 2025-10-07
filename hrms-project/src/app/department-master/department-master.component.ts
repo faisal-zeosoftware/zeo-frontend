@@ -11,6 +11,7 @@ import { DepartmentCreationComponent } from '../department-creation/department-c
 import { DepartmentEditComponent } from '../department-edit/department-edit.component';
 import { SessionService } from '../login/session.service';
 import { withModule } from '@angular/core/testing';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-department-master',
@@ -18,13 +19,23 @@ import { withModule } from '@angular/core/testing';
   styleUrl: './department-master.component.css'
 })
 export class DepartmentMasterComponent {
+  
+  private apiUrl = `${environment.apiBaseUrl}`;
+
+   selectedFiles! : File;
+  selectedFile!: File;
+  file:any ='';
+  selectedDeparmentsecId:any | undefined;
 
   Departments: any[] = [];
   selectedDepartment: any;
 
   dept_name: string = '';
   dept_description:string = '';
-  branch_id:string = '';
+  branch_id:any = '';
+  dept_code: string = '';
+
+
 
 
   hasAddPermission: boolean = false;
@@ -168,6 +179,9 @@ if (this.userId !== null) {
 
 
 
+
+
+
       // this.DepartmentServiceService.getDeptNames().subscribe(dept_name => {
       //   this.dept_name = dept_name;
       // });
@@ -245,6 +259,11 @@ if (this.userId !== null) {
     //     }
     //   );
     // }
+
+
+
+
+    
   
 
 
@@ -254,6 +273,9 @@ if (this.userId !== null) {
         height:'700px',
       })
     }
+
+
+    
 
 
 
@@ -315,6 +337,102 @@ if (this.userId !== null) {
     this.showEditBtn = !this.showEditBtn;
   }
 
+
+
+  
+   onFileChange(event: any){
+    this.file = event.target.files[0];
+    console.log(this.file);
+    
+  }
+   onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+
+
+     bulkuploaddocument(): void {
+      
+     const formData = new FormData();
+    formData.append('file',this.selectedFiles);
+  
+    formData.append('file',this.file)
+    
+    formData.append('dept_name', this.dept_name);
+  
+    formData.append('dept_description', this.dept_description);
+    formData.append('branch_id', this.branch_id);
+    
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      // return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+   
+    // return this.http.put(apiUrl, formData);
+
+  
+    this.http.post(`${this.apiUrl}/organisation/api/Dept-bulkupload/bulk_upload/?schema=${selectedSchema}`, formData)
+      .subscribe((response) => {
+        // Handle successful upload
+        console.log('bulkupload upload successful', response);
+        alert('bulkupload upload successful');
+        window.location.reload();
+
+  
+        // const dialogRef = this.dialog.open(SuccesModalComponent, {
+        //   width: '300px', // Adjust width as needed
+        //   data: { message: 'bulkupload Department successfully!' } // Pass any data you want to display in the modal
+        // });
+    
+        // dialogRef.afterClosed().subscribe(() => {
+        //   console.log('The success modal was closed');
+        //   // Handle any actions after the modal is closed, if needed
+        // });
+      }, (error) => {
+        // Handle upload error
+        console.error('Departments upload failed', error);
+        alert('Departments upload failed! enter all fields correctly');
+      });
+      }
+
+
+
+
+ isBulkuploadDepartmentModalOpen :boolean=false;
+
+
+OpenBulkuploadModal():void{
+  this.isBulkuploadDepartmentModalOpen = true;
+}
+
+
+closeBulkuploadModal():void{
+  this.isBulkuploadDepartmentModalOpen = false;
+
+}
+
+
+    showUploadForm: boolean = false;
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+
+
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+
+
+
+
+
   openEditPopuss(departmentId: number):void{
     const dialogRef = this.dialog.open(DepartmentEditComponent, {
       width:'80%',
@@ -327,5 +445,49 @@ if (this.userId !== null) {
       console.log('The dialog was closed');
     });
   }
+
+
+      downloadDepartmentCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadDepartmentCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Department_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+     
+    downloadDepartmentExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadDepartmentExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Department_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -220,51 +220,39 @@
             </div>
           </div>
 
-        <div class="com_list table-scroll mt-4" *ngIf="hasViewPermission">
+    <div class="table-responsive com_list table-scroll mt-4" *ngIf="hasViewPermission">
+  <table class="table table-striped custom-table" width="100%">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Title</th>
+        <th>Message</th>
+        <th>Send Email</th>
+        <th>Is Sticky</th>
+        <th>Schedule At</th>
+        <th>Expires At</th>
+        <th>Allow Comments</th>
+        <th>Specific Employees</th>
+        <th>Branches</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of LoanTypes; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Title">{{ docs.title }}</td>
+        <td data-label="Message">{{ docs.message }}</td>
+        <td data-label="Send Email">{{ docs.send_email }}</td>
+        <td data-label="Is Sticky">{{ docs.is_sticky }}</td>
+        <td data-label="Schedule At">{{ docs.schedule_at }}</td>
+        <td data-label="Expires At">{{ docs.expires_at }}</td>
+        <td data-label="Allow Comments">{{ docs.allow_comments }}</td>
+        <td data-label="Specific Employees">{{ docs.specific_employees }}</td>
+        <td data-label="Branches">{{ docs.branches }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-
-            <table class="table-container" width="100%" *ngIf="hasViewPermission">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th> Title  </th>
-                    <th>Message</th>
-                    <th>Send email</th>
-                    <th>Is sticky</th>
-                    <th>Schedule at</th>
-                    <th>Expires at</th>
-                    <th>Allow comments</th>
-                    <th>Specific employees </th>
-                    <th>Branches </th>
-
-                   
-                  </tr>
-                </thead>
-                <tbody>
-                    
-                  <tr *ngFor="let docs of LoanTypes;let i = index">
-                    <td>{{ i + 1 }}</td> 
-                    <td>{{ docs.title }}</td>
-                    <td>{{ docs.message }}</td> 
-                    <td>{{ docs.send_email }}</td>
-                    <td>{{ docs.is_sticky }}</td>
-
-                    <td>{{ docs.schedule_at }}</td>
-
-                    <td>{{ docs.expires_at }}</td>
-
-                    <td>{{ docs.allow_comments }}</td>
-
-                    <td>{{ docs.specific_employees }}</td>
-                    <td>{{ docs.branches }}</td>
-
-
-                  </tr>
-              
-                </tbody>
-              </table>
-
-        </div>
         </div>
         </div>
         

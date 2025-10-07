@@ -189,4 +189,17 @@ downloadEmployeeExcel(selectedSchema: string): Observable<Blob> {
 }
 
 
+downloadDepartmentCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Dept-bulkupload/download_demo_csv/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+downloadDepartmentExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Dept-bulkupload/download_demo_excel/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
   }
