@@ -212,54 +212,49 @@
   </div>
 
 
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
+      <div class="com_list mt-4" *ngIf="hasViewPermission">
+  <div style="overflow-x: auto; width: 100%;">
+    <table class="table-container" style="width: 100%;">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Minimum Value</th>
+          <th>Maximum Value</th>
+          <th>Resignation Days</th>
+          <th>Termination Days</th>
+          <th>Active Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let docs of LoanTypes; let i = index">
+          <td data-label="No">{{ i + 1 }}</td>
+          <td data-label="Minimum Value">{{ docs.minimum_value }}</td>
+          <td data-label="Maximum Value">{{ docs.maximum_value }}</td>
+          <td data-label="Resignation Days">{{ docs.resignation_days }}</td>
+          <td data-label="Termination Days">{{ docs.termination_days }}</td>
+          <td data-label="Active Status">{{ docs.is_active ? 'Active' : 'Inactive' }}</td>
+          <td data-label="Action">
+            <button
+              mat-fab
+              color="primary"
+              aria-label="Edit"
+              *ngIf="showEditBtn"
+              (click)="openEditModal(docs)">
+              <mat-icon style="color: white;">draw</mat-icon>
+            </button>
+
+            <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
 
-            <table width="100%" *ngIf="hasViewPermission">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th> Minimum Value  </th>
-                    <th>Maximum Value</th>
-                    <th>Resignation days</th>
-                    <th>Termination days</th>
-                    <th>Active Status</th>
 
-        <th>Action</th>
-                   
-                  </tr>
-                </thead>
-                <tbody>
-                    
-                  <tr *ngFor="let docs of LoanTypes;let i = index">
-                    <td>{{ i + 1 }}</td> 
-                    <td>{{ docs.minimum_value }}</td>
-                    <td>{{ docs.maximum_value }}</td> 
-                    <td>{{ docs.resignation_days }}</td>
-                    <td>{{ docs.termination_days }}</td>
-                    <td>{{ docs.is_active }}</td>
-                    <td>
-                      <button
-                        mat-fab
-                        color="primary"
-                        aria-label="Edit icon"
-                        *ngIf="showEditBtn"
-      
-                        
-                        (click)="openEditModal(docs)"
-                      >
-                        <mat-icon style="color: white;">draw</mat-icon>
-                      </button>
-      
-                      <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-      
-                    </td>
-                  </tr>
-              
-                </tbody>
-              </table>
 
-        </div>
         </div>
         </div>
         

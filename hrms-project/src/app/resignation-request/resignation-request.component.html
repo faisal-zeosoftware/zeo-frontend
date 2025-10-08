@@ -277,7 +277,7 @@
 
 
 
-        <div class="mt-4" style="overflow-x: auto; width: 100%;">
+        <div class="table-responsive mt-4" style="overflow-x: auto; width: 100%;">
         <table width="100%" >
           <thead>
             <tr>
@@ -294,24 +294,29 @@
               <th>Reason for leaving</th>
               <th>Status</th>
               <th>Employee</th>
+              <th>Attachment</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
               
             <tr *ngFor="let docs of DocRequest;let i = index">
-              <td>{{ i + 1 }}</td> 
+      
           
-              <td>{{ docs.document_date }}</td>
-              <td>{{ docs.resigned_on }}</td>
-              <td>{{ docs.notice_period }}</td> 
-              <td>{{ docs.last_working_date }}</td>
-              <td>{{ docs.location }}</td> 
-              <td>{{ docs.termination_type }}</td>
-              <td>{{ docs.reason_for_leaving }}</td>
-              <td>{{ docs.status }}</td> 
-              <td>{{ docs.employee }}</td>
-              <td>
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Document Date">{{ docs.document_date }}</td>
+        <td data-label="Resigned On">{{ docs.resigned_on }}</td>
+        <td data-label="Notice Period">{{ docs.notice_period }}</td>
+        <td data-label="Last Working Date">{{ docs.last_working_date }}</td>
+        <td data-label="Location">{{ docs.location }}</td>
+        <td data-label="Termination Type">{{ docs.termination_type }}</td>
+        <td data-label="Reason for Leaving">{{ docs.reason_for_leaving }}</td>
+        <td data-label="Status">{{ docs.status }}</td>
+        <td data-label="Employee">{{ docs.employee }}</td>
+        <td data-label="Attachment">{{ docs.attachment }}</td>
+   
+       
+              <td data-label="Actions">
                 <button
                   mat-fab
                   color="primary"

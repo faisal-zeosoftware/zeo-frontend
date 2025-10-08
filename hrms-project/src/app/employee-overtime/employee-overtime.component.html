@@ -75,24 +75,6 @@
              
           
 
-<!-- <div class="col-md-6" >
-    <label>Leave Type</label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="leave_type"
-        name="leave_type"
-        [(ngModel)]="leave_type"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let leavetypes of LeaveTypes" [value]="leavetypes.id">
-          {{ leavetypes.name }}
-        </option>
-      </select>
-    </div>
-  </div> -->
-
-  
 <div class="col-md-6" >
     <label>Employee</label>
     <div class="custom-sel">
@@ -145,37 +127,33 @@
         
                 </div>
         
-                <table width="100%" *ngIf="hasViewPermission">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th> Date</th>
-                        <th> Hours</th>
-                        <th>Rate multiplier</th>
-                        <th>Approved </th>
-            
-                        <th>Employee</th>
-                        <th>Approved By</th>
+              <div class="table-responsive mt-4" *ngIf="hasViewPermission">
+  <table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>No</th>
+        <th>Date</th>
+        <th>Hours</th>
+        <th>Rate Multiplier</th>
+        <th>Approved</th>
+        <th>Employee</th>
+        <th>Approved By</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of LeaveBalances; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Date">{{ docs.date }}</td>
+        <td data-label="Hours">{{ docs.hours }}</td>
+        <td data-label="Rate Multiplier">{{ docs.rate_multiplier }}</td>
+        <td data-label="Approved">{{ docs.approved }}</td>
+        <td data-label="Employee">{{ docs.employee }}</td>
+        <td data-label="Approved By">{{ docs.approved_by }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                       
-                      </tr>
-                    </thead>
-                    <tbody>
-                        
-                      <tr *ngFor="let docs of LeaveBalances;let i = index">
-                        <td>{{ i + 1 }}</td> 
-                        <td>{{ docs.date }}</td>
-                        <td>{{ docs.hours }}</td>
-                        <td>{{ docs.rate_multiplier }}</td> 
-                        <td>{{ docs.approved }}</td>
-                        <td>{{ docs.employee }}</td>
-                        <td>{{ docs.approved_by }}</td>
-
-
-                      </tr>
-                  
-                    </tbody>
-                  </table>
             
   
     </div>

@@ -9,7 +9,7 @@
                     <h1> Department Details</h1>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
 
                     <div class="search-container">
                         <input type="text" class="search-input" placeholder="Search..."    [(ngModel)]="searchQuery" (input)="filterEmployees()">
@@ -29,7 +29,7 @@
                     <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
 
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-6">
                     <div class="button-group pull-right">
                         <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"> <span class="header-btn-icon"><mat-icon>add_circle
                         </mat-icon></span> Create</button>
@@ -142,7 +142,7 @@
 
         <div class="row">
             <div class="col-md-8">
-                <h2>Employee Bulk Upload & Download Details</h2> 
+                <h2>Department Bulk Upload & Download Details</h2> 
             </div>
             <div class="col-md-4">
                 <span class="close pull-right" (click)="closeBulkuploadModal()">&times;</span>

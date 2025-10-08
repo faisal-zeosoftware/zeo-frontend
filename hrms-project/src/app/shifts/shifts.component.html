@@ -66,30 +66,31 @@
          
         </form>
 
-        <div class="row mt-5">
-            <div class="col-md-12">
-                <!-- <h4>Shifts</h4> -->
-                <table class="table"  >
-                    <thead>
-                        <tr>
-                            <th>Shift Name</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Break Duration</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let deparmentsec of Shifts">
-                            <td>{{ deparmentsec.name }}</td>
-                            <td>{{ deparmentsec.start_time }}</td>
-                            <td>{{ deparmentsec.end_time }}</td>
-                            <td>{{ deparmentsec.break_duration }}</td>
+   <div class="row mt-5">
+  <div class="col-md-12">
+    <table class="table" width="100%">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Shift Name</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Break Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let shift of Shifts; let i = index">
+          <td data-label="No">{{ i + 1 }}</td>
+          <td data-label="Shift Name">{{ shift.name }}</td>
+          <td data-label="Start Time">{{ shift.start_time }}</td>
+          <td data-label="End Time">{{ shift.end_time }}</td>
+          <td data-label="Break Duration">{{ shift.break_duration }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
 
         </mat-tab >
@@ -238,129 +239,7 @@
 
 
                        
-                        <!-- <div class="col-md-6" >
-                            <label>Employee</label>
-                            <div class="custom-sel">
-                                <div class="form-control-wrapper">
-                                  <mat-form-field>
-                                    <mat-select  placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
-                                      <div class="select-all">
-                                        <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
-                                          Select All
-                                        </mat-checkbox>
-                                      </div>
-                                     
-                                      <mat-option *ngFor="let emp of Employee" [value]="emp.id">
-                                        {{ emp.emp_first_name }}   {{ emp.emp_last_name }}
-                                      </mat-option>
-                                    </mat-select>
-                                  </mat-form-field>
-                                </div>
-                                <div *ngIf="registerButtonClicked && (!employee || employee.length === 0)" class="error-message">
-                                  Please Select Your employee
-                                </div>
-                              </div>
-                        </div>
-
-                        <div class="col-md-6" >
-                            <label>Select Branches</label>
-                            <div class="custom-sel">
-                              <div class="form-control-wrapper">
-                             
-        
-                                <mat-form-field>
-                                  <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #select multiple>
-                                    <div class="select-all">
-                                      <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
-                                        Select All
-                                      </mat-checkbox>
-                                    </div>
-                                    <input type="text" placeholder="serach" class="form-control">
-        
-                                    <mat-option *ngFor="let food of branches" [value]="food.id">
-                                      {{ food.branch_name }}
-                                    </mat-option>
-                                  </mat-select>
-                                </mat-form-field>
-                                
-                              </div>
-                              <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
-                                Please Select Your Branch
-                              </div>
-                            </div>
-                          </div>
-                          
-                            
-                         
-                          <div class="col-md-6" >
-                            <label>Department</label>
-                            <div class="custom-sel">
-                                <div class="form-control-wrapper">
-                                  <mat-form-field>
-                                    <mat-select  placeholder="Select" [(ngModel)]="department" [ngModelOptions]="{standalone: true}" #selectDept  multiple>
-                                      <div class="select-all">
-                                        <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
-                                          Select All
-                                        </mat-checkbox>
-                                      </div>
-                                      <mat-option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">
-                                        {{ deparmentsec.dept_name }}
-                                      </mat-option>
-                                    </mat-select>
-                                  </mat-form-field>
-                                </div>
-                                <div *ngIf="registerButtonClicked && (!department || department.length === 0)" class="error-message">
-                                  Please Select Your department
-                                </div>
-                              </div>
-                        </div>
-
-                        <div class="col-md-6" >
-                            <label>Designation</label>
-                            <div class="custom-sel">
-                                <div class="form-control-wrapper">
-                                  <mat-form-field>
-                                    <mat-select  placeholder="Select" [(ngModel)]="designation" [ngModelOptions]="{standalone: true}" #selectDes  multiple>
-                                      <div class="select-all">
-                                        <mat-checkbox [(ngModel)]="allSelecteddes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondes()">
-                                          Select All
-                                        </mat-checkbox>
-                                      </div>
-                                      <mat-option *ngFor="let deparmentsec of Designations" [value]="deparmentsec.id">
-                                        {{ deparmentsec.desgntn_job_title }}
-                                      </mat-option>
-                                    </mat-select>
-                                  </mat-form-field>
-                                </div>
-                                <div *ngIf="registerButtonClicked && (!designation || designation.length === 0)" class="error-message">
-                                  Please Select Your designation
-                                </div>
-                              </div>
-                        </div>
-        
-                        <div class="col-md-6" >
-                            <label>Category</label>
-                            <div class="custom-sel">
-                                <div class="form-control-wrapper">
-                                  <mat-form-field>
-                                    <mat-select  placeholder="Select" [(ngModel)]="role" [ngModelOptions]="{standalone: true}" #selectCat multiple>
-                                      <div class="select-all">
-                                        <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
-                                          Select All
-                                        </mat-checkbox>
-                                      </div>
-                                     
-                                      <mat-option *ngFor="let deparmentsec of Categories" [value]="deparmentsec.id">
-                                        {{ deparmentsec.ctgry_title }}
-                                      </mat-option>
-                                    </mat-select>
-                                  </mat-form-field>
-                                </div>
-                                <div *ngIf="registerButtonClicked && (!role || role.length === 0)" class="error-message">
-                                  Please Select Your category
-                                </div>
-                              </div>
-                        </div> -->
+                        
         
                    
                     </div>
@@ -375,40 +254,39 @@
                     </div>
                 </form>
 
-                <div class="row mt-5">
-                  <div class="col-md-12">
-                      <!-- <h4>Shifts</h4> -->
-                      <div style="overflow-x: auto; width: 100%;">
-                        <table class="table" style="min-width: 1000px;">
-                          <thead>
-                            <tr>
-                              <th>Shift Pattern Name</th>
-                              <th>Monday Shift</th>
-                              <th>Tuesday Shift</th>
-                              <th>Wednesday Shift</th>
-                              <th>Thursday Shift</th>
-                              <th>Friday Shift</th>
-                              <th>Saturday Shift</th>
-                              <th>Sunday Shift</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr *ngFor="let deparmentsec of ShiftsPattern">
-                              <td>{{ deparmentsec.name }}</td>
-                              <td>{{ deparmentsec.monday_shift }}</td>
-                              <td>{{ deparmentsec.tuesday_shift }}</td>
-                              <td>{{ deparmentsec.wednesday_shift }}</td>
-                              <td>{{ deparmentsec.thursday_shift }}</td>
-                              <td>{{ deparmentsec.friday_shift }}</td>
-                              <td>{{ deparmentsec.saturday_shift }}</td>
-                              <td>{{ deparmentsec.sunday_shift }}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      
-                  </div>
-              </div>
+              <div class="row mt-5">
+  <div class="col-md-12">
+    <div style="overflow-x: auto; width: 100%;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Shift Pattern Name</th>
+            <th>Monday Shift</th>
+            <th>Tuesday Shift</th>
+            <th>Wednesday Shift</th>
+            <th>Thursday Shift</th>
+            <th>Friday Shift</th>
+            <th>Saturday Shift</th>
+            <th>Sunday Shift</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pattern of ShiftsPattern">
+            <td data-label="Shift Pattern Name">{{ pattern.name }}</td>
+            <td data-label="Monday Shift">{{ pattern.monday_shift }}</td>
+            <td data-label="Tuesday Shift">{{ pattern.tuesday_shift }}</td>
+            <td data-label="Wednesday Shift">{{ pattern.wednesday_shift }}</td>
+            <td data-label="Thursday Shift">{{ pattern.thursday_shift }}</td>
+            <td data-label="Friday Shift">{{ pattern.friday_shift }}</td>
+            <td data-label="Saturday Shift">{{ pattern.saturday_shift }}</td>
+            <td data-label="Sunday Shift">{{ pattern.sunday_shift }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
       
            
                 </mat-tab>

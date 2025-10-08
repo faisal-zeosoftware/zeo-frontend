@@ -313,51 +313,47 @@
     
 
 
-            
-        <table class="mt-4" width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th> Level  </th>
-                <th>Request Type</th>
-                <th>Approver</th>
-                <th>Branch</th>
-  <th>Action</th>
-    
-               
-              </tr>
-            </thead>
-            <tbody>
-                
-              <tr *ngFor="let docs of ApprovalLEvel;let i = index">
-                <td>{{ i + 1 }}</td> 
-                <td>{{ docs.level }}</td>
-                <td>{{ docs.request_type }}</td> 
-                <td>{{ docs.approver }}</td>
-                <td>{{ docs.branch }}</td>
+    <div class="table-responsive mt-4" *ngIf="hasViewPermission">
+  <table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>No</th>
+        <th>Level</th>
+        <th>Request Type</th>
+        <th>Approver</th>
+        <th>Branch</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of ApprovalLEvel; let i = index">
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Level">{{ docs.level }}</td>
+        <td data-label="Request Type">{{ docs.request_type }}</td>
+        <td data-label="Approver">{{ docs.approver }}</td>
+        <td data-label="Branch">{{ docs.branch }}</td>
+        <td data-label="Action" class="text-center">
+          <button
+            mat-fab
+            color="primary"
+            aria-label="Edit"
+            *ngIf="showEditBtn"
+            (click)="openEditModal(docs)"
+            style="transform: scale(0.7); margin-right: 6px;"
+          >
+            <mat-icon style="color: white;">draw</mat-icon>
+          </button>
 
-                <td>
-                  <button
-                    mat-fab
-                    color="primary"
-                    aria-label="Edit icon"
-                    *ngIf="showEditBtn"
+          <mat-checkbox
+            *ngIf="Delete"
+            [(ngModel)]="docs.selected"
+          ></mat-checkbox>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                    
-                    (click)="openEditModal(docs)"
-                  >
-                    <mat-icon style="color: white;">draw</mat-icon>
-                  </button>
-
-                  <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-
-                </td>
-
-              </tr>
-          
-            </tbody>
-          </table>
-  
 
 
   
