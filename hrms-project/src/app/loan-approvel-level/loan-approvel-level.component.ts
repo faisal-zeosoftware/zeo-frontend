@@ -164,24 +164,6 @@ private employeeService: EmployeeService,
       );
   }
 }
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leave_type' ||'change_leave_type' ||'delete_leave_type' ||'view_leave_type';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
-  
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
@@ -292,6 +274,124 @@ private employeeService: EmployeeService,
           );
         }
         }
+
+
+
+        
+      iscreateLoanApp: boolean = false;
+
+
+
+
+      openPopus():void{
+        this.iscreateLoanApp = true;
+
+      }
+    
+      closeapplicationModal():void{
+        this.iscreateLoanApp = false;
+
+      }
+
+
+
+
+  
+
+       
+
+showEditBtn: boolean = false;
+  
+EditShowButtons() {
+  this.showEditBtn = !this.showEditBtn;
+}
+
+
+Delete: boolean = false;
+allSelecteds: boolean = false;
+
+toggleCheckboxes() {
+this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+  this.allSelecteds = !this.allSelecteds;
+this.approvalLevels.forEach(employee => employee.selected = this.allSelecteds);
+
+}
+
+onCheckboxChange(employee:number) {
+// No need to implement any logic here if you just want to change the style.
+// You can add any additional logic if needed.
+}
+
+
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+openEditModal(asset: any): void {
+this.editAsset = { ...asset }; // copy asset data
+this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+deleteSelectedAssetType() { 
+  const selectedEmployeeIds = this.approvalLevels
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedEmployeeIds.length === 0) {
+    alert('No Loan Approval Level selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected Loan Approval Level ?')) {
+    selectedEmployeeIds.forEach(categoryId => {
+      this.employeeService.deleteLoanApprovalLevel(categoryId).subscribe(
+        () => {
+          console.log(' Loan Approval Level deleted successfully:', categoryId);
+          // Remove the deleted employee from the local list
+          this.approvalLevels = this.approvalLevels.filter(employee => employee.id !== categoryId);
+          alert(' Loan Approval Level  deleted successfully');
+          window.location.reload();
+
+        },
+        (error) => {
+          console.error('Error deleting Loan Approval Level:', error);
+          alert(error)
+        }
+      );
+    });
+  }
+}
+
+
+updateAssetType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  this.employeeService.updateLoanApprovalLevel(this.editAsset.id, this.editAsset).subscribe(
+    (response) => {
+      alert(' Loan Approval Level  updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Error updating asset:', error);
+      alert('Update failed');
+    }
+  );
+}
+
 
 
 

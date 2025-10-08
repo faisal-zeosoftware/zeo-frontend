@@ -1,75 +1,217 @@
 <div class="container">
     <div class="comapny_section" *ngIf="hasViewPermission">
-        <div class="com_list " >
 
-                <h2>Loan Repayment</h2>
-                <hr>
+      <div class="header_section">
+
+        <div class="row">
+            <div class="col-md-4">
+                <h1> Loan Repayment</h1>
+            </div>
+            <div class="col-md-3">
                 
-                <form (ngSubmit)="CreateLoanrepayment()" enctype="multipart/form-data">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <label>Repayment date</label>
-                        <input type="date" class="form-control" required [(ngModel)]="repayment_date" placeholder="Enter Repayment date"
-                               [ngModelOptions]="{standalone: true}" >
-                      </div>
-                  
-                      <div class="col-md-6">
-                        <label>Amount paid</label>
-                        <input type="text" class="form-control" required [(ngModel)]="amount_paid" placeholder="Enter Amount paid"
-                               [ngModelOptions]="{standalone: true}">
-                      
-                      </div>
+                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
 
-                      <div class="col-md-6">
-                        <label>Remaining balance</label>
-                        <input type="text" class="form-control" required [(ngModel)]="remaining_balance" placeholder="Enter Remaining balance"
-                               [ngModelOptions]="{standalone: true}">
-                      
-                      </div>
-                  
-    
-                 
-                  
+            </div>
+            <div class="col-md-5">
+              <div class="button-group pull-right">
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                  </span> Create</button>
+                  <span *ngIf="!hasAddPermission"></span>
+
+                  <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                      <span class="header-btn-icon">
+                       <mat-icon>draw
+                  </mat-icon></span> Edit</button>
+                  <span *ngIf="hasEditPermission"></span>
+
+                  <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                      <span class="header-btn-icon">
+                          <mat-icon> delete
+                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
                      
+                     <span *ngIf="!hasDeletePermission"></span>
+              </div>
+          </div>
+        </div>
+       
+       
 
-                      <div class="col-md-6" >
-                        <label>Loan Type</label>
-                        <div class="custom-sel">
-                          <select
-                            class="form-control"
-                            id="loan"
-                            name="loan"
-                            [(ngModel)]="loan"
-                            [ngModelOptions]="{ standalone: true }"
-                          >
-                            <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-                              {{ employees.loan_type }}
-                            </option>
-                          </select>
-                        </div>
-                      </div>
+    </div>
 
+    <div class="row">
+      <div class="col-md-2">
+          
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
 
-                    </div>
-                  
-                    <div class="row" *ngIf="hasAddPermission">
-                      <div class="col-md-9"></div>
-                      <div class="col-md-3">
-                        <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Repayment </button>
-                      </div>
-                    </div>
-                  </form>
-                  
+      </div>
+      <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
 
+      </div>
+  </div>
+  
+  
 
+    <div *ngIf="iscreateLoanApp" class="modal">
+        <div class="modal-content">
+          <div class="row">
+            <div class="col-md-10">
+              <h2> Create Loan Repayment</h2>
+            </div>
+            <div class="col-md-2">
+              <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+            </div>
+          </div>
+          <hr />
+    
+          <form (ngSubmit)="CreateLoanrepayment()" enctype="multipart/form-data">
+            <div class="row">
+              <div class="col-md-6">
+                <label>Repayment date</label>
+                <input type="date" class="form-control" required [(ngModel)]="repayment_date" placeholder="Enter Repayment date"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+          
+              <div class="col-md-6">
+                <label>Amount paid</label>
+                <input type="text" class="form-control" required [(ngModel)]="amount_paid" placeholder="Enter Amount paid"
+                       [ngModelOptions]="{standalone: true}">
+              
+              </div>
 
+              <div class="col-md-6">
+                <label>Remaining balance</label>
+                <input type="text" class="form-control" required [(ngModel)]="remaining_balance" placeholder="Enter Remaining balance"
+                       [ngModelOptions]="{standalone: true}">
+              
+              </div>
+          
+
+         
+          
+             
+
+              <div class="col-md-6" >
+                <label>Loan Type</label>
+                <div class="custom-sel">
+                  <select
+                    class="form-control"
+                    id="loan"
+                    name="loan"
+                    [(ngModel)]="loan"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+                      {{ employees.loan_type }}
+                    </option>
+                  </select>
+                </div>
+              </div>
 
 
             </div>
+          
+            <div class="row" *ngIf="hasAddPermission">
+              <div class="col-md-8"></div>
+              <div class="col-md-2">
+                <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-4">Close </button>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-success btn-full mt-4">Add </button>
+              </div>
+            </div>
+          </form>
+          
+        
+        </div>
+      </div>
+
+                 <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+<div class="modal-content">
+<div class="row">
+  <div class="col-md-10">
+    <h2>Edit  Loan Repayment</h2>
+  </div>
+  <div class="col-md-2">
+    <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+  </div>
+</div>
+<hr />
+
+<form >
+  <div class="row">
+    <div class="col-md-6">
+      <label>Repayment date</label>
+      <input type="date" class="form-control" required [(ngModel)]="editAsset.repayment_date" placeholder="Enter Repayment date"
+             [ngModelOptions]="{standalone: true}" >
+    </div>
+
+    <div class="col-md-6">
+      <label>Amount paid</label>
+      <input type="text" class="form-control" required [(ngModel)]="editAsset.amount_paid" placeholder="Enter Amount paid"
+             [ngModelOptions]="{standalone: true}">
+    
+    </div>
+
+    <div class="col-md-6">
+      <label>Remaining balance</label>
+      <input type="text" class="form-control" required [(ngModel)]="editAsset.remaining_balance" placeholder="Enter Remaining balance"
+             [ngModelOptions]="{standalone: true}">
+    
+    </div>
 
 
 
-            <div class=""  *ngIf="hasViewPermission">
+
+   
+
+    <div class="col-md-6" >
+      <label>Loan Type</label>
+      <div class="custom-sel">
+        <select
+          class="form-control"
+          id="loan"
+          name="loan"
+          [(ngModel)]="editAsset.loan"
+          [ngModelOptions]="{ standalone: true }"
+        >
+          <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+            {{ employees.loan_type }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+
+  </div>
+
+
+  <div class="row" >
+    <div class="col-md-8"></div>
+    <div class="col-md-2">
+      <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-4">Close</button>
+
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+    </div>
+  </div>
+</form>
+
+
+
+</div>
+</div>
+
+
+
+
+
+    
+
+
+            <div class="mt-4"  *ngIf="hasViewPermission">
 
                 <table class="table-container " width="100%">
                     <thead>
@@ -81,7 +223,8 @@
 
                         <th>Loan Type</th>
                        
-          
+          <th>Action</th>
+
             
                        
                       </tr>
@@ -95,7 +238,22 @@
                         <td>{{ docs.remaining_balance }}</td>
                         <td>{{ docs.loan }}</td>
 
-                      
+                       <td>
+                      <button
+                        mat-fab
+                        color="primary"
+                        aria-label="Edit icon"
+                        *ngIf="showEditBtn"
+      
+                        
+                        (click)="openEditModal(docs)"
+                      >
+                        <mat-icon style="color: white;">draw</mat-icon>
+                      </button>
+      
+                      <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+      
+                    </td>
         
                       </tr>
                   

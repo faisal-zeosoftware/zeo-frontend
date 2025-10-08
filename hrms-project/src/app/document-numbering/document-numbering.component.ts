@@ -316,7 +316,7 @@ ngOnInit(): void {
                 total_length: this.total_length,
                 start_date: this.start_date,
                 end_date: this.end_date,
-                // automatic_numbering: this.automatic_numbering,
+                automatic_numbering: this.automatic_numbering,
                 type: this.type,
                 // leave_type: this.leave_type,
               };

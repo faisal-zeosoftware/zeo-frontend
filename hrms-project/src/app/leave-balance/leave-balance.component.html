@@ -14,144 +14,297 @@
 
                 </div>
                 <div class="col-md-5">
-                    <div class="button-group pull-right">
-<!-- Toggle Bulk Upload Button -->
-<button type="button" class="btn-Create btn btn-danger" (click)="toggleBulkUpload()">
-    <span class="header-btn-icon">
-      <mat-icon>{{ showBulkUpload ? 'cancel' : 'add_circle' }}</mat-icon>
-    </span>
-    {{ showBulkUpload ? 'Cancel Bulk Upload' : 'Bulk Upload Opening Leave Balance' }}
-  </button>
-                      
-                   
-                   
-                          </div>
-                </div>
-                 
+                  <div class="button-group pull-right">
+                      <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                      </span> Create</button>
+                      <span *ngIf="!hasAddPermission"></span>
+
+                      <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                          <span class="header-btn-icon">
+                           <mat-icon>draw
+                      </mat-icon></span> Edit</button>
+                      <span *ngIf="hasEditPermission"></span>
+
+                      <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                          <span class="header-btn-icon">
+                              <mat-icon> delete
+                         </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                         
+                         <span *ngIf="!hasDeletePermission"></span>
+                  </div>
+              </div>
             </div>
            
            
 
         </div>
 
-        <div class="com_list mt-4 " >
-
-            <div class=""  *ngIf="!showBulkUpload">
-                
-            <form (ngSubmit)="LeaveBalance()" enctype="multipart/form-data">
-               
-               
-                <div class="row">
 
 
-                  <div class="col-md-6">
-                    <label>Balance</label>
-                    <input type="number" class="form-control" required [(ngModel)]="balance" placeholder="Enter balance"
-                           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !balance}">
-                    <div *ngIf="registerButtonClicked && !balance" class="error-message">balance field is required.</div>
-                  </div>
+        <div class="row">
+          <div class="col-md-2">
               
-                  <div class="col-md-6">
-                    <label>openings</label>
-                    <input type="number" class="form-control" required [(ngModel)]="openings" placeholder="Enter openings"
-                           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !openings}">
-                    <div *ngIf="registerButtonClicked && !openings" class="error-message">openings field is required.</div>
+              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+  
+          </div>
+          <div class="col-md-3">
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+  
+          </div>
+      </div>
+      
+
+        <div *ngIf="iscreateLoanApp" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-7">
+                  <h2> Add Employee Opening Leave Balance </h2>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="button-group pull-right">
+<!-- Toggle Bulk Upload Button -->
+<button type="button" class="btn-Create btn btn-danger btn-full pull-right" (click)="toggleBulkUpload()">
+    <span class="header-btn-icon">
+      <mat-icon>{{ showBulkUpload ? 'cancel' : 'add_circle' }}</mat-icon>
+    </span>
+    {{ showBulkUpload ? 'Cancel Bulk Upload' : 'Bulk Upload ' }}
+  </button>
+                      
+                   
+                   
+                          </div>
                   </div>
-              
-                
 
-             
-
-             
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
           
+              <div class=""  *ngIf="!showBulkUpload">
+                
+                <form (ngSubmit)="LeaveBalance()" enctype="multipart/form-data">
+                   
+                   
+                    <div class="row">
+    
+    
+                      <div class="col-md-6">
+                        <label>Balance</label>
+                        <input type="number" class="form-control" required [(ngModel)]="balance" placeholder="Enter balance"
+                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !balance}">
+                        <div *ngIf="registerButtonClicked && !balance" class="error-message">balance field is required.</div>
+                      </div>
+                  
+                      <div class="col-md-6">
+                        <label>openings</label>
+                        <input type="number" class="form-control" required [(ngModel)]="openings" placeholder="Enter openings"
+                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !openings}">
+                        <div *ngIf="registerButtonClicked && !openings" class="error-message">openings field is required.</div>
+                      </div>
+                  
+                    
+    
+                 
+    
+                 
+              
+    
+    <div class="col-md-6" >
+        <label>Leave Type</label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="leave_type"
+            name="leave_type"
+            [(ngModel)]="leave_type"
+            [ngModelOptions]="{ standalone: true }"
+          >
+            <option *ngFor="let leavetypes of LeaveTypes" [value]="leavetypes.id">
+              {{ leavetypes.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+    
+      
+    <div class="col-md-6" >
+        <label>Employee</label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="employee"
+            name="employee"
+            [(ngModel)]="employee"
+            [ngModelOptions]="{ standalone: true }"
+          >
+            <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
+              {{ leavetype.emp_code }}
+            </option>
+          </select>
+        </div>
+      </div>
+    
+    
+    
+                
+                      <!-- <div class="col-md-6">
+                        <label>Approver</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="created_by" name="created_by" [(ngModel)]="created_by" [ngModelOptions]="{standalone: true}">
+                            <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.username }}</option>
+                          </select>
+                        </div>
+                      </div> -->
+    
+                  
+                 
+                  
+                 
+                    </div>
+                  
+                    <div class="row"  *ngIf="hasAddPermission">
+                      <div class="col-md-6"></div>
+                      <div class="col-md-3">
+                        <button type="button" class="btn btn-danger btn-full mt-4" (click)="closeapplicationModal()">Close</button>
+
+                        </div>
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Balance</button>
+                      </div>
+                    </div>
+                  </form>
+    
+                  </div>
+    
+                  <div class="bulk_upload_section" *ngIf="showBulkUpload">
+                    <label class="mt-4">Upload Excel File for Leave Balance</label>
+                  
+                    <input
+                      type="file"
+                      (change)="onFileSelected($event)"
+                      accept=".xlsx, .xls, .csv"
+                      class="form-control mb-3"
+                    />
+                  
+                    <button
+                      class="btn-Create btn btn-success"
+                      [disabled]="!selectedFile"
+                      (click)="submitBulkUpload()"
+                    >
+                      Submit Bulk Upload
+                    </button>
+                  </div>
+            
+            </div>
+          </div>
+
+                 <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+  <div class="modal-content">
+    <div class="row">
+      <div class="col-md-10">
+        <h2>Edit  Employee Opening Leave Balance </h2>
+      </div>
+      <div class="col-md-2">
+        <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+      </div>
+    </div>
+    <hr />
+  
+    <form >
+      <div class="row">
+    
+    
+        <div class="col-md-6">
+          <label>Balance</label>
+          <input type="number" class="form-control" required [(ngModel)]="editAsset.balance" placeholder="Enter balance"
+                 [ngModelOptions]="{standalone: true}" >
+        </div>
+    
+        <div class="col-md-6">
+          <label>openings</label>
+          <input type="number" class="form-control" required [(ngModel)]="editAsset.openings" placeholder="Enter openings"
+                 [ngModelOptions]="{standalone: true}">
+        </div>
+    
+      
+
+   
+
+   
+
 
 <div class="col-md-6" >
-    <label>Leave Type</label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="leave_type"
-        name="leave_type"
-        [(ngModel)]="leave_type"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let leavetypes of LeaveTypes" [value]="leavetypes.id">
-          {{ leavetypes.name }}
-        </option>
-      </select>
-    </div>
+<label>Leave Type</label>
+<div class="custom-sel">
+<select
+class="form-control"
+id="leave_type"
+name="leave_type"
+[(ngModel)]="editAsset.leave_type"
+[ngModelOptions]="{ standalone: true }"
+>
+<option *ngFor="let leavetypes of LeaveTypes" [value]="leavetypes.id">
+{{ leavetypes.name }}
+</option>
+</select>
+</div>
+</div>
+
+
+<div class="col-md-6" >
+<label>Employee</label>
+<div class="custom-sel">
+<select
+class="form-control"
+id="employee"
+name="employee"
+[(ngModel)]="editAsset.employee"
+[ngModelOptions]="{ standalone: true }"
+>
+<option *ngFor="let leavetype of Employees" [value]="leavetype.id">
+{{ leavetype.emp_code }}
+</option>
+</select>
+</div>
+</div>
+
+
+
+  
+        <!-- <div class="col-md-6">
+          <label>Approver</label>
+          <div class="custom-sel">
+            <select class="form-control" id="created_by" name="created_by" [(ngModel)]="created_by" [ngModelOptions]="{standalone: true}">
+              <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.username }}</option>
+            </select>
+          </div>
+        </div> -->
+
+    
+   
+    
+   
+      </div>
+    
+
+      <div class="row" >
+        <div class="col-md-9"></div>
+        <div class="col-md-3">
+          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+        </div>
+      </div>
+    </form>
+    
+  
+  
+  </div>
   </div>
 
   
-<div class="col-md-6" >
-    <label>Employee</label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="employee"
-        name="employee"
-        [(ngModel)]="employee"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
-          {{ leavetype.emp_code }}
-        </option>
-      </select>
-    </div>
-  </div>
-
-
-
-            
-                  <!-- <div class="col-md-6">
-                    <label>Approver</label>
-                    <div class="custom-sel">
-                      <select class="form-control" id="created_by" name="created_by" [(ngModel)]="created_by" [ngModelOptions]="{standalone: true}">
-                        <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.username }}</option>
-                      </select>
-                    </div>
-                  </div> -->
-
-              
-             
-              
-             
-                </div>
-              
-                <div class="row"  *ngIf="hasAddPermission">
-                  <div class="col-md-9"></div>
-                  <div class="col-md-3">
-                    <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Balance</button>
-                  </div>
-                </div>
-              </form>
-
-              </div>
-
-              <div class="bulk_upload_section" *ngIf="showBulkUpload">
-                <label class="mt-4">Upload Excel File for Leave Balance</label>
-              
-                <input
-                  type="file"
-                  (change)="onFileSelected($event)"
-                  accept=".xlsx, .xls, .csv"
-                  class="form-control mb-3"
-                />
-              
-                <button
-                  class="btn-Create btn btn-success"
-                  [disabled]="!selectedFile"
-                  (click)="submitBulkUpload()"
-                >
-                  Submit Bulk Upload
-                </button>
-              </div>
-              
-            
-        
-                </div>
-        
-                <table width="100%" *ngIf="hasViewPermission">
+                <table class="mt-4" width="100%" *ngIf="hasViewPermission">
                     <thead>
                       <tr>
                         <th>No</th>
@@ -159,7 +312,7 @@
                         <th> Balance</th>
                         <th>Openings</th>
                         <th>Employee</th>
-            
+                      <th>Action</th>
             
                        
                       </tr>
@@ -172,7 +325,23 @@
                         <td>{{ docs.balance }}</td>
                         <td>{{ docs.openings }}</td> 
                         <td>{{ docs.employee }}</td>
-                       
+                        
+                        <td>
+                          <button
+                            mat-fab
+                            color="primary"
+                            aria-label="Edit icon"
+                            *ngIf="showEditBtn"
+          
+                            
+                            (click)="openEditModal(docs)"
+                          >
+                            <mat-icon style="color: white;">draw</mat-icon>
+                          </button>
+          
+                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+          
+                        </td>
                       </tr>
                   
                     </tbody>

@@ -12,32 +12,43 @@
 
                 </div>
                 <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
-                        </span> Create</button>
-                        <!-- <span *ngIf="!hasAddPermission"></span>
+                  <div class="button-group pull-right">
+                      <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                      </span> Create</button>
+                      <span *ngIf="!hasAddPermission"></span>
 
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
+                      <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                          <span class="header-btn-icon">
+                           <mat-icon>draw
+                      </mat-icon></span> Edit</button>
+                      <span *ngIf="hasEditPermission"></span>
 
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                           
-                           <span *ngIf="!hasDeletePermission"></span> -->
-                    </div>
-                </div>
+                      <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                          <span class="header-btn-icon">
+                              <mat-icon> delete
+                         </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                         
+                         <span *ngIf="!hasDeletePermission"></span>
+                  </div>
+              </div>
             </div>
            
            
 
         </div>
 
-
+        <div class="row">
+          <div class="col-md-2">
+              
+              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+  
+          </div>
+          <div class="col-md-3">
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+  
+          </div>
+      </div>
+      
       
 
         <div *ngIf="iscreateLoanApp" class="modal">
@@ -132,6 +143,99 @@
             </div>
           </div>
 
+                     <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+  <div class="modal-content">
+    <div class="row">
+      <div class="col-md-10">
+        <h2>Edit  Gratuity Type</h2>
+      </div>
+      <div class="col-md-2">
+        <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+      </div>
+    </div>
+    <hr />
+  
+    <form >
+      <div class="row">
+        <div class="col-md-6" >
+       
+            <label>Loan Type</label>
+           <input type="text"  class="form-control" required  [(ngModel)]="editAsset.loan_type"  placeholder="Enter loan type"
+            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !loan_type}">
+           
+           <div *ngIf="registerButtonClicked && !loan_type" class="error-message">loan type is required.</div>
+      </div>
+      
+
+      <div class="col-md-6" >
+       
+        <label>Maximum Amount</label>
+       <input type="text"  class="form-control" required  [(ngModel)]="editAsset.max_amount"  placeholder="Enter Maximum amount"
+        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !max_amount}">
+       
+       <div *ngIf="registerButtonClicked && !max_amount" class="error-message">max amount is required.</div>
+  </div>
+
+  
+  <div class="col-md-6" >
+       
+    <label>Repayment period</label>
+   <input type="number"  class="form-control" required  [(ngModel)]="editAsset.repayment_period"  placeholder="Enter Repayment period"
+    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !repayment_period}">
+   
+   <div *ngIf="registerButtonClicked && !repayment_period" class="error-message">Repayment period is required.</div>
+</div>
+
+
+
+<!--         
+  <div class="col-md-6 mt-4">
+    <div class="check-box-selection-sec form-control">
+        <div class="mat-set">
+            <mat-checkbox [(ngModel)]="use_common_workflow" [ngModelOptions]="{standalone: true}">use common workflow</mat-checkbox>
+        </div>
+       
+    </div>
+</div> -->
+
+
+
+<div class="col-md-6" *ngIf="!created_by">
+
+
+<div class="custom-sel">
+    <label>Created by</label>
+    <select class="form-control" id="created_by" required [(ngModel)]="editAsset.created_by"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !created_by}" >
+        <option value="" >Select</option>
+        <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
+    </select>
+    <div *ngIf="registerButtonClicked && !created_by" class="error-message">Please Select Created by </div>
+</div>
+            
+
+</div>
+    </div>
+
+      <div class="row" >
+        <div class="col-md-8"></div>
+        <div class="col-md-2">
+          <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-4">Close</button>
+
+        </div>
+        <div class="col-md-2">
+          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+        </div>
+      </div>
+    </form>
+    
+  
+  
+  </div>
+  </div>
+
+
+
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
 
@@ -142,7 +246,7 @@
                     <th> Loan type  </th>
                     <th>Maximum amount</th>
                     <th>Repayment period</th>
-      
+                    <th>Action</th>
         
                    
                   </tr>
@@ -154,7 +258,22 @@
                     <td>{{ docs.loan_type }}</td>
                     <td>{{ docs.max_amount }}</td> 
                     <td>{{ docs.repayment_period }}</td>
-    
+                    <td>
+                      <button
+                        mat-fab
+                        color="primary"
+                        aria-label="Edit icon"
+                        *ngIf="showEditBtn"
+      
+                        
+                        (click)="openEditModal(docs)"
+                      >
+                        <mat-icon style="color: white;">draw</mat-icon>
+                      </button>
+      
+                      <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+      
+                    </td>
                   </tr>
               
                 </tbody>
