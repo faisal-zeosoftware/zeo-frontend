@@ -503,6 +503,21 @@ updateAssetType(): void {
           }
           
 
+selectedSalaryComponent: string | null = null;
+
+onRequestTypeChange(event: any): void {
+  const selectedId = +event.target.value;
+  const selectedReq = this.RequestType.find((r: any) => r.id === selectedId);
+
+  if (selectedReq) {
+    this.selectedSalaryComponent = selectedReq.salary_component;
+    console.log('Selected salary_component:', this.selectedSalaryComponent);
+  } else {
+    this.selectedSalaryComponent = null;
+  }
+}
+
+
           loadgeneralReq(): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema

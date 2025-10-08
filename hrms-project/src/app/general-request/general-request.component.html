@@ -115,33 +115,41 @@
     
            
               
-              <div class="col-md-6" >
-                   
+          
+        
+    
+        
+              <div class="col-md-6">
+                <div class="custom-sel">
+                  <label>Select Request Type</label>
+                  <select class="form-control"
+                          id="request_type"
+                          required
+                          [(ngModel)]="request_type"
+                          [ngModelOptions]="{standalone: true}"
+                          [ngClass]="{'error-field': registerButtonClicked && !request_type}"
+                          (change)="onRequestTypeChange($event)">
+                    <option value="">Select</option>
+                    <option *ngFor="let req of RequestType" [value]="req.id">{{ req.name }}</option>
+                  </select>
+                  <div *ngIf="registerButtonClicked && !request_type" class="error-message">
+                    Please Select Your Req type
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Show Total field only if salary_component is not null -->
+              <div class="col-md-6" *ngIf="selectedSalaryComponent">
                 <label>Total</label>
-               <input type="number"  class="form-control" required  [(ngModel)]="total"  placeholder="Enter total"
-                [ngModelOptions]="{standalone: true}" >
-               
-          </div>
-    
-        
-    
-        
-        <div class="col-md-6">
-    
-    
-            <div class="custom-sel">
-                <label>Select Request Type</label>
-                <select class="form-control" id="request_type" required [(ngModel)]="request_type"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}" >
-                    <option value="" >Select</option>
-                    <option *ngFor="let deparmentsec of RequestType" [value]="deparmentsec.id">{{ deparmentsec.name     }} </option>
-                </select>
-                <div *ngIf="registerButtonClicked && !request_type" class="error-message">Please Select Your Req type</div>
-            </div>
-                        
-    
-        </div>
-    
-    
+                <input type="number"
+                       class="form-control"
+                       required
+                       [(ngModel)]="total"
+                       placeholder="Enter total"
+                       [ngModelOptions]="{standalone: true}">
+              </div>
+              
+
        
     
     
