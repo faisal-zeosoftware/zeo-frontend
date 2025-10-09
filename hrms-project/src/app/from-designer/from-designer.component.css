@@ -62,41 +62,7 @@ table thead th {
     border: 1px solid #e6edf1;
     padding: 15px;
   }
-  
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
+ 
   
 
 
@@ -289,3 +255,47 @@ input:focus-visible {
     color: black;
     margin-right: 20px;
   }
+
+
+/* Default stepper style improvements */
+::ng-deep .mat-horizontal-stepper-header-container {
+  flex-wrap: wrap; /* allows step labels to wrap instead of shrinking */
+  justify-content: center;
+}
+
+/* Step labels text fix */
+::ng-deep .mat-step-label {
+  white-space: normal !important; /* allow line break */
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 8px;
+}
+
+/* Active step label highlight */
+::ng-deep .mat-step-header.mat-step-header-selected .mat-step-label {
+  font-weight: 600;
+  color: #004976; /* navy color like your theme */
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width: 640px) {
+  ::ng-deep .mat-horizontal-stepper-header-container {
+    flex-direction: column; /* stack steps vertically */
+    align-items: flex-start;
+  }
+
+  ::ng-deep .mat-step-label {
+    font-size: 13px;
+    text-align: left;
+    width: 100%; /* full width label */
+    padding: 6px 0;
+  }
+
+  /* Add spacing between step headers */
+  ::ng-deep .mat-step-header {
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    padding: 6px 0;
+  }
+}

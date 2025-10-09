@@ -146,3 +146,80 @@ margin-right: 10px;
     font-weight: 600;
     font-family: math;
   }
+
+
+  /* Expansion panel header responsive */
+mat-expansion-panel-header {
+  flex-wrap: wrap; /* allow wrapping */
+}
+
+mat-expansion-panel-header .col-md-6,
+mat-expansion-panel-header .col-md-5,
+mat-expansion-panel-header .col-md-1 {
+  flex: 1 1 100%;
+  max-width: 100%;
+  padding: 5px 0;
+  text-align: left;
+}
+
+/* UDF inside section fields */
+.inside_udf .row > div {
+  margin-bottom: 15px;
+}
+
+/* Modal fixes */
+.modal-content {
+  width: 90%;
+  max-width: 800px;
+  margin: 50px auto;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* Close button positioning */
+.modal .close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+
+/* Mobile-specific */
+@media (max-width: 768px) {
+  .comapny_section {
+    margin: 80px 10px 20px 10px;
+  }
+
+  .com_list {
+    padding: 15px;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 250px auto;
+    padding: 15px;
+  }
+
+  .inside_udf .row > div {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  .row .col-md-2,
+  .row .col-md-6,
+  .row .col-md-8,
+  .row .col-md-10,
+  .row .col-md-12 {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  /* Buttons in modal footer */
+  .modal form .row:last-child {
+    text-align: center;
+  }
+
+  .modal form .row:last-child .btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
