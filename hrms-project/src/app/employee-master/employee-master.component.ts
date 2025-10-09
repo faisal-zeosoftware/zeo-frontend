@@ -331,16 +331,6 @@ if (this.userId !== null) {
   console.error('User ID is null.');
 }
 
-
-
-
-   
-  
-   
-
-  
-  
-  
     
      
     }
@@ -552,7 +542,7 @@ toggleView() {
       
     }
 
-    isBulkuploadEmployeeModalOpen :boolean=false;
+ isBulkuploadEmployeeModalOpen :boolean=false;
 
 
 OpenBulkuploadModal():void{

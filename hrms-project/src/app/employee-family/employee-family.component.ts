@@ -414,6 +414,54 @@ bulkUploadDoc() {
   this.visibilitys = !this.visibilitys;
 }
 
+
+
+
+
+    showUploadForm: boolean = false;
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+  downloadDocumnetExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadDocumnetExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Document_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+    downloadDocumnetCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+
+      this.companyRegistrationService.downloadDocumnetCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Document_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+
+
 bulkuploaddocument(): void {
   if (!this.selectedFiles) {
     alert('Please select a valid Excel file before uploading.');
@@ -446,6 +494,8 @@ bulkuploaddocument(): void {
       }
     );
 }
+
+
 
   
  

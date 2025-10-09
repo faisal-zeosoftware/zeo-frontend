@@ -1,100 +1,5 @@
 
 
-.comapny_section{
-
-    margin-top: 100px;
-    margin-left: 50px;
-    
-}
-
-.header_section{
-    background: white;
-    padding: 24px 20px 15px 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    width: 100%;
-    border-bottom: solid 3px navy;
-}
-
-.header_section h1{
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
-
-}
-
-.btn-Create{
-     /* padding: 5px 15px; */
-     /* border: none; */
-margin-right: 10px;     
-   
-}
-
-.btn-Edit{
-    margin-right: 10px;
-}
-
-.btn-Delete{
-    margin-right: 10px;
-}
-
-.header-btn-icon{
-    vertical-align: middle;
-}
-
-.btn-Create .mat-icon{
-    margin-top: 4px;
-}
-.btn-Create .mat-icon{
-    margin-top: 2px;
-}
-
-
-
-.list_company_sec{
-    padding: 25px;
-    background: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    border-top: solid 3px navy;
-
-}
-
-.com_list{
-    padding: 20px;
-    width: 100%;
-    background: white;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    border-bottom: solid 3px navy;
-    margin-bottom: 20px;
-
-
-}
-
-.com_list h2{
-    font-size: 16px;
-    margin-top: 15px;
-    font-weight: 500;
-}
-
-.comp_logo{
-    width: 40px;
-    height: 50px;
-    overflow: hidden;
-}
-
-.comapny_section p{
-    text-align: center;
-    color: grey;
-}
-
-.com_list .mat-icon{
-    color: #FDCC0D;
-    height: 20px;
-    width: 25px;
-}
-
-
 
 .comapny_section{
 
@@ -189,45 +94,220 @@ margin-right: 10px;
     height: 20px;
     width: 25px;
 }
+
+
+
+
+
+.search-box {
+    width: 100%;
+    position: relative;
+    display: flex;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+  }
+  
+  .search-input {
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    /* padding: 15px 45px 15px 15px; */
+    background-color: #eaeaeb;
+    color: #6c6c6c;
+    border-radius: 6px;
+    border:none;
+    transition: all .4s;
+  }
+  
+  .search-input:focus {
+    border:none;
+    outline:none;
+    box-shadow: 0 1px 12px #b8c6db;
+    -moz-box-shadow: 0 1px 12px #b8c6db;
+    -webkit-box-shadow: 0 1px 12px #b8c6db;
+  }
+  
+  .search-btn {
+    background-color: transparent;
+    font-size: 18px;
+    padding: 6px 9px;
+    margin-left:-45px;
+    border:none;
+    color: #6c6c6c;
+    transition: all .4s;
+    z-index: 1 ;
+  }
+  
+  .search-btn:hover {
+    transform: scale(1.2);
+    cursor: pointer;
+    color: black;
+  }
+  
+  .search-btn:focus {
+    outline:none;
+    color:black;
+  }
+  
+  /* You just need to get this field - end */
+  
+  .footer {
+    position:fixed;
+    bottom:5px;
+  }
+  
+  .footer p {
+    font-family: 'Montserrat', sans-serif;
+    font-size:12px;
+    color:#000;
+  }
+  
+  .footer a {
+    color: #fff;
+    transition: all .4s;
+  }
+  
+  .footer a:hover {
+    color: #eaeaeb;
+  }
 
 
   
 .search-container {
-    display: flex;
-    align-items: center;
-    position: relative;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-input {
+  padding: 8px 15px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  background: transparent;
+  /* transition: width 0.4s ease-in-out; */
+  /* opacity: 0;
+  z-index: 0; */
+}
+
+.search-input.expanded {
+  width: 300px; /* Adjust width as needed */
+  opacity: 1;
+}
+
+.search-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: -40px;
+  border-radius: 100%;
+  background: #5c1e81;
+  width: 35px;
+  height: 35px;
+  z-index: 1;
+}
+
+.search-btn i {
+  color: #ffffff;
+}
+
+
+
+
+/* Add your CSS styles here */
+.modal {
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    margin-left: auto;
+    margin-right: auto;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
   }
   
-  .search-input {
-    padding: 8px 15px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    outline: none;
-    background: transparent;
-    /* transition: width 0.4s ease-in-out; */
-    /* opacity: 0;
-    z-index: 0; */
-    width: 100%;
+  .modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%; /* Could be more or less, depending on screen size */
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 100px;
+    height: auto;
+  
   }
   
- 
-  .search-btn {
-    background: transparent;
-    border: none;
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: red;
+    text-decoration: none;
     cursor: pointer;
-    font-size: 18px;
-    margin-left: -40px;
-    border-radius: 100%;
-    background: #5c1e81;
-    width: 35px;
-    height: 35px;
-    z-index: 10;
   }
   
-  .search-btn i {
-    color: #ffffff;
+  .modal h2{
+  
+    font-size: 16px;
+    text-transform: capitalize;
+    font-weight: 600;
+    font-family: math;
   }
+
   
-  
-  
-  
+
+
+
+.vn-wisteria a{
+background-color:#8e44ad;
+  display:inline-block;
+  position:relative;
+  margin:30px 5px;
+  padding:15px 10px 12px 50px;
+  color:#fff;
+  transition:all 0.4s ease;
+  border-radius:3px;
+  font-size: 12px;
+  width: 100%;
+  white-space: nowrap;
+}
+.vn-wisteria a:before{
+  content:"\f019";
+  font-family:fontAwesome;
+  position:absolute;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  font-size:14px;
+  border-radius:0 20px 0 0;
+  color:#000;
+  background-color:#fff;
+  opacity:0.3;
+  padding:15px;
+  top:0;
+  left:0;
+}
+.vn-wisteria a:hover{
+  background:#7f8c8d
+}
+
+.vn-green a{
+    background-color: #27ae60;
+}
+
+.vn-blue a{
+    background-color:#2980b9;
+}

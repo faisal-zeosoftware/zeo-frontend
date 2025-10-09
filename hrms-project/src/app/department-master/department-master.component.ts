@@ -409,6 +409,8 @@ OpenBulkuploadModal():void{
 }
 
 
+
+
 closeBulkuploadModal():void{
   this.isBulkuploadDepartmentModalOpen = false;
 

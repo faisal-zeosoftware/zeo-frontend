@@ -196,8 +196,52 @@ downloadDepartmentCsv(selectedSchema: string): Observable<Blob> {
 
 
 
-downloadDepartmentExcel(selectedSchema: string): Observable<Blob> {
+downloadDesignationExcel(selectedSchema: string): Observable<Blob> {
   const apiUrl = `${this.apiUrl}/organisation/api/Dept-bulkupload/download_demo_excel/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+
+downloadDesignationCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Desigtn-bulkupload/download_demo_csv/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+downloadDepartmentExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Desigtn-bulkupload/download_demo_excel/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+downloadCatogaryCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Category-bulkupload/download_demo_csv/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+downloadCatogaryExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Category-bulkupload/download_demo_excel/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+
+downloadDocumnetCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/employee/api/Bulkupload-Documents/download_demo_csv/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+downloadDocumnetExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/employee/api/Bulkupload-Documents/download_demo_excel/?schema=${selectedSchema}`;
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
 

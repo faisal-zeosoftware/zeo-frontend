@@ -15,6 +15,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { environment } from '../../environments/environment';
 
 
 interface Permission {
@@ -31,13 +32,26 @@ interface Permission {
 })
 export class CatogaryMasterComponent  implements OnInit{
 
+
+    private apiUrl = `${environment.apiBaseUrl}`;
+  
+     selectedFiles! : File;
+    selectedFile!: File;
+    file:any ='';
+
   
   Catogaries: any[] = [];
   selectedDepartment: any;
 
   ctgry_title: string = '';
   ctgry_description:string = '';
+  ctgry_code:string ='';
   hasPermissioncom: boolean = false;
+  
+
+
+
+  
 
   isAuthenticated: boolean = false;
   showComponent: boolean = false;
@@ -193,25 +207,6 @@ if (this.userId !== null) {
     }
 
    
-    // checkViewPermission(permissions: any[]): boolean {
-    //   const requiredPermission = 'view_ctgry_master' ||'add_ctgry_master' ||'delete_ctgry_master' ||'change_ctgry_master';
-      
-    
-    //   // Check user permissions
-    //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-    //     return true;
-    //   }
-    
-    //   // Check group permissions (if applicable)
-    //   // Replace `// TODO: Implement group permission check`
-    //   // with your logic to retrieve and check group permissions
-    //   // (consider using a separate service or approach)
-    //   return false; // Replace with actual group permission check
-    // }
-
-    
-
-    
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);
     }
@@ -355,6 +350,124 @@ if (this.userId !== null) {
       Catogaries.ctgry_title.toLowerCase().includes(query) 
     );
   }
+
+
+
+
+       bulkuploaddocument(): void {
+
+     const formData = new FormData();
+
+    formData.append('file',this.selectedFiles);
+  
+    formData.append('file',this.file)
+    
+    formData.append('ctgry_title', this.ctgry_title);
+  
+    formData.append('ctgry_description', this.ctgry_description);
+    
+    formData.append('ctgry_code', this.ctgry_code);
+    
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      // return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+   
+    // return this.http.put(apiUrl, formData);
+
+  
+    this.http.post(`${this.apiUrl}/organisation/api/Category-bulkupload/bulk_upload/?schema=${selectedSchema}`, formData)
+      .subscribe((response) => {
+        // Handle successful upload
+        console.log('bulkupload upload successful', response);
+        alert('bulkupload upload successful');
+        window.location.reload();
+
+  
+       
+      }, (error) => {
+        // Handle upload error
+        console.error('Category upload failed', error);
+        alert('Category upload failed! enter all fields correctly');
+      });
+      }
+
+
+
+
+      
+
+  
+   onFileChange(event: any){
+    this.file = event.target.files[0];
+    console.log(this.file);
+    
+  }
+   onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+
+
+  isBulkuploadCatogaryModalOpen :boolean=false;
+
+
+OpenBulkuploadModal():void{
+  this.isBulkuploadCatogaryModalOpen = true;
+}
+
+closeBulkuploadModal():void{
+  this.isBulkuploadCatogaryModalOpen = false;
+
+}
+
+    showUploadForm: boolean = false;
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+
+
+   downloadCatogaryExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadCatogaryExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Categary_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+
+
+    
+      downloadCatogaryCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadCatogaryCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Category_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
 
 
   

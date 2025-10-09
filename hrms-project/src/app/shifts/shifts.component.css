@@ -389,21 +389,6 @@ table thead td {
 
 /* Mobile styles */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @media (max-width: 768px) {
 
   .table{
@@ -411,5 +396,6 @@ table thead td {
   }
 
 }
+
 
 

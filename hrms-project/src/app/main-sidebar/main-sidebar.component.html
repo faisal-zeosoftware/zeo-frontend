@@ -112,35 +112,31 @@
 </nav>
 
 
-
+<!-- ------------------------------------desktop view------------------------------------ -->
 
 <!-- Navbar -->
 <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
   <!-- Container wrapper -->
   <div class="container-fluid lap_view">
 
-    <!-- Brand -->
+  <!-- button close and open  -->
 
      <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
           <span *ngIf="!isMenuOpen">☰</span>
           <span *ngIf="isMenuOpen">X</span>
     </button>
 
-
+    <!-- logo -->
     <div class="nav_mov">
      <a class="navbar-brand">
       <img src="assets/zeo_logo_new.png" height="70" width="100%" alt="MDB Logo" 
         loading="lazy" />
 
      </a>
-     <!-- <h1 class="pull-right menu_mob" >menubar</h1> -->
+     
 
      </div>
 
-
-
-
- 
    
     <ul class="navbar-nav ms-auto d-flex flex-row">
       <!-- Notification dropdown -->
@@ -154,6 +150,8 @@
                style="position: absolute; margin-left: -10px; color: white;">{{ expiredDocumentsCount }}</span>
      </a>
        </li>
+
+       <!-- select company -->
    
       <li class="nav-item dropdown" *ngIf="schemas.length > 0">
         <div class="Company_pro" >
@@ -174,6 +172,8 @@
         
       </li>
 
+      <!-- Admin logo -->
+
     <li>
       <div class="user_logged_outer" *ngIf="userDetails">
         <div class="user_logged_in">
@@ -186,7 +186,7 @@
       </div>
     </li>
       
-      <!-- Avatar -->
+      <!-- logout button -->
       <li class="nav-item dropdown">
 
       
@@ -309,12 +309,6 @@
 
 
 </nav>
-
-
-
-
-
-
 
 
 

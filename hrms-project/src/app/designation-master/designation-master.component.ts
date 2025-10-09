@@ -10,6 +10,7 @@ import { DesignationService } from './designation.service';
 import { DesignationCreationComponent } from '../designation-creation/designation-creation.component';
 import { DesignationEditComponent } from '../designation-edit/designation-edit.component';
 import { SessionService } from '../login/session.service';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -19,8 +20,23 @@ import { SessionService } from '../login/session.service';
 })
 export class DesignationMasterComponent {
 
+   private apiUrl = `${environment.apiBaseUrl}`;
+
+    selectedFiles! : File;
+    selectedFile!: File;
+    file:any ='';
+
+
   Designations: any[] = [];
   selectedDepartment: any;
+
+  
+  desgntn_job_title: string = '';
+  desgntn_description:string ='';
+  desgntn_code:string ='';
+
+ 
+ 
 
   job_title: string = '';
   description:string = '';
@@ -189,26 +205,7 @@ if (this.userId !== null) {
         }
       );
     }
-    // checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-    //   return groupPermissions.some(permission => permission.codename === codeName);
-    // }
-     
 
-
-    
-
-    // loadDesignation(): void {
-    //   this.DesignationService.getDesignation().subscribe(
-    //     (result: any) => {
-    //       this.Designations = result;
-    //       console.log(' fetching Companies:');
-  
-    //     },
-    //     (error) => {
-    //       console.error('Error fetching Companies:', error);
-    //     }
-    //   );
-    // }
   
 
 
@@ -292,7 +289,125 @@ if (this.userId !== null) {
         Designations.desgntn_job_title.toLowerCase().includes(query) 
       );
     }
+
+
+
+
     
+
+ onFileChange(event: any){
+    this.file = event.target.files[0];
+    console.log(this.file);
+    
+  }
+   onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+
+
+
+
+ bulkuploaddocument(): void {
+  
+  
+    const formData = new FormData();
+    formData.append('file',this.selectedFiles);
+  
+    formData.append('file',this.file)
+    
+    formData.append('desgntn_job_title', this.desgntn_job_title);
+  
+    formData.append('desgntn_description', this.desgntn_description);
+  
+    
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      // return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+   
+    // return this.http.put(apiUrl, formData);
+
+  
+    this.http.post(`${this.apiUrl}/organisation/api/Desigtn-bulkupload/bulk_upload/?schema=${selectedSchema}`, formData)
+      .subscribe((response) => {
+        // Handle successful upload
+        console.log('bulkupload upload successful', response);
+        alert("bulkupload upload successful");
+        window.location.reload();
+  
+      }, (error) => {
+        // Handle upload error
+        console.error('Designations upload failed', error);
+        alert('enter all fields correctly');
+      });
+  
+  }
+
+
+
+ isBulkuploadDesignationModalOpen :boolean=false;
+
+
+OpenBulkuploadModal():void{
+  this.isBulkuploadDesignationModalOpen = true;
+}
+
+
+closeBulkuploadModal():void{
+  this.isBulkuploadDesignationModalOpen = false;
+
+}
+
+
+    showUploadForm: boolean = false;
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+  downloadDesignationExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadDesignationExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Designation_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+          downloadDesignationCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+
+      this.companyRegistrationService.downloadDesignationCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Designation_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+
+
+
 
 
 

@@ -28,6 +28,9 @@
                      -->
                     <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
 
+
+
+                    
                 </div>
                 <div class="col-md-6">
                     <div class="button-group pull-right">
@@ -167,7 +170,7 @@
                     <div class="col-md-4">
                         <div class="vn-wisteria  vn-blue" >
                             <a class="btn-wrap" (click)="toggleUploadForm()">
-                                EMPLOYEE BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
+                                DEPARTMENT BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
                               </a>                            </div>
                         </div>
             </div>
@@ -177,7 +180,7 @@
     <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
       <div class="row">
         <div class="col-md-12">
-          <label for="emp_profile_pic">Upload Employee Details:</label>
+          <label for="emp_profile_pic">Upload department Details:</label>
           <input type="file" name="files" id="file" class="form-control" (change)="onFileChange($event);">
         </div>
       </div>
@@ -203,13 +206,6 @@
 
 
   
-      
-
-  
-    
-            
-   
-    
     
 
     </div>

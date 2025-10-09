@@ -430,9 +430,10 @@
                 <div class="row">
                     <div class="col-md-10"></div>
                     <div class="col-md-2">
-                        <button (click)="bulkUploadDoc()" type="button" class="btn btn-full btn-danger">
-                            {{ReadMore?"Back":"Bulk Upload"}}
-                        </button>
+                      <button type="button" class="btn-Edit btn-secondary  btn"  (click)="bulkUploadDoc()">
+                            <span class="header-btn-icon">
+                             <mat-icon>system_update_alt
+                        </mat-icon></span> Import</button>
                     </div>
                 </div>
                 <form (ngSubmit)="uploadEmployeeDocument()" #documentForm="ngForm" *ngIf="visibles">
@@ -528,7 +529,39 @@
                     </mat-action-row>
                 </form>
                 <div class="from-sec" *ngIf="visibilitys" >
-                    <h1>Bulk Upload Department</h1>
+
+   <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="vn-wisteria" >
+                    <a  class="btn-wrap" (click)="downloadDocumnetExcel()">DOWNLOAD EXCEL FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="vn-wisteria vn-green" >
+                        <a  class="btn-wrap"  (click)="downloadDocumnetCsv()">DOWNLOAD CSV FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="vn-wisteria  vn-blue" >
+                            <a class="btn-wrap" (click)="toggleUploadForm()">
+                                DESIGNATION BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
+                              </a>                            </div>
+                        </div>
+            </div>
+
+
+                  
+                  
+                  
+                  
+                  
+                   
+
+                        
+            <div *ngIf="showUploadForm">
+                 <h1>Bulk Upload Department</h1>
                    
                     <hr>
                     <div class="text-wrappers" >
@@ -559,6 +592,8 @@
                       
                     
                         </div>
+
+  </div>
                       
                 
                 
