@@ -406,5 +406,88 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       data: { template: selectedTemplate } // Passing the selected template data to the modal component
     });
   }
+
+
+
+
+
+
+  
+
+  iscreateLoanApp: boolean = false;
+
+
+
+
+  openPopus():void{
+    this.iscreateLoanApp = true;
+
+  }
+
+  closeapplicationModal():void{
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelected: boolean = false;
+
+toggleCheckboxes() {
+  this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+this.tempEmails.forEach(employee => employee.selected = this.allSelected);
+
+}
+
+onCheckboxChange(employee:number) {
+  // No need to implement any logic here if you just want to change the style.
+  // You can add any additional logic if needed.
+}
+
+
+
+   deleteSelectedAssetType() { 
+      const selectedEmployeeIds = this.tempEmails
+        .filter(employee => employee.selected)
+        .map(employee => employee.id);
+    
+      if (selectedEmployeeIds.length === 0) {
+        alert('No Asset type selected for deletion.');
+        return;
+      }
+    
+      if (confirm('Are you sure you want to delete the selected Email Template?')) {
+        selectedEmployeeIds.forEach(categoryId => {
+          this.employeeService.deleteEmailTemplateLeave(categoryId).subscribe(
+            () => {
+              console.log('Email Configuration deleted successfully:', categoryId);
+              // Remove the deleted employee from the local list
+              this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
+              alert(' Email Template deleted successfully');
+              window.location.reload();
+    
+            },
+            (error) => {
+              console.error('Error deleting Email Configuration:', error);
+              alert(error)
+            }
+          );
+        });
+      }
+    }
+    
+    
        
 }
