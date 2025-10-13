@@ -652,6 +652,7 @@ closeBulkuploadModal():void{
       .subscribe(
         (response) => {
           console.log('Bulk upload successful', response);
+           alert('bulkupload upload successful');
     
        
         },
