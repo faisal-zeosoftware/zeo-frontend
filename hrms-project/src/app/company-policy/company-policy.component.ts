@@ -5,6 +5,7 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { BranchServiceService } from '../branch-master/branch-service.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { EmployeeService } from '../employee-master/employee.service';
 
 
 @Component({
@@ -59,6 +60,7 @@ policies: any[] = [];
     private leaveService:LeaveService,
     private branchService:BranchServiceService,
     private DesignationService: DesignationService,
+    private employeeService:EmployeeService,
 
   
     ) {}
@@ -252,19 +254,7 @@ if (this.userId !== null) {
     }
   
 
-    // getCompanyPolicies(): void {
-    //   const selectedSchema = localStorage.getItem('selectedSchema');
-    //   const url = `${this.apiUrl}/organisation/api/policies/?schema=${selectedSchema}`;
-    
-    //   this.http.get<any[]>(url).subscribe(
-    //     (data) => {
-    //       this.policies = data;
-    //     },
-    //     (error) => {
-    //       console.error('Error fetching policies', error);
-    //     }
-    //   );
-    // }
+   
 
     getCompanyPolicies() {
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -359,6 +349,128 @@ if (this.userId !== null) {
       }
   
     }
+
+
+
+
+    
+
+    iscreateLoanApp: boolean = false;
+
+
+
+
+    openPopus():void{
+      this.iscreateLoanApp = true;
+
+    }
+  
+    closeapplicationModal():void{
+      this.iscreateLoanApp = false;
+
+    }
+
+
+
+
+
+
+     
+
+showEditBtn: boolean = false;
+
+EditShowButtons() {
+this.showEditBtn = !this.showEditBtn;
+}
+
+
+Delete: boolean = false;
+allSelecteds: boolean = false;
+
+toggleCheckboxes() {
+this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+this.allSelecteds = !this.allSelecteds;
+this.policies.forEach(employee => employee.selected = this.allSelecteds);
+
+}
+
+onCheckboxChange(employee:number) {
+// No need to implement any logic here if you just want to change the style.
+// You can add any additional logic if needed.
+}
+
+
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+openEditModal(asset: any): void {
+this.editAsset = { ...asset }; // copy asset data
+this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+deleteSelectedAssetType() { 
+const selectedEmployeeIds = this.policies
+  .filter(employee => employee.selected)
+  .map(employee => employee.id);
+
+if (selectedEmployeeIds.length === 0) {
+  alert('No policies  selected for deletion.');
+  return;
+}
+
+if (confirm('Are you sure you want to delete the selected policies ?')) {
+  selectedEmployeeIds.forEach(categoryId => {
+    this.employeeService.deletePolicy(categoryId).subscribe(
+      () => {
+        console.log(' policies deleted successfully:', categoryId);
+        // Remove the deleted employee from the local list
+        this.policies = this.policies.filter(employee => employee.id !== categoryId);
+        alert(' policies deleted successfully');
+        window.location.reload();
+
+      },
+      (error) => {
+        console.error('Error deleting Loan Types:', error);
+        alert(error)
+      }
+    );
+  });
+}
+}
+
+
+updateAssetType(): void {
+const selectedSchema = localStorage.getItem('selectedSchema');
+if (!selectedSchema || !this.editAsset.id) {
+  alert('Missing schema or asset ID');
+  return;
+}
+
+this.employeeService.updatePolicy(this.editAsset.id, this.editAsset).subscribe(
+  (response) => {
+    alert(' policies  updated successfully!');
+    this.closeEditModal();
+    window.location.reload();
+  },
+  (error) => {
+    console.error('Error updating asset:', error);
+    alert('Update failed');
+  }
+);
+}
+
+
+
 
 
 }

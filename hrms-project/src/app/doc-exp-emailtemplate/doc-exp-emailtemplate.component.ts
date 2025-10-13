@@ -213,36 +213,6 @@ if (this.userId !== null) {
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
-  
-  // ngAfterViewInit(): void {
-  //   $(this.el.nativeElement).find('#summernote').summernote({
-  //     height: 150,  // Set editor height
-  //     placeholder: 'Type your text here...',
-  //     toolbar: [
-  //       ['style', ['bold', 'italic', 'underline']],
-  //       ['fontsize', ['fontsize']],  // Make sure fontsize is added here
-  //       ['color', ['color']],
-  //       ['para', ['ul', 'ol', 'paragraph']],
-  //       ['insert', ['link', 'picture', 'video']],
-  //       ['view', ['fullscreen', 'codeview', 'help']]
-  //     ],
-  //     fontsize: ['8', '9', '10', '11', '12', '14', '16', '18', '24', '36', '48', '64', '82', '150'],  // Font sizes to choose from
-  //     fontsizeUnit: 'px',  // Font size unit, you can also use 'pt' or other units
-  //     hint: {
-  //       mentions: ['Jayden Smith', 'Peter Pan', 'Lorca', 'David Summer'],
-  //       match: /\B@(\w*)$/,
-  //       search: function (keyword: string, callback: Function) {
-  //         callback($.grep(this.mentions, function (item: string | string[]) {
-  //           return item.indexOf(keyword) === 0;
-  //         }));
-  //       },
-  //       content: function (item: string) {
-  //         return '@' + item;
-  //       }
-  //     }
-  //   });
-  // }
-  
 
 
  
@@ -289,20 +259,6 @@ if (this.userId !== null) {
   
     selectedPlaceholders: string[] = []; // Store multiple placeholders
 
-  // // Method to handle placeholder selection
-  // selectPlaceholder(placeholder: string): void {
-  //   const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
-    
-  //   // If the placeholder is already inserted, prevent adding it again
-  //   if (!this.selectedPlaceholders.includes(placeholder)) {
-  //     // Append the new placeholder
-  //     const updatedContent = currentContent + ' ' + placeholder;
-  //     $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
-
-  //     // Add the placeholder to the selectedPlaceholders array
-  //     this.selectedPlaceholders.push(placeholder);
-  //   }
-  // }
 
 
   selectPlaceholder(placeholder: string): void {
@@ -442,6 +398,7 @@ if (this.userId !== null) {
         console.log('Template updated successfully', response);
         alert('Email Template has been updated');
         this.loadtemp(); // Refresh the list of templates
+        window.location.reload();
       },
       (error) => {
         console.error('Error updating template:', error);
@@ -450,14 +407,92 @@ if (this.userId !== null) {
     );
   }
 
+  
 
-  // openEditPopuss(selectedTemplate: any): void {
-  //   this.dialog.open(EmailTemplateEditComponent, {
-  //     width: '80%',
-  //     height: '700px',
-  //     data: { template: selectedTemplate } // Passing the selected template data to the modal component
-  //   });
-  // }
+  iscreateLoanApp: boolean = false;
+
+
+
+
+  openPopus():void{
+    this.iscreateLoanApp = true;
+
+  }
+
+  closeapplicationModal():void{
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelected: boolean = false;
+
+toggleCheckboxes() {
+  this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+this.tempEmails.forEach(employee => employee.selected = this.allSelected);
+
+}
+
+onCheckboxChange(employee:number) {
+  // No need to implement any logic here if you just want to change the style.
+  // You can add any additional logic if needed.
+}
+
+
+
+   deleteSelectedAssetType() { 
+      const selectedEmployeeIds = this.tempEmails
+        .filter(employee => employee.selected)
+        .map(employee => employee.id);
     
+      if (selectedEmployeeIds.length === 0) {
+        alert('No Asset type selected for deletion.');
+        return;
+      }
+    
+      if (confirm('Are you sure you want to delete the selected Email Template?')) {
+        selectedEmployeeIds.forEach(categoryId => {
+          this.employeeService.deleteEmailTemplateDocmentExp(categoryId).subscribe(
+            () => {
+              console.log('Email Configuration deleted successfully:', categoryId);
+              // Remove the deleted employee from the local list
+              this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
+              alert(' Email Template deleted successfully');
+              window.location.reload();
+    
+            },
+            (error) => {
+              console.error('Error deleting Email Configuration:', error);
+              alert(error)
+            }
+          );
+        });
+      }
+    }
+    
+    
+    openEditPopuss(selectedTemplate: any): void {
+      this.dialog.open(EmailTemplateEditComponent, {
+        width: '80%',
+        height: '700px',
+        data: { template: selectedTemplate } // Passing the selected template data to the modal component
+      });
+    }
+  
+  
+  
 
 }

@@ -2,13 +2,72 @@
 
     
     <div class="comapny_section">
-        <div class="com_list " *ngIf="hasViewPermission">
-    <div class="cpm-sec">
 
-        <h2>Company Policy</h2><hr>
+      <div class="header_section">
 
+        <div class="row">
+            <div class="col-md-4">
+                <h1> Company Policy</h1>
+            </div>
+            <div class="col-md-3">
+                
+                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
 
-        <form (ngSubmit)="registerApproveLevel()" enctype="multipart/form-data">
+            </div>
+            <div class="col-md-5">
+              <div class="button-group pull-right">
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                  </span> Create</button>
+                  <span *ngIf="!hasAddPermission"></span>
+
+                  <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                      <span class="header-btn-icon">
+                       <mat-icon>draw
+                  </mat-icon></span> Edit</button>
+                  <span *ngIf="hasEditPermission"></span>
+
+                  <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                      <span class="header-btn-icon">
+                          <mat-icon> delete
+                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                     
+                     <span *ngIf="!hasDeletePermission"></span>
+              </div>
+          </div>
+        </div>
+       
+       
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+          
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+
+      </div>
+  </div>
+  
+  
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+        <div class="modal-content">
+          <div class="row">
+            <div class="col-md-10">
+              <h2> Create Company Policy</h2>
+            </div>
+            <div class="col-md-2">
+              <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+            </div>
+          </div>
+          <hr />
+      
+ 
+          <form (ngSubmit)="registerApproveLevel()" enctype="multipart/form-data">
             <div class="row">
                
                
@@ -76,15 +135,99 @@
             </div>
         </form>
         
+        
+        </div>
+      </div>
+
+                 <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+<div class="modal-content">
+<div class="row">
+  <div class="col-md-10">
+    <h2>Edit Company Policy</h2>
+  </div>
+  <div class="col-md-2">
+    <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+  </div>
+</div>
+<hr />
+
+<form >
+  <div class="row">
+               
+               
+    <div class="col-md-12" >
+   
+        <label>Title</label>
+       <input type="text"  class="form-control" required  [(ngModel)]="editAsset.title"  placeholder="Enter title"
+        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !title}">
+       
+       <div *ngIf="registerButtonClicked && !title" class="error-message">title is required.</div>
+  </div>
   
 
-    
+  <div class="col-md-12">
+    <label>Description</label>
+    <textarea class="form-control" [(ngModel)]="editAsset.description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
 
 
-        </div>
+<div class="col-md-6">
+<label>Branch</label>
+<div class="custom-sel">
+<select class="form-control" id="branch" name="branch" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}">
+<option *ngFor="let brch of Branches" [value]="brch.id">{{ brch.branch_name }}</option>
+</select>
+</div>
+</div>
 
-        </div>
+<div class="col-md-6">
+<label for="policy_file">Policy Image</label>
+<input type="file" class="form-control" id="policy_file" name="policy_file" (change)="onFileSelected($event)">
+</div>
 
+<div class="col-md-6">
+<label>Department</label>
+<div class="custom-sel">
+<select class="form-control" id="department" name="department" [(ngModel)]="editAsset.department" [ngModelOptions]="{standalone: true}">
+<option *ngFor="let dept of Depts" [value]="dept.id">{{ dept.dept_name }}</option>
+</select>
+</div>
+</div>
+
+<div class="col-md-6">
+<label>Category</label>
+<div class="custom-sel">
+<select class="form-control" id="category" name="category" [(ngModel)]="editAsset.category" [ngModelOptions]="{standalone: true}">
+<option *ngFor="let catg of Cats" [value]="catg.id">{{ catg.ctgry_title }}</option>
+</select>
+</div>
+</div>
+
+
+
+</div>
+  <div class="row" >
+    <div class="col-md-8"></div>
+    <div class="col-md-2">
+      <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-4">Close</button>
+
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+    </div>
+  </div>
+</form>
+
+
+
+</div>
+</div>
+
+
+
+
+  
         
 
         <table class="table mt-4">
@@ -96,6 +239,7 @@
               <th>Department</th>
               <th>Category</th>
               <th>Policy File</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -109,6 +253,22 @@
                 <button (click)="downloadPolicy(policy.policy_file, policy.title + '.pdf')" class="btn btn-sm btn-primary">
                   Download PDF
                 </button>
+              </td>
+              <td>
+                <button
+                  mat-fab
+                  color="primary"
+                  aria-label="Edit icon"
+                  *ngIf="showEditBtn"
+
+                  
+                  (click)="openEditModal(policy)"
+                >
+                  <mat-icon style="color: white;">draw</mat-icon>
+                </button>
+
+                <mat-checkbox *ngIf="Delete" [(ngModel)]="policy.selected" ></mat-checkbox>
+
               </td>
             </tr>
           </tbody>
