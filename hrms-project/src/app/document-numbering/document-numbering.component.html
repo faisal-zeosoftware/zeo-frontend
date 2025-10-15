@@ -1,321 +1,575 @@
-<div class="container" >
-    <div class="comapny_section">
-        <div class="com_list " *ngIf="hasAddPermission"
-        >
-    <div class="cpm-sec">
+<div class="container">
+  <div class="comapny_section">
 
-        <h2>Document Numbering</h2><hr>
+    <div class="header_section">
 
-        <form >
+      <div class="row">
+        <div class="col-md-4">
+          <h1> Document Numbering</h1>
+        </div>
+        <div class="col-md-3">
 
-            <div class="row">
-                <div class="col-md-3" >
-               
-                    <label>Preffix</label>
-                   <input type="text"  class="form-control" required  [(ngModel)]="prefix"  placeholder="Enter prefix
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "><span
+                class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+              </span> Create</button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+              <span class="header-btn-icon">
+                <mat-icon>draw
+                </mat-icon></span> Edit</button>
+            <span *ngIf="hasEditPermission"></span>
+
+            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission">
+              <span class="header-btn-icon">
+                <mat-icon> delete
+                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+
+        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete
+          Selected </button>
+
+      </div>
+    </div>
+
+
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2> Create Document Numbering</h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+
+          <div class="row">
+            <div class="col-md-3">
+
+              <label>Preffix</label>
+              <input type="text" class="form-control" required [(ngModel)]="prefix" placeholder="Enter prefix
                    
-                   "
-                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !prefix}">
-                   
-                   <div *ngIf="registerButtonClicked && !prefix" class="error-message">Preffix is required.</div>
-              </div>
-              
+                   " [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !prefix}">
 
-              <div class="col-md-3" >
-               
-                <label>Suffix</label>
-               <input type="text"  class="form-control" required  [(ngModel)]="suffix"  placeholder="Enter Suffix"
+              <div *ngIf="registerButtonClicked && !prefix" class="error-message">Preffix is required.</div>
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Suffix</label>
+              <input type="text" class="form-control" required [(ngModel)]="suffix" placeholder="Enter Suffix"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !suffix}">
-               
-               <div *ngIf="registerButtonClicked && !suffix" class="error-message">Suffix is required.</div>
+
+              <div *ngIf="registerButtonClicked && !suffix" class="error-message">Suffix is required.</div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+            <div class="col-md-3">
+
+              <label>Current Number</label>
+              <input type="number" class="form-control" required [(ngModel)]="current_number"
+                placeholder="Enter current number" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !current_number}">
+
+              <div *ngIf="registerButtonClicked && !current_number" class="error-message">current number is required.
+              </div>
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Total length</label>
+              <input type="number" class="form-control" required [(ngModel)]="total_length"
+                placeholder="Enter total length" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !total_length}">
+
+              <div *ngIf="registerButtonClicked && !total_length" class="error-message">total length is required.</div>
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Start Date</label>
+              <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter start date"
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
+
+              <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
+            </div>
+
+            <div class="col-md-3">
+
+              <label>End Date</label>
+              <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter end date"
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+
+              <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
+            </div>
+
+
+
+            <div class="col-md-3">
+              <label>Type</label>
+              <div class="custom-sel">
+                <select class="form-control" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
+                  <option value="general_request">General Request</option>
+                  <option value="leave_request">Leave Request</option>
+                  <option value="advance_salary_request">Advance Salary Request</option>
+
+                  <option value="air_ticket_request">Air Ticket Request</option>
+                  <option value="loan_request">Loan Request</option>
+                  <option value="asset_request">Asset Request</option>
+
+                </select>
+              </div>
+            </div>
+
+
+            
+
+
+            <div class="col-md-3">
+
+
+              <div class="custom-sel">
+                <label>Select Branches</label>
+                <select class="form-control" id="branch_id" required [(ngModel)]="branch_id"
+                  [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'error-field': registerButtonClicked && !branch_id}">
+                  <option value="">Select</option>
+                  <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                  </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Branch</div>
+              </div>
+
+
+            </div>
+
+
+
+
+            <div class="col-md-3" *ngIf="!user">
+
+
+              <div class="custom-sel">
+                <label>Users</label>
+                <select class="form-control" id="user" required [(ngModel)]="user" [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'error-field': registerButtonClicked && !user}">
+                  <option value="">Select</option>
+                  <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username }}
+                  </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !user" class="error-message">Please Select user </div>
+              </div>
+
+
+            </div>
+
+
+            <div class="col-md-4 mt-2">
+              <div class="check-box-selection-sec form-control">
+                <div class="mat-set">
+                  <mat-checkbox [(ngModel)]="automatic_numbering" [ngModelOptions]="{standalone: true}">Automatic
+                    numbering</mat-checkbox>
+                </div>
+
+              </div>
+            </div>
           </div>
 
 
-          
-          <!-- <div class="col-md-3" >
-               
-            <label>Year</label>
-           <input type="number"  class="form-control" required  [(ngModel)]="year"  placeholder="Enter year"
-            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !year}">
-           
-           <div *ngIf="registerButtonClicked && !year" class="error-message">year is required.</div>
-      </div> -->
+          <div class="row">
+            <div class="col-md-10">
 
-       
-
-    
-
-
-
-  <div class="col-md-3" >
-               
-    <label>Current Number</label>
-   <input type="number"  class="form-control" required  [(ngModel)]="current_number"  placeholder="Enter current number"
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !current_number}">
-   
-   <div *ngIf="registerButtonClicked && !current_number" class="error-message">current number is required.</div>
-</div>
-
-
-<div class="col-md-3" >
-               
-  <label>Total length</label>
- <input type="number"  class="form-control" required  [(ngModel)]="total_length"  placeholder="Enter total length"
-  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !total_length}">
- 
- <div *ngIf="registerButtonClicked && !total_length" class="error-message">total length is required.</div>
-</div>
-
-
-<div class="col-md-3" >
-               
-  <label>Start Date</label>
- <input type="date"  class="form-control" required  [(ngModel)]="start_date"  placeholder="Enter start date"
-  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
- 
- <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
-</div>
-
-<div class="col-md-3" >
-               
-  <label>End Date</label>
- <input type="date"  class="form-control" required  [(ngModel)]="end_date"  placeholder="Enter end date"
-  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
- 
- <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
-</div>
-
-
-
-<div class="col-md-3">
-    <label>Type</label>
-    <div class="custom-sel">
-        <select class="form-control" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
-            <option value="general_request">General Request</option>
-            <option value="leave_request">Leave Request</option>
-            <option value="advance_salary_request">Advance Salary Request</option>
-
-            <option value="air_ticket_request">Air Ticket Request</option>
-            <option value="loan_request">Loan Request</option>
-            <option value="asset_request">Asset Request</option>
-
-        </select>
-    </div>
-</div>
-
-
-<!-- <div class="col-md-3" *ngIf="type === 'leave_request'">
-
-
-    <div class="custom-sel">
-        <label>Select Leave Type</label>
-        <select class="form-control" id="leave_type" required [(ngModel)]="leave_type"  [ngModelOptions]="{standalone: true}" >
-            <option value="" >Select</option>
-            <option *ngFor="let deparmentsec of LeaveTypes" [value]="deparmentsec.id">{{ deparmentsec.name }} </option>
-        </select>
-    </div>
-                
-
-</div> -->
-
-
-      <div class="col-md-3">
-
-
-        <div class="custom-sel">
-            <label>Select Branches</label>
-            <select class="form-control" id="branch_id" required [(ngModel)]="branch_id"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_id}" >
-                <option value="" >Select</option>
-                <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name     }} </option>
-            </select>
-            <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Branch</div>
-        </div>
-                    
-
-    </div>
-
-    
-
-
-    <div class="col-md-3" *ngIf="!user">
-
-
-        <div class="custom-sel">
-            <label>Users</label>
-            <select class="form-control" id="user" required [(ngModel)]="user"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !user}" >
-                <option value="" >Select</option>
-                <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
-            </select>
-            <div *ngIf="registerButtonClicked && !user" class="error-message">Please Select user </div>
-        </div>
-                    
-
-    </div>
-
-    
-    <div class="col-md-4">
-        <div class="check-box-selection-sec form-control">
-            <div class="mat-set">
-                <mat-checkbox [(ngModel)]="automatic_numbering"  [ngModelOptions]="{standalone: true}">Automatic numbering</mat-checkbox>
-            </div>
-           
-        </div>
-    </div>
             </div>
 
-
-            <div class="row">
-                <div class="col-md-10">
-    
-                </div>
-    
-                <div class="col-md-2">
-                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Save</button>  
-                 </div>
+            <div class="col-md-2">
+              <button type="button" class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="registerGeneralreq()">Save</button>
             </div>
-            
-       
-    </form>
-
-  
+          </div>
 
 
-        </div>
-
-        </div>
-<div class="table-responsive" *ngIf="hasViewPermission">
-  <table class="table table-striped custom-table" width="100%">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Prefix</th>
-        <th>Suffix</th>
-        <th>Current No</th>
-        <th>Branch</th>
-        <th>Type</th>
-        <th>Total Length</th>
-        <th>Start Date</th>
-        <th>End Date</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let docs of docsNumbers; let i = index">
-        <td data-label="No">{{ i + 1 }}</td>
-        <td data-label="Prefix">{{ docs.prefix }}</td>
-        <td data-label="Suffix">{{ docs.suffix }}</td>
-        <td data-label="Current No">{{ docs.current_number }}</td>
-        <td data-label="Branch">{{ docs.branch_id }}</td>
-        <td data-label="Type">{{ docs.type }}</td>
-        <td data-label="Total Length">{{ docs.total_length }}</td>
-        <td data-label="Start Date">{{ docs.start_date }}</td>
-        <td data-label="End Date">{{ docs.end_date }}</td>
-        <td data-label="Action">
-          <i class="fa-solid fa-edit" style="cursor:pointer;" (click)="openEditDocModal(docs)"></i>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+        </form>
 
 
 
-          <!-- Edit Modal Popup -->
-<div *ngIf="isDocumentnumbereditModalOpen" class="modal">
-    <div class="modal-content">
-      <span class="close pull-right" (click)="closeEditDocModal()">&times;</span>
-      <h2>Edit Document Number</h2>
-      <form (ngSubmit)="updateDocumentNumber()">
 
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
         <div class="row">
+          <div class="col-md-10">
+            <h2>Edit Document Numbering</h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-3">
+
+              <label>Preffix</label>
+              <input type="text" class="form-control" required [(ngModel)]="editAsset.prefix" placeholder="Enter prefix
+                   
+                   " [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !prefix}">
+
+              <div *ngIf="registerButtonClicked && !prefix" class="error-message">Preffix is required.</div>
+            </div>
 
 
-        <div class="col-md-4">
-          <label>Preffix</label>
-          <input type="text" class="form-control" [(ngModel)]="selectedDoc.prefix" name="prefix" required>
-        </div>
-        <div class="col-md-4">
-          <label>Suffix</label>
-          <input type="text" class="form-control" [(ngModel)]="selectedDoc.suffix" name="suffix" required>
-        </div>
-        <!-- <div class="col-md-4">
+            <div class="col-md-3">
+
+              <label>Suffix</label>
+              <input type="text" class="form-control" required [(ngModel)]="editAsset.suffix" placeholder="Enter Suffix"
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !suffix}">
+
+              <div *ngIf="registerButtonClicked && !suffix" class="error-message">Suffix is required.</div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+            <div class="col-md-3">
+
+              <label>Current Number</label>
+              <input type="number" class="form-control" required [(ngModel)]="editAsset.current_number"
+                placeholder="Enter current number" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !current_number}">
+
+              <div *ngIf="registerButtonClicked && !current_number" class="error-message">current number is required.
+              </div>
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Total length</label>
+              <input type="number" class="form-control" required [(ngModel)]="editAsset.total_length"
+                placeholder="Enter total length" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !total_length}">
+
+              <div *ngIf="registerButtonClicked && !total_length" class="error-message">total length is required.</div>
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Start Date</label>
+              <input type="date" class="form-control" required [(ngModel)]="editAsset.start_date" placeholder="Enter start date"
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
+
+              <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
+            </div>
+
+            <div class="col-md-3">
+
+              <label>End Date</label>
+              <input type="date" class="form-control" required [(ngModel)]="editAsset.end_date" placeholder="Enter end date"
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+
+              <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
+            </div>
+
+
+
+            <div class="col-md-3">
+              <label>Type</label>
+              <div class="custom-sel">
+                <select class="form-control" [(ngModel)]="editAsset.type" [ngModelOptions]="{standalone: true}">
+                  <option value="general_request">General Request</option>
+                  <option value="leave_request">Leave Request</option>
+                  <option value="advance_salary_request">Advance Salary Request</option>
+
+                  <option value="air_ticket_request">Air Ticket Request</option>
+                  <option value="loan_request">Loan Request</option>
+                  <option value="asset_request">Asset Request</option>
+
+                </select>
+              </div>
+            </div>
+
+
+            
+
+
+            <div class="col-md-3">
+
+
+              <div class="custom-sel">
+                <label>Select Branches</label>
+                <select class="form-control" id="branch_id" required [(ngModel)]="editAsset.branch_id"
+                  [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'error-field': registerButtonClicked && !branch_id}">
+                  <option value="">Select</option>
+                  <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                  </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Branch</div>
+              </div>
+
+
+            </div>
+
+
+
+
+            <div class="col-md-3" *ngIf="!user">
+
+
+              <div class="custom-sel">
+                <label>Users</label>
+                <select class="form-control" id="user" required [(ngModel)]="editAsset.user" [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'error-field': registerButtonClicked && !user}">
+                  <option value="">Select</option>
+                  <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username }}
+                  </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !user" class="error-message">Please Select user </div>
+              </div>
+
+
+            </div>
+
+
+            <div class="col-md-4 mt-2">
+              <div class="check-box-selection-sec form-control">
+                <div class="mat-set">
+                  <mat-checkbox [(ngModel)]="editAsset.automatic_numbering" [ngModelOptions]="{standalone: true}">Automatic
+                    numbering</mat-checkbox>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
+
+            </div>
+            <div class="col-md-2">
+              <button type="button" (click)="updateAssetType()" class="btn btn-success btn-full mt-4">Update</button>
+            </div>
+          </div>
+        </form>
+
+
+
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="com_list  mt-4" style="border-top: white;">
+
+    <div class="table-responsive" *ngIf="hasViewPermission">
+      <table class="table table-striped custom-table" width="100%">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Prefix</th>
+            <th>Suffix</th>
+            <th>Current No</th>
+            <th>Branch</th>
+            <th>Type</th>
+            <th>Total Length</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let docs of docsNumbers; let i = index">
+            <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="Prefix">{{ docs.prefix }}</td>
+            <td data-label="Suffix">{{ docs.suffix }}</td>
+            <td data-label="Current No">{{ docs.current_number }}</td>
+            <td data-label="Branch">{{ docs.branch_id }}</td>
+            <td data-label="Type">{{ docs.type }}</td>
+            <td data-label="Total Length">{{ docs.total_length }}</td>
+            <td data-label="Start Date">{{ docs.start_date }}</td>
+            <td data-label="End Date">{{ docs.end_date }}</td>
+            <td>
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+    
+                
+                (click)="openEditModal(docs)"
+              >
+                <mat-icon style="color: white;">draw</mat-icon>
+              </button>
+    
+              <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+    
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+
+
+    <!-- Edit Modal Popup -->
+    <div *ngIf="isDocumentnumbereditModalOpen" class="modal">
+      <div class="modal-content">
+        <span class="close pull-right" (click)="closeEditDocModal()">&times;</span>
+        <h2>Edit Document Number</h2>
+        <form (ngSubmit)="updateDocumentNumber()">
+
+          <div class="row">
+
+
+            <div class="col-md-4">
+              <label>Preffix</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedDoc.prefix" name="prefix" required>
+            </div>
+            <div class="col-md-4">
+              <label>Suffix</label>
+              <input type="text" class="form-control" [(ngModel)]="selectedDoc.suffix" name="suffix" required>
+            </div>
+            <!-- <div class="col-md-4">
           <label>Year</label>
           <input type="number" class="form-control" [(ngModel)]="selectedDoc.year" name="year" required>
         </div> -->
-      
-        <div class="col-md-4">
-          <label>Current Number</label>
-          <input type="number" class="form-control" [(ngModel)]="selectedDoc.current_number" name="current_number" required>
-        </div>
 
-        
-<div class="col-md-3" >
-               
-  <label>Total length</label>
- <input type="number"  class="form-control" required  [(ngModel)]="selectedDoc.total_length"  placeholder="Enter total length"
-  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !total_length}">
- 
- <div *ngIf="registerButtonClicked && !total_length" class="error-message">total length is required.</div>
-</div>
+            <div class="col-md-4">
+              <label>Current Number</label>
+              <input type="number" class="form-control" [(ngModel)]="selectedDoc.current_number" name="current_number"
+                required>
+            </div>
 
 
-<div class="col-md-3" >
-               
-  <label>Start Date</label>
- <input type="date"  class="form-control" required  [(ngModel)]="selectedDoc.start_date"  placeholder="Enter start date"
-  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
- 
- <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
-</div>
+            <div class="col-md-3">
 
-<div class="col-md-3" >
-               
-  <label>End Date</label>
- <input type="date"  class="form-control" required  [(ngModel)]="selectedDoc.end_date"  placeholder="Enter end date"
-  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
- 
- <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
-</div>
+              <label>Total length</label>
+              <input type="number" class="form-control" required [(ngModel)]="selectedDoc.total_length"
+                placeholder="Enter total length" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !total_length}">
 
-       
-        <div class="col-md-4">
-          <label>Branch</label>
-          <select class="form-control" [(ngModel)]="selectedDoc.branch_id"  name="branch_id" required>
-            <option value="">Select</option>
-            <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branch_name }}</option>
-          </select>
-        </div>
-        
-        <!-- <div class="col-md-4">
+              <div *ngIf="registerButtonClicked && !total_length" class="error-message">total length is required.</div>
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Start Date</label>
+              <input type="date" class="form-control" required [(ngModel)]="selectedDoc.start_date"
+                placeholder="Enter start date" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !start_date}">
+
+              <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
+            </div>
+
+            <div class="col-md-3">
+
+              <label>End Date</label>
+              <input type="date" class="form-control" required [(ngModel)]="selectedDoc.end_date"
+                placeholder="Enter end date" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+
+              <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
+            </div>
+
+
+            <div class="col-md-4">
+              <label>Branch</label>
+              <select class="form-control" [(ngModel)]="selectedDoc.branch_id" name="branch_id" required>
+                <option value="">Select</option>
+                <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branch_name }}</option>
+              </select>
+            </div>
+
+            <!-- <div class="col-md-4">
           <label class="mt-4">proper-Autonumbering</label>
           <mat-checkbox [(ngModel)]="selectedDoc.automatic_numbering" name="automatic_numbering"></mat-checkbox>
         </div> -->
 
 
-        </div>
-        <div class="row mt-4">
+          </div>
+          <div class="row mt-4">
             <div class="col-md-8">
 
             </div>
             <div class="col-md-2">
-                <button type="button" class="btn btn-secondary  btn-full" (click)="closeEditDocModal()">Cancel</button>
+              <button type="button" class="btn btn-secondary  btn-full" (click)="closeEditDocModal()">Cancel</button>
 
             </div>
 
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary btn btn-full">Save </button>
+              <button type="submit" class="btn btn-primary btn btn-full">Save </button>
 
             </div>
 
 
 
 
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
+
   </div>
-  
-        </div>
-        </div>
-        
- 
+</div>

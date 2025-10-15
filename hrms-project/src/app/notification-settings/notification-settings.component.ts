@@ -6,6 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
+import { EmployeeService } from '../employee-master/employee.service';
 
 
 @Component({
@@ -61,6 +62,8 @@ export class NotificationSettingsComponent {
     private authService: AuthenticationService,
     private sessionService: SessionService,
     private leaveService:LeaveService,
+    private employeeService:EmployeeService,
+
     private DesignationService: DesignationService,
   
     ) {}
@@ -375,6 +378,123 @@ deleteDoc(permissionId: number): void {
   }
 }
 
+
+
+
+  iscreateLoanApp: boolean = false;
+
+
+
+
+      openPopus():void{
+        this.iscreateLoanApp = true;
+
+      }
+    
+      closeapplicationModal():void{
+        this.iscreateLoanApp = false;
+
+      }
+
+
+
+
+      showEditBtn: boolean = false;
+
+      EditShowButtons() {
+      this.showEditBtn = !this.showEditBtn;
+      }
+      
+      
+      Delete: boolean = false;
+      allSelecteds: boolean = false;
+      
+      toggleCheckboxes() {
+      this.Delete = !this.Delete;
+      }
+      
+      toggleSelectAllEmployees() {
+      this.allSelecteds = !this.allSelecteds;
+      this.NotSettings.forEach(employee => employee.selected = this.allSelecteds);
+      
+      }
+      
+      onCheckboxChange(employee:number) {
+      // No need to implement any logic here if you just want to change the style.
+      // You can add any additional logic if needed.
+      }
+      
+      
+      
+      isEditModalOpen: boolean = false;
+      editAsset: any = {}; // holds the asset being edited
+      
+      openEditModal(asset: any): void {
+      this.editAsset = { ...asset }; // copy asset data
+      this.isEditModalOpen = true;
+      }
+      
+      closeEditModal(): void {
+      this.isEditModalOpen = false;
+      this.editAsset = {};
+      }
+      
+      
+      deleteSelectedAssetType() { 
+      const selectedEmployeeIds = this.NotSettings
+      .filter(employee => employee.selected)
+      .map(employee => employee.id);
+      
+      if (selectedEmployeeIds.length === 0) {
+      alert('No Announcement selected for deletion.');
+      return;
+      }
+      
+      if (confirm('Are you sure you want to delete the selected Document Notification Setting ?')) {
+      selectedEmployeeIds.forEach(categoryId => {
+        this.employeeService.deleteNotSetting(categoryId).subscribe(
+          () => {
+            console.log(' Document Numbering deleted successfully:', categoryId);
+            // Remove the deleted employee from the local list
+            this.NotSettings = this.NotSettings.filter(employee => employee.id !== categoryId);
+            alert(' Document Notification Setting  deleted successfully');
+            window.location.reload();
+      
+          },
+          (error) => {
+            console.error('Error deleting Loan Types:', error);
+            alert(error)
+          }
+        );
+      });
+      }
+      }
+      
+      
+      updateAssetType(): void {
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema || !this.editAsset.id) {
+      alert('Missing schema or asset ID');
+      return;
+      }
+      
+      this.employeeService.updateNotSetting(this.editAsset.id, this.editAsset).subscribe(
+      (response) => {
+        alert(' Document Notification Setting  updated successfully!');
+        this.closeEditModal();
+        window.location.reload();
+      },
+      (error) => {
+        console.error('Error updating asset:', error);
+        alert('Update failed');
+      }
+      );
+      }
+      
+      
+
+
+      
 
 
 

@@ -501,6 +501,188 @@ updateLoanApprovalLevel(id: number, data: any): Observable<any> {
   );
 }
 
+
+deleteState(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/core/api/State/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+updateState(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/core/api/State/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+deleteDocumentType(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/core/api/Documents/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+updateDocumentType(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/core/api/Documents/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+deleteDocumentNumber(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+updateDocumentNumber(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+deleteAnnouncement(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/organisation/api/announcements/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+updateAnnouncement(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/announcements/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+deleteNotSetting(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/employee/api/notification-settings/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+updateNotSetting(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/notification-settings/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+
+deleteDocReqApprovallevel(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/employee/api/Doc-request-approval-levels/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+updateDocReqApprovallevel(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Doc-request-approval-levels/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
   registerDocNum(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
