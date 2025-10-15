@@ -28,69 +28,70 @@
         <div class="com_list">
 
             <div style="overflow-x: auto;  overflow-y: auto;">
-                <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
-                  <thead>
-                    <tr>
-                        <th><input type="checkbox" [(ngModel)]="masterSelected" (change)="toggleAll()" /></th>
-                        <th class="text-table-header">No</th>
-                      <th class="text-table-header">Employee Code</th>
-                      <th class="text-table-header">Payroll Name</th>
-                      <th class="text-table-header">Year</th>
-                      <th class="text-table-header">Month</th>
-                      <th class="text-table-header">Gross Salary</th>
-                      <th class="text-table-header">Total Additions</th>
-                      <th class="text-table-header">Total Deductions</th>
-                      <th class="text-table-header">Net Salary</th>
-                      <th class="text-table-header">Pro Rata Adjustment</th>
-                      <th class="text-table-header">Working Days</th>
-                      <th class="text-table-header">Days Worked</th>
-                      <th class="text-table-header">Status</th>
-                      <th class="text-table-header">Components</th>
-                    </tr>
-                  </thead>
-              
-                  <tbody class="text-table-body">
-                    <tr *ngFor="let payslip of Approvals; let i = index">
-                      <td>
-                        <input type="checkbox" [(ngModel)]="payslip.selected" />
+             <div class="table-scroll">
+  <table class="styled-table mt-2">
+    <thead>
+      <tr>
+        <th><input type="checkbox" [(ngModel)]="masterSelected" (change)="toggleAll()" /></th>
+        <th>No</th>
+        <th>Employee Code</th>
+        <th>Payroll Name</th>
+        <th>Year</th>
+        <th>Month</th>
+        <th>Gross Salary</th>
+        <th>Total Additions</th>
+        <th>Total Deductions</th>
+        <th>Net Salary</th>
+        <th>Pro Rata Adjustment</th>
+        <th>Working Days</th>
+        <th>Days Worked</th>
+        <th>Status</th>
+        <th>Components</th>
+      </tr>
+    </thead>
 
-                      </td>
-                      <td>{{ i + 1 }}</td>
-                      <td>{{ payslip.request?.employee }}</td>
-                      <td>{{ payslip.request?.payroll_run?.name }}</td>
-                      <td>{{ payslip.request?.payroll_run?.year }}</td>
-                      <td>{{ getMonthName(payslip.request?.payroll_run?.month) }}</td>
-                      <td>{{ payslip.request?.gross_salary }}</td>
-                      <td>{{ payslip.request?.total_additions }}</td>
-                      <td>{{ payslip.request?.total_deductions }}</td>
-                      <td>{{ payslip.request?.net_salary }}</td>
-                      <td>{{ payslip.request?.pro_rata_adjustment }}</td>
-                      <td>{{ payslip.request?.total_working_days }}</td>
-                      <td>{{ payslip.request?.days_worked }}</td>
-                      <td>
-                        <span class="pill" [ngClass]="{
-                          'pill green': payslip.request?.status === 'approved',
-                          'pill blue': payslip.request?.status === 'processed',
-                          'pill yellow': payslip.request?.status === 'pending',
-                          'pill red': payslip.request?.status === 'rejected'
-                        }">{{ payslip.request?.status }}</span>
-                      </td>
-                      <td>
-                        <ul>
-                          <li *ngFor="let comp of payslip.request?.components">
-                            <strong>{{ comp.component_name }}</strong> ({{ comp.component_type }}): {{ comp.payslip_amount }}
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+    <tbody>
+      <tr *ngFor="let payslip of Approvals; let i = index">
+        <td data-label="Select">
+          <input type="checkbox" [(ngModel)]="payslip.selected" />
+        </td>
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Employee Code">{{ payslip.request?.employee }}</td>
+        <td data-label="Payroll Name">{{ payslip.request?.payroll_run?.name }}</td>
+        <td data-label="Year">{{ payslip.request?.payroll_run?.year }}</td>
+        <td data-label="Month">{{ getMonthName(payslip.request?.payroll_run?.month) }}</td>
+        <td data-label="Gross Salary">{{ payslip.request?.gross_salary }}</td>
+        <td data-label="Total Additions">{{ payslip.request?.total_additions }}</td>
+        <td data-label="Total Deductions">{{ payslip.request?.total_deductions }}</td>
+        <td data-label="Net Salary">{{ payslip.request?.net_salary }}</td>
+        <td data-label="Pro Rata Adjustment">{{ payslip.request?.pro_rata_adjustment }}</td>
+        <td data-label="Working Days">{{ payslip.request?.total_working_days }}</td>
+        <td data-label="Days Worked">{{ payslip.request?.days_worked }}</td>
+        <td data-label="Status">
+          <span class="pill" [ngClass]="{
+            'green': payslip.request?.status === 'approved',
+            'blue': payslip.request?.status === 'processed',
+            'yellow': payslip.request?.status === 'pending',
+            'red': payslip.request?.status === 'rejected'
+          }">{{ payslip.request?.status }}</span>
+        </td>
+        <td data-label="Components">
+          <ul>
+            <li *ngFor="let comp of payslip.request?.components">
+              <strong>{{ comp.component_name }}</strong> ({{ comp.component_type }}): {{ comp.payslip_amount }}
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Approve Button -->
+<button type="button" class="btn btn-primary mt-3" (click)="approveSelectedPayslips()">Approve</button>
+
               </div>
               
-              <!-- Approve Button -->
-              <button type="button" class="btn btn-primary mt-3" (click)="approveSelectedPayslips()">Approve</button>
-              
-        </div>
 <!-- 
         <div class="row">
             <div class="col-md-12">

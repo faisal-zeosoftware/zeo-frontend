@@ -146,3 +146,19 @@ margin-right: 10px;
   font-weight: 600;
   font-family: math;
 }
+
+
+/* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
+    
+    margin-top: 200px;
+
+  }
+
+  
+
+
+
+  }

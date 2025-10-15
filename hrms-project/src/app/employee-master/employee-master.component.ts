@@ -654,41 +654,56 @@ closeBulkuploadModal():void{
           console.log('Bulk upload successful', response);
            alert('bulkupload upload successful');
     
-       
         },
-        (error: HttpErrorResponse) => {
-          console.error('Upload error:', error);
-    
-          // If the backend provides an error message, display it in an alert
-          if (error.error) {
-            if (typeof error.error === 'string') {
-              alert(error.error); // If the error is a simple string
-            } else if (typeof error.error === 'object') {
-              const errorMessages: string[] = [];
-    
-              // Extract error messages from objects like sheet1_errors, sheet2_errors, etc.
-              Object.keys(error.error).forEach((key) => {
-                if (Array.isArray(error.error[key])) {
-                  error.error[key].forEach((errObj: any) => {
-                    if (errObj.error) {
-                      errorMessages.push(`Row ${errObj.row}: ${errObj.error}`);
-                    }
-                  });
-                }
-              });
-    
-              if (errorMessages.length > 0) {
-                alert(errorMessages.join('\n')); // Show all errors in an alert
+       (error: HttpErrorResponse) => {
+             console.error('Upload error:', error);
+
+  if (error.error) {
+    const errors = error.error.errors || error.error;
+
+    if (typeof errors === 'string') {
+      alert(errors);
+      return;
+    }
+
+    const allMessages: string[] = [];
+
+    Object.keys(errors).forEach((sheetKey) => {
+      const sheetErrors = errors[sheetKey];
+      if (Array.isArray(sheetErrors) && sheetErrors.length > 0) {
+        allMessages.push(`\n🔹 ${sheetKey.replace('_', ' ').toUpperCase()}:\n`);
+        sheetErrors.forEach((errObj: any) => {
+          if (errObj.error) {
+            try {
+              // Parse JSON-like string (e.g. ["error1", "error2"])
+              const parsedErrors = JSON.parse(errObj.error);
+              if (Array.isArray(parsedErrors)) {
+                allMessages.push(`Row ${errObj.row}:`);
+                parsedErrors.forEach((msg) => {
+                  allMessages.push(`   - ${msg}`);
+                });
               } else {
-                alert('An unexpected error occurred.');
+                allMessages.push(`Row ${errObj.row}: ${parsedErrors}`);
               }
-            } else {
-              alert('Something went wrong.');
+            } catch {
+              // Fallback if JSON.parse fails
+              allMessages.push(`Row ${errObj.row}: ${errObj.error}`);
             }
-          } else {
-            alert('Something went wrong.');
           }
+        });
+      }
+    });
+
+    if (allMessages.length > 0) {
+      alert(allMessages.join('\n'));
+    } else {
+      alert('An unexpected error occurred.');
+    }
+      } else {
+    alert('Something went wrong.');
+      }
         }
+
       );
     
     }

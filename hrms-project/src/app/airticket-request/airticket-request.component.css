@@ -150,3 +150,17 @@ margin-right: 10px;
   table thead th {
     white-space: nowrap;
   }
+
+
+
+        /* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
+    
+    margin-top: 200px;
+    margin-left: 15%;
+    
+
+  }
+}

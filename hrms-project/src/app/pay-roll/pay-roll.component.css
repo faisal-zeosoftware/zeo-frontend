@@ -62,44 +62,7 @@
     border: 1px solid #e6edf1;
     padding: 15px;
   }
-  
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
-  
-  
-  
+
   
   p{
     margin-bottom: 0px;
@@ -560,4 +523,131 @@ table th{
   max-width: 100%;
   /* border: 1px solid #ddd;
   border-radius: 8px; */
+}
+/* ✅ Desktop - default table look */
+table.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+table.styled-table th,
+table.styled-table td {
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+/* ✅ Smooth responsive behavior for tablets (<= 991px) */
+@media (max-width: 991px) {
+  .comapny_section {
+    margin-top: 80px;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .com_list {
+    padding: 15px;
+  }
+
+  table.styled-table th,
+  table.styled-table td {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+/* ✅ Fully responsive stacked card layout for mobile (<= 640px) */
+@media only screen and (max-width: 640px) {
+  .comapny_section {
+    margin: 20px 10px;
+  }
+
+  .com_list {
+    padding: 10px;
+    background: #fff;
+    border: none;
+    box-shadow: none;
+  }
+
+  table.styled-table {
+    border: 0;
+    width: 100%;
+    table-layout: fixed; /* Ensures smooth stacking */
+  }
+
+  /* Hide table header */
+  table.styled-table thead {
+    display: none;
+  }
+
+  /* Each row becomes a card */
+  table.styled-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  table.styled-table tr {
+    display: block;
+    width: 27%;
+    background: #ffffff;
+    border: 1px solid #c7c7c7;
+    border-radius: 10px;
+    padding: 15px 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+  }
+
+  /* Each cell stacked vertically with its label */
+  table.styled-table td {
+    display: block;
+    width: 100%; /* ✅ Full width, no side scroll */
+    border: none;
+    padding: 6px 0;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  /* Label styling (data-label attribute) */
+  table.styled-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 4px;
+    font-size: 13px;
+    text-transform: capitalize;
+  }
+
+  /* Checkbox + first column alignment */
+  table.styled-table td:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  /* Status pill smaller for mobile */
+  .pill {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  /* Reduce large font areas for mobile readability */
+  .header_section h1,
+  .com_list h2 {
+    font-size: 14px;
+  }
+
+  /* Prevent any side scrolling globally */
+  body,
+  html {
+    overflow-x: hidden;
+  }
+
+  .table-scroll {
+    overflow-x: hidden !important;
+  }
 }

@@ -232,6 +232,8 @@ option { width: 200px; }
   animation: spin 2s linear infinite;
 }
 
+
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -315,6 +317,7 @@ option { width: 200px; }
     margin-left: 0 !important;   /* override Angular Material default */
     width: 100% !important;
   }
+
 }
 
   .cpm-sec h1 { font-size: 14px; }

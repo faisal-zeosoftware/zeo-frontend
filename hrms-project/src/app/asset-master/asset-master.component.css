@@ -118,7 +118,7 @@ margin-right: 10px;
     border: 1px solid #888;
     width: 70%; /* Could be more or less, depending on screen size */
     margin-right: auto;
-    margin-left: 25%;
+    margin-left: 20%;
     margin-top: 100px;
     height: auto;
   
@@ -146,3 +146,14 @@ margin-right: 10px;
     font-weight: 600;
     font-family: math;
   }
+
+
+  /* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
+    
+    margin-top: 200px;
+
+  }
+}

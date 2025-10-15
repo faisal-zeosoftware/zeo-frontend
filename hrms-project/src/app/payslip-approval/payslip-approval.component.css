@@ -62,42 +62,6 @@ table thead th {
     border: 1px solid #e6edf1;
     padding: 15px;
   }
-  
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
-  
 
 
 
@@ -335,40 +299,6 @@ input:focus-visible {
     padding: 15px;
   }
   
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
   
   
   
@@ -513,3 +443,94 @@ input:focus-visible {
     cursor: pointer;
   }
   
+
+  /* ===== Mobile Responsive Table (<= 640px) ===== */
+@media only screen and (max-width: 640px) {
+
+  .comapny_section {
+    margin: 20px 10px;
+  }
+
+  .com_list {
+    padding: 10px;
+    background: #fff;
+    border: none;
+    box-shadow: none;
+  }
+
+  table.styled-table {
+    width: 100%;
+    border: 0;
+    table-layout: fixed;
+  }
+
+  /* Hide table header */
+  table.styled-table thead {
+    display: none;
+  }
+
+  /* Make each row a card */
+  table.styled-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  table.styled-table tr {
+    display: block;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #004976;
+    border-radius: 10px;
+    padding: 12px 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    box-sizing: border-box;
+  }
+
+  /* Stack each cell vertically */
+  table.styled-table td {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 6px 0;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.4;
+    word-break: break-word;
+    border: none;
+  }
+
+  /* Label before value */
+  table.styled-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #ffffff;
+    margin-right: 10px;
+    flex: 0 0 40%; /* Label width */
+    text-transform: capitalize;
+  }
+
+  /* Checkbox / first column adjustment */
+  table.styled-table td:first-child {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Status pill adjustments */
+  .pill {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  /* Reduce large font areas */
+  .header_section h1,
+  .com_list h2 {
+    font-size: 14px;
+  }
+
+  /* Remove horizontal scroll */
+  .table-scroll {
+    overflow-x: hidden !important;
+  }
+}

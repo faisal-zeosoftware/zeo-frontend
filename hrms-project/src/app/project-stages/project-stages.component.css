@@ -257,3 +257,18 @@ input:focus-visible {
   padding: 4px 7px;
   height: 35px;
 }
+
+
+
+    /* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
+    
+    margin-top: 200px;
+    margin-left: 15%;
+    
+
+  }
+}
+

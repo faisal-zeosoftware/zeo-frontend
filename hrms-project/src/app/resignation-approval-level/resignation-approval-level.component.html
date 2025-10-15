@@ -80,7 +80,7 @@
 
               
 
-                  <div class="col-md-6" >
+                  <!-- <div class="col-md-6" >
                     <label>Approver</label>
                     <div class="custom-sel">
                       <select
@@ -95,7 +95,19 @@
                         </option>
                       </select>
                     </div>
-                  </div>
+                  </div> -->
+
+
+                            <div class="col-md-6">
+            <div class="custom-sel">
+                <label>Approver</label>
+                <select class="form-control" id="approver" required [(ngModel)]="approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
+                    <option value="" >Select</option>
+                    <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
+            </div>
+        </div>
              
               
                  

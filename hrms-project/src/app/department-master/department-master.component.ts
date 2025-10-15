@@ -361,6 +361,7 @@ if (this.userId !== null) {
     formData.append('dept_name', this.dept_name);
   
     formData.append('dept_description', this.dept_description);
+    
     formData.append('branch_id', this.branch_id);
     
   
@@ -394,7 +395,7 @@ if (this.userId !== null) {
       }, (error) => {
         // Handle upload error
         console.error('Departments upload failed', error);
-        alert('Departments upload failed! enter all fields correctly');
+        alert('Departments upload failed!');
       });
       }
 

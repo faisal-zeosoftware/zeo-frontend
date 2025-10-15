@@ -175,7 +175,15 @@
     margin-top: 30px;
   }
 
- 
+
+
+  ::ng-deep .mat-drawer-inner-container {
+
+          width: 110% !important;
+
+  
+}
+
 
 
 .menu_mob {
@@ -192,6 +200,12 @@
   cursor: pointer;
 
 }
+
+
+.sidnav_scrolling {
+  overflow: hidden !important;
+}
+
 
 @media only screen and (max-width: 640px) {
   .menu_mob {

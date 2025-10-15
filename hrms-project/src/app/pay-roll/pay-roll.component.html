@@ -137,21 +137,16 @@
               <tbody>
                   
                   <tr *ngFor="let payroll of Payrolls;let i = index">
-                      <td>{{ i + 1 }}</td> 
-                      <td>{{payroll.name}}</td>
-                      <td>{{payroll.year}}</td>
-
-                      <td>{{payroll.month}}</td>
-                      <td>{{payroll.payment_date}}</td>
-
-                      <td>{{payroll.branch}}</td>
-
-                      <td>{{payroll.department}}</td>
-
-                      <td>{{payroll.category}}</td>
-
-                      <td>{{payroll.status}}</td>
-                      <td>
+                       <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="Name">{{ payroll.name }}</td>
+            <td data-label="Year">{{ payroll.year }}</td>
+            <td data-label="Month">{{ getMonthName(payroll.month) }}</td>
+            <td data-label="Payment Date">{{ payroll.payment_date }}</td>
+            <td data-label="Branch">{{ payroll.branch }}</td>
+            <td data-label="Department">{{ payroll.department }}</td>
+            <td data-label="Category">{{ payroll.category }}</td>
+            <td data-label="Status">{{ payroll.status }}</td>
+            <td data-label="Action">
                         <i
                           class="fa-solid fa-trash"
                           style="cursor: pointer; text-align: center;"
@@ -198,42 +193,52 @@
                   </tr>
                 </thead>
               
-                <tbody class="text-table-body">
-                  <tr *ngFor="let payslip of PaySlips; let i = index" >
-                    <!-- Individual Row Checkbox -->
-                    <td>
-                      <mat-checkbox [(ngModel)]="payslip.selected" (change)="checkIfAllSelected()"></mat-checkbox>
-                    </td>
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ payslip.employee }}</td>
-                    <td>{{ payslip.payroll_run?.name }}</td>
-                    <td>{{ payslip.payroll_run?.year }}</td>
-                    <td>{{ getMonthName(payslip.payroll_run?.month) }}</td>
-                    <td>{{ payslip.gross_salary }}</td>
-                    <td>{{ payslip.total_additions }}</td>
-                    <td>{{ payslip.total_deductions }}</td>
-                    <td>{{ payslip.net_salary }}</td>
-                    <td>{{ payslip.pro_rata_adjustment }}</td>
-                    <td>{{ payslip.total_working_days }}</td>
-                    <td>{{ payslip.days_worked }}</td>
-                    <td>
-                      <span class="pill" [ngClass]="{
-                        'pill green': payslip.status === 'approved',
-                        'pill blue': payslip.status === 'processed',
-                        'pill yellow': payslip.status === 'pending',
-                        'pill red': payslip.status === 'rejected'
-                      }">{{ payslip.status }}</span>
-                    </td>
-                    <td>
-                      <ul>
-                        <li *ngFor="let comp of payslip.components">
-                          <strong>{{ comp.component_name }}</strong> 
-                          ({{ comp.component_type }}): {{ comp.payslip_amount }}
-                        </li>
-                      </ul>
-                    </td>
-                  </tr>
-                </tbody>
+<tbody class="text-table-body">
+  
+  <tr *ngFor="let payslip of PaySlips; let i = index">
+    <!-- Checkbox -->
+    <td data-label="Select">
+      <mat-checkbox [(ngModel)]="payslip.selected" (change)="checkIfAllSelected()"></mat-checkbox>
+    </td>
+
+    <td data-label="No">{{ i + 1 }}</td>
+    <td data-label="Employee Code">{{ payslip.employee }}</td>
+    <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
+    <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
+    <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
+    <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
+    <td data-label="Total Additions">{{ payslip.total_additions }}</td>
+    <td data-label="Total Deductions">{{ payslip.total_deductions }}</td>
+    <td data-label="Net Salary">{{ payslip.net_salary }}</td>
+    <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
+    <td data-label="Working Days">{{ payslip.total_working_days }}</td>
+    <td data-label="Days Worked">{{ payslip.days_worked }}</td>
+
+    <td data-label="Status">
+      <span
+        class="pill"
+        [ngClass]="{
+          'pill green': payslip.status === 'approved',
+          'pill blue': payslip.status === 'processed',
+          'pill yellow': payslip.status === 'pending',
+          'pill red': payslip.status === 'rejected'
+        }"
+      >
+        {{ payslip.status }}
+      </span>
+    </td>
+
+    <td data-label="Components">
+      <ul>
+        <li *ngFor="let comp of payslip.components">
+          <strong>{{ comp.component_name }}</strong>
+          ({{ comp.component_type }}): {{ comp.payslip_amount }}
+        </li>
+      </ul>
+    </td>
+  </tr>
+              </tbody>
+
               </table>
               </div>
 
@@ -298,19 +303,19 @@
       </thead>
       <tbody class="text-table-body">
         <tr *ngFor="let payslip of PaySlipsConfrimed; let i = index" (click)="viewPayrollDetails(payslip)">
-          <td>{{ i + 1 }}</td>
-          <td>{{ payslip.employee }}</td>
-          <td>{{ payslip.payroll_run?.name }}</td>
-          <td>{{ payslip.payroll_run?.year }}</td>
-          <td>{{ getMonthName(payslip.payroll_run?.month) }}</td>
-          <td>{{ payslip.gross_salary }}</td>
-          <td>{{ payslip.total_additions }}</td>
-          <td>{{ payslip.total_deductions }}</td>
-          <td>{{ payslip.net_salary }}</td>
-          <td>{{ payslip.pro_rata_adjustment }}</td>
-          <td>{{ payslip.total_working_days }}</td>
-          <td>{{ payslip.days_worked }}</td>
-          <td>
+          <td data-label="No">{{ i + 1 }}</td>
+              <td data-label="Employee Code">{{ payslip.employee }}</td>
+              <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
+              <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
+              <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
+              <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
+              <td data-label="Total Additions">{{ payslip.total_additions }}</td>
+              <td data-label="Total Deductions">{{ payslip.total_deductions }}</td>
+              <td data-label="Net Salary">{{ payslip.net_salary }}</td>
+              <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
+              <td data-label="Working Days">{{ payslip.total_working_days }}</td>
+              <td data-label="Days Worked">{{ payslip.days_worked }}</td>
+          <td data-label="Status">
             <span class="pill" [ngClass]="{
               'pill green': payslip.status === 'approved',
               'pill blue': payslip.status === 'processed',
@@ -318,7 +323,7 @@
               'pill red': payslip.status === 'rejected'
             }">{{ payslip.status }}</span>
           </td>
-          <td>
+          <td data-label="Components">
             <ul>
               <li *ngFor="let comp of payslip.components">
                 <strong>{{ comp.component_name }}</strong> 
@@ -341,6 +346,17 @@
   
              
                   </mat-tab-group> 
+                  
+
+    </div>
+</div>
+
+</div>
+
+    <!-- Loader -->
+    <div class="loader-container" [class.show]="isLoading">
+      <div class="loader"></div>
+    </div>
   
 
      
@@ -871,13 +887,3 @@
 
 
 
-
-    </div>
-</div>
-
-</div>
-
-    <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>

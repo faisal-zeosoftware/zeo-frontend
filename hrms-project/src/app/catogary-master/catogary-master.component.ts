@@ -391,7 +391,7 @@ if (this.userId !== null) {
       }, (error) => {
         // Handle upload error
         console.error('Category upload failed', error);
-        alert('Category upload failed! enter all fields correctly');
+        alert('Category upload failed!');
       });
       }
 

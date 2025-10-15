@@ -229,51 +229,51 @@
 
   
         
+<div class="table-responsive mt-4">
+  <table class="table table-bordered table-striped align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Branch</th>
+        <th>Department</th>
+        <th>Category</th>
+        <th>Policy File</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let policy of policies">
+        <td data-label="Title">{{ policy.title }}</td>
+        <td data-label="Description">{{ policy.description }}</td>
+        <td data-label="Branch">{{ policy.branch }}</td>
+        <td data-label="Department">{{ policy.department }}</td>
+        <td data-label="Category">{{ policy.category }}</td>
+        <td data-label="Policy File">
+          <button 
+            (click)="downloadPolicy(policy.policy_file, policy.title + '.pdf')" 
+            class="btn btn-sm btn-primary">
+            Download PDF
+          </button>
+        </td>
+        <td data-label="Action">
+          <button
+            mat-fab
+            color="primary"
+            aria-label="Edit icon"
+            *ngIf="showEditBtn"
+            (click)="openEditModal(policy)"
+          >
+            <mat-icon style="color: white;">draw</mat-icon>
+          </button>
 
-        <table class="table mt-4">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Branch</th>
-              <th>Department</th>
-              <th>Category</th>
-              <th>Policy File</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let policy of policies">
-              <td>{{ policy.title }}</td>
-              <td>{{ policy.description }}</td>
-              <td>{{ policy.branch }}</td>
-              <td>{{ policy.department }}</td>
-              <td>{{ policy.category }}</td>
-              <td>
-                <button (click)="downloadPolicy(policy.policy_file, policy.title + '.pdf')" class="btn btn-sm btn-primary">
-                  Download PDF
-                </button>
-              </td>
-              <td>
-                <button
-                  mat-fab
-                  color="primary"
-                  aria-label="Edit icon"
-                  *ngIf="showEditBtn"
+          <mat-checkbox *ngIf="Delete" [(ngModel)]="policy.selected"></mat-checkbox>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                  
-                  (click)="openEditModal(policy)"
-                >
-                  <mat-icon style="color: white;">draw</mat-icon>
-                </button>
-
-                <mat-checkbox *ngIf="Delete" [(ngModel)]="policy.selected" ></mat-checkbox>
-
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        
      
 
 

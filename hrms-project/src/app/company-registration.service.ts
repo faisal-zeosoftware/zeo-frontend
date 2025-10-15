@@ -194,9 +194,7 @@ downloadDepartmentCsv(selectedSchema: string): Observable<Blob> {
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
 
-
-
-downloadDesignationExcel(selectedSchema: string): Observable<Blob> {
+downloadDepartmentExcel(selectedSchema: string): Observable<Blob> {
   const apiUrl = `${this.apiUrl}/organisation/api/Dept-bulkupload/download_demo_excel/?schema=${selectedSchema}`;
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
@@ -204,17 +202,17 @@ downloadDesignationExcel(selectedSchema: string): Observable<Blob> {
 
 
 
+downloadDesignationExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Desigtn-bulkupload/download_demo_excel/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
 downloadDesignationCsv(selectedSchema: string): Observable<Blob> {
   const apiUrl = `${this.apiUrl}/organisation/api/Desigtn-bulkupload/download_demo_csv/?schema=${selectedSchema}`;
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
 
-
-
-downloadDepartmentExcel(selectedSchema: string): Observable<Blob> {
-  const apiUrl = `${this.apiUrl}/organisation/api/Desigtn-bulkupload/download_demo_excel/?schema=${selectedSchema}`;
-  return this.http.get(apiUrl, { responseType: 'blob' });
-}
 
 
 

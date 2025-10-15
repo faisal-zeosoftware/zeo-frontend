@@ -6,6 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import {UserMasterService} from '../user-master/user-master.service'
 
 @Component({
   selector: 'app-resignation-approval-level',
@@ -21,13 +22,15 @@ export class ResignationApprovalLevelComponent {
   role:any='';
   approver:any='';
 
+
+  Users:any []=[];
   approvalLevels:any []=[];
   Approvers:any []=[];
 
 
   selectedFile!: File | null;
 
-  hasAddPermission: boolean = false;
+ hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -40,6 +43,7 @@ schemas: string[] = []; // Array to store schema names
   constructor(
     private leaveservice: LeaveService, 
     private authService: AuthenticationService, 
+      private userService: UserMasterService,
 
     private http: HttpClient,
     private DesignationService: DesignationService,
@@ -53,6 +57,8 @@ private employeeService: EmployeeService,
     // this.loadLoanTypes();
     this.loadLoanApprovalLevels();
     this.loadLoanapprover();
+
+      this.loadUsers();
 
 
     this.userId = this.sessionService.getUserId();
@@ -233,6 +239,28 @@ private employeeService: EmployeeService,
         );
       }
       }
+
+
+
+      loadUsers(): void {
+    
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+        console.log(' fetching Companies:');
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
 
 
       
