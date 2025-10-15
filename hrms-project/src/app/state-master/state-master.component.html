@@ -1,76 +1,211 @@
 <div class="container" >
     <div class="comapny_section">
-        <div class="com_list " *ngIf="hasAddPermission">
-    <div class="cpm-sec">
 
-        <h2>Create {{ stateLabel }}</h2><hr>
+      <div class="header_section">
 
-        <form >
         <div class="row">
-            <div class="col-md-6" >
+            <div class="col-md-4">
+                <h1> State Master</h1>
+            </div>
+            <div class="col-md-3">
+                
+                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+            </div>
+            <div class="col-md-5">
+              <div class="button-group pull-right">
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                  </span> Create</button>
+                  <span *ngIf="!hasAddPermission"></span>
+
+                  <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                      <span class="header-btn-icon">
+                       <mat-icon>draw
+                  </mat-icon></span> Edit</button>
+                  <span *ngIf="hasEditPermission"></span>
+
+                  <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                      <span class="header-btn-icon">
+                          <mat-icon> delete
+                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                     
+                     <span *ngIf="!hasDeletePermission"></span>
+              </div>
+          </div>
+        </div>
+       
+       
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+          
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+
+      </div>
+  </div>
+  
+  
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+        <div class="modal-content">
+          <div class="row">
+            <div class="col-md-10">
+              <h2> Create State</h2>
+            </div>
+            <div class="col-md-2">
+              <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+            </div>
+          </div>
+          <hr />
+      
+          <form >
+            <div class="row">
+                <div class="col-md-6" >
+                   
+          <label>{{ stateLabel }} Name</label>
+         <input type="text"  class="form-control" required  [(ngModel)]="state_name"  placeholder="Enter {{ stateLabel }} Name"
+          [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !state_name}">
+         
+         <div *ngIf="registerButtonClicked && !state_name" class="error-message">{{ stateLabel }} Name is required.</div>
+    </div>
+    
+    
+    
+           
+    
+    
+             
                
-      <label>{{ stateLabel }} Name</label>
-     <input type="text"  class="form-control" required  [(ngModel)]="state_name"  placeholder="Enter {{ stateLabel }} Name"
-      [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !state_name}">
-     
-     <div *ngIf="registerButtonClicked && !state_name" class="error-message">{{ stateLabel }} Name is required.</div>
+          
+    
+            <div class="col-md-6">
+    
+    
+                <div class="custom-sel">
+                    <label>Select Country</label>
+                    <select class="form-control" id="deparmentsec" required [(ngModel)]="country"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !country}" >
+                        <option value="" >Select</option>
+                        <option *ngFor="let deparmentsec of Countries" [value]="deparmentsec.id">{{ deparmentsec.country_name     }} </option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !country" class="error-message">Please Select Your country</div>
+                </div>
+                            
+        
+            </div>
+        
+            
+       
+    
+    
+            </div>
+    
+            <div class="row">
+                <div class="col-md-10">
+    
+                </div>
+    
+                <div class="col-md-2">
+                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerDepartment()">Save</button>  
+                 </div>
+            </div>
+        </form>
+    
+
+        
+        </div>
+      </div>
+
+                 <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+<div class="modal-content">
+<div class="row">
+  <div class="col-md-10">
+    <h2>Edit  State</h2>
+  </div>
+  <div class="col-md-2">
+    <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+  </div>
+</div>
+<hr />
+
+<form >
+  <div class="row">
+    <div class="col-md-6" >
+       
+<label>{{ stateLabel }} Name</label>
+<input type="text"  class="form-control" required  [(ngModel)]="editAsset.state_name"  placeholder="Enter {{ stateLabel }} Name"
+[ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !state_name}">
+
+<div *ngIf="registerButtonClicked && !state_name" class="error-message">{{ stateLabel }} Name is required.</div>
 </div>
 
 
 
-       
 
 
-         
-           
-      
 
-        <div class="col-md-6">
-
-
-            <div class="custom-sel">
-                <label>Select Country</label>
-                <select class="form-control" id="deparmentsec" required [(ngModel)]="country"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !country}" >
-                    <option value="" >Select</option>
-                    <option *ngFor="let deparmentsec of Countries" [value]="deparmentsec.id">{{ deparmentsec.country_name     }} </option>
-                </select>
-                <div *ngIf="registerButtonClicked && !country" class="error-message">Please Select Your country</div>
-            </div>
-                        
-    
-        </div>
-    
-        
+ 
    
 
 
-        </div>
-
-        <div class="row">
-            <div class="col-md-10">
-
-            </div>
-
-            <div class="col-md-2">
-                <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerDepartment()">Save</button>  
-             </div>
-        </div>
-    </form>
-
-  
+<div class="col-md-6">
 
 
-        </div>
+    <div class="custom-sel">
+        <label>Select Country</label>
+        <select class="form-control" id="deparmentsec" required [(ngModel)]="editAsset.country"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !country}" >
+            <option value="" >Select</option>
+            <option *ngFor="let deparmentsec of Countries" [value]="deparmentsec.id">{{ deparmentsec.country_name     }} </option>
+        </select>
+        <div *ngIf="registerButtonClicked && !country" class="error-message">Please Select Your country</div>
+    </div>
+                
 
-        </div>
+</div>
 
-       <div class="table-responsive">
+
+
+
+
+</div>
+
+  <div class="row" >
+    <div class="col-md-8"></div>
+    <div class="col-md-2">
+      <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-4">Close</button>
+
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+    </div>
+  </div>
+</form>
+
+
+
+</div>
+</div>
+
+
+
+
+
+
+
+       <div class="table-responsive mt-4">
   <table class="table table-striped custom-table">
     <thead>
       <tr>
         <th>No</th>
         <th>Name</th>
         <th>Country</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -78,6 +213,22 @@
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Name">{{ state.state_name }}</td>
         <td data-label="Country">{{ state.country }}</td>
+         <td>
+                      <button
+                        mat-fab
+                        color="primary"
+                        aria-label="Edit icon"
+                        *ngIf="showEditBtn"
+      
+                        
+                        (click)="openEditModal(state)"
+                      >
+                        <mat-icon style="color: white;">draw</mat-icon>
+                      </button>
+      
+                      <mat-checkbox *ngIf="Delete" [(ngModel)]="state.selected" ></mat-checkbox>
+      
+                    </td>
       </tr>
     </tbody>
   </table>
