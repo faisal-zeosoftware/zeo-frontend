@@ -398,6 +398,7 @@ this.isPauseModalOpen = false;
 }
 
 
+
 openResumeModal(loan: any): void {
 this.selectedLoanId = loan.id;
 this.resume_date = '';
@@ -466,5 +467,110 @@ this.leaveService.resumeAdvsalaryApplication(this.selectedLoanId, resumeData).su
   }
 );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+showEditBtn: boolean = false;
+
+EditShowButtons() {
+this.showEditBtn = !this.showEditBtn;
+}
+
+
+Delete: boolean = false;
+allSelecteds: boolean = false;
+
+toggleCheckboxes() {
+this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+this.allSelecteds = !this.allSelecteds;
+this.DocRequest.forEach(employee => employee.selected = this.allSelecteds);
+
+}
+
+onCheckboxChange(employee: number) {
+// No need to implement any logic here if you just want to change the style.
+// You can add any additional logic if needed.
+}
+
+
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+openEditModal(asset: any): void {
+this.editAsset = { ...asset }; // copy asset data
+this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+deleteSelectedAssetType() {
+const selectedEmployeeIds = this.DocRequest
+.filter(employee => employee.selected)
+.map(employee => employee.id);
+
+if (selectedEmployeeIds.length === 0) {
+alert('No States selected for deletion.');
+return;
+}
+
+if (confirm('Are you sure you want to delete the selected  Advance Salary Request ?')) {
+selectedEmployeeIds.forEach(categoryId => {
+  this.employeeService.deletepayrolladvSalary(categoryId).subscribe(
+    () => {
+      console.log(' Document Type deleted successfully:', categoryId);
+      // Remove the deleted employee from the local list
+      this.DocRequest = this.DocRequest.filter(employee => employee.id !== categoryId);
+      alert(' Advance Salary Request  deleted successfully');
+      window.location.reload();
+
+    },
+    (error) => {
+      console.error('Error deleting Loan Types:', error);
+      alert(error)
+    }
+  );
+});
+}
+}
+
+
+updateAssetType(): void {
+const selectedSchema = localStorage.getItem('selectedSchema');
+if (!selectedSchema || !this.editAsset.id) {
+alert('Missing schema or asset ID');
+return;
+}
+
+this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).subscribe(
+(response) => {
+  alert(' Advance Salary Request  updated successfully!');
+  this.closeEditModal();
+  window.location.reload();
+},
+(error) => {
+  console.error('Error updating asset:', error);
+  alert('Update failed');
+}
+);
+}
+
+
 
 }

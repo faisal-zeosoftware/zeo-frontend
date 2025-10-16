@@ -167,8 +167,12 @@
             </div>
           
             <div class="row"  *ngIf="hasAddPermission">
-              <div class="col-md-9"></div>
-              <div class="col-md-3">
+              <div class="col-md-2"></div>
+              <div class="col-md-2">
+                <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
+        
+              </div>
+              <div class="col-md-2">
                 <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Aproval Level</button>
               </div>
             </div>

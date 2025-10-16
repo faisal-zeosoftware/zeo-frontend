@@ -1,42 +1,59 @@
 <div class="container" >
     <div class="comapny_section">
-        <div class="header_section">
+         
+      <div class="header_section">
 
-            <div class="row">
-                <div class="col-md-5">
-                    <h1> Advance salary Approval Level Setting</h1>
-                </div>
-                <div class="col-md-2">
-                    
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
-                        </span> Create</button>
-                        <!-- <span *ngIf="!hasAddPermission"></span>
-
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                           
-                           <span *ngIf="!hasDeletePermission"></span> -->
-                    </div>
-                </div>
+        <div class="row">
+          <div class="col-md-4">
+            <h1> Advance Salary Approval Level  </h1>
+          </div>
+          <div class="col-md-3">
+  
+            <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+  
+          </div>
+          <div class="col-md-5">
+            <div class="button-group pull-right">
+              <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "><span
+                  class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                </span> Create</button>
+              <span *ngIf="!hasAddPermission"></span>
+  
+              <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                <span class="header-btn-icon">
+                  <mat-icon>draw
+                  </mat-icon></span> Edit</button>
+              <span *ngIf="hasEditPermission"></span>
+  
+              <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+                *ngIf="hasDeletePermission">
+                <span class="header-btn-icon">
+                  <mat-icon> delete
+                  </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+  
+              <span *ngIf="!hasDeletePermission"></span>
             </div>
-           
-           
-
+          </div>
         </div>
-
+  
+  
+  
+      </div>
+  
+      <div class="row">
+        <div class="col-md-2">
+  
+          <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+            (click)="toggleSelectAllEmployees()">Select All</button>
+  
+        </div>
+        <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete
+            Selected </button>
+  
+        </div>
+      </div>
+  
 
       
 
@@ -121,6 +138,79 @@
             </div>
           </div>
 
+
+                <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit Payroll Approval Level Setting </h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Level</label>
+              <input type="number" class="form-control" required [(ngModel)]="editAsset.level" placeholder="Enter Level"
+                     [ngModelOptions]="{standalone: true}" >
+            </div>
+        
+            <div class="col-md-6">
+              <label>Role</label>
+              <input type="text" class="form-control" required [(ngModel)]="editAsset.role" placeholder="Enter Role"
+                     [ngModelOptions]="{standalone: true}">
+            
+            </div>
+
+    
+
+
+                                   <!-- non-ess users  -->
+                      <div class="col-md-6">
+      <div class="custom-sel">
+          <label>Approver</label>
+          <select class="form-control" id="approver" required [(ngModel)]="editAsset.approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
+              <option value="" >Select</option>
+              <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
+          </select>
+          <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
+      </div>
+  </div>
+       
+       
+        
+           
+
+          
+
+
+          </div>
+        
+
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
+
+            </div>
+            <div class="col-md-2">
+              <button type="button" (click)="updateAssetType()" class="btn btn-success btn-full mt-4">Update</button>
+            </div>
+          </div>
+        </form>
+
+
+
+      </div>
+    </div>
+
+
+
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
 
@@ -132,7 +222,7 @@
                     <th>Level</th>
                     <th>Role</th>
                     <th>Approver</th>
-
+                    <th>Actions</th>
                    
       
         
@@ -146,7 +236,23 @@
                     <td>{{ docs.level }}</td>
                     <td>{{ docs.role }}</td> 
                     <td>{{ docs.approver }}</td>
-
+                    <td>
+                      <button
+                        mat-fab
+                        color="primary"
+                        aria-label="Edit icon"
+                        *ngIf="showEditBtn"
+            
+                        
+                        (click)="openEditModal(docs)"
+                      >
+                        <mat-icon style="color: white;">draw</mat-icon>
+                      </button>
+            
+                      <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+            
+                    </td>
+            
                   
     
                   </tr>
