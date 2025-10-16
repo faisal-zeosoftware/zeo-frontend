@@ -342,7 +342,10 @@ ngOnInit(): void {
             if (selectedSchema) {
               this.employeeService.getemployees(selectedSchema).subscribe(
                 (result: any) => {
-                  this.Employees = result;
+                  // ✅ Filter employees: show only those who are active or not marked inactive
+                 this.Employees = result.filter(
+                 (employee: any) => employee.is_active === true || employee.is_active === null
+                );     
                   console.log(' fetching Loantypes:');
           
                 },

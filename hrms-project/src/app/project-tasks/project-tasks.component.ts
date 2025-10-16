@@ -365,25 +365,30 @@ ngOnInit(): void {
             }
         
       
-          loadLAssetType(): void {
-    
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-          
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getemployees(selectedSchema).subscribe(
-                (result: any) => {
-                  this.Employees = result;
-                  console.log(' fetching Loantypes:');
-          
-                },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
-                }
-              );
-            }
-            }
+  
+
+loadLAssetType(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  console.log('schemastore', selectedSchema);
+
+  if (selectedSchema) {
+    this.employeeService.getemployees(selectedSchema).subscribe(
+      (result: any) => {
+        // ✅ Filter employees: show only those who are active or not marked inactive
+        this.Employees = result.filter(
+          (employee: any) => employee.is_active === true || employee.is_active === null
+        );
+
+        console.log('Filtered Employees:', this.Employees);
+      },
+      (error) => {
+        console.error('Error fetching employees:', error);
+      }
+    );
+  }
+}
+
         
 
 
