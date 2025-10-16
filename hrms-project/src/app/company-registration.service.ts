@@ -163,19 +163,6 @@ export class CompanyRegistrationService {
 
 
 
-
-    // Inside CompanyRegistrationService
-// getBranchesByCompanyId(companyId: any): Observable<any> {
-//   const url = `${this.baseUrl}/${companyId}/Branch`; // Adjust the URL if needed
-//   return this.http.get(url).pipe(
-//     catchError((error) => {
-//       console.error('Error fetching branches by company ID:', error);
-//       return throwError(error);
-//     })
-//   );
-// }
-
-
 downloadEmployeeCsv(selectedSchema: string): Observable<Blob> {
   const apiUrl = `${this.apiUrl}/employee/api/emp-bulkupload/download_default_csv_file/?schema=${selectedSchema}`;
   return this.http.get(apiUrl, { responseType: 'blob' });

@@ -90,8 +90,6 @@
     
     
           <div class="col-md-6">
-    
-    
             <div class="custom-sel">
                 <label>Approver</label>
                 <select class="form-control" id="approver" required [(ngModel)]="approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
@@ -100,8 +98,6 @@
                 </select>
                 <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
             </div>
-                        
-    
         </div>
     
           

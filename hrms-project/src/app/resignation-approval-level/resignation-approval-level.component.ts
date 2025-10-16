@@ -24,6 +24,7 @@ export class ResignationApprovalLevelComponent {
 
 
   Users:any []=[];
+  
   approvalLevels:any []=[];
   Approvers:any []=[];
 
@@ -43,6 +44,7 @@ schemas: string[] = []; // Array to store schema names
   constructor(
     private leaveservice: LeaveService, 
     private authService: AuthenticationService, 
+
       private userService: UserMasterService,
 
     private http: HttpClient,
@@ -57,6 +59,8 @@ private employeeService: EmployeeService,
     // this.loadLoanTypes();
     this.loadLoanApprovalLevels();
     this.loadLoanapprover();
+
+
 
       this.loadUsers();
 
@@ -218,7 +222,7 @@ private employeeService: EmployeeService,
     }
     }
 
-
+// employee service code
 
     loadLoanapprover(): void {
   
@@ -240,7 +244,7 @@ private employeeService: EmployeeService,
       }
       }
 
-
+// non-ess-users usermaster services
 
       loadUsers(): void {
     

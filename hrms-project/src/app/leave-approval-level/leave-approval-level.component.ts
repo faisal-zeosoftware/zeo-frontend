@@ -7,6 +7,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
+import {UserMasterService} from '../user-master/user-master.service';
 
 @Component({
   selector: 'app-leave-approval-level',
@@ -59,6 +60,7 @@ schemas: string[] = []; // Array to store schema names
     private sessionService: SessionService,
     private leaveService:LeaveService,
     private employeeService:EmployeeService,
+    private userService: UserMasterService,
 
     private DesignationService: DesignationService,
   
@@ -71,7 +73,10 @@ schemas: string[] = []; // Array to store schema names
         this.LoadBranch(selectedSchema);
 
         this.LoadLeavetype(selectedSchema);
-      this.LoadUsers(selectedSchema);
+      // this.LoadUsers(selectedSchema);
+
+         this.loadUsers();
+      
       this.LoadLeaveApprovalLevel(selectedSchema);
 
 
@@ -280,18 +285,40 @@ if (this.userId !== null) {
   
  
   
-    LoadUsers(selectedSchema: string) {
-      this.leaveService.getUsers(selectedSchema).subscribe(
-        (data: any) => {
-          this.Users = data;
+    // LoadUsers(selectedSchema: string) {
+    //   this.leaveService.getUsers(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.Users = data;
         
-          console.log('employee:', this.LeaveTypes);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
+    //       console.log('employee:', this.LeaveTypes);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
+
+    // non-ess-users usermaster services
+
+      loadUsers(): void {
+    
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+        console.log(' fetching Companies:');
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
   
 
 
