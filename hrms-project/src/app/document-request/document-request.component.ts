@@ -6,6 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
+import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
   selector: 'app-document-request',
@@ -63,6 +64,8 @@ schemas: string[] = []; // Array to store schema names
     private authService: AuthenticationService,
     private sessionService: SessionService,
     private leaveService:LeaveService,
+    private employeeService:EmployeeService,
+
     private DesignationService: DesignationService,
   
     ) {}
@@ -350,5 +353,127 @@ this.userDetails = this.created_by;
         }
       );
     }
+
+
+
+    
+
+
+    
+  iscreateLoanApp: boolean = false;
+
+
+
+
+  openPopus():void{
+    this.iscreateLoanApp = true;
+
+  }
+
+  closeapplicationModal():void{
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+
+
+
+   
+
+showEditBtn: boolean = false;
+
+EditShowButtons() {
+this.showEditBtn = !this.showEditBtn;
+}
+
+
+Delete: boolean = false;
+allSelecteds: boolean = false;
+
+toggleCheckboxes() {
+this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+this.allSelecteds = !this.allSelecteds;
+this.DocRequest.forEach(employee => employee.selected = this.allSelecteds);
+
+}
+
+onCheckboxChange(employee:number) {
+// No need to implement any logic here if you just want to change the style.
+// You can add any additional logic if needed.
+}
+
+
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+openEditModal(asset: any): void {
+this.editAsset = { ...asset }; // copy asset data
+this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+deleteSelectedAssetType() { 
+const selectedEmployeeIds = this.DocRequest
+.filter(employee => employee.selected)
+.map(employee => employee.id);
+
+if (selectedEmployeeIds.length === 0) {
+alert('No Document Request selected for deletion.');
+return;
+}
+
+if (confirm('Are you sure you want to delete the selected Document Request  ?')) {
+selectedEmployeeIds.forEach(categoryId => {
+  this.employeeService.deleteDocReq(categoryId).subscribe(
+    () => {
+      console.log(' Document Type deleted successfully:', categoryId);
+      // Remove the deleted employee from the local list
+      this.DocRequest = this.DocRequest.filter(employee => employee.id !== categoryId);
+      alert(' Document Request  deleted successfully');
+      window.location.reload();
+
+    },
+    (error) => {
+      console.error('Error deleting Loan Types:', error);
+      alert(error)
+    }
+  );
+});
+}
+}
+
+
+updateAssetType(): void {
+const selectedSchema = localStorage.getItem('selectedSchema');
+if (!selectedSchema || !this.editAsset.id) {
+alert('Missing schema or asset ID');
+return;
+}
+
+this.employeeService.updateDocReq(this.editAsset.id, this.editAsset).subscribe(
+(response) => {
+  alert(' Document Request  updated successfully!');
+  this.closeEditModal();
+  window.location.reload();
+},
+(error) => {
+  console.error('Error updating asset:', error);
+  alert('Update failed');
+}
+);
+}
+
+
 
 }
