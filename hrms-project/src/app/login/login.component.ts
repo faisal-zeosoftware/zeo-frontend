@@ -119,7 +119,7 @@ export class LoginComponent implements OnInit {
               const selectedSchema = tenant.schema_name; // Assuming the tenant ID is in the tenants array
               localStorage.setItem('selectedSchema', selectedSchema.toString());
 
-              this.router.navigate(['/employee-dashboard/employee-sction']);
+              this.router.navigate(['/employee-dashboard']);
        
               // this.EmployeeService.getEmployeeDetails(userId).subscribe(
               //   (employeeDetails) => {
