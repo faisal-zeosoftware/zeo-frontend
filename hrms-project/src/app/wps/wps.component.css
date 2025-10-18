@@ -63,40 +63,6 @@ table tr td {
   padding: 15px;
 }
 
-@media only screen and (max-width: 640px) {
-  table thead {
-    display: none;
-  }
-
-  table tbody {
-    display: block;
-  }
-
-  table tbody tr td {
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
-
-  table tbody tr {
-    margin-bottom: 20px;
-    display: block;
-    border: 1px solid #004976;
-    background: #f9f9f9;
-    overflow: hidden;
-  }
-
-  table tbody td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    width: 30%;
-    display: flex;
-    background: #004976;
-    color: #fff;
-    padding: 15px;
-    margin-inline-end: 10px;
-  }
-}
 
 
 
@@ -337,4 +303,78 @@ font-family: math;
 .table-scroll{
   overflow-x: scroll;
   overflow-y: scroll;
+}
+
+/* Make table scrollable on small devices */
+.table-responsive {
+  overflow-x: auto;
+  width: 100%;
+}
+
+/* Basic table styling */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1200px; /* maintain large table layout on desktop */
+}
+
+.styled-table th,
+.styled-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.styled-table thead {
+  background-color: #ddd;
+  color: white;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 640px) {
+  .styled-table {
+    display: block;
+    width: 100%;
+  }
+
+  .styled-table thead {
+    display: none; /* hide header */
+  }
+
+  .styled-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .styled-table tbody tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #f9f9f9;
+    padding: 10px;
+  }
+
+  .styled-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  .styled-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .styled-table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #ddd;
+    width: 40%;
+    flex-shrink: 0;
+  }
 }

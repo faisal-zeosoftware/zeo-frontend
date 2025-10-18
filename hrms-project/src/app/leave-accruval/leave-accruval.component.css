@@ -63,43 +63,7 @@ table thead th {
     padding: 15px;
   }
   
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
   
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
-  
-
-
 
   p{
     margin-bottom: 0px;
@@ -242,3 +206,157 @@ table thead .inner_t_head{
   background: whitesmoke !important;
   color: black;
 }
+
+
+
+ 
+
+
+
+
+/* ✅ FIX: Ensure nested (inner) tables display properly inside mobile view */
+@media (max-width: 991px) {
+ 
+  .table.table-sm {
+    display: table !important;
+  }
+  .table.table-sm thead {
+    display: table-header-group !important;
+  }
+  .table.table-sm tbody,
+  .table.table-sm tr,
+  .table.table-sm td {
+    display: table-row-group !important;
+    width: auto !important;
+  }
+  .table.table-sm tr {
+    display: table-row !important;
+  }
+  .table.table-sm td {
+    display: table-cell !important;
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+  }
+   .table.table-sm td::before {
+    content: none !important;    
+   }  
+   
+}
+
+
+
+@media only screen and (max-width: 768px) {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table thead {
+    display: none; /* Hide headers on mobile */
+  }
+
+  table tbody,
+  table tr,
+  table td {
+    display: block;
+    width: 100%;
+  }
+
+  table tbody tr {
+    margin-bottom: 20px;
+    border: 1px solid #5c1e81;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    padding: 8px 0;
+  }
+
+  table tbody td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+    font-size: 13px;
+    word-break: break-word;
+  }
+
+  table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  table tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 40%;
+    max-width: 40%;
+    font-weight: 600;
+    background:#5c1e81;
+    color: #fff;
+    padding: 8px 10px;
+    margin-right: 10px;
+    border-radius: 4px 0 0 4px;
+    font-size: 13px;
+  }
+
+  /* ✅ Nested (inner) tables — like monthly accruals */
+  table.table-sm {
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fafafa;
+  }
+
+  table.table-sm thead {
+    display: none;
+  }
+
+  table.table-sm tbody,
+  table.table-sm tr,
+  table.table-sm td {
+    display: block;
+    width: 100%;
+  }
+
+  table.table-sm tbody tr {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding: 6px 0;
+  }
+
+  table.table-sm tbody td {
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  table.table-sm tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 45%;
+    max-width: 45%;
+    font-weight: 600;
+    color:#5c1e81;
+    background: none;
+    padding: 0;
+    margin-right: 8px;
+  }
+
+
+  /* td not view in mobile  */
+
+  .tdview{
+    display: block !important;
+  }
+
+     td.tdview {
+    display: none !important;
+  }
+
+}
+
+
+

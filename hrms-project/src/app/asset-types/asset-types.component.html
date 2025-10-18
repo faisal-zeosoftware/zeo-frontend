@@ -175,7 +175,7 @@
                 <thead>
                   <tr>
                     <th>No</th>
-                    <th> Asset Type  </th>
+                    <th>Asset Type  </th>
                     <th>Description </th>
       
                     <th>Action</th>
@@ -185,11 +185,11 @@
                 <tbody>
                     
                   <tr *ngFor="let docs of LoanTypes;let i = index">
-                    <td>{{ i + 1 }}</td> 
-                    <td>{{ docs.name }}</td>
-                    <td>{{ docs.description }}</td> 
+                    <td data-label="No">{{ i + 1 }}</td> 
+                    <td data-label="Asset Type">{{ docs.name }}</td>
+                    <td data-label="Description">{{ docs.description }}</td> 
                 
-                    <td>
+                    <td data-label="Action">
                         <button
                           mat-fab
                           color="primary"

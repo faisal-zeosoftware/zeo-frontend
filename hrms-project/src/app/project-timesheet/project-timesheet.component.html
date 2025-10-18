@@ -352,19 +352,19 @@
           
             <tbody>
               <tr *ngFor="let docs of Timesheets; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.date }}</td>
-                <td>{{ docs.time_spent }}</td>
+                <td data-label="No">{{ i + 1 }}</td>
+                <td data-label="Date">{{ docs.date }}</td>
+                <td data-label="Time spent">{{ docs.time_spent }}</td>
 
-                <td>{{ docs.status }}</td>
-                <td>{{ docs.description }}</td>
-                <td>{{ docs.project }}</td>
-                <td>{{ docs.task }}</td>
-                <td>{{ docs.employee }}</td>
+                <td data-label="Status">{{ docs.status }}</td>
+                <td data-label="Description">{{ docs.description }}</td>
+                <td data-label="Project">{{ docs.project }}</td>
+                <td data-label="Task">{{ docs.task }}</td>
+                <td data-label="Employee">{{ docs.employee }}</td>
 
                       <!-- Dynamic custom field values -->
             
-                <td>
+                <td data-label="Action">
                   <button
                     mat-fab
 

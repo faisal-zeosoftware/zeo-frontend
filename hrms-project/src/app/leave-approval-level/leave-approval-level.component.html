@@ -331,21 +331,22 @@ name="request_type"
               <th>Leave Type</th>
               <th>Approver</th>
               <th>Is compensatory</th>
+               <th>Action</th>
 
-  <th>Action</th>
+ 
              
             </tr>
           </thead>
           <tbody>
               
             <tr *ngFor="let docs of LeaveapprovalLevels;let i = index">
-              <td>{{ i + 1 }}</td> 
-              <td>{{ docs.level }}</td>
-              <td>{{ docs.branch }}</td>
-              <td>{{ docs.request_type }}</td> 
-              <td>{{ docs.approver }}</td>
-              <td>{{ docs.is_compensatory }}</td>
-              <td>
+              <td data-label="No">{{ i + 1 }}</td> 
+              <td data-label="Level">{{ docs.level }}</td>
+              <td data-label="Branch">{{ docs.branch }}</td>
+              <td data-label="Leave Type">{{ docs.request_type }}</td> 
+              <td data-label="Approver">{{ docs.approver }}</td>
+              <td data-label="Is Compensatory">{{ docs.is_compensatory }}</td>
+              <td data-label="Action">
                 <button
                   mat-fab
                   color="primary"

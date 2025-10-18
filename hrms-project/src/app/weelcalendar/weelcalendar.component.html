@@ -286,10 +286,10 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let detail of groupDetailsByMonth()[month]">
-                    <td>{{ formatDate(detail.date) }}</td>
-                    <td>{{ getDayName(detail.date) }}</td>
-                    <td class="leave_type_clm" >{{ getDayTypeDisplayName(detail.day_type) }}</td>
-                    <td>
+                    <td data-label="Date">{{ formatDate(detail.date) }}</td>
+                    <td data-label="Day">{{ getDayName(detail.date) }}</td>
+                    <td class="leave_type_clm" data-label="Day Type">{{ getDayTypeDisplayName(detail.day_type) }}</td>
+                    <td data-label="Action">
                       <button type="button" class="btn-Edit btn-info btn btn_tabl" (click)="openEditModal(detail)">
                         <span class="header-btn-icon">
                           <mat-icon>draw</mat-icon>

@@ -320,13 +320,13 @@ name="employee"
                     <tbody>
                         
                       <tr *ngFor="let docs of LeaveBalances;let i = index">
-                        <td>{{ i + 1 }}</td> 
-                        <td>{{ docs.leave_type }}</td>
-                        <td>{{ docs.balance }}</td>
-                        <td>{{ docs.openings }}</td> 
-                        <td>{{ docs.employee }}</td>
+                        <td data-label="No">{{ i + 1 }}</td> 
+                        <td data-label="Leave type">{{ docs.leave_type }}</td>
+                        <td data-label="Balance">{{ docs.balance }}</td>
+                        <td data-label="Openings">{{ docs.openings }}</td> 
+                        <td data-label="Employee">{{ docs.employee }}</td>
                         
-                        <td>
+                        <td data-label="Action">
                           <button
                             mat-fab
                             color="primary"

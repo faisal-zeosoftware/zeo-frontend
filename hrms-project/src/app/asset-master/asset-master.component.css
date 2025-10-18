@@ -151,9 +151,10 @@ margin-right: 10px;
   /* Phones */
 @media (max-width: 728px) {
 
-  .modal-content{
+  ::ng-deep.modal-content{
     
-    margin-top: 200px;
+    margin-top: 200px !important;
+    margin-left: 60px !important;
 
   }
 }

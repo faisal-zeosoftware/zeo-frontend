@@ -223,7 +223,7 @@
 
                         <th>Loan Type</th>
                        
-          <th>Action</th>
+                           <th>Action</th>
 
             
                        
@@ -232,13 +232,13 @@
                     <tbody>
                         
                       <tr *ngFor="let docs of LoanRepayements;let i = index">
-                        <td>{{ i + 1 }}</td> 
-                        <td>{{ docs.repayment_date }}</td>
-                        <td>{{ docs.amount_paid }}</td> 
-                        <td>{{ docs.remaining_balance }}</td>
-                        <td>{{ docs.loan }}</td>
+                        <td data-label="No">{{ i + 1 }}</td> 
+                        <td data-label="Repayment date">{{ docs.repayment_date }}</td>
+                        <td data-label="Amount paid">{{ docs.amount_paid }}</td> 
+                        <td data-label="Remaining balance">{{ docs.remaining_balance }}</td>
+                        <td data-label="Loan Type">{{ docs.loan }}</td>
 
-                       <td>
+                       <td data-label="Action">
                       <button
                         mat-fab
                         color="primary"

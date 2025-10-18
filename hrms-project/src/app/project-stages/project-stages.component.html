@@ -304,17 +304,17 @@
           
             <tbody>
               <tr *ngFor="let docs of LoanTypes; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.title }}</td>
-                <td>{{ docs.sequence }}</td>
-                <td>{{ docs.is_end_stage }}</td>
-                <td>{{ docs.project }}</td>
+                <td data-label="No">{{ i + 1 }}</td>
+                <td data-label="Title">{{ docs.title }}</td>
+                <td data-label="Sequence">{{ docs.sequence }}</td>
+                <td data-label="Is End Stage">{{ docs.is_end_stage }}</td>
+                <td data-label="Project">{{ docs.project }}</td>
 
                 
 
                 <!-- Dynamic custom field values -->
             
-                <td>
+                <td data-label="Action">
                   <button
                     mat-fab
 

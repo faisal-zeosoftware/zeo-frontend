@@ -348,57 +348,59 @@
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
 
-          <table width="100%" *ngIf="hasViewPermission">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Asset Name</th>
-                <th>Serial No</th>
-                <th>Model</th>
-                <th>Purchase Date</th>
-                <th>Status</th>
-                <th>Condition</th>
-                <th>Asset Type</th>
-          
-                <!-- Dynamic custom field headers -->
-                <th *ngFor="let field of customFieldHeaders">
-                  {{ field.custom_field_name }}
-                </th>
-          
-                <th>Action</th>
-              </tr>
-            </thead>
-          
-            <tbody>
-              <tr *ngFor="let docs of Assets; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.name }}</td>
-                <td>{{ docs.serial_number }}</td>
-                <td>{{ docs.model }}</td>
-                <td>{{ docs.purchase_date }}</td>
-                <td>{{ docs.status }}</td>
-                <td>{{ docs.condition }}</td>
-                <td>{{ docs.asset_type }}</td>
-          
-                <!-- Dynamic custom field values -->
-                <td *ngFor="let field of customFieldHeaders">
-                  {{ getCustomFieldValue(docs, field.custom_field_id) }}
-                </td>
-                <td>
-                  <button
-                    mat-fab
-                    color="primary"
-                    aria-label="Edit icon"
-                    *ngIf="showEditBtn"
-                    (click)="openEditModal(docs)"
-                  >
-                    <mat-icon style="color: white;">draw</mat-icon>
-                  </button>
-                  <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <table width="100%" *ngIf="hasViewPermission" class="styled-table">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Asset Name</th>
+      <th>Serial No</th>
+      <th>Model</th>
+      <th>Purchase Date</th>
+      <th>Status</th>
+      <th>Condition</th>
+      <th>Asset Type</th>
+
+      <!-- Dynamic custom field headers -->
+      <th *ngFor="let field of customFieldHeaders">
+        {{ field.custom_field_name }}
+      </th>
+
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let docs of Assets; let i = index">
+      <td data-label="No">{{ i + 1 }}</td>
+      <td data-label="Asset Name">{{ docs.name }}</td>
+      <td data-label="Serial No">{{ docs.serial_number }}</td>
+      <td data-label="Model">{{ docs.model }}</td>
+      <td data-label="Purchase Date">{{ docs.purchase_date }}</td>
+      <td data-label="Status">{{ docs.status }}</td>
+      <td data-label="Condition">{{ docs.condition }}</td>
+      <td data-label="Asset Type">{{ docs.asset_type }}</td>
+
+      <!-- ✅ Dynamic custom field values with mobile labels -->
+      <td *ngFor="let field of customFieldHeaders" [attr.data-label]="field.custom_field_name">
+        {{ getCustomFieldValue(docs, field.custom_field_id) }}
+      </td>
+
+      <td data-label="Action">
+        <button
+          mat-fab
+          color="primary"
+          aria-label="Edit icon"
+          *ngIf="showEditBtn"
+          (click)="openEditModal(docs)"
+        >
+          <mat-icon style="color: white;">draw</mat-icon>
+        </button>
+        <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
           
 
         </div>

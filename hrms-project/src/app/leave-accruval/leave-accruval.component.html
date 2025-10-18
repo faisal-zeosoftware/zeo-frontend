@@ -67,31 +67,56 @@
         <ng-container *ngFor="let item of employeeAccruals.leave_accrual_summary">
           <!-- Main row -->
           <tr>
-            <td>{{ item.leave_type }}</td>
-            <td>{{ item.accrual_rate }}</td>
-            <td>{{ item.existing_balance }}</td>
+            <td data-label="Leave Type">{{ item.leave_type }}</td>
+            <td data-label="Accrual Rate">{{ item.accrual_rate }}</td>
+            <td data-label="Existing Balance">{{ item.existing_balance }}</td>
           </tr>
       
           <!-- Nested table row for monthly accruals -->
           <tr *ngIf="item.monthly_accruals">
-            <td colspan="3">
-              <table class="table table-sm table-striped table-bordered mt-2">
-                <thead >
-                  <tr>
-                    <th class="inner_t_head">Month</th>
-                    <th class="inner_t_head">Accrued Balance</th>
-                    <th class="inner_t_head">Total With Existing Balance</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let monthData of item.monthly_accruals">
-                    <td>{{ monthData.month }}</td>
-                    <td>{{ monthData.accrued_balance }}</td>
-                    <td>{{ monthData.total_with_existing_balance }}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <td  class="tdview" colspan="3">
+     <table class="table table-sm table-bordered" width="100%">
+        <thead>
+    <tr>
+      <th>Month</th>
+      <th>Accrued Balance</th>
+      <th>Total With Existing Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let monthData of item.monthly_accruals">
+      <td data-label="Month">{{ monthData.month }}</td>
+      <td data-label="Accrued Balance">{{ monthData.accrued_balance }}</td>
+      <td data-label="Total With Existing Balance">{{ monthData.total_with_existing_balance }}</td>
+    </tr>
+  </tbody>
+</table>
+
             </td>
+
+<!-- for mobile responsive -->
+
+      <div class="tdview" style="display: none;">       
+     <table class="table table-sm table-bordered" width="100%">
+        <thead>
+    <tr>
+      <th>Month</th>
+      <th>Accrued Balance</th>
+      <th>Total With Existing Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let monthData of item.monthly_accruals">
+      <td data-label="Month">{{ monthData.month }}</td>
+      <td data-label="Accrued Balance">{{ monthData.accrued_balance }}</td>
+      <td data-label="Total With Existing Balance">{{ monthData.total_with_existing_balance }}</td>
+    </tr>
+  </tbody>
+</table>   
+
+</div> 
+
+            
           </tr>
         </ng-container>
       </tbody>
@@ -151,13 +176,13 @@
                                 </thead>
                                 <tbody>
                                   <tr *ngFor="let row of resetPreviewResults">
-                                    <td>{{ row.employee }}</td>
-                                    <td>{{ row.leave_type }}</td>
-                                    <td>{{ row.reset_date }}</td>
-                                    <td>{{ row.initial_balance }}</td>
-                                    <td>{{ row.carry_forward }}</td>
-                                    <td>{{ row.encashment }}</td>
-                                    <td>{{ row.final_balance }}</td>
+                                    <td data-label="Employee">{{ row.employee }}</td>
+                                    <td data-label="Leave Type">{{ row.leave_type }}</td>
+                                    <td data-label="Reset Date">{{ row.reset_date }}</td>
+                                    <td data-label="Initial Balance">{{ row.initial_balance }}</td>
+                                    <td data-label="Carry Forward">{{ row.carry_forward }}</td>
+                                    <td data-label="Encashment">{{ row.encashment }}</td>
+                                    <td data-label="Final Balance">{{ row.final_balance }}</td>
                                   </tr>
                                 </tbody>
                               </table>

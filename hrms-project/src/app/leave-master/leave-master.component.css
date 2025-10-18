@@ -408,7 +408,7 @@ label{
 
 
 
-@media only screen and (max-width: 640px) {
+@media only screen and (max-width: 768px) {
   table thead {
     display: none;
   }
@@ -426,7 +426,7 @@ label{
   table tbody tr {
     margin-bottom: 20px;
     display: block;
-    border: 1px solid #004976;
+    border: 1px solid #5c1e81;
     background: #f9f9f9;
     overflow: hidden;
   }
@@ -434,19 +434,19 @@ label{
   table tbody td::before {
     content: attr(data-label);
     font-weight: bold;
-    width: 30%;
+    width: 80%;
     display: flex;
-    background: #004976;
+    background: #5c1e81;
     color: #fff;
     padding: 15px;
     margin-inline-end: 10px;
   }
 
 
-  .modal-content[_ngcontent-ng-c4067305211]{
+   ::ng-deep .modal-content{
 
-    width: 98%;
-    margin-top: 160px;
+    width: 98% !important;
+    margin-top: 160px !important;
   }
 
 

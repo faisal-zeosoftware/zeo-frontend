@@ -44,55 +44,46 @@
                     </div>
                   </div>
                 
-                  <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
-                    
-                  <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
-                    <thead>
-                      <tr>
-                        <th>Type</th> <!-- to show HDR, EDR, SCR -->
-                        <th *ngFor="let key of getUnifiedSIFKeys()">{{ key }}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <!-- HDR Row -->
-                      <tr>
-                        <td>HDR</td>
-                        <td *ngFor="let key of getUnifiedSIFKeys()">{{ sifData.hdr[key] || '-' }}</td>
-                      </tr>
-                
-                      <!-- EDR Rows -->
-                      <tr *ngFor="let edrItem of sifData.edr">
-                        <td>EDR</td>
-                        <td *ngFor="let key of getUnifiedSIFKeys()">{{ edrItem[key] || '-' }}</td>
-                      </tr>
-                
-                      <!-- SCR Row -->
-                      <tr>
-                        <td>SCR</td>
-                        <td *ngFor="let key of getUnifiedSIFKeys()">{{ sifData.scr[key] || '-' }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  </div>
+<div class="table-responsive">
+  <table class="styled-table mt-2">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th *ngFor="let key of getUnifiedSIFKeys()">{{ key }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- HDR Row -->
+      <tr>
+        <td data-label="Type">HDR</td>
+        <td *ngFor="let key of getUnifiedSIFKeys()" [attr.data-label]="key">
+          {{ sifData.hdr[key] || '-' }}
+        </td>
+      </tr>
+
+      <!-- EDR Rows -->
+      <tr *ngFor="let edrItem of sifData.edr">
+        <td data-label="Type">EDR</td>
+        <td *ngFor="let key of getUnifiedSIFKeys()" [attr.data-label]="key">
+          {{ edrItem[key] || '-' }}
+        </td>
+      </tr>
+
+      <!-- SCR Row -->
+      <tr>
+        <td data-label="Type">SCR</td>
+        <td *ngFor="let key of getUnifiedSIFKeys()" [attr.data-label]="key">
+          {{ sifData.scr[key] || '-' }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
                 </div>
                 
-
-
-
-
- 
             </div>
 
-             
-
-
-
-          
-
         </div>
-
-
-
-
-
 </div>

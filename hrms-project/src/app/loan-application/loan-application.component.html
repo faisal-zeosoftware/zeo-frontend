@@ -88,8 +88,8 @@
                     <tbody>
                         
                       <tr *ngFor="let docs of LoanApplications;let i = index">
-                        <td>{{ i + 1 }}</td> 
-                        <td>
+                        <td data-label="No">{{ i + 1 }}</td> 
+                        <td data-label="Action">
                             <!-- Show buttons only if the loan status is 'Approved' -->
                             <ng-container *ngIf="docs.status === 'Approved'">
                               <button  class="btn btn-full btn-warning" (click)="openPauseModal(docs)">Pause</button>
@@ -99,24 +99,23 @@
                               <button class="btn btn-full btn-primary" (click)="openResumeModal(docs)">Resume</button>
                             </ng-container>
                           </td>
-                          
-                          <td>{{ docs.employee }}</td>
 
-                               
-                        <td>{{ docs.amount_requested }}</td>
-                        <td>{{ docs.repayment_period }}</td> 
-                        <td>{{ docs.status }}</td>
-                        <td>{{ docs.emi_amount }}</td>
+                          <td data-label="Employee">{{ docs.employee }}</td>
+
+                        <td data-label="Amount Requested">{{ docs.amount_requested }}</td>
+                        <td data-label="Repayment Period">{{ docs.repayment_period }}</td> 
+                        <td data-label="Status">{{ docs.status }}</td>
+                        <td data-label="EMI Amount">{{ docs.emi_amount }}</td>
                         <!-- <td>{{ docs.disbursement_date }}</td>  -->
-                        <td>{{ docs.remaining_balance }}</td>
+                        <td data-label="Remaining Balance">{{ docs.remaining_balance }}</td>
                         <!-- <td>{{ docs.approved_on }}</td> -->
                         <!-- <td>{{ docs.rejection_reason }}</td>  -->
-                        <td>{{ docs.pause_start_date }}</td>
-                        <td>{{ docs.pause_reason }}</td> 
-                        <td>{{ docs.resume_date }}</td>
+                        <td data-label="Pause Start Date">{{ docs.pause_start_date }}</td>
+                        <td data-label="Pause Reason">{{ docs.pause_reason }}</td> 
+                        <td data-label="Resume Date">{{ docs.resume_date }}</td>
 
-                        <td>{{ docs.loan_type }}</td>
-                      
+                        <td data-label="Loan Type">{{ docs.loan_type }}</td>
+
                       </tr>
                   
                     </tbody>

@@ -297,7 +297,7 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let docs of AssetsRequest; let i = index">
-                    <td>
+                    <td data-label="No">
                       <button
                         mat-fab
                         color="primary"
@@ -311,12 +311,13 @@
                       <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
                       {{ i + 1 }}
                     </td>
-                    <td>{{ docs.reason }}</td>
-                    <td>{{ docs.employee }}</td>
-                    <td>{{ docs.asset_type }}</td>
-                    <td>{{ docs.requested_asset }}</td>
-                    <td>{{ docs.status }}</td>
-                    <td>
+                    <td data-label="Reason">{{ docs.reason }}</td>
+                    <td data-label="Employee">{{ docs.employee }}</td>
+                    <td data-label="Asset type">{{ docs.asset_type }}</td>
+                    <td data-label="Requested asset">{{ docs.requested_asset }}</td>
+                    <td data-label="Status">{{ docs.status }}</td>
+                    
+                    <td data-label="Action">
                       <button
                         type="button"
                         class="btn btn-success"

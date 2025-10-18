@@ -254,11 +254,11 @@
                 <tbody>
                     
                   <tr *ngFor="let docs of LoanTypes;let i = index">
-                    <td>{{ i + 1 }}</td> 
-                    <td>{{ docs.loan_type }}</td>
-                    <td>{{ docs.max_amount }}</td> 
-                    <td>{{ docs.repayment_period }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td> 
+                    <td data-label="Loan type">{{ docs.loan_type }}</td>
+                    <td data-label="Maximum amount">{{ docs.max_amount }}</td> 
+                    <td data-label="Repayment period">{{ docs.repayment_period }}</td>
+                    <td data-label="Action">
                       <button
                         mat-fab
                         color="primary"

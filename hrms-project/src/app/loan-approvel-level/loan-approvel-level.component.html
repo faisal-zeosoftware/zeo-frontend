@@ -271,13 +271,13 @@
                     <tbody>
                         
                       <tr *ngFor="let docs of approvalLevels;let i = index">
-                        <td>{{ i + 1 }}</td> 
-                        <td>{{ docs.level }}</td>
-                        <td>{{ docs.role }}</td> 
-                        <td>{{ docs.approver }}</td>
-                        <td>{{ docs.loan_type }}</td>
+                        <td data-label="No">{{ i + 1 }}</td> 
+                        <td data-label="Level">{{ docs.level }}</td>
+                        <td data-label="Role">{{ docs.role }}</td> 
+                        <td data-label="Approver">{{ docs.approver }}</td>
+                        <td data-label="Loan Type">{{ docs.loan_type }}</td>
 
-                        <td>
+                        <td data-label="Action">
                           <button
                             mat-fab
                             color="primary"

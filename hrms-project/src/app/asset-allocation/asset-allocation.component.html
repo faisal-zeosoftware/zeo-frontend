@@ -290,18 +290,20 @@
                 <tbody>
                     
                   <tr *ngFor="let docs of AssetAllocations;let i = index">
-                    <td>{{ i + 1 }}</td> 
-                    <td>{{ docs.assigned_date }}</td>
-                    <td>{{ docs.asset }}</td> 
+                    <td data-label="No">{{ i + 1 }}</td> 
+                    <td data-label="Assigned date">{{ docs.assigned_date }}</td>
+                    <td data-label="Asset">{{ docs.asset }}</td> 
 
-                    <td>{{ docs.employee }}</td> 
+                    <td data-label="Employee">{{ docs.employee }}</td> 
 
-                    <td>{{ docs.returned_date }}</td>
+                    <td data-label="Return Date">{{ docs.returned_date }}</td>
 
-                    <td>{{ docs.return_condition }}</td> 
+                     <td data-label="Return condition">{{ docs.return_condition }}</td> 
+
+                   
 
 
-                    <td>
+                    <td data-label="Action">
 
                  
                         <button
@@ -331,6 +333,8 @@
                         <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
 
                       </td>
+
+                      
                       
               
                 </tbody>

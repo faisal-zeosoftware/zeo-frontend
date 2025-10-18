@@ -42,7 +42,7 @@ export class LeaveApprovalsComponent {
 
   
   constructor(private authService: AuthenticationService,
-    private router: Router,
+   private router: Router,
    private EmployeeService: EmployeeService,
    private route: ActivatedRoute,
    private sessionService: SessionService,
