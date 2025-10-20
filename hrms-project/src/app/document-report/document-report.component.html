@@ -65,6 +65,8 @@
                 
                 
                 <hr>
+
+                <div class="table-container">
                 <table mat-table [dataSource]="reportData"  class="mat-table-scroll" *ngIf="hasViewPermission" >
               
             
@@ -72,49 +74,49 @@
                   <!-- First Name Column -->
                   <ng-container matColumnDef="emp_first_name">
                     <th mat-header-cell *matHeaderCellDef> First Name </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_first_name }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_first_name'] || 'First Name'"> {{ item.emp_first_name }} </td>
                   </ng-container>
               
                    <!-- Active Date Column -->
                    <ng-container matColumnDef="emp_active_date">
                     <th mat-header-cell *matHeaderCellDef> Active Date </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_active_date }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_active_date'] || 'Active Date'"> {{ item.emp_active_date }} </td>
                   </ng-container>
 
                   <ng-container matColumnDef="emp_branch_id">
                     <th mat-header-cell *matHeaderCellDef> Branch </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_branch_id }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_branch_id'] || 'Branch'"> {{ item.emp_branch_id }} </td>
                   </ng-container>
               
                   <!-- Department ID Column -->
                   <ng-container matColumnDef="emp_dept_id">
                     <th mat-header-cell *matHeaderCellDef> Department</th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_dept_id }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_dept_id'] || 'Department'"> {{ item.emp_dept_id }} </td>
                   </ng-container>
               
                   <!-- Designation ID Column -->
                   <ng-container matColumnDef="emp_desgntn_id">
                     <th mat-header-cell *matHeaderCellDef> Designation </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_desgntn_id }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_desgntn_id'] || 'Designation'"> {{ item.emp_desgntn_id }} </td>
                   </ng-container>
               
                   <!-- Category ID Column -->
                   <ng-container matColumnDef="emp_ctgry_id">
                     <th mat-header-cell *matHeaderCellDef> Category </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_ctgry_id }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_ctgry_id'] || 'Category'"> {{ item.emp_ctgry_id }} </td>
                   </ng-container>
               
             
                  
                 <ng-container matColumnDef="emp_id">
                     <th mat-header-cell *matHeaderCellDef> Emp Id </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_id }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_id'] || 'Emp Id'"> {{ item.emp_id }} </td>
                   </ng-container>
 
                   <!-- Active Column -->
                   <ng-container matColumnDef="is_active">
                     <th mat-header-cell *matHeaderCellDef> Active </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.is_active }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['is_active'] || 'Active'"> {{ item.is_active }} </td>
                   </ng-container>
               
            
@@ -124,21 +126,21 @@
                   <ng-container matColumnDef="emp_doc_type">
                     <th mat-header-cell *matHeaderCellDef> Doc Type</th>
                     <!-- <th mat-header-cell *matHeaderCellDef> {{display_names.emp_doc_type}} </th> -->
-                    <td mat-cell *matCellDef="let element"> {{element.emp_doc_type}} </td>
+                    <td mat-cell *matCellDef="let element" [attr.data-label]="display_names['emp_doc_type'] || 'Doc Type'"> {{element.emp_doc_type}} </td>
                   </ng-container>
                   
                   <ng-container matColumnDef="emp_doc_number">
                     <th mat-header-cell *matHeaderCellDef>Doc Number </th>
                     <!-- <th mat-header-cell *matHeaderCellDef>{{display_names.emp_doc_number}}  </th> -->
-                    <td mat-cell *matCellDef="let element"> {{ element.emp_doc_number }} </td>
+                    <td mat-cell *matCellDef="let element" [attr.data-label]="display_names['emp_doc_number'] || 'Doc Number'"> {{ element.emp_doc_number }} </td>
                   </ng-container>
                   <ng-container matColumnDef="emp_doc_issued_date">
                     <th mat-header-cell *matHeaderCellDef>Issue Date</th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_doc_issued_date }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_doc_issued_date'] || 'Issue Date'"> {{ item.emp_doc_issued_date }} </td>
                   </ng-container>
                   <ng-container matColumnDef="emp_doc_expiry_date">
                     <th mat-header-cell *matHeaderCellDef> Expiry Date </th>
-                    <td mat-cell *matCellDef="let item"> {{ item.emp_doc_expiry_date }} </td>
+                    <td mat-cell *matCellDef="let item" [attr.data-label]="display_names['emp_doc_expiry_date'] || 'Expiry Date'"> {{ item.emp_doc_expiry_date }} </td>
                   </ng-container>
         
               
@@ -148,6 +150,7 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table>
+                </div>
               </div>
 <!--               
               <div class="card-body" >

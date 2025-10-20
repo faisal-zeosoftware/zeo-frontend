@@ -40,30 +40,32 @@
           
           
                 <div *ngIf="departmentData.length > 0">
+                       <div class="table-container">
   <table mat-table [dataSource]="departmentData" class="mat-elevation-z8">
     <ng-container matColumnDef="Designation">
       <th mat-header-cell *matHeaderCellDef> Designation </th>
-      <td mat-cell *matCellDef="let element"> {{ element.Designation }} </td>
+      <td mat-cell *matCellDef="let element" [attr.data-label]="displayNames['Designation'] || 'Designation'"> {{ element.Designation }} </td>
     </ng-container>
 
     <ng-container matColumnDef="Designation Code">
       <th mat-header-cell *matHeaderCellDef> Designation Code </th>
-      <td mat-cell *matCellDef="let element"> {{ element['Designation Code'] }} </td>
+      <td mat-cell *matCellDef="let element" [attr.data-label]="displayNames['Designation Code'] || 'Designation Code'"> {{ element['Designation Code'] }} </td>
     </ng-container>
 
     <ng-container matColumnDef="Description">
       <th mat-header-cell *matHeaderCellDef> Description </th>
-      <td mat-cell *matCellDef="let element"> {{ element.Description }} </td>
+      <td mat-cell *matCellDef="let element" [attr.data-label]="displayNames['Description'] || 'Description'"> {{ element.Description }} </td>
     </ng-container>
 
     <ng-container matColumnDef="Active">
       <th mat-header-cell *matHeaderCellDef> Active </th>
-      <td mat-cell *matCellDef="let element"> {{ element.Active }} </td>
+      <td mat-cell *matCellDef="let element" [attr.data-label]="displayNames['Active'] || 'Active'"> {{ element.Active }} </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
+  </div>
 </div>
 
                   

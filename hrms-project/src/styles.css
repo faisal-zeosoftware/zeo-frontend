@@ -245,6 +245,11 @@ option { width: 200px; }
   padding: 7px 20px;
 }
 
+
+
+
+
+
 /* ==============================
    RESPONSIVE FIXES
 ================================*/
@@ -262,7 +267,6 @@ option { width: 200px; }
 
   .cpm-sec h1 { font-size: 15px; }
 
-  /* Responsive table */
   table thead { display: none; }
   table tbody { display: block; }
   table tbody tr {
@@ -277,11 +281,11 @@ option { width: 200px; }
     display: flex;
     padding: 10px;
     align-items: center;
-    justify-content: space-between; /* better spacing */
+    justify-content: space-between; 
   }
   table tbody td::before {
     content: attr(data-label);
-    flex: 0 0 40%;       /* flexible instead of fixed % */
+    flex: 0 0 40%;      
     font-weight: bold;
     background: var(--main-color);
     color: #fff;
@@ -304,18 +308,18 @@ option { width: 200px; }
 
   .comapny_section {
     margin-left: 0 !important;
-    margin-top: 200px !important; /* smaller top margin */
+    margin-top: 200px !important; 
     padding: 12px;
   }
   .comapny_section {
-    margin-left: 0 !important;   /* remove left gap */
-    width: 100% !important;      /* full width */
-    padding: 12px;               /* keep some padding inside */
+    margin-left: 0 !important; 
+    width: 100% !important;     
+    padding: 12px;              
   }
 
   .mat-drawer-content, 
   .mat-drawer-container {
-    margin-left: 0 !important;   /* override Angular Material default */
+    margin-left: 0 !important;   
     width: 100% !important;
   }
 
@@ -344,16 +348,14 @@ option { width: 200px; }
   }
 
   table tbody tr td {
-    flex-direction: column;  /* stack label & value */
+    flex-direction: column;  
     align-items: flex-start;
   }
   table tbody td::before {
     font-size: 12px;
     margin-bottom: 4px;
-    width: 100%;             /* full width for labels */
+    width: 100%;           
     text-align: left;
   }
 }
-
-
 

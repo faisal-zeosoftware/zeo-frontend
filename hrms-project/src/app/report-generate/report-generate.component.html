@@ -36,20 +36,21 @@
               </div>
               <hr>
               <!-- HTML file: report-generate.component.html -->
-<table mat-table [dataSource]="dataSource">
-  <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-    <th mat-header-cell *matHeaderCellDef> {{ display_names[column] || column }} </th>
-    <td mat-cell *matCellDef="let element" [attr.data-label]="display_names[column] || column">
-    <span>{{ element[column] }}</span>
-    </td>
-  </ng-container>
 
-   
+  <div class="table-container standard-table">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z1 standard-report-table">
+    <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+      <th mat-header-cell *matHeaderCellDef> {{ display_names[column] || column }} </th>
+      <td mat-cell *matCellDef="let element" [attr.data-label]="display_names[column] || column">
+        {{ element[column] }}
+      </td>
+    </ng-container>
 
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
 
 
               
