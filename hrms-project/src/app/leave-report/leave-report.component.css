@@ -1,3 +1,5 @@
+
+
 .card {
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -45,25 +47,6 @@
     font-size: 0.75rem; /* Even smaller font size */
   }
   
-  /* Responsive adjustments for small screens */
-  @media (max-width: 400px) {
-    .small-card {
-      max-width: 100%; /* Full width on small screens */
-      margin: 5px; /* Reduce margin */
-    }
-  
-    .small-card-header {
-      font-size: 0.8rem; /* Slightly smaller font size */
-    }
-  
-    .small-card-body {
-      font-size: 0.75rem; /* Smaller font size */
-    }
-  
-    .small-card-list li {
-      font-size: 0.7rem; /* Smaller font size */
-    }
-  }
   
   .header-container {
     display: flex;
@@ -286,6 +269,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    margin-top: 20px;
   }
   
   .header_section h1 {
@@ -683,3 +667,267 @@
     text-decoration: none;
     cursor: pointer;
   }
+
+
+  /* ===== Report Table Styles ===== */
+#reportTable {
+  width: 100%;
+  max-height: 300px; /* Instead of fixed height for better responsiveness */
+  overflow: auto; /* Scroll if content overflows */
+  border-collapse: collapse;
+}
+
+/* Table header cells */
+#reportTable th {
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  text-align: center;
+  font-size: 14px;
+  padding: 8px;
+  position: sticky; /* Makes header fixed on scroll */
+  top: 0;
+  z-index: 2;
+}
+
+/* Table data cells */
+#reportTable td {
+  min-width: 100px; /* Keeps columns wide enough */
+  height: 50px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Table scroll container */
+.table-container {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 300px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Inside body padding (used in your outer container) */
+.inside_body {
+  padding: 20px 30px 20px 55px;
+}
+
+
+
+
+  /* 🌐 Mobile Responsive Overrides */
+@media (max-width: 768px) {
+
+  /* General container adjustments */
+  .container {
+    padding: 10px;
+    margin: 0;
+    width: 100%;
+  }
+
+  .inside_body {
+    padding: 10px;
+  }
+
+  .header_section {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    box-shadow: none;
+  }
+
+  .header_section h1,
+  .header_section h4 {
+    font-size: 16px;
+    text-align: left;
+    margin-bottom: 10px;
+  }
+
+  /* Tab styling */
+  ::ng-deep .mat-mdc-tab-labels {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  ::ng-deep .mat-mdc-tab-label {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* Buttons */
+  button,
+  .btn {
+    font-size: 13px;
+    padding: 8px 12px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .btn-full {
+    width: 100%;
+  }
+
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* Cards */
+  .card {
+    margin: 10px 0;
+    box-shadow: none;
+    border-radius: 6px;
+  }
+
+  .card-body {
+    padding: 10px;
+    max-height: unset;
+  }
+
+  /* Left panel (Saved Reports) and Right panel stacked */
+  .broder_side {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    height: auto;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .report_common_box {
+    background: #fff;
+    height: auto;
+    padding: 10px;
+  }
+
+  /* Table adjustments */
+  .table-container {
+    overflow-x: auto;
+  }
+
+  table {
+    font-size: 12px;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  table th,
+  table td {
+    padding: 8px;
+    text-wrap: nowrap;
+  }
+
+  .preview-table th {
+    font-size: 13px;
+  }
+
+  .preview-table td {
+    font-size: 12px;
+  }
+
+  /* Modal adjustments */
+  .modal-dialog {
+    width: 95%;
+    margin: 10px auto;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .modal-body {
+    font-size: 14px;
+  }
+
+  /* Field lists */
+  .field-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 5px;
+  }
+
+  .field-item {
+    font-size: 13px;
+    padding: 5px;
+  }
+
+  /* Layout simplification */
+  .row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .col-md-4,
+  .col-md-6,
+  .col-md-9,
+  .col-md-12 {
+    width: 100%;
+  }
+
+  /* Text alignments */
+  .text-center {
+    text-align: left !important;
+  }
+
+  /* Headings */
+  .preview-heading,
+  .card-titles {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  /* Tabs spacing */
+  mat-tab-group {
+    width: 100%;
+  }
+
+  /* Reduced height for scrolling sections */
+  .report-section-main {
+    padding: 10px;
+  }
+    /* Target only that header section where buttons live */
+  .header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .header-container h6.preview-heading {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  /* Stack the buttons neatly below heading */
+  .header-container button {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  /* Add some breathing room between buttons */
+  .header-container button + button {
+    margin-top: 6px;
+  }
+
+  /* Optional: make buttons distinct visually */
+  .header-container button[color="success"] {
+    background-color: #28a745 !important;
+    color: #fff !important;
+  }
+
+  .header-container button[color="primary"] {
+    background-color: #007bff !important;
+    color: #fff !important;
+  }
+
+
+}

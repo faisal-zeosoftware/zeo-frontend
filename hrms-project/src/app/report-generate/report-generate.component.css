@@ -286,6 +286,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    margin-top: 20px;
   }
   
   .header_section h1 {
@@ -684,6 +685,55 @@
     cursor: pointer;
   }
 
+
+  /* ===== Report Table Styles ===== */
+#reportTable {
+  width: 100%;
+  max-height: 300px; /* Instead of fixed height for better responsiveness */
+  overflow: auto; /* Scroll if content overflows */
+  border-collapse: collapse;
+}
+
+/* Table header cells */
+#reportTable th {
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  text-align: center;
+  font-size: 14px;
+  padding: 8px;
+  position: sticky; /* Makes header fixed on scroll */
+  top: 0;
+  z-index: 2;
+}
+
+/* Table data cells */
+#reportTable td {
+  min-width: 100px; /* Keeps columns wide enough */
+  height: 50px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Table scroll container */
+.table-container {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 300px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Inside body padding (used in your outer container) */
+.inside_body {
+  padding: 20px 30px 20px 55px;
+}
+
+
+
+
   /* 🌐 Mobile Responsive Overrides */
 @media (max-width: 768px) {
 
@@ -857,43 +907,44 @@
   .report-section-main {
     padding: 10px;
   }
-   /* Button container wrapper (if not grouped, this will catch them anyway) */
-  .button-group,
-  .filter-download-container {
+    /* Target only that header section where buttons live */
+  .header-container {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    margin-top: 10px;
+    text-align: left;
   }
 
-  /* Make each button full width */
-  .button-group button,
-  .filter-download-container button,
-  .btn-advanced-filter,
-  .btn-download {
+  .header-container h6.preview-heading {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  /* Stack the buttons neatly below heading */
+  .header-container button {
     width: 100%;
-    font-size: 13px;
     padding: 10px;
+    font-size: 13px;
     border-radius: 6px;
-    text-align: center;
   }
 
-  /* Optional – make them distinct visually */
-  .btn-advanced-filter {
-    background-color: #007bff;
-    color: #fff;
+  /* Add some breathing room between buttons */
+  .header-container button + button {
+    margin-top: 6px;
   }
 
-  .btn-download {
-    background-color: #28a745;
-    color: #fff;
+  /* Optional: make buttons distinct visually */
+  .header-container button[color="success"] {
+    background-color: #28a745 !important;
+    color: #fff !important;
   }
 
-  /* Add some spacing below the buttons */
-  .button-group + .preview-table,
-  .filter-download-container + .preview-table {
-    margin-top: 15px;
+  .header-container button[color="primary"] {
+    background-color: #007bff !important;
+    color: #fff !important;
   }
+
+
 }

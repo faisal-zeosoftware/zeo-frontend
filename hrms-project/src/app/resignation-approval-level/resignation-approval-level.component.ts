@@ -6,7 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
-import {UserMasterService} from '../user-master/user-master.service'
+import {UserMasterService} from '../user-master/user-master.service';
 
 @Component({
   selector: 'app-resignation-approval-level',
@@ -59,8 +59,6 @@ private employeeService: EmployeeService,
     // this.loadLoanTypes();
     this.loadLoanApprovalLevels();
     this.loadLoanapprover();
-
-
 
       this.loadUsers();
 
