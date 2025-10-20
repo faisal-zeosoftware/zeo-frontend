@@ -57,23 +57,23 @@
                           <ng-container *ngFor="let request of groupedApprovalData">
                             <ng-container *ngFor="let approval of request.approvals; let i = index">
                               <tr>
-                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_first_name || 'N/A' }}</td>
-                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_branch_id || '-' }}</td>
-                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_dept_id || '-' }}</td>
-                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_desgntn_id || '-' }}</td>
-                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_ctgry_id || '-' }}</td>
-                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.leave_request || '-' }}</td>
-                                <td *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.compensatory_request || '-' }}</td>
-                      
-                                <!-- Per-approval data -->
-                                <td>{{ approval.level || '-' }}</td>
+                                <td data-label="Employee" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_first_name || 'N/A' }}</td>
+                                <td data-label="Branch" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_branch_id || '-' }}</td>
+                                <td data-label="Department" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_dept_id || '-' }}</td>
+                                <td data-label="Designation" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_desgntn_id || '-' }}</td>
+                                <td data-label="Category" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_ctgry_id || '-' }}</td>
+                                <td data-label="Leave Request" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.leave_request || '-' }}</td>
+                                <td data-label="Compensatory Request" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.compensatory_request || '-' }}</td>
 
-                                <td>{{ approval.approver || '-' }}</td>
-                                <td>{{ approval.role || '-' }}</td>
-                                <td>{{ approval.status || '-' }}</td>
-                                <td>{{ approval.rejection_reason || '-' }}</td>
-                                <td>{{ approval.note || '-' }}</td>
-                                <td>{{ approval.updated_at | date: 'short' }}</td>
+                                <!-- Per-approval data -->
+                                <td data-label="Level">{{ approval.level || '-' }}</td>
+
+                                <td data-label="Approver">{{ approval.approver || '-' }}</td>
+                                <td data-label="Role">{{ approval.role || '-' }}</td>
+                                <td data-label="Status">{{ approval.status || '-' }}</td>
+                                <td data-label="Rejection Reason">{{ approval.rejection_reason || '-' }}</td>
+                                <td data-label="Note">{{ approval.note || '-' }}</td>
+                                <td data-label="Updated At">{{ approval.updated_at | date: 'short' }}</td>
                               </tr>
                             </ng-container>
                           </ng-container>

@@ -51,17 +51,17 @@
                         </thead>
                         <tbody>
                           <tr *ngFor="let item of approvalReportData">
-                            <td>{{ item.employee || '-' }}</td>
-                            <td>{{ item.emp_first_name || '-' }}</td>
-                            <td>{{ item.emp_branch_id || '-' }}</td>
+                            <td data-label="Employee">{{ item.employee || '-' }}</td>
+                            <td data-label="First Name">{{ item.emp_first_name || '-' }}</td>
+                            <td data-label="Branch">{{ item.emp_branch_id || '-' }}</td>
 
-                            <td>{{ item.emp_dept_id || '-' }}</td>
-                            <td>{{ item.emp_desgntn_id || '-' }}</td>
-                            <td>{{ item.emp_ctgry_id || '-' }}</td>
-                            <td>{{ item.leave_type || '-' }}</td>
-                            <td>{{ item.balance }}</td>
-                            <td>{{ item.openings }}</td>
-                            
+                            <td data-label="Department">{{ item.emp_dept_id || '-' }}</td>
+                            <td data-label="Designation">{{ item.emp_desgntn_id || '-' }}</td>
+                            <td data-label="Category">{{ item.emp_ctgry_id || '-' }}</td>
+                            <td data-label="Leave Type">{{ item.leave_type || '-' }}</td>
+                            <td data-label="Balance">{{ item.balance }}</td>
+                            <td data-label="Openings">{{ item.openings }}</td>
+
                             <!-- <td>{{ item.created_at | date:'short' }}</td> -->
                           </tr>
                         </tbody>

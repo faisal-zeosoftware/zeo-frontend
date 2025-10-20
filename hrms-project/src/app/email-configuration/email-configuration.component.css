@@ -183,3 +183,14 @@ margin-right: 10px;
 .note-editable {
   font-size: inherit !important; /* Ensure that the font size changes according to Summernote settings */
 }
+
+
+/* Phones */
+@media (max-width: 728px) {
+
+  ::ng-deep.modal-content{
+    
+    margin-top: 200px !important;
+
+  }
+}

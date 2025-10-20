@@ -52,16 +52,16 @@
                         </thead>
                         <tbody>
                           <tr *ngFor="let item of approvalReportData">
-                            <td>{{ item.emp_first_name || '-' }}</td>
-                            <td>{{ item.employee || '-' }}</td>
-                            <td>{{ item.asset || '-' }}</td>
-                            <td>{{ item.assigned_date || '-' }}</td>
-                            <td>{{ item.returned_date || '-' }}</td>
-                            <td>{{ item.return_condition || '-' }}</td>
-                            <td>{{ item.emp_branch_id || '-' }}</td>
-                            <td>{{ item.emp_dept_id || '-' }}</td>
-                            <td>{{ item.emp_desgntn_id || '-' }}</td>
-                            <td>{{ item.emp_ctgry_id || '-' }}</td>
+                            <td data-label="Employee Name">{{ item.emp_first_name || '-' }}</td>
+                            <td data-label="Employee ID">{{ item.employee || '-' }}</td>
+                            <td data-label="Asset">{{ item.asset || '-' }}</td>
+                            <td data-label="Assigned Date">{{ item.assigned_date || '-' }}</td>
+                            <td data-label="Returned Date">{{ item.returned_date || '-' }}</td>
+                            <td data-label="Return Condition">{{ item.return_condition || '-' }}</td>
+                            <td data-label="Branch">{{ item.emp_branch_id || '-' }}</td>
+                            <td data-label="Department">{{ item.emp_dept_id || '-' }}</td>
+                            <td data-label="Designation">{{ item.emp_desgntn_id || '-' }}</td>
+                            <td data-label="Category">{{ item.emp_ctgry_id || '-' }}</td>
                           </tr>
                         </tbody>
                       </table>

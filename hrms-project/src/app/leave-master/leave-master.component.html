@@ -640,23 +640,23 @@
                </thead>
                <tbody>
                  <tr *ngFor="let ent of leaveRests; let i = index">
-                   <td>{{ i + 1 }}</td>
-                   <td>{{ ent.leave_type }}</td>
-                   <td>{{ ent.reset }}</td>
-                   <td>{{ ent.frequency }}</td>
-                   <td>{{ ent.month }}</td>
-                   <td>{{ ent.day }}</td>
-                   <td>{{ ent.allow_cf }}</td>
-                   <td>{{ ent.carry_forward_choice }}</td>
-                   <td>{{ ent.cf_value }}</td>
-                   <td>{{ ent.cf_unit_or_percentage }}</td>
-                   <td>{{ ent.cf_max_limit }}</td>
-                   <td>{{ ent.cf_expires_in_value }}</td>
-                   <td>{{ ent.cf_time_choice }}</td>
-                   <td>{{ ent.allow_encashment }}</td>
-                   <td>{{ ent.encashment_value }}</td>
-                   <td>{{ ent.encashment_unit_or_percentage }}</td>
-                   <td>{{ ent.encashment_max_limit }}</td>
+                   <td data-label="No">{{ i + 1 }}</td>
+                   <td data-label="Leave Type">{{ ent.leave_type }}</td>
+                   <td data-label="Reset">{{ ent.reset }}</td>
+                   <td data-label="Frequency">{{ ent.frequency }}</td>
+                   <td data-label="Month">{{ ent.month }}</td>
+                   <td data-label="Day">{{ ent.day }}</td>
+                   <td data-label="Allow Carry Forward">{{ ent.allow_cf }}</td>
+                   <td data-label="Carry Forward Choice">{{ ent.carry_forward_choice }}</td>
+                   <td data-label="CF Value">{{ ent.cf_value }}</td>
+                   <td data-label="CF Unit/Percentage">{{ ent.cf_unit_or_percentage }}</td>
+                   <td data-label="CF Max Limit">{{ ent.cf_max_limit }}</td>
+                   <td data-label="CF Expires In Value">{{ ent.cf_expires_in_value }}</td>
+                   <td data-label="CF Time Choice">{{ ent.cf_time_choice }}</td>
+                   <td data-label="Allow Encashment">{{ ent.allow_encashment }}</td>
+                   <td data-label="Encashment Value">{{ ent.encashment_value }}</td>
+                   <td data-label="Encashment Unit/Percentage">{{ ent.encashment_unit_or_percentage }}</td>
+                   <td data-label="Encashment Max Limit">{{ ent.encashment_max_limit }}</td>
                  </tr>
                </tbody>
              </table>

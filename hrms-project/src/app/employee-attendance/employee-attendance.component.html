@@ -96,13 +96,13 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ attendanceData.employee_name }}</td>
-            <td *ngFor="let day of daysArray">
+            <td data-label="Employee Name">{{ attendanceData.employee_name }}</td>
+            <td *ngFor="let day of daysArray" [attr.data-label]="day">
               {{ getStatusForDay(day, attendanceData.summary_data) }}
             </td>
             <!-- <td>{{ attendanceData.total_days }}</td> -->
-            <td>{{ attendanceData.total_present }}</td>
-            <td>{{ attendanceData.total_absent }}</td>
+            <td data-label="Present Days">{{ attendanceData.total_present }}</td>
+            <td data-label="Absent Days">{{ attendanceData.total_absent }}</td>
           </tr>
         </tbody>
       </table>
@@ -114,26 +114,30 @@
     <h2>All Employees Attendance Records</h2>
     <div class="table-container table-scroll">
       <table class="table table-bordered table-hover mt-3 text-center">
-        <thead>
-          <tr>
-            <th>Employee Name</th>
-            <th *ngFor="let day of daysArray">{{ day }}</th>
-            <th>Total Days</th>
-            <th>Present Days</th>
-            <th>Absent Days</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let record of allAttendanceData">
-            <td>{{ record.employee_name }}</td>
-            <td *ngFor="let day of daysArray">
-              {{ getStatusForDay(day, record.summary_data) }}
-            </td>
-            <td>{{ record.total_days }}</td>
-            <td>{{ record.total_present }}</td>
-            <td>{{ record.total_absent }}</td>
-          </tr>
-        </tbody>
+<thead>
+  <tr>
+    <th>Employee Name</th>
+    <th *ngFor="let day of daysArray">{{ day }}</th>
+    <th>Total Days</th>
+    <th>Present Days</th>
+    <th>Absent Days</th>
+  </tr>
+</thead>
+
+<tbody>
+  <tr *ngFor="let record of allAttendanceData">
+    <td data-label="Employee Name">{{ record.employee_name }}</td>
+
+    <td *ngFor="let day of daysArray" [attr.data-label]="day">
+      {{ getStatusForDay(day, record.summary_data) }}
+    </td>
+
+    <td data-label="Total Days">{{ record.total_days }}</td>
+    <td data-label="Present Days">{{ record.total_present }}</td>
+    <td data-label="Absent Days">{{ record.total_absent }}</td>
+  </tr>
+</tbody>
+
       </table>
     </div>
   </div>

@@ -286,14 +286,14 @@
                 <tbody>
                     
                   <tr *ngFor="let docs of EmailConfg;let i = index">
-                    <td>{{ i + 1 }}</td> 
-                    <td>{{ docs.email_host }}</td>
-                    <td>{{ docs.email_port }}</td> 
-                    <td>{{ docs.email_use_tls }}</td>
-                    <td>{{ docs.email_host_user }}</td>
-                    <td>{{ docs.email_host_password }}</td> 
-                    <td>{{ docs.is_active }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td> 
+                    <td data-label="Email host">{{ docs.email_host }}</td>
+                    <td data-label="Email Port">{{ docs.email_port }}</td> 
+                    <td data-label="email use tls">{{ docs.email_use_tls }}</td>
+                    <td data-label="email host user">{{ docs.email_host_user }}</td>
+                    <td data-label="email host password">{{ docs.email_host_password }}</td> 
+                    <td data-label="is active">{{ docs.is_active }}</td>
+                    <td data-label="Action">
                         <button
                           mat-fab
                           color="primary"

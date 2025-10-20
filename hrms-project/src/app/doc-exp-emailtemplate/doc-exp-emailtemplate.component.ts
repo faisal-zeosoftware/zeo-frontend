@@ -454,35 +454,44 @@ onCheckboxChange(employee:number) {
 
 
    deleteSelectedAssetType() { 
-      const selectedEmployeeIds = this.tempEmails
-        .filter(employee => employee.selected)
-        .map(employee => employee.id);
-    
-      if (selectedEmployeeIds.length === 0) {
-        alert('No Asset type selected for deletion.');
-        return;
-      }
-    
-      if (confirm('Are you sure you want to delete the selected Email Template?')) {
-        selectedEmployeeIds.forEach(categoryId => {
-          this.employeeService.deleteEmailTemplateDocmentExp(categoryId).subscribe(
-            () => {
-              console.log('Email Configuration deleted successfully:', categoryId);
-              // Remove the deleted employee from the local list
-              this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
-              alert(' Email Template deleted successfully');
-              window.location.reload();
-    
-            },
-            (error) => {
-              console.error('Error deleting Email Configuration:', error);
-              alert(error)
-            }
-          );
-        });
-      }
-    }
-    
+  const selectedEmployeeIds = this.tempEmails
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedEmployeeIds.length === 0) {
+    alert('No Asset type selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected Email Template?')) {
+    selectedEmployeeIds.forEach(categoryId => {
+      this.employeeService.deleteEmailTemplateDocmentExp(categoryId).subscribe(
+        () => {
+          console.log('Email Configuration deleted successfully:', categoryId);
+          // Remove the deleted employee from the local list
+          this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
+          alert('Email Template deleted successfully');
+          window.location.reload();
+        },
+        (error) => {
+          console.error('Error deleting Email Configuration:', error);
+
+          // Extract meaningful message
+          let errorMessage = 'Failed to delete the Email Template.';
+          if (error.error?.detail) {
+            errorMessage = error.error.detail;
+          } else if (error.error) {
+            // If backend sends field-specific errors
+            errorMessage = JSON.stringify(error.error);
+          }
+
+          alert(errorMessage);
+        }
+      );
+    });
+  }
+}
+
     
     openEditPopuss(selectedTemplate: any): void {
       this.dialog.open(EmailTemplateEditComponent, {
