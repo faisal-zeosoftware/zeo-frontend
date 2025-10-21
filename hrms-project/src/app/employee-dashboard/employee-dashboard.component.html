@@ -1,161 +1,279 @@
-<nav id="sidebarMenu" class="d-lg-block sidebar bg-white" [class.menu-open]="isMenuOpen"
-  [class.menu-close]="!isMenuOpen" >
-  <div class="position-sticky">
-    <div class="list-group list-group-flush  mt-5">
-<!-- 
-      <a routerLink="/main-sidebar" class="list-group-item list-group-item-action py-2 ripple ">
-        <span><mat-icon>home</mat-icon> <span class="sidenav-opt"> Dashboard
-
-          </span></span>
-
-      </a> -->
+<!-- Overlay for mobile -->
 
 
-      <a  class="list-group-item list-group-item-action py-2 ripple"
-        aria-current="true" routerLink="/employee-dashboard/employee-sction" >
-        <span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Employee Dashboard</span></span>
-      </a>
+<div class="sass-overlay" id="sassOverlay"></div>
 
-      <a  class="list-group-item list-group-item-action py-2 ripple"
-      aria-current="true" routerLink="/employee-dashboard/employee-approvals">
-      <span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Approvals</span></span>
+<!-- Sidebar -->
+<aside class="sass-sidebar" id="sassSidebar">
+  <div class="sass-sidebar-header">
+    <div class="sass-logo">AH</div>
+    <div class="sass-logo-text">AdminHub</div>
+  </div>
+  <nav class="sass-nav">
+    <a href="#" class="sass-nav-item sass-active">
+      <div class="sass-nav-icon"><i class="fas fa-home"></i></div>
+      <span class="sass-nav-text">Dashboard</span>
     </a>
+    <a href="#" class="sass-nav-item">
+      <div class="sass-nav-icon"><i class="fas fa-store"></i></div>
+      <span class="sass-nav-text">My Store</span>
+    </a>
+    <a href="#" class="sass-nav-item">
+      <div class="sass-nav-icon"><i class="fas fa-chart-bar"></i></div>
+      <span class="sass-nav-text">Analytics</span>
+    </a>
+    <a href="#" class="sass-nav-item">
+      <div class="sass-nav-icon"><i class="fas fa-envelope"></i></div>
+      <span class="sass-nav-text">Message</span>
+    </a>
+    <a href="#" class="sass-nav-item">
+      <div class="sass-nav-icon"><i class="fas fa-users"></i></div>
+      <span class="sass-nav-text">Team</span>
+    </a>
+    <a href="#" class="sass-nav-item">
+      <div class="sass-nav-icon"><i class="fas fa-cog"></i></div>
+      <span class="sass-nav-text">Settings</span>
+    </a>
+    <a href="#" class="sass-nav-item">
+      <div class="sass-nav-icon"><i class="fas fa-sign-out-alt"></i></div>
+      <span class="sass-nav-text">Logout</span>
+    </a>
+  </nav>
+</aside>
 
-    <a  class="list-group-item list-group-item-action py-2 ripple"
-    aria-current="true" routerLink="/employee-dashboard/employee-leave">
-    <span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Leave Management</span></span>
-  </a>
-     
-  
-  <a  class="list-group-item list-group-item-action py-2 ripple"
-  aria-current="true" routerLink="/employee-dashboard/emp-attendance">
-  <span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Attendance</span></span>
-</a>
+<!-- Main Content -->
+<main class="sass-main">
+  <!-- Top Navigation -->
+  <header class="sass-topbar">
+    <div class="sass-topbar-left">
+      <button class="sass-menu-toggle" id="sassMenuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="sass-search-container" id="sassSearchContainer">
+        <i class="fas fa-search sass-search-icon"></i>
+        <input type="text" class="sass-search-input" placeholder="Search...">
+      </div>
+    </div>
+    <div class="sass-topbar-right">
+      <button class="sass-theme-toggle" id="sassThemeToggle">
+        <i class="fas fa-moon"></i>
+      </button>
+      <div style="position: relative;">
+        <button class="sass-notification-btn" id="sassNotificationBtn">
+          <i class="fas fa-bell"></i>
+          <div class="sass-notification-badge"></div>
+        </button>
+        <div class="sass-dropdown" id="sassNotificationDropdown">
+          <a href="#" class="sass-dropdown-item">
+            <i class="fas fa-shopping-cart"></i>
+            New order received
+          </a>
+          <a href="#" class="sass-dropdown-item">
+            <i class="fas fa-user"></i>
+            New user registered
+          </a>
+          <a href="#" class="sass-dropdown-item">
+            <i class="fas fa-chart-line"></i>
+            Sales report ready
+          </a>
+        </div>
+      </div>
+      <div style="position: relative;">
+        <button class="sass-profile-btn" id="sassProfileBtn">
+          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Profile" class="sass-profile-avatar">
+        </button>
+        <div class="sass-dropdown" id="sassProfileDropdown">
+          <a href="#" class="sass-dropdown-item">
+            <i class="fas fa-user"></i>
+            Profile
+          </a>
+          <a href="#" class="sass-dropdown-item">
+            <i class="fas fa-cog"></i>
+            Settings
+          </a>
+          <a href="#" class="sass-dropdown-item">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
 
-<a  class="list-group-item list-group-item-action py-2 ripple"
-aria-current="true" routerLink="/employee-dashboard/emp-asset-request">
-<span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Asset Master</span></span>
-</a>
+  <!-- Content Area -->
+  <div class="sass-content">
+    <!-- Breadcrumb -->
+    <nav class="sass-breadcrumb">
+      <span>Home</span>
+      <i class="fas fa-chevron-right"></i>
+      <span>Dashboard</span>
+    </nav>
 
-<a  class="list-group-item list-group-item-action py-2 ripple"
-aria-current="true" routerLink="/employee-dashboard/emp-loan">
-<span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Loan Management</span></span>
-</a>
-  
-  
-  <!-- <a  class="list-group-item list-group-item-action py-2 ripple">
-        <span><mat-icon>account_tree</mat-icon> <span class="sidenav-opt" routerLink="/main-sidebar"> Leave Management</span></span>
+    <!-- Page Header -->
+    <div class="sass-page-header">
+      <h1 class="sass-page-title">Dashboard</h1>
+      <button class="sass-btn">
+        <i class="fas fa-rocket"></i>
+        Release version
+      </button>
+    </div>
 
+    <!-- Info Cards -->
+    <div class="sass-cards-grid">
+      <div class="sass-card">
+        <div class="sass-card-header">
+          <div class="sass-card-title">New Orders</div>
+          <div class="sass-card-icon" style="background: var(--sass-primary);">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+        </div>
+        <div class="sass-card-value">1,234</div>
+        <div class="sass-card-change sass-positive">
+          <i class="fas fa-arrow-up"></i>
+          +12.5%
+        </div>
+      </div>
+      <div class="sass-card">
+        <div class="sass-card-header">
+          <div class="sass-card-title">Visitors</div>
+          <div class="sass-card-icon" style="background: var(--sass-accent);">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+        <div class="sass-card-value">5,678</div>
+        <div class="sass-card-change sass-positive">
+          <i class="fas fa-arrow-up"></i>
+          +8.2%
+        </div>
+      </div>
+      <div class="sass-card">
+        <div class="sass-card-header">
+          <div class="sass-card-title">Total Sales</div>
+          <div class="sass-card-icon" style="background: var(--sass-warning);">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+        </div>
+        <div class="sass-card-value">$89,432</div>
+        <div class="sass-card-change sass-negative">
+          <i class="fas fa-arrow-down"></i>
+          -2.1%
+        </div>
+      </div>
+    </div>
 
-      </a>
-      <a  class="list-group-item list-group-item-action py-2 ripple" *ngIf="!hideButton" routerLink="/main-sidebar/settings">
-        <span><mat-icon>settings</mat-icon> <span class="sidenav-opt" > Settings</span></span>
-      </a>
-      -->
+    <!-- Content Grid -->
+    <div class="sass-content-grid">
+      <!-- Recent Orders Table -->
+      <div class="sass-table-container">
+        <div class="sass-table-header">
+          <h3 class="sass-table-title">Recent Orders</h3>
+        </div>
+        <table class="sass-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="sass-table-user">
+                  <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
+                  <span>Sarah Johnson</span>
+                </div>
+              </td>
+              <td>2024-01-15</td>
+              <td>$299.99</td>
+              <td><span class="sass-status sass-completed">Completed</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="sass-table-user">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
+                  <span>Mike Chen</span>
+                </div>
+              </td>
+              <td>2024-01-14</td>
+              <td>$149.50</td>
+              <td><span class="sass-status sass-pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="sass-table-user">
+                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
+                  <span>Emma Wilson</span>
+                </div>
+              </td>
+              <td>2024-01-13</td>
+              <td>$89.99</td>
+              <td><span class="sass-status sass-processing">Processing</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="sass-table-user">
+                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
+                  <span>John Smith</span>
+                </div>
+              </td>
+              <td>2024-01-12</td>
+              <td>$199.99</td>
+              <td><span class="sass-status sass-completed">Completed</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Todo List -->
+      <div class="sass-todo-container">
+        <h3 class="sass-todo-title">Todo List</h3>
+        <div class="sass-todo-item sass-completed">
+          <input type="checkbox" class="sass-todo-checkbox" checked>
+          <span class="sass-todo-text">Review monthly sales report</span>
+        </div>
+        <div class="sass-todo-item sass-completed">
+          <input type="checkbox" class="sass-todo-checkbox" checked>
+          <span class="sass-todo-text">Update product inventory</span>
+        </div>
+        <div class="sass-todo-item sass-pending">
+          <input type="checkbox" class="sass-todo-checkbox">
+          <span class="sass-todo-text">Prepare team meeting agenda</span>
+        </div>
+        <div class="sass-todo-item sass-pending">
+          <input type="checkbox" class="sass-todo-checkbox">
+          <span class="sass-todo-text">Contact new suppliers</span>
+        </div>
+        <div class="sass-todo-item sass-pending">
+          <input type="checkbox" class="sass-todo-checkbox">
+          <span class="sass-todo-text">Review customer feedback</span>
+        </div>
+      </div>
     </div>
   </div>
-</nav>
-<!-- Sidebar -->
 
-<!-- Navbar -->
-<nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-  <!-- Container wrapper -->
-  <div class="container-fluid">
-    <!-- Toggle button -->
-    <!-- <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#sidebarMenu"
-      aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-      <i class="fas fa-bars"></i>
-    </button> -->
-
-    
-    <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-    <span *ngIf="!isMenuOpen">☰</span>
-    <span *ngIf="isMenuOpen">×</span>
-    </button>
-
-    <!-- Brand -->
-    <a class="navbar-brand" >
-      <img src="assets/zeo_logo_new.png" height="70" width="100%" alt="MDB Logo"
-        loading="lazy" />
-    </a>
-
-
-    <!-- Right links -->
-    <ul class="navbar-nav ms-auto d-flex flex-row">
-      <!-- Notification dropdown -->
-      <li class="nav-item dropdown">
-        <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow" (click)="redirectToExpiredDocuments()" role="button"
-        data-mdb-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-         <mat-icon class="mt-2">notifications</mat-icon>
-         <span class="badge rounded-pill badge-notification bg-danger" *ngIf="expiredDocumentsCount > 0"
-               style="position: absolute; margin-left: -10px; color: white;">{{ expiredDocumentsCount }}</span>
-     </a>
-       
-
-
-     
-      
-
-
-    <li>
-      <div class="user_logged_outer" *ngIf="userDetails">
-        <div class="user_logged_in">
-          <mat-icon>person</mat-icon>
+  <!-- Footer -->
+  <footer class="sass-footer">
+    <div class="sass-footer-content">
+      <h3 class="sass-footer-title">Contact Information</h3>
+      <div class="sass-footer-info">
+        <div class="sass-footer-item">
+          <i class="fas fa-user"></i>
+          <span>Sheikh abu sufian shoron</span>
         </div>
-        <div class="user_logged_out">
-          <h1>{{ userDetails.username }}</h1>
+        <div class="sass-footer-item">
+          <i class="fas fa-phone"></i>
+          <span>01705900937</span>
         </div>
-
+        <div class="sass-footer-item">
+          <i class="fas fa-envelope"></i>
+          <span>abusufianshoron2017gmail.com</span>
+        </div>
       </div>
-    </li>
-      
-     
-    
-  
-    
-
-      <!-- Avatar -->
-      <li class="nav-item dropdown">
-
-      
-        <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"  id="navbarDropdownMenuLink"
-          role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-          <!-- <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img (31).webp" class="rounded-circle" height="22"
-            alt="Avatar" loading="lazy" /> -->
-            <button type="button" (click)="logout()"  class="btn btn-danger" style="    border-radius: 0px;">Logout</button>
-
-        </a>
-
-      </li>
-    </ul>
-
-
-
-
-   
-  </div>
-  <!-- Container wrapper -->
- 
-
-
-
-</nav>
-
-
-
-<div class="container" >
-
-    <!-- <div class="comapny_section">
-       
-
-
-
-    
-
-      
-    </div> -->
-</div>
-
-
-
-<router-outlet></router-outlet>
+      <p style="color: var(--sass-gray-500); font-size: 0.8rem; margin-top: 1rem;">
+        © 2024 AdminHub. All rights reserved.
+      </p>
+    </div>
+  </footer>
+</main>
