@@ -1,283 +1,414 @@
-<!-- Overlay for mobile -->
 
+<div class="container-fluid" *ngFor="let employeesec of employees">
+  <div class="row">
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-3">
+        <div class="text-center mb-4">
+          <div class="profile-pic-container position-relative">
+            <img id="profile-pic" [src]="employeesec.emp_profile_pic"  (error)="handleImageError($event)" alt="Profile Picture" class="img-fluid rounded-circle">
+            <div class="upload-overlay position-absolute">
+              <label for="profile-upload" class="upload-label">
+                <i class="bi bi-camera-fill"></i>
+              </label>
+              <input type="file" id="profile-upload" accept="image/*" class="d-none">
+            </div>
+          </div>
+          <h5 id="user-name" class="text-light mt-3">{{ employeesec.emp_first_name }} {{ employeesec.emp_last_name }}</h5>
+          <p id="user-id" class="text-secondary small">Employee Code: {{ employeesec.emp_code }}</p>
+        </div>
 
-<div class="sass-overlay" id="sassOverlay"></div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" data-tab="dashboard">
+              <i class="bi bi-speedometer2 me-2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-tab="academic">
+              <i class="bi bi-book me-2"></i>
+              <span>Requests</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-tab="extracurricular">
+              <i class="bi bi-trophy me-2"></i>
+              <span>Approvals</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-tab="financial">
+              <i class="bi bi-cash-coin me-2"></i>
+              <span>Payslip</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-tab="career">
+              <i class="bi bi-briefcase me-2"></i>
+              <span>Career</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-tab="health">
+              <i class="bi bi-heart-pulse me-2"></i>
+              <span>Assets</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-tab="settings">
+              <i class="bi bi-gear me-2"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
 
-<!-- Sidebar -->
-<aside class="sass-sidebar" id="sassSidebar">
-  <div class="sass-sidebar-header">
-    <div class="sass-logo">AH</div>
-    <div class="sass-logo-text">AdminHub</div>
-  </div>
-  <nav class="sass-nav">
-    <a href="#" class="sass-nav-item sass-active">
-      <div class="sass-nav-icon"><i class="fas fa-home"></i></div>
-      <span class="sass-nav-text">Dashboard</span>
-    </a>
-    <a href="#" class="sass-nav-item">
-      <div class="sass-nav-icon"><i class="fas fa-store"></i></div>
-      <span class="sass-nav-text">My Store</span>
-    </a>
-    <a href="#" class="sass-nav-item">
-      <div class="sass-nav-icon"><i class="fas fa-chart-bar"></i></div>
-      <span class="sass-nav-text">Analytics</span>
-    </a>
-    <a href="#" class="sass-nav-item">
-      <div class="sass-nav-icon"><i class="fas fa-envelope"></i></div>
-      <span class="sass-nav-text">Message</span>
-    </a>
-    <a href="#" class="sass-nav-item">
-      <div class="sass-nav-icon"><i class="fas fa-users"></i></div>
-      <span class="sass-nav-text">Team</span>
-    </a>
-    <a href="#" class="sass-nav-item">
-      <div class="sass-nav-icon"><i class="fas fa-cog"></i></div>
-      <span class="sass-nav-text">Settings</span>
-    </a>
-    <a href="#" class="sass-nav-item">
-      <div class="sass-nav-icon"><i class="fas fa-sign-out-alt"></i></div>
-      <span class="sass-nav-text">Logout</span>
-    </a>
-  </nav>
-</aside>
-
-<!-- Main Content -->
-<main class="sass-main">
-  <!-- Top Navigation -->
-  <header class="sass-topbar">
-    <div class="sass-topbar-left">
-      <button class="sass-menu-toggle" id="sassMenuToggle">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="sass-search-container" id="sassSearchContainer">
-        <i class="fas fa-search sass-search-icon"></i>
-        <input type="text" class="sass-search-input" placeholder="Search...">
-      </div>
-    </div>
-    <div class="sass-topbar-right">
-      <button class="sass-theme-toggle" id="sassThemeToggle">
-        <i class="fas fa-moon"></i>
-      </button>
-      <div style="position: relative;">
-        <button class="sass-notification-btn" id="sassNotificationBtn">
-          <i class="fas fa-bell"></i>
-          <div class="sass-notification-badge"></div>
-        </button>
-        <div class="sass-dropdown" id="sassNotificationDropdown">
-          <a href="#" class="sass-dropdown-item">
-            <i class="fas fa-shopping-cart"></i>
-            New order received
-          </a>
-          <a href="#" class="sass-dropdown-item">
-            <i class="fas fa-user"></i>
-            New user registered
-          </a>
-          <a href="#" class="sass-dropdown-item">
-            <i class="fas fa-chart-line"></i>
-            Sales report ready
-          </a>
+        <div class="mt-5 mb-3 text-center">
+          <button id="logout-btn" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-box-arrow-right me-2"></i>Logout
+          </button>
         </div>
       </div>
-      <div style="position: relative;">
-        <button class="sass-profile-btn" id="sassProfileBtn">
-          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" alt="Profile" class="sass-profile-avatar">
-        </button>
-        <div class="sass-dropdown" id="sassProfileDropdown">
-          <a href="#" class="sass-dropdown-item">
-            <i class="fas fa-user"></i>
-            Profile
-          </a>
-          <a href="#" class="sass-dropdown-item">
-            <i class="fas fa-cog"></i>
-            Settings
-          </a>
-          <a href="#" class="sass-dropdown-item">
-            <i class="fas fa-sign-out-alt"></i>
-            Logout
-          </a>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Content Area -->
-  <div class="sass-content">
-    <!-- Breadcrumb -->
-    <nav class="sass-breadcrumb">
-      <span>Home</span>
-      <i class="fas fa-chevron-right"></i>
-      <span>Dashboard</span>
     </nav>
 
-    <!-- Page Header -->
-    <div class="sass-page-header">
-      <h1 class="sass-page-title">Dashboard</h1>
-      <button class="sass-btn">
-        <i class="fas fa-rocket"></i>
-        Release version
-      </button>
-    </div>
-
-    <!-- Info Cards -->
-    <div class="sass-cards-grid">
-      <div class="sass-card">
-        <div class="sass-card-header">
-          <div class="sass-card-title">New Orders</div>
-          <div class="sass-card-icon" style="background: var(--sass-primary);">
-            <i class="fas fa-shopping-cart"></i>
+    <!-- Main Content Area -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <header class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Employee Dashboard</h1>
+        <div class="d-flex">
+          <div class="input-group me-3">
+            <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
+            <button class="btn btn-outline-secondary" type="button" id="search-btn">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+          <div class="dropdown position-relative">
+            <button class="btn btn-outline-secondary position-relative" type="button" id="notification-btn" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-bell"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                3
+              </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notification-btn">
+              <li>
+                <a class="dropdown-item d-flex justify-content-between align-items-start" href="#">
+                  <div>
+                    <strong>Leave Request</strong>
+                    <div class="text-muted small">2 hours ago</div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">New</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex justify-content-between align-items-start" href="#">
+                  <div>
+                    <strong>Document Expired</strong>
+                    <div class="text-muted small">Yesterday</div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">New</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex justify-content-between align-items-start" href="#">
+                  <div>
+                    <strong>Approval Status</strong>
+                    <div class="text-muted small">3 days ago</div>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
+            </ul>
           </div>
         </div>
-        <div class="sass-card-value">1,234</div>
-        <div class="sass-card-change sass-positive">
-          <i class="fas fa-arrow-up"></i>
-          +12.5%
+      </header>
+
+      <!-- Dashboard Tab (Default View) -->
+      <section id="dashboard-tab" class="content-tab animate__animated animate__fadeIn">
+        <div class="row mb-4">
+          <!-- Quick Stats Cards -->
+          <div class="col-md-3 mb-4" *ngFor="let Empholiday of employeesec.leave_balance">
+            <div class="card h-100 border-0 shadow-sm" >
+              <div class="card-body">
+                <h5 class="card-title">{{Empholiday.leave_type}}</h5>
+                <div class="d-flex align-items-center">
+                  <h2 class="mb-0 me-2">{{Empholiday.balance}}</h2>
+                  <span class="text-success"><i class="bi bi-arrow-up-short"></i> {{Empholiday.openings}}</span>
+                </div>
+                <div class="progress mt-3" style="height: 5px;">
+                  <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<!-- 
+          <div class="col-md-3 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">Attendance</h5>
+                <div class="d-flex align-items-center">
+                  <h2 class="mb-0 me-2">92%</h2>
+                  <span class="text-danger"><i class="bi bi-arrow-down-short"></i> 3%</span>
+                </div>
+                <div class="progress mt-3" style="height: 5px;">
+                  <div class="progress-bar bg-success" role="progressbar" style="width: 92%;" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">Credits Completed</h5>
+                <div class="d-flex align-items-center">
+                  <h2 class="mb-0 me-2">64</h2>
+                  <span class="text-muted">/ 120</span>
+                </div>
+                <div class="progress mt-3" style="height: 5px;">
+                  <div class="progress-bar bg-info" role="progressbar" style="width: 53%;" aria-valuenow="53" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">Tuition Paid</h5>
+                <div class="d-flex align-items-center">
+                  <h2 class="mb-0 me-2">75%</h2>
+                  <span class="text-muted">$3,750 left</span>
+                </div>
+                <div class="progress mt-3" style="height: 5px;">
+                  <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div> -->
         </div>
-      </div>
-      <div class="sass-card">
-        <div class="sass-card-header">
-          <div class="sass-card-title">Visitors</div>
-          <div class="sass-card-icon" style="background: var(--sass-accent);">
-            <i class="fas fa-users"></i>
+
+        <div class="row">
+          <!-- Course Schedule -->
+          <div class="col-md-8 mb-4">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="courseDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Spring 2025
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="courseDropdown">
+                    <li><a class="dropdown-item" href="#">Fall 2024</a></li>
+                    <li><a class="dropdown-item" href="#">Summer 2024</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card-body">
+
+                <div class="emp_additional_details">
+                  <div class="row">
+                      <div class="col-md-3">
+                         
+
+                          <div class="d-flex align-items-center">
+                            <strong>Emp Code</strong>
+                          </div>
+                          <small class="text-center">{{ employeesec.emp_code }}</small>
+                      </div>
+
+                      <div class="col-md-3">
+                       
+
+                                        <div class="d-flex align-items-center">
+                            <strong>Employee Status</strong>
+                          </div>
+                          <small class="text-center">{{employeesec.emp_status}}</small>
+                          <!-- <h2>Employee Ess User</h2>
+                          <h3>{{employee.is_ess}}</h3> -->
+                      </div>
+
+                      <div class="col-md-3">
+              
+                          <div class="d-flex align-items-center">
+                            <strong>Designation</strong>
+                          </div>
+                          <small class="text-center">{{ employeesec.emp_desgntn_id }}</small>
+                      </div>
+                  </div>
+
+                  <div class="row mt-4">
+                      <div class="col-md-3">
+                       
+                          <div class="d-flex align-items-center">
+                            <strong>Catogary</strong>
+                          </div>
+                          <small class="text-center">{{ employeesec.emp_ctgry_id }}</small>
+                      </div>
+
+                      <div class="col-md-3">
+                      
+                          <div class="d-flex align-items-center">
+                            <strong>Department</strong>
+                          </div>
+                          <small class="text-center">{{ employeesec.emp_dept_id }}</small>
+                      </div>
+
+                      <div class="col-md-3">
+                      
+                          <div class="d-flex align-items-center">
+                            <strong>Branch</strong>
+                          </div>
+                          <small class="text-center">{{ employeesec.emp_branch_id }}</small>
+                      </div>
+                  </div>
+
+              
+                  <!-- <div *ngFor="let doc of expiredDocuments">
+                      <p>Document Name: {{ doc.name }}</p>
+                      <p>Expiration Date: {{ doc.expiryDate }}</p>
+                    </div> -->
+              </div>
+                <!-- <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Course</th>
+                        <th>Instructor</th>
+                        <th>Schedule</th>
+                        <th>Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>CS301: Data Structures</td>
+                        <td>Dr. Smith</td>
+                        <td>MWF 10:00-11:15</td>
+                        <td><span class="badge bg-success">A</span></td>
+                      </tr>
+                      <tr>
+                        <td>MATH241: Linear Algebra</td>
+                        <td>Prof. Johnson</td>
+                        <td>TR 13:00-14:30</td>
+                        <td><span class="badge bg-primary">B+</span></td>
+                      </tr>
+                      <tr>
+                        <td>ENG210: Technical Writing</td>
+                        <td>Dr. Williams</td>
+                        <td>MWF 14:00-15:15</td>
+                        <td><span class="badge bg-warning text-dark">C</span></td>
+                      </tr>
+                      <tr>
+                        <td>PHYS201: Physics II</td>
+                        <td>Dr. Garcia</td>
+                        <td>TR 9:30-11:00</td>
+                        <td><span class="badge bg-success">A-</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div> -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Upcoming Events -->
+          <!-- <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white">
+                <h5 class="mb-0">Upcoming Holidays</h5>
+              </div>
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush"  *ngFor="let Empholiday of employeesec.holidays">
+                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-calendar-event text-primary me-2"></i>
+                        <strong>{{Empholiday.description}}</strong>
+                      </div>
+                      <small class="text-muted">{{Empholiday.start_date}}</small>
+                    </div>
+                    <span class="badge bg-danger rounded-pill">{{ calculateDaysLeft(Empholiday.start_date) }}</span>
+                  </li>
+                
+                </ul>
+              </div>
+              <div class="card-footer bg-white text-center">
+                <a href="#" class="btn btn-sm btn-outline-primary">View Full Calendar</a>
+              </div>
+            </div>
+          </div> -->
+
+          <div class="col-md-4 mb-4">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white">
+                <h5 class="mb-0">Upcoming Holidays</h5>
+              </div>
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-calendar-event text-primary me-2"></i>
+                        <strong>Christmas</strong>
+                      </div>
+                      <small class="text-muted">Dec 25, 2025 • 9:30 AM</small>
+                    </div>
+                    <span class="badge bg-danger rounded-pill">2 days</span>
+                  </li>
+               
+                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-building text-info me-2"></i>
+                        <strong>Tech Career Fair</strong>
+                      </div>
+                      <small class="text-muted">Mar 25, 2025 • 1:00 PM</small>
+                    </div>
+                    <span class="badge bg-info rounded-pill">2 weeks</span>
+                  </li>
+             
+                </ul>
+              </div>
+              <div class="card-footer bg-white text-center">
+                <a href="#" class="btn btn-sm btn-outline-primary">View Full Calendar</a>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="sass-card-value">5,678</div>
-        <div class="sass-card-change sass-positive">
-          <i class="fas fa-arrow-up"></i>
-          +8.2%
-        </div>
-      </div>
-      <div class="sass-card">
-        <div class="sass-card-header">
-          <div class="sass-card-title">Total Sales</div>
-          <div class="sass-card-icon" style="background: var(--sass-warning);">
-            <i class="fas fa-dollar-sign"></i>
-          </div>
-        </div>
-        <div class="sass-card-value">$89,432</div>
-        <div class="sass-card-change sass-negative">
-          <i class="fas fa-arrow-down"></i>
-          -2.1%
-        </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- Content Grid -->
-    <div class="sass-content-grid">
-      <!-- Recent Orders Table -->
-      <div class="sass-table-container">
-        <div class="sass-table-header">
-          <h3 class="sass-table-title">Recent Orders</h3>
-        </div>
-        <table class="sass-table">
-          <thead>
-            <tr>
-              <th>Customer</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="sass-table-user">
-                  <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
-                  <span>Sarah Johnson</span>
-                </div>
-              </td>
-              <td>2024-01-15</td>
-              <td>$299.99</td>
-              <td><span class="sass-status sass-completed">Completed</span></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="sass-table-user">
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
-                  <span>Mike Chen</span>
-                </div>
-              </td>
-              <td>2024-01-14</td>
-              <td>$149.50</td>
-              <td><span class="sass-status sass-pending">Pending</span></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="sass-table-user">
-                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
-                  <span>Emma Wilson</span>
-                </div>
-              </td>
-              <td>2024-01-13</td>
-              <td>$89.99</td>
-              <td><span class="sass-status sass-processing">Processing</span></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="sass-table-user">
-                  <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" alt="User" class="sass-table-avatar">
-                  <span>John Smith</span>
-                </div>
-              </td>
-              <td>2024-01-12</td>
-              <td>$199.99</td>
-              <td><span class="sass-status sass-completed">Completed</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- Other tabs would go here, initially hidden -->
+      <section id="academic-tab" class="content-tab d-none animate__animated animate__fadeIn">
+        <!-- Academic content here -->
+      </section>
 
+      <section id="extracurricular-tab" class="content-tab d-none animate__animated animate__fadeIn">
+        <!-- Extracurricular content here -->
+      </section>
 
+      <section id="financial-tab" class="content-tab d-none animate__animated animate__fadeIn">
+        <!-- Financial content here -->
+      </section>
 
-      <!-- bjhxbfhbsjdbf -->
+      <section id="career-tab" class="content-tab d-none animate__animated animate__fadeIn">
+        <!-- Career content here -->
+      </section>
 
-      <!-- Todo List -->
-      <div class="sass-todo-container">
-        <h3 class="sass-todo-title">Todo List</h3>
-        <div class="sass-todo-item sass-completed">
-          <input type="checkbox" class="sass-todo-checkbox" checked>
-          <span class="sass-todo-text">Review monthly sales report</span>
-        </div>
-        <div class="sass-todo-item sass-completed">
-          <input type="checkbox" class="sass-todo-checkbox" checked>
-          <span class="sass-todo-text">Update product inventory</span>
-        </div>
-        <div class="sass-todo-item sass-pending">
-          <input type="checkbox" class="sass-todo-checkbox">
-          <span class="sass-todo-text">Prepare team meeting agenda</span>
-        </div>
-        <div class="sass-todo-item sass-pending">
-          <input type="checkbox" class="sass-todo-checkbox">
-          <span class="sass-todo-text">Contact new suppliers</span>
-        </div>
-        <div class="sass-todo-item sass-pending">
-          <input type="checkbox" class="sass-todo-checkbox">
-          <span class="sass-todo-text">Review customer feedback</span>
-        </div>
-      </div>
-    </div>
+      <section id="health-tab" class="content-tab d-none animate__animated animate__fadeIn">
+        <!-- Health & Wellness content here -->
+      </section>
+
+      <section id="settings-tab" class="content-tab d-none animate__animated animate__fadeIn">
+        <!-- Settings content here -->
+      </section>
+    </main>
   </div>
-
-  <!-- Footer -->
-  <footer class="sass-footer">
-    <div class="sass-footer-content">
-      <h3 class="sass-footer-title">Contact Information</h3>
-      <div class="sass-footer-info">
-        <div class="sass-footer-item">
-          <i class="fas fa-user"></i>
-          <span>Sheikh abu sufian shoron</span>
-        </div>
-        <div class="sass-footer-item">
-          <i class="fas fa-phone"></i>
-          <span>01705900937</span>
-        </div>
-        <div class="sass-footer-item">
-          <i class="fas fa-envelope"></i>
-          <span>abusufianshoron2017gmail.com</span>
-        </div>
-      </div>
-      <p style="color: var(--sass-gray-500); font-size: 0.8rem; margin-top: 1rem;">
-        © 2024 AdminHub. All rights reserved.
-      </p>
-    </div>
-  </footer>
-</main>
+</div>
