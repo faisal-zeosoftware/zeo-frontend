@@ -1,364 +1,254 @@
-
-.comapny_section{
-
-    margin-top: 100px;
-    margin-left: 50px;
-    
+/* -------------------------------
+   🏢 Layout & Section Styles
+---------------------------------- */
+.comapny_section {
+  margin-top: 100px;
+  margin-left: 50px;
 }
 
-.header_section{
-    background: white;
-    padding: 24px 20px 15px 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    width: 100%;
-    border-bottom: solid 3px navy;
+.com_list {
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-top: 4px solid #004976;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
-.header_section h1{
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
-
+.com_list h2, .com_list h4 {
+  color: #004976;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
 }
 
-
-.com_list{
-    padding: 20px;
-    width: 100%;
-    background: white;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    border-top: solid 3px navy;
-    margin-bottom: 20px;
-
-
+hr {
+  border-top: 2px solid #004976;
+  opacity: 0.4;
 }
 
-.com_list h2{
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
+/* -------------------------------
+   🧾 Form Styling
+---------------------------------- */
+label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
 }
 
+select.form-control {
+  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background-color: #fff;
+}
 
+.btn {
+  font-size: 14px;
+  border-radius: 6px;
+  font-weight: 500;
+}
 
-  
+.btn-primary {
+  background-color:#0d6efd;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #00385a;
+}
+
+/* -------------------------------
+   📋 Table Styling
+---------------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+table thead {
+  background-color: #004976;
+  color: #fff;
+}
+
 table thead th {
-    color: #ffffff;
-    background: #004976;
-    padding: 15px;
-    border: 1px solid #ebebec;
-    font-weight: 500;
-  }
-  
-  table tr {
-    background: #ffffff;
-  }
-  
-  table tr td {
-    border: 1px solid #e6edf1;
-    padding: 15px;
-  }
-  
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
-  
-
-
-
-  p{
-    margin-bottom: 0px;
-  }
-
-
-  .form-control-wrapper {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  ::ng-deep .form-control-wrapper mat-form-field {
-    width: 100%;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-wrapper {
-    padding: 0;
-    margin: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-flex {
-    background: none;
-    border: none;
-    box-shadow: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-underline {
-    display: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select {
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    height: auto;
-    line-height: 1.5;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-trigger {
-    height: auto;
-    padding: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-value-text {
-    padding: 0;
-    margin: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-infix {
-    padding: 0;
-    border: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-placeholder {
-    transform: translateY(-50%);
-    top: 50%;
-  }
-
-
-  ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
-    margin-top: -14px;
+  padding: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-align: left;
 }
 
-::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
-
-  background-color: white;
+table tr {
+  background: #ffffff;
+  border-bottom: 1px solid #e6edf1;
 }
 
-::ng-deep .form-control-wrapper .mdc-text-field{
-  padding: 0px;
+table td {
+  padding: 12px;
+  color: #333;
+  border: 1px solid #e6edf1;
 }
 
-::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
-  outline: none-webkit-focus-ring-color auto 0px;
-  
-
-}
-
-
-/* Remove :focus-visible style from all input elements */
-input:focus-visible {
-  outline: none;
-}
-
-/* Remove :focus-visible style from mat-select */
-.mat-select:focus-visible {
-  outline: none;
-}
-
-/* Use !important to ensure the outline is removed */
-::ng-deep .form-control-wrapper:focus-visible {
-  outline: none !important;
-}
-
-
-::ng-deep .mat-select:focus-visible {
-  outline: none;
-}
-
-/* Optionally, you can also override other styles */
-::ng-deep .mat-select:focus-visible .mat-select-value {
-  outline: none;
-}
-
-::ng-deep .mdc-text-field--no-label{
-  border:1px solid #ced4da;
-}
-
-::ng-deep .mat-mdc-form-field-flex {
-  padding: 4px 7px;
-  height: 35px;
-}
-
-.check-box-selection-sec{
-    padding: 0px !important;
-}
-
-/* .form-control {
-    font-size: 14px;
-} */
-
-  
-
-/* label{
-    font-size: 14px;
-} */
-
-
- 
-
-/* Add your CSS styles here */
+/* -------------------------------
+   💼 Final Settlement Modal
+---------------------------------- */
 .modal {
-  display: block; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  margin-left: auto;
-  margin-right: auto;
+  display: block;
+  position: fixed;
+  z-index: 1050;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
 }
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: #fff;
+  margin: 100px auto;
   padding: 20px;
-  border: 1px solid #888;
-  width: 60%; /* Could be more or less, depending on screen size */
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 100px;
-  height: auto;
+  border-radius: 10px;
+  width: 70%;
+  max-width: 500px;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+}
 
+.modal h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #004976;
 }
 
 .close {
-  color: #aaa;
-  float: right;
+  color: #999;
   font-size: 28px;
   font-weight: bold;
-  text-align: right;
-}
-
-.close:hover,
-.close:focus {
-  color: red;
-  text-decoration: none;
   cursor: pointer;
+  transition: color 0.2s ease;
 }
 
-.modal h2{
+.close:hover {
+  color: red;
+}
 
-  font-size: 16px;
-  text-transform: capitalize;
+
+
+/* -------------------------------
+   🧾 Final Settlement Report
+---------------------------------- */
+.final-settlement-report {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.final-settlement-report h4,
+.final-settlement-report h5 {
+  color: #004976;
   font-weight: 600;
-  font-family: math;
+  text-transform: uppercase;
+  margin-top: 20px;
+  font-size: 15px;
+}
+
+/* Target only the header of payslip summary table */
+.payslip-summary-table thead tr th {
+  background-color: #f5f7f8; /* Navy background */
+  color: #fff !important;    /* White text */
+  font-weight: 600;
+}
+
+/* Keep all other table headers unaffected */
+.final-settlement-report .table th {
+  background: #f1f3f5;
+  color: #004976;
+  font-weight: 600;
 }
 
 
+.final-settlement-report .table tr  {
 
-table thead th {
+  color: #ffffff;
 
-    white-space: nowrap;
+}
+
+.final-settlement-report .table td {
+  font-size: 13px;
+}
+
+.remarks {
+  font-size: 12px;
+  font-style: italic;
+  color: #777;
 }
 
 
-  
-/* Add your CSS styles here */
-.modal {
-    display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    margin-left: auto;
-    margin-right: auto;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
-  .modal-content {
-    background-color: #fefefe;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 60%; /* Could be more or less, depending on screen size */
-    margin-right: auto;
-    margin-left: auto;
-    margin-top: 100px;
-    height: auto;
-  
-  }
-  
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: right;
-  }
-  
-  .close:hover,
-  .close:focus {
-    color: red;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  
-  .modal h2{
-  
-    font-size: 16px;
-    text-transform: capitalize;
-    font-weight: 600;
-    font-family: math;
+/* -------------------------------
+   📱 Mobile Responsive Tables
+---------------------------------- */
+@media (max-width: 768px) {
+  .comapny_section {
+    margin: 80px 10px 20px 10px;
   }
 
+  table thead {
+    display: none;
+  }
 
+  table, table tbody, table tr, table td {
+    display: block;
+    width: 100%;
+  }
 
-  .final-settlement-report {
-    background: #fff;
-    padding: 20px;
+  table tbody tr {
+    margin-bottom: 15px;
+    background: #f9f9f9;
     border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    padding: 10px;
   }
-  
-  .final-settlement-report h4 {
-    text-decoration: underline;
-  }
-  
-  .table th {
-    background: #f8f9fa;
-  }
-  .remarks {
-    font-size: 12px;
-    font-style: italic;
-  }
-  
 
+  table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 5px;
+    font-size: 13px;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
 
-  
+  table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #004976;
+    text-align: left;
+    flex: 0 0 45%;
+  }
+
+  /* Adjust modal width on mobile */
+  .modal-content {
+    width: 80%;
+    margin-top: 200px;
+    padding: 15px;
+  }
+
+  h2, h4 {
+    font-size: 16px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

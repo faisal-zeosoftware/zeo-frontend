@@ -110,6 +110,11 @@ table thead th {
       margin-top: 10px !important;
       position: relative !important;
     }
+
+    ::ng-deep.modal-content{
+      margin-top: 200px !important;
+
+    }
     
   }
   

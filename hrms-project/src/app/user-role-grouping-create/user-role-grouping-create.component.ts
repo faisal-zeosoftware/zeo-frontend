@@ -83,10 +83,12 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsLeavemaster:any[] =[];
   GrouppermissionsLeavereq:any[] =[];
   GrouppermissionsLeavecom:any[] =[];
-
   GrouppermissionsLeaveaprvlvl:any[] =[];
-
   GrouppermissionsLeaveaprvlvltemp:any[] =[];
+
+  //permission stored arrays for Payroll
+  GrouppermissionsPayrollrun:any[] =[];
+  GrouppermissionsSalarycomponent:any[] =[];
 
 
   //creating group name declared variables.
@@ -241,7 +243,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
 
 
 
-    //Calendars checkbox checked values
+    //Leave checkbox checked values
     LeaveaprvChecked:boolean= false;
     LeavetypeChecked:boolean= false;
     LeavemasterChecked:boolean= false;
@@ -250,8 +252,10 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     LeaveaprvlvlChecked:boolean= false;
     LeaveaprvlvltempChecked:boolean= false;
 
-  
+     //Payroll checkbox checked values
 
+    PayrollrunChecked:boolean= false;
+    SalarycomponentChecked:boolean= false;
 
 // main headings values
 
@@ -260,6 +264,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   reportchecked:boolean = false;
   calenderchecked:boolean = false;
   Leavechecked:boolean = false;
+  Payrollchecked:boolean = false;
 
 
 
@@ -269,6 +274,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   reportMastersvalue:boolean =true;
   calenderMastersvalue:boolean =true;
   LeaveMastersvalue:boolean =true;
+  PayrollMastersvalue:boolean =true;
 
   // Add this property
   registerButtonClicked: boolean = false;
@@ -612,6 +618,22 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     return selectedLeaveaprvPermissions.length > 0 && selectedLeaveaprvPermissions.length < this.GrouppermissionsLeaveaprv.length;
   }
 
+isPayrollrunIndeterminate(): boolean {
+  const selectedPayrollPermissions = this.selectedPermissions.filter(permission =>
+    this.GrouppermissionsPayrollrun.map(p => p.id).includes(permission)
+  );
+  return selectedPayrollPermissions.length > 0 &&
+         selectedPayrollPermissions.length < this.GrouppermissionsPayrollrun.length;
+}
+
+isSalarycomponentIndeterminate(): boolean {
+  const selectedSalaryPermissions = this.selectedPermissions.filter(permission =>
+    this.GrouppermissionsSalarycomponent.map(p => p.id).includes(permission)
+  );
+  return selectedSalaryPermissions.length > 0 &&
+         selectedSalaryPermissions.length < this.GrouppermissionsSalarycomponent.length;
+}
+
   isLeavetypeIndeterminate(): boolean {
     const selectedLeavetypePermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissionsLeavetype.map(p => p.id).includes(permission)
@@ -666,6 +688,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     this.loadReportPermissions();
     this.loadCalenderPermissions();
     this.loadLeavePermissions();
+    this.loadPayrollPermissions();
 
 
     this.updateIndeterminateStates();
@@ -824,6 +847,13 @@ updateInderminateLeave():void{
     this.loadpermissionsLeaveaprvlvl();
     this.loadpermissionsLeaveaprvlvltemp();
 
+
+  }
+
+  loadPayrollPermissions():void{
+
+  this.loadpermissionsPayrollrun();
+  this.loadpermissionsSalarycomponent();
 
   }
 
@@ -3024,81 +3054,109 @@ updateInderminateLeave():void{
                                     return permissionCodename;
                                 }
                               }
-        
+
+
+
+// === Fetch Payroll permissions from backend ===
+loadpermissionsPayrollrun(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        const requiredCodenames = [
+          'add_payrollrun',
+          'change_payrollrun',
+          'delete_payrollrun',
+          'view_payrollrun'
+        ];
+
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsPayrollrun = Array.from(uniquePermissionsMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Payroll permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Payroll permissions ===
+getDisplayNamePayrollrun(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_payrollrun':
+      return 'Add';
+    case 'change_payrollrun':
+      return 'Edit';
+    case 'delete_payrollrun':
+      return 'Delete';
+    case 'view_payrollrun':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
+loadpermissionsSalarycomponent(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        const requiredCodenames = [
+          'add_salarycomponent',
+          'change_salarycomponent',
+          'delete_salarycomponent',
+          'view_salarycomponent'
+        ];
+
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsSalarycomponent = Array.from(uniquePermissionsMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Salary Component permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Payroll salarycomponent permissions ===
+getDisplayNameSalarycomponent(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_salarycomponent':
+      return 'Add';
+    case 'change_salarycomponent':
+      return 'Edit';
+    case 'delete_salarycomponent':
+      return 'Delete';
+    case 'view_salarycomponent':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
 
 
 
 
-  //   onCheckboxChangeEmp(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   this.updateEmployeeMasterCheckbox();
-  // }
 
-  // updateEmployeeMasterCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsEmp.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.employeeMasterChecked = allPermissionsSelected;
-  // }
-  
-  // onCheckboxChangeDept(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   this.updateDepartmentMasterCheckbox();
-  // }
-
-  // updateDepartmentMasterCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsDept.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.departmentMasterChecked = allPermissionsSelected;
-  // }
-  
-  // onCheckboxChangeDesg(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   this.updateDesgnationMasterCheckbox();
-  // }
-
-  // updateDesgnationMasterCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsDis.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.designationMasterChecked = allPermissionsSelected;
-  // }
-  // onCheckboxChangeCat(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   this.updateCategoryMasterCheckbox();
-  // }
-
-  // updateCategoryMasterCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsCat.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.categoryMasterChecked = allPermissionsSelected;
-  // }
   onCheckboxChangeEmp(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
@@ -3975,6 +4033,36 @@ updateInderminateLeave():void{
   }
 
 
+  
+onCheckboxChangesPayrollrun(permission: string): void {
+  if (this.selectedPermissions.includes(permission)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+  } else {
+    this.selectedPermissions.push(permission);
+  }
+  this.updatePayrollrunCheckbox();
+  this.updatePayrollCheckbox();
+}
+
+ onCheckboxChangesSalarycomponent(permission: string): void {
+  if (this.selectedPermissions.includes(permission)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+  } else {
+    this.selectedPermissions.push(permission);
+  }
+
+  this.updateSalarycomponentCheckbox();
+  this.updatePayrollCheckbox();
+}
+
+
+updateSalarycomponentCheckbox(): void {
+  const allPermissionsSelected = this.GrouppermissionsSalarycomponent.every(permission =>
+    this.selectedPermissions.includes(permission.id)
+  );
+  this.SalarycomponentChecked = allPermissionsSelected;
+}
+
 
 
 
@@ -4771,6 +4859,30 @@ showexpandable(): void {
 
   }
 
+  onPayrollrunChange(): void {
+  if (this.PayrollrunChecked) {
+    this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsPayrollrun.map(p => p.id));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      permission => !this.GrouppermissionsPayrollrun.map(p => p.id).includes(permission)
+    );
+  }
+  this.updatePayrollCheckbox();
+}
+
+onSalarycomponentChange(): void {
+  if (this.SalarycomponentChecked) {
+    this.selectedPermissions = this.selectedPermissions.concat(
+      this.GrouppermissionsSalarycomponent.map(permission => permission.id)
+    );
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      permission => !this.GrouppermissionsSalarycomponent.map(p => p.id).includes(permission)
+    );
+  }
+  this.updatePayrollCheckbox();
+}
+
   
   onLeavetypeChange(): void {
     if (this.LeavetypeChecked) {
@@ -4864,6 +4976,8 @@ showexpandable(): void {
   updateLeaveCheckbox(): void {
     this.Leavechecked = this.isLeaveMangementMasterChecked();
   }
+
+ 
 
   
   // selectAlls(): void {
@@ -5139,6 +5253,36 @@ selectLeave(): void {
   // this.updateCalenderCheckbox();
 }
 
+
+selectPayroll(): void {
+  const allPermissions = [
+    ...this.GrouppermissionsPayrollrun,
+    ...this.GrouppermissionsSalarycomponent,
+  ].map(permission => permission.id);
+
+  if (this.Payrollchecked) {
+    // Select all payroll permissions
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...allPermissions]));
+  } else {
+    // Deselect all payroll permissions
+    this.selectedPermissions = this.selectedPermissions.filter(p => !allPermissions.includes(p));
+  }
+
+  this.updatePayrollrunCheckbox();
+  this.updateSalarycomponentCheckbox(); // 👈 added
+}
+
+updatePayrollrunCheckbox(): void {
+  const allPermissionsSelected = this.GrouppermissionsPayrollrun.every(permission =>
+    this.selectedPermissions.includes(permission.id)
+  );
+  this.PayrollrunChecked = allPermissionsSelected;
+}
+
+updatePayrollCheckbox(): void {
+  this.Payrollchecked = this.isPayrollMasterChecked();
+}
+
 updateCalender():void{
   this.updateAddHolidayCheckbox();
   this.updateAssignHolidayCheckbox();
@@ -5208,6 +5352,25 @@ isLeaveInderminate(): boolean {
   return hasSelectedPermissions && !this.isLeaveMangementMasterChecked();
 }
 
+
+
+isPayrollInderminate(): boolean {
+  const hasSelectedPermissions = [
+    ...this.GrouppermissionsPayrollrun,
+  ].some(permission => this.selectedPermissions.includes(permission.id));
+
+  return hasSelectedPermissions && !this.isPayrollMasterChecked();
+}
+
+
+
+isPayrollMasterChecked(): boolean {
+  const allPermissions = [
+    ...this.GrouppermissionsPayrollrun,
+  ].map(permission => permission.id);
+  return allPermissions.every(permission => this.selectedPermissions.includes(permission));
+}
+
 // isReportInderminate(): boolean {
 //   return !this.reportchecked && (
 //     this.emportReportChecked||
@@ -5230,6 +5393,10 @@ showcalenders(): void{
 
 showLeaves(): void{
   this.LeaveMastersvalue =!this.LeaveMastersvalue;
+}
+
+showPayroll(): void{
+  this.PayrollMastersvalue =!this.PayrollMastersvalue;
 }
 
 

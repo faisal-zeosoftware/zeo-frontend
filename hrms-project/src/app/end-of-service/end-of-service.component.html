@@ -36,9 +36,6 @@
 
 
             </div>
-
-
-
         </div>
 
        <div class="com_list mt-5" >
@@ -147,38 +144,39 @@
       
         <!-- Payslip Summary -->
         <h5 class="mt-3">Payslip Summary</h5>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Particulars</th>
-              <th>Deductions</th>
-              <th>Additions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let d of finalSettlement.payslip_summary.deductions">
-              <td>{{ d.component_name }}</td>
-              <td>{{ d.amount }}</td>
-              <td>0.00</td>
-            </tr>
-            <tr *ngFor="let a of finalSettlement.payslip_summary.additions">
-              <td>{{ a.component_name }}</td>
-              <td>0.00</td>
-              <td>{{ a.amount }}</td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <th>Total</th>
-              <td>{{ finalSettlement.payslip_summary.total_deductions }}</td>
-              <td>{{ finalSettlement.payslip_summary.total_additions }}</td>
-            </tr>
-            <tr>
-              <th colspan="2">Net Amount (AED)</th>
-              <td>{{ finalSettlement.payslip_summary.net_amount }}</td>
-            </tr>
-          </tfoot>
-        </table>
+<table class="table table-bordered payslip-summary-table">
+  <thead>
+    <tr>
+      <th>Particulars</th>
+      <th>Deductions</th>
+      <th>Additions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-label="Particulars" *ngFor="let d of finalSettlement.payslip_summary.deductions">
+      <td>{{ d.component_name }}</td>
+      <td>{{ d.amount }}</td>
+      <td>0.00</td>
+    </tr>
+    <tr data-label="Additions" *ngFor="let a of finalSettlement.payslip_summary.additions">
+      <td>{{ a.component_name }}</td>
+      <td>0.00</td>
+      <td>{{ a.amount }}</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th>Total</th>
+      <td>{{ finalSettlement.payslip_summary.total_deductions }}</td>
+      <td>{{ finalSettlement.payslip_summary.total_additions }}</td>
+    </tr>
+    <tr>
+      <th colspan="2">Net Amount (AED)</th>
+      <td>{{ finalSettlement.payslip_summary.net_amount }}</td>
+    </tr>
+  </tfoot>
+</table>
+
       
         <!-- Footer -->
         <div class="mt-3">
@@ -198,14 +196,7 @@
     </div>
   </div>
   
-        
-
-
-            
+             
         </div>
-
-
-
-
     </div>
 </div>
