@@ -269,15 +269,15 @@
           <tbody>
               
             <tr *ngFor="let docs of DocRequest;let i = index">
-              <td>{{ i + 1 }}</td> 
-              <td>{{ docs.document_number }}</td>
-              <td>{{ docs.reason }}</td>
-              <td>{{ docs.total }}</td> 
-              <td>{{ docs.remarks }}</td>
-              <td>{{ docs.request_type }}</td>
-              <td>{{ docs.employee }}</td> 
-              <td>{{ docs.status }}</td>
-              <td>
+              <td data-label="No">{{ i + 1 }}</td> 
+              <td data-label="Document number">{{ docs.document_number }}</td>
+              <td data-label="Reason">{{ docs.reason }}</td>
+              <td data-label="Total">{{ docs.total }}</td> 
+              <td data-label="Remarks">{{ docs.remarks }}</td>
+              <td data-label="Request type">{{ docs.request_type }}</td>
+              <td data-label="Employee">{{ docs.employee }}</td> 
+              <td data-label="Status">{{ docs.status }}</td>
+              <td data-label="Action">
                 <button
                   mat-fab
                   color="primary"

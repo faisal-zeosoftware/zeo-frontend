@@ -110,7 +110,7 @@
                       <label>Employee</label>
                       <div class="custom-sel">
                         <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
-                          <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.emp_code }}</option>
+                          <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.username }}</option>
                         </select>
                       </div>
                     </div>
@@ -249,8 +249,9 @@
              
   
               <th>Pause start date</th>
-              <th>Pause reason</th>
               <th>Resume date</th>
+              <th>Pause reason</th>
+           
               <th>Actions</th>
             </tr>
           </thead>
@@ -275,8 +276,9 @@
               <td data-label="Employee">{{ docs.employee }}</td> 
               <td data-label="Status">{{ docs.status }}</td>
               <td data-label="Pause start date">{{ docs.pause_start_date }}</td>
-              <td data-label="Pause reason">{{ docs.pause_reason }}</td>
               <td data-label="Resume date">{{ docs.resume_date }}</td> 
+              <td data-label="Pause reason">{{ docs.pause_reason }}</td>
+             
               
               <td data-label="Action">
                 <button
