@@ -26,8 +26,14 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsApr: any[] = [];
   GrouppermissionsAprlvl: any[] = [];
   GrouppermissionsAtd: any[] = [];
-  GrouppermissionsSal: any[] = [];
-  GrouppermissionsPay: any[] = [];
+  GrouppermissionsExpDocument: any[] = [];
+  GrouppermissionsEmpOver: any[] = [];
+  GrouppermissionsEmpAprList: any[] = [];
+  GrouppermissionsEmpRegAprList: any[] = [];
+  GrouppermissionsEndofSer: any[] = [];
+  GrouppermissionsRegReq: any[] = [];
+  GrouppermissionsRegAprlvl: any[] = [];
+  GrouppermissionsGratuity: any[] = [];
 
 
 
@@ -59,6 +65,11 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissiionsLeaveReport: any[]=[];
   GrouppermissiionsDeptReport: any[]=[];
   GrouppermissiionsDesReport: any[]=[];
+  GrouppermissiionsLeaveAprRep: any[]=[];
+  GrouppermissionsLeaveBalReport: any[] =[];
+  GrouppermissionsAttendReport: any[] =[];
+  GrouppermissionsAssetReport: any[] =[];
+  GrouppermissionsAssetTransReport: any[] =[];
 
 
 
@@ -154,8 +165,15 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   AprMasterInderminate = false;
   AprlvlMasterInderminate = false;
   AtdMasterInderminate = false;
-  SalMasterInderminate = false;
-  PayMasterInderminate = false;
+  ExpDocumentInderminate = false;
+  EmpOverInderminate = false;
+  EmpAprListInderminate = false;
+  EmpRegAprListInderminate = false;
+  EndofSerInderminate = false;
+  RegReqInderminate = false;
+  RegAprlvlInderminate = false;
+  GratuityInderminate = false;
+
 
 
 
@@ -188,6 +206,11 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   LeaveReportInderminate= false;
   DeptReportInderminate= false;
   DesReportInderminate= false;
+  LeaveAprRepInderminate= false;
+  LeaveBalReportInderminate = false;
+  AttendReportInderminate = false;
+  AssetReportInderminate = false;
+  AssetTransReportInderminate = false;
 
 
   //selected calendars checkboxes.
@@ -280,8 +303,15 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   AprMasterChecked: boolean = false;
   AprlvlMasterChecked: boolean = false;
   AtdMasterChecked: boolean = false;
-  SalMasterChecked: boolean = false;
-  PayMasterChecked: boolean = false;
+  ExpDocumentChecked: boolean = false;
+  EmpOverChecked: boolean = false;
+  EmpAprListChecked: boolean = false;
+  EmpRegAprListChecked: boolean = false;
+  EndofSerChecked: boolean = false;
+  RegReqChecked: boolean = false;
+  RegAprlvlChecked: boolean = false;
+  GratuityChecked: boolean = false;
+  
 
 
 
@@ -317,6 +347,11 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   LeaveReportChecked:boolean = false;
   DeptReportChecked:boolean = false;
   DesReportChecked:boolean = false;
+  LeaveAprRepChecked:boolean = false;
+  LeaveBalReportChecked:boolean = false;
+  AttendReportChecked:boolean = false;
+  AssetReportChecked:boolean = false;
+  AssetTransReportChecked:boolean = false;
 
   
   
@@ -469,8 +504,14 @@ isEmployeeManagementMasterChecked(): boolean {
       this.AprMasterChecked &&
       this.AprlvlMasterChecked &&
       this.AtdMasterChecked &&
-      this.SalMasterChecked &&
-      this.PayMasterChecked 
+      this.ExpDocumentChecked &&
+      this.EmpOverChecked &&
+      this.EmpAprListChecked &&
+      this.EmpRegAprListChecked &&
+      this.EndofSerChecked &&
+      this.RegReqChecked &&
+      this.RegAprlvlChecked &&
+      this.GratuityChecked
 }
 
 isSettingsMasterChecked(): boolean {
@@ -494,7 +535,12 @@ isReportManagementMasterChecked(): boolean {
       this.generelReportChecked  &&
       this.LeaveReportChecked &&
       this.DeptReportChecked &&
-      this.DesReportChecked ;
+      this.DesReportChecked &&
+      this.LeaveAprRepChecked &&
+      this.LeaveBalReportChecked &&
+      this.AttendReportChecked &&
+      this.AssetReportChecked &&
+      this.AssetTransReportChecked
       
 }
 
@@ -651,18 +697,61 @@ isAirTicketManagementMasterChecked():boolean{
     return selectedGenPermissions.length > 0 && selectedGenPermissions.length < this.GrouppermissionsAtd.length;
   }
 
-  isSalMasterIndeterminate(): boolean {
-    const selectedSalPermissions = this.selectedPermissions.filter(permission =>
-      this.GrouppermissionsSal.map(p => p.id).includes(permission)
+  isExpDocumentIndeterminate(): boolean {
+    const selectedExpDocPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsExpDocument.map(p => p.id).includes(permission)
     );
-    return selectedSalPermissions.length > 0 && selectedSalPermissions.length < this.GrouppermissionsSal.length;
+    return selectedExpDocPermissions.length > 0 && selectedExpDocPermissions.length < this.GrouppermissionsExpDocument.length;
   }
 
-  isPayMasterIndeterminate(): boolean {
-    const selectedPayPermissions = this.selectedPermissions.filter(permission =>
-      this.GrouppermissionsPay.map(p => p.id).includes(permission)
+  isEmpOverIndeterminate(): boolean {
+    const selectedEmpOverPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsEmpOver.map(p => p.id).includes(permission)
     );
-    return selectedPayPermissions.length > 0 && selectedPayPermissions.length < this.GrouppermissionsPay.length;
+    return selectedEmpOverPermissions.length > 0 && selectedEmpOverPermissions.length < this.GrouppermissionsEmpOver.length;
+  }
+
+    isEmpAprListIndeterminate(): boolean {
+    const selectedEmpAprListPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsEmpAprList.map(p => p.id).includes(permission)
+    );
+    return selectedEmpAprListPermissions.length > 0 && selectedEmpAprListPermissions.length < this.GrouppermissionsEmpAprList.length;
+  }
+
+
+    isEmpRegAprListIndeterminate(): boolean {
+    const selectedEmpRegAprListPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsEmpRegAprList.map(p => p.id).includes(permission)
+    );
+    return selectedEmpRegAprListPermissions.length > 0 && selectedEmpRegAprListPermissions.length < this.GrouppermissionsEmpRegAprList.length;
+  }
+
+  isEndofSerIndeterminate(): boolean {
+    const selectedEndofSerPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsEndofSer.map(p => p.id).includes(permission)
+    );
+    return selectedEndofSerPermissions.length > 0 && selectedEndofSerPermissions.length < this.GrouppermissionsEndofSer.length;
+  }
+
+  isRegReqIndeterminate(): boolean {
+    const selectedRegReqPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsRegReq.map(p => p.id).includes(permission)
+    );
+    return selectedRegReqPermissions.length > 0 && selectedRegReqPermissions.length < this.GrouppermissionsRegReq.length;
+  }
+
+  isRegAprlvlIndeterminate(): boolean {
+    const selectedRegAprlvlPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsRegAprlvl.map(p => p.id).includes(permission)
+    );
+    return selectedRegAprlvlPermissions.length > 0 && selectedRegAprlvlPermissions.length < this.GrouppermissionsRegAprlvl.length;
+  }
+
+  isGratuityIndeterminate(): boolean {
+    const selectedGratuityPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsGratuity.map(p => p.id).includes(permission)
+    );
+    return selectedGratuityPermissions.length > 0 && selectedGratuityPermissions.length < this.GrouppermissionsGratuity.length;
   }
   
    isBranchMasterIndeterminate(): boolean {
@@ -763,6 +852,13 @@ isDocumentReportIndeterminate(): boolean {
     return selecteddocreportPermissions.length > 0 && selecteddocreportPermissions.length < this.GrouppermissionsdocumnetReport.length;
 }
 
+isLeaveBalReportIndeterminate(): boolean {
+    const selectedLeaveBalreportPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsLeaveBalReport.map(p => p.id).includes(permission)
+    );
+    return selectedLeaveBalreportPermissions.length > 0 && selectedLeaveBalreportPermissions.length < this.GrouppermissionsLeaveBalReport.length;
+}
+
 isGeneralReportIndeterminate(): boolean {
     const selectedGenReportPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissiionsgeneralReport.map(p => p.id).includes(permission)
@@ -776,6 +872,37 @@ isLeaveReportIndeterminate(): boolean {
       this.GrouppermissiionsLeaveReport.map(p => p.id).includes(permission)
     );
     return selectedLeaveReportPermissions.length > 0 && selectedLeaveReportPermissions.length < this.GrouppermissiionsLeaveReport.length;
+}
+
+isAttendReportIndeterminate(): boolean {
+    const selectedAttendReportPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsAttendReport.map(p => p.id).includes(permission)
+    );
+    return selectedAttendReportPermissions.length > 0 && selectedAttendReportPermissions.length < this.GrouppermissionsAttendReport.length;
+}
+
+isAssetReportIndeterminate(): boolean {
+    const selectedAssetReportPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsAssetReport.map(p => p.id).includes(permission)
+    );
+    return selectedAssetReportPermissions.length > 0 && selectedAssetReportPermissions.length < this.GrouppermissionsAssetReport.length;
+}
+
+isAssetTransReportIndeterminate(): boolean {
+    const selectedAssetTransReportPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsAssetTransReport.map(p => p.id).includes(permission)
+    );
+    return selectedAssetTransReportPermissions.length > 0 && selectedAssetTransReportPermissions.length < this.GrouppermissionsAssetTransReport.length;
+}
+
+
+
+
+isLeaveAprRepIndeterminate(): boolean {
+    const selectedLeaveAprReportPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissiionsLeaveAprRep.map(p => p.id).includes(permission)
+    );
+    return selectedLeaveAprReportPermissions.length > 0 && selectedLeaveAprReportPermissions.length < this.GrouppermissiionsLeaveAprRep.length;
 }
 
 
@@ -1136,8 +1263,14 @@ isAirTicketRuleIndeterminate(): boolean {
     this.isAprMasterIndeterminate();
     this.isAprlvlMasterIndeterminate();
     this.isAtdMasterIndeterminate();
-    this.isSalMasterIndeterminate();
-    this.isPayMasterIndeterminate();
+    this.isExpDocumentIndeterminate();
+    this.isEmpOverIndeterminate();
+    this.isEmpAprListIndeterminate();
+    this.isEmpRegAprListIndeterminate();
+    this.isEndofSerIndeterminate();
+    this.isRegReqIndeterminate();
+    this.isRegAprlvlIndeterminate();
+    this.isGratuityIndeterminate();
 
 
 
@@ -1171,6 +1304,11 @@ updateIndeterminateReports(): void{
   this.isLeaveReportIndeterminate();
   this.isDeptReportIndeterminate();
   this.isDesReportIndeterminate();
+  this.isLeaveAprRepIndeterminate();
+  this.isLeaveBalReportIndeterminate();
+  this.isAttendReportIndeterminate();
+  this.isAssetReportIndeterminate();
+  this.isAssetTransReportIndeterminate();
 
 
 }
@@ -1281,8 +1419,14 @@ updateInderminateDocument():void{
     this.loadpermissionsAprMaster();
     this.loadpermissionsAprlvlMaster();
     this.loadpermissionsAtdMaster();
-    this.loadpermissionsSalMaster();
-    this.loadpermissionsPayMaster();
+    this.loadpermissionsExpDocument();
+    this.loadpermissionsEmpOver();
+    this.loadpermissionsEmpAprList();
+    this.loadpermissionsEmpRegAprList();
+    this.loadpermissionsEndofSer();
+    this.loadpermissionsregReq();
+    this.loadpermissionsRegAprlvl();
+    this.loadpermissionsGratuity();
   }
 
 
@@ -1319,6 +1463,11 @@ updateInderminateDocument():void{
     this.loadpermissionsLeaveReport();
     this.loadpermissionsDeptReport();
     this.loadpermissionsDesReport();
+    this.loadpermissionsLeaveAprReport();
+    this.loadpermissionsLeaveBalReport();
+    this.loadpermissionsAttendReport();
+    this.loadpermissionsAssetReport();
+    this.loadpermissionsAssetTransReport();
 
 
 
@@ -1903,7 +2052,7 @@ updateInderminateDocument():void{
 
    //load permission for Salary Master master
 
- loadpermissionsSalMaster(): void {
+ loadpermissionsExpDocument(): void {
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
         
             console.log('schemastore', selectedSchema);
@@ -1912,7 +2061,7 @@ updateInderminateDocument():void{
               this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                 (result: any[]) => {
                   // Specify the codenames you want to filter
-                  const requiredCodenames = ['add_salarycomponent', 'change_salarycomponent', 'delete_salarycomponent', 'view_salarycomponent'];
+                  const requiredCodenames = ['add_emp_documents', 'change_emp_documents', 'delete_emp_documents', 'view_emp_documents'];
           
                   // Filter and remove duplicates based on codename
                   const uniquePermissionsMap = new Map();
@@ -1924,9 +2073,9 @@ updateInderminateDocument():void{
                   });
           
                   // Convert map values to an array
-                  this.GrouppermissionsSal = Array.from(uniquePermissionsMap.values());
+                  this.GrouppermissionsExpDocument = Array.from(uniquePermissionsMap.values());
           
-                  console.log('Filtered Unique Permissions:', this.GrouppermissionsSal);
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsExpDocument);
                 },
                 (error: any) => {
                   console.error('Error fetching permissions:', error);
@@ -1938,15 +2087,15 @@ updateInderminateDocument():void{
         
            //Display Name  add view delte code for General request master-------
         
-           getDisplayNameSal(permissionCodename: string): string {
+           getDisplayNameExpDocument(permissionCodename: string): string {
             switch (permissionCodename.trim().toLowerCase()) {
-              case 'add_salarycomponent':
+              case 'add_emp_documents':
                 return 'Add';
-              case 'change_salarycomponent':
+              case 'change_emp_documents':
                 return 'Edit';
-              case 'delete_salarycomponent':
+              case 'delete_emp_documents':
                 return 'Delete';
-              case 'view_salarycomponent':
+              case 'view_emp_documents':
                 return 'View';
               default:
                 return permissionCodename;
@@ -1954,7 +2103,7 @@ updateInderminateDocument():void{
           }
         
           
-          loadpermissionsPayMaster(): void {
+          loadpermissionsEmpOver(): void {
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
         
             console.log('schemastore', selectedSchema);
@@ -1963,7 +2112,7 @@ updateInderminateDocument():void{
               this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                 (result: any[]) => {
                   // Specify the codenames you want to filter
-                  const requiredCodenames = ['add_payrollrun', 'change_payrollrun', 'delete_payrollrun', 'view_payrollrun'];
+                  const requiredCodenames = ['add_employeeovertime', 'change_employeeovertime', 'delete_employeeovertime', 'view_employeeovertime'];
           
                   // Filter and remove duplicates based on codename
                   const uniquePermissionsMap = new Map();
@@ -1975,9 +2124,9 @@ updateInderminateDocument():void{
                   });
           
                   // Convert map values to an array
-                  this.GrouppermissionsPay = Array.from(uniquePermissionsMap.values());
+                  this.GrouppermissionsEmpOver = Array.from(uniquePermissionsMap.values());
           
-                  console.log('Filtered Unique Permissions:', this.GrouppermissionsPay);
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsEmpOver);
                 },
                 (error: any) => {
                   console.error('Error fetching permissions:', error);
@@ -1989,29 +2138,339 @@ updateInderminateDocument():void{
         
            //Display Name  add view delte code for General request master-------
         
-           getDisplayNamePay(permissionCodename: string): string {
+           getDisplayNameEmpOver(permissionCodename: string): string {
             switch (permissionCodename.trim().toLowerCase()) {
-              case 'add_payrollrun':
+              case 'add_employeeovertime':
                 return 'Add';
-              case 'change_payrollrun':
+              case 'change_employeeovertime':
                 return 'Edit';
-              case 'delete_payrollrun':
+              case 'delete_employeeovertime':
                 return 'Delete';
-              case 'view_payrollrun':
+              case 'view_employeeovertime':
+                return 'View';
+              default:
+                return permissionCodename;
+            }
+          }
+
+
+
+        loadpermissionsEmpAprList(): void {
+            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        
+            console.log('schemastore', selectedSchema);
+          
+            if (selectedSchema) {
+              this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+                (result: any[]) => {
+                  // Specify the codenames you want to filter
+                  const requiredCodenames = ['add_resignationapproval', 'change_resignationapproval', 'delete_resignationapproval', 'view_resignationapproval'];
+          
+                  // Filter and remove duplicates based on codename
+                  const uniquePermissionsMap = new Map();
+                  result.forEach(permission => {
+                    const codename = permission.codename.trim().toLowerCase();
+                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                      uniquePermissionsMap.set(codename, permission);
+                    }
+                  });
+          
+                  // Convert map values to an array
+                  this.GrouppermissionsEmpAprList = Array.from(uniquePermissionsMap.values());
+          
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsEmpAprList);
+                },
+                (error: any) => {
+                  console.error('Error fetching permissions:', error);
+                }
+              );
+            }
+          }
+        
+        
+           //Display Name  add view delte code for Employee Approval List -------
+        
+           getDisplayNameEmpAprList(permissionCodename: string): string {
+            switch (permissionCodename.trim().toLowerCase()) {
+              case 'add_resignationapproval':
+                return 'Add';
+              case 'change_resignationapproval':
+                return 'Edit';
+              case 'delete_resignationapproval':
+                return 'Delete';
+              case 'view_resignationapproval':
+                return 'View';
+              default:
+                return permissionCodename;
+            }
+          }
+
+
+
+
+          
+        loadpermissionsEmpRegAprList(): void {
+            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        
+            console.log('schemastore', selectedSchema);
+          
+            if (selectedSchema) {
+              this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+                (result: any[]) => {
+                  // Specify the codenames you want to filter
+                  const requiredCodenames = ['add_endofservice', 'change_endofservice', 'delete_endofservice', 'view_endofservice'];
+          
+                  // Filter and remove duplicates based on codename
+                  const uniquePermissionsMap = new Map();
+                  result.forEach(permission => {
+                    const codename = permission.codename.trim().toLowerCase();
+                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                      uniquePermissionsMap.set(codename, permission);
+                    }
+                  });
+          
+                  // Convert map values to an array
+                  this.GrouppermissionsEmpRegAprList = Array.from(uniquePermissionsMap.values());
+          
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsEmpRegAprList);
+                },
+                (error: any) => {
+                  console.error('Error fetching permissions:', error);
+                }
+              );
+            }
+          }
+        
+        
+           //Display Name  add view delte code for Employee Resignation Approval List -------
+        
+           getDisplayNameEmpregAprList(permissionCodename: string): string {
+            switch (permissionCodename.trim().toLowerCase()) {
+              case 'add_endofservice':
+                return 'Add';
+              case 'change_endofservice':
+                return 'Edit';
+              case 'delete_endofservice':
+                return 'Delete';
+              case 'view_endofservice':
+                return 'View';
+              default:
+                return permissionCodename;
+            }
+          }
+
+
+loadpermissionsEndofSer(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        
+   console.log('schemastore', selectedSchema);
+          
+   if (selectedSchema) {
+  this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+  (result: any[]) => {
+                  // Specify the codenames you want to filter
+   const requiredCodenames = ['add_endofservice', 'change_endofservice', 'delete_endofservice', 'view_endofservice'];
+          
+                  // Filter and remove duplicates based on codename
+                  const uniquePermissionsMap = new Map();
+                  result.forEach(permission => {
+                    const codename = permission.codename.trim().toLowerCase();
+                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                      uniquePermissionsMap.set(codename, permission);
+                    }
+                  });
+          
+                  // Convert map values to an array
+                  this.GrouppermissionsEndofSer = Array.from(uniquePermissionsMap.values());
+          
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsEndofSer);
+                },
+                (error: any) => {
+                  console.error('Error fetching permissions:', error);
+                }
+              );
+            }
+          }
+        
+        
+//Display Name  add view delte code for Employee End Of Service -------
+        
+getDisplayNameEndofSer(permissionCodename: string): string {
+            switch (permissionCodename.trim().toLowerCase()) {
+              case 'add_endofservice':
+                return 'Add';
+              case 'change_endofservice':
+                return 'Edit';
+              case 'delete_endofservice':
+                return 'Delete';
+              case 'view_endofservice':
+                return 'View';
+              default:
+                return permissionCodename;
+            }
+          }
+
+
+          
+loadpermissionsregReq(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        
+   console.log('schemastore', selectedSchema);
+          
+   if (selectedSchema) {
+  this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+  (result: any[]) => {
+                  // Specify the codenames you want to filter
+ const requiredCodenames = ['add_employeeresignation', 'change_employeeresignation', 'delete_employeeresignation', 'view_employeeresignation'];
+          
+                  // Filter and remove duplicates based on codename
+                  const uniquePermissionsMap = new Map();
+                  result.forEach(permission => {
+                    const codename = permission.codename.trim().toLowerCase();
+                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                      uniquePermissionsMap.set(codename, permission);
+                    }
+                  });
+          
+                  // Convert map values to an array
+                  this.GrouppermissionsRegReq = Array.from(uniquePermissionsMap.values());
+          
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsRegReq);
+                },
+                (error: any) => {
+                  console.error('Error fetching permissions:', error);
+                }
+              );
+            }
+          }
+        
+        
+//Display Name  add view delte code for Employee Resignation request -------
+        
+getDisplayNameRegReq(permissionCodename: string): string {
+            switch (permissionCodename.trim().toLowerCase()) {
+              case 'add_employeeresignation':
+                return 'Add';
+              case 'change_employeeresignation':
+                return 'Edit';
+              case 'delete_employeeresignation':
+                return 'Delete';
+              case 'view_employeeresignation':
+                return 'View';
+              default:
+                return permissionCodename;
+            }
+          }
+
+          
+loadpermissionsRegAprlvl(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        
+   console.log('schemastore', selectedSchema);
+          
+   if (selectedSchema) {
+  this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+  (result: any[]) => {
+                  // Specify the codenames you want to filter
+ const requiredCodenames = ['add_resignationapprovallevel', 'change_resignationapprovallevel', 'delete_resignationapprovallevel', 'view_resignationapprovallevel'];
+          
+                  // Filter and remove duplicates based on codename
+                  const uniquePermissionsMap = new Map();
+                  result.forEach(permission => {
+                    const codename = permission.codename.trim().toLowerCase();
+                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                      uniquePermissionsMap.set(codename, permission);
+                    }
+                  });
+          
+                  // Convert map values to an array
+                  this.GrouppermissionsRegAprlvl = Array.from(uniquePermissionsMap.values());
+          
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsRegAprlvl);
+                },
+                (error: any) => {
+                  console.error('Error fetching permissions:', error);
+                }
+              );
+            }
+          }
+        
+        
+//Display Name  add view delte code for Employee Resignation Approval Level -------
+        
+getDisplayNameRegAprlvl(permissionCodename: string): string {
+            switch (permissionCodename.trim().toLowerCase()) {
+              case 'add_resignationapprovallevel':
+                return 'Add';
+              case 'change_resignationapprovallevel':
+                return 'Edit';
+              case 'delete_resignationapprovallevel':
+                return 'Delete';
+              case 'view_resignationapprovallevel':
                 return 'View';
               default:
                 return permissionCodename;
             }
           }
         
+        
 
-
-
-
-
-
+          
+loadpermissionsGratuity(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        
+   console.log('schemastore', selectedSchema);
+          
+   if (selectedSchema) {
+  this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+  (result: any[]) => {
+                  // Specify the codenames you want to filter
+ const requiredCodenames = ['add_gratuitytable', 'change_gratuitytable', 'delete_gratuitytable', 'view_gratuitytable'];
+          
+                  // Filter and remove duplicates based on codename
+                  const uniquePermissionsMap = new Map();
+                  result.forEach(permission => {
+                    const codename = permission.codename.trim().toLowerCase();
+                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                      uniquePermissionsMap.set(codename, permission);
+                    }
+                  });
+          
+                  // Convert map values to an array
+                  this.GrouppermissionsGratuity = Array.from(uniquePermissionsMap.values());
+          
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsGratuity);
+                },
+                (error: any) => {
+                  console.error('Error fetching permissions:', error);
+                }
+              );
+            }
+          }
+        
+        
+//Display Name  add view delte code for Employee Resignation Approval Level -------
+        
+getDisplayNameGratuity(permissionCodename: string): string {
+            switch (permissionCodename.trim().toLowerCase()) {
+              case 'add_gratuitytable':
+                return 'Add';
+              case 'change_gratuitytable':
+                return 'Edit';
+              case 'delete_gratuitytable':
+                return 'Delete';
+              case 'view_gratuitytable':
+                return 'View';
+              default:
+                return permissionCodename;
+            }
+          }
+        
+      
 
 // load permission for company master---------
+
+
 
   loadpermissionsCmpMaster(): void {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -2740,7 +3199,11 @@ updateInderminateDocument():void{
             this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
               (result: any[]) => {
                 // Specify the codenames you want to filter
-                const requiredCodenames = ['add_doc_report', 'change_doc_report', 'delete_doc_report', 'export_document_report','view_doc_report'];
+                const requiredCodenames = ['add_doc_report',
+                                         'change_doc_report', 
+                                          'delete_doc_report',
+                                          'export_document_report',
+                                           'view_doc_report'];
         
                 // Filter and remove duplicates based on codename
                 const uniquePermissionsMap = new Map();
@@ -2793,7 +3256,11 @@ updateInderminateDocument():void{
     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
       (result: any[]) => {
         // Specify the codenames you want to filter
-        const requiredCodenames = ['add_generalrequestreport', 'change_generalrequestreport', 'delete_generalrequestreport', 'export_general_request_report','view_generalrequestreport'];
+        const requiredCodenames = ['add_generalrequestreport',
+                                 'change_generalrequestreport',
+                                  'delete_generalrequestreport',
+                                  'export_general_request_report',
+                                  'view_generalrequestreport'];
 
         // Filter and remove duplicates based on codename
         const uniquePermissionsMap = new Map();
@@ -2889,6 +3356,293 @@ updateInderminateDocument():void{
                   return permissionCodename;
               }
             }
+
+
+  loadpermissionsLeaveAprReport(): void {
+            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore', selectedSchema);
+  
+    if (selectedSchema) {
+      this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+        (result: any[]) => {
+          // Specify the codenames you want to filter
+          const requiredCodenames = ['add_leaveapprovalreport',
+                                  'change_leaveapprovalreport',
+                                  'delete_leaveapprovalreport',
+                                      // 'export_report',
+                                    'view_leaveapprovalreport'];
+  
+          // Filter and remove duplicates based on codename
+          const uniquePermissionsMap = new Map();
+          result.forEach(permission => {
+            const codename = permission.codename.trim().toLowerCase();
+            if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+              uniquePermissionsMap.set(codename, permission);
+            }
+          });
+  
+          // Convert map values to an array
+          this.GrouppermissiionsLeaveAprRep = Array.from(uniquePermissionsMap.values());
+  
+          console.log('Filtered Unique Permissions:', this.GrouppermissiionsLeaveAprRep);
+        },
+        (error: any) => {
+          console.error('Error fetching permissions:', error);
+        }
+      );
+    }
+          }
+
+        
+            //Display Name  add view delte code for Leave Approval request-------
+        
+   getDisplayNameLeaveAprRep(permissionCodename: string): string {
+              switch (permissionCodename.trim().toLowerCase()) {
+                case 'add_leaveapprovalreport':
+                  return 'Add';
+                case 'change_leaveapprovalreport':
+                  return 'Edit';
+                case 'delete_leaveapprovalreport':
+                  return 'Delete';
+                // case 'export_report':
+                //   return 'Export';
+                case 'view_leaveapprovalreport':
+                    return 'View';
+
+                default:
+                  return permissionCodename;
+              }
+            }
+
+
+    loadpermissionsLeaveBalReport(): void {
+          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+          console.log('schemastore', selectedSchema);
+        
+          if (selectedSchema) {
+            this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+              (result: any[]) => {
+                // Specify the codenames you want to filter
+                const requiredCodenames = ['add_lvbalancereport',
+                                         'change_lvbalancereport', 
+                                          'delete_lvbalancereport',
+                                          // 'export_document_report',
+                                           'view_lvbalancereport'];
+        
+                // Filter and remove duplicates based on codename
+                const uniquePermissionsMap = new Map();
+                result.forEach(permission => {
+                  const codename = permission.codename.trim().toLowerCase();
+                  if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                    uniquePermissionsMap.set(codename, permission);
+                  }
+                });
+        
+                // Convert map values to an array
+                this.GrouppermissionsLeaveBalReport = Array.from(uniquePermissionsMap.values());
+        
+                console.log('Filtered Unique Permissions:', this.GrouppermissionsLeaveBalReport);
+              },
+              (error: any) => {
+                console.error('Error fetching permissions:', error);
+              }
+            );
+          }
+      }
+    
+        //Display Name  add view delte code for Leave balance Report-------
+    
+    getDisplayNameLeaveBalReport(permissionCodename: string): string {
+          switch (permissionCodename.trim().toLowerCase()) {
+            case 'add_lvbalancereport':
+              return 'Add';
+            case 'change_lvbalancereport':
+              return 'Edit';
+            case 'delete_lvbalancereport':
+              return 'Delete';
+            // case 'export_document_report':
+            //   return 'Export';
+              case 'view_lvbalancereport':
+                return 'View';
+            default:
+              return permissionCodename;
+          }
+        }
+
+
+
+
+    loadpermissionsAttendReport(): void {
+          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+          console.log('schemastore', selectedSchema);
+        
+          if (selectedSchema) {
+            this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+              (result: any[]) => {
+                // Specify the codenames you want to filter
+                const requiredCodenames = ['add_attendancereport',
+                                         'change_attendancereport', 
+                                          'delete_attendancereport',
+                                          // 'export_document_report',
+                                           'view_attendancereport'];
+        
+                // Filter and remove duplicates based on codename
+                const uniquePermissionsMap = new Map();
+                result.forEach(permission => {
+                  const codename = permission.codename.trim().toLowerCase();
+                  if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                    uniquePermissionsMap.set(codename, permission);
+                  }
+                });
+        
+                // Convert map values to an array
+                this.GrouppermissionsAttendReport = Array.from(uniquePermissionsMap.values());
+        
+                console.log('Filtered Unique Permissions:', this.GrouppermissionsAttendReport);
+              },
+              (error: any) => {
+                console.error('Error fetching permissions:', error);
+              }
+            );
+          }
+      }
+    
+    //Display Name  add view delte code for Attendance Report-------
+    
+    getDisplayNameAttendReport(permissionCodename: string): string {
+          switch (permissionCodename.trim().toLowerCase()) {
+            case 'add_attendancereport':
+              return 'Add';
+            case 'change_attendancereport':
+              return 'Edit';
+            case 'delete_attendancereport':
+              return 'Delete';
+            // case 'export_document_report':
+            //   return 'Export';
+              case 'view_attendancereport':
+                return 'View';
+            default:
+              return permissionCodename;
+          }
+        }
+
+
+
+
+  loadpermissionsAssetReport(): void {
+          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+          console.log('schemastore', selectedSchema);
+        
+          if (selectedSchema) {
+            this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+              (result: any[]) => {
+                // Specify the codenames you want to filter
+                const requiredCodenames = ['add_assetreport',
+                                         'change_assetreport', 
+                                          'delete_assetreport',
+                                          // 'export_document_report',
+                                           'view_assetreport'];
+        
+                // Filter and remove duplicates based on codename
+                const uniquePermissionsMap = new Map();
+                result.forEach(permission => {
+                  const codename = permission.codename.trim().toLowerCase();
+                  if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                    uniquePermissionsMap.set(codename, permission);
+                  }
+                });
+        
+                // Convert map values to an array
+                this.GrouppermissionsAssetReport = Array.from(uniquePermissionsMap.values());
+        
+                console.log('Filtered Unique Permissions:', this.GrouppermissionsAssetReport);
+              },
+              (error: any) => {
+                console.error('Error fetching permissions:', error);
+              }
+            );
+          }
+      }
+    
+    //Display Name  add view delte code for Asset Report-------
+    
+    getDisplayNameAssetReport(permissionCodename: string): string {
+          switch (permissionCodename.trim().toLowerCase()) {
+            case 'add_assetreport':
+              return 'Add';
+            case 'change_assetreport':
+              return 'Edit';
+            case 'delete_assetreport':
+              return 'Delete';
+            // case 'export_document_report':
+            //   return 'Export';
+              case 'view_assetreport':
+                return 'View';
+            default:
+              return permissionCodename;
+          }
+        }
+
+
+   loadpermissionsAssetTransReport(): void {
+          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+          console.log('schemastore', selectedSchema);
+        
+          if (selectedSchema) {
+            this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+              (result: any[]) => {
+                // Specify the codenames you want to filter
+                const requiredCodenames = ['add_assettransactionreport',
+                                         'change_assettransactionreport', 
+                                          'delete_assettransactionreport',
+                                          // 'export_document_report',
+                                           'view_assettransactionreport'];
+        
+                // Filter and remove duplicates based on codename
+                const uniquePermissionsMap = new Map();
+                result.forEach(permission => {
+                  const codename = permission.codename.trim().toLowerCase();
+                  if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                    uniquePermissionsMap.set(codename, permission);
+                  }
+                });
+        
+                // Convert map values to an array
+                this.GrouppermissionsAssetTransReport = Array.from(uniquePermissionsMap.values());
+        
+                console.log('Filtered Unique Permissions:', this.GrouppermissionsAssetTransReport);
+              },
+              (error: any) => {
+                console.error('Error fetching permissions:', error);
+              }
+            );
+          }
+      }
+    
+    //Display Name  add view delte code for Asset Transation Report-------
+    
+    getDisplayNameAssetTransReport(permissionCodename: string): string {
+          switch (permissionCodename.trim().toLowerCase()) {
+            case 'add_assettransactionreport':
+              return 'Add';
+            case 'change_assettransactionreport':
+              return 'Edit';
+            case 'delete_assettransactionreport':
+              return 'Delete';
+            // case 'export_document_report':
+            //   return 'Export';
+              case 'view_assettransactionreport':
+                return 'View';
+            default:
+              return permissionCodename;
+          }
+        }
+  
   
 
 
@@ -4928,10 +5682,10 @@ loadpermissionsDocumentType(): void {
     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
       (result: any[]) => {
         const requiredCodenames = [
-          'add_document_type',
-          'change_document_type',
-          'delete_document_type',
-          'view_document_type'
+          'add_docrequesttype',
+          'change_docrequesttype',
+          'delete_docrequesttype',
+          'view_docrequesttype'
         ];
 
         const uniquePermissionsMap = new Map();
@@ -4952,16 +5706,16 @@ loadpermissionsDocumentType(): void {
 }
 
 
-// === Display readable names for Document Type permissions ===
+// === Display readable names for Document Request Type permissions ===
 getDisplayNameDocumentType(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_document_type':
+    case 'add_docrequesttype':
       return 'Add';
-    case 'change_document_type':
+    case 'change_docrequesttype':
       return 'Edit';
-    case 'delete_document_type':
+    case 'delete_docrequesttype':
       return 'Delete';
-    case 'view_document_type':
+    case 'view_docrequesttype':
       return 'View';
     default:
       return permissionCodename;
@@ -5166,44 +5920,165 @@ getDisplayNameDocumentType(permissionCodename: string): string {
   }
 
 
-  onCheckboxChangeSal(permission: string): void {
+  onCheckboxChangeExpDocument(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
     } else {
       this.selectedPermissions.push(permission);
     }
-    this.updateSalMasterCheckbox();
+    this.updateExpDocumentCheckbox();
     this.updateSelectAll();
   }
 
-  updateSalMasterCheckbox(): void {
-    const allPermissionsSelected = this.GrouppermissionsSal.every(permission => 
+  updateExpDocumentCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsExpDocument.every(permission => 
       this.selectedPermissions.includes(permission.id)
     );
-    this.SalMasterChecked = allPermissionsSelected;
-    this.SalMasterInderminate = this.isSalMasterIndeterminate();
+    this.ExpDocumentChecked = allPermissionsSelected;
+    this.ExpDocumentInderminate = this.isExpDocumentIndeterminate();
 
   }
 
 
-  onCheckboxChangePay(permission: string): void {
+  onCheckboxChangeEmpOver(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
     } else {
       this.selectedPermissions.push(permission);
     }
-    this.updatePayMasterCheckbox();
+    this.updateEmpOverCheckbox();
     this.updateSelectAll();
   }
 
-  updatePayMasterCheckbox(): void {
-    const allPermissionsSelected = this.GrouppermissionsPay.every(permission => 
+  updateEmpOverCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsEmpOver.every(permission => 
       this.selectedPermissions.includes(permission.id)
     );
-    this.PayMasterChecked = allPermissionsSelected;
-    this.PayMasterInderminate = this.isPayMasterIndeterminate();
+    this.EmpOverChecked = allPermissionsSelected;
+    this.EmpOverInderminate = this.isEmpOverIndeterminate();
 
   }
+
+  
+  onCheckboxChangeEmpAprList(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateEmpAprListCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateEmpAprListCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsEmpAprList.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.EmpAprListChecked = allPermissionsSelected;
+    this.EmpAprListInderminate = this.isEmpAprListIndeterminate();
+
+  }
+
+    onCheckboxChangeEmpRegAprList(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateEmpRegAprListCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateEmpRegAprListCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsEmpRegAprList.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.EmpRegAprListChecked = allPermissionsSelected;
+    this.EmpRegAprListInderminate = this.isEmpRegAprListIndeterminate();
+
+  }
+
+
+  onCheckboxChangeEndofSer(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateEndofSerCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateEndofSerCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsEndofSer.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.EndofSerChecked = allPermissionsSelected;
+    this.EndofSerInderminate = this.isEndofSerIndeterminate();
+
+  }
+
+
+
+  onCheckboxChangeRegReq(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateRegReqCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateRegReqCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsRegReq.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.RegReqChecked = allPermissionsSelected;
+    this.RegReqInderminate = this.isRegReqIndeterminate();
+
+  }
+
+    onCheckboxChangeRegAprlvl(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateRegAprlvlCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateRegAprlvlCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsRegAprlvl.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.RegAprlvlChecked = allPermissionsSelected;
+    this.RegAprlvlInderminate = this.isRegAprlvlIndeterminate();
+
+  }
+
+
+  onCheckboxChangeGratuity(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateGratuityCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateGratuityCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsGratuity.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.GratuityChecked = allPermissionsSelected;
+    this.GratuityInderminate = this.isGratuityIndeterminate();
+
+  }
+
+
 
   onCheckboxChangesBrch(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
@@ -5512,6 +6387,31 @@ getDisplayNameDocumentType(permissionCodename: string): string {
     this.documentReportChecked = allPermissionsSelected;
     this.documentReportInderminate = this.isDocumentReportIndeterminate();
   }
+
+
+    onCheckboxChangesLeaveBalReport(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateLeaveBalReportCheckbox();
+    this.updateReport();
+
+  }
+
+    updateLeaveBalReportCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsLeaveBalReport.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.LeaveBalReportChecked = allPermissionsSelected;
+    this.LeaveBalReportInderminate = this.isLeaveBalReportIndeterminate();
+  }
+
+
   onCheckboxChangesGenReport(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
@@ -5555,6 +6455,100 @@ getDisplayNameDocumentType(permissionCodename: string): string {
     );
     this.LeaveReportChecked= allPermissionsSelected;
     this.LeaveReportInderminate = this.isLeaveReportIndeterminate();
+  }
+
+
+  onCheckboxChangesAttendReport(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateAttendReportCheckbox();
+    this.updateReport();
+
+  }
+
+  updateAttendReportCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsAttendReport.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.AttendReportChecked= allPermissionsSelected;
+    this.AttendReportInderminate = this.isAttendReportIndeterminate();
+  }
+
+ onCheckboxChangesAssetReport(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateAssetReportCheckbox();
+    this.updateReport();
+
+  }
+
+  updateAssetReportCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsAssetReport.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.AssetReportChecked= allPermissionsSelected;
+    this.AssetReportInderminate = this.isAssetReportIndeterminate();
+  }
+
+
+ onCheckboxChangesAssetTransReport(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateAssetTransReportCheckbox();
+    this.updateReport();
+
+  }
+
+ updateAssetTransReportCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsAssetTransReport.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.AssetTransReportChecked= allPermissionsSelected;
+    this.AssetTransReportInderminate = this.isAssetTransReportIndeterminate();
+  }
+
+
+
+
+
+onCheckboxChangesLeaveAprRep(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateLeaveAprRepCheckbox();
+    this.updateReport();
+
+  }
+
+updateLeaveAprRepCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissiionsLeaveAprRep.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.LeaveAprRepChecked= allPermissionsSelected;
+    this.LeaveAprRepInderminate = this.isLeaveAprRepIndeterminate();
   }
 
   onCheckboxChangesAddweek(permission: string): void {
@@ -6397,8 +7391,14 @@ updateAirTicketRuleCheckbox(): void {
     this.updateAprMasterCheckbox();
     this.updateAprlvlMasterCheckbox();
     this.updateAtdMasterCheckbox();
-    this.updateSalMasterCheckbox();
-    this.updatePayMasterCheckbox();
+    this.updateExpDocumentCheckbox();
+    this.updateEmpOverCheckbox();
+    this.updateEmpAprListCheckbox();
+    this.updateEmpRegAprListCheckbox();
+    this.updateEndofSerCheckbox();
+    this.updateRegReqCheckbox();
+    this.updateRegAprlvlCheckbox();
+    this.updateGratuityCheckbox();
 
 
 
@@ -6454,9 +7454,14 @@ updateAirTicketRuleCheckbox(): void {
                             this.AprMasterChecked &&
                             this.AprlvlMasterChecked &&
                             this.AtdMasterChecked &&
-                            this.SalMasterChecked &&
-
-                            this.PayMasterChecked;
+                            this.ExpDocumentChecked &&
+                            this.EmpOverChecked &&
+                            this.EmpAprListChecked &&
+                            this.EmpRegAprListChecked &&
+                            this.EndofSerChecked &&
+                            this.RegReqChecked &&
+                            this.RegAprlvlChecked &&
+                            this.GratuityChecked;
 
 }
 
@@ -6464,7 +7469,9 @@ updateAirTicketRuleCheckbox(): void {
 isEmpDeptDisCatPermission(permission: string): boolean {
   return [...this.GrouppermissionsEmp, ...this.GrouppermissionsDept, ...this.GrouppermissionsDis, 
     ...this.GrouppermissionsCat, ...this.GrouppermissionsGen,...this.GrouppermissionsReqtype,
-    ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,...this.GrouppermissionsAtd,...this.GrouppermissionsSal,...this.GrouppermissionsPay,]
+    ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,...this.GrouppermissionsAtd,...this.GrouppermissionsExpDocument,...this.GrouppermissionsEmpOver,
+  ...this.GrouppermissionsEmpAprList,...this.GrouppermissionsEmpRegAprList,this.GrouppermissionsEndofSer,this.GrouppermissionsRegReq,
+...this.GrouppermissionsRegAprlvl,...this.GrouppermissionsGratuity]
     .some(p => p.id === permission);
 }
 
@@ -6481,9 +7488,14 @@ isIndeterminate(): boolean {
     ...this.GrouppermissionsApr,
     ...this.GrouppermissionsAprlvl,
     ...this.GrouppermissionsAtd,
-    ...this.GrouppermissionsSal,
-    ...this.GrouppermissionsPay,
-
+    ...this.GrouppermissionsExpDocument,
+    ...this.GrouppermissionsEmpOver,
+    ...this.GrouppermissionsEmpAprList,
+    ...this.GrouppermissionsEmpRegAprList,
+    ...this.GrouppermissionsEndofSer,
+    ...this.GrouppermissionsRegReq,
+    ...this.GrouppermissionsRegAprlvl,
+    ...this.GrouppermissionsGratuity,
 
   ].some(permission => this.selectedPermissions.includes(permission.id));
     return hasSelectedPermissions && !this.isEmployeeManagementMasterChecked();
@@ -6502,9 +7514,15 @@ isemployee(): boolean {
   const AprMasterInderminate = this.isAprMasterIndeterminate();
   const AprlvlMasterInderminate = this.isAprlvlMasterIndeterminate();
   const AtdMasterInderminate = this.isAtdMasterIndeterminate();
-  const SalMasterInderminate = this.isSalMasterIndeterminate();
+  const ExpDocumentInderminate = this.isExpDocumentIndeterminate();
 
-  const PayMasterInderminate = this.isPayMasterIndeterminate();
+  const EmpOverInderminate = this.isEmpOverIndeterminate();
+  const EmpAprListInderminate = this.isEmpAprListIndeterminate();
+  const EmpRegAprListInderminate = this.isEmpRegAprListIndeterminate();
+  const EndofSerInderminate = this.isEndofSerIndeterminate();
+  const RegReqInderminate = this.isRegReqIndeterminate();
+  const RegAprlvlInderminate = this.isRegAprlvlIndeterminate();
+  const GratuityInderminate = this.isGratuityIndeterminate();
 
 
 
@@ -6513,7 +7531,9 @@ isemployee(): boolean {
 
     // Return true only if some but not all checkboxes are selected
     return employeeMasterIndeterminate || departmentMasterInderminate || designationMasterInderminate || categoryMasterInderminate|| 
-    GenMasterInderminate|| ReqtypeMasterInderminate|| AprMasterInderminate|| AprlvlMasterInderminate|| AtdMasterInderminate|| SalMasterInderminate|| PayMasterInderminate||  otherGroupIndeterminate;
+    GenMasterInderminate|| ReqtypeMasterInderminate|| AprMasterInderminate|| AprlvlMasterInderminate|| AtdMasterInderminate|| ExpDocumentInderminate ||
+     EmpOverInderminate || EmpAprListInderminate || EmpRegAprListInderminate || EndofSerInderminate || RegReqInderminate || RegAprlvlInderminate ||
+      GratuityInderminate || otherGroupIndeterminate;
 }
 
 
@@ -6539,17 +7559,24 @@ issettings(): boolean {
     return branchMasterInderminate || userMasterInderminate || userGroupMasterInderminate || assignMasterInderminate||stateMasterInderminate || documentMasterInderminate || userGroupMasterInderminate || expiredMasterInderminate||locationMasterInderminate||
     DnMasterInderminate || CpMasterInderminate || EmtMasterInderminate || FormdesMasterInderminate || otherGroupIndeterminate;
 }
+
 isreports(): boolean {
   const emportReportInderminate = this.isEmployeeReportIndeterminate();
   const documentReportInderminate = this.isDocumentReportIndeterminate();
   const generalReportInderminate = this.isGeneralReportIndeterminate();
   const LeaveReportInderminate = this.isLeaveReportIndeterminate();
+  const LeaveAprRepInderminate = this.isLeaveAprRepIndeterminate();
+  const LeaveBalReportInderminate = this.isLeaveBalReportIndeterminate();
+  const AttendReportInderminate = this.isAttendReportIndeterminate();
+  const AssetReportInderminate = this.isAttendReportIndeterminate();
+  const AssetTransReportInderminate = this.isAssetTransReportIndeterminate();
 
     const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
 
     // Return true only if some but not all checkboxes are selected
     return emportReportInderminate || documentReportInderminate || 
-    generalReportInderminate ||  LeaveReportInderminate || otherGroupIndeterminate;
+    generalReportInderminate ||  LeaveReportInderminate || LeaveAprRepInderminate || LeaveBalReportInderminate ||
+    AttendReportInderminate || AssetReportInderminate || AssetTransReportInderminate || otherGroupIndeterminate;
 }
 
 iscalenders(): boolean {
@@ -6790,11 +7817,11 @@ isDocument(): boolean {
   }
 
 
-  onSalMasterChange(): void {
-    if (this.SalMasterChecked) {
-      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsSal.map(permission => permission.id));
+  onExpDocumentChange(): void {
+    if (this.ExpDocumentChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsExpDocument.map(permission => permission.id));
     } else {  
-      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsSal.map(p => p.id).includes(permission));
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsExpDocument.map(p => p.id).includes(permission));
     }
   
     // Update related checkboxes
@@ -6804,11 +7831,11 @@ isDocument(): boolean {
   }
 
 
-  onPayMasterChange(): void {
-    if (this.PayMasterChecked) {
-      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsPay.map(permission => permission.id));
+  onEmpOverChange(): void {
+    if (this.EmpOverChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEmpOver.map(permission => permission.id));
     } else {  
-      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsPay.map(p => p.id).includes(permission));
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsEmpOver.map(p => p.id).includes(permission));
     }
   
     // Update related checkboxes
@@ -6816,6 +7843,88 @@ isDocument(): boolean {
     // this.selectAllChecked = this.categoryMasterChecked;
 
   }
+
+    onEmpAprListChange(): void {
+    if (this.EmpAprListChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEmpAprList.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsEmpAprList.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+  onEmpRegAprListChange(): void {
+    if (this.EmpRegAprListChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEmpRegAprList.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsEmpRegAprList.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+
+    onEndofSerChange(): void {
+    if (this.EndofSerChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEndofSer.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsEndofSer.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+
+  onRegReqChange(): void {
+    if (this.RegReqChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsRegReq.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsRegReq.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+  onRegAprlvlChange(): void {
+    if (this.RegAprlvlChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsRegAprlvl.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsRegAprlvl.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+  onGratuityChange(): void {
+    if (this.GratuityChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsGratuity.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsGratuity.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+
 
 
 
@@ -6995,6 +8104,19 @@ isDocument(): boolean {
 
 
   }
+
+    onLeaveBalReportChange(): void {
+    if (this.LeaveBalReportChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveBalReport.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeaveBalReport.map(p => p.id).includes(permission));
+    }
+    this.updateReportCheckbox();
+    // this.updateSelectedPermissions(this.expireddocumnetsMasterChecked, this.Grouppermissionsexpirydocuments);
+    // this.settingsChecked = this.expireddocumnetsMasterChecked;
+
+
+  }
   onGenReportChange(): void {
     if (this.generelReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsgeneralReport.map(permission => permission.id));
@@ -7018,6 +8140,54 @@ isDocument(): boolean {
     // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
     // this.settingsChecked = this.locationMasterChecked;
 
+  }
+
+  onAttendReportChange(): void {
+    if (this.AttendReportChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAttendReport.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsAttendReport.map(p => p.id).includes(permission));
+    }
+    this.updateReportCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+  }
+
+  onAssetReportChange(): void {
+    if (this.AssetReportChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAssetReport.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsAssetReport.map(p => p.id).includes(permission));
+    }
+    this.updateReportCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+  }
+
+    onAssetTransReportChange(): void {
+    if (this.AssetTransReportChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAssetTransReport.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsAssetTransReport.map(p => p.id).includes(permission));
+    }
+    this.updateReportCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+  }
+
+
+  onLeaveAprRepChange(): void {
+    if (this.LeaveAprRepChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsLeaveAprRep.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissiionsLeaveAprRep.map(p => p.id).includes(permission));
+    }
+    this.updateReportCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
 
   }
 
@@ -7612,9 +8782,15 @@ this.Documentchecked = this.isDocumentMangementMasterChecked();
     ...this.GrouppermissionsApr,
     ...this.GrouppermissionsAprlvl,
     ...this.GrouppermissionsAtd,
-    ...this.GrouppermissionsSal,
+    ...this.GrouppermissionsExpDocument,
 
-    ...this.GrouppermissionsPay,
+    ...this.GrouppermissionsEmpOver,
+    ...this.GrouppermissionsEmpAprList,
+    ...this.GrouppermissionsEmpRegAprList,
+    ...this.GrouppermissionsEndofSer,
+    ...this.GrouppermissionsRegReq,
+    ...this.GrouppermissionsRegAprlvl,
+    ...this.GrouppermissionsGratuity,
 
 
 
@@ -7636,9 +8812,15 @@ this.Documentchecked = this.isDocumentMangementMasterChecked();
   this.updateAprMasterCheckbox();
   this.updateAprlvlMasterCheckbox();
   this.updateAtdMasterCheckbox();
-  this.updateSalMasterCheckbox();
+  this.updateExpDocumentCheckbox();
 
-  this.updatePayMasterCheckbox();
+  this.updateEmpOverCheckbox();
+  this.updateEmpAprListCheckbox();
+  this.updateEmpRegAprListCheckbox();
+  this.updateEndofSerCheckbox();
+  this.updateRegReqCheckbox();
+  this.updateRegAprlvlCheckbox();
+  this.updateGratuityCheckbox();
 
 
 
@@ -7696,7 +8878,12 @@ this.Documentchecked = this.isDocumentMangementMasterChecked();
       ...this.GrouppermissionsemployeeReport,
       ...this.GrouppermissionsdocumnetReport,
       ...this.GrouppermissiionsgeneralReport,
-      ...this.GrouppermissiionsLeaveReport
+      ...this.GrouppermissiionsLeaveReport,
+      ...this.GrouppermissiionsLeaveAprRep,
+      ...this.GrouppermissionsLeaveBalReport,
+      ...this.GrouppermissionsAttendReport,
+      ...this.GrouppermissionsAssetReport,
+      ...this.GrouppermissionsAssetTransReport,
 
     ].map(permission => permission.id);
   
@@ -7710,6 +8897,11 @@ this.Documentchecked = this.isDocumentMangementMasterChecked();
     this.updatedocReportCheckbox();
     this.updateGenReportCheckbox();
     this.updateLeaveReportCheckbox();
+    this.updateLeaveAprRepCheckbox();
+    this.updateLeaveBalReportCheckbox();
+    this.updateAttendReportCheckbox();
+    this.updateAssetReportCheckbox();
+    this.updateAssetTransReportCheckbox();
 
 
 
@@ -7956,8 +9148,20 @@ updateSelectAll(): void {
   this.updateAprMasterCheckbox();
   this.updateAprlvlMasterCheckbox();
   this.updateAtdMasterCheckbox();
-  this.updateSalMasterCheckbox();
-   this.updatePayMasterCheckbox();
+  this.updateExpDocumentCheckbox();
+  this.updateEmpOverCheckbox();
+  this.updateEmpAprListCheckbox();
+  this.updateEmpRegAprListCheckbox();
+  this.updateEndofSerCheckbox();
+  this.updateRegReqCheckbox();
+  this.updateRegAprlvlCheckbox();
+  this.updateGratuityCheckbox();
+
+
+
+
+
+
   this.updateEmployeeManagementCheckbox();
 
  
@@ -7996,6 +9200,11 @@ updateReport(): void {
   this.updatedocReportCheckbox();
   this.updateGenReportCheckbox();
   this.updateLeaveReportCheckbox();
+  this.updateLeaveAprRepCheckbox();
+  this.updateLeaveBalReportCheckbox();
+  this.updateAttendReportCheckbox();
+  this.updateAssetReportCheckbox();
+  this.updateAssetTransReportCheckbox();
 
 
   this.updateIndeterminateReports();
@@ -8120,7 +9329,12 @@ isReportInderminate(): boolean {
     ...this.GrouppermissionsemployeeReport,
     ...this.GrouppermissionsdocumnetReport,
     ...this.GrouppermissiionsgeneralReport,
-    ...this.GrouppermissiionsLeaveReport
+    ...this.GrouppermissiionsLeaveReport,
+    ...this.GrouppermissiionsLeaveAprRep,
+    ...this.GrouppermissionsLeaveBalReport,
+    ...this.GrouppermissionsAttendReport,
+    ...this.GrouppermissionsAssetReport,
+    ...this.GrouppermissionsAssetTransReport,
 
   ].some(permission => this.selectedPermissions.includes(permission.id));
 
