@@ -1049,6 +1049,23 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   }
 
+  getEmpAssetDetails(selectedSchema: string, empId: number): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/emp_asset/?schema=${selectedSchema}`;
+    return this.http.get(apiUrl);
+  }
+
+
+  
+  getEmpLoanDetails(selectedSchema: string, empId: number): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/emp_loan/?schema=${selectedSchema}`;
+    return this.http.get(apiUrl);
+  }
+
+  getEmpAdvSalaryDetails(selectedSchema: string, empId: number): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/emp_adv_salary/?schema=${selectedSchema}`;
+    return this.http.get(apiUrl);
+  }
+
 
 
   refreshDocumentList(notiId: number): Observable<any> {
@@ -1239,10 +1256,7 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
 
     getAssetDetails(employeeId: number): Observable<any> {
-    // return this.http.get<any>(`http://localhost:8000/api/Employee/${employeeId}/emp_family/`);
 
-    // const url = `${this.baseUrl}/Employee/${employeeId}/emp_family/`;
-    // return this.http.get(url);
 
 
     const selectedSchema = localStorage.getItem('selectedSchema');
@@ -4170,5 +4184,7 @@ registerGratuity(companyData: any): Observable<any> {
 
   
 }
+
+
 
 }
