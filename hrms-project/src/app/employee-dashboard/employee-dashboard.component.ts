@@ -6,6 +6,9 @@ import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorRes
 import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
+import { LeaveService } from '../leave-master/leave.service';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-employee-dashboard',
@@ -62,11 +65,16 @@ export class EmployeeDashboardComponent {
   emp_family_details: any[] | undefined;
 
 
+  selectedEmployeeId: number | null = null;
+
+
   constructor(private authService: AuthenticationService,
      private router: Router,
     private EmployeeService: EmployeeService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
+    private leaveService: LeaveService,
+
     ) { }
   
   // marginLeftValue = '200px';
@@ -89,7 +97,7 @@ export class EmployeeDashboardComponent {
   // 
   ngOnInit(): void {
 
-   
+    this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
     // Get the selected schema
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -97,9 +105,10 @@ export class EmployeeDashboardComponent {
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
     if (selectedSchema) {
+              this.LoadLeavetype(selectedSchema);
+
       // Construct the API URL with the selected schema
      //  const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/`;
-   
       // Fetch employees from the API
       this.EmployeeService.getEmployees(selectedSchema).subscribe(
         (data: any) => {
@@ -272,6 +281,7 @@ export class EmployeeDashboardComponent {
         
        }
    
+     
    
        handleImageError(event: any): void {
         // console.error('Error loading image:', event);
@@ -293,19 +303,42 @@ export class EmployeeDashboardComponent {
        return groupPermissions.some(permission => permission.codename === codeName);
      }
    
-     fetchDesignations(selectedSchema: string) {
-       this.EmployeeService.getemployees(selectedSchema).subscribe(
-         (data: any) => {
-           this.employees = data;
+    //  fetchDesignations(selectedSchema: string) {
+    //    this.EmployeeService.getemployees(selectedSchema).subscribe(
+    //      (data: any) => {
+    //        this.employees = data;
+    //       console.log('employee:', this.employees);
+    //      },
+    //      (error: any) => {
+    //        console.error('Error fetching categories:', error);
+    //      }
+    //    );
+    //  }
+   
+    fetchDesignations(selectedSchema: string) {
+      this.EmployeeService.getemployees(selectedSchema).subscribe(
+        (data: any) => {
+          this.employees = data;
           console.log('employee:', this.employees);
-         },
-         (error: any) => {
-           console.error('Error fetching categories:', error);
-         }
-       );
-     }
-   
-   
+    
+          if (this.employees.length === 1) {
+            this.selectedEmployeeId = this.employees[0].id;
+            console.log('Fetched Employee ID:', this.selectedEmployeeId);
+    
+            if (selectedSchema && this.selectedEmployeeId !== null) {
+              this.loadEmpAssetsDetails(selectedSchema, this.selectedEmployeeId);
+              this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
+              this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
+
+
+            }
+          }
+        },
+        (error: any) => {
+          console.error('Error fetching employee:', error);
+        }
+      );
+    }
   
  
    
@@ -317,18 +350,7 @@ export class EmployeeDashboardComponent {
    // }
     
    
-       loadEmployee(): void {
-         this.EmployeeService.getEmployee().subscribe(
-           (result: any) => {
-             this.Employees = result;
-             console.log(' fetching employees:');
      
-           },
-           (error) => {
-             console.error('Error fetching employees:', error);
-           }
-         );
-       }
 
 
       
@@ -371,6 +393,8 @@ export class EmployeeDashboardComponent {
     );
   }
   }
+
+
   redirectToExpiredDocuments(): void {
     this.router.navigate(['/main-sidebar/settings/document-expired']);
     this.expiredDocumentsCount = 0;
@@ -396,6 +420,288 @@ export class EmployeeDashboardComponent {
     
   }
 
+
+  activeTab: string = 'signup';  // default tab
+
+selectTab(tabName: string): void {
+  this.activeTab = tabName;
+}
+
+
+
+ activeTabNav: string = 'dashboard';  // default tab
+
+selectTabNav(tabNameNav: string): void {
+  this.activeTabNav = tabNameNav;
+}
+
+
+
+EmpAssets: any[] = [];
+
+loadEmpAssetsDetails(selectedSchema: string, empId: number): void {
+  this.EmployeeService.getEmpAssetDetails(selectedSchema, empId).subscribe(
+    (result: any) => {
+      this.EmpAssets = result;
+      console.log('Employee Assets:', this.EmpAssets);
+    },
+    (error) => {
+      console.error('Error fetching Employee Assets:', error);
+    }
+  );
+}
+
+EmpLoan: any[] = [];
+
+
+loadEmpLoanDetails(selectedSchema: string, empId: number): void {
+  this.EmployeeService.getEmpLoanDetails(selectedSchema, empId).subscribe(
+    (result: any) => {
+      this.EmpLoan = result;
+      console.log('Employee Assets:', this.EmpLoan);
+    },
+    (error) => {
+      console.error('Error fetching Employee EmpLoan:', error);
+    }
+  );
+}
+
+AdvSalary: any[] = [];
+
+loadEmpAdvSalaryDetails(selectedSchema: string, empId: number): void {
+  this.EmployeeService.getEmpAdvSalaryDetails(selectedSchema, empId).subscribe(
+    (result: any) => {
+      this.AdvSalary = result;
+      console.log('Employee AdvSalary:', this.AdvSalary);
+    },
+    (error) => {
+      console.error('Error fetching Employee AdvSalary:', error);
+    }
+  );
+}
+
+
+
+daysArray: number[] = [];
+
+
+
+year: any = '';
+month: any = '';
+
+// employee_id: any = '';
+
+
+
+attendanceData: any = null; // Define this at the class level
+
+// ✅ Generate Attendance Report
+generateAttendanceReport(): void {
+  // Check if employee ID is set
+  if (!this.year || !this.month || !this.selectedEmployeeId) {
+    alert('Please select Year, Month, and ensure Employee is loaded.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('year', this.year.toString());
+  formData.append('month', this.month.toString());
+  formData.append('employee_id', this.selectedEmployeeId.toString()); // ✅ automatically set employee ID
+
+  this.leaveService.CreateEmployeeattendance(formData).subscribe(
+    (response) => {
+      console.log('Report data received', response);
+      this.attendanceData = response[0]; // Assuming backend sends array
+    },
+    (error) => {
+      console.error('Error generating report', error);
+      alert('Failed to generate report. Please try again.');
+    }
+  );
+}
+
+  getStatusForDay(day: number, summary_data: any[]): string {
+    const entry = summary_data.find((d: { date: string }) => {
+      const dateObj = new Date(d.date);
+      return dateObj.getDate() === day;
+    });
+    return entry ? this.getShortStatus(entry.status) : '-';
+  }
   
+
+  getShortStatus(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'present': return 'P';
+      case 'absent': return 'A';
+      case 'leave': return 'L';
+      case 'holiday': return 'H';
+
+      default: return status;
+    }
+  }
+  
+
+  exportToExcel(): void {
+    const data: any[][] = [];
+  
+    const reportTitle = `Attendance Report - ${this.attendanceData.month} /${this.attendanceData.year}`;
+    const headerRow = ['Employee Name', ...this.daysArray, 'Present Days', 'Absent Days'];
+    const titleRow = [reportTitle];
+  
+    data.push(titleRow);
+    data.push([]); // spacing row
+    data.push(headerRow);
+  
+    const employeeRow: any[] = [this.attendanceData.employee_name];
+    for (let day of this.daysArray) {
+      const status = this.getStatusForDay(day, this.attendanceData.summary_data);
+      employeeRow.push(status);
+    }
+    employeeRow.push(this.attendanceData.total_present);
+    employeeRow.push(this.attendanceData.total_absent);
+    data.push(employeeRow);
+  
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
+  
+    // Merge title row
+    const mergeRef = XLSX.utils.encode_range({
+      s: { r: 0, c: 0 },
+      e: { r: 0, c: headerRow.length - 1 }
+    });
+    if (!worksheet['!merges']) worksheet['!merges'] = [];
+    worksheet['!merges'].push(XLSX.utils.decode_range(mergeRef));
+  
+    // Apply center style to merged title
+    worksheet['A1'].s = {
+      alignment: { horizontal: 'center', vertical: 'center' },
+      font: { bold: true, sz: 14 }
+    };
+  
+    // Apply styles to "Absent" or "A" cells
+    const dataRowIndex = 3; // since it's the 4th row (0-indexed)
+    for (let col = 1; col <= this.daysArray.length; col++) {
+      const cellRef = XLSX.utils.encode_cell({ r: dataRowIndex, c: col });
+      const cell = worksheet[cellRef];
+      if (cell && (cell.v === 'Absent' || cell.v === 'A')) {
+        cell.s = {
+          font: { color: { rgb: "FF0000" }, bold: true },
+          alignment: { horizontal: "center" }
+        };
+      }
+    }
+  
+    // Create workbook and save
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Attendance Report': worksheet },
+      SheetNames: ['Attendance Report']
+    };
+  
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+      cellStyles: true // Important for styles to apply
+    });
+  
+    const fileData: Blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+  
+    FileSaver.saveAs(
+      fileData,
+      `Attendance_Report_${this.attendanceData.employee_name}_${this.attendanceData.month}_${this.attendanceData.year}.xlsx`
+    );
+  }
+
+  selectedRequestId: number | null = null; // Property to track the selected leave request ID
+
+  selectRequest(requestId: number) {
+    this.selectedRequestId = requestId === this.selectedRequestId ? null : requestId; // Toggle the selected request
+  }
+
+
+
+
+
+
+  start_date:any='';
+  end_date:any='';
+  note:any='';
+  reason:any='';                  
+
+  status:any='';
+  applied_on:any='';
+  approved_by:any='';
+  approved_on:any='';
+  half_day_period:any='' ;
+  leave_type:any='' ;
+  dis_half_day: boolean = false;
+
+
+
+
+
+  requestLeave(): void {
+
+    // if (!this.name || !this.code || !this.valid_to) {
+    //   return;
+    // }
+
+     if (!this.start_date || !this.end_date || this.leave_type ||!this.selectedEmployeeId) {
+    alert('Please select Year, Month, and ensure Employee is loaded.');
+    return;
+  }
+
+  
+    const formData = new FormData();
+    formData.append('start_date', this.start_date);
+    formData.append('end_date', this.end_date);
+    formData.append('reason', this.reason);
+    formData.append('status', this.status);
+    formData.append('approved_by', this.approved_by);
+    // formData.append('approved_on', this.approved_on);
+
+    formData.append('dis_half_day', this.dis_half_day.toString());
+
+    formData.append('half_day_period', this.half_day_period);
+    formData.append('leave_type', this.leave_type);
+    formData.append('employee', this.selectedEmployeeId.toString());
+
+   
+
+    
+  
+  
+    this.leaveService.requestLeaveAdmin(formData).subscribe(
+      (response) => {
+        console.log('Registration successful', response);
+
+
+        alert('Leave Request   has been Sent');
+
+        window.location.reload();
+      },  
+      (error) => {
+        console.error('Added failed', error);
+        alert('Enter all required fields!');
+      }
+    );
+  }
+
+
+  LeaveTypes: any[] = [];
+
+    
+  LoadLeavetype(selectedSchema: string) {
+    this.leaveService.getLeaveType(selectedSchema).subscribe(
+      (data: any) => {
+        this.LeaveTypes = data;
+      
+        console.log('LeaveTypes:', this.LeaveTypes);
+      },
+      (error: any) => {
+        console.error('Error fetching categories:', error);
+      }
+    );
+  }
 
 }
