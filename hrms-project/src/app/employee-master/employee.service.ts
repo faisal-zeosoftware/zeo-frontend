@@ -1066,7 +1066,10 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
   }
 
-
+  getEmpLeaveBalance(selectedSchema: string, empId: number): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/leave_balance/?schema=${selectedSchema}`;
+    return this.http.get(apiUrl);
+  }
 
   refreshDocumentList(notiId: number): Observable<any> {
     const url = `${this.baseUrl}/notification/${notiId}`;

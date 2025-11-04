@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { LeaveService } from '../leave-master/leave.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-employee-dashboard',
@@ -74,6 +75,7 @@ export class EmployeeDashboardComponent {
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private leaveService: LeaveService,
+    private DepartmentServiceService: DepartmentServiceService 
 
     ) { }
   
@@ -97,6 +99,13 @@ export class EmployeeDashboardComponent {
   // 
   ngOnInit(): void {
 
+    this.loadRequestType();
+
+    this.loadLAsset();
+    this.loadLAssetType();
+    this.loadLoanTypes();
+
+
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
     // Get the selected schema
@@ -105,7 +114,7 @@ export class EmployeeDashboardComponent {
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
     if (selectedSchema) {
-              this.LoadLeavetype(selectedSchema);
+              // this.LoadLeavetype(selectedSchema);
 
       // Construct the API URL with the selected schema
      //  const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/`;
@@ -282,6 +291,7 @@ export class EmployeeDashboardComponent {
        }
    
      
+       
    
        handleImageError(event: any): void {
         // console.error('Error loading image:', event);
@@ -329,6 +339,7 @@ export class EmployeeDashboardComponent {
               this.loadEmpAssetsDetails(selectedSchema, this.selectedEmployeeId);
               this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
               this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
+              this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
 
 
             }
@@ -480,6 +491,30 @@ loadEmpAdvSalaryDetails(selectedSchema: string, empId: number): void {
   );
 }
 
+LeaveTypes: any[] = [];
+
+
+loadEmpLeaveBalance(selectedSchema: string, empId: number): void {
+  this.EmployeeService.getEmpLeaveBalance(selectedSchema, empId).subscribe(
+    (result: any) => {
+      console.log('Raw leave balance result:', result);
+
+      // ✅ Combine data — only take leave types with balance > 0
+      if (result && result.leave_balance && Array.isArray(result.leave_balance)) {
+        this.LeaveTypes = result.leave_balance.filter(
+          (item: any) => item.balance > 0 // show only leaves with balance
+        );
+
+        console.log('Filtered LeaveTypes (with balance):', this.LeaveTypes);
+      } else {
+        this.LeaveTypes = [];
+      }
+    },
+    (error) => {
+      console.error('Error fetching Employee Leave Balance:', error);
+    }
+  );
+}
 
 
 daysArray: number[] = [];
@@ -619,6 +654,11 @@ generateAttendanceReport(): void {
   }
 
 
+  isRequestsDropdownOpen = false;
+
+toggleRequestsDropdown() {
+  this.isRequestsDropdownOpen = !this.isRequestsDropdownOpen;
+}
 
 
 
@@ -638,48 +678,395 @@ generateAttendanceReport(): void {
 
 
 
-
-
   requestLeave(): void {
-
-    // if (!this.name || !this.code || !this.valid_to) {
-    //   return;
-    // }
-
-     if (!this.start_date || !this.end_date || this.leave_type ||!this.selectedEmployeeId) {
-    alert('Please select Year, Month, and ensure Employee is loaded.');
-    return;
-  }
-
+    if (!this.selectedEmployeeId) {
+      alert('Please ensure Employee is loaded.');
+      return;
+    }
+  
+    // ✅ Convert to proper YYYY-MM-DD format manually
+    const formattedStartDate = this.convertToDateString(this.start_date);
+    const formattedEndDate = this.convertToDateString(this.end_date);
+  
+    console.log('Formatted Start Date:', formattedStartDate);
+    console.log('Formatted End Date:', formattedEndDate);
   
     const formData = new FormData();
-    formData.append('start_date', this.start_date);
-    formData.append('end_date', this.end_date);
-    formData.append('reason', this.reason);
-    formData.append('status', this.status);
-    formData.append('approved_by', this.approved_by);
-    // formData.append('approved_on', this.approved_on);
-
+    formData.append('start_date', formattedStartDate);
+    formData.append('end_date', formattedEndDate);
+    formData.append('reason', this.reason || '');
+    formData.append('status', this.status || '');
+    formData.append('approved_by', this.approved_by || '');
     formData.append('dis_half_day', this.dis_half_day.toString());
-
-    formData.append('half_day_period', this.half_day_period);
-    formData.append('leave_type', this.leave_type);
+    formData.append('half_day_period', this.half_day_period || '');
+    formData.append('leave_type', this.leave_type.toString());
     formData.append('employee', this.selectedEmployeeId.toString());
-
-   
-
-    
   
+    console.log('FormData:');
+    formData.forEach((v, k) => console.log(k, v));
   
     this.leaveService.requestLeaveAdmin(formData).subscribe(
       (response) => {
-        console.log('Registration successful', response);
-
-
-        alert('Leave Request   has been Sent');
-
+        console.log('Leave request successful:', response);
+        alert('✅ Leave request has been sent successfully!');
         window.location.reload();
-      },  
+      },
+      (error) => {
+        console.error('❌ Leave request failed:', error);
+  
+        // ✅ If backend sent validation errors, show them clearly
+        if (error.error) {
+          let errorMsg = '';
+  
+          // Handle field-specific errors
+          for (const key in error.error) {
+            if (Array.isArray(error.error[key])) {
+              errorMsg += `${key}: ${error.error[key].join(', ')}\n`;
+            } else if (typeof error.error[key] === 'string') {
+              errorMsg += `${key}: ${error.error[key]}\n`;
+            }
+          }
+  
+          if (errorMsg) {
+            alert(`⚠️ Please fix the following errors:\n\n${errorMsg}`);
+          } else {
+            alert('⚠️ Error submitting leave request. Please check all fields.');
+          }
+        } else {
+          alert('⚠️ Server error. Please try again later.');
+        }
+      }
+    );
+  }
+  
+  // ✅ Utility to force YYYY-MM-DD format
+  convertToDateString(dateInput: any): string {
+    if (!dateInput) return '';
+  
+    if (typeof dateInput === 'string' && dateInput.includes('-')) {
+      // Already in YYYY-MM-DD format
+      return dateInput;
+    }
+  
+    const date = new Date(dateInput);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+
+// doc_number: any = '';
+document_number: number | null = null;
+total: any = '';
+branch: any = '';
+request_type: any = '';
+created_by: any = '';
+approved:  boolean = false;
+
+
+automaticNumbering: boolean = false;
+
+remarks: string = '';
+request_document: File | null = null;
+
+
+
+registerGeneralreq(): void {
+  if (!this.selectedEmployeeId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
+  const formData = new FormData();
+
+  formData.append('document_number', this.document_number?.toString() || '');
+  formData.append('reason', this.reason || '');
+  formData.append('total', this.total?.toString() || '');
+  formData.append('request_type', this.request_type || '');
+  formData.append('employee', this.selectedEmployeeId.toString());
+  // formData.append('created_by', this.created_by || '');
+  formData.append('approved', this.approved ? 'true' : 'false');
+  formData.append('remarks', this.remarks || '');
+
+  if (this.request_document) {
+    formData.append('request_document', this.request_document);
+  }
+
+  this.EmployeeService.registerGeneralReq(formData).subscribe(
+    (response) => {
+      alert('✅ General request has been added successfully!');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('General request failed:', error);
+
+      // ✅ Backend error handler
+      if (error.error) {
+        let errorMsg = '';
+
+        if (typeof error.error === 'string') {
+          // If backend sends plain text
+          errorMsg = error.error;
+        } 
+        else if (typeof error.error === 'object') {
+          // If backend sends JSON (like {"field": ["msg"]})
+          for (const key in error.error) {
+            if (error.error.hasOwnProperty(key)) {
+              const msg = Array.isArray(error.error[key])
+                ? error.error[key].join(', ')
+                : error.error[key];
+              errorMsg += `${key}: ${msg}\n`;
+            }
+          }
+        }
+
+        alert(`❌ Error submitting request:\n${errorMsg || 'Unknown error occurred.'}`);
+      } else {
+        alert('❌ Failed to submit request. Please check all required fields.');
+      }
+    }
+  );
+}
+
+    
+          onFileChange(event: any) {
+            const file = event.target.files[0];
+            if (file) {
+              this.request_document = file;
+            }
+          }
+
+          
+selectedSalaryComponent: string | null = null;
+
+onRequestTypeChange(event: any): void {
+  const selectedId = +event.target.value;
+  const selectedReq = this.RequestType.find((r: any) => r.id === selectedId);
+
+  if (selectedReq) {
+    this.selectedSalaryComponent = selectedReq.salary_component;
+    console.log('Selected salary_component:', this.selectedSalaryComponent);
+  } else {
+    this.selectedSalaryComponent = null;
+  }
+}
+
+
+RequestType:any []=[];
+
+
+
+loadRequestType(): void {
+    
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.DepartmentServiceService.getReqType(selectedSchema).subscribe(
+      (result: any) => {
+        this.RequestType = result;
+        console.log(' fetching Companies:');
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
+
+
+
+ 
+  asset_type: any = '';
+  requested_asset: any = '';
+
+  CreateAssetType(): void {
+    const companyData = {
+      reason: this.reason,
+    
+      // status:this.status,
+      employee:this.selectedEmployeeId,
+      asset_type:this.asset_type,
+      requested_asset:this.requested_asset,
+
+      // Add other form field values to the companyData object
+    };
+  
+
+    this.EmployeeService.registerAssetRequest(companyData).subscribe(
+      (response) => {
+        console.log('Registration successful', response);
+      
+            alert('Asset request has been added ');
+            window.location.reload();
+            // window.location.reload();
+       
+
+      },
+      (error) => {
+        console.error('Added failed', error);
+        alert('enter all field!')
+        // Handle the error appropriately, e.g., show a user-friendly error message.
+      }
+    );
+  }
+
+  Assets:any []=[];
+
+
+  loadLAsset(): void {
+    
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.EmployeeService.getAsset(selectedSchema).subscribe(
+        (result: any) => {
+          this.Assets = result;
+          console.log(' fetching Loantypes:');
+  
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
+  
+    AssetTypes:any []=[];
+
+     
+    loadLAssetType(): void {
+    
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    
+      console.log('schemastore',selectedSchema )
+      // Check if selectedSchema is available
+      if (selectedSchema) {
+        this.EmployeeService.getAssetType(selectedSchema).subscribe(
+          (result: any) => {
+            this.AssetTypes = result;
+            console.log(' fetching Loantypes:');
+    
+          },
+          (error) => {
+            console.error('Error fetching Companies:', error);
+          }
+        );
+      }
+      }
+
+
+    
+      requested_amount: any = '';
+   
+    
+      rejection_reason: any = '';
+    
+      pause_start_date: any = '';
+    
+      resume_date: any = '';
+    
+      pause_reason: any = '';
+    
+    
+      is_compensatory: boolean = false;
+
+      SetLeaveApprovaLevel(): void {
+        // if (!this.name || !this.code || !this.valid_to) {
+        //   return;
+        // }
+        if (!this.selectedEmployeeId) {
+          alert('Please ensure Employee is loaded.');
+          return;
+        }
+    
+        const formData = new FormData();
+        formData.append('reason', this.reason);
+    
+        formData.append('document_number', this.document_number?.toString() || '');
+
+    
+    
+        formData.append('remarks', this.remarks);
+    
+        formData.append('requested_amount', this.requested_amount);
+        formData.append('employee', this.selectedEmployeeId.toString());
+        formData.append('created_by', this.created_by);
+    
+    
+    
+    
+    
+    
+        this.leaveService.CreateAdvSalaryRequest(formData).subscribe(
+          (response) => {
+            console.log('Registration successful', response);
+    
+    
+            alert('Advanced salary Request  has been Sent');
+    
+            window.location.reload();
+          },
+          (error) => {
+            console.error('Added failed', error);
+            alert('Enter all required fields!');
+          }
+        );
+      }
+
+
+
+
+
+
+      
+  amount_requested:any='';
+  repayment_period:any='';
+  emi_amount:any='';
+  disbursement_date:any='';
+  remaining_balance:any='';
+  // approved_on:any='';
+
+ 
+  loan_type:any='';
+
+  CreateLoanApplication(): void {
+  
+    if (!this.selectedEmployeeId) {
+      alert('Please ensure Employee is loaded.');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('amount_requested', this.amount_requested);
+    formData.append('repayment_period', this.repayment_period);
+    formData.append('emi_amount', this.emi_amount);
+    // formData.append('disbursement_date', this.disbursement_date );
+    formData.append('remaining_balance', this.remaining_balance);
+    // formData.append('approved_on', this.approved_on);
+    // formData.append('rejection_reason', this.rejection_reason);
+
+
+    
+    formData.append('pause_start_date', this.pause_start_date);
+    formData.append('resume_date', this.resume_date );
+    formData.append('pause_reason', this.pause_reason);
+    formData.append('employee', this.selectedEmployeeId.toString());
+    formData.append('loan_type', this.loan_type);
+
+
+  
+    this.EmployeeService.registerLoanApplication(formData).subscribe(
+      (response) => {
+        console.log('Registration successful', response);
+        alert('Loan application has been added');
+        window.location.reload();
+      },
       (error) => {
         console.error('Added failed', error);
         alert('Enter all required fields!');
@@ -687,21 +1074,28 @@ generateAttendanceReport(): void {
     );
   }
 
+  LoanTypes:any[]=[];
 
-  LeaveTypes: any[] = [];
-
+  loadLoanTypes(): void {
     
-  LoadLeavetype(selectedSchema: string) {
-    this.leaveService.getLeaveType(selectedSchema).subscribe(
-      (data: any) => {
-        this.LeaveTypes = data;
-      
-        console.log('LeaveTypes:', this.LeaveTypes);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
-  }
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.EmployeeService.getLoanTypes(selectedSchema).subscribe(
+        (result: any) => {
+          this.LoanTypes = result;
+          console.log(' fetching Loantypes:');
+  
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
+
+  
 
 }

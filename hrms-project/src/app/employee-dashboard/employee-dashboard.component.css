@@ -347,6 +347,7 @@ body {
     color: #ffffff;
     background: #293a4b !important;
     white-space: nowrap;
+    text-transform: capitalize;
   }
 
   
@@ -369,5 +370,11 @@ body {
     padding: 30px;
     margin-top: 20px;
     border-radius: 10px;
+
+  }
+
+
+  .drop-nav-emp a{
+    font-size: 12px;
 
   }
