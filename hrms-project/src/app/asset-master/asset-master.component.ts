@@ -138,28 +138,33 @@ this.loadFormFieldsFam();
   
                 if (firstItem.is_superuser) {
                   console.log('User is superuser according to permissions API');
+
                   // Grant all permissions
                   this.hasViewPermission = true;
                   this.hasAddPermission = true;
                   this.hasDeletePermission = true;
                   this.hasEditPermission = true;
+
                 } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                   const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                   console.log('Group Permissions:', groupPermissions);
-  
-                 
-                  this.hasAddPermission = this.checkGroupPermission('add_requesttype', groupPermissions);
-                  console.log('Has add permission:', this.hasAddPermission);
+
+
+                  // AssetMaster
+
+                this.hasAddPermission = this.checkGroupPermission('add_asset', groupPermissions);
+                console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_requesttype', groupPermissions);
-                  console.log('Has edit permission:', this.hasEditPermission);
+                this.hasEditPermission = this.checkGroupPermission('change_asset', groupPermissions);
+                console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_requesttype', groupPermissions);
-                 console.log('Has delete permission:', this.hasDeletePermission);
-    
+                this.hasDeletePermission = this.checkGroupPermission('delete_asset', groupPermissions);
+                console.log('Has delete permission:', this.hasDeletePermission);
   
-                  this.hasViewPermission = this.checkGroupPermission('view_requesttype', groupPermissions);
-                  console.log('Has view permission:', this.hasViewPermission);
+                this.hasViewPermission = this.checkGroupPermission('view_asset', groupPermissions);
+                console.log('Has view permission:', this.hasViewPermission);
+
+
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);
                 }

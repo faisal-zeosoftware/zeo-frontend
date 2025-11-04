@@ -35,7 +35,7 @@ export class LoanRepaymentComponent {
 
   selectedFile!: File | null;
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -113,22 +113,24 @@ private employeeService: EmployeeService,
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
+
+
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_leave_type', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_loanrepayment', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_leave_type', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_loanrepayment', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_leave_type', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_loanrepayment', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leave_type', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_loanrepayment', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     
@@ -158,23 +160,7 @@ private employeeService: EmployeeService,
       );
   }
 }
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leave_type' ||'change_leave_type' ||'delete_leave_type' ||'view_leave_type';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
+
   
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {

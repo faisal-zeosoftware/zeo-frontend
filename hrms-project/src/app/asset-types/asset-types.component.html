@@ -1,4 +1,4 @@
-<div class="container" >
+<div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
 
         <div class="header_section">
@@ -24,6 +24,7 @@
                              <mat-icon>draw
                         </mat-icon></span> Edit</button>
                         <span *ngIf="hasEditPermission"></span>
+                        
                         <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
                             <span class="header-btn-icon">
                                 <mat-icon> delete

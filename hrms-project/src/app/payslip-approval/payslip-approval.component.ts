@@ -154,17 +154,17 @@ export class PayslipApprovalComponent {
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_leaveapproval', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_payslipapproval', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_leaveapproval', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_payslipapproval', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_leaveapproval', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_payslipapproval', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leaveapproval', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_payslipapproval', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     
@@ -306,6 +306,7 @@ approveSelectedPayslips(): void {
   this.EmployeeService.bulkApprovePayslips(selectedSchema, selectedIds, note).subscribe(
     (res) => {
       alert('Selected payslips approved.');
+      window.location.reload();
       this.fetchingApprovals(); // refresh list
     },
     (err) => {
@@ -382,10 +383,11 @@ scrollToBottom(): void {
       this.EmployeeService.approveApprovalRequest(apiUrl, approvalData).subscribe(
         (response: any) => {
         console.log('Approval status changed to Approved:', response);
-         this.fetchingApprovals();
+        alert('Approval status Approved')
         // Update the selected approval status in the local UI
         if (this.selectedApproval) {
           this.selectedApproval.status = 'Approved';
+        
         }
 
         // Optionally, update the main approvals list if needed

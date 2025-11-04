@@ -32,7 +32,7 @@ export class AdvanceSalaryApprovalLevelComponent {
 
   selectedFile!: File | null;
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -121,17 +121,17 @@ private employeeService: EmployeeService,
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_leave_type', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_advancecommonworkflow', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_leave_type', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_advancecommonworkflow', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_leave_type', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_advancecommonworkflow', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leave_type', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_advancecommonworkflow', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     

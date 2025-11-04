@@ -139,18 +139,18 @@ this.loadEmployees();
                   console.log('Group Permissions:', groupPermissions);
   
                  
-                  this.hasAddPermission = this.checkGroupPermission('add_requesttype', groupPermissions);
-                  console.log('Has add permission:', this.hasAddPermission);
+                 this.hasAddPermission = this.checkGroupPermission('add_assetallocation', groupPermissions);
+                console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_requesttype', groupPermissions);
-                  console.log('Has edit permission:', this.hasEditPermission);
+                this.hasEditPermission = this.checkGroupPermission('change_assetallocation', groupPermissions);
+                console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_requesttype', groupPermissions);
-                 console.log('Has delete permission:', this.hasDeletePermission);
-    
+                this.hasDeletePermission = this.checkGroupPermission('delete_assetallocation', groupPermissions);
+                console.log('Has delete permission:', this.hasDeletePermission);
   
-                  this.hasViewPermission = this.checkGroupPermission('view_requesttype', groupPermissions);
-                  console.log('Has view permission:', this.hasViewPermission);
+                this.hasViewPermission = this.checkGroupPermission('view_assetallocation', groupPermissions);
+                console.log('Has view permission:', this.hasViewPermission);
+                
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);
                 }

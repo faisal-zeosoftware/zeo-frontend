@@ -24,15 +24,17 @@ export class AttendaceMarkingComponent {
 
   shift: any = '';
 
-  Employees: any[] = [];
-  userId: number | null | undefined;
+Employees: any[] = [];
+userId: number | null | undefined;
 userDetails: any;
 userDetailss: any;
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
+
+
 schemas: string[] = []; // Array to store schema names
 
 

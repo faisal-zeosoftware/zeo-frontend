@@ -800,8 +800,10 @@ confirmSelectedPayslips() {
         p.selected = false;
       }
       this.masterSelected = false;
-      alert('Selected payslips confirmed successfully.');
+      alert('Selected payslips confirmed successfully.')
+        window.location.reload();
     },
+    
     (error: any) => {
       console.error('Error confirming payslips:', error);
       alert('Failed to confirm payslips.');

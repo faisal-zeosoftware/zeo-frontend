@@ -325,51 +325,41 @@ if (selectedSchema) {
       );
     }
 
-
-       
-    registerAnnouncement(): void {
-      this.registerButtonClicked = true;
-      
-      const companyData = {
-        title: this.title,
-      
-        message:this.message,
-        send_email: this.send_email,
-  
-        is_sticky: this.is_sticky,
-      
-        schedule_at: this.schedule_at,
-
-        expires_at: this.expires_at,
-
-        allow_comments: this.allow_comments,
-        specific_employees: this.specific_employees,
-        branches: this.branches,
-
-        created_by: this.created_by,
-
-        // Add other form field values to the companyData object
-      };
     
-  
-      this.employeeService.registerAnnouncement(companyData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-        
-              alert('Approvel Level Assigned ');
-              window.location.reload();
-              // window.location.reload();
-         
-  
-        },
-        (error) => {
-          console.error('Added failed', error);
-          alert('enter all field!')
-          // Handle the error appropriately, e.g., show a user-friendly error message.
-        }
-      );
+isLoading: boolean = false;
+
+registerAnnouncement(): void {
+  this.registerButtonClicked = true;
+  this.isLoading = true; // start loader ✅
+
+  const companyData = {
+    title: this.title,
+    message: this.message,
+    send_email: this.send_email,
+    is_sticky: this.is_sticky,
+    schedule_at: this.schedule_at,
+    expires_at: this.expires_at,
+    allow_comments: this.allow_comments,
+    specific_employees: this.specific_employees,
+    branches: this.branches,
+    created_by: this.created_by,
+  };
+
+  this.employeeService.registerAnnouncement(companyData).subscribe(
+    (response) => {
+      this.isLoading = false; // stop loader ✅
+      alert('Approval Level Assigned');
+      console.log('Registration successful', response);
+      window.location.reload();
+    },
+    (error) => {
+      this.isLoading = false; // stop loader even on error ✅
+      console.error('Added failed', error);
+      alert('Please fill all required fields!');
     }
-  
+  );
+}
+
 
 
     onFileChange(event: any) {

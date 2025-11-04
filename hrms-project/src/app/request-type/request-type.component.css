@@ -94,6 +94,9 @@ margin-right: 10px;
   width: 25px;
 }
 
+table thead th {
+  color: white;
+}
 
 
 
@@ -146,6 +149,10 @@ margin-right: 10px;
   font-weight: 600;
   font-family: math;
 }
+
+
+
+
 
 
       /* Phones */

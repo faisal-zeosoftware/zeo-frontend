@@ -33,10 +33,12 @@ export class LoanApprovalComponent {
   Approvals: any[] = []; // Assuming this array holds the list of expired documents
 
   RejectionResons: any[] = []; // Assuming this array holds the list of expired documents
-  hasAddPermission: boolean = false;
-  hasDeletePermission: boolean = false;
+
+
+  // hasAddPermission: boolean = false;
+  // hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
-  hasEditPermission: boolean = false;
+  // hasEditPermission: boolean = false;
 
   Employees: any[] = [];
 
@@ -119,9 +121,9 @@ export class LoanApprovalComponent {
             
             // Grant all permissions
             this.hasViewPermission = true;
-            this.hasAddPermission = true;
-            this.hasDeletePermission = true;
-            this.hasEditPermission = true;
+            // this.hasAddPermission = true;
+            // this.hasDeletePermission = true;
+            // this.hasEditPermission = true;
         
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
@@ -144,25 +146,26 @@ export class LoanApprovalComponent {
                     console.log('User is superuser according to permissions API');
                     // Grant all permissions
                     this.hasViewPermission = true;
-                    this.hasAddPermission = true;
-                    this.hasDeletePermission = true;
-                    this.hasEditPermission = true;
+                    // this.hasAddPermission = true;
+                    // this.hasDeletePermission = true;
+                    // this.hasEditPermission = true;
+                    
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_leaveapproval', groupPermissions);
-                    console.log('Has add permission:', this.hasAddPermission);
+                  //   this.hasAddPermission = this.checkGroupPermission('add_loanapproval', groupPermissions);
+                  //   console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_leaveapproval', groupPermissions);
-                    console.log('Has edit permission:', this.hasEditPermission);
+                  //   this.hasEditPermission = this.checkGroupPermission('change_loanapproval', groupPermissions);
+                  //   console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_leaveapproval', groupPermissions);
-                   console.log('Has delete permission:', this.hasDeletePermission);
+                  //  this.hasDeletePermission = this.checkGroupPermission('delete_loanapproval', groupPermissions);
+                  //  console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leaveapproval', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_loanapproval', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     

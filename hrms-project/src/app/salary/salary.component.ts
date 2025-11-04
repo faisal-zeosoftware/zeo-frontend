@@ -428,6 +428,7 @@ if (this.userId !== null) {
             alert('Salary Component has been added');
             this.resetFormEmp();
             this.LoadEmployeeSalaryCom(localStorage.getItem('selectedSchema') || '');
+            window.location.reload();
           },
           (error) => {
             console.error('Add failed', error);

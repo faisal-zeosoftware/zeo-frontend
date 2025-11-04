@@ -55,7 +55,7 @@ export class AdvanceSalaryRequestComponent {
   DocType: any[] = [];
 
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -147,17 +147,17 @@ this.userDetails = this.created_by;
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_leaveapprovallevels', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_advancesalaryrequest', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_leaveapprovallevels', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_advancesalaryrequest', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_leaveapprovallevels', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_advancesalaryrequest', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_leaveapprovallevels', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_advancesalaryrequest', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 
@@ -168,8 +168,7 @@ this.userDetails = this.created_by;
               console.error('Permissions data is not an array or is empty.', permissionsData);
             }
 
-            // Fetching designations after checking permissions
-            // this.fetchDesignations(selectedSchema);
+
           }
           
           catch (error) {

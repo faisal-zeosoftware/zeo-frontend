@@ -1,5 +1,5 @@
-<div class="container">
-    <div class="comapny_section" *ngIf="hasViewPermission">
+<div class="container"  *ngIf="hasViewPermission">
+    <div class="comapny_section">
 
       <div class="header_section">
 
@@ -14,7 +14,7 @@
             </div>
             <div class="col-md-5">
               <div class="button-group pull-right">
-                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission" ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
                   </span> Create</button>
                   <span *ngIf="!hasAddPermission"></span>
 

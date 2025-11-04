@@ -2484,6 +2484,39 @@
   </div>
 </div>
 
+
+            <div class="col-md-3">
+               <span class="">
+     <mat-checkbox [(ngModel)]="LoanRepayChecked"
+      [indeterminate]="isLoanRepayIndeterminate()"
+      (change)="onLoanRepayChange()"
+      [ngModelOptions]="{standalone: true}">
+      Loan Repayment
+    </mat-checkbox>
+  </span><br>
+</div>
+
+<div class="col-md-9">
+  <div class="selection_checkmark_sec">
+    <div class="all_selection_Sec">
+      <div class="row">
+        <div class="col-md-2" *ngFor="let permission of GrouppermissionsLoanRepay">
+          <h2>
+            <span>
+              <mat-checkbox
+                [value]="permission.id"
+                (change)="onCheckboxChangesLoanRepay(permission.id)"
+                [checked]="selectedPermissions.includes(permission.id)">
+                {{ getDisplayNameLoanRepay(permission.codename) }}
+              </mat-checkbox>
+            </span>
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
                   
 
                 <div class="col-md-3">
@@ -3231,10 +3264,9 @@
         
                   </div>
         
-                  <div class="col-md-2">
-                      <button type="button" (click)="createGroup()" class="btn btn-primary btn-full">Save Group</button>
-        
-                  </div>
+          <div class="col-md-2">
+         <button type="button" (click)="createGroup()" class="btn btn-primary btn-full">Save Group</button>
+         </div>
                 </div>
         
 

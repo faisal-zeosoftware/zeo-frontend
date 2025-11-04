@@ -13,8 +13,12 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 export class LoanSidebarComponent {
 
   
-  hasViewPermissionSalary: boolean = false;
-  hasViewPermissionPayroll: boolean = false;
+  hasViewPermissionLoanType: boolean = false;
+  hasViewPermissionLoanRepayment: boolean = false; 
+  hasViewPermissionLoanApprovals: boolean = false;
+  hasViewPermissionLoanApprovalLevel: boolean = false;
+  hasViewPermissionLoanApplication: boolean = false;
+
 
 
   userId: number | null | undefined;
@@ -74,8 +78,12 @@ export class LoanSidebarComponent {
         if (isSuperuser) {
           console.log('User is superuser or ESS user');
           // Grant all permissions
-          this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+     
+          this.hasViewPermissionLoanType = true;
+          this.hasViewPermissionLoanRepayment = true;
+          this.hasViewPermissionLoanApprovals = true;
+          this.hasViewPermissionLoanApplication = true;
+          this.hasViewPermissionLoanApprovalLevel = true;
        
   
   
@@ -100,8 +108,12 @@ export class LoanSidebarComponent {
                 if (firstItem.is_superuser) {
                   console.log('User is superuser according to permissions API');
                   // Grant all permissions
-                  this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+              
+                  this.hasViewPermissionLoanType = true;
+                  this.hasViewPermissionLoanRepayment = true;
+                  this.hasViewPermissionLoanApprovals = true;
+                  this.hasViewPermissionLoanApplication = true;
+                  this.hasViewPermissionLoanApprovalLevel = true;
                  
   
   
@@ -112,11 +124,22 @@ export class LoanSidebarComponent {
   
               
                        
-                       this.hasViewPermissionSalary = this.checkGroupPermission('view_salarycomponent', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionSalary);
+                       this.hasViewPermissionLoanType = this.checkGroupPermission('view_loantype', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLoanType);
+
+                       this.hasViewPermissionLoanApprovals = this.checkGroupPermission('view_loanapproval', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLoanApprovals);
+
+                       this.hasViewPermissionLoanApprovalLevel = this.checkGroupPermission('view_loancommonworkflow', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLoanApprovalLevel);
+
+                       this.hasViewPermissionLoanApplication = this.checkGroupPermission('view_loanapplication', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLoanApplication);
+
+                       this.hasViewPermissionLoanRepayment = this.checkGroupPermission('view_loanrepayment', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLoanRepayment);
                       
-                       this.hasViewPermissionPayroll = this.checkGroupPermission('view_payrollrun', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionPayroll);
+
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);
@@ -146,35 +169,17 @@ export class LoanSidebarComponent {
   } else {
     console.error('User ID is null.');
   }
-  
-  
-  
-  
-  
-  
+ 
     }
   
   
    
   
     
-  
-    
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);
     }
   
-
-
-
-
-
-
-
-
-
-
-
 
 
 

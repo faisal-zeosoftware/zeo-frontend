@@ -204,15 +204,26 @@
             </div>
 
 
-            <div class="row">
-                <div class="col-md-10">
-    
-                </div>
-    
-                <div class="col-md-2">
-                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerAnnouncement()">Save</button>  
-                 </div>
-            </div>
+      <div class="row">
+            <div class="col-md-10"></div>
+
+               <div class="col-md-2">
+      <button
+      type="button"
+      class="btn-Create btn-full mt-5 btn-success btn"
+      (click)="registerAnnouncement()"
+      [disabled]="isLoading"
+    >
+      {{ isLoading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+
+  <!-- Loader -->
+  <div class="loader-container" [class.show]="isLoading">
+    <div class="loader"></div>
+  </div>
+</div>
+
             
        
     </form>

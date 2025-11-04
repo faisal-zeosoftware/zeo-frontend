@@ -34,6 +34,7 @@ export class AdvanceSalaryApprovalsComponent {
   Approvals: any[] = []; // Assuming this array holds the list of expired documents
 
   RejectionResons: any[] = []; // Assuming this array holds the list of expired documents
+
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
@@ -148,22 +149,23 @@ export class AdvanceSalaryApprovalsComponent {
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
+                    
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_leaveapproval', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_advancesalaryapproval', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_leaveapproval', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_advancesalaryapproval', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_leaveapproval', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_advancesalaryapproval', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leaveapproval', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_advancesalaryapproval', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     

@@ -4,7 +4,7 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { MatDialogRef } from '@angular/material/dialog';
 import { AuthenticationService } from '../login/authentication.service';
 import { environment } from '../../environments/environment';
-import { window } from 'rxjs';
+// import { window } from 'rxjs';
 
 @Component({
   selector: 'app-user-role-grouping-create',
@@ -117,6 +117,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsLoanType:any[] =[];
   GrouppermissionsLoanAprvlvl:any[] =[];
   GrouppermissionsLoanApp:any[] =[];
+  GrouppermissionsLoanRepay:any[] =[];
 
   //permission stored arrays for Asset
 
@@ -281,6 +282,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     LoanTypeInderminate= false;
     LoanAprvInderminate= false;
     LoanAppInderminate= false;
+    LoanRepayIndeterminate= false
 
     //selected Asset checkboxes.
 
@@ -434,6 +436,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     LoanTypeChecked:boolean= false;
     LoanAprvlvlChecked:boolean= false;
     LoanAppChecked:boolean= false;
+    LoanRepayChecked:boolean= false;
 
     //Asset checkbox checked values
 
@@ -647,7 +650,8 @@ isLoanManagementMasterChecked():boolean{
   return this.LoanApprovalChecked &&
   this.LoanTypeChecked &&
   this.LoanAprvlvlChecked &&
-  this.LoanAppChecked
+  this.LoanAppChecked &&
+  this.LoanRepayChecked;
 
 }
 
@@ -1194,6 +1198,13 @@ isLoanTypeIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsLoanType.length;
 }
 
+isLoanRepayIndeterminate(): boolean { 
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsLoanRepay.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsLoanRepay.length;
+}
+
 isLoanAprvlvlIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
     this.GrouppermissionsLoanAprvlvl.map(p => p.id).includes(id)
@@ -1524,6 +1535,7 @@ updateInderminateLoan():void{
   this.isLoanTypeIndeterminate();
   this.isLoanAprvlvlIndeterminate();
   this.isLoanAppIndeterminate();
+  this.isLoanRepayIndeterminate();
 
 }
 
@@ -1708,6 +1720,7 @@ updateInderminateEmailTemplate():void{
   this.loadpermissionsLoanType();
   this.loadpermissionsLoanAprvlvl();
   this.loadpermissionsLoanApp();
+  this.loadpermissionsLoanRepay();
  
   }
 
@@ -5387,6 +5400,55 @@ getDisplayNameLoanType(permissionCodename: string): string {
 }
 
 
+loadpermissionsLoanRepay(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_loanrepayment',
+          'change_loanrepayment',
+          'delete_loanrepayment',
+          'view_loanrepayment',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsLoanRepay = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Loan Type permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Loan Type permissions ===
+getDisplayNameLoanRepay(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_loanrepayment':
+      return 'Add';
+    case 'change_loanrepayment':
+      return 'Edit';
+    case 'delete_loanrepayment':
+      return 'Delete';
+    case 'view_loanrepayment':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
 loadpermissionsLoanAprvlvl(): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
@@ -5476,6 +5538,55 @@ getDisplayNameLoanApp(permissionCodename: string): string {
     case 'delete_loanapplication':
       return 'Delete';
     case 'view_loanapplication':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
+loadpermissionsLoanReqTemp(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        const requiredCodenames = [
+          'add_loanemailtemplate',
+          'change_loanemailtemplate',
+          'delete_loanemailtemplate',
+          'view_loanemailtemplate'
+        ];
+
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsLoanReqTemp = Array.from(uniquePermissionsMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Loan request Email Template permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Loan Request Email Template permissions ===
+
+getDisplayNameLoanReqTemp(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_loanemailtemplate':
+      return 'Add';
+    case 'change_loanemailtemplate':
+      return 'Edit';
+    case 'delete_loanemailtemplate':
+      return 'Delete';
+    case 'view_loanemailtemplate':
       return 'View';
     default:
       return permissionCodename;
@@ -6500,61 +6611,6 @@ getDisplayNameAdvanceSalReqTemp(permissionCodename: string): string {
       return permissionCodename;
   }
 }
-
-
-loadpermissionsLoanReqTemp(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (selectedSchema) {
-    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-      (result: any[]) => {
-        const requiredCodenames = [
-          'add_loanemailtemplate',
-          'change_loanemailtemplate',
-          'delete_loanemailtemplate',
-          'view_loanemailtemplate'
-        ];
-
-        const uniquePermissionsMap = new Map();
-        result.forEach(permission => {
-          const codename = permission.codename.trim().toLowerCase();
-          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-            uniquePermissionsMap.set(codename, permission);
-          }
-        });
-
-        this.GrouppermissionsLoanReqTemp = Array.from(uniquePermissionsMap.values());
-      },
-      (error: any) => {
-        console.error('Error fetching Loan request Email Template permissions:', error);
-      }
-    );
-  }
-}
-
-
-// === Display readable names for Loan Request Email Template permissions ===
-
-getDisplayNameLoanReqTemp(permissionCodename: string): string {
-  switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_loanemailtemplate':
-      return 'Add';
-    case 'change_loanemailtemplate':
-      return 'Edit';
-    case 'delete_loanemailtemplate':
-      return 'Delete';
-    case 'view_loanemailtemplate':
-      return 'View';
-    default:
-      return permissionCodename;
-  }
-}
-
-
-
-
-
-
 
 
 
@@ -7968,6 +8024,26 @@ updateLoanTypeCheckbox(): void {
 }
 
 
+
+onCheckboxChangesLoanRepay(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateLoanRepayCheckbox();
+  this.updateLoan();
+}
+
+updateLoanRepayCheckbox(): void {
+  const allSelected = this.GrouppermissionsLoanRepay.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.LoanRepayChecked = allSelected;
+}
+
+
 onCheckboxChangesLoanAprvlvl(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
@@ -8747,11 +8823,12 @@ isLoans(): boolean {
   const LoanTypeIndeterminate = this.isLoanTypeIndeterminate();
   const LoanAprvlvlIndeterminate = this.isLoanAprvlvlIndeterminate();
   const LoanAppIndeterminate = this.isLoanAppIndeterminate();
+  const LoanRepayIndeterminate = this.isLoanRepayIndeterminate();
 
 
   const otherGroupIndeterminate = false;
 
-  return LoanApprovalIndeterminate || LoanTypeIndeterminate || LoanAprvlvlIndeterminate || LoanAppIndeterminate  || otherGroupIndeterminate;
+  return LoanApprovalIndeterminate || LoanTypeIndeterminate || LoanAprvlvlIndeterminate || LoanAppIndeterminate || LoanRepayIndeterminate  || otherGroupIndeterminate;
 }
 
 
@@ -9689,6 +9766,18 @@ onLoanTypeChange(): void {
   this.updateLoanCheckbox();
 }
 
+onLoanRepayChange(): void {
+  if (this.LoanRepayChecked) {
+    const idsToAdd = this.GrouppermissionsLoanRepay.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsLoanRepay.some(p => p.id === id)
+    );
+  }
+  this.updateLoanCheckbox();
+}
+
 onLoanAprvlvlChange(): void {
   if (this.LoanAprvlvlChecked) {
     const idsToAdd = this.GrouppermissionsLoanAprvlvl.map(p => p.id);
@@ -10305,6 +10394,7 @@ selectLoan(): void {
     ...this.GrouppermissionsLoanType,
     ...this.GrouppermissionsLoanAprvlvl,
     ...this.GrouppermissionsLoanApp,
+    ...this.GrouppermissionsLoanRepay,
 
   ].map(permission => permission.id);
 
@@ -10320,6 +10410,7 @@ selectLoan(): void {
   this.updateLoanTypeCheckbox();
   this.updateLoanAprvlvlCheckbox();
   this.updateLoanAppCheckbox();
+  this.updateLoanRepayCheckbox();
  
 }
 
@@ -10593,6 +10684,7 @@ updateLoan():void{
   this.updateLoanTypeCheckbox();
   this.updateLoanAprvlvlCheckbox();
   this.updateLoanAppCheckbox();
+  this.updateLoanRepayCheckbox();
   
 
 }
@@ -10755,6 +10847,7 @@ isLoanInderminate(): boolean {
     ...this.GrouppermissionsLoanType,
     ...this.GrouppermissionsLoanAprvlvl,
     ...this.GrouppermissionsLoanApp,
+    ...this.GrouppermissionsLoanRepay,
  
 
   ].some(permission => this.selectedPermissions.includes(permission.id));
@@ -10907,7 +11000,7 @@ showEmailTemplate(): void{
 
 createGroup(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  
+
   if (!selectedSchema) {
     console.error('No schema selected.');
     return;
@@ -10919,21 +11012,19 @@ createGroup(): void {
   };
 
   this.http.post(`${this.apiUrl}/organisation/api/Group/?schema=${selectedSchema}`, formData)
-    .subscribe(
-      (response) => {
+    .subscribe({
+      next: (response) => {
         console.log('Data saved successfully:', response);
         alert('Permission Group Added');
-        
 
-        // ✅ Force reload the page
-        (window as any).location.reload();
-
+        // Reload the page after successful save
+        window.location.reload();
       },
-      (error) => {
+      error: (error) => {
         console.error('Failed to save data:', error);
-        alert(`Fail to save data! ${error}`);
+        alert(`Failed to save data! ${error.message || error}`);
       }
-    );
+    });
 }
 
   ClosePopup() {

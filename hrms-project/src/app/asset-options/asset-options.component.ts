@@ -12,8 +12,12 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 export class AssetOptionsComponent {
 
   
-  hasViewPermissionSalary: boolean = false;
-  hasViewPermissionPayroll: boolean = false;
+  hasViewPermissionAssetTypes: boolean = false;
+  hasViewPermissionAssetMaster: boolean = false;
+  hasViewPermissionAssetAllocation: boolean = false;
+  hasViewPermissionAssetRequest: boolean = false;
+
+
 
 
   userId: number | null | undefined;
@@ -72,9 +76,16 @@ export class AssetOptionsComponent {
       
         if (isSuperuser) {
           console.log('User is superuser or ESS user');
+
           // Grant all permissions
-          this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+          
+          this.hasViewPermissionAssetTypes = true;
+          this.hasViewPermissionAssetMaster = true;
+          this.hasViewPermissionAssetAllocation = true;
+          this.hasViewPermissionAssetRequest = true;
+
+
+  
        
   
   
@@ -99,8 +110,12 @@ export class AssetOptionsComponent {
                 if (firstItem.is_superuser) {
                   console.log('User is superuser according to permissions API');
                   // Grant all permissions
-                  this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+                  this.hasViewPermissionAssetTypes = true;
+                  this.hasViewPermissionAssetMaster = true;
+                  this.hasViewPermissionAssetAllocation = true;
+                  this.hasViewPermissionAssetRequest = true;
+
+              
                  
   
   
@@ -111,11 +126,18 @@ export class AssetOptionsComponent {
   
               
                        
-                       this.hasViewPermissionSalary = this.checkGroupPermission('view_salarycomponent', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionSalary);
+                       this.hasViewPermissionAssetTypes = this.checkGroupPermission('view_assettype', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAssetTypes);
                       
-                       this.hasViewPermissionPayroll = this.checkGroupPermission('view_payrollrun', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionPayroll);
+                       this.hasViewPermissionAssetMaster = this.checkGroupPermission('view_asset', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAssetMaster);
+
+                       this.hasViewPermissionAssetAllocation = this.checkGroupPermission('view_assetallocation', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAssetAllocation);
+
+                       this.hasViewPermissionAssetRequest = this.checkGroupPermission('view_assetrequest', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAssetRequest);
+
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);
@@ -123,9 +145,6 @@ export class AssetOptionsComponent {
               } else {
                 console.error('Permissions data is not an array or is empty.', permissionsData);
               }
-  
-              // Fetching designations after checking permissions
-              // this.fetchDesignations(selectedSchema);
             }
             
             
@@ -146,35 +165,16 @@ export class AssetOptionsComponent {
     console.error('User ID is null.');
   }
   
-  
-  
-  
-  
-  
     }
   
   
    
   
     
-  
-    
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);
     }
   
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     fetchDesignations(selectedSchema: string) {
