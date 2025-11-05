@@ -21,14 +21,14 @@
 
           <div class="sidebar"  [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
               <ul>
-                <li routerLink="/main-sidebar/project-options/project-master" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects</a></li>
+                <li routerLink="/main-sidebar/project-options/project-master" *ngIf="hasViewPermissionProjects"><a><mat-icon>peoples</mat-icon> Projects</a></li>
              
               
-                <li routerLink="/main-sidebar/project-options/project-stages" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects Stages</a></li>
+                <li routerLink="/main-sidebar/project-options/project-stages" *ngIf="hasViewPermissionProjectsStages"><a><mat-icon>peoples</mat-icon> Projects Stages</a></li>
                
-                <li routerLink="/main-sidebar/project-options/project-tasks" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects Tasks</a></li>
+                <li routerLink="/main-sidebar/project-options/project-tasks" *ngIf="hasViewPermissionProjectsTaks"><a><mat-icon>peoples</mat-icon> Projects Tasks</a></li>
 
-                <li routerLink="/main-sidebar/project-options/project-timesheet" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Projects Timesheet</a></li>
+                <li routerLink="/main-sidebar/project-options/project-timesheet" *ngIf="hasViewPermissionProjectsTimesheet"><a><mat-icon>peoples</mat-icon> Projects Timesheet</a></li>
 
                   <mat-nav-list>
      

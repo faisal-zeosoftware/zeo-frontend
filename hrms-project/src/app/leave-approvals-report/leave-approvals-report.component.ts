@@ -50,15 +50,13 @@ export class LeaveApprovalsReportComponent {
 // your.component.ts
 
 fetchStandardReport() {
-  this.leaveService.getApprovalReport().subscribe(
+  this.leaveService.getLeavebalanceReport().subscribe(
     (response) => {
       if (response.length > 0 && response[0].report_data) {
         const jsonUrl = response[0].report_data;
-        this.leaveService.fetchApprovalJsonData(jsonUrl).subscribe((jsonData: any[]) => {
-          this.groupedApprovalData = jsonData.map(entry => ({
-            request_id: entry.request_id,
-            approvals: entry.approvals
-          }));
+        this.leaveService.fetchLeavebalanceJsonData(jsonUrl).subscribe((jsonData: any) => {
+          // Directly assign the data since it's already flat
+          this.approvalReportData = jsonData;
         });
       }
     },
@@ -67,10 +65,9 @@ fetchStandardReport() {
     }
   );
 }
-
   
 downloadExcel(): void {
-  const exportData: any[] = [];
+  const headerMap: any[] = [];
 
   this.groupedApprovalData.forEach(group => {
     group.approvals.forEach((approval: any, index: number) => {
@@ -93,6 +90,18 @@ downloadExcel(): void {
       });
     });
   });
+
+    const exportData = this.approvalReportData.map(item => {
+    const transformed: any = {};
+    for (const key in headerMap) {
+      if (item.hasOwnProperty(key)) {
+        transformed[headerMap[key]] = item[key];
+      }
+    }
+    return transformed;
+  });
+
+  
 
   const worksheet = XLSX.utils.json_to_sheet(exportData);
   const workbook = XLSX.utils.book_new();

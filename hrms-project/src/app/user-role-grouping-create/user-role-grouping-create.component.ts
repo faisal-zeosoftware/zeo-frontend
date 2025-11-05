@@ -4060,15 +4060,15 @@ getDisplayNameGratuity(permissionCodename: string): string {
           
               getDisplayNameDeptReport(permissionCodename: string): string {
                 switch (permissionCodename.trim().toLowerCase()) {
-                  case 'add_leavereport':
+                  case 'add_deptreport':
                     return 'Add';
-                  case 'change_leavereport':
+                  case 'change_deptreport':
                     return 'Edit';
-                  case 'delete_leavereport':
+                  case 'delete_deptreport':
                     return 'Delete';
                   case 'export_report':
                     return 'Export';
-                    case 'view_leavereport':
+                    case 'view_deptreport':
                       return 'View';
                   default:
                     return permissionCodename;
@@ -4112,15 +4112,15 @@ getDisplayNameGratuity(permissionCodename: string): string {
             
                 getDisplayNameDesReport(permissionCodename: string): string {
                   switch (permissionCodename.trim().toLowerCase()) {
-                    case 'add_leavereport':
+                    case 'add_designationreport':
                       return 'Add';
-                    case 'change_leavereport':
+                    case 'change_designationreport':
                       return 'Edit';
-                    case 'delete_leavereport':
+                    case 'delete_designationreport':
                       return 'Delete';
                     case 'export_report':
                       return 'Export';
-                      case 'view_leavereport':
+                      case 'view_designationreport':
                         return 'View';
                     default:
                       return permissionCodename;

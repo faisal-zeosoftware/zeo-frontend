@@ -13,8 +13,15 @@ export class AirTicketOptionsComponent {
 
   
   
-  hasViewPermissionSalary: boolean = false;
-  hasViewPermissionPayroll: boolean = false;
+
+
+  hasViewPermissionAirticketPolicy:boolean = false;
+  hasViewPermissionAirticketAllocation:boolean = false;
+  hasViewPermissionAirticketRequest:boolean = false;
+  hasViewPermissionAirticketRule:boolean = false;
+
+
+  
 
 
   userId: number | null | undefined;
@@ -71,8 +78,12 @@ export class AirTicketOptionsComponent {
         if (isSuperuser) {
           console.log('User is superuser or ESS user');
           // Grant all permissions
-          this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+
+
+          this.hasViewPermissionAirticketPolicy = true;
+          this.hasViewPermissionAirticketAllocation = true;
+          this.hasViewPermissionAirticketRequest = true;
+          this.hasViewPermissionAirticketRule = true;
        
   
   
@@ -97,8 +108,11 @@ export class AirTicketOptionsComponent {
                 if (firstItem.is_superuser) {
                   console.log('User is superuser according to permissions API');
                   // Grant all permissions
-                  this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+
+          this.hasViewPermissionAirticketPolicy = true;
+          this.hasViewPermissionAirticketAllocation = true;
+          this.hasViewPermissionAirticketRequest = true;
+          this.hasViewPermissionAirticketRule = true;
                  
   
   
@@ -109,11 +123,17 @@ export class AirTicketOptionsComponent {
   
               
                        
-                       this.hasViewPermissionSalary = this.checkGroupPermission('view_salarycomponent', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionSalary);
+                       this.hasViewPermissionAirticketPolicy = this.checkGroupPermission('view_airticketpolicy', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAirticketPolicy);
                       
-                       this.hasViewPermissionPayroll = this.checkGroupPermission('view_payrollrun', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionPayroll);
+                       this.hasViewPermissionAirticketAllocation = this.checkGroupPermission('view_airticketallocation', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAirticketAllocation);
+
+                        this.hasViewPermissionAirticketRequest = this.checkGroupPermission('view_airticketrequest', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAirticketRequest);
+                      
+                       this.hasViewPermissionAirticketRule = this.checkGroupPermission('view_airticketrule', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAirticketRule);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

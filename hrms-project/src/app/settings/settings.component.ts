@@ -30,7 +30,11 @@ export class SettingsComponent {
   hasViewPermissionDocType: boolean = false;
   hasViewPermissionAssignPermission: boolean = false;
   hasViewStateMaster: boolean = false;
-  hasAddCompanyMaster: boolean = false;
+  hasViewCompanyMaster: boolean = false;
+  hasViewAnnounceMaster:boolean = false;
+  hasViewDocNotifySettings:boolean = false;
+
+
   hasViewNotification: boolean = false;
   hasViewDN : boolean = false;
   hasViewPermissionFormdes : boolean = false;
@@ -117,9 +121,11 @@ if (this.userId !== null) {
         this.hasViewPermissionDocType = true;
         this.hasViewPermissionAssignPermission = true;
         this.hasViewStateMaster = true;
-        this.hasAddCompanyMaster = true;
+        this.hasViewCompanyMaster = true;
         this.hasViewNotification = true;
         this.hasViewDN = true;
+        this.hasViewAnnounceMaster = true;
+        this.hasViewDocNotifySettings = true;
         this.hasViewPermissionFormdes = true;
         this.hasViewPermissionEmtemp = true;
         this.hasViewPermissionCmp = true;
@@ -171,9 +177,11 @@ if (this.userId !== null) {
                 this.hasViewPermissionDocType = true;
                 this.hasViewPermissionAssignPermission = true;
                 this.hasViewStateMaster = true;
-                this.hasAddCompanyMaster = true;
+                this.hasViewCompanyMaster = true;
                 this.hasViewNotification = true;
                 this.hasViewDN = true;
+                this.hasViewAnnounceMaster = true;
+                this.hasViewDocNotifySettings = true;
                 this.hasViewPermissionFormdes = true;
                 this.hasViewPermissionEmtemp = true;
                 this.hasViewPermissionCmp = true;
@@ -219,17 +227,24 @@ if (this.userId !== null) {
                     this.hasViewStateMaster = this.checkGroupPermission('view_state_mstr', groupPermissions);
                   console.log('Has view permission:', this.hasViewStateMaster);
       
-                  this.hasAddCompanyMaster = this.checkGroupPermission('add_cmpny_mastr', groupPermissions);
-                   console.log('Has view permission:', this.hasAddCompanyMaster);
+                  this.hasViewCompanyMaster = this.checkGroupPermission('view_company', groupPermissions);
+                   console.log('Has view permission:', this.hasViewCompanyMaster);
       
                     this.hasViewNotification = this.checkGroupPermission('view_notification', groupPermissions);
                     console.log('Has view permission:', this.hasViewNotification);
 
-                    this.hasViewDN = this.checkGroupPermission('view_document_numbering', groupPermissions);
+                    this.hasViewDN = this.checkGroupPermission('view_documentnumbering', groupPermissions);
                     console.log('Has view permission:', this.hasViewDN);
 
+                    this.hasViewAnnounceMaster = this.checkGroupPermission('view_announcement', groupPermissions);
+                    console.log('Has view permission:', this.hasViewAnnounceMaster);
+
+                    this.hasViewDocNotifySettings = this.checkGroupPermission('view_notificationsettings', groupPermissions);
+                    console.log('Has view permission:', this.hasViewDocNotifySettings);
+                    
                     this.hasViewPermissionFormdes = this.checkGroupPermission('view_emp_customfield', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermissionFormdes);
+
                    
                     this.hasViewPermissionEmtemp = this.checkGroupPermission('view_emailtemplate', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermissionEmtemp);

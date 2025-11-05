@@ -42,6 +42,7 @@ export class SubSidebarComponent {
   hasViewPermissionAprvlvl: boolean = false;
   hasViewPermissionAttd: boolean = false;
   hasViewNotification: boolean = false;
+  hasViewEmpOverTime: boolean = false;
 
 
 
@@ -101,6 +102,7 @@ if (this.userId !== null) {
         this.hasViewPermissionAprvlvl = true;
         this.hasViewPermissionAttd = true;
         this.hasViewNotification = true;
+        this.hasViewEmpOverTime = true;
 
 
         // Fetch designations without checking permissions
@@ -132,6 +134,7 @@ if (this.userId !== null) {
                 this.hasViewPermissionAprvlvl = true;
                 this.hasViewPermissionAttd = true;
                 this.hasViewNotification = true;
+                this.hasViewEmpOverTime = true;
 
 
         
@@ -170,6 +173,9 @@ if (this.userId !== null) {
                      
                     this.hasViewNotification = this.checkGroupPermission('view_notification', groupPermissions);
                     console.log('Has view permission:', this.hasViewNotification);
+
+                    this.hasViewEmpOverTime = this.checkGroupPermission('view_employeeovertime', groupPermissions);
+                    console.log('Has view permission:', this.hasViewEmpOverTime);
 
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);

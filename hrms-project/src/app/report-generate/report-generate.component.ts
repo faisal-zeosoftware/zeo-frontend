@@ -160,6 +160,9 @@ private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` fo
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
   hasExportPermission: boolean = false;
+
+
+  
   userId: number | null | undefined;
   userDetails: any;
   selectedSchema: string | null = null;

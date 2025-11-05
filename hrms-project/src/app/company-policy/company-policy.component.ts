@@ -36,7 +36,7 @@ export class CompanyPolicyComponent {
 
   registerButtonClicked =false;
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -132,17 +132,17 @@ if (this.userId !== null) {
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_companypolicy', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_company', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_companypolicy', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_company', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_companypolicy', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_company', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_companypolicy', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_company', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 

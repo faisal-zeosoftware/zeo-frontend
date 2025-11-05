@@ -172,17 +172,17 @@ ngOnInit(): void {
                   console.log('Group Permissions:', groupPermissions);
   
                  
-                  this.hasAddPermission = this.checkGroupPermission('add_requesttype', groupPermissions);
+                  this.hasAddPermission = this.checkGroupPermission('add_task', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_requesttype', groupPermissions);
+                  this.hasEditPermission = this.checkGroupPermission('change_task', groupPermissions);
                   console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_requesttype', groupPermissions);
+                 this.hasDeletePermission = this.checkGroupPermission('delete_task', groupPermissions);
                  console.log('Has delete permission:', this.hasDeletePermission);
     
   
-                  this.hasViewPermission = this.checkGroupPermission('view_requesttype', groupPermissions);
+                  this.hasViewPermission = this.checkGroupPermission('view_task', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

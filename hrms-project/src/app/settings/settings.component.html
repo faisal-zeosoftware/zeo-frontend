@@ -65,31 +65,33 @@
               </div>
               <div *ngIf="!hasViewPermissionDocType"></div>
 
-              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/location-master" *ngIf="hasAddCompanyMaster">
+              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/location-master" *ngIf="hasViewCompanyMaster">
                 <a class="set_siding" mat-list-item>
                   <span class="side_option">Company Master</span>
                 </a>
               </div>
-              <div *ngIf="!hasAddCompanyMaster"></div>
+              <div *ngIf="!hasViewCompanyMaster"></div>
 
               <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/document-numbering" *ngIf="hasViewDN">
                 <a class="set_siding" mat-list-item>
                   <span class="side_option">Document Numbering</span>
                 </a>
               </div>
+              <div *ngIf="!hasViewDN"></div>
 
-              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/announcement-master" *ngIf="hasViewDN">
+              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/announcement-master" *ngIf="hasViewAnnounceMaster">
                 <a class="set_siding" mat-list-item>
                   <span class="side_option">Announcement</span>
                 </a>
               </div>
+              <div *ngIf="!hasViewAnnounceMaster"></div>
 
-              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/notification-settings" *ngIf="hasViewPermissionLeaveEmtemp">
+              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/notification-settings" *ngIf="hasViewDocNotifySettings">
                 <a class="set_siding" mat-list-item>
                   <span class="side_option">Document Notification Settings</span>
                 </a>
               </div>
-              <div *ngIf="!hasAddCompanyMaster"></div>
+              <div *ngIf="!hasViewDocNotifySettings"></div>
             </mat-expansion-panel>
 
             <mat-expansion-panel>

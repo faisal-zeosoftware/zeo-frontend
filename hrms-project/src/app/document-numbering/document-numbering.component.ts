@@ -54,6 +54,7 @@ export class DocumentNumberingComponent {
   userDetails: any;
   userDetailss: any[] = [];
   username: any;
+
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
@@ -145,22 +146,23 @@ ngOnInit(): void {
                   this.hasAddPermission = true;
                   this.hasDeletePermission = true;
                   this.hasEditPermission = true;
+
                 } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                   const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                   console.log('Group Permissions:', groupPermissions);
   
                  
-                  this.hasAddPermission = this.checkGroupPermission('add_document_numbering', groupPermissions);
+                  this.hasAddPermission = this.checkGroupPermission('add_documentnumbering', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_document_numbering', groupPermissions);
+                  this.hasEditPermission = this.checkGroupPermission('change_documentnumbering', groupPermissions);
                   console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_document_numbering', groupPermissions);
+                 this.hasDeletePermission = this.checkGroupPermission('delete_documentnumbering', groupPermissions);
                  console.log('Has delete permission:', this.hasDeletePermission);
     
   
-                  this.hasViewPermission = this.checkGroupPermission('view_document_numbering', groupPermissions);
+                  this.hasViewPermission = this.checkGroupPermission('view_documentnumbering', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
   
   

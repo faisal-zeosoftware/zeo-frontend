@@ -15,8 +15,11 @@ export class ProjectOptionsComponent {
 
   
   
-  hasViewPermissionSalary: boolean = false;
-  hasViewPermissionPayroll: boolean = false;
+
+  hasViewPermissionProjects: boolean = false;
+  hasViewPermissionProjectsStages: boolean = false;
+  hasViewPermissionProjectsTaks: boolean = false;
+  hasViewPermissionProjectsTimesheet: boolean = false;
 
 
   userId: number | null | undefined;
@@ -72,8 +75,11 @@ export class ProjectOptionsComponent {
         if (isSuperuser) {
           console.log('User is superuser or ESS user');
           // Grant all permissions
-          this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+          this.hasViewPermissionProjects = true;
+          this.hasViewPermissionProjectsStages = true;
+          this.hasViewPermissionProjectsTaks = true;
+          this.hasViewPermissionProjectsTimesheet = true;
+
        
   
   
@@ -98,8 +104,10 @@ export class ProjectOptionsComponent {
                 if (firstItem.is_superuser) {
                   console.log('User is superuser according to permissions API');
                   // Grant all permissions
-                  this.hasViewPermissionPayroll = true;
-          this.hasViewPermissionSalary = true;
+                  this.hasViewPermissionProjects = true;
+                  this.hasViewPermissionProjectsStages = true;
+                  this.hasViewPermissionProjectsTaks = true;
+                  this.hasViewPermissionProjectsTimesheet = true;
                  
   
   
@@ -110,11 +118,17 @@ export class ProjectOptionsComponent {
   
               
                        
-                       this.hasViewPermissionSalary = this.checkGroupPermission('view_salarycomponent', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionSalary);
+                       this.hasViewPermissionProjects = this.checkGroupPermission('view_project', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionProjects);
                       
-                       this.hasViewPermissionPayroll = this.checkGroupPermission('view_payrollrun', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionPayroll);
+                       this.hasViewPermissionProjectsStages = this.checkGroupPermission('view_projectstage', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionProjectsStages);
+
+                       this.hasViewPermissionProjectsTaks = this.checkGroupPermission('view_task', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionProjectsTaks);
+                      
+                       this.hasViewPermissionProjectsTimesheet = this.checkGroupPermission('view_timesheet', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionProjectsTimesheet);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

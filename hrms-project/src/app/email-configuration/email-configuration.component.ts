@@ -35,7 +35,7 @@ export class EmailConfigurationComponent {
   userDetails: any;
   userDetailss: any;
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -122,17 +122,17 @@ ngOnInit(): void {
                   console.log('Group Permissions:', groupPermissions);
   
                  
-                  this.hasAddPermission = this.checkGroupPermission('add_approvallevel', groupPermissions);
+                  this.hasAddPermission = this.checkGroupPermission('add_emailconfiguration', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_approvallevel', groupPermissions);
+                  this.hasEditPermission = this.checkGroupPermission('change_emailconfiguration', groupPermissions);
                   console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_approvallevel', groupPermissions);
+                 this.hasDeletePermission = this.checkGroupPermission('delete_emailconfiguration', groupPermissions);
                  console.log('Has delete permission:', this.hasDeletePermission);
     
   
-                  this.hasViewPermission = this.checkGroupPermission('view_approvallevel', groupPermissions);
+                  this.hasViewPermission = this.checkGroupPermission('view_emailconfiguration', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
   
   

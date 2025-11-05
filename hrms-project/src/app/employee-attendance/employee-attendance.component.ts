@@ -123,17 +123,17 @@ export class EmployeeAttendanceComponent {
                     console.log('Group Permissions:', groupPermissions);
 
 
-                    this.hasAddPermission = this.checkGroupPermission('add_employee_leave_request', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_attendancereport', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
 
-                    this.hasEditPermission = this.checkGroupPermission('change_employee_leave_request', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_attendancereport', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
 
-                    this.hasDeletePermission = this.checkGroupPermission('delete_employee_leave_request', groupPermissions);
+                    this.hasDeletePermission = this.checkGroupPermission('delete_attendancereport', groupPermissions);
                     console.log('Has delete permission:', this.hasDeletePermission);
 
 
-                    this.hasViewPermission = this.checkGroupPermission('view_employee_leave_request', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_attendancereport', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
 
 

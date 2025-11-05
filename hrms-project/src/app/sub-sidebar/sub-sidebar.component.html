@@ -38,7 +38,7 @@
 
                   <li routerLink="/main-sidebar/sub-sidebar/document-expired" *ngIf="hasViewNotification"><a ><mat-icon>peoples</mat-icon> Expired Documents</a></li>
 
-                  <li routerLink="/main-sidebar/sub-sidebar/employee-overtime" ><a ><mat-icon>peoples</mat-icon> Employee Overtime</a></li>
+                  <li routerLink="/main-sidebar/sub-sidebar/employee-overtime" *ngIf="hasViewEmpOverTime"><a><mat-icon>peoples</mat-icon> Employee Overtime</a></li>
 
                   <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
                     <a>
