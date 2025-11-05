@@ -67,6 +67,11 @@
                   <i class="fa fa-paper-plane me-2"></i> Loan Request
                 </a>
               </li>
+                <li class="nav-item" [class.active]="activeTabNav === 'resignationRequest'" (click)="selectTabNav('resignationRequest')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Resignation Request
+                </a>
+              </li>
 
 
             </ul>
@@ -124,53 +129,65 @@
               <i class="fa fa-search"></i>
             </button>
           </div>
-          <div class="dropdown position-relative">
-            <button class="btn btn-outline-secondary position-relative" type="button" id="notification-btn"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fa fa-bell"></i>
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                3
+          <div class="dropdown position-relative" *ngIf="Documents">
+            <button
+              class="btn btn-outline-secondary position-relative"
+              type="button"
+              id="notification-btn"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="fa fa-bell">
+
+              </i>
+          
+              <!-- 🔴 Dynamic notification count -->
+              <span
+                *ngIf="notificationCount > 0"
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              >
+                {{ notificationCount }}
               </span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notification-btn">
-              <li>
-                <a class="dropdown-item d-flex justify-content-between align-items-start">
+          
+            <ul
+              class="dropdown-menu dropdown-menu-end shadow"
+              aria-labelledby="notification-btn"
+            >
+              <!-- ✅ List notifications dynamically -->
+              <li *ngFor="let doc of Documents; let i = index">
+                <a
+                  class="dropdown-item d-flex justify-content-between align-items-start"
+                  href="javascript:void(0)"
+                >
                   <div>
-                    <strong>Leave Request</strong>
-                    <div class="text-muted small">2 hours ago</div>
+                    <strong>Document Alert</strong>
+                    <div class="text-muted small">
+                      {{ doc.created_at | date: 'medium' }}
+                    </div>
+                    <div class="small mt-1 text-wrap">{{ doc.message }}</div>
                   </div>
                   <span class="badge bg-primary rounded-pill">New</span>
                 </a>
+                <!-- <li *ngIf="i < Documents.length - 1">
+                  <hr class="dropdown-divider" />
+                </li> -->
               </li>
-              <li>
-                <hr class="dropdown-divider">
+          
+              <!-- 🔘 When no notifications -->
+              <li *ngIf="Documents.length === 0">
+                <a class="dropdown-item text-center text-muted">No new notifications</a>
               </li>
+          
+              <!-- 🔗 View All -->
               <li>
-                <a class="dropdown-item d-flex justify-content-between align-items-start" href="#">
-                  <div>
-                    <strong>Document Expired</strong>
-                    <div class="text-muted small">Yesterday</div>
-                  </div>
-                  <span class="badge bg-primary rounded-pill">New</span>
-                </a>
-              </li>
-              <li>
-                <hr class="dropdown-divider">
-              </li>
-              <li>
-                <a class="dropdown-item d-flex justify-content-between align-items-start" href="#">
-                  <div>
-                    <strong>Approval Status</strong>
-                    <div class="text-muted small">3 days ago</div>
-                  </div>
-                </a>
-              </li>
-              <li>
-                <hr class="dropdown-divider">
+                <hr class="dropdown-divider" />
               </li>
               <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
             </ul>
           </div>
+          
+          
         </div>
       </header>
 
@@ -1944,8 +1961,102 @@
 
 
       </section>
-      <section id="settings-tab" class="content-tab d-none animate__animated animate__fadeIn">
-        <!-- Settings content here -->
+      <section class="content-tab  animate__animated animate__fadeIn" id="resignationRequest"
+      *ngIf="activeTabNav === 'resignationRequest'">
+
+        <!-- Financial content here -->
+
+
+         
+           <div class="white-outer-sec">
+            <form (ngSubmit)="SetEmployeeResignation()" enctype="multipart/form-data">
+              <div class="row">
+  
+                
+                <div class="col-md-6">
+                  <label>Document date</label>
+                  <input type="date" class="form-control" required [(ngModel)]="document_date" placeholder="Enter document date"
+                         [ngModelOptions]="{standalone: true}" >
+                </div>
+  
+                <div class="col-md-6">
+                  <label> resigned on</label>
+                  <input type="date" class="form-control" required [(ngModel)]="resigned_on" placeholder="Enter resigned on"
+                         [ngModelOptions]="{standalone: true}" >
+                </div>
+            
+                <div class="col-md-6">
+                  <label>notice period</label>
+                  <input type="number" class="form-control" required [(ngModel)]="notice_period" placeholder="Enter notice period"
+                         [ngModelOptions]="{standalone: true}" >
+                </div>
+  
+              
+                <div class="col-md-6">
+                  <label>last working date</label>
+                  <input type="date" class="form-control" required [(ngModel)]="last_working_date" placeholder="Enter last working date"
+                         [ngModelOptions]="{standalone: true}" >
+                </div>
+              
+  
+                <div class="col-md-6">
+                  <label>location</label>
+                  <input type="text" class="form-control" required [(ngModel)]="location" placeholder="Enter location"
+                         [ngModelOptions]="{standalone: true}" >
+                </div>
+              
+  
+              
+                <div class="col-md-6">
+                  <label>Type</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}">
+                      <option  value="resignation" >Resignation</option>
+                      <option  value="termination" >Termination</option>
+  
+                      <option  value="retirement" >Retirement</option>
+  
+                      <option  value="death_or_disablement" >Death or Disablement</option>
+                      
+                    </select>
+                  </div>
+                </div>
+                
+        
+                <div class="col-md-12">
+                  <label>Reason</label>
+                  <textarea class="form-control" [(ngModel)]="reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
+                </div>
+  
+   
+          
+           
+                
+  
+  
+            
+  
+          
+                 
+           
+            
+           
+              </div>
+            
+              <div class="row" >
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                  <button type="submit" class="btn btn-success btn-full mt-4">Sent</button>
+                </div>
+              </div>
+            </form>
+  
+        </div>
+
+
+       
+
+
       </section>
     </main>
   </div>

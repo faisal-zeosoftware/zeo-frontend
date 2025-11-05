@@ -93,11 +93,16 @@ export class EmployeeDashboardComponent {
   this.isMenuOpen = !this.isMenuOpen;
 }
 
+Documents: any[] = []; // store expired document notifications
+notificationCount: number = 0; // number to show in the red badge
+
 
   // private updateMarginLeft() {
   //   this.marginLeftValue = this.isMenuOpen ? '200px' : '0px';
   // 
   ngOnInit(): void {
+
+    this.loadExpiredDoc(); // load notifications on page load
 
     this.loadRequestType();
 
@@ -291,6 +296,32 @@ export class EmployeeDashboardComponent {
        }
    
      
+       
+loadExpiredDoc(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    console.error('Schema missing for notifications.');
+    return;
+  }
+
+  this.EmployeeService.getExpiredDocuments(selectedSchema).subscribe(
+    (result: any) => {
+      // Assuming backend returns a list of expired documents
+      this.Documents = result.filter((item: any) =>
+        item.message && item.message.toLowerCase().includes('document')
+      );
+
+      // Set notification count
+      this.notificationCount = this.Documents.length;
+
+      console.log('Fetched Expired Documents:', this.Documents);
+    },
+    (error) => {
+      console.error('Error fetching expired documents:', error);
+    }
+  );
+}
        
    
        handleImageError(event: any): void {
@@ -1095,6 +1126,69 @@ loadRequestType(): void {
       );
     }
     }
+
+
+
+
+    
+
+  document_date:any='';
+  resigned_on:any='' ;
+  notice_period:any='' ;
+
+  last_working_date:any='' ;
+  location: any = '';
+  termination_type: any = '';
+  reason_for_leaving: any = '';
+
+  
+  SetEmployeeResignation(): void {
+    // if (!this.name || !this.code || !this.valid_to) {
+    //   return;
+    // }
+  
+    if (!this.selectedEmployeeId) {
+      alert('Please ensure Employee is loaded.');
+      return;
+    }
+  
+    const formData = new FormData();
+    formData.append('document_date', this.document_date);
+    formData.append('resigned_on', this.resigned_on);
+
+
+
+
+    formData.append('notice_period', this.notice_period);
+  
+    formData.append('last_working_date', this.last_working_date);
+    formData.append('location', this.location);
+    formData.append('termination_type', this.termination_type);
+
+    formData.append('reason_for_leaving', this.reason_for_leaving);
+  
+    formData.append('employee', this.selectedEmployeeId.toString());
+
+
+
+    
+  
+  
+    this.leaveService.CreateEmpResignationRequest(formData).subscribe(
+      (response) => {
+        console.log('Registration successful', response);
+
+
+        alert('Resignation Request  has been Sent');
+
+        window.location.reload();
+      },  
+      (error) => {
+        console.error('Added failed', error);
+        alert('Enter all required fields!');
+      }
+    );
+  }
 
   
 

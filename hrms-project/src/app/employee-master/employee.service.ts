@@ -1049,6 +1049,8 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   }
 
+  
+
   getEmpAssetDetails(selectedSchema: string, empId: number): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/emp_asset/?schema=${selectedSchema}`;
     return this.http.get(apiUrl);
