@@ -371,6 +371,7 @@ loadExpiredDoc(): void {
               this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
               this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
               this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
+              this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
 
 
             }
@@ -1189,6 +1190,25 @@ loadRequestType(): void {
       }
     );
   }
+
+
+
+
+
+
+  EmpAnnouncement: any[] = [];
+
+loadEmpAnnouncement(selectedSchema: string, empId: number): void {
+  this.EmployeeService.getEmpAnnouncement(selectedSchema, empId).subscribe(
+    (result: any) => {
+      this.EmpAnnouncement = result;
+      console.log('Employee Assets:', this.EmpAssets);
+    },
+    (error) => {
+      console.error('Error fetching Employee Assets:', error);
+    }
+  );
+}
 
   
 
