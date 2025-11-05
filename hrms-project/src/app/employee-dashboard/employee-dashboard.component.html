@@ -26,12 +26,52 @@
               <span>Dashboard</span>
             </a>
           </li>
-          <li class="nav-item" [class.active]="activeTabNav === 'leaverequest'" (click)="selectTabNav('leaverequest')">
-            <a class="nav-link" href="javascript:void(0)">
-              <i class="bi bi-book me-2"></i>
-              <span>Requests</span>
+          <li class="nav-item" >
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="javascript:void(0)"
+               (click)="toggleRequestsDropdown()">
+              <div>
+                <i class="bi bi-book me-2"></i>
+                <span>Requests</span>
+              </div>
+              <i [class]="isRequestsDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
             </a>
+          
+            <!-- Dropdown Items -->
+            <ul *ngIf="isRequestsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'leaverequest'" (click)="selectTabNav('leaverequest')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Leave Request
+                </a>
+              </li>
+          
+              <li class="nav-item" [class.active]="activeTabNav === 'generalRequest'" (click)="selectTabNav('generalRequest')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> General Request
+                </a>
+              </li>
+
+              <li class="nav-item" [class.active]="activeTabNav === 'assetRequest'" (click)="selectTabNav('assetRequest')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Asset Request
+                </a>
+              </li>
+
+                 <li class="nav-item" [class.active]="activeTabNav === 'advsalaryRequest'" (click)="selectTabNav('advsalaryRequest')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i>Advance Salary Request
+                </a>
+              </li>
+              <li class="nav-item" [class.active]="activeTabNav === 'loanRequest'" (click)="selectTabNav('loanRequest')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Loan Request
+                </a>
+              </li>
+
+
+            </ul>
           </li>
+
           <li class="nav-item">
             <a class="nav-link" href="#" data-tab="extracurricular">
               <i class="bi bi-trophy me-2"></i>
@@ -94,7 +134,7 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notification-btn">
               <li>
-                <a class="dropdown-item d-flex justify-content-between align-items-start" href="#">
+                <a class="dropdown-item d-flex justify-content-between align-items-start">
                   <div>
                     <strong>Leave Request</strong>
                     <div class="text-muted small">2 hours ago</div>
@@ -1201,14 +1241,26 @@
             <div class="row">
               <div class="col-md-6">
                 <label>Start Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter Start Date"
-                       [ngModelOptions]="{standalone: true}">
+                <input
+                type="date"
+                class="form-control"
+                name="start_date"
+                [(ngModel)]="start_date"
+                placeholder="Enter Start Date"
+                [ngModelOptions]="{standalone: true}"
+              />
               </div>
           
               <div class="col-md-6">
                 <label>End Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter End Date"
-                       >
+                <input
+                type="date"
+                class="form-control"
+                name="end_date"
+                [(ngModel)]="end_date"
+                placeholder="Enter End Date"
+                [ngModelOptions]="{standalone: true}"
+              />
               </div>
           
               <div class="col-md-12">
@@ -1248,12 +1300,20 @@
               <div class="col-md-6">
                 <label>Leave Type</label>
                 <div class="custom-sel">
-                  <select class="form-control" id="leave_type" name="leave_type" [(ngModel)]="leave_type" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">{{ leavetype.name }}</option>
+                  <select
+                    class="form-control"
+                    id="leave_type"
+                    name="leave_type"
+                    [(ngModel)]="leave_type"
+                    [ngModelOptions]="{standalone: true}"
+                  >
+                    <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">
+                      {{ leavetype.leave_type }} (Balance: {{ leavetype.balance }})
+                    </option>
                   </select>
                 </div>
               </div>
-
+              
 
 
              
@@ -1278,31 +1338,37 @@
           <div class="row">
 
             <div class="col-md-12">
+              <div class="table-scroll">
+              
               <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
                 <thead>
                   <tr>
                     <th class="text-table-header" style="width: 0;">No</th>
                     <!-- <th class="text-table-header">Employee</th> -->
-                    <th class="text-table-header">Leave Type</th>
                     <th class="text-table-header">Start Date</th>
 
                     <th class="text-table-header">End Date</th>
+                    <th class="text-table-header">Leave Type</th>
 
-                    <th class="text-table-header">Total Working Days</th>
-
-                    <th class="text-table-header">Day Worked</th>
-                    <th class="text-table-header">Payment Date</th>
-                    <th class="text-table-header">Components </th>
-                    <th class="text-table-header">Gross Salary</th>
-                    <th class="text-table-header">Net Salary</th>
                     <th class="text-table-header">Status</th>
+
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
                 </thead>
                 <tbody class="text-table-body">
-           
+                  
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.start_date }}</td>
+                    <td>{{ leavereq.end_date }}</td>
+                    <td>{{ leavereq.leave_type }}</td>
+                    <td>{{ leavereq.approvals?.status }}</td>
+
+
+                  </tr>
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
           </div>
@@ -1311,22 +1377,573 @@
 
       </section>
 
-      <section id="extracurricular-tab" class="content-tab d-none animate__animated animate__fadeIn">
+      <section class="content-tab  animate__animated animate__fadeIn" id="generalRequest"
+      *ngIf="activeTabNav === 'generalRequest'">
+
+
         <!-- Extracurricular content here -->
+
+           <div class="white-outer-sec">
+            <form >
+
+              <div class="row">
+  
+              
+  
+                  <!-- <div class="col-md-3">
+                      <div class="custom-sel">
+                          <label>Select Branches</label>
+                          <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                              <option value="">Select</option>
+                              <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                          </select>
+                          <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                      </div>
+                  </div> -->
+                  <div class="col-md-6">
+                      <label>Document Number</label>
+                      <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+                          [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
+                  </div>
+                  
+  
+                <div class="col-md-6" >
+                 
+                  <label>Reason</label>
+                 <input type="text"  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter Reason"
+                  [ngModelOptions]="{standalone: true}" >
+                 
+            </div>
+  
+  
+         
+            
+        
+      
+  
+      
+            <div class="col-md-6">
+              <div class="custom-sel">
+                <label>Select Request Type</label>
+                <select class="form-control"
+                        id="request_type"
+                        required
+                        [(ngModel)]="request_type"
+                        [ngModelOptions]="{standalone: true}"
+                     
+                        (change)="onRequestTypeChange($event)">
+                  <option value="">Select</option>
+                  <option *ngFor="let req of RequestType" [value]="req.id">{{ req.name }}</option>
+                </select>
+            
+              </div>
+            </div>
+            
+            <!-- Show Total field only if salary_component is not null -->
+            <div class="col-md-6" *ngIf="selectedSalaryComponent">
+              <label>Total</label>
+              <input type="number"
+                     class="form-control"
+                     required
+                     [(ngModel)]="total"
+                     placeholder="Enter total"
+                     [ngModelOptions]="{standalone: true}">
+            </div>
+            
+
+     
+  
+  
+    
+  
+      
+
+  
+      <div class="col-md-6">
+          <label>Request Document</label>
+          <input type="file" class="form-control" (change)="onFileChange($event)">
+        </div>
+      <div class="col-md-12">
+          <label>Remarks</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="remarks" [ngModelOptions]="{standalone: true}" placeholder="Enter remarks"></textarea>
+        </div>
+  
+        
+     
+              </div>
+  
+  
+              <div class="row">
+                  <div class="col-md-10">
+      
+                  </div>
+           
+                  <div class="col-md-2">
+                      <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Save</button>  
+                   </div>
+  
+                   
+              </div>
+              
+         
+      </form>
+  
+
+        </div>
+
+        
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Start Date</th>
+
+                    <th class="text-table-header">End Date</th>
+                    <th class="text-table-header">Leave Type</th>
+
+                    <th class="text-table-header">Status</th>
+
+                    <!-- <th class="text-table-header">Payslip Component</th> -->
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.start_date }}</td>
+                    <td>{{ leavereq.end_date }}</td>
+                    <td>{{ leavereq.leave_type }}</td>
+                    <td>{{ leavereq.approvals?.status }}</td>
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
+
       </section>
 
-      <section id="financial-tab" class="content-tab d-none animate__animated animate__fadeIn">
+      <section class="content-tab  animate__animated animate__fadeIn" id="assetRequest"
+      *ngIf="activeTabNav === 'assetRequest'">
         <!-- Financial content here -->
+
+
+         
+           <div class="white-outer-sec">
+                 
+        <form >
+
+          <div class="row">
+             
+
+            <div class="col-md-12" >
+             
+              <label>Reason</label>
+              
+             <textarea  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter reason"
+              [ngModelOptions]="{standalone: true}" > </textarea>
+             
+        </div>
+
+        
+
+
+
+      
+
+        <div class="col-md-6" >
+          <label>Select Asset Type</label>
+          <div class="custom-sel">
+            <select
+              class="form-control"
+              id="asset_type"
+              name="asset_type"
+              [(ngModel)]="asset_type"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <option *ngFor="let employees of AssetTypes" [value]="employees.id">
+                {{ employees.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      
+
+
+
+<div class="col-md-6" >
+  <label>Select Requested Asset </label>
+  <div class="custom-sel">
+    <select
+      class="form-control"
+      id="requested_asset"
+      name="requested_asset"
+      [(ngModel)]="requested_asset"
+      [ngModelOptions]="{ standalone: true }"
+    >
+      <option *ngFor="let employees of Assets" [value]="employees.id">
+        {{ employees.name }}
+      </option>
+    </select>
+  </div>
+</div>
+
+   
+
+    
+    
+ 
+
+
+
+  
+          </div>
+
+
+          <div class="row">
+              <div class="col-md-10">
+  
+              </div>
+  
+              <div class="col-md-2">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateAssetType()">Save</button>  
+               </div>
+          </div>
+          
+     
+  </form>
+
+
+        </div>
+
+
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Asset Type</th>
+
+                    <th class="text-table-header">Reason</th>
+                    <th class="text-table-header"> Requested Asset</th>
+
+                    <th class="text-table-header">Status</th>
+
+                    <!-- <th class="text-table-header">Payslip Component</th> -->
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.assets_requests; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.asset_type }}</td>
+                    <td>{{ leavereq.reason }}</td>
+                    <td>{{ leavereq.requested_asset }}</td>
+                    <td>{{ leavereq.status }}</td>
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
+
+
       </section>
 
-      <section id="career-tab" class="content-tab d-none animate__animated animate__fadeIn">
-        <!-- Career content here -->
-      </section>
+      <section class="content-tab  animate__animated animate__fadeIn" id="advsalaryRequest"
+      *ngIf="activeTabNav === 'advsalaryRequest'">
 
-      <section id="health-tab" class="content-tab d-none animate__animated animate__fadeIn">
-        <!-- Health & Wellness content here -->
-      </section>
+        <!-- Financial content here -->
 
+
+         
+           <div class="white-outer-sec">
+         <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Document Number</label>
+                      <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+                             [ngModelOptions]="{standalone: true}" >
+                    </div>
+
+                    <div class="col-md-6">
+                      <label>Requested amount</label>
+                      <input type="number" class="form-control" required [(ngModel)]="requested_amount" placeholder="Enter requested amount"
+                             [ngModelOptions]="{standalone: true}" >
+                    </div>
+                
+                    <div class="col-md-6">
+                      <label>reason</label>
+                      <input type="text" class="form-control" required [(ngModel)]="reason" placeholder="Enter reason"
+                             [ngModelOptions]="{standalone: true}" >
+                    </div>
+
+                  
+                    <div class="col-md-6">
+                      <label>Remark</label>
+                      <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
+                             [ngModelOptions]="{standalone: true}" >
+                    </div>
+                  
+
+               
+              
+            
+
+       
+
+              
+
+
+                
+
+              
+                     
+               
+                
+               
+                  </div>
+                
+                  <div class="row" >
+                    <div class="col-md-10"></div>
+                 
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
+                  </div>
+                  </div>
+                </form>
+
+        </div>
+
+
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Document Number</th>
+
+                    <th class="text-table-header">Requested Amount</th>
+                    <th class="text-table-header"> Remark</th>
+                                        <th class="text-table-header"> Reason</th>
+
+
+                    <th class="text-table-header">Status</th>
+
+                    <!-- <th class="text-table-header">Payslip Component</th> -->
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.advance_salary_requests; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.document_number }}</td>
+                    <td>{{ leavereq.requested_amount }}</td>
+                    <td>{{ leavereq.remarks }}</td>
+                    <td>{{ leavereq.reason }}</td>
+                    <td>{{ leavereq.status }}</td>
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
+
+
+      </section>
+      <section class="content-tab  animate__animated animate__fadeIn" id="loanRequest"
+      *ngIf="activeTabNav === 'loanRequest'">
+
+        <!-- Financial content here -->
+
+
+         
+           <div class="white-outer-sec">
+            <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
+              <div class="row">
+
+                <div class="col-md-4">
+                  <label>Amount requested</label>
+                  <input type="text" class="form-control" required [(ngModel)]="amount_requested" placeholder="Enter Amount requested"
+                         [ngModelOptions]="{standalone: true}" >
+                </div>
+            
+                <div class="col-md-4">
+                  <label>Repayment period</label>
+                  <input type="number" class="form-control" required [(ngModel)]="repayment_period" placeholder="Enter Repayment period"
+                         [ngModelOptions]="{standalone: true}">
+                
+                </div>
+
+                <div class="col-md-4">
+                  <label>Emi amount</label>
+                  <input type="text" class="form-control" required [(ngModel)]="emi_amount" placeholder="Enter Repayment period"
+                         [ngModelOptions]="{standalone: true}">
+                
+                </div>
+            
+             
+
+             
+
+                <div class="col-md-4">
+                  <label>Remaining balance</label>
+                  <input type="text" class="form-control" required [(ngModel)]="remaining_balance" placeholder="Enter remaining balance"
+                         [ngModelOptions]="{standalone: true}">
+                
+                </div>
+            
+            
+
+          
+
+                <div class="col-md-6" >
+                  <label>Loan Type</label>
+                  <div class="custom-sel">
+                    <select
+                      class="form-control"
+                      id="loan_type"
+                      name="loan_type"
+                      [(ngModel)]="loan_type"
+                      [ngModelOptions]="{ standalone: true }"
+                    >
+                      <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+                        {{ employees.loan_type }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+
+              </div>
+                  
+
+
+
+
+
+              
+              
+              
+
+              <div class="row">
+                <div class="col-md-8"></div>
+                <div class="col-md-4">
+                  <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Application</button>
+                </div>
+              </div>
+            </form>
+
+        </div>
+
+
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Amount Requested</th>
+
+                    <th class="text-table-header">disbursement date</th>
+                    <th class="text-table-header"> document number</th>
+                                        <th class="text-table-header"> emi amount</th>
+                                        <th class="text-table-header">  loan type</th>
+                                        <th class="text-table-header">  pause reason</th>
+                                        <th class="text-table-header">  pause start date</th>
+                                        <th class="text-table-header">  rejection reason</th>
+                                        <th class="text-table-header">  remaining balance</th>
+                                        <th class="text-table-header">  repayment period</th>
+                                        <th class="text-table-header">  resume date</th>
+                                        <th class="text-table-header">  applied on</th>
+                                        <th class="text-table-header">  approved on</th>
+
+
+                    <th class="text-table-header">Status</th>
+
+                    <!-- <th class="text-table-header">Payslip Component</th> -->
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.loan_requests; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.amount_requested }}</td>
+                    <td>{{ leavereq.disbursement_date }}</td>
+                    <td>{{ leavereq.document_number }}</td>
+                    <td>{{ leavereq.emi_amount }}</td>
+                    <td>{{ leavereq.loan_type }}</td>
+                    <td>{{ leavereq.pause_reason }}</td>
+
+                    <td>{{ leavereq.pause_start_date }}</td>
+
+                    <td>{{ leavereq.rejection_reason }}</td>
+                    <td>{{ leavereq.remaining_balance }}</td>
+
+                    <td>{{ leavereq.repayment_period }}</td>
+                    <td>{{ leavereq.resume_date }}</td>
+
+                    <td>{{ leavereq.applied_on }}</td>
+
+                    <td>{{ leavereq.approved_on }}</td>
+                    <td>{{ leavereq.status }}</td>
+
+
+
+
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
+
+
+      </section>
       <section id="settings-tab" class="content-tab d-none animate__animated animate__fadeIn">
         <!-- Settings content here -->
       </section>
