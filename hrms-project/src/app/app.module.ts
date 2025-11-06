@@ -204,6 +204,10 @@ import { AdvanceSalaryEmailtemplateEditComponent } from './advance-salary-emailt
 import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
 import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
 import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
+import { ShiftOptionsComponent } from './shift-options/shift-options.component';
+import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
+import { ShiftEmployeeComponent } from './shift-employee/shift-employee.component';
+import { ShiftOverrideComponent } from './shift-override/shift-override.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -366,7 +370,11 @@ import { AirticketRuleComponent } from './airticket-rule/airticket-rule.componen
      AdvanceSalaryEmailtemplateEditComponent,
      LoanEmailTemplateComponent,
      LoanEmailtemplateEditComponent,
-     AirticketRuleComponent
+     AirticketRuleComponent,
+     ShiftOptionsComponent,
+     ShiftPatternComponent,
+     ShiftEmployeeComponent,
+     ShiftOverrideComponent
      
      
 

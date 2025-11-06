@@ -53,7 +53,8 @@ export class ShiftsComponent {
 
   ShiftsPattern: any[] = [];
 
-  allSelected=false;
+  // allSelected: boolean = false;
+
   allSelecteddept=false;
   allSelectedcat=false;
   allSelectedEmp=false;
@@ -72,6 +73,7 @@ export class ShiftsComponent {
   saturday_shift:any='';
 
   sunday_shift:any='';
+  
   employee:any='';
   branch:any='';
   department:any='';
@@ -436,32 +438,32 @@ this.loadShiftsPattern();
   }
 
 
-  registerShiftOverride(): void {
-    this.registerButtonClicked = true;
+  // registerShiftOverride(): void {
+  //   this.registerButtonClicked = true;
 
  
 
-    const companyData = {
-      date: this.date,
-      employee: this.employee_override ,
-      override_shift: this.override_shift,
-      // single_shift_pattern: this.single_shift_pattern,
+  //   const companyData = {
+  //     date: this.date,
+  //     employee: this.employee_override ,
+  //     override_shift: this.override_shift,
+  //     // single_shift_pattern: this.single_shift_pattern,
 
 
-    };
+  //   };
 
-    this.employeeService.registerShiftOverride(companyData).subscribe(
-      (response) => { 
-        console.log('Registration successful', response);
-        alert('Shift has been added.');
-        // window.location.reload();
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('Registration failed. Please try again.');
-      }
-    );
-  }
+  //   this.employeeService.registerShiftOverride(companyData).subscribe(
+  //     (response) => { 
+  //       console.log('Registration successful', response);
+  //       alert('Shift has been added.');
+  //       // window.location.reload();
+  //     },
+  //     (error) => {
+  //       console.error('Registration failed', error);
+  //       alert('Registration failed. Please try again.');
+  //     }
+  //   );
+  // }
 
 
 
@@ -608,6 +610,9 @@ this.loadShiftsPattern();
           }
         }
       }
+
+
+      
   
   
        
@@ -693,6 +698,113 @@ this.loadShiftsPattern();
                   );
                 }
                 }
+
+  iscreateLoanApp: boolean = false;
+
+   openPopus():void{
+        this.iscreateLoanApp = true;
+
+      }
+    
+      closeapplicationModal():void{
+        this.iscreateLoanApp = false;
+
+      }
+
+
+      isEditModalOpen: boolean = false;
+      editshifts: any = {}; // holds the asset being edited
+
+openEditModal(asset: any): void {
+  this.editshifts = { ...asset }; // copy asset data
+  this.isEditModalOpen = true;
+}
+
+
+      showEditBtn: boolean = false;
+  
+      EditShowButtons() {
+        this.showEditBtn = !this.showEditBtn;
+      }
+
+      closeEditModal(): void {
+      this.isEditModalOpen = false;
+     this.editshifts = {};
+}
+
+
+
+      Delete: boolean = false;
+  
+  
+    toggleCheckboxes() {
+      this.Delete = !this.Delete;
+    }
+
+
+
+  updateShiftsType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editshifts.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  this.employeeService.updateShifts(this.editshifts.id, this.editshifts).subscribe(
+    (response) => {
+      alert('Shifts updated successfully!');
+      this.closeEditModal();
+      this.loadEmployeeshift(); // reload updated list
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Error updating asset:', error);
+      alert('Update failed');
+    }
+  );
+}
+
+
+
+deleteSelectedShifts() { 
+  const selectedEmployeeIds = this.Shifts
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedEmployeeIds.length === 0) {
+    alert('No shifts selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected shifts?')) {
+    selectedEmployeeIds.forEach(categoryId => {
+      this.employeeService.deleteShifts(categoryId).subscribe(
+        () => {
+          console.log('shifts deleted successfully:', categoryId);
+          // Remove the deleted employee from the local list
+          this.Shifts = this.Shifts.filter(employee => employee.id !== categoryId);
+          alert(' shifts deleted successfully');
+          window.location.reload();
+
+        },
+        (error) => {
+          console.error('Error deleting Category:', error);
+        }
+      );
+    });
+  }
+}
+
+
+    allSelected: boolean = false;
+
+
+    toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+    this.Shifts.forEach(employee => employee.selected = this.allSelected);
+
+    }
+  
 
 
 

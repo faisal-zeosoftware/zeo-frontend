@@ -3162,6 +3162,46 @@ registerAssetType(companyData: any): Observable<any> {
   );
 }
 
+  updateShiftPattern(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/shiftpattern/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+  updateShiftOverride(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/shift-overrides/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating ShiftOverride:', error);
+      return throwError(error);
+    })
+  );
+}
+
+  updateShifts(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/shifts/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating Shifts:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
 
 
 deleteAssetType(categoryId: number): Observable<any> {
@@ -3175,6 +3215,54 @@ deleteAssetType(categoryId: number): Observable<any> {
   }
  
   const apiUrl = `${this.apiUrl}/organisation/api/asset-type/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+deleteShiftPattern(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/shiftpattern/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+deleteShiftOverride(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/shift-overrides/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+deleteShifts(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/shifts/${categoryId}/?schema=${selectedSchema}`;
  
   return this.http.delete(apiUrl);
 }

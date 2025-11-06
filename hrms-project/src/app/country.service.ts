@@ -492,6 +492,31 @@ export class CountryService {
     // Fetch employees from the API
     return this.http.get(apiUrl);
   }
+  
+
+    getShiftsEmployee(selectedSchema: string): Observable<any> {
+    // const url = `${this.baseUrl}/Branch/`;
+    // return this.http.get(url);
+
+    const apiUrl = `${this.apiUrl}/calendars/api/shiftemployee/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+  }
+
+
+  
+  getShiftOverride(selectedSchema: string): Observable<any> {
+    // const url = `${this.baseUrl}/Branch/`;
+    // return this.http.get(url);
+
+    const apiUrl = `${this.apiUrl}/calendars/api/shift-overrides/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+  }
+
+
 
 
   

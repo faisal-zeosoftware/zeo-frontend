@@ -63,7 +63,6 @@ import { LeaveReportComponent } from './leave-report/leave-report.component';
 import { EmployeeApprovalsComponent } from './employee-approvals/employee-approvals.component';
 import { EmployeeLeaveComponent } from './employee-leave/employee-leave.component';
 import { DashboardContentsComponent } from './dashboard-contents/dashboard-contents.component';
-import { ShiftsComponent } from './shifts/shifts.component';
 import { PayRollComponent } from './pay-roll/pay-roll.component';
 import { SalaryComponent } from './salary/salary.component';
 import { PayrollDetailsComponent } from './payroll-details/payroll-details.component';
@@ -126,6 +125,12 @@ import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtempl
 import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
 import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
 import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
+import { ShiftOptionsComponent } from './shift-options/shift-options.component';
+import { ShiftsComponent } from './shifts/shifts.component';
+import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
+import { ShiftEmployeeComponent } from './shift-employee/shift-employee.component';
+import { ShiftOverrideComponent } from './shift-override/shift-override.component';
+
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
    { path: 'login', component: LoginComponent ,  },
@@ -648,6 +653,37 @@ const routes: Routes = [
       path:'project-timesheet',
       component:ProjectTimesheetComponent,
     },
+
+
+  ]
+
+},
+
+{
+  path: 'shift-options',
+  component: ShiftOptionsComponent,
+  children:[
+   
+    {
+      path:'shifts',
+      component:ShiftsComponent,
+    },
+
+    {
+      path:'shift-pattern',
+      component:ShiftPatternComponent,
+    },
+
+    {
+      path:'shift-employee',
+      component:ShiftEmployeeComponent,
+    },
+
+    {
+      path:'shift-override',
+      component:ShiftOverrideComponent,
+    },
+    
 
 
   ]
