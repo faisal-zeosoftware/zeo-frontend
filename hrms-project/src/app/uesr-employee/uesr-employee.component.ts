@@ -84,8 +84,8 @@ export class UesrEmployeeComponent {
   emp_ctgry_id:any='';
   // emp_languages: string[] = [];
   emp_languages: any='';
-  emp_active_date:any='';
-  emp_hired_date:any=''; 
+  emp_joined_date:any='';
+  emp_date_of_confirmation:any=''; 
   users:any=''; 
   selectedUser: any; // Declare the selectedUser property
   Emp: any;
@@ -127,8 +127,8 @@ export class UesrEmployeeComponent {
   }
 
 
-   onFileSelected(event: any): void {
-    this.selectedFile = event.target.files[0];
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
   }
 
   ngOnInit(): void {
@@ -396,7 +396,12 @@ createEmpCodeToIdMap(employees: Employee[]): { [key: string]: number } {
   // }
     
     const formData = new FormData();
-    formData.append('emp_profile_pic', this.selectedFile);
+    if (this.selectedFile) {
+      formData.append('emp_profile_pic', this.selectedFile);
+    } else {
+      formData.append('emp_profile_pic', '');
+    }
+
     
     formData.append('emp_code', this.emp_code);
     formData.append('users', this.users);
@@ -437,8 +442,8 @@ createEmpCodeToIdMap(employees: Employee[]): { [key: string]: number } {
     // formData.append('emp_languages', this.emp_languages);
 
     // formData.append('emp_languages', JSON.stringify(this.emp_languages));
-    formData.append('emp_active_date', this.emp_active_date);
-    formData.append('emp_hired_date', this.emp_hired_date);
+    formData.append('emp_joined_date', this.emp_joined_date);
+    formData.append('emp_date_of_confirmation', this.emp_date_of_confirmation);
     formData.append('is_ess', this.is_ess ? '1' : '0');
     formData.append('emp_status', this.emp_status ? '1' : '0');
 
@@ -449,9 +454,9 @@ createEmpCodeToIdMap(employees: Employee[]): { [key: string]: number } {
   
     if (this.selectedCompany) {
       const companyName = this.selectedCompany.schema_name;
-      console.log(`Submitting to: ${this.apiUrl}/employee/api/employees/?schema=${companyName}`);
+      console.log(`Submitting to: ${this.apiUrl}/employee/api/Employee/?schema=${companyName}`);
   
-      this.http.post(`${this.apiUrl}/employee/api/employees/?schema=${companyName}`, formData)
+      this.http.post(`${this.apiUrl}/employee/api/Employee/?schema=${companyName}`, formData)
         .subscribe({
           next: (response) => {
             console.log('Response:', response);

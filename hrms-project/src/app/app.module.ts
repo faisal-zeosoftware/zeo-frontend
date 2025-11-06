@@ -419,6 +419,7 @@ import { ShiftOverrideComponent } from './shift-override/shift-override.componen
     
     
     
+    
   ],
   providers: [AuthGuard, CompanyRegistrationService,AuthenticationService,NotificationServiceService,DatePipe,
     {

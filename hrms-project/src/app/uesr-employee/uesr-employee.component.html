@@ -388,7 +388,7 @@
     <div class="col-md-6">
                
         <label>Hired date</label>
-       <input type="date"  class="form-control" required id="emp_hired_date" name="emp_hired_date"  [(ngModel)]="emp_hired_date"  placeholder="Enter hired Date "
+       <input type="date"  class="form-control" required id="emp_date_of_confirmation" name="emp_date_of_confirmation"  [(ngModel)]="emp_date_of_confirmation"  placeholder="Enter hired Date "
         [ngModelOptions]="{standalone: true}" >
        
        <!-- <div *ngIf="registerButtonClicked && !emp_hired_date" class="error-message">hired date .</div> -->
@@ -397,10 +397,10 @@
     <div class="col-md-6">
                
         <label>Joining  date</label>
-       <input type="date"  class="form-control" required id="emp_active_date" name="emp_active_date"  [(ngModel)]="emp_active_date"  placeholder="Enter Active Date "
-        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_active_date}">
+       <input type="date"  class="form-control" required id="emp_joined_date" name="emp_joined_date"  [(ngModel)]="emp_joined_date"  placeholder="Enter Active Date "
+        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_joined_date}">
        
-       <div *ngIf="registerButtonClicked && !emp_active_date" class="error-message">Active date .</div>
+       <div *ngIf="registerButtonClicked && !emp_joined_date" class="error-message">Active date .</div>
     </div>
 
  
