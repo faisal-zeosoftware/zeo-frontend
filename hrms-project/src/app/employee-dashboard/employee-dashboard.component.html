@@ -464,7 +464,7 @@
                   <div class="card-header bg-white">
                     <h5 class="mb-0"> <i class="fa fa-calendar-times me-2" aria-hidden="true"></i> Upcoming Holidays</h5>
                   </div>
-                  <div class="card-body p-0">
+                  <div class="card-body card-scroll p-0">
                     <ul class="list-group list-group-flush" *ngFor="let Empholiday of employeesec.holidays">
                       <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                         <div>
@@ -500,29 +500,105 @@
 
 
               <div class="col-md-7 mb-4">
-                <div class="card border-0 shadow-sm">
+                <div class="card border-0 shadow-sm ">
                   <div class="card-header bg-white">
-                    <h5 class="mb-0"> <i class="fa fa-bullhorn me-2" aria-hidden="true"></i> Announcements</h5>
+                    <h5 class="mb-0">
+                      <i class="fa fa-bullhorn me-2" aria-hidden="true"></i> Announcements
+                    </h5>
                   </div>
-                  <div class="card-body ">
-                 <div class="annou_Card">
-                  <div class="row">
-                    <div class="col-md-11">
-                      <h2>Annoucement tittle</h2>
-
+                
+                  <div class="card-body card-scroll">
+                    <div *ngIf="EmpAnnouncement && EmpAnnouncement.length > 0; else noAnnouncements">
+                      <div *ngFor="let ann of EmpAnnouncement" class="annou_Card mb-3 p-3 border rounded shadow-sm">
+                        <div class="row align-items-center">
+                          <div class="col-md-11">
+                            <h2 >{{ ann.title }}</h2>
+                            <h3 >
+                              {{ ann.schedule_at | date: 'mediumDate' }} – {{ ann.expires_at | date: 'mediumDate' }}
+                            </h3>
+                          </div>
+                          <div class="col-md-1 text-end">
+                            <button
+                              type="button"
+                              class="btn-announcement-expand btn btn-light btn-sm"
+                              (click)="toggleExpand(ann)"
+                            >
+                              <i class="fa" [ngClass]="ann.expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                            </button>
+                          </div>
+                        </div>
+                
+                        <div
+                          class="Annoucement-body mt-2 ps-2 border-start border-2 border-primary"
+                          *ngIf="ann.expanded"
+                        >
+                          <h2 class="mb-0">{{ ann.message }}</h2>
+                
+                          <div *ngIf="ann.attachment" class="mt-2">
+                            <a [href]="ann.attachment" target="_blank" class="text-decoration-none text-primary">
+                              <i class="fa fa-paperclip me-1"></i> View Attachment
+                            </a>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="col-md-1">
-                      <button type="button" class="btn-announcement-expand"> <i class="fa fa-chevron-down"></i></button>
-                    </div>
+                
+                    <ng-template #noAnnouncements>
+                      <p class="text-muted text-center mb-0">No announcements available.</p>
+                    </ng-template>
                   </div>
-                 </div>
-                  </div>
-                 
                 </div>
-
+                
                 
               </div>
               </div>
+
+              <div class="line-chart-block block">
+                <div class="line-chart">
+                  <div class='grafico'>
+                  <ul class='eje-y'>
+                    <li data-ejeY='30'></li>
+                    <li data-ejeY='20'></li>
+                    <li data-ejeY='10'></li>
+                    <li data-ejeY='0'></li>
+                  </ul>
+                  <ul class='eje-x'>
+                    <li>Apr</li>
+                    <li>May</li>
+                    <li>Jun</li>
+                  </ul>
+                    <span data-valor='25'>
+                      <span data-valor='8'>
+                        <span data-valor='13'>
+                          <span data-valor='5'>   
+                            <span data-valor='23'>   
+                            <span data-valor='12'>
+                                <span data-valor='15'>
+                                </span></span></span></span></span></span></span>
+                  </div>
+                  
+                </div>
+                               <ul class="time-lenght horizontal-list">
+                                   <li><a class="time-lenght-btn" href="#14">Week</a></li>
+                                   <li><a class="time-lenght-btn" href="#15">Month</a></li>
+                                   <li><a class="time-lenght-btn" href="#16">Year</a></li>
+                               </ul>
+                               <ul class="month-data clear">
+                                   <li>
+                                       <p>APR<span class="scnd-font-color"> 2013</span></p>
+                                       <p><span class="entypo-plus increment"> </span>21<sup>%</sup></p>
+                                   </li>
+                                   <li>
+                                       <p>MAY<span class="scnd-font-color"> 2013</span></p>
+                                       <p><span class="entypo-plus increment"> </span>48<sup>%</sup></p>
+                                   </li>
+                                   <li>
+                                       <p>JUN<span class="scnd-font-color"> 2013</span></p>
+                                       <p><span class="entypo-plus increment"> </span>35<sup>%</sup></p>
+                                   </li>
+                               </ul>
+                           </div>
+                           
 
           </div>
 
@@ -1420,9 +1496,79 @@
             </div>
           </div>
           </div>
-
-
-
+          <div class="tab_boddy mt-4">
+          <div  class="row">
+            <div class="col-md-12">
+              <div class="">
+                <!-- Check if there are any leave requests -->
+                <div *ngIf="employeesec.leave_rqsts && employeesec.leave_rqsts.length > 0; else noLeaveRequests">
+                  <!-- Loop through leave requests -->
+                  <div  class="">
+                    <div class="row">
+                      <div class="col-md-5">
+                        <div class="leave_box" *ngFor="let request of employeesec.leave_rqsts" (click)="selectRequest(request.id)"
+                        [ngClass]="{'selected-request': selectedRequestId === request.id}">
+                          <div class="row">
+                            <div class="col-md-4">
+                              <label>Leave Type</label>
+                              <h6>{{ request.leave_type || 'N/A' }}</h6>
+                            </div>
+                            <div class="col-md-4">
+                              <label>Start Date</label>
+                              <h6>{{ request.start_date }}</h6>
+                            </div>
+                            <div class="col-md-4">
+                              <label>End Date</label>
+                              <h6>{{ request.end_date }}</h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+        
+                      <div class="col-md-7" >
+                          <div *ngFor="let request of employeesec.leave_rqsts">
+                          
+                        <div class="leave_box"  *ngIf="selectedRequestId === request.id">
+                          <!-- Loop through approvals for the leave request -->
+                          <div class="approval-steps" *ngIf="request.approvals && request.approvals.length > 0">
+                            <h5>Leave Approval Status</h5><hr>
+                            <div *ngFor="let approval of request.approvals" class="row">
+                              <div class="col-md-3">
+                                <label>Status</label>
+                                <h6>{{ approval.status }}</h6>
+                              </div>
+                              <div class="col-md-3">
+                                <label>Role</label>
+                                <h6>{{ approval.role }}</h6>
+                              </div>
+                              <div class="col-md-3">
+                                <label>Approver</label>
+                                <h6>{{ approval.approver || 'N/A' }}</h6>
+                              </div>
+                              <div class="col-md-3">
+                                <label>Note</label>
+                                <h6>{{ approval.note || 'N/A' }}</h6>
+                              </div>
+                              <!-- <div class="col-md-2">
+                                <label>Updated At</label>
+                                <h6>{{ approval.updated_at }}</h6>
+                              </div> -->
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                    </div>  
+                  </div>
+                </div>
+                <!-- Template to show if no leave requests are present -->
+                <ng-template #noLeaveRequests>
+                  <p>No leave requests available for this employee.</p>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+</div>
       </section>
 
       <section class="content-tab  animate__animated animate__fadeIn" id="generalRequest"

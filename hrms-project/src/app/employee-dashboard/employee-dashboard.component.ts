@@ -11,12 +11,17 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 
+
 @Component({
   selector: 'app-employee-dashboard',
   templateUrl: './employee-dashboard.component.html',
   styleUrl: './employee-dashboard.component.css'
 })
 export class EmployeeDashboardComponent {
+
+
+  
+  
 
   expiredDocumentsCount: number = 0;
   expiredDocuments: any[] = []; // Assuming this array holds the list of expired documents
@@ -1198,18 +1203,24 @@ loadRequestType(): void {
 
   EmpAnnouncement: any[] = [];
 
-loadEmpAnnouncement(selectedSchema: string, empId: number): void {
-  this.EmployeeService.getEmpAnnouncement(selectedSchema, empId).subscribe(
-    (result: any) => {
-      this.EmpAnnouncement = result;
-      console.log('Employee Assets:', this.EmpAssets);
-    },
-    (error) => {
-      console.error('Error fetching Employee Assets:', error);
-    }
-  );
-}
-
+  loadEmpAnnouncement(selectedSchema: string, empId: number): void {
+    this.EmployeeService.getEmpAnnouncement(selectedSchema, empId).subscribe(
+      (result: any) => {
+        this.EmpAnnouncement = result.map((a: any) => ({
+          ...a,
+          expanded: false // add toggle flag for UI
+        }));
+        console.log('Employee Announcements:', this.EmpAnnouncement);
+      },
+      (error) => {
+        console.error('Error fetching Employee Announcements:', error);
+      }
+    );
+  }
+  
+  toggleExpand(announcement: any): void {
+    announcement.expanded = !announcement.expanded;
+  }
   
 
 }
