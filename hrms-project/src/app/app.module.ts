@@ -204,9 +204,6 @@ import { AdvanceSalaryEmailtemplateEditComponent } from './advance-salary-emailt
 import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
 import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
 import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
-
-// import { FullCalendarModule } from '@fullcalendar/angular';
-
 @NgModule({
   declarations: [
     AppComponent,
