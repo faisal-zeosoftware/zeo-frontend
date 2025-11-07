@@ -553,7 +553,76 @@
               </div>
               </div>
 
-              <div class="line-chart-block block">
+             <!-- EMPLOYEE PROJECT SECTION -->
+<div class="project-section" *ngIf="employeesec.projects?.length > 0; else noProjects">
+  <h3 class="section-title">🧩 Employee Projects</h3>
+
+  <div class="project-grid">
+    <div class="project-card" *ngFor="let project of employeesec.projects">
+      <div class="project-header">
+        <div class="left">
+          <h4 class="project-title">{{ project.title || 'Untitled Project' }}</h4>
+          <p class="project-desc">{{ project.description }}</p>
+        </div>
+        <span class="status-badge" [ngClass]="project.status">{{ project.status }}</span>
+      </div>
+
+      <div class="project-meta">
+        <div class="meta-item">
+          <i class="fa fa-calendar-alt"></i>
+          <span><strong>Start:</strong> {{ project.start_date | date }}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fa fa-calendar-check"></i>
+          <span><strong>End:</strong> {{ project.end_date | date }}</span>
+        </div>
+      </div>
+
+      <div class="project-meta">
+        <div class="meta-item">
+          <i class="fa fa-user-tie"></i>
+          <span><strong>Managers:</strong> {{ project.managers.join(', ') || '—' }}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fa fa-users"></i>
+          <span><strong>Members:</strong> {{ project.members.join(', ') || '—' }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="project.document" class="project-doc">
+        <a [href]="project.document" target="_blank">
+          <i class="fa fa-paperclip"></i> View Project Document
+        </a>
+      </div>
+
+      <!-- TASKS SECTION -->
+      <div class="task-list" *ngIf="project.tasks?.length > 0">
+        <h5>📋 Tasks</h5>
+        <div class="task-item" *ngFor="let task of project.tasks">
+          <div class="task-header">
+            <strong>{{ task.title }}</strong>
+            <span class="task-status" [ngClass]="task.status">{{ task.status }}</span>
+          </div>
+          <p class="task-desc">{{ task.description }}</p>
+          <small class="task-date">
+            <i class="fa fa-clock"></i> {{ task.start_date | date }} → {{ task.end_date | date }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #noProjects>
+  <p class="no-data">No projects assigned</p>
+</ng-template>
+
+  <!-- If no projects -->
+  <ng-template #noProjects>
+    <p class="no-data">No projects assigned</p>
+  </ng-template>
+
+              <!-- <div class="line-chart-block block">
                 <div class="line-chart">
                   <div class='grafico'>
                   <ul class='eje-y'>
@@ -597,7 +666,7 @@
                                        <p><span class="entypo-plus increment"> </span>35<sup>%</sup></p>
                                    </li>
                                </ul>
-                           </div>
+                           </div> -->
                            
 
           </div>

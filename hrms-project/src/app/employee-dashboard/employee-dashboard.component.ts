@@ -123,24 +123,20 @@ notificationCount: number = 0; // number to show in the red badge
    
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
-    if (selectedSchema) {
-              // this.LoadLeavetype(selectedSchema);
-
-      // Construct the API URL with the selected schema
-     //  const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/`;
-      // Fetch employees from the API
-      this.EmployeeService.getEmployees(selectedSchema).subscribe(
-        (data: any) => {
-          this.employees = data;
-          console.log('employee:' ,this.employees)
-        },
-        (error: any) => {
-          console.error('Error fetching employees:', error);
-        }
-      );
-    } else {
-      console.error('No schema selected.');
-    }
+    // if (selectedSchema) {
+     
+    //   this.EmployeeService.getEmployees(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.employees = data;
+    //       console.log('employee:' ,this.employees)
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching employees:', error);
+    //     }
+    //   );
+    // } else {
+    //   console.error('No schema selected.');
+    // }
          
          
       // Extract schema name from the URL

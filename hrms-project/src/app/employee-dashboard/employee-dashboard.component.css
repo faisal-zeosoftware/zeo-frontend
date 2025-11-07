@@ -742,3 +742,164 @@ body {
   font-weight: bold;
   color: #4caf50;
 }
+
+
+/* ===== PROJECT SECTION ===== */
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #1b2a49;
+    margin-bottom: 15px;
+  }
+  
+  /* Grid Layout for Projects */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  
+  /* Card Style */
+  .project-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e0e6ed;
+  }
+  .project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  
+  /* Project Header */
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .project-title {
+    color: #11a8ab;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .project-desc {
+    color: #555;
+    font-size: 0.9rem;
+  }
+  
+  /* Status Badge */
+  .status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    text-transform: capitalize;
+    color: #fff;
+    font-weight: 500;
+  }
+  .status-badge.new { background-color: #11a8ab; }
+  .status-badge.in_progress { background-color: #fcb150; }
+  .status-badge.completed { background-color: #4fc4f6; }
+  
+  /* Meta Info */
+  .project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #333;
+    font-size: 0.9rem;
+  }
+  .meta-item i {
+    color: #11a8ab;
+  }
+  
+  /* Document Link */
+  .project-doc {
+    margin-top: 12px;
+  }
+  .project-doc a {
+    color: #11a8ab;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  .project-doc a:hover {
+    text-decoration: underline;
+  }
+  
+  /* ===== TASKS ===== */
+  .task-list {
+    margin-top: 15px;
+    background: #f9fafe;
+    border-radius: 10px;
+    padding: 10px 15px;
+  }
+  .task-list h5 {
+    color: #1b2a49;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .task-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-left: 4px solid #11a8ab;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .task-status {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #fff;
+    text-transform: capitalize;
+  }
+  .task-status.to_do { background: #e64c65; }
+  .task-status.in_progress { background: #fcb150; }
+  .task-status.completed { background: #4fc4f6; }
+  .task-desc {
+    margin: 5px 0;
+    color: #555;
+    font-size: 0.85rem;
+  }
+  .task-date {
+    color: #777;
+    font-size: 0.8rem;
+  }
+  .task-date i {
+    color: #11a8ab;
+    margin-right: 4px;
+  }
+  
+  /* No Data */
+  .no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    margin-top: 10px;
+  }
+  
+  /* Responsive Tweaks */
+  @media (max-width: 600px) {
+    .project-card {
+      padding: 15px;
+    }
+    .project-title {
+      font-size: 1rem;
+    }
+  }
+  
