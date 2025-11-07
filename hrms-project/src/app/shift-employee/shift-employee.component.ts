@@ -9,7 +9,9 @@ import { CountryService } from '../country.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
+
 import { environment } from '../../environments/environment';
 declare var $: any;
 
