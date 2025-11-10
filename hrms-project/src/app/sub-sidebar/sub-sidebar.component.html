@@ -48,23 +48,23 @@
                   </li>
 
                   <ul *ngIf="showAdvanceSalary" style="padding-left: 20px;">
-                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approvals">
+                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approvals"  *ngIf="hasViewApprovalList">
                       <a> Approval List</a>
                     </li>
-                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approved-list">
+                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approved-list"  *ngIf="hasViewResignationApprovedList">
                       <a>Resignation Approved List</a>
                     </li>
-                     <li routerLink="/main-sidebar/sub-sidebar/end-of-service">
+                     <li routerLink="/main-sidebar/sub-sidebar/end-of-service"  *ngIf="hasViewEndOfService">
                       <a>Employee End Of Service</a>
                     </li>
-                    <li routerLink="/main-sidebar/sub-sidebar/resignation-request">
+                    <li routerLink="/main-sidebar/sub-sidebar/resignation-request"  *ngIf="hasViewResignationRequest">
                       <a> Resignation Request</a>
                     </li>
-                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approval-level">
+                    <li routerLink="/main-sidebar/sub-sidebar/resignation-approval-level"  *ngIf="hasViewResignationApprovalLevel">
                       <a>Resignation Approval Level</a>  
                     </li>
 
-                    <li routerLink="/main-sidebar/sub-sidebar/gratyuity">
+                    <li routerLink="/main-sidebar/sub-sidebar/gratyuity"  *ngIf="hasViewGratuity">
                       <a>Gratuity</a>  
                     </li>
                   </ul>

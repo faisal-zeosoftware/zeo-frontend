@@ -44,6 +44,13 @@ export class SubSidebarComponent {
   hasViewNotification: boolean = false;
   hasViewEmpOverTime: boolean = false;
 
+  hasViewApprovalList: boolean = false;
+  hasViewResignationApprovedList: boolean = false;
+  hasViewEndOfService: boolean = false;
+  hasViewResignationRequest: boolean = false;
+  hasViewResignationApprovalLevel: boolean = false;
+  hasViewGratuity: boolean = false;
+
 
 
   constructor(private EmployeeService:EmployeeService,
@@ -103,6 +110,13 @@ if (this.userId !== null) {
         this.hasViewPermissionAttd = true;
         this.hasViewNotification = true;
         this.hasViewEmpOverTime = true;
+        
+        this.hasViewApprovalList = true;
+        this.hasViewResignationApprovedList = true;
+        this.hasViewEndOfService = true;
+        this.hasViewResignationRequest = true;
+        this.hasViewResignationApprovalLevel = true;
+        this.hasViewGratuity = true;
 
 
         // Fetch designations without checking permissions
@@ -135,6 +149,14 @@ if (this.userId !== null) {
                 this.hasViewPermissionAttd = true;
                 this.hasViewNotification = true;
                 this.hasViewEmpOverTime = true;
+
+                this.hasViewApprovalList = true;
+                this.hasViewResignationApprovedList = true;
+                this.hasViewEndOfService = true;
+                this.hasViewResignationRequest = true;
+                this.hasViewResignationApprovalLevel = true;
+                this.hasViewGratuity = true;
+
 
 
         
@@ -174,8 +196,26 @@ if (this.userId !== null) {
                     this.hasViewNotification = this.checkGroupPermission('view_notification', groupPermissions);
                     console.log('Has view permission:', this.hasViewNotification);
 
-                    this.hasViewEmpOverTime = this.checkGroupPermission('view_employeeovertime', groupPermissions);
-                    console.log('Has view permission:', this.hasViewEmpOverTime);
+
+
+                    this.hasViewApprovalList = this.checkGroupPermission('view_resignationapproval', groupPermissions);
+                    console.log('Has view permission:', this.hasViewApprovalList);
+
+                     this.hasViewResignationApprovedList = this.checkGroupPermission('view_resignationapproval', groupPermissions);
+                    console.log('Has view permission:', this.hasViewResignationApprovedList);
+
+                     this.hasViewEndOfService = this.checkGroupPermission('view_endofservice', groupPermissions);
+                    console.log('Has view permission:', this.hasViewEndOfService);
+
+                     this.hasViewResignationRequest = this.checkGroupPermission('view_employeeresignation', groupPermissions);
+                    console.log('Has view permission:', this.hasViewResignationRequest);
+
+                     this.hasViewResignationApprovalLevel = this.checkGroupPermission('view_resignationapprovallevel', groupPermissions);
+                    console.log('Has view permission:', this.hasViewResignationApprovalLevel);
+
+                     this.hasViewGratuity = this.checkGroupPermission('view_gratuitytable', groupPermissions);
+                    console.log('Has view permission:', this.hasViewGratuity);
+
 
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);
@@ -184,8 +224,7 @@ if (this.userId !== null) {
               console.error('Permissions data is not an array or is empty.', permissionsData);
             }
 
-            // Fetching designations after checking permissions
-            // this.fetchDesignations(selectedSchema);
+
           }
           
           

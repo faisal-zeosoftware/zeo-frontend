@@ -449,6 +449,7 @@ outline: none-webkit-focus-ring-color auto 0px;
 
 table thead th {
   white-space: nowrap;
+  color: white;
 }
 table thead td {
   white-space: nowrap;

@@ -25,13 +25,13 @@
           <div class="sidebar"  [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
               <ul>
                 
-                <li routerLink="/main-sidebar/shift-options/shifts"><a><mat-icon>peoples</mat-icon>Shift</a></li>
+                <li routerLink="/main-sidebar/shift-options/shifts" *ngIf="hasViewPermissionShifts"><a><mat-icon>peoples</mat-icon>Shift</a></li>
 
-                <li routerLink="/main-sidebar/shift-options/shift-pattern" ><a><mat-icon>peoples</mat-icon>Shift Pattern</a></li>
+                <li routerLink="/main-sidebar/shift-options/shift-pattern" *ngIf="hasViewPermissionShiftPattern"><a><mat-icon>peoples</mat-icon>Shift Pattern</a></li>
                
-                <li routerLink="/main-sidebar/shift-options/shift-employee"><a><mat-icon>peoples</mat-icon>Employee Shift</a></li>
+                <li routerLink="/main-sidebar/shift-options/shift-employee" *ngIf="hasViewPermissionEmployeeShift"><a><mat-icon>peoples</mat-icon>Employee Shift</a></li>
 
-                <li routerLink="/main-sidebar/shift-options/shift-override"><a><mat-icon>peoples</mat-icon>Shift Override</a></li>
+                <li routerLink="/main-sidebar/shift-options/shift-override" *ngIf="hasViewPermissionShiftOverride"><a><mat-icon>peoples</mat-icon>Shift Override</a></li>
 
                   <mat-nav-list>
      

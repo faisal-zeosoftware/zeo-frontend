@@ -430,27 +430,27 @@ ngOnInit(): void {
 
 
     isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
+editProject: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
+  this.editProject = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
   this.isEditModalOpen = false;
-  this.editAsset = {};
+  this.editProject = {};
 }
 
 
 updateAssetType(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema || !this.editAsset.id) {
+  if (!selectedSchema || !this.editProject.id) {
     alert('Missing schema or asset ID');
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateAirpolicy(this.editProject.id, this.editProject).subscribe(
     (response) => {
       alert('Asset  updated successfully!');
       this.closeEditModal();

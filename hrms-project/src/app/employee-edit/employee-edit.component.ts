@@ -288,7 +288,7 @@ updateEmp(): void {
   safeAppend('emp_branch_id', this.Emp.emp_branch_id);
 
   safeAppend('emp_relegion', this.Emp.emp_relegion);
-  safeAppend('emp_nationality', this.Emp.emp_nationality);
+    formData.append('emp_nationality', this.emp_nationality);
 
   safeAppend('emp_dept_id', this.Emp.emp_dept_id);
   safeAppend('emp_desgntn_id', this.Emp.emp_desgntn_id);

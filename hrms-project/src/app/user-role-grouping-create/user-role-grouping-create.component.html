@@ -252,7 +252,7 @@
 
                                   (change)="onAprlvlMasterChange()" 
                                   [ngModelOptions]="{standalone: true}">
-                     Approvals Level Setting
+                     Approvals Level
                     </mat-checkbox>
                   </div>
                   <div class="col-md-9">
@@ -494,36 +494,6 @@
                   </div>
                  </div>
 
-
-        <div class="row">
-                  <div class="col-md-3">
-                    <mat-checkbox [(ngModel)]="RegAprlvlChecked" 
-                              [indeterminate]="isRegAprlvlIndeterminate()" 
-
-                                  (change)="onRegAprlvlChange()" 
-                                  [ngModelOptions]="{standalone: true}">
-                   Resignation Approval Level
-                    </mat-checkbox>
-                  </div>
-                  <div class="col-md-9">
-
-
-                    
-                    <div class="selection_checkmark_sec">
-                      <div class="all_selection_Sec">
-                        <div class="row">
-                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsRegAprlvl">
-                            <mat-checkbox [value]="permission.id" 
-                                          (change)="onCheckboxChangeRegAprlvl(permission.id)" 
-                                          [checked]="selectedPermissions.includes(permission.id)">
-                              {{ getDisplayNameRegAprlvl(permission.codename) }}
-                            </mat-checkbox>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-       </div>
 
 
         <div class="row">
@@ -1485,7 +1455,7 @@
                     </div>
                 
                
-
+<!-- 
                     <div class="col-md-3">
                       <span class=""><mat-checkbox [(ngModel)]="ShiftChecked"
                         [indeterminate]="isShiftIndeterminate()" 
@@ -1512,7 +1482,7 @@
                       </div>
       
                   </div>
-              
+               -->
                  
         
                 </div>
@@ -3247,6 +3217,171 @@
 
 
       
+                </div>
+                
+        
+        
+                </div>
+
+
+    <!-- Shift Management -->
+
+                <div class="row mt-3">
+       
+                <div class="col-md-4">
+                    <span class="head_group_list">
+                      <!-- [indeterminate]="isreports()" -->
+
+                      <mat-checkbox [(ngModel)]="Shiftchecked" 
+                                    (change)="selectShift()"
+                                    (change)="updateShiftCheckbox()" 
+                                    [indeterminate]="isShiftInderminate()"
+                                    [ngModelOptions]="{standalone: true}">
+                      </mat-checkbox>
+                      <span (click)="showShift()">Shift Management</span>
+                    </span>
+                  </div>
+                                   
+                </div>
+
+                    <div class="child_per">
+                <div class="row"  *ngIf="ShiftMastersvalue" >
+                
+                  
+                  <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="ShiftsChecked" 
+                          [indeterminate]="isShiftsIndeterminate()" 
+                          (change)="onShiftsChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                          Shifts
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsShifts">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesShifts(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameShifts(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+
+                    
+            <div class="col-md-3">
+               <span class="">
+     <mat-checkbox [(ngModel)]="ShiftPatternChecked"
+      [indeterminate]="isShiftPatternIndeterminate()"
+      (change)="onShiftPatternChange()"
+      [ngModelOptions]="{standalone: true}">
+      Shift Pattern
+    </mat-checkbox>
+  </span><br>
+</div>
+
+<div class="col-md-9">
+  <div class="selection_checkmark_sec">
+    <div class="all_selection_Sec">
+      <div class="row">
+        <div class="col-md-2" *ngFor="let permission of GrouppermissionsShiftPattern">
+          <h2>
+            <span>
+              <mat-checkbox
+                [value]="permission.id"
+                (change)="onCheckboxChangesShiftPattern(permission.id)"
+                [checked]="selectedPermissions.includes(permission.id)">
+                {{ getDisplayNameShiftPattern(permission.codename) }}
+              </mat-checkbox>
+            </span>
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+                  
+
+                <div class="col-md-3">
+                  <span class="">
+                      <mat-checkbox [(ngModel)]="ShiftEmployeeChecked" 
+                      [indeterminate]="isShiftEmployeeIndeterminate()" 
+                      (change)="onShiftEmployeeChange()" 
+                      [ngModelOptions]="{standalone: true}">
+                      Shift Employee
+                      </mat-checkbox>
+                  </span><br>
+              </div>
+              
+              <div class="col-md-9">
+                  <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                          <div class="row">
+                        
+                              <div class="col-md-2" *ngFor="let permission of GrouppermissionsShiftEmployee">
+                                  <h2>
+                                      <span>
+                                          <mat-checkbox [value]="permission.id"
+                                          (change)="onCheckboxChangesShiftEmployee(permission.id)"
+                                           [checked]="selectedPermissions.includes(permission.id)">
+                                              {{ getDisplayNameShiftEmployee(permission.codename) }}
+                                          </mat-checkbox> 
+                                      </span> 
+                                  </h2>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+                
+        
+
+              <div class="col-md-3">
+                <span class="">
+                    <mat-checkbox [(ngModel)]="ShiftOverRideChecked" 
+                    [indeterminate]="isShiftOverRideIndeterminate()" 
+                    (change)="onShiftOverRideChange()" 
+                    [ngModelOptions]="{standalone: true}">
+                    Shift OverRide
+                    </mat-checkbox>
+                </span><br>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="selection_checkmark_sec">
+                    <div class="all_selection_Sec">
+                        <div class="row">
+                      
+                            <div class="col-md-2" *ngFor="let permission of GrouppermissionsShiftOverRide">
+                                <h2>
+                                    <span>
+                                        <mat-checkbox [value]="permission.id"
+                                        (change)="onCheckboxChangesShiftOverRide(permission.id)"
+                                         [checked]="selectedPermissions.includes(permission.id)">
+                                            {{ getDisplayNameShiftOverRide(permission.codename) }}
+                                        </mat-checkbox> 
+                                    </span> 
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
                 </div>
                 
         

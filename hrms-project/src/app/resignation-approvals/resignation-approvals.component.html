@@ -1,5 +1,5 @@
-<div class="container" >
-    <div class="comapny_section" *ngIf="hasViewPermission">
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section" >
         <div class="com_list " >
 
     <div class="">
@@ -56,10 +56,7 @@
                     </div>
                   </div>
               
-         
-                <!-- <h6> General Request - {{apr.general_request}}</h6>
-                <h6>Status - {{apr.status}}</h6>
-                <h6>Level - {{apr.level}}</h6> -->
+
         
             
         
@@ -120,14 +117,6 @@
             [ngModelOptions]="{ standalone: true }"
           ></textarea>
 
-          <!-- <div class="col-md-12">
-            <label>Leave Type</label>
-            <div class="custom-sel">
-              <select class="form-control" id="rejection_reason" name="rejection_reason" [(ngModel)]="rejection_reason" [ngModelOptions]="{standalone: true}">
-                <option *ngFor="let rejectionReason of RejectionResons" [value]="rejectionReason.id">{{ rejectionReason.reason_text }}</option>
-              </select>
-            </div>
-          </div> -->
 
         </div>
         <div class="mt-2" *ngIf="showRejectionReason">

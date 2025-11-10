@@ -16,10 +16,10 @@ export class ShiftOptionsComponent {
   
   
 
-  hasViewPermissionProjects: boolean = false;
-  hasViewPermissionProjectsStages: boolean = false;
-  hasViewPermissionProjectsTaks: boolean = false;
-  hasViewPermissionProjectsTimesheet: boolean = false;
+  hasViewPermissionShifts: boolean = false;
+  hasViewPermissionShiftPattern: boolean = false;
+  hasViewPermissionEmployeeShift: boolean = false;
+  hasViewPermissionShiftOverride: boolean = false;
 
 
   userId: number | null | undefined;
@@ -75,10 +75,10 @@ export class ShiftOptionsComponent {
         if (isSuperuser) {
           console.log('User is superuser or ESS user');
           // Grant all permissions
-          this.hasViewPermissionProjects = true;
-          this.hasViewPermissionProjectsStages = true;
-          this.hasViewPermissionProjectsTaks = true;
-          this.hasViewPermissionProjectsTimesheet = true;
+          this.hasViewPermissionShifts = true;
+          this.hasViewPermissionShiftPattern = true;
+          this.hasViewPermissionEmployeeShift = true;
+          this.hasViewPermissionShiftOverride = true;
 
        
   
@@ -104,10 +104,10 @@ export class ShiftOptionsComponent {
                 if (firstItem.is_superuser) {
                   console.log('User is superuser according to permissions API');
                   // Grant all permissions
-                  this.hasViewPermissionProjects = true;
-                  this.hasViewPermissionProjectsStages = true;
-                  this.hasViewPermissionProjectsTaks = true;
-                  this.hasViewPermissionProjectsTimesheet = true;
+                   this.hasViewPermissionShifts = true;
+                   this.hasViewPermissionShiftPattern = true;
+                   this.hasViewPermissionEmployeeShift = true;
+                   this.hasViewPermissionShiftOverride = true;
                  
   
   
@@ -118,17 +118,17 @@ export class ShiftOptionsComponent {
   
               
                        
-                       this.hasViewPermissionProjects = this.checkGroupPermission('view_project', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjects);
+                       this.hasViewPermissionShifts = this.checkGroupPermission('view_shift', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionShifts);
                       
-                       this.hasViewPermissionProjectsStages = this.checkGroupPermission('view_projectstage', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjectsStages);
+                       this.hasViewPermissionShiftPattern = this.checkGroupPermission('view_shiftpattern', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionShiftPattern);
 
-                       this.hasViewPermissionProjectsTaks = this.checkGroupPermission('view_task', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjectsTaks);
+                       this.hasViewPermissionEmployeeShift = this.checkGroupPermission('view_employeeshiftschedule', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionEmployeeShift);
                       
-                       this.hasViewPermissionProjectsTimesheet = this.checkGroupPermission('view_timesheet', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjectsTimesheet);
+                       this.hasViewPermissionShiftOverride = this.checkGroupPermission('view_shiftoverride', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionShiftOverride);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

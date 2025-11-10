@@ -963,6 +963,7 @@ attendanceData: any = null; // Define this at the class level
         this.selectedLeaveBalanceId = leaveBalanceId;
         this.selectedLeaveTypeName = leaveTypeName;
         this.isOpeningsModalOpen = true;
+    
       }
       
       closeModal(): void {
@@ -974,7 +975,7 @@ attendanceData: any = null; // Define this at the class level
 
       submitOpenings(): void {
         if (this.selectedLeaveBalanceId == null || this.openingBalance == null) {
-          alert("Please enter opening balance");
+          alert("Please enter opening balance")
           return;
         }
       
@@ -993,8 +994,9 @@ attendanceData: any = null; // Define this at the class level
         this.EmployeeService.saveLeaveOpening(payload).subscribe(
           (res) => {
             alert("Opening leave balance saved.");
+
             this.closeModal();
-            // this.ngOnInit(); // Reload data
+            this.ngOnInit(); 
           },
           (err) => {
             console.error("Failed to save opening balance", err);

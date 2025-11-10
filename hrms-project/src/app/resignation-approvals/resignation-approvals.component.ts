@@ -154,17 +154,17 @@ export class ResignationApprovalsComponent {
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_leaveapproval', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_resignationapproval', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_leaveapproval', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_resignationapproval', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_leaveapproval', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_resignationapproval', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leaveapproval', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_resignationapproval', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     

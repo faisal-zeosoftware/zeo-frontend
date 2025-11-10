@@ -147,6 +147,11 @@ margin-right: 10px;
   font-family: math;
 }
 
+
+  table thead th{
+    color: white;
+  }
+
 /* Phones */
 @media (max-width: 768px) {
 

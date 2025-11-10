@@ -271,21 +271,19 @@
 
 
     <!-- Hidden input to store the final value to be posted -->
-    <input type="text"  class="form-control" required   [(ngModel)]="emp_blood_group"  placeholder="Enter {{bloodFieldName}}"
-    [ngModelOptions]="{standalone: true}"  style="display: none;" [required]="isBloodMandatory" 
-[ngClass]="{'error-field': registerButtonClicked && isBloodMandatory && !emp_blood_group}" >
+    <input type="text"  class="form-control" [(ngModel)]="emp_blood_group"  placeholder="Enter {{bloodFieldName}}"
+    [ngModelOptions]="{standalone: true}"  style="display: none;" >
 
-<div *ngIf="registerButtonClicked && isBloodMandatory && !emp_blood_group" class="error-message">
-                    {{bloodFieldName}} is required.
+<div>
+                   
                 </div>
     <ng-container [ngSwitch]="selectedDataTypeblood">
         <!-- Text Box -->
         <input *ngSwitchCase="'Text Box'" type="text" class="form-control" 
-               required placeholder="{{bloodFieldName}}" 
+                placeholder="{{bloodFieldName}}" 
                [(ngModel)]="temp_blood" 
-               (ngModelChange)="syncblood($event)"  [ngModelOptions]="{standalone: true}"
-               [ngClass]="{'error-field': registerButtonClicked && !temp_blood}">
-        <div *ngIf="registerButtonClicked && !temp_religion" class="error-message">{{bloodFieldName}} is required.</div>
+               (ngModelChange)="syncblood($event)"  [ngModelOptions]="{standalone: true}">
+    
 
         <!-- Dropdown -->
         <div *ngSwitchCase="'Dropdown'" class="custom-sel">
@@ -293,7 +291,7 @@
                 <option value="">Select an option</option>
                 <option *ngFor="let option of bloodDropdownOptions" [value]="option">{{option}}</option>
             </select>
-            <div *ngIf="registerButtonClicked && !temp_blood" class="error-message">{{bloodFieldName}} is required.</div>
+            <div *ngIf="registerButtonClicked && !temp_blood" >{{bloodFieldName}} is required.</div>
         </div>
     </ng-container>
 </div>
@@ -1157,10 +1155,10 @@
     <div class="col-md-6" >
                    
         <label>Blood Group</label>
-       <input type="text"  class="form-control" required id="emp_blood_group" name="emp_blood_group"  [(ngModel)]="emp_blood_group"  placeholder="Enter Blood Group"
+       <input type="text"  class="form-control" id="emp_blood_group" name="emp_blood_group"  [(ngModel)]="emp_blood_group"  placeholder="Enter Blood Group"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_blood_group}">
        
-       <div *ngIf="registerButtonClicked && !emp_blood_group" class="error-message">Description is required.</div>
+       <div class="error-message">Description is required.</div>
     </div>
     
     <div class="col-md-6" >

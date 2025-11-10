@@ -320,7 +320,7 @@ createempbankdetails():void{
       },
       (error) => {
         console.error('Registration failed', error);
-        alert('enter all field!')
+        alert('enter all field correctly!')
         // Handle the error appropriately, e.g., show a user-friendly error message.
       }
     );
