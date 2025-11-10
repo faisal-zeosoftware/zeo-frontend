@@ -463,6 +463,12 @@ export class LeaveMasterComponent {
         console.error('Added failed', error);
         alert('Enter all required fields!');
       }
+
+
+
+
+
+      
     );
   }
 

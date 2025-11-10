@@ -1,1 +1,2313 @@
-<p>main-dashboard works!</p>
+<div class="container-fluid" *ngFor="let employeesec of employees">
+    <div class="row">
+      <!-- Sidebar Navigation -->
+      <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+        <div class="position-sticky pt-3">
+          <div class="text-center mb-4">
+            <div class="profile-pic-container position-relative">
+              <img id="profile-pic" [src]="employeesec.emp_profile_pic" (error)="handleImageError($event)"
+                alt="Profile Picture" class="img-fluid rounded-circle">
+              <div class="upload-overlay position-absolute">
+                <label for="profile-upload" class="upload-label">
+                  <i class="bi bi-camera-fill"></i>
+                </label>
+                <input type="file" id="profile-upload" accept="image/*" class="d-none">
+              </div>
+            </div>
+            <h5 id="user-name" class="text-light mt-3">{{ employeesec.emp_first_name }} {{ employeesec.emp_last_name }}
+            </h5>
+            <p id="user-id" class="text-secondary small">Employee Code: {{ employeesec.emp_code }}</p>
+          </div>
+  
+          <ul class="nav flex-column">
+            <li class="nav-item" [class.active]="activeTabNav === 'dashboard'" (click)="selectTabNav('dashboard')">
+              <a class="nav-link active" href="javascript:void(0)">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-item" >
+              <a class="nav-link d-flex justify-content-between align-items-center"
+                 href="javascript:void(0)"
+                 (click)="toggleRequestsDropdown()">
+                <div>
+                  <i class="bi bi-book me-2"></i>
+                  <span>Requests</span>
+                </div>
+                <i [class]="isRequestsDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+              </a>
+            
+              <!-- Dropdown Items -->
+              <ul *ngIf="isRequestsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+                <li class="nav-item" [class.active]="activeTabNav === 'leaverequest'" (click)="selectTabNav('leaverequest')">
+                  <a class="nav-link" href="javascript:void(0)">
+                    <i class="fa fa-paper-plane me-2"></i> Leave Request
+                  </a>
+                </li>
+            
+                <li class="nav-item" [class.active]="activeTabNav === 'generalRequest'" (click)="selectTabNav('generalRequest')">
+                  <a class="nav-link" href="javascript:void(0)">
+                    <i class="fa fa-paper-plane me-2"></i> General Request
+                  </a>
+                </li>
+  
+                <li class="nav-item" [class.active]="activeTabNav === 'assetRequest'" (click)="selectTabNav('assetRequest')">
+                  <a class="nav-link" href="javascript:void(0)">
+                    <i class="fa fa-paper-plane me-2"></i> Asset Request
+                  </a>
+                </li>
+  
+                   <li class="nav-item" [class.active]="activeTabNav === 'advsalaryRequest'" (click)="selectTabNav('advsalaryRequest')">
+                  <a class="nav-link" href="javascript:void(0)">
+                    <i class="fa fa-paper-plane me-2"></i>Advance Salary Request
+                  </a>
+                </li>
+                <li class="nav-item" [class.active]="activeTabNav === 'loanRequest'" (click)="selectTabNav('loanRequest')">
+                  <a class="nav-link" href="javascript:void(0)">
+                    <i class="fa fa-paper-plane me-2"></i> Loan Request
+                  </a>
+                </li>
+                  <li class="nav-item" [class.active]="activeTabNav === 'resignationRequest'" (click)="selectTabNav('resignationRequest')">
+                  <a class="nav-link" href="javascript:void(0)">
+                    <i class="fa fa-paper-plane me-2"></i> Resignation Request
+                  </a>
+                </li>
+  
+  
+              </ul>
+            </li>
+  
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-tab="extracurricular">
+                <i class="bi bi-trophy me-2"></i>
+                <span>Approvals</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-tab="financial">
+                <i class="bi bi-cash-coin me-2"></i>
+                <span>Payslip</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-tab="career">
+                <i class="bi bi-briefcase me-2"></i>
+                <span>Career</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-tab="health">
+                <i class="bi bi-heart-pulse me-2"></i>
+                <span>Assets</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" data-tab="settings">
+                <i class="bi bi-gear me-2"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+          </ul>
+  
+          <div class="mt-5 mb-3 text-center">
+            <button id="logout-btn" class="btn btn-outline-light btn-sm" (click)="logout()">
+              <i class="fa fa-sign-out me-2"></i>Logout
+            </button>
+          </div>
+        </div>
+      </nav>
+  
+      <!-- Main Content Area -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <header
+          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Employee Dashboard</h1>
+          <div class="d-flex">
+            <div class="input-group me-3">
+              <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
+              <button class="btn btn-outline-secondary" type="button" id="search-btn">
+                <i class="fa fa-search"></i>
+              </button>
+            </div>
+            <div class="dropdown position-relative" *ngIf="Documents">
+              <button
+                class="btn btn-outline-secondary position-relative"
+                type="button"
+                id="notification-btn"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="fa fa-bell">
+  
+                </i>
+            
+                <!-- 🔴 Dynamic notification count -->
+                <span
+                  *ngIf="notificationCount > 0"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                >
+                  {{ notificationCount }}
+                </span>
+              </button>
+            
+              <ul
+                class="dropdown-menu dropdown-menu-end shadow"
+                aria-labelledby="notification-btn"
+              >
+                <!-- ✅ List notifications dynamically -->
+                <li *ngFor="let doc of Documents; let i = index">
+                  <a
+                    class="dropdown-item d-flex justify-content-between align-items-start"
+                    href="javascript:void(0)"
+                  >
+                    <div>
+                      <strong>Document Alert</strong>
+                      <div class="text-muted small">
+                        {{ doc.created_at | date: 'medium' }}
+                      </div>
+                      <div class="small mt-1 text-wrap">{{ doc.message }}</div>
+                    </div>
+                    <span class="badge bg-primary rounded-pill">New</span>
+                  </a>
+                  <!-- <li *ngIf="i < Documents.length - 1">
+                    <hr class="dropdown-divider" />
+                  </li> -->
+                </li>
+            
+                <!-- 🔘 When no notifications -->
+                <li *ngIf="Documents.length === 0">
+                  <a class="dropdown-item text-center text-muted">No new notifications</a>
+                </li>
+            
+                <!-- 🔗 View All -->
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
+              </ul>
+            </div>
+            
+            
+          </div>
+        </header>
+  
+  
+  
+  
+  
+        <!-- Dashboard Tab (Default View) -->
+        <section class="content-tab animate__animated animate__fadeIn" id="dashboard"
+          *ngIf="activeTabNav === 'dashboard'">
+          <ul class="tab-group ">
+            <li class="tab" [class.active]="activeTab === 'signup'" (click)="selectTab('signup')">
+              <a href="javascript:void(0)">Profile</a>
+            </li>
+            <li class="tab" [class.active]="activeTab === 'login'" (click)="selectTab('login')">
+              <a href="javascript:void(0)">Family Info</a>
+            </li>
+            <li class="tab" [class.active]="activeTab === 'qualification'" (click)="selectTab('qualification')">
+              <a href="javascript:void(0)">Qualification</a>
+            </li>
+  
+            <li class="tab" [class.active]="activeTab === 'bankdetails'" (click)="selectTab('bankdetails')">
+              <a href="javascript:void(0)">Bank Details</a>
+            </li>
+  
+            <li class="tab" [class.active]="activeTab === 'Jobhistory'" (click)="selectTab('Jobhistory')">
+              <a href="javascript:void(0)">Job History</a>
+            </li>
+            <li class="tab" [class.active]="activeTab === 'document'" (click)="selectTab('document')">
+              <a href="javascript:void(0)">Documents</a>
+            </li>
+            <li class="tab" [class.active]="activeTab === 'salary'" (click)="selectTab('salary')">
+              <a href="javascript:void(0)">Salary</a>
+            </li>
+            <li class="tab" [class.active]="activeTab === 'asset'" (click)="selectTab('asset')">
+              <a href="javascript:void(0)">Asset</a>
+            </li>
+            <li class="tab" [class.active]="activeTab === 'loan'" (click)="selectTab('loan')">
+              <a href="javascript:void(0)">Loan</a>
+            </li>
+            <li class="tab" [class.active]="activeTab === 'attendance'" (click)="selectTab('attendance')">
+        <a href="javascript:void(0)">Attendance</a>
+        </li>
+          <li class="tab" [class.active]="activeTab === 'advanceSalary'" (click)="selectTab('advanceSalary')">
+        <a href="javascript:void(0)">Advance Salary</a>
+        </li>
+            
+          </ul>
+  
+          <div class="tab-content">
+            <div id="signup" *ngIf="activeTab === 'signup'">
+              <!-- Your Create Salary Component content -->
+              <div class="row mb-4">
+                <!-- Quick Stats Cards -->
+                <div class="col-md-3 mb-4" *ngFor="let Empholiday of employeesec.leave_balance">
+                  <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                      <h5 class="card-title">{{Empholiday.leave_type}}</h5>
+                      <div class="d-flex align-items-center">
+                        <h2 class="mb-0 me-2">{{Empholiday.balance}}</h2>
+                        <span class="text-success"><i class="bi bi-arrow-up-short"></i> {{Empholiday.openings}}</span>
+                      </div>
+                      <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;" aria-valuenow="85"
+                          aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- 
+                <div class="col-md-3 mb-4">
+                  <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                      <h5 class="card-title">Attendance</h5>
+                      <div class="d-flex align-items-center">
+                        <h2 class="mb-0 me-2">92%</h2>
+                        <span class="text-danger"><i class="bi bi-arrow-down-short"></i> 3%</span>
+                      </div>
+                      <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 92%;" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="col-md-3 mb-4">
+                  <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                      <h5 class="card-title">Credits Completed</h5>
+                      <div class="d-flex align-items-center">
+                        <h2 class="mb-0 me-2">64</h2>
+                        <span class="text-muted">/ 120</span>
+                      </div>
+                      <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 53%;" aria-valuenow="53" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="col-md-3 mb-4">
+                  <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                      <h5 class="card-title">Tuition Paid</h5>
+                      <div class="d-flex align-items-center">
+                        <h2 class="mb-0 me-2">75%</h2>
+                        <span class="text-muted">$3,750 left</span>
+                      </div>
+                      <div class="progress mt-3" style="height: 5px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+              </div>
+  
+              <div class="row">
+                <!-- Course Schedule -->
+                <div class="col-md-12 mb-4">
+                  <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                      <h5 class="mb-0">Details</h5>
+                      <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="courseDropdown"
+                          data-bs-toggle="dropdown" aria-expanded="false">
+                          2025
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="courseDropdown">
+                          <li><a class="dropdown-item" href="#">Fall 2024</a></li>
+                          <li><a class="dropdown-item" href="#">Summer 2024</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="card-body">
+  
+                      <div class="emp_additional_details">
+                        <div class="row">
+                          <div class="col-md-3">
+  
+  
+                            <div class="d-flex align-items-center">
+                              <strong>Emp Code</strong>
+                            </div>
+                            <small class="text-center">{{ employeesec.emp_code }}</small>
+                          </div>
+  
+                          <div class="col-md-3">
+  
+  
+                            <div class="d-flex align-items-center">
+                              <strong>Employee Status</strong>
+                            </div>
+                            <small class="text-center">{{employeesec.emp_status}}</small>
+                            <!-- <h2>Employee Ess User</h2>
+                                <h3>{{employee.is_ess}}</h3> -->
+                          </div>
+  
+                          <div class="col-md-3">
+  
+                            <div class="d-flex align-items-center">
+                              <strong>Designation</strong>
+                            </div>
+                            <small class="text-center">{{ employeesec.emp_desgntn_id }}</small>
+                          </div>
+  
+  
+                          <div class="col-md-3">
+  
+                            <div class="d-flex align-items-center mt-2">
+                              <strong>Catogary</strong>
+                            </div>
+                            <small class="text-center">{{ employeesec.emp_ctgry_id }}</small>
+                          </div>
+  
+                          <div class="col-md-3">
+  
+                            <div class="d-flex align-items-center mt-2">
+                              <strong>Department</strong>
+                            </div>
+                            <small class="text-center">{{ employeesec.emp_dept_id }}</small>
+                          </div>
+  
+                          <div class="col-md-3 ">
+  
+                            <div class="d-flex align-items-center mt-2">
+                              <strong>Branch</strong>
+                            </div>
+                            <small class="text-center">{{ employeesec.emp_branch_id }}</small>
+                          </div>
+                        </div>
+  
+                      
+  
+                        <!-- <div *ngFor="let doc of expiredDocuments">
+                            <p>Document Name: {{ doc.name }}</p>
+                            <p>Expiration Date: {{ doc.expiryDate }}</p>
+                          </div> -->
+                      </div>
+                      <!-- <div class="table-responsive">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th>Course</th>
+                              <th>Instructor</th>
+                              <th>Schedule</th>
+                              <th>Grade</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>CS301: Data Structures</td>
+                              <td>Dr. Smith</td>
+                              <td>MWF 10:00-11:15</td>
+                              <td><span class="badge bg-success">A</span></td>
+                            </tr>
+                            <tr>
+                              <td>MATH241: Linear Algebra</td>
+                              <td>Prof. Johnson</td>
+                              <td>TR 13:00-14:30</td>
+                              <td><span class="badge bg-primary">B+</span></td>
+                            </tr>
+                            <tr>
+                              <td>ENG210: Technical Writing</td>
+                              <td>Dr. Williams</td>
+                              <td>MWF 14:00-15:15</td>
+                              <td><span class="badge bg-warning text-dark">C</span></td>
+                            </tr>
+                            <tr>
+                              <td>PHYS201: Physics II</td>
+                              <td>Dr. Garcia</td>
+                              <td>TR 9:30-11:00</td>
+                              <td><span class="badge bg-success">A-</span></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div> -->
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Upcoming Events -->
+                <!-- <div class="col-md-4 mb-4">
+                  <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                      <h5 class="mb-0">Upcoming Holidays</h5>
+                    </div>
+                    <div class="card-body p-0">
+                      <ul class="list-group list-group-flush"  *ngFor="let Empholiday of employeesec.holidays">
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                          <div>
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-calendar-event text-primary me-2"></i>
+                              <strong>{{Empholiday.description}}</strong>
+                            </div>
+                            <small class="text-muted">{{Empholiday.start_date}}</small>
+                          </div>
+                          <span class="badge bg-danger rounded-pill">{{ calculateDaysLeft(Empholiday.start_date) }}</span>
+                        </li>
+                      
+                      </ul>
+                    </div>
+                    <div class="card-footer bg-white text-center">
+                      <a href="#" class="btn btn-sm btn-outline-primary">View Full Calendar</a>
+                    </div>
+                  </div>
+                </div> -->
+  
+               
+              </div>
+  
+              <div class="row">
+                 <div class="col-md-5 mb-4">
+                  <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                      <h5 class="mb-0"> <i class="fa fa-calendar-times me-2" aria-hidden="true"></i> Upcoming Holidays</h5>
+                    </div>
+                    <div class="card-body card-scroll p-0">
+                      <ul class="list-group list-group-flush" *ngFor="let Empholiday of employeesec.holidays">
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                          <div>
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-calendar-event text-primary me-2"></i>
+                              <strong>{{Empholiday.description}}</strong>
+                            </div>
+                            <small class="text-muted">{{Empholiday.start_date}}</small>
+                          </div>
+                          <span class="badge bg-danger rounded-pill">{{ calculateDaysLeft(Empholiday.start_date) }}</span>
+                        </li>
+  
+                        <!-- <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                          <div>
+                            <div class="d-flex align-items-center">
+                              <i class="bi bi-building text-info me-2"></i>
+                              <strong>Tech Career Fair</strong>
+                            </div>
+                            <small class="text-muted">Mar 25, 2025 • 1:00 PM</small>
+                          </div>
+                          <span class="badge bg-info rounded-pill">2 weeks</span>
+                        </li> -->
+  
+                      </ul>
+                    </div>
+                    <div class="card-footer bg-white text-center">
+                      <a href="#" class="btn btn-sm btn-outline-primary">View Full Calendar</a>
+                    </div>
+                  </div>
+  
+                  
+                </div>
+  
+  
+                <div class="col-md-7 mb-4">
+                  <div class="card border-0 shadow-sm ">
+                    <div class="card-header bg-white">
+                      <h5 class="mb-0">
+                        <i class="fa fa-bullhorn me-2" aria-hidden="true"></i> Announcements
+                      </h5>
+                    </div>
+                  
+                    <div class="card-body card-scroll">
+                      <div *ngIf="EmpAnnouncement && EmpAnnouncement.length > 0; else noAnnouncements">
+                        <div *ngFor="let ann of EmpAnnouncement" class="annou_Card mb-3 p-3 border rounded shadow-sm">
+                          <div class="row align-items-center">
+                            <div class="col-md-11">
+                              <h2 >{{ ann.title }}</h2>
+                              <h3 >
+                                {{ ann.schedule_at | date: 'mediumDate' }} – {{ ann.expires_at | date: 'mediumDate' }}
+                              </h3>
+                            </div>
+                            <div class="col-md-1 text-end">
+                              <button
+                                type="button"
+                                class="btn-announcement-expand btn btn-light btn-sm"
+                                (click)="toggleExpand(ann)"
+                              >
+                                <i class="fa" [ngClass]="ann.expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                              </button>
+                            </div>
+                          </div>
+                  
+                          <div
+                            class="Annoucement-body mt-2 ps-2 border-start border-2 border-primary"
+                            *ngIf="ann.expanded"
+                          >
+                            <h2 class="mb-0">{{ ann.message }}</h2>
+                  
+                            <div *ngIf="ann.attachment" class="mt-2">
+                              <a [href]="ann.attachment" target="_blank" class="text-decoration-none text-primary">
+                                <i class="fa fa-paperclip me-1"></i> View Attachment
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                  
+                      <ng-template #noAnnouncements>
+                        <p class="text-muted text-center mb-0">No announcements available.</p>
+                      </ng-template>
+                    </div>
+                  </div>
+                  
+                  
+                </div>
+                </div>
+  
+               <!-- EMPLOYEE PROJECT SECTION -->
+  <div class="project-section" *ngIf="employeesec.projects?.length > 0; else noProjects">
+    <h3 class="section-title">🧩 Employee Projects</h3>
+  
+    <div class="project-grid">
+      <div class="project-card" *ngFor="let project of employeesec.projects">
+        <div class="project-header">
+          <div class="left">
+            <h4 class="project-title">{{ project.title || 'Untitled Project' }}</h4>
+            <p class="project-desc">{{ project.description }}</p>
+          </div>
+          <span class="status-badge" [ngClass]="project.status">{{ project.status }}</span>
+        </div>
+  
+        <div class="project-meta">
+          <div class="meta-item">
+            <i class="fa fa-calendar-alt"></i>
+            <span><strong>Start:</strong> {{ project.start_date | date }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="fa fa-calendar-check"></i>
+            <span><strong>End:</strong> {{ project.end_date | date }}</span>
+          </div>
+        </div>
+  
+        <div class="project-meta">
+          <div class="meta-item">
+            <i class="fa fa-user-tie"></i>
+            <span><strong>Managers:</strong> {{ project.managers.join(', ') || '—' }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="fa fa-users"></i>
+            <span><strong>Members:</strong> {{ project.members.join(', ') || '—' }}</span>
+          </div>
+        </div>
+  
+        <div *ngIf="project.document" class="project-doc">
+          <a [href]="project.document" target="_blank">
+            <i class="fa fa-paperclip"></i> View Project Document
+          </a>
+        </div>
+  
+        <!-- TASKS SECTION -->
+        <div class="task-list" *ngIf="project.tasks?.length > 0">
+          <h5>📋 Tasks</h5>
+          <div class="task-item" *ngFor="let task of project.tasks">
+            <div class="task-header">
+              <strong>{{ task.title }}</strong>
+              <span class="task-status" [ngClass]="task.status">{{ task.status }}</span>
+            </div>
+            <p class="task-desc">{{ task.description }}</p>
+            <small class="task-date">
+              <i class="fa fa-clock"></i> {{ task.start_date | date }} → {{ task.end_date | date }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template #noProjects>
+    <p class="no-data">No projects assigned</p>
+  </ng-template>
+    <!-- If no projects -->
+  
+    <!-- If no projects -->  
+  
+     
+    <ng-template #noProjects>
+      <p class="no-data">No projects assigned</p>
+    </ng-template>  
+  
+  
+                <!-- <div class="line-chart-block block">
+                  <div class="line-chart">
+                    <div class='grafico'>
+                    <ul class='eje-y'>
+                      <li data-ejeY='30'></li>
+                      <li data-ejeY='20'></li>
+                      <li data-ejeY='10'></li>
+                      <li data-ejeY='0'></li>
+                    </ul>
+                    <ul class='eje-x'>
+                      <li>Apr</li>
+                      <li>May</li>
+                      <li>Jun</li>
+                    </ul>
+                      <span data-valor='25'>
+                        <span data-valor='8'>
+                          <span data-valor='13'>
+                            <span data-valor='5'>   
+                              <span data-valor='23'>   
+                              <span data-valor='12'>
+                                  <span data-valor='15'>
+                                  </span></span></span></span></span></span></span>
+                    </div>
+                    
+                  </div>
+                                 <ul class="time-lenght horizontal-list">
+                                     <li><a class="time-lenght-btn" href="#14">Week</a></li>
+                                     <li><a class="time-lenght-btn" href="#15">Month</a></li>
+                                     <li><a class="time-lenght-btn" href="#16">Year</a></li>
+                                 </ul>
+                                 <ul class="month-data clear">
+                                     <li>
+                                         <p>APR<span class="scnd-font-color"> 2013</span></p>
+                                         <p><span class="entypo-plus increment"> </span>21<sup>%</sup></p>
+                                     </li>
+                                     <li>
+                                         <p>MAY<span class="scnd-font-color"> 2013</span></p>
+                                         <p><span class="entypo-plus increment"> </span>48<sup>%</sup></p>
+                                     </li>
+                                     <li>
+                                         <p>JUN<span class="scnd-font-color"> 2013</span></p>
+                                         <p><span class="entypo-plus increment"> </span>35<sup>%</sup></p>
+                                     </li>
+                                 </ul>
+                             </div> -->
+                             
+  
+            </div>
+  
+            <div id="login" *ngIf="activeTab === 'login'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class=" emp_additional_details " *ngFor="let familyMember of employeesec.emp_family">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong> Member Name</strong>
+                        </div>
+                        <small class="text-center">{{ familyMember.ef_member_name }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Date Of Birth</strong>
+                        </div>
+                        <small class="text-center">{{ familyMember.ef_date_of_birth }} </small>
+                      </div>
+  
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Employee Relation</strong>
+                        </div>
+  
+                        <small class="text-center">{{ familyMember.emp_relation }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong> Family Company Expense</strong>
+                        </div>
+  
+                        <small class="text-center">{{ familyMember.ef_company_expence }} </small>
+                      </div>
+  
+  
+                    </div>
+  
+  
+  
+  
+                  </div>
+  
+                  <!-- <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Course</th>
+                          <th>Instructor</th>
+                          <th>Schedule</th>
+                          <th>Grade</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>CS301: Data Structures</td>
+                          <td>Dr. Smith</td>
+                          <td>MWF 10:00-11:15</td>
+                          <td><span class="badge bg-success">A</span></td>
+                        </tr>
+                        <tr>
+                          <td>MATH241: Linear Algebra</td>
+                          <td>Prof. Johnson</td>
+                          <td>TR 13:00-14:30</td>
+                          <td><span class="badge bg-primary">B+</span></td>
+                        </tr>
+                        <tr>
+                          <td>ENG210: Technical Writing</td>
+                          <td>Dr. Williams</td>
+                          <td>MWF 14:00-15:15</td>
+                          <td><span class="badge bg-warning text-dark">C</span></td>
+                        </tr>
+                        <tr>
+                          <td>PHYS201: Physics II</td>
+                          <td>Dr. Garcia</td>
+                          <td>TR 9:30-11:00</td>
+                          <td><span class="badge bg-success">A-</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+  
+            <div id="qualification" *ngIf="activeTab === 'qualification'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="emp_additional_details  mt-3" *ngFor="let Qualification of employeesec.emp_qualification">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Employee Qualification</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.emp_qualification }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Year</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.emp_qf_year }} </small>
+                      </div>
+  
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Subject</strong>
+                        </div>
+  
+                        <small class="text-center">{{ Qualification.emp_qf_subject }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Institution</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.emp_qf_instituition }} </small>
+                      </div>
+  
+  
+  
+                    </div>
+  
+  
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+  
+            <div id="bankdetails" *ngIf="activeTab === 'bankdetails'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="emp_additional_details  mt-3" *ngFor="let Qualification of employeesec.emp_bank">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Bank Name</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.bank_name }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Branch name</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.branch_name }} </small>
+                      </div>
+  
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Account Number</strong>
+                        </div>
+  
+                        <small class="text-center">{{ Qualification.account_number }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Bank Address</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.bank_address }} </small>
+                      </div>
+  
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Route Code</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.route_code }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Iban Number</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.iban_number }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Active Status</strong>
+                        </div>
+                        <small class="text-center">{{ Qualification.is_active }} </small>
+                      </div>
+  
+  
+                    </div>
+  
+  
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+            <div id="Jobhistory" *ngIf="activeTab === 'Jobhistory'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="emp_additional_details  mt-3" *ngFor="let Jobhistory of employeesec.emp_job_history">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Company Name</strong>
+                        </div>
+                        <small class="text-center">{{ Jobhistory.emp_jh_company_name }}</small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Designation</strong>
+                        </div>
+                        <small class="text-center">{{ Jobhistory.emp_jh_designation }} </small>
+                      </div>
+  
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>From Date</strong>
+                        </div>
+                        <small class="text-center">{{ Jobhistory.emp_jh_from_date }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>End Date</strong>
+                        </div>
+                        <small class="text-center">{{ Jobhistory.emp_jh_end_date }} </small>
+                      </div>
+  
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong>Last Leaving Salary Per Month</strong>
+                        </div>
+                        <small class="text-center">{{ Jobhistory.emp_jh_leaving_salary_permonth }} </small>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong> Leaving Reason</strong>
+                        </div>
+                        <small class="text-center">{{ Jobhistory.emp_jh_reason }} </small>
+                      </div>
+  
+                      <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+  
+                          <strong> Total Experiance</strong>
+                        </div>
+                        <small class="text-center">{{ Jobhistory.emp_jh_years_experiance }} </small>
+                      </div>
+  
+  
+  
+  
+                    </div>
+  
+  
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+  
+  
+            <div id="document" *ngIf="activeTab === 'document'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="tab_content  mt-3">
+                    <div class="row mt-3" *ngFor="let document of employeesec.emp_documents">
+                      <div class="col-md-2">
+                        <h2>Document number</h2>
+                        <h3>{{ document.emp_doc_number }}</h3>
+                      </div>
+                      <div class="col-md-2">
+                        <h2>issue Date</h2>
+                        <h3> {{ document.emp_doc_issued_date }}</h3>
+                      </div>
+  
+  
+                      <div class="col-md-2">
+                        <h2>expired date</h2>
+                        <h3>{{ document.emp_doc_expiry_date }} </h3>
+                      </div>
+  
+                      <div class="col-md-2">
+                        <h2>Type</h2>
+                        <h3>{{ document.document_type }}</h3>
+                      </div>
+  
+                      <div class="col-md-1">
+                        <h2> Status</h2>
+                        <h3> {{ document.is_active }}</h3>
+                      </div>
+  
+  
+  
+                      <div class="col-md-3">
+                        <h2>Employee Document</h2>
+  
+                        <div *ngIf="document.emp_doc_document">
+                          <a [href]="document.emp_doc_document" target="_blank"
+                            *ngIf="isPDF(document.emp_doc_document)">View Document</a>
+                          <img [src]="document.emp_doc_document" alt="Employee Document"
+                            *ngIf="!isPDF(document.emp_doc_document)" style="width: 100px; height: auto;">
+                        </div>
+                        <div *ngIf="!document.emp_doc_document">No Document Available</div>
+                      </div>
+  
+  
+  
+                      <!-- <div class="col-md-3" >
+                            <h2>employee document</h2>
+                            <img src="{{ document.emp_doc_document }}"  alt="Employee Document">
+                        </div> -->
+  
+  
+  
+  
+  
+  
+  
+                    </div>
+  
+  
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+            <div id="salary" *ngIf="activeTab === 'salary'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="tab_content  mt-3">
+  
+                    <div class="table-scroll">
+  
+                      <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                        <thead>
+                          <tr>
+                            <th class="text-table-header" style="width: 0;">No</th>
+                            <!-- <th class="text-table-header">Employee</th> -->
+                            <th class="text-table-header">Name</th>
+                            <th class="text-table-header">Year</th>
+  
+                            <th class="text-table-header">Month</th>
+  
+                            <th class="text-table-header">Total Working Days</th>
+  
+                            <th class="text-table-header">Day Worked</th>
+                            <th class="text-table-header">Payment Date</th>
+                            <th class="text-table-header">Components </th>
+                            <th class="text-table-header">Gross Salary</th>
+                            <th class="text-table-header">Net Salary</th>
+                            <th class="text-table-header">Status</th>
+                            <!-- <th class="text-table-header">Payslip Component</th> -->
+                          </tr>
+                        </thead>
+                        <tbody class="text-table-body">
+                          <tr class="tbodytext" *ngFor="let payslip of employeesec.payslip; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
+                            <td>{{ payslip.payroll_run?.name }}</td>
+                            <td>{{ payslip.payroll_run?.year }}</td>
+  
+                            <td>{{ payslip.payroll_run?.month }}</td>
+  
+                            <td>{{ payslip.total_working_days }}</td>
+  
+                            <td>{{ payslip.days_worked }}</td>
+                            <td>{{ payslip.payroll_run?.payment_date }}</td>
+                            <td data-label="Components">
+                              <ul>
+                                <li *ngFor="let comp of payslip.components">
+                                  <strong>{{ comp.component_name }}</strong>
+                                  ({{ comp.component_type }}): {{ comp.payslip_amount }}
+                                </li>
+                              </ul>
+                            </td>
+                            <td>{{ payslip.gross_salary }}</td>
+                            <td>{{ payslip.net_salary }}</td>
+                            <td>
+                              <span class="pill" [ngClass]="{
+                              'pill green': payslip.status === 'approved',
+                              'pill blue': payslip.status === 'processed',
+  
+                              'pill yellow': payslip.status === 'pending',
+                              'pill red': payslip.status === 'rejected'
+                            }">
+                                {{ payslip.status }}
+                              </span>
+                            </td>
+                            <!-- <td>{{ payslip.end_date }}</td> -->
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+  
+  
+  
+            <div id="asset" *ngIf="activeTab === 'asset'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="tab_content mt-3" *ngFor="let member of EmpAssets">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <h2>Asset Name</h2>
+                        <h3>{{ member.asset }}</h3>
+                      </div>
+                      <div class="col-md-3">
+                        <h2>Assigned Date</h2>
+                        <h3>{{ member.assigned_date }}</h3>
+                      </div>
+                      <div class="col-md-3">
+                        <h2>Return Condition</h2>
+                        <h3>{{ member.return_condition }}</h3>
+                      </div>
+                      <div class="col-md-3">
+                        <h2>Return Date</h2>
+                        <h3>{{ member.returned_date }}</h3>
+                      </div>
+  
+                      <!-- Custom fields -->
+                      <!-- <ng-container *ngFor="let field of member.fam_custom_fields">
+                        <div class="col-md-3">
+                          <h2>{{ field.emp_custom_field }}</h2>
+                          <h3>{{ field.field_value }}</h3>
+                        </div>
+                      </ng-container> -->
+                    </div>
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+  
+  
+  
+            <div id="loan" *ngIf="activeTab === 'loan'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="tab_content mt-3" >
+                    <div class="table-scroll">
+  
+                      <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                        <thead>
+                          <tr>
+                            <th class="text-table-header" style="width: 0;">No</th>
+                            <!-- <th class="text-table-header">Employee</th> -->
+                            <th class="text-table-header">Amount requested</th>
+                            <th class="text-table-header">EMI Amount</th>
+  
+                            <th class="text-table-header">Loan Type</th>
+                            <th class="text-table-header">Document Number</th>
+  
+                            <th class="text-table-header">Repayment Period</th>
+  
+                            <th class="text-table-header">Remaining Balance</th>
+                            <th class="text-table-header">applied on</th>
+                            <th class="text-table-header">applied on</th>
+                            <th class="text-table-header">Disbursement date</th>
+                            <th class="text-table-header">Status</th>
+                            <!-- <th class="text-table-header">Payslip Component</th> -->
+                          </tr>
+                        </thead>
+                        <tbody class="text-table-body">
+                          <tr class="tbodytext" *ngFor="let loan of EmpLoan; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
+                            <td>{{ loan.amount_requested }}</td>
+  
+                            <td>{{ loan.emi_amount }}</td>
+  
+                            <td>{{ loan.loan_type }}</td>
+                            <td>{{ loan.document_number }}</td>
+                            <td>{{ loan.repayment_period }}</td>
+  
+                            <td>{{ loan.remaining_balance }}</td>
+                            <td>{{ loan.applied_on }}</td>
+                        
+                            <td>{{ loan.approved_on }}</td>
+                            <td>{{ loan.disbursement_date }}</td>
+                            <td>
+                              <span class="pill" [ngClass]="{
+                                'pill green': loan.status === 'approved',
+                                'pill blue': loan.status === 'processed',
+    
+                                'pill yellow': loan.status === 'pending',
+                                'pill red': loan.status === 'rejected'
+                              }">
+                                {{ loan.status }}
+                              </span>
+                            </td>
+                            <!-- <td>{{ payslip.end_date }}</td> -->
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+  
+  
+  
+            <div id="attendance" *ngIf="activeTab === 'attendance'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="tab_content  mt-3">
+                                   
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label >Year</label>
+                            <input
+                              type="number"
+                              class="form-control"
+                              [(ngModel)]="year"
+                              [ngModelOptions]="{standalone: true}"
+                            />
+                        </div>
+                        <div class="col-md-6">
+                            <label >Month</label>
+                            <input
+                              type="number"
+                              class="form-control"
+                              [(ngModel)]="month"
+                              [ngModelOptions]="{standalone: true}"
+                            />
+                        </div>
+                        
+                    
+                        </div>
+                        <div class="row">
+                            <div class="col-md-10">
+                        
+                            </div>
+                            <div class="col-md-2 mt-3">
+                                <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate Report</button>
+                              </div>
+                        </div>
+                        
+  
+                        <div *ngIf="attendanceData">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h2>Attendance Sheet for {{ attendanceData.employee_name }} - {{ attendanceData.month }}/{{ attendanceData.year }}</h2>
+                        
+                                </div>
+                        
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-success pull-right" (click)="exportToExcel()">Export</button>
+                                </div>
+                            </div>   
+  
+  <div class="table-container table-scroll">
+  <table class="table table-bordered table-hover mt-3 text-center">
+  <thead>
+  <tr>
+  <th>Employee Name</th>
+  <th *ngFor="let day of daysArray">Day {{ day }}</th>
+  <!-- <th>Total Days</th> -->
+  <th>Present Days</th>
+  <th>Absent Days</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+  <td>{{ attendanceData.employee_name }}</td>
+  <td *ngFor="let day of daysArray">
+  {{ getStatusForDay(day, attendanceData.summary_data) }}
+  </td>
+  <!-- <td>{{ attendanceData.total_days }}</td> -->
+  <td>{{ attendanceData.total_present }}</td>
+  <td>{{ attendanceData.total_absent }}</td>
+  </tr>
+  </tbody>
+  </table>
+  </div>
+  </div>
+  
+  
+                </div>
+  
+                </div>
+              </div>
+            </div>
+  
+  
+             <div id="advanceSalary" *ngIf="activeTab === 'advanceSalary'">
+              <!-- Your Run Employee Salary content -->
+              <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Details</h5>
+  
+                </div>
+                <div class="card-body">
+  
+                  <div class="tab_content mt-3" >
+                    <div class="table-scroll">
+  
+                      <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                        <thead>
+                          <tr>
+                            <th class="text-table-header" style="width: 0;">No</th>
+                            <!-- <th class="text-table-header">Employee</th> -->
+                            <th class="text-table-header">Amount requested</th>
+                            <th class="text-table-header">EMI Amount</th>
+  
+                            <th class="text-table-header">Loan Type</th>
+                            <th class="text-table-header">Document Number</th>
+  
+                            <th class="text-table-header">Repayment Period</th>
+  
+                            <th class="text-table-header">Remaining Balance</th>
+                            <th class="text-table-header">applied on</th>
+                            <th class="text-table-header">applied on</th>
+                            <th class="text-table-header">Disbursement date</th>
+                            <th class="text-table-header">Status</th>
+                            <!-- <th class="text-table-header">Payslip Component</th> -->
+                          </tr>
+                        </thead>
+                        <tbody class="text-table-body">
+                          <tr class="tbodytext" *ngFor="let advanceSalary of AdvSalary; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
+                            <td>{{ advanceSalary.amount_requested }}</td>
+  
+                            <td>{{ advanceSalary.emi_amount }}</td>
+  
+                            <td>{{ advanceSalary.loan_type }}</td>
+                            <td>{{ advanceSalary.document_number }}</td>
+                            <td>{{ advanceSalary.repayment_period }}</td>
+  
+                            <td>{{ advanceSalary.remaining_balance }}</td>
+                            <td>{{ advanceSalary.applied_on }}</td>
+                        
+                            <td>{{ advanceSalary.approved_on }}</td>
+                            <td>{{ advanceSalary.disbursement_date }}</td>
+                            <td>
+                              <span class="pill" [ngClass]="{
+                                'pill green': advanceSalary.status === 'approved',
+                                'pill blue': advanceSalary.status === 'processed',
+    
+                                'pill yellow': advanceSalary.status === 'pending',
+                                'pill red': advanceSalary.status === 'rejected'
+                              }">
+                                {{ advanceSalary.status }}
+                              </span>
+                            </td>
+                            <!-- <td>{{ payslip.end_date }}</td> -->
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+  
+  
+                </div>
+              </div>
+            </div>
+  
+  
+  
+          </div>
+  
+  
+  
+  
+  
+        </section>
+  
+        <!-- Other tabs would go here, initially hidden -->
+        <section class="content-tab  animate__animated animate__fadeIn" id="leaverequest"
+          *ngIf="activeTabNav === 'leaverequest'">
+          <!-- Academic content here -->
+  
+  
+          <div class="white-outer-sec">
+            <form (ngSubmit)="requestLeave()" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Start Date</label>
+                  <input
+                  type="date"
+                  class="form-control"
+                  name="start_date"
+                  [(ngModel)]="start_date"
+                  placeholder="Enter Start Date"
+                  [ngModelOptions]="{standalone: true}"
+                />
+                </div>
+            
+                <div class="col-md-6">
+                  <label>End Date</label>
+                  <input
+                  type="date"
+                  class="form-control"
+                  name="end_date"
+                  [(ngModel)]="end_date"
+                  placeholder="Enter End Date"
+                  [ngModelOptions]="{standalone: true}"
+                />
+                </div>
+            
+                <div class="col-md-12">
+                  <label>Reason</label>
+                  <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}"></textarea>
+                </div>
+  
+  
+           
+  
+                <!-- <div class="col-md-6">
+                  <label>Approved On</label>
+                  <input type="date" class="form-control" required [(ngModel)]="approved_on" placeholder="Enter date of approved on"
+                         [ngModelOptions]="{standalone: true}" >
+                </div> -->
+  
+                <div class="col-md-6">
+                  <label></label>
+                  <div class="check-box-selection-sec form-control mt-3">
+                    <div class="mat-set">
+                      <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Dis Half Day</mat-checkbox>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label>Half Day Period</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="half_day_period" [ngModelOptions]="{standalone: true}">
+                      <option value="first_half">First Half</option>
+                      <option value="second_half">Second Half</option>
+                    </select>
+                  </div>
+                </div>
+  
+  
+                <div class="col-md-6">
+                  <label>Leave Type</label>
+                  <div class="custom-sel">
+                    <select
+                      class="form-control"
+                      id="leave_type"
+                      name="leave_type"
+                      [(ngModel)]="leave_type"
+                      [ngModelOptions]="{standalone: true}"
+                    >
+                      <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">
+                        {{ leavetype.leave_type }} (Balance: {{ leavetype.balance }})
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                
+  
+  
+               
+            
+           
+              </div>
+            
+              <div class="row">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                  <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Type</button>
+                </div>
+              </div>
+            </form>
+  
+          </div>
+  
+  
+          <div class="white-outer-sec">
+  
+  
+            <div class="row">
+  
+              <div class="col-md-12">
+                <div class="table-scroll">
+                
+                <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                  <thead>
+                    <tr>
+                      <th class="text-table-header" style="width: 0;">No</th>
+                      <!-- <th class="text-table-header">Employee</th> -->
+                      <th class="text-table-header">Start Date</th>
+  
+                      <th class="text-table-header">End Date</th>
+                      <th class="text-table-header">Leave Type</th>
+  
+                      <th class="text-table-header">Status</th>
+  
+                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                    </tr>
+                  </thead>
+                  <tbody class="text-table-body">
+                    
+                    <tr class="tbodytext" *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ leavereq.start_date }}</td>
+                      <td>{{ leavereq.end_date }}</td>
+                      <td>{{ leavereq.leave_type }}</td>
+                      <td>{{ leavereq.approvals?.status }}</td>
+  
+  
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+            </div>
+            <div class="tab_boddy mt-4">
+            <div  class="row">
+              <div class="col-md-12">
+                <div class="">
+                  <!-- Check if there are any leave requests -->
+                  <div *ngIf="employeesec.leave_rqsts && employeesec.leave_rqsts.length > 0; else noLeaveRequests">
+                    <!-- Loop through leave requests -->
+                    <div  class="">
+                      <div class="row">
+                        <div class="col-md-5">
+                          <div class="leave_box" *ngFor="let request of employeesec.leave_rqsts" (click)="selectRequest(request.id)"
+                          [ngClass]="{'selected-request': selectedRequestId === request.id}">
+                            <div class="row">
+                              <div class="col-md-4">
+                                <label>Leave Type</label>
+                                <h6>{{ request.leave_type || 'N/A' }}</h6>
+                              </div>
+                              <div class="col-md-4">
+                                <label>Start Date</label>
+                                <h6>{{ request.start_date }}</h6>
+                              </div>
+                              <div class="col-md-4">
+                                <label>End Date</label>
+                                <h6>{{ request.end_date }}</h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+          
+                        <div class="col-md-7" >
+                            <div *ngFor="let request of employeesec.leave_rqsts">
+                            
+                          <div class="leave_box"  *ngIf="selectedRequestId === request.id">
+                            <!-- Loop through approvals for the leave request -->
+                            <div class="approval-steps" *ngIf="request.approvals && request.approvals.length > 0">
+                              <h5>Leave Approval Status</h5><hr>
+                              <div *ngFor="let approval of request.approvals" class="row">
+                                <div class="col-md-3">
+                                  <label>Status</label>
+                                  <h6>{{ approval.status }}</h6>
+                                </div>
+                                <div class="col-md-3">
+                                  <label>Role</label>
+                                  <h6>{{ approval.role }}</h6>
+                                </div>
+                                <div class="col-md-3">
+                                  <label>Approver</label>
+                                  <h6>{{ approval.approver || 'N/A' }}</h6>
+                                </div>
+                                <div class="col-md-3">
+                                  <label>Note</label>
+                                  <h6>{{ approval.note || 'N/A' }}</h6>
+                                </div>
+                                <!-- <div class="col-md-2">
+                                  <label>Updated At</label>
+                                  <h6>{{ approval.updated_at }}</h6>
+                                </div> -->
+                              </div>
+                            </div>
+                          </div>
+                          </div>
+                        </div>
+                      </div>  
+                    </div>
+                  </div>
+                  <!-- Template to show if no leave requests are present -->
+                  <ng-template #noLeaveRequests>
+                    <p>No leave requests available for this employee.</p>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+  </div>
+        </section>
+  
+        <section class="content-tab  animate__animated animate__fadeIn" id="generalRequest"
+        *ngIf="activeTabNav === 'generalRequest'">
+  
+  
+          <!-- Extracurricular content here -->
+  
+             <div class="white-outer-sec">
+              <form >
+  
+                <div class="row">
+    
+                
+    
+                    <!-- <div class="col-md-3">
+                        <div class="custom-sel">
+                            <label>Select Branches</label>
+                            <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                                <option value="">Select</option>
+                                <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                            </select>
+                            <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                        </div>
+                    </div> -->
+                    <div class="col-md-6">
+                        <label>Document Number</label>
+                        <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+                            [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
+                    </div>
+                    
+    
+                  <div class="col-md-6" >
+                   
+                    <label>Reason</label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter Reason"
+                    [ngModelOptions]="{standalone: true}" >
+                   
+              </div>
+    
+    
+           
+              
+          
+        
+    
+        
+              <div class="col-md-6">
+                <div class="custom-sel">
+                  <label>Select Request Type</label>
+                  <select class="form-control"
+                          id="request_type"
+                          required
+                          [(ngModel)]="request_type"
+                          [ngModelOptions]="{standalone: true}"
+                       
+                          (change)="onRequestTypeChange($event)">
+                    <option value="">Select</option>
+                    <option *ngFor="let req of RequestType" [value]="req.id">{{ req.name }}</option>
+                  </select>
+              
+                </div>
+              </div>
+              
+              <!-- Show Total field only if salary_component is not null -->
+              <div class="col-md-6" *ngIf="selectedSalaryComponent">
+                <label>Total</label>
+                <input type="number"
+                       class="form-control"
+                       required
+                       [(ngModel)]="total"
+                       placeholder="Enter total"
+                       [ngModelOptions]="{standalone: true}">
+              </div>
+              
+  
+       
+    
+    
+      
+    
+        
+  
+    
+        <div class="col-md-6">
+            <label>Request Document</label>
+            <input type="file" class="form-control" (change)="onFileChange($event)">
+          </div>
+        <div class="col-md-12">
+            <label>Remarks</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="remarks" [ngModelOptions]="{standalone: true}" placeholder="Enter remarks"></textarea>
+          </div>
+    
+          
+       
+                </div>
+    
+    
+                <div class="row">
+                    <div class="col-md-10">
+        
+                    </div>
+             
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Save</button>  
+                     </div>
+    
+                     
+                </div>
+                
+           
+        </form>
+    
+  
+          </div>
+  
+          
+          <div class="white-outer-sec">
+  
+  
+            <div class="row">
+  
+              <div class="col-md-12">
+                <div class="table-scroll">
+                
+                <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                  <thead>
+                    <tr>
+                      <th class="text-table-header" style="width: 0;">No</th>
+                      <!-- <th class="text-table-header">Employee</th> -->
+                      <th class="text-table-header">Start Date</th>
+  
+                      <th class="text-table-header">End Date</th>
+                      <th class="text-table-header">Leave Type</th>
+  
+                      <th class="text-table-header">Status</th>
+  
+                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                    </tr>
+                  </thead>
+                  <tbody class="text-table-body">
+                    
+                    <tr class="tbodytext" *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ leavereq.start_date }}</td>
+                      <td>{{ leavereq.end_date }}</td>
+                      <td>{{ leavereq.leave_type }}</td>
+                      <td>{{ leavereq.approvals?.status }}</td>
+  
+  
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+            </div>
+  
+        </section>
+  
+        <section class="content-tab  animate__animated animate__fadeIn" id="assetRequest"
+        *ngIf="activeTabNav === 'assetRequest'">
+          <!-- Financial content here -->
+  
+  
+           
+             <div class="white-outer-sec">
+                   
+          <form >
+  
+            <div class="row">
+               
+  
+              <div class="col-md-12" >
+               
+                <label>Reason</label>
+                
+               <textarea  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter reason"
+                [ngModelOptions]="{standalone: true}" > </textarea>
+               
+          </div>
+  
+          
+  
+  
+  
+        
+  
+          <div class="col-md-6" >
+            <label>Select Asset Type</label>
+            <div class="custom-sel">
+              <select
+                class="form-control"
+                id="asset_type"
+                name="asset_type"
+                [(ngModel)]="asset_type"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <option *ngFor="let employees of AssetTypes" [value]="employees.id">
+                  {{ employees.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        
+  
+  
+  
+  <div class="col-md-6" >
+    <label>Select Requested Asset </label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="requested_asset"
+        name="requested_asset"
+        [(ngModel)]="requested_asset"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Assets" [value]="employees.id">
+          {{ employees.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+  
+     
+  
+      
+      
+   
+  
+  
+  
+    
+            </div>
+  
+  
+            <div class="row">
+                <div class="col-md-10">
+    
+                </div>
+    
+                <div class="col-md-2">
+                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateAssetType()">Save</button>  
+                 </div>
+            </div>
+            
+       
+    </form>
+  
+  
+          </div>
+  
+  
+          <div class="white-outer-sec">
+  
+  
+            <div class="row">
+  
+              <div class="col-md-12">
+                <div class="table-scroll">
+                
+                <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                  <thead>
+                    <tr>
+                      <th class="text-table-header" style="width: 0;">No</th>
+                      <!-- <th class="text-table-header">Employee</th> -->
+                      <th class="text-table-header">Asset Type</th>
+  
+                      <th class="text-table-header">Reason</th>
+                      <th class="text-table-header"> Requested Asset</th>
+  
+                      <th class="text-table-header">Status</th>
+  
+                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                    </tr>
+                  </thead>
+                  <tbody class="text-table-body">
+                    
+                    <tr class="tbodytext" *ngFor="let leavereq of employeesec.assets_requests; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ leavereq.asset_type }}</td>
+                      <td>{{ leavereq.reason }}</td>
+                      <td>{{ leavereq.requested_asset }}</td>
+                      <td>{{ leavereq.status }}</td>
+  
+  
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+            </div>
+  
+  
+        </section>
+  
+        <section class="content-tab  animate__animated animate__fadeIn" id="advsalaryRequest"
+        *ngIf="activeTabNav === 'advsalaryRequest'">
+  
+          <!-- Financial content here -->
+  
+  
+           
+             <div class="white-outer-sec">
+           <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label>Document Number</label>
+                        <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+  
+                      <div class="col-md-6">
+                        <label>Requested amount</label>
+                        <input type="number" class="form-control" required [(ngModel)]="requested_amount" placeholder="Enter requested amount"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+                  
+                      <div class="col-md-6">
+                        <label>reason</label>
+                        <input type="text" class="form-control" required [(ngModel)]="reason" placeholder="Enter reason"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+  
+                    
+                      <div class="col-md-6">
+                        <label>Remark</label>
+                        <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+                    
+  
+                 
+                
+              
+  
+         
+  
+                
+  
+  
+                  
+  
+                
+                       
+                 
+                  
+                 
+                    </div>
+                  
+                    <div class="row" >
+                      <div class="col-md-10"></div>
+                   
+                    <div class="col-md-2">
+                      <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
+                    </div>
+                    </div>
+                  </form>
+  
+          </div>
+  
+  
+          <div class="white-outer-sec">
+  
+  
+            <div class="row">
+  
+              <div class="col-md-12">
+                <div class="table-scroll">
+                
+                <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                  <thead>
+                    <tr>
+                      <th class="text-table-header" style="width: 0;">No</th>
+                      <!-- <th class="text-table-header">Employee</th> -->
+                      <th class="text-table-header">Document Number</th>
+  
+                      <th class="text-table-header">Requested Amount</th>
+                      <th class="text-table-header"> Remark</th>
+                                          <th class="text-table-header"> Reason</th>
+  
+  
+                      <th class="text-table-header">Status</th>
+  
+                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                    </tr>
+                  </thead>
+                  <tbody class="text-table-body">
+                    
+                    <tr class="tbodytext" *ngFor="let leavereq of employeesec.advance_salary_requests; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ leavereq.document_number }}</td>
+                      <td>{{ leavereq.requested_amount }}</td>
+                      <td>{{ leavereq.remarks }}</td>
+                      <td>{{ leavereq.reason }}</td>
+                      <td>{{ leavereq.status }}</td>
+  
+  
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+            </div>
+  
+  
+        </section>
+        <section class="content-tab  animate__animated animate__fadeIn" id="loanRequest"
+        *ngIf="activeTabNav === 'loanRequest'">
+  
+          <!-- Financial content here -->
+  
+  
+           
+             <div class="white-outer-sec">
+              <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
+                <div class="row">
+  
+                  <div class="col-md-4">
+                    <label>Amount requested</label>
+                    <input type="text" class="form-control" required [(ngModel)]="amount_requested" placeholder="Enter Amount requested"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+              
+                  <div class="col-md-4">
+                    <label>Repayment period</label>
+                    <input type="number" class="form-control" required [(ngModel)]="repayment_period" placeholder="Enter Repayment period"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+  
+                  <div class="col-md-4">
+                    <label>Emi amount</label>
+                    <input type="text" class="form-control" required [(ngModel)]="emi_amount" placeholder="Enter Repayment period"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+              
+               
+  
+               
+  
+                  <div class="col-md-4">
+                    <label>Remaining balance</label>
+                    <input type="text" class="form-control" required [(ngModel)]="remaining_balance" placeholder="Enter remaining balance"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+              
+              
+  
+            
+  
+                  <div class="col-md-6" >
+                    <label>Loan Type</label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="loan_type"
+                        name="loan_type"
+                        [(ngModel)]="loan_type"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+                          {{ employees.loan_type }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+  
+  
+                </div>
+                    
+  
+  
+  
+  
+  
+                
+                
+                
+  
+                <div class="row">
+                  <div class="col-md-8"></div>
+                  <div class="col-md-4">
+                    <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Application</button>
+                  </div>
+                </div>
+              </form>
+  
+          </div>
+  
+  
+          <div class="white-outer-sec">
+  
+  
+            <div class="row">
+  
+              <div class="col-md-12">
+                <div class="table-scroll">
+                
+                <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                  <thead>
+                    <tr>
+                      <th class="text-table-header" style="width: 0;">No</th>
+                      <!-- <th class="text-table-header">Employee</th> -->
+                      <th class="text-table-header">Amount Requested</th>
+  
+                      <th class="text-table-header">disbursement date</th>
+                      <th class="text-table-header"> document number</th>
+                                          <th class="text-table-header"> emi amount</th>
+                                          <th class="text-table-header">  loan type</th>
+                                          <th class="text-table-header">  pause reason</th>
+                                          <th class="text-table-header">  pause start date</th>
+                                          <th class="text-table-header">  rejection reason</th>
+                                          <th class="text-table-header">  remaining balance</th>
+                                          <th class="text-table-header">  repayment period</th>
+                                          <th class="text-table-header">  resume date</th>
+                                          <th class="text-table-header">  applied on</th>
+                                          <th class="text-table-header">  approved on</th>
+  
+  
+                      <th class="text-table-header">Status</th>
+  
+                      <!-- <th class="text-table-header">Payslip Component</th> -->
+                    </tr>
+                  </thead>
+                  <tbody class="text-table-body">
+                    
+                    <tr class="tbodytext" *ngFor="let leavereq of employeesec.loan_requests; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ leavereq.amount_requested }}</td>
+                      <td>{{ leavereq.disbursement_date }}</td>
+                      <td>{{ leavereq.document_number }}</td>
+                      <td>{{ leavereq.emi_amount }}</td>
+                      <td>{{ leavereq.loan_type }}</td>
+                      <td>{{ leavereq.pause_reason }}</td>
+  
+                      <td>{{ leavereq.pause_start_date }}</td>
+  
+                      <td>{{ leavereq.rejection_reason }}</td>
+                      <td>{{ leavereq.remaining_balance }}</td>
+  
+                      <td>{{ leavereq.repayment_period }}</td>
+                      <td>{{ leavereq.resume_date }}</td>
+  
+                      <td>{{ leavereq.applied_on }}</td>
+  
+                      <td>{{ leavereq.approved_on }}</td>
+                      <td>{{ leavereq.status }}</td>
+  
+  
+  
+  
+  
+  
+                    </tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+            </div>
+  
+  
+        </section>
+        <section class="content-tab  animate__animated animate__fadeIn" id="resignationRequest"
+        *ngIf="activeTabNav === 'resignationRequest'">
+  
+          <!-- Financial content here -->
+  
+  
+           
+             <div class="white-outer-sec">
+              <form (ngSubmit)="SetEmployeeResignation()" enctype="multipart/form-data">
+                <div class="row">
+    
+                  
+                  <div class="col-md-6">
+                    <label>Document date</label>
+                    <input type="date" class="form-control" required [(ngModel)]="document_date" placeholder="Enter document date"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+    
+                  <div class="col-md-6">
+                    <label> resigned on</label>
+                    <input type="date" class="form-control" required [(ngModel)]="resigned_on" placeholder="Enter resigned on"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+              
+                  <div class="col-md-6">
+                    <label>notice period</label>
+                    <input type="number" class="form-control" required [(ngModel)]="notice_period" placeholder="Enter notice period"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+    
+                
+                  <div class="col-md-6">
+                    <label>last working date</label>
+                    <input type="date" class="form-control" required [(ngModel)]="last_working_date" placeholder="Enter last working date"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+                
+    
+                  <div class="col-md-6">
+                    <label>location</label>
+                    <input type="text" class="form-control" required [(ngModel)]="location" placeholder="Enter location"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+                
+    
+                
+                  <div class="col-md-6">
+                    <label>Type</label>
+                    <div class="custom-sel">
+                      <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}">
+                        <option  value="resignation" >Resignation</option>
+                        <option  value="termination" >Termination</option>
+    
+                        <option  value="retirement" >Retirement</option>
+    
+                        <option  value="death_or_disablement" >Death or Disablement</option>
+                        
+                      </select>
+                    </div>
+                  </div>
+                  
+          
+                  <div class="col-md-12">
+                    <label>Reason</label>
+                    <textarea class="form-control" [(ngModel)]="reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
+                  </div>
+    
+     
+            
+             
+                  
+    
+    
+              
+    
+            
+                   
+             
+              
+             
+                </div>
+              
+                <div class="row" >
+                  <div class="col-md-9"></div>
+                  <div class="col-md-3">
+                    <button type="submit" class="btn btn-success btn-full mt-4">Sent</button>
+                  </div>
+                </div>
+              </form>
+    
+          </div>
+  
+  
+         
+  
+  
+        </section>
+      </main>
+    </div>
+  </div>

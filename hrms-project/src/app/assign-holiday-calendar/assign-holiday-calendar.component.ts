@@ -81,7 +81,7 @@ schemas: string[] = []; // Array to store schema names
     private companyRegistrationService: CompanyRegistrationService, 
     private http: HttpClient,
     private authService: AuthenticationService,
-    private categoryService: CatogaryService,
+      private categoryService: CatogaryService,
     private userService: UserMasterService,
     private employeeService: EmployeeService,
     private DesignationService: DesignationService,

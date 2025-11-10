@@ -77,14 +77,15 @@
         <h6>Resignation Request - {{ selectedApproval.general_request }}</h6>
         <h6>Status - {{ selectedApproval.status }}</h6>
         <h6>Level - {{ selectedApproval.level }}</h6>
-  
+
         <textarea
           class="form-control"
           [(ngModel)]="note"
           placeholder="Add a Comment here..."
           [ngModelOptions]="{ standalone: true }"
-        >  </textarea>
-  
+        >  
+      </textarea>
+
    
   
         <div class="row mt-2">

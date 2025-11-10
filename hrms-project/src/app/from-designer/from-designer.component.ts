@@ -1474,6 +1474,8 @@ CreateEmployeeFeildFam(): void {
       (response) => {
           console.log('Field added successfully', response);
           alert('Field added successfully');
+          window.location.reload();
+
       },
       (error) => {
           console.error('Field addition failed', error);
@@ -1509,6 +1511,8 @@ CreateEmployeeFeildQual(): void {
       (response) => {
           console.log('Field added successfully', response);
           alert('Field added successfully');
+          window.location.reload();
+
       },
       (error) => {
           console.error('Field addition failed', error);
@@ -1545,6 +1549,8 @@ CreateEmployeeFeildJob(): void {
       (response) => {
           console.log('Field added successfully', response);
           alert('Field added successfully');
+          window.location.reload();
+
       },
       (error) => {
           console.error('Field addition failed', error);
@@ -1575,6 +1581,8 @@ updateCustomField(field: any): void {
     (response) => {
       console.log('Field updated successfully', response);
       alert('Field updated successfully');
+                window.location.reload();
+
     },
     (error) => {
       console.error('Field update failed', error);

@@ -18,7 +18,7 @@ export class EmployeeLeaveComponent {
   start_date:any='';
   end_date:any='';
   note:any='';
-  reason:any='';
+  reason:any='';                  
 
   status:any='';
   applied_on:any='';

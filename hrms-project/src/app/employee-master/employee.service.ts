@@ -70,6 +70,11 @@ export class EmployeeService {
     return this.http.get(url);
   }
 
+  getemployeesForUser(selectedSchema: string): Observable<any> {
+    const url = `${this.apiUrl}/employee/api/emp-by-user/?schema=${selectedSchema}`;
+    return this.http.get(url);
+  }
+
   getemployeesMaster(selectedSchema: string): Observable<any> {
     const url = `${this.apiUrl}/employee/api/emplist/?schema=${selectedSchema}`;
     return this.http.get(url);
