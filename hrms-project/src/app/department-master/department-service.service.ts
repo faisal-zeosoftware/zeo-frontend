@@ -66,6 +66,12 @@ export class DepartmentServiceService {
       return this.http.get(apiUrl);
     }
 
+
+    getBranchAnnouncement(branchId: string,selectedSchema: string): Observable<any> {
+      const apiUrl = `${this.apiUrl}/organisation/api/Branch/${branchId}/branch_announcements/?schema=${selectedSchema}`;
+      return this.http.get(apiUrl);
+    }
+
   
 
   getReqType(selectedSchema: string): Observable<any> {

@@ -21,6 +21,8 @@ export class ProjectMasterComponent {
 
   @ViewChild('select') select: MatSelect | undefined;
   @ViewChild('selectMng') selectMng: MatSelect | undefined;
+    @ViewChild('selectBr') selectBr: MatSelect | undefined;
+
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -28,6 +30,8 @@ export class ProjectMasterComponent {
 
   allSelectedEmp=false;
   allSelectedMng=false;
+    allSelectedBr=false;
+
 
 
   hasAddPermission: boolean = false;
@@ -45,6 +49,7 @@ export class ProjectMasterComponent {
   members: any = '';
 
   status: any = '';
+  branches: any = '';
 
   is_active:  boolean = false;
 
@@ -57,6 +62,7 @@ export class ProjectMasterComponent {
   Employees:any []=[];
 
   Assets:any []=[];
+  Branches:any []=[];
 
 
   customFieldHeaders: { custom_field_id: number, custom_field_name: string }[] = [];
@@ -104,6 +110,8 @@ ngOnInit(): void {
   this.loadProjects();
 
   this.loadCountries();
+  this.loadBranches();
+
 
   this.userId = this.sessionService.getUserId();
   
@@ -219,23 +227,6 @@ ngOnInit(): void {
 }
 
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
   
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -271,6 +262,17 @@ ngOnInit(): void {
       }
     }
   }
+
+  toggleAllSelectionBr(): void {
+    if (this.selectBr) {
+      if (this.allSelectedBr) {
+        this.selectBr.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectBr.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
 
         loadUsers(): void {
     
@@ -313,6 +315,8 @@ ngOnInit(): void {
             // Convert arrays (managers and members) to JSON strings or loop and append each
             this.managers.forEach((id: number) => formData.append('managers', id.toString()));
             this.members.forEach((id: number) => formData.append('members', id.toString()));
+            this.branches.forEach((id: number) => formData.append('branches', id.toString()));
+
           
             // Add file
             formData.append('document', this.selectedFile);
@@ -356,6 +360,7 @@ ngOnInit(): void {
             }
             }
         
+            
 
 
             loadProjects(): void {
@@ -377,6 +382,28 @@ ngOnInit(): void {
                 );
               }
               }
+
+              
+            loadBranches(): void {
+    
+              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            
+              console.log('schemastore',selectedSchema )
+              // Check if selectedSchema is available
+              if (selectedSchema) {
+                this.employeeService.getBrs(selectedSchema).subscribe(
+                  (result: any) => {
+                    this.Branches = result;
+                    console.log(' fetching Loantypes:');
+            
+                  },
+                  (error) => {
+                    console.error('Error fetching Companies:', error);
+                  }
+                );
+              }
+              }
+          
           
 
                iscreateLoanApp: boolean = false;
