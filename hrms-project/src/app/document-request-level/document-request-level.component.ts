@@ -49,6 +49,8 @@ export class DocumentRequestLevelComponent {
 
   DocType: any[] = [];
 
+    DocRequest: any[] = [];
+
 
   hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
@@ -91,6 +93,7 @@ schemas: string[] = []; // Array to store schema names
 
 
       this.LoadDocType(selectedSchema);
+      this.LoadDocRequest(selectedSchema);
 
       
       }
@@ -214,24 +217,7 @@ if (this.userId !== null) {
 
 
     
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leaveapprovallevels' ||'change_leaveapprovallevels' 
-//   ||'delete_leaveapprovallevels' ||'view_leaveapprovallevels';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
+
   
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -335,11 +321,25 @@ if (this.userId !== null) {
   
 
     LoadDocType(selectedSchema: string) {
-      this.leaveService.getDocType(selectedSchema).subscribe(
+      this.leaveService.getDocRequestType(selectedSchema).subscribe(
         (data: any) => {
           this.DocType = data;
         
           console.log('DocType:', this.DocType);
+        },
+        (error: any) => {
+          console.error('Error fetching DocType:', error);
+        }
+      );
+    }
+  
+
+    LoadDocRequest(selectedSchema: string) {
+      this.leaveService.getDocRequest(selectedSchema).subscribe(
+        (data: any) => {
+          this.DocRequest = data;
+        
+          console.log('DocRequest:', this.DocRequest);
         },
         (error: any) => {
           console.error('Error fetching DocType:', error);

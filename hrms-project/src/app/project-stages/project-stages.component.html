@@ -45,7 +45,7 @@
 
             </div>
             <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedProjectStages()">Delete Selected </button>
 
             </div>
         </div>
@@ -154,7 +154,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit Asset </h2>
+          <h2>Edit Project Stages</h2>
         </div>
         <div class="col-md-2">
           <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -162,125 +162,85 @@
       </div>
       <hr />
   
-      <form>
-      
-        <div class="row">
+       <form >
+
+            <div class="row">
                
 
-            <div class="col-md-6" >
-             
-              <label>Asset Name</label>
-             <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter name"
-              [ngModelOptions]="{standalone: true}" >
-             
-        </div>
+              <div class="col-md-6" >
+               
+                <label> Title</label>
+               <input type="text"  class="form-control" required  [(ngModel)]="editProjectStages.title"  placeholder="Enter title"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
 
-         <div class="col-md-6" >
-             
-              <label>Serial No</label>
-             <input type="text"  class="form-control" required  [(ngModel)]="editAsset.serial_number"  placeholder="Enter Serial no"
-              [ngModelOptions]="{standalone: true}" >
-             
+                 
+          <div class="col-md-6" >
+               
+            <label>sequence</label>
+           <input type="number"  class="form-control" required  [(ngModel)]="editProjectStages.sequence"  placeholder="Enter sequence"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+
+
+      <div class="col-md-6" >
+        <label>Select Projects</label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="project"
+            name="project"
+            [(ngModel)]="editProjectStages.project"
+            [ngModelOptions]="{ standalone: true }"
+          >
+            <option *ngFor="let employees of Employees" [value]="employees.id">
+              {{ employees.title }}
+            </option>
+          </select>
         </div>
-        <div class="col-md-6" >
-             
-          <label>Model</label>
-         <input type="text"  class="form-control" required  [(ngModel)]="editAsset.model"  placeholder="Enter Model"
-          [ngModelOptions]="{standalone: true}" >
-         
+      </div>
+      
+      
+
+
+
+
+
+
+
+
+       
+
+      
+<div class="col-md-6">
+    <label></label>
+    <div class="check-box-selection-sec form-control mt-3">
+      <div class="mat-set">
+        <mat-checkbox [(ngModel)]="editProjectStages.is_end_stage" [ngModelOptions]="{standalone: true}">Is end stage</mat-checkbox>
+      </div>
     </div>
-
-    <div class="col-md-6" >
-             
-      <label>Purchase date</label>
-     <input type="date"  class="form-control" required  [(ngModel)]="editAsset.purchase_date"  placeholder="Enter Purchase date"
-      [ngModelOptions]="{standalone: true}" >
-     
-</div>
-
-<div class="col-md-6" >
-  <label>Status</label>
-  <div class="custom-sel">
-    <select
-      class="form-control" [(ngModel)]="editAsset.status" [ngModelOptions]="{ standalone: true }">
-      <option value="new">New </option>
-      <option value="in_progress">In Progress </option>
-
-      <option value="completed">Completed </option>
-
-      <option value="on_hold">On Hold </option>
-      <option value="cancelled">Cancelled </option>
-
-      <option value="expired">Expired</option>
-
-
-    </select>
   </div>
-</div>
 
 
-<div class="col-md-6" >
-  <label>Condition</label>
-  <div class="custom-sel">
-    <select
-      class="form-control" [(ngModel)]="editAsset.condition" [ngModelOptions]="{ standalone: true }">
-      <option value="healthy">Healthy </option>
-      <option value="minor_damage">Minor Damage </option>
-      <option value="major_damage">Major Damage </option>
-
-  
-
-    </select>
-  </div>
-</div>
-
-
-
-
-<div class="col-md-6" >
-  <label>Select Asset Type</label>
-  <div class="custom-sel">
-    <select
-      class="form-control"
-      id="asset_type"
-      name="asset_type"
-      [(ngModel)]="editAsset.asset_type"
-      [ngModelOptions]="{ standalone: true }"
-    >
-      <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-        {{ employees.name }}
-      </option>
-    </select>
-  </div>
-</div>
-
-   
-        
     
+            </div>
+
     
- 
-
-
-
-  
-          </div>
-
-
-        
-  
-        <div class="row">
-          <div class="col-md-10"></div>
-          <div class="col-md-2">
-            <button
-              type="button"
-              class="btn-Create btn-full mt-5 btn-success btn"
-              (click)="updateAssetType()"
-            >
-              Update
-            </button>
-          </div>
-        </div>
-      </form>
+            <div class="row">
+                <div class="col-md-10">
+    
+                </div>
+    
+                <div class="col-md-2">
+                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateProjectStagesType()">Save</button>  
+                 </div>
+            </div>
+            
+       
+    </form>
     </div>
   </div>
   
@@ -293,10 +253,10 @@
             <thead>
               <tr>
                 <th>No</th>
-                <th> Title</th>
-                <th> sequence</th>
+                <th>Title</th>
+                <th>sequence</th>
                 <th>Is end stage</th>
-                <th>  Project</th>
+                <th>Project</th>
              
                 <th>Action</th>
               </tr>

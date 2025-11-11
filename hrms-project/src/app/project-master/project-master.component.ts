@@ -443,45 +443,45 @@ closeEditModal(): void {
 }
 
 
-updateAssetType(): void {
+updateProject(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
   if (!selectedSchema || !this.editProject.id) {
-    alert('Missing schema or asset ID');
+    alert('Missing schema or project ID');
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editProject.id, this.editProject).subscribe(
+  this.employeeService.updateProjects(this.editProject.id, this.editProject).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Project updated successfully!');
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
     },
     (error) => {
-      console.error('Error updating asset:', error);
+      console.error('Error updating Project:', error);
       alert('Update failed');
     }
   );
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedProject() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
   if (selectedEmployeeIds.length === 0) {
-    alert('No Asset type selected for deletion.');
+    alert('No Projects selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset ?')) {
+  if (confirm('Are you sure you want to delete the selected Project ?')) {
     selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteAirPolicy(categoryId).subscribe(
+      this.employeeService.deleteProjects(categoryId).subscribe(
         () => {
-          console.log('policy  deleted successfully:', categoryId);
+          console.log('Project  deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-          alert(' policy  deleted successfully');
+          alert(' Project  deleted successfully');
           window.location.reload();
 
         },

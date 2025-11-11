@@ -491,63 +491,64 @@ ngOnInit(): void {
 
 
     isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
+editProjectTime: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
+  this.editProjectTime = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
   this.isEditModalOpen = false;
-  this.editAsset = {};
+  this.editProjectTime = {};
 }
 
 
-updateAssetType(): void {
+updateProjecttimesheet(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema || !this.editAsset.id) {
-    alert('Missing schema or asset ID');
+  if (!selectedSchema || !this.editProjectTime.id) {
+    alert('Missing schema or Projecttimesheet ID');
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateProjectTimeSheet(this.editProjectTime.id, this.editProjectTime).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Project Timesheet updated successfully!');
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
+      window.location.reload();
     },
     (error) => {
-      console.error('Error updating asset:', error);
+      console.error('Error updating Project Timesheet:', error);
       alert('Update failed');
     }
   );
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedProjectTimesheet() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
   if (selectedEmployeeIds.length === 0) {
-    alert('No Asset type selected for deletion.');
+    alert('No projectTimesheet selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset ?')) {
+  if (confirm('Are you sure you want to delete the selected projectTimesheet ?')) {
     selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteAirPolicy(categoryId).subscribe(
+      this.employeeService.deleteProjectTimsesheet(categoryId).subscribe(
         () => {
-          console.log('policy  deleted successfully:', categoryId);
+          console.log('projectTimesheet  deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-          alert(' policy  deleted successfully');
+          alert(' projectTimesheet  deleted successfully');
           window.location.reload();
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting ProjectTimesheet:', error);
         }
       );
     });

@@ -314,6 +314,10 @@ note: string = '';  // To hold the note entered by the user
       this.leaveService.approveApprovalDocRequest(apiUrl, approvalData).subscribe(
         (response: any) => {
         console.log('Approval status changed to Approved:', response);
+        window.location.reload();
+        
+ 
+
 
         // Update the selected approval status in the local UI
         if (this.selectedApproval) {
@@ -325,6 +329,8 @@ note: string = '';  // To hold the note entered by the user
         if (approvalIndex !== -1) {
           this.Approvals[approvalIndex].status = 'Approved';
         }
+
+  
 
         // Close the modal after successful approval
         this.isAddFieldsModalOpen = false;
@@ -365,6 +371,8 @@ confirmRejection(approvalId: number): void {
     this.leaveService.rejectApprovalDocRequest(apiUrl, approvalData).subscribe(
       (response: any) => {
         console.log('Approval status changed to Rejected:', response);
+        window.location.reload();
+
 
         // Update the selected approval status in the local UI
         if (this.selectedApproval) {

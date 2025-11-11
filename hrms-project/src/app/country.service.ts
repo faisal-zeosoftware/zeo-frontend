@@ -356,6 +356,29 @@ export class CountryService {
       );
       }
 
+      
+    registerDocumentReqType(companyData: any): Observable<any> {
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema) {
+        console.error('No schema selected.');
+        return throwError('No schema selected.'); // Return an error observable if no schema is selected
+      }
+     
+  
+      
+      const apiUrl = `${this.apiUrl}/employee/api/Doc-request-Type/?schema=${selectedSchema}`;
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+      return this.http.post(apiUrl, companyData, { headers }).pipe(
+        catchError((error) => {
+          // Handle errors here (you can log, show a user-friendly message, etc.)
+          console.error('Error during Document Rquest type registration:', error);
+          return throwError(error);
+  
+        })
+      );
+      }
+
       updateDocNum(docId: number, payload: any): Observable<any> {
         const selectedSchema = localStorage.getItem('selectedSchema');
         if (!selectedSchema) {
@@ -454,6 +477,18 @@ export class CountryService {
     // return this.http.get(url);
 
     const Url = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(Url);
+
+
+  }
+
+    getDocumentReqType(selectedSchema:string): Observable<any> {
+    // const url = `${this.baseUrl}/Group/`;
+    // return this.http.get(url);
+
+    const Url = `${this.apiUrl}/employee/api/Doc-request-Type/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(Url);

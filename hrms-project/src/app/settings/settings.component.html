@@ -421,6 +421,19 @@
             >
           </mat-expansion-panel-header>
 
+
+           <div
+            class="mat-expansion-panel-body"
+            *ngIf="hasViewPermissionFormdes"
+          >
+            <a
+              class="set_siding"
+              mat-list-item
+              routerLink="/main-sidebar/settings/document-request-type"
+              ><span class="side_option">Document Request Type</span>
+            </a>
+          </div>
+
           <div
             class="mat-expansion-panel-body"
             *ngIf="hasViewPermissionFormdes"

@@ -484,63 +484,63 @@ loadLAssetType(): void {
 
 
     isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
+editProjecttask: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
+  this.editProjecttask = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
   this.isEditModalOpen = false;
-  this.editAsset = {};
+  this.editProjecttask = {};
 }
 
 
-updateAssetType(): void {
+updateProjectTask(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema || !this.editAsset.id) {
-    alert('Missing schema or asset ID');
+  if (!selectedSchema || !this.editProjecttask.id) {
+    alert('Missing schema or Project Task ID');
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateProjectTask(this.editProjecttask.id, this.editProjecttask).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Project Task  updated successfully!');
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
     },
     (error) => {
-      console.error('Error updating asset:', error);
+      console.error('Error updating Project Task:', error);
       alert('Update failed');
     }
   );
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedProjectTasks() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
   if (selectedEmployeeIds.length === 0) {
-    alert('No Asset type selected for deletion.');
+    alert('No Project task selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset ?')) {
+  if (confirm('Are you sure you want to delete the selected Project Task ?')) {
     selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteAirPolicy(categoryId).subscribe(
+      this.employeeService.deleteProjectTask(categoryId).subscribe(
         () => {
-          console.log('policy  deleted successfully:', categoryId);
+          console.log('Project Task deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-          alert(' policy  deleted successfully');
+          alert('Project Task deleted successfully');
           window.location.reload();
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting Project Task:', error);
         }
       );
     });

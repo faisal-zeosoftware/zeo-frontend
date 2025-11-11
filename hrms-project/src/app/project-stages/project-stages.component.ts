@@ -100,6 +100,7 @@ ngOnInit(): void {
   this.loadProject();
   this.loadProjects();
 
+
   this.loadCountries();
 
   this.userId = this.sessionService.getUserId();
@@ -417,58 +418,58 @@ ngOnInit(): void {
 
 
     isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
+    editProjectStages: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
+  this.editProjectStages = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
   this.isEditModalOpen = false;
-  this.editAsset = {};
+  this.editProjectStages = {};
 }
 
 
-updateAssetType(): void {
+updateProjectStagesType(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema || !this.editAsset.id) {
+  if (!selectedSchema || !this.editProjectStages.id) {
     alert('Missing schema or asset ID');
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateProjectStages(this.editProjectStages.id, this.editProjectStages).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Project stages  updated successfully!');
       this.closeEditModal();
       this.loadProjects(); // reload updated list
     },
     (error) => {
-      console.error('Error updating asset:', error);
+      console.error('Error updating Stages:', error);
       alert('Update failed');
     }
   );
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedProjectStages() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
   if (selectedEmployeeIds.length === 0) {
-    alert('No Asset type selected for deletion.');
+    alert('No projectStages selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset ?')) {
+  if (confirm('Are you sure you want to delete the selected Project Stage ?')) {
     selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteAirPolicy(categoryId).subscribe(
+      this.employeeService.deleteProjectStages(categoryId).subscribe(
         () => {
-          console.log('policy  deleted successfully:', categoryId);
+          console.log('Project Stages deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-          alert(' policy  deleted successfully');
+          alert(' Project Stages  deleted successfully');
           window.location.reload();
 
         },

@@ -130,6 +130,7 @@ import { ShiftsComponent } from './shifts/shifts.component';
 import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
 import { ShiftEmployeeComponent } from './shift-employee/shift-employee.component';
 import { ShiftOverrideComponent } from './shift-override/shift-override.component';
+import { DocumentRequestTypeComponent } from './document-request-type/document-request-type.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
@@ -274,7 +275,7 @@ const routes: Routes = [
             component:DocumentTypeMasterComponent
           },
 
-        
+
           {
             path:'user-details/:id/details',
             component:UserDetailsComponent
@@ -388,6 +389,14 @@ const routes: Routes = [
             path:'document-request-level',
             component:DocumentRequestLevelComponent
           },
+
+          {
+             
+            path:'document-request-type',
+            component:DocumentRequestTypeComponent
+
+          },
+
           {
             path:'document-request',
             component:DocumentRequestComponent

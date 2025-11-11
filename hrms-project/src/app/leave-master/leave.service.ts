@@ -1017,9 +1017,22 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
 getDocType(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
 
+
+  return this.http.get(apiUrl);
+
+
+  
+}
+
+
+getDocRequestType(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/Doc-request-Type/?schema=${selectedSchema}`;
+
   // Fetch employees from the API
   return this.http.get(apiUrl);
 
+
+  
 }
 
 
@@ -1071,7 +1084,7 @@ CreateDocRequest(formData: FormData): Observable<any> {
 }
 
 
-getDocRequest(selectedSchema: string): Observable<any> {
+  getDocRequest(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/employee/api/Doc-request/?schema=${selectedSchema}`;
 
   // Fetch employees from the API
