@@ -115,6 +115,12 @@ export class DashboardContentsComponent {
 }
 
 
+
+EssUser(): void {
+  this.router.navigate(['/main-dashboard']);
+
+}
+
 fetchingSchemaDatas(): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
