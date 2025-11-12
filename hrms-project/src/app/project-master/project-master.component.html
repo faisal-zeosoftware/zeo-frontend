@@ -183,6 +183,37 @@
     </div>
   </div>
  
+  
+<div class="col-md-6" >
+  <label>Select Branch</label>
+  <div class="custom-sel">
+    <div class="form-control-wrapper">
+  
+
+      <mat-form-field>
+        <!-- <mat-label>Favorite food</mat-label> -->
+        <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #selectBr multiple>
+          <div class="select-all">
+            <mat-checkbox [(ngModel)]="allSelectedBr" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBr()">
+              Select All
+            </mat-checkbox>
+            
+          </div>
+          <input type="text" placeholder="serach" class="form-control">
+
+          <mat-option *ngFor="let food of Branches"  [value]="food.id">
+            {{ food.brnch_name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+    </div>
+    <div *ngIf="registerButtonClicked && (!members || members.length === 0)" class="error-message">
+      Please Select Members
+    </div>
+  </div>
+</div>
+
 
   <div class="col-md-6">
   <label>Upload Document</label>
@@ -362,7 +393,35 @@
       </div>
     </div>
   </div>
- 
+  <div class="col-md-6" >
+    <label>Select Branch</label>
+    <div class="custom-sel">
+      <div class="form-control-wrapper">
+    
+  
+        <mat-form-field>
+          <!-- <mat-label>Favorite food</mat-label> -->
+          <mat-select placeholder="Select" [(ngModel)]="editProject.branches" [ngModelOptions]="{standalone: true}" #selectBr multiple>
+            <div class="select-all">
+              <mat-checkbox [(ngModel)]="allSelectedBr" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBr()">
+                Select All
+              </mat-checkbox>
+            </div>
+            <input type="text" placeholder="serach" class="form-control">
+  
+            <mat-option *ngFor="let food of Branches" [value]="food.id">
+              {{ food.brnch_name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+      </div>
+      <div *ngIf="registerButtonClicked && (!members || members.length === 0)" class="error-message">
+        Please Select Members
+      </div>
+    </div>
+  </div>
+  
 
   <div class="col-md-6">
   <label>Upload Document</label>

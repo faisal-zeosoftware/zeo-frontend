@@ -60,6 +60,7 @@ export class DashboardContentsComponent {
 
     this.fetchingSchemaDatas();
     this.loadBranch();
+    
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
     // this.hideButton = this.EmployeeService.getHideButton();
@@ -227,26 +228,26 @@ loadBranch(): void {
   }
 
 
-  // onBranchChangeCmpPolicy(event: Event): void {
-  //   const branchId = (event.target as HTMLSelectElement).value;
+  onBranchChangeAnnouncement(event: Event): void {
+    const branchId = (event.target as HTMLSelectElement).value;
 
-  //   const selectedSchema = this.authService.getSelectedSchema();
+    const selectedSchema = this.authService.getSelectedSchema();
   
-  //   if (branchId && selectedSchema ) {
-  //     this.DepartmentServiceService.getBranchPolicies(branchId,selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.selectedBranchPolicies = result;
-  //         console.log('Policies fetched for branch:', branchId, this.selectedBranchPolicies);
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching policies for branch:', branchId, error);
-  //         this.selectedBranchPolicies = [];
-  //       }
-  //     );
-  //   } else {
-  //     this.selectedBranchPolicies = [];
-  //   }
-  // }
+    if (branchId && selectedSchema ) {
+      this.DepartmentServiceService.getBranchAnnouncement(branchId,selectedSchema).subscribe(
+        (result: any) => {
+          this.selectedBranchPolicies = result;
+          console.log('Policies fetched for branch:', branchId, this.selectedBranchPolicies);
+        },
+        (error) => {
+          console.error('Error fetching policies for branch:', branchId, error);
+          this.selectedBranchPolicies = [];
+        }
+      );
+    } else {
+      this.selectedBranchPolicies = [];
+    }
+  }
 
   // fetchBranchPolicies(branchId: string, selectedSchema: string): void {
   //   this.DepartmentServiceService.getBranchPolicies(branchId, selectedSchema).subscribe(

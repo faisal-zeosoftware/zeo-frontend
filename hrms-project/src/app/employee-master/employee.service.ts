@@ -4148,6 +4148,17 @@ getProjects(selectedSchema: string): Observable<any> {
   
 }
 
+getBrs(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/organisation/api/Branch/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
+
 
 
 
