@@ -29,6 +29,8 @@ export class DashboardContentsComponent {
   selectedBranchHolidays: any[] = []; // To store the holidays for the selected branch
 
   selectedBranchPolicies: any[] = []; // To store policies for the selected branch
+  selectedBranchAnnouncement: any[] = [];
+  selectedBranchProjects: any[] = [];
 
   selectedBranchId: string = ''; // To track the currently selected branch
   selectedBranchIdhol: string = ''; // To track the currently selected branch
@@ -155,61 +157,51 @@ setDynamicGreeting(): void {
   }
 }
 
+ loadBranch(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
 
-loadBranch(): void {
-    
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
-  if (selectedSchema) {
-    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any) => {
-        this.branches = result;
-        console.log(' fetching Companies:');
-        if (this.branches.length > 0) {
-          // Automatically select the first branch
-          this.selectedBranchId = this.branches[0].id;
-          this.selectedBranchIdhol = this.branches[0].id; // Default branch for holidays
-
-          // this.fetchBranchPolicies(this.selectedBranchId, selectedSchema);
-          this.fetchBranchHolidays(this.selectedBranchIdhol);
-
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any) => {
+          this.branches = result;
+          if (this.branches.length > 0) {
+            this.selectedBranchId = this.branches[0].id;
+            this.selectedBranchIdhol = this.branches[0].id;
+            this.fetchBranchHolidays(this.selectedBranchIdhol);
+          }
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
         }
-
-      },
-      (error) => {
-        console.error('Error fetching Companies:', error);
-      }
-    );
-  }
-  }
-
-
-  onBranchChange(event: Event): void {
-    const branchId = (event.target as HTMLSelectElement).value;
-    
-    if (branchId) {
-      const selectedBranch = this.branches.find(branch => branch.id == branchId);
-      if (selectedBranch) {
-        this.selectedBranchHolidays = selectedBranch.holidays || [];
-        this.selectedBranchPolicies = selectedBranch.policies || [];
-
-        this.isAddFieldsModalOpen=false;
-      } else {
-        this.selectedBranchHolidays = [];
-        this.selectedBranchPolicies = [];
-
-      }
+      );
     }
   }
 
+  onBranchChange(event: Event): void {
+    const branchId = (event.target as HTMLSelectElement).value;
+    const selectedBranch = this.branches.find(branch => branch.id == branchId);
+  
+    if (selectedBranch) {
+      this.selectedBranchHolidays = selectedBranch.holidays || [];
+      this.selectedBranchPolicies = selectedBranch.policies || [];
+      this.selectedBranchAnnouncement = selectedBranch.branch_announcements || [];
+      this.selectedBranchProjects = selectedBranch.branch_projects || [];
+    } else {
+      this.selectedBranchHolidays = [];
+      this.selectedBranchPolicies = [];
+      this.selectedBranchAnnouncement = [];
+      this.selectedBranchProjects = [];
+    }
+  }
 
+  
   fetchBranchHolidays(branchId: string): void {
     const selectedBranch = this.branches.find(branch => branch.id === branchId);
+  
     this.selectedBranchHolidays = selectedBranch ? selectedBranch.holidays || [] : [];
     this.selectedBranchPolicies = selectedBranch ? selectedBranch.policies || [] : [];
-
+    this.selectedBranchAnnouncement = selectedBranch ? selectedBranch.branch_announcements || [] : [];
+    this.selectedBranchProjects = selectedBranch ? selectedBranch.branch_projects || [] : [];
   }
   // Utility methods to format date
   getDate(dateStr: string): string {
@@ -228,26 +220,29 @@ loadBranch(): void {
   }
 
 
-  onBranchChangeAnnouncement(event: Event): void {
-    const branchId = (event.target as HTMLSelectElement).value;
 
-    const selectedSchema = this.authService.getSelectedSchema();
   
-    if (branchId && selectedSchema ) {
-      this.DepartmentServiceService.getBranchAnnouncement(branchId,selectedSchema).subscribe(
-        (result: any) => {
-          this.selectedBranchPolicies = result;
-          console.log('Policies fetched for branch:', branchId, this.selectedBranchPolicies);
-        },
-        (error) => {
-          console.error('Error fetching policies for branch:', branchId, error);
-          this.selectedBranchPolicies = [];
-        }
-      );
-    } else {
-      this.selectedBranchPolicies = [];
-    }
-  }
+
+  // LoadSelectedBranchAnnouncement(event: Event): void {
+  //   const branchId = (event.target as HTMLSelectElement).value;
+
+  //   const selectedSchema = this.authService.getSelectedSchema();
+  
+  //   if (branchId && selectedSchema ) {
+  //     this.DepartmentServiceService.getBranchAnnouncement(branchId,selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.selectedBranchPolicies = result;
+  //         console.log('Policies fetched for branch:', branchId, this.selectedBranchPolicies);
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching policies for branch:', branchId, error);
+  //         this.selectedBranchPolicies = [];
+  //       }
+  //     );
+  //   } else {
+  //     this.selectedBranchPolicies = [];
+  //   }
+  // }
 
   // fetchBranchPolicies(branchId: string, selectedSchema: string): void {
   //   this.DepartmentServiceService.getBranchPolicies(branchId, selectedSchema).subscribe(

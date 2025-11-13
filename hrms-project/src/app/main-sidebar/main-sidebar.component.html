@@ -136,20 +136,75 @@
      
 
      </div>
-
+  
    
-    <ul class="navbar-nav ms-auto d-flex flex-row">
-      <!-- Notification dropdown -->
-      <li class="nav-item dropdown">
-        <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow" (click)="redirectToExpiredDocuments()" role="button"
-        data-mdb-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-        <div class="notiicon">
-           <mat-icon class="mt-2">notifications</mat-icon>
-        </div>   
-         <span class="badge rounded-pill badge-notification bg-danger" *ngIf="expiredDocumentsCount > 0"
-               style="position: absolute; margin-left: -10px; color: white;">{{ expiredDocumentsCount }}</span>
-     </a>
-       </li>
+    <ul class="navbar-nav ms-auto d-flex flex-row" >
+<!-- 🔔 Notification Dropdown -->
+<li class="nav-item dropdown" *ngIf="AllNotifications">
+  <a
+    class="nav-link me-5 me-lg-0 dropdown-toggle hidden-arrow"
+    id="notificationDropdown"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+    style="cursor: pointer; position: relative;"
+  >
+    <div class="notiicon position-relative">
+      <mat-icon class="mt-2">notifications</mat-icon>
+      <span
+        *ngIf="notificationCount > 0"
+        class="badge rounded-pill bg-danger position-absolute translate-middle"
+        style="font-size: 11px; left: 70%; top: 5px;"
+      >
+        {{ notificationCount }}
+      </span>
+    </div>
+  </a>
+
+  <ul
+    class="dropdown-menu dropdown-menu-end shadow p-2"
+    aria-labelledby="notificationDropdown"
+    style="min-width: 320px; max-height: 400px; overflow-y: auto;"
+  >
+    <ng-container *ngIf="AllNotifications.length > 0; else noNotifications">
+      <li *ngFor="let noti of AllNotifications; let i = index">
+        <a
+          class="dropdown-item py-2 px-3"
+          href="javascript:void(0)"
+          (click)="onNotificationClick(noti)"
+          [ngClass]="{ 'flash-highlight': noti.highlighted }"
+        >
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <strong *ngIf="noti.type === 'document'">📄 Document Expired</strong>
+              <strong *ngIf="noti.type === 'leave'">🏖️ Leave Request</strong>
+              <strong *ngIf="noti.type === 'general'">📢 General Request</strong>
+              <strong *ngIf="noti.type === 'docrequest'">🗂️ Document Request</strong>
+              <strong *ngIf="noti.type === 'loanrequest'">💰 Loan Request</strong>
+              <strong *ngIf="noti.type === 'advancesalaryrequest'">💵 Advance Salary Request</strong>
+              <div class="text-muted small">
+                {{ noti.created_at | date: 'medium' }}
+              </div>
+              <div class="small mt-1 text-wrap text-dark">
+                {{ noti.message }}
+              </div>
+            </div>
+            <span class="badge bg-primary rounded-pill">New</span>
+          </div>
+        </a>
+        <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-1" />
+      </li>
+    </ng-container>
+
+    <ng-template #noNotifications>
+      <li>
+        <a class="dropdown-item text-center text-muted py-3">
+          No new notifications
+        </a>
+      </li>
+    </ng-template>
+  </ul>
+</li>
+
 
        <!-- select company -->
    
@@ -241,7 +296,7 @@
       <!-- notification -->
 
       <div class="col-md-1 col-3" >
-         <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow pull-right " (click)="redirectToExpiredDocuments()" role="button"
+         <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow pull-right "  role="button"
         data-mdb-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
         <div class="notiicon">
            <mat-icon class="mt-2">notifications</mat-icon>

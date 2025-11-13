@@ -20,6 +20,18 @@ export class MainSidebarComponent {
  
   expiredDocumentsCount: number = 0;
   expiredDocuments: any[] = []; // Assuming this array holds the list of expired documents
+  AllNotifications: any[] = []; // Combined notifications
+
+  notificationCount: number = 0; // number to show in the red badge
+
+
+  Documents: any[] = []; // store expired document notifications
+  // 🔔 Notification Arrays
+  LeaveNot: any[] = [];
+  GeneralReqNot: any[] = [];
+  DocReqNot: any[] = [];
+  LoanReqNot: any[] = [];
+  AdvancesalaryReqNot: any[] = [];
 
   hideButton = false;
   // constructor(public authService: AuthService) {}
@@ -62,6 +74,10 @@ export class MainSidebarComponent {
   // }
 
   ngOnInit(): void {
+
+    // this.loadAllNotifications();
+
+
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
     this.hideButton = this.EmployeeService.getHideButton();
@@ -79,6 +95,9 @@ export class MainSidebarComponent {
     const selectedStateLabel = localStorage.getItem('selectedSchemaStateLabel');
     console.log("Retrieved state label:", selectedStateLabel);
     
+    if (selectedSchema) {
+      this.loadAllNotifications(selectedSchema);
+    }
 
     if (selectedSchema && selectedSchemaId) {
         this.selectedSchema = selectedSchema;
@@ -118,9 +137,174 @@ export class MainSidebarComponent {
 }
 
 
+ // ✅ Load all notification types
+ loadAllNotifications(selectedSchema: string): void {
+  this.loadExpiredDocuments(selectedSchema);
+  this.loadLeaveNotifications(selectedSchema);
+  this.loadGeneralReqNotifications(selectedSchema);
+  this.loadDocumentReqNotifications(selectedSchema);
+  this.loadLoanReqNotifications(selectedSchema);
+  this.loadAdvancesalaryReqNotifications(selectedSchema);
+}
 
 
+ // ✅ Expired Document Notifications
+ loadExpiredDocuments(selectedSchema: string): void {
+  this.EmployeeService.getExpiredDocuments(selectedSchema).subscribe({
+    next: (docs: any[]) => {
+      this.Documents = (docs || []).map(item => ({
+        ...item,
+        type: 'document',
+        highlighted: false
+      }));
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading document notifications:', err);
+      this.Documents = [];
+      this.combineNotifications();
+    }
+  });
+}
 
+// ✅ Leave Notifications
+loadLeaveNotifications(selectedSchema: string): void {
+  this.EmployeeService.getLeaveNotify(selectedSchema).subscribe({
+    next: (leaves: any[]) => {
+      this.LeaveNot = (leaves || []).map(item => ({
+        ...item,
+        type: 'leave',
+        highlighted: false
+      }));
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading leave notifications:', err);
+      this.LeaveNot = [];
+      this.combineNotifications();
+    }
+  });
+}
+
+// ✅ General Request Notifications
+loadGeneralReqNotifications(selectedSchema: string): void {
+  this.EmployeeService.getLeaveGeneralReqNot(selectedSchema).subscribe({
+    next: (leaves: any) => {
+      this.GeneralReqNot = Array.isArray(leaves)
+        ? leaves
+            .filter((item: any) => item.message?.toLowerCase().includes('generalrequest'))
+            .map((item) => ({ ...item, type: 'general', highlighted: false }))
+        : [];
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading general request notifications:', err);
+      this.GeneralReqNot = [];
+      this.combineNotifications();
+    },
+  });
+}
+
+// ✅ Document Request Notifications
+loadDocumentReqNotifications(selectedSchema: string): void {
+  this.EmployeeService.getDocumentReqNot(selectedSchema).subscribe({
+    next: (docs: any) => {
+      this.DocReqNot = Array.isArray(docs)
+        ? docs
+            .filter((item: any) => item.message?.toLowerCase().includes('docrequest'))
+            .map((item) => ({ ...item, type: 'docrequest', highlighted: false }))
+        : [];
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading document request notifications:', err);
+      this.DocReqNot = [];
+      this.combineNotifications();
+    },
+  });
+}
+
+// ✅ Loan Request Notifications
+loadLoanReqNotifications(selectedSchema: string): void {
+  this.EmployeeService.getLoanReqNot(selectedSchema).subscribe({
+    next: (loan: any) => {
+      this.LoanReqNot = Array.isArray(loan)
+        ? loan
+            .filter((item: any) => item.message?.toLowerCase().includes('loanrequest'))
+            .map((item) => ({ ...item, type: 'loanrequest', highlighted: false }))
+        : [];
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading loan request notifications:', err);
+      this.LoanReqNot = [];
+      this.combineNotifications();
+    },
+  });
+}
+
+// ✅ Advance Salary Request Notifications
+loadAdvancesalaryReqNotifications(selectedSchema: string): void {
+  this.EmployeeService.getAdvancesalaryReqNot(selectedSchema).subscribe({
+    next: (loan: any) => {
+      this.AdvancesalaryReqNot = Array.isArray(loan)
+        ? loan
+            .filter((item: any) => item.message?.toLowerCase().includes('advancesalaryrequest'))
+            .map((item) => ({ ...item, type: 'advancesalaryrequest', highlighted: false }))
+        : [];
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading advance salary request notifications:', err);
+      this.AdvancesalaryReqNot = [];
+      this.combineNotifications();
+    },
+  });
+}
+
+// ✅ Combine & Sort all notifications
+combineNotifications(): void {
+  this.AllNotifications = [
+    ...this.Documents,
+    ...this.LeaveNot,
+    ...this.GeneralReqNot,
+    ...this.DocReqNot,
+    ...this.LoanReqNot,
+    ...this.AdvancesalaryReqNot
+  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  this.notificationCount = this.AllNotifications.length;
+}
+
+// ✅ Handle click with flash + redirect
+
+onNotificationClick(noti: any): void {
+  noti.highlighted = true;
+  setTimeout(() => (noti.highlighted = false), 1000);
+
+  switch (noti.type) {
+    case 'document':
+      this.router.navigate(['/main-sidebar/sub-sidebar/document-expired']);
+      break;
+    case 'leave':
+      this.router.navigate(['/main-sidebar/leave-options/leave-approvals']);
+      break;
+    case 'general':
+      this.router.navigate(['/main-sidebar/sub-sidebar/approvals']);
+      break;
+    case 'docrequest':
+      this.router.navigate(['/main-sidebar/settings/document-request-approval']);
+      break;
+    case 'loanrequest':
+      this.router.navigate(['/main-sidebar/loan-sidebar/loan-approval']);
+      break;
+    case 'advancesalaryrequest':
+      this.router.navigate(['/main-sidebar/salary-options/advance-salary-approvals']);
+      break;
+    default:
+      console.warn('⚠️ Unknown notification type:', noti.type);
+  }
+}
 
 selectSchema(event: any) {
   const selectedSchemaName = event.target.value;
@@ -185,11 +369,8 @@ showsidebarclick() {
 
 
   
-  redirectToExpiredDocuments(): void {
-    this.router.navigate(['/main-sidebar/sub-sidebar/document-expired']);
-    this.expiredDocumentsCount = 0;
-  }
 
+  
 
   logout(): void {
     this.authService.logout().subscribe(() => {

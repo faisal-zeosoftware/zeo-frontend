@@ -1084,7 +1084,77 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   }
 
+  getLeaveNotify(selectedSchema: string): Observable<any> {
+
+    // const url = `${this.baseUrl}/notification/`;
+    // return this.http.get(url);
+
+    const apiUrl = `${this.apiUrl}/calendars/api/leave-ApprovalNotify/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+
+  }
+
+
+  getLeaveGeneralReqNot(selectedSchema: string): Observable<any> {
+
+    // const url = `${this.baseUrl}/notification/`;
+    // return this.http.get(url);
+
+    const apiUrl = `${this.apiUrl}/employee/api/request-notifications/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+
+  }
+
+
+  getDocumentReqNot(selectedSchema: string): Observable<any> {
+
+    // const url = `${this.baseUrl}/notification/`;
+    // return this.http.get(url);
+
+    const apiUrl = `${this.apiUrl}/employee/api/Doc-request-noification/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+
+  }
+
+  getLoanReqNot(selectedSchema: string): Observable<any> {
+
   
+
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-notification/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+
+  }
+
+  getAdvancesalaryReqNot(selectedSchema: string): Observable<any> {
+
+  
+
+    const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-notification/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+
+  }
+
+
 
   getEmpAssetDetails(selectedSchema: string, empId: number): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/emp_asset/?schema=${selectedSchema}`;
