@@ -244,55 +244,57 @@ export class LeaveRequestComponent {
   }
 
 
-  requestLeave(): void {
-    this.registerButtonClicked = true;
+requestLeave(): void {
+  this.registerButtonClicked = true;
 
-    const formData = new FormData();
-    formData.append('start_date', this.start_date);
-    formData.append('end_date', this.end_date);
-    formData.append('reason', this.reason);
-    formData.append('status', this.status);
-    formData.append('dis_half_day', this.dis_half_day.toString());
-    formData.append('half_day_period', this.half_day_period);
-    formData.append('document_number', this.document_number);
+  const formData = new FormData();
+  formData.append('start_date', this.start_date);
+  formData.append('end_date', this.end_date);
+  formData.append('reason', this.reason);
+  formData.append('status', this.status);
+  formData.append('dis_half_day', this.dis_half_day.toString());
+  formData.append('half_day_period', this.half_day_period);
+  formData.append('document_number', this.document_number);
+  formData.append('leave_type', this.leave_type.toString());
+  formData.append('employee', this.selectedEmployee?.toString() || '');
 
-    formData.append('leave_type', this.leave_type.toString());
+  this.leaveService.requestLeaveAdmin(formData).subscribe(
+    (response) => {
+      console.log('Leave request successful:', response);
+      alert('Leave Request has been sent successfully!');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Leave request failed:', error);
 
-    // formData.append('leave_type', this.leave_type);
-    formData.append('employee', this.selectedEmployee?.toString() || '');
+      let errorMessage = 'Something went wrong.';
 
-    this.leaveService.requestLeaveAdmin(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Leave Request has been Sent');
-        window.location.reload();
-      },
+      // ✅ Handle backend validation or field-level errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
 
-      (error) => {
-        console.error('Request failed', error);
-
-        let errorMessage = 'Enter all required fields!';
-
-        if (error.error) {
-          if (typeof error.error === 'string') {
-            errorMessage = error.error;
-          } else if (error.error.detail) {
-            errorMessage = error.error.detail;
-          } else if (error.error.non_field_errors) {
-            errorMessage = error.error.non_field_errors.join(', ');
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
           } else {
-            // Collect field-specific error messages
-            const fieldErrors = Object.keys(error.error)
-              .map(field => `${field}: ${error.error[field].join(', ')}`)
-              .join('\n');
-            errorMessage = fieldErrors || errorMessage;
+            messages.push(`${key}: ${JSON.stringify(value)}`);
           }
         }
 
-        alert(errorMessage);
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handles backend messages like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
       }
-    );
-  }
+
+      alert(`Leave request failed!\n\n${errorMessage}`);
+    }
+  );
+}
 
 
 

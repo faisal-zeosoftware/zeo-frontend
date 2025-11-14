@@ -399,7 +399,7 @@ export class CreateEmployeeComponent implements OnInit {
 
     this.loadCountries();
     this.loadReligoin();
-this.loadNationality();
+    this.loadNationality();
 
     this.loadCompanies();
     this.loadbranches();
@@ -650,12 +650,39 @@ this.loadNationality();
             console.log('The success modal was closed');
           });
         },
-        (error: HttpErrorResponse) => {
-          const errorMessage = error.error?.detail || 'Something went wrong.';
-          console.error('Document upload failed', error);
-          alert(`Registration failed! ${errorMessage}`);
-          alert(123)
-        }
+        
+(error: HttpErrorResponse) => {
+  console.error('Document upload failed', error);
+
+  let errorMessage = 'Something went wrong.';
+
+  if (error.error && typeof error.error === 'object') {
+    const messages: string[] = [];
+
+    for (const [key, value] of Object.entries(error.error)) {
+      if (Array.isArray(value)) {
+        // If it's an array (like DRF validation errors)
+        messages.push(`${key}: ${value.join(', ')}`);
+      } else if (typeof value === 'string') {
+        // If it's a simple string message
+        messages.push(`${key}: ${value}`);
+      } else {
+        // Fallback for unexpected structures
+        messages.push(`${key}: ${JSON.stringify(value)}`);
+      }
+    }
+
+    if (messages.length > 0) {
+      errorMessage = messages.join('\n'); // Combine all messages with new lines
+    }
+  } else if (error.error?.detail) {
+    // Handles backend responses like { "detail": "Something went wrong" }
+    errorMessage = error.error.detail;
+  }
+
+  alert(`Registration failed!\n\n${errorMessage}`);
+}
+
       );
   }
 

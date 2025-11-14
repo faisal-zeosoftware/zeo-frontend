@@ -329,8 +329,23 @@ ngOnInit(): void {
               },
               (error) => {
                 console.error('Add failed', error);
-                alert('Enter all fields correctly!');
-              }
+               let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
+      alert(errorMessage);
+    }
             );
           }
           

@@ -174,32 +174,43 @@ private employeeService: EmployeeService,
   registerButtonClicked = false;
 
 
-  CreateLoanrepayment(): void {
-    this.registerButtonClicked = true;
-  
-  
-    const formData = new FormData();
-    formData.append('repayment_date', this.repayment_date);
-    formData.append('amount_paid', this.amount_paid);
-    formData.append('remaining_balance', this.remaining_balance);
-    formData.append('loan', this.loan );
+CreateLoanrepayment(): void {
+  this.registerButtonClicked = true;
 
+  const formData = new FormData();
+  formData.append('repayment_date', this.repayment_date);
+  formData.append('amount_paid', this.amount_paid);
+  formData.append('remaining_balance', this.remaining_balance);
+  formData.append('loan', this.loan);
 
- 
+  this.employeeService.registerLoanrepayment(formData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Loan Repayment has been added');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Added failed', error);
 
-  
-    this.employeeService.registerLoanrepayment(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Loan Repayment has been added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
-        alert('Enter all required fields!');
+      let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
       }
-    );
-  }
+
+      alert(errorMessage);
+    }
+  );
+}
 
 
 

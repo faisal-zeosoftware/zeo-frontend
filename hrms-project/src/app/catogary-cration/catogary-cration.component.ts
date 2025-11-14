@@ -71,80 +71,67 @@ export class CatogaryCrationComponent {
     }
   }
 
-   registerCatogary(): void {
-    this.registerButtonClicked = true;
+registerCatogary(): void {
+  this.registerButtonClicked = true;
 
-    
-     // Basic validation for username and password fields
-  if (!this.ctgry_title || !this.ctgry_description ||!this.ctgry_code) {
+  // Basic front-end validation
+  if (!this.ctgry_title || !this.ctgry_description || !this.ctgry_code) {
     if (!this.ctgry_title) {
-      alert('Category name field is blank.');
+      alert('Category Name field is blank.');
     }
     if (!this.ctgry_code) {
-      alert('Category name field is blank.');
+      alert('Category Code field is blank.');
     }
     if (!this.ctgry_description) {
-      alert('Category Description  field is blank.');
+      alert('Category Description field is blank.');
     }
-    // return; // Exit the function if validation fails
+    return; // Stop further execution if validation fails
   }
 
-    const companyData = {
-      ctgry_title: this.ctgry_title,
-      ctgry_description:this.ctgry_description,
-      ctgry_code:this.ctgry_code,
+  const companyData = {
+    ctgry_title: this.ctgry_title,
+    ctgry_description: this.ctgry_description,
+    ctgry_code: this.ctgry_code,
+  };
 
-  
-   
+  this.CatogaryService.registerCatogary(companyData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Category has been registered successfully!');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Registration failed', error);
 
-      // Add other form field values to the companyData object
-    };
-    // if (this.selectedFile) {
-    //   const formData = new FormData();
-    //   formData.append('logo', this.selectedFile, this.selectedFile.name);
+      let errorMessage = 'Something went wrong.';
 
-    //   // Replace 'http://localhost:8000/upload-logo' with your backend API endpoint for handling logo uploads
-    //   this.http.post<any>('http://localhost:8000/upload-logo', formData).subscribe(
-    //     (response) => {
-    //       console.log('Logo uploaded successfully', response);
-    //       // Optionally, you can handle the response from the server (e.g., get the logo URL)
-    //     },
-    //     (error) => {
-    //       console.error('Logo upload failed', error);
-    //       // Handle the error appropriately, e.g., show a user-friendly error message
-    //     }
-    //   );
-    // }
+      // ✅ Handle backend validation errors (e.g., from Django REST Framework)
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
 
-    this.CatogaryService.registerCatogary(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        // this.authService.login(this.cmpny_mail, this.cmpny_pincode).subscribe(
-        //   (loginResponse) => {
-        //     console.log('Login successful after registration', loginResponse);
-        //     // Optionally, you can navigate to another page or perform other actions upon successful login.
-            alert('Catagory has been Registered !');
-          
-            window.location.reload();
-         
-        //   },
-        //   (loginError) => {
-        //     console.error('Login failed after registration', loginError);
-        //     // Handle login error after registration
-        //   }
-        // );
-        // Optionally, you can navigate to another page or perform other actions upon successful registration.
-        // alert('Company has been Register!')
-        // window.location.reload();
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+        }
 
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handles backend messages like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
       }
-    );
-  }
+
+      alert(`Registration failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
 
   ClosePopup(){
     this.ref.close('Closed using function')

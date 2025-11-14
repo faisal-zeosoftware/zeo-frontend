@@ -269,43 +269,56 @@ loadUsers(): void {
 
 
 
-    registerApproveLevel(): void {
-      this.registerButtonClicked = true;
-      
-      const companyData = {
-        level: this.level,
-      
-        role:this.role,
-        approver: this.approver,
-  
-        request_type: this.request_type,
-      
-        branch: this.branch,
+registerApproveLevel(): void {
+  this.registerButtonClicked = true;
 
+  const companyData = {
+    level: this.level,
+    role: this.role,
+    approver: this.approver,
+    request_type: this.request_type,
+    branch: this.branch,
+    // Add other form field values to the companyData object
+  };
 
-     
-  
-        // Add other form field values to the companyData object
-      };
-    
-  
-      this.employeeService.registerApproveLevel(companyData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-        
-              alert('Approvel Level Assigned ');
-              window.location.reload();
-              // window.location.reload();
-         
-  
-        },
-        (error) => {
-          console.error('Added failed', error);
-          alert('enter all field!')
-          // Handle the error appropriately, e.g., show a user-friendly error message.
+  this.employeeService.registerApproveLevel(companyData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Approval Level has been assigned successfully!');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Approval level assignment failed:', error);
+
+      let errorMessage = 'Something went wrong.';
+
+      // ✅ Handle backend validation or field-level errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
         }
-      );
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handles backend messages like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
+      }
+
+      alert(`Registration failed!\n\n${errorMessage}`);
     }
+  );
+}
+
   
 
     

@@ -162,74 +162,66 @@ export class DesignationCreationComponent {
       });
   
   }
-   registerDesignation(): void {
-    this.registerButtonClicked = true;
 
-     // Basic validation for username and password fields
-     if (!this.desgntn_job_title || !this.desgntn_description) {
-      if (!this.desgntn_job_title) {
-        alert('Job  Title field is blank.');
-      }
-      if (!this.desgntn_description) {
-        alert('Job Description  field is blank.');
-      }
-      // return; // Exit the function if validation fails
+
+registerDesignation(): void {
+  this.registerButtonClicked = true;
+
+  // Basic validation for required fields
+  if (!this.desgntn_job_title || !this.desgntn_description) {
+    if (!this.desgntn_job_title) {
+      alert('Job Title field is blank.');
     }
-  
-
-
-    const companyData = {
-      desgntn_job_title: this.desgntn_job_title,
-      desgntn_description:this.desgntn_description,
-      desgntn_code:this.desgntn_code,
-   
-
-      // Add other form field values to the companyData object
-    };
-    // if (this.selectedFile) {
-    //   const formData = new FormData();
-    //   formData.append('logo', this.selectedFile, this.selectedFile.name);
-
-    //   // Replace 'http://localhost:8000/upload-logo' with your backend API endpoint for handling logo uploads
-    //   this.http.post<any>('http://localhost:8000/upload-logo', formData).subscribe(
-    //     (response) => {
-    //       console.log('Logo uploaded successfully', response);
-    //       // Optionally, you can handle the response from the server (e.g., get the logo URL)
-    //     },
-    //     (error) => {
-    //       console.error('Logo upload failed', error);
-    //       // Handle the error appropriately, e.g., show a user-friendly error message
-    //     }
-    //   );
-    // }
-
-    this.DesignationService.registerDesignation(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        // this.authService.login(this.cmpny_mail, this.cmpny_pincode).subscribe(
-        //   (loginResponse) => {
-        //     console.log('Login successful after registration', loginResponse);
-        //     // Optionally, you can navigate to another page or perform other actions upon successful login.
-            alert('Designation has been Registered ');
-            window.location.reload();
-        //   },
-        //   (loginError) => {
-        //     console.error('Login failed after registration', loginError);
-        //     // Handle login error after registration
-        //   }
-        // );
-        // Optionally, you can navigate to another page or perform other actions upon successful registration.
-        // alert('Company has been Register!')
-        // window.location.reload();
-
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
-      }
-    );
+    if (!this.desgntn_description) {
+      alert('Job Description field is blank.');
+    }
+    return; // Stop if local validation fails
   }
+
+  const companyData = {
+    desgntn_job_title: this.desgntn_job_title,
+    desgntn_description: this.desgntn_description,
+    desgntn_code: this.desgntn_code,
+  };
+
+  this.DesignationService.registerDesignation(companyData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Designation has been registered successfully.');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Registration failed', error);
+
+      let errorMessage = 'Something went wrong.';
+
+      // If backend sends field-level errors like { field: ["msg"] }
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+        }
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // If backend sends a general message like { detail: "Invalid data" }
+        errorMessage = error.error.detail;
+      }
+
+      alert(`Registration failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
 
   ClosePopup(){
     this.ref.close('Closed using function')

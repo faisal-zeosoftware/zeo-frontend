@@ -216,54 +216,6 @@
 </div>
 
 
-<!-- <div class="col-md-6" >
-               
-    <label>Religion</label>
-   <input type="text"  class="form-control" required id="emp_relegion" name="emp_relegion"  [(ngModel)]="emp_relegion"  placeholder="Enter Religion"
-    [ngModelOptions]="{standalone: true}" >
-   
-</div> -->
-   <!-- <div *ngIf="registerButtonClicked && !emp_relegion" class="error-message">Description is required.</div> -->
-
-<!-- <div class="col-md-6" >
-    <label>{{religionFieldName}}</label>
-
-
-
-    <input type="text"  class="form-control" required   [(ngModel)]="emp_relegion"  placeholder="Enter {{religionFieldName}}"
-    [ngModelOptions]="{standalone: true}"  style="display: none;" [required]="isRelMandatory" 
-[ngClass]="{'error-field': registerButtonClicked && isRelMandatory && !emp_relegion}" >
-
-<div *ngIf="registerButtonClicked && isRelMandatory && !emp_relegion" class="error-message">
-                    {{religionFieldName}} is required.
-                </div>
-
-    <ng-container [ngSwitch]="selectedDataTypereligion">
-        <input *ngSwitchCase="'Text Box'" type="text" class="form-control" 
-               required placeholder="{{religionFieldName}}" 
-               [(ngModel)]="temp_religion" 
-               (ngModelChange)="syncReligion($event)"  [ngModelOptions]="{standalone: true}"
-               [ngClass]="{'error-field': registerButtonClicked && !temp_religion}">
-        <div *ngIf="registerButtonClicked && !temp_religion" class="error-message">{{religionFieldName}} is required.</div>
-
-        <div *ngSwitchCase="'Dropdown'" class="custom-sel">
-            <select class="form-control" [(ngModel)]="temp_religion" (ngModelChange)="syncReligion($event)" [ngModelOptions]="{standalone: true}">
-                <option value="">Select an option</option>
-                <option *ngFor="let option of ReligionDropdownOptions" [value]="option">{{option}}</option>
-            </select>
-            <div *ngIf="registerButtonClicked && !temp_religion" class="error-message">{{religionFieldName}} is required.</div>
-        </div>
-    </ng-container>
-</div> -->
-
-
-<!-- <div class="col-md-6" >
-               
-    <label>Blood Group</label>
-   <input type="text"  class="form-control" required id="emp_blood_group" name="emp_blood_group"  [(ngModel)]="emp_blood_group"  placeholder="Enter Blood Group"
-    [ngModelOptions]="{standalone: true}" >
-   
-</div> -->
 
  
 <div class="col-md-6" *ngIf="!isBloodFieldHidden">
@@ -297,18 +249,7 @@
 </div>
 
 
-<!-- <div class="col-md-6"   >
-               
-    <label>{{nationFieldName}}</label>
-    <input type="text"  class="form-control" required   [(ngModel)]="emp_nationality"  placeholder="Enter {{nationFieldName}}"
-     [ngModelOptions]="{standalone: true}" [required]="isNatMandatory" 
- [ngClass]="{'error-field': registerButtonClicked && isNatMandatory && !emp_nationality}" >
- 
- <div *ngIf="registerButtonClicked && isNatMandatory && !emp_nationality" class="error-message">
-                  
-                 </div>
-   
-</div> -->
+
 
 
 <div class="col-md-6" *ngIf="!isNationFieldHidden">

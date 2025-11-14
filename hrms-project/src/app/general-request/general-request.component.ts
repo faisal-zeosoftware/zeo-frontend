@@ -472,35 +472,61 @@ updateAssetType(): void {
           }
 
 
+registerGeneralreq(): void {
+  this.registerButtonClicked = true;
 
-          registerGeneralreq(): void {
-            this.registerButtonClicked = true;
-          
-            const formData = new FormData();
-          
-            formData.append('document_number', this.document_number?.toString() || '');
-            formData.append('reason', this.reason || '');
-            formData.append('total', this.total?.toString() || '');
-            formData.append('request_type', this.request_type || '');
-            formData.append('employee', this.employee || '');
-            formData.append('created_by', this.created_by || '');
-            formData.append('approved', this.approved ? 'true' : 'false');
-            formData.append('remarks', this.remarks || '');
-          
-            if (this.request_document) {
-              formData.append('request_document', this.request_document);
-            }
-          
-            this.employeeService.registerGeneralReq(formData).subscribe(
-              (response) => {
-                alert('General request has been added');
-                window.location.reload();
-              },
-              (error) => {
-                alert('Enter all fields!');
-              }
-            );
+  const formData = new FormData();
+
+  formData.append('document_number', this.document_number?.toString() || '');
+  formData.append('reason', this.reason || '');
+  formData.append('total', this.total?.toString() || '');
+  formData.append('request_type', this.request_type || '');
+  formData.append('employee', this.employee || '');
+  formData.append('created_by', this.created_by || '');
+  formData.append('approved', this.approved ? 'true' : 'false');
+  formData.append('remarks', this.remarks || '');
+
+  if (this.request_document) {
+    formData.append('request_document', this.request_document);
+  }
+
+  this.employeeService.registerGeneralReq(formData).subscribe(
+    (response) => {
+      alert('General request has been added successfully!');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('General request registration failed:', error);
+
+      let errorMessage = 'Something went wrong.';
+
+      // ✅ Handle backend validation or field-level errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
           }
+        }
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handle general error message like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
+      }
+
+      alert(`Registration failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
           
 
 selectedSalaryComponent: string | null = null;

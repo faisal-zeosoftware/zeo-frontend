@@ -178,49 +178,65 @@ export class DepartmentCreationComponent {
   
   }
   
-   registerDepartment(): void {
-    this.registerButtonClicked = true;
+registerDepartment(): void {
+  this.registerButtonClicked = true;
 
-
-     // Basic validation for username and password fields
+  // Basic validation for required fields
   if (!this.dept_name || !this.branch_id) {
     if (!this.dept_name) {
-      alert('Department name field is blank.');
+      alert('Department Name field is blank.');
     }
     if (!this.branch_id) {
-      alert('Branch  field is blank.');
+      alert('Branch field is blank.');
     }
-    // return; // Exit the function if validation fails
+    return; // Stop if validation fails
   }
 
+  const companyData = {
+    dept_name: this.dept_name,
+    dept_description: this.dept_description,
+    branch_id: this.branch_id,
+    dept_code: this.dept_code,
+  };
 
-    const companyData = {
-      dept_name: this.dept_name,
-      dept_description:this.dept_description,
-      branch_id:this.branch_id,
-      dept_code: this.dept_code,
+  this.DepartmentServiceService.registerDepartment(companyData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Department has been registered successfully.');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Registration failed', error);
 
-      // Add other form field values to the companyData object
-    };
-    
+      let errorMessage = 'Something went wrong.';
 
-    this.DepartmentServiceService.registerDepartment(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-       
-            alert('Deaprtment has been Registered ');
-            window.location.reload();
-            // window.location.reload();
-       
+      // ✅ Handle backend validation errors (like Django REST Framework)
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
 
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+        }
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handles generic backend message: { "detail": "Something went wrong" }
+        errorMessage = error.error.detail;
       }
-    );
-  }
+
+      alert(`Registration failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
 
   ngOnInit(): void {
     this.loadDeparmentBranch();

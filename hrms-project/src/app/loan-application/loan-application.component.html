@@ -14,22 +14,22 @@
                 </div>
                 <div class="col-md-5">
                     <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
-                        </span> Create</button>
-                        <span *ngIf="!hasAddPermission"></span>
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><mat-icon>add_circle
+                  </mat-icon></span>Create</button>
+                  <span *ngIf="!hasAddPermission"></span>
 
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
+                  <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                      <span class="header-btn-icon">
+                       <mat-icon>draw
+                  </mat-icon></span> Edit</button>
+                  <span *ngIf="hasEditPermission"></span>
 
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                           
-                           <span *ngIf="!hasDeletePermission"></span>
+                  <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                      <span class="header-btn-icon">
+                          <mat-icon> delete
+                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                     
+                     <span *ngIf="!hasDeletePermission"></span>
                     </div>
                 </div>
             </div>

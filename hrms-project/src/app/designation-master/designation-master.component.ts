@@ -233,34 +233,45 @@ if (this.userId !== null) {
     // You can add any additional logic if needed.
   }
 
-    deleteSelectedEmployees() { 
-      const selectedEmployeeIds = this.Designations
-        .filter(employee => employee.selected)
-        .map(employee => employee.id);
-  
-      if (selectedEmployeeIds.length === 0) {
-        alert('No Designation selected for deletion.');
-        return;
-      }
-  
-      if (confirm('Are you sure you want to delete the selected Designation?')) {
-        selectedEmployeeIds.forEach(DeptId => {
-          this.DesignationService.deletedesignation(DeptId).subscribe(
-            () => {
-              console.log('Designation deleted successfully:', DeptId);
-              // Remove the deleted employee from the local list
-              this.Designations = this.Designations.filter(employee => employee.id !== DeptId);
-              alert(' Designation deleted successfully');
-              window.location.reload();
-            },
-            (error: HttpErrorResponse) => {
-              console.error('Error deleting Designation:', error);
-              alert(`Error deleting Designation: ${error.statusText}`);
-            }
-          );
-        });
-      }
-    }
+ deleteSelectedEmployees() { 
+  const selectedEmployeeIds = this.Designations
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedEmployeeIds.length === 0) {
+    alert('No Designation selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected Designation?')) {
+
+    let completed = 0;  
+    let total = selectedEmployeeIds.length;
+
+    selectedEmployeeIds.forEach(DeptId => {
+      this.DesignationService.deletedesignation(DeptId).subscribe(
+        () => {
+          // Remove deleted item from UI
+          this.Designations = this.Designations.filter(emp => emp.id !== DeptId);
+
+          completed++;
+
+          // When ALL deletions finish → show ONE alert
+          if (completed === total) {
+            alert('Selected Designations deleted successfully.');
+            window.location.reload(); 
+          }
+        },
+        (error: HttpErrorResponse) => {
+          console.error('Error deleting Designation:', error);
+          alert(`Error deleting Designation: ${error.statusText}`);
+        }
+      );
+    });
+
+  }
+}
+
 
 
     showEditBtn: boolean = false;

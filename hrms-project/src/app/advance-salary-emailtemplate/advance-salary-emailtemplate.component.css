@@ -97,8 +97,9 @@
   
   
   
-  /* Add your CSS styles here */
-  .modal {
+
+/* Add your CSS styles here */
+.modal {
     display: block; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
@@ -116,16 +117,16 @@
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 60%; /* Could be more or less, depending on screen size */
+    width: 70%; /* Could be more or less, depending on screen size */
     margin-right: auto;
-    margin-left: auto;
+    margin-left: 25%;
     margin-top: 100px;
     height: auto;
   
   }
   
   .close {
-    color: red;
+    color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -146,7 +147,7 @@
     font-weight: 600;
     font-family: math;
   }
-  
+
   
   
   .email_placeholdername{

@@ -116,7 +116,7 @@ margin-right: 10px;
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 70%; /* Could be more or less, depending on screen size */
+    width: 70%;
     margin-right: auto;
     margin-left: 25%;
     margin-top: 100px;
@@ -147,6 +147,8 @@ margin-right: 10px;
     font-family: math;
   }
 
+  
+
 
   /* Expansion panel header responsive */
 mat-expansion-panel-header {
@@ -168,13 +170,13 @@ mat-expansion-panel-header .col-md-1 {
 }
 
 /* Modal fixes */
-.modal-content {
+/* .modal-content {
   width: 90%;
   max-width: 800px;
   margin: 50px auto;
   border-radius: 8px;
   padding: 20px;
-}
+} */
 
 /* Close button positioning */
 .modal .close {

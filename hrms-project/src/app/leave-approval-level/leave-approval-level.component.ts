@@ -324,45 +324,55 @@ if (this.userId !== null) {
 
 
 
-    SetLeaveApprovaLevel(): void {
-      this.registerButtonClicked = true;
-      // if (!this.name || !this.code || !this.valid_to) {
-      //   return;
-      // }
-    
-      const formData = new FormData();
-      formData.append('level', this.level);
-      formData.append('role', this.role);
+SetLeaveApprovaLevel(): void {
+  this.registerButtonClicked = true;
 
+  const formData = new FormData();
+  formData.append('level', this.level);
+  formData.append('role', this.role);
+  formData.append('is_compensatory', this.is_compensatory.toString());
+  formData.append('approver', this.approver);
+  formData.append('request_type', this.request_type);
+  formData.append('branch', this.branch);
 
-  
-      formData.append('is_compensatory', this.is_compensatory.toString());
-  
-      formData.append('approver', this.approver);
-      formData.append('request_type', this.request_type);
-    
-      formData.append('branch', this.branch);
+  this.leaveService.CreateLeaveapprovalLevel(formData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Leave Approval Level has been created successfully!');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Leave approval level creation failed:', error);
 
-     
-  
-      
-    
-    
-      this.leaveService.CreateLeaveapprovalLevel(formData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-  
-  
-          alert('Leave Approval Level has been Created');
-  
-          window.location.reload();
-        },  
-        (error) => {
-          console.error('Added failed', error);
-          alert('Enter all required fields!');
+      let errorMessage = 'Something went wrong.';
+
+      // ✅ Handle backend validation or field-level errors (e.g., from Django REST Framework)
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
         }
-      );
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handles backend responses like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
+      }
+
+      alert(`Creation failed!\n\n${errorMessage}`);
     }
+  );
+}
+
   
 
 

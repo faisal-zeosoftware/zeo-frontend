@@ -244,39 +244,55 @@ ngOnInit(): void {
 
 
 
-          registerGeneralreq(): void {
-            this.registerButtonClicked = true;
-            const companyData = {
-              name: this.name,
-            
-              description:this.description,
-              salary_component:this.salary_component,
-              created_by:this.created_by,
-              // use_common_workflow:this.use_common_workflow,
+registerGeneralreq(): void {
+  this.registerButtonClicked = true;
 
-           
-        
-              // Add other form field values to the companyData object
-            };
-          
-        
-            this.employeeService.registerReqType(companyData).subscribe(
-              (response) => {
-                console.log('Registration successful', response);
-              
-                    alert('Request Type has been Added ');
-                    window.location.reload();
-                    // window.location.reload();
-               
-        
-              },
-              (error) => {
-                console.error('Added failed', error);
-                alert('enter all field!')
-                // Handle the error appropriately, e.g., show a user-friendly error message.
-              }
-            );
+  const companyData = {
+    name: this.name,
+    description: this.description,
+    salary_component: this.salary_component,
+    created_by: this.created_by,
+    // use_common_workflow: this.use_common_workflow,
+  };
+
+  this.employeeService.registerReqType(companyData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Request Type has been added successfully!');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Request Type addition failed:', error);
+
+      let errorMessage = 'Something went wrong.';
+
+      // ✅ Handle backend validation or field-level errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
           }
+        }
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handles backend messages like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
+      }
+
+      alert(`Registration failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
 
 
           loadReqTypes(): void {

@@ -116,16 +116,16 @@ margin-right: 10px;
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 60%; /* Could be more or less, depending on screen size */
+    width: 70%; /* Could be more or less, depending on screen size */
     margin-right: auto;
-    margin-left: auto;
+    margin-left: 25%;
     margin-top: 100px;
     height: auto;
   
   }
   
   .close {
-    color: #000000e4;
+    color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;

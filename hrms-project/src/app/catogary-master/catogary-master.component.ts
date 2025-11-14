@@ -314,34 +314,46 @@ if (this.userId !== null) {
     // You can add any additional logic if needed.
   }
 
-  deleteSelectedEmployees() { 
-    const selectedEmployeeIds = this.Catogaries
-      .filter(employee => employee.selected)
-      .map(employee => employee.id);
+deleteSelectedEmployees() { 
+  const selectedEmployeeIds = this.Catogaries
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
 
-    if (selectedEmployeeIds.length === 0) {
-      alert('No Category selected for deletion.');
-      return;
-    }
-
-    if (confirm('Are you sure you want to delete the selected Category?')) {
-      selectedEmployeeIds.forEach(categoryId => {
-        this.CatogaryService.deleteCategory(categoryId).subscribe(
-          () => {
-            console.log('Category deleted successfully:', categoryId);
-            // Remove the deleted employee from the local list
-            this.Catogaries = this.Catogaries.filter(employee => employee.id !== categoryId);
-            alert(' Category deleted successfully');
-            window.location.reload();
-
-          },
-          (error) => {
-            console.error('Error deleting Category:', error);
-          }
-        );
-      });
-    }
+  if (selectedEmployeeIds.length === 0) {
+    alert('No Category selected for deletion.');
+    return;
   }
+
+  if (confirm('Are you sure you want to delete the selected Category?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+    selectedEmployeeIds.forEach(categoryId => {
+      this.CatogaryService.deleteCategory(categoryId).subscribe(
+        () => {
+          console.log('Category deleted:', categoryId);
+
+          // Remove deleted category from list
+          this.Catogaries = this.Catogaries.filter(emp => emp.id !== categoryId);
+
+          completed++;
+
+          // Show ONE alert when done
+          if (completed === total) {
+            alert('Selected Categories deleted successfully.');
+            window.location.reload();
+          }
+        },
+        (error) => {
+          console.error('Error deleting Category:', error);
+          alert('Error deleting category: ' + error.statusText);
+        }
+      );
+    });
+  }
+}
+
 
 
   filterEmployees(): void {

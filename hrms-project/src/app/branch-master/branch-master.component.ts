@@ -262,26 +262,11 @@ if (this.userId !== null) {
 } else {
   console.error('User ID is null.');
 }
-
-
-
-
-
-   
-   
-     
-
-    
-
-
   
      
     }
 
-   
-
-    
-
+  
     
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);

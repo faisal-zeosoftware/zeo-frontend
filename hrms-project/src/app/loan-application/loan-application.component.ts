@@ -227,10 +227,9 @@ this.Delete = !this.Delete;
     formData.append('amount_requested', this.amount_requested);
     formData.append('repayment_period', this.repayment_period);
     formData.append('emi_amount', this.emi_amount);
-    // formData.append('disbursement_date', this.disbursement_date );
+
     formData.append('remaining_balance', this.remaining_balance);
-    // formData.append('approved_on', this.approved_on);
-    // formData.append('rejection_reason', this.rejection_reason);
+ 
 
 
     
@@ -250,8 +249,25 @@ this.Delete = !this.Delete;
       },
       (error) => {
         console.error('Added failed', error);
-        alert('Enter all required fields!');
+
+          let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
       }
+
+      alert(errorMessage);
+    }
+ 
     );
   }
 

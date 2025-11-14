@@ -17,8 +17,8 @@
             </div>
             <div class="col-md-5">
               <div class="button-group pull-right">
-                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission" ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
-                  </span> Create</button>
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission" ><span class="header-btn-icon"><mat-icon>add_circle
+                  </mat-icon></span> Create</button>
                   <span *ngIf="!hasAddPermission"></span>
 
                   <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">

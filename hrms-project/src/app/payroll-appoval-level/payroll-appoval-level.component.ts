@@ -174,31 +174,43 @@ private employeeService: EmployeeService,
   registerButtonClicked = false;
 
 
-  CreateLoanApproverLevel(): void {
-    this.registerButtonClicked = true;
-  
-  
-    const formData = new FormData();
-    formData.append('level', this.level);
-    formData.append('role', this.role);
-    formData.append('approver', this.approver);
+CreateLoanApproverLevel(): void {
+  this.registerButtonClicked = true;
 
+  const formData = new FormData();
+  formData.append('level', this.level);
+  formData.append('role', this.role);
+  formData.append('approver', this.approver);
 
- 
+  this.employeeService.registerPayrollApproverLevel(formData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Approval Level has been added');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Added failed', error);
 
-  
-    this.employeeService.registerPayrollApproverLevel(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert(' Approval Level has been added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
-        alert('Enter all required fields!');
+      let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
       }
-    );
-  }
+
+      alert(errorMessage);
+    }
+  );
+}
+
 
 
 
