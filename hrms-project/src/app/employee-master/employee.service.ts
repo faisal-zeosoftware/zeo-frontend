@@ -4523,4 +4523,36 @@ registerGratuity(companyData: any): Observable<any> {
 
 
 
+// document folder
+
+registerFolder(companyData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/organisation/api/folders/?schema=${selectedSchema}`;
+
+  // ❌ Don't manually set Content-Type for FormData
+  return this.http.post(apiUrl, companyData).pipe(
+    catchError((error) => {
+      console.error('Error during company registration:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+
+
+getDocumentFolders(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/organisation/api/folders/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
 }

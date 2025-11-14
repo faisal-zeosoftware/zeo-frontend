@@ -1,6 +1,18 @@
+
 @import url(https://fonts.googleapis.com/css?family=Lobster);
 @import url(https://fonts.googleapis.com/css?family=Pacifico);
 @import url(https://fonts.googleapis.com/css?family=Dancing+Script);
+@import url(https://fonts.googleapis.com/css?family=Oswald:200,300,400,500,600,700&display=swap);
+
+
+:root {
+  --size: calc(100vw / 6); /* slightly smaller and centered */
+  --neon: goldenrod;
+  --background: #000;
+  --timer: 1s;
+  font-size: calc(1.75vw + 1.75vh);
+}
+   
 .container{
     /* margin-left: 85px; */
     margin-right: 3.5%;
@@ -883,4 +895,72 @@ input:focus-visible {
 .policy-card .mat-icon{
   color: #5c1e81 ;
   margin-top: 5px;
+}
+
+
+
+/* 🌀 Full-screen overlay */
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🔄 Rotation animation */
+@keyframes animate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loaderess {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  animation: animate calc(var(--timer) * 3) linear infinite;
+}
+
+.loaderess span {
+  position: absolute;
+  inset: calc(var(--size) * 0.1);
+  background: var(--background);
+  border-radius: 50%;
+}
+
+div[class*='segment']:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to top, transparent, var(--neon));
+  background-size: calc(var(--size) * 0.5) calc(var(--size) * 0.6);
+  background-repeat: no-repeat;
+  border-top-left-radius: calc(var(--size) * 0.5);
+  border-bottom-left-radius: calc(var(--size) * 0.5);
+}
+
+.segment1 { animation-delay: calc(var(--timer) * -0); }
+.segment2 { animation-delay: calc(var(--timer) * -1); }
+.segment3 { animation-delay: calc(var(--timer) * -2); }
+
+.loaderess i {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(var(--size) * 0.1);
+  height: calc(var(--size) * 0.1);
+  background: var(--neon);
+  border-radius: 50%;
+  box-shadow:
+    0 0 calc(var(--size) * 0.1) var(--neon),
+    0 0 calc(var(--size) * 0.2) var(--neon),
+    0 0 calc(var(--size) * 0.3) var(--neon),
+    0 0 calc(var(--size) * 0.4) var(--neon),
+    0 0 calc(var(--size) * 0.5) var(--neon);
 }

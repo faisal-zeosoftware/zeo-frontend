@@ -51,7 +51,11 @@ export class DashboardContentsComponent {
    private route: ActivatedRoute,
    private sessionService: SessionService,
    private DepartmentServiceService: DepartmentServiceService ,
-   ) { }
+   ) { this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      this.isLoadingEss = false;
+    }
+  }); }
 
    ngOnInit(): void {
 
@@ -118,11 +122,24 @@ export class DashboardContentsComponent {
 }
 
 
+isLoadingEss: boolean = false;
+
 
 EssUser(): void {
-  this.router.navigate(['/main-dashboard']);
+  if (this.selectedSchema) {
+    this.isLoadingEss = true;
 
+    // ⏳ Simulate loading time before navigation
+    setTimeout(() => {
+      const url = '/main-dashboard';
+      this.router.navigate([url]);
+    }, 2000); // Show loader for 2 seconds
+  } else {
+    alert('Please select a schema.');
+  }
 }
+
+
 
 fetchingSchemaDatas(): void {
   const selectedSchema = this.authService.getSelectedSchema();
