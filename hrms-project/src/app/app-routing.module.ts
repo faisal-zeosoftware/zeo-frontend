@@ -131,6 +131,7 @@ import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
 import { ShiftEmployeeComponent } from './shift-employee/shift-employee.component';
 import { ShiftOverrideComponent } from './shift-override/shift-override.component';
 import { DocumentRequestTypeComponent } from './document-request-type/document-request-type.component';
+import { DocumentFoldersComponent } from './document-folders/document-folders.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
@@ -694,6 +695,21 @@ const routes: Routes = [
     },
     
 
+
+  ]
+
+},
+{
+  path: 'document-folders',
+  component: DocumentFoldersComponent,
+  children:[
+   
+    {
+      path:'shifts',
+      component:ShiftsComponent,
+    },
+
+   
 
   ]
 

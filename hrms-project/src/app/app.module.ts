@@ -209,6 +209,7 @@ import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
 import { ShiftEmployeeComponent } from './shift-employee/shift-employee.component';
 import { ShiftOverrideComponent } from './shift-override/shift-override.component';
 import { DocumentRequestTypeComponent } from './document-request-type/document-request-type.component';
+import { DocumentFoldersComponent } from './document-folders/document-folders.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -376,7 +377,8 @@ import { DocumentRequestTypeComponent } from './document-request-type/document-r
      ShiftPatternComponent,
      ShiftEmployeeComponent,
      ShiftOverrideComponent,
-     DocumentRequestTypeComponent
+     DocumentRequestTypeComponent,
+     DocumentFoldersComponent
      
      
 
