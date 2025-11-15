@@ -4555,4 +4555,55 @@ getDocumentFolders(selectedSchema: string): Observable<any> {
 }
 
 
+
+
+registerDocument(companyData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/organisation/api/documents/?schema=${selectedSchema}`;
+
+  // ❌ Don't manually set Content-Type for FormData
+  return this.http.post(apiUrl, companyData).pipe(
+    catchError((error) => {
+      console.error('Error during company registration:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+
+
+getDocuments(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/organisation/api/documents/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+getDocumentsByFolder(folderId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/organisation/api/documents/by_folder/?folder_id=${folderId}&schema=${selectedSchema}`;
+
+  return this.http.get<any>(apiUrl).pipe(
+    catchError((error) => {
+      console.error('Error fetching folder documents:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+
+
 }

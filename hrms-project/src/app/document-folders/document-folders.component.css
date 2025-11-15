@@ -1,23 +1,12 @@
-/* sub-sidebar.component.css */
-/* .sub-sidebar {
-    width: 150px;
-    background-color: #555;
-    color: #fff;
-    padding: 10px;
-    position: relative;
-    margin-left: 85px;
-  }
-   */
 
 
-
-   .ico_set{
+.ico_set{
     margin-top: 10px;
 }
 .mat-icon{
-    margin-bottom: -5px;
+    margin-bottom: -7px;
     color: white ;
-    font-size: 25px;
+    font-size: 22px;
 }
 
 .con_clr{
@@ -44,7 +33,7 @@
     height: 50px;
 }
 .mdc-list-item.mdc-list-item--with-one-line:hover{
-    background: 	#5a1f82;
+    background: 	#333333;
     border-radius: 2%;
 }
 
@@ -117,16 +106,6 @@
     justify-content: left;
   }
 
-  /* #sidenav{
-    width: 15% ;
-    height: 400px;
-    position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  } */
 
   #sidenav .menu-close{
     width: 5% !important;
@@ -138,20 +117,6 @@
     width: 18% !important;
 }
 
-/* .cdk-overlay-pane {
-
-    margin-left: 6%;
-    position: fixed;
-} */
-
-/* .cdk-overlay-connected-position-bounding-box{
-    top: 65 !important;
-    left: 6% !important;
-    box-sizing: border-box;
-    bottom: 0;
-    overflow-y: auto;
-    max-height: 400px !important;
-} */
 
 .mat-drawer.mat-drawer-side{
     margin-left: 3%;
@@ -160,7 +125,7 @@
 }
 
 .mat-drawer.mat-drawer-side{
-    top: 34px;
+    top: 20px;
     bottom: 0;
     position: fixed;
 }
@@ -190,31 +155,39 @@
 
 
 
-  .mdc-list-item.mdc-list-item--with-one-line {
-    /* border-bottom:solid 0.2px #a7a4a4; */
-    padding: 10px;
-    height: 40px;
-}
-.mdc-list-item.mdc-list-item--with-one-line:hover{
-    border-bottom: solid 1px white;
-    /* border-radius: 2%; */
-}
 
 
-
+/* new sidebar css style start her */
   
 .wrapper{
     display: flex;
     position: relative;
   }
   
-  .wrapper .sidebar{
+  .wrapper .sidebar {
     width: 200px;
-    height: 100%;
+    height: 90vh; /* Full height to enable scrolling */
     background: #000000;
     padding: 20px 0px;
     position: fixed;
-  }
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+/* Custom scrollbar styling (Optional) */
+.wrapper .sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.wrapper .sidebar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.wrapper .sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
   
   .wrapper .sidebar h2{
     color: #fff;
@@ -303,12 +276,25 @@
     padding-left: 5px;
    }
 
+
    .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled="true"]):hover{
     background: transparent !important;
 }
 
+   
+.sidebar ul ul {
+  list-style: none;
+  padding-left: 15px;
+}
 
+.sidebar ul ul li {
+  font-size: 13px;
+  padding: 8px;
+  color: #ccc;
+}
 
+/* .sidebar ul ul li:hover {
+} */
 
 
 /* ==============================
@@ -379,7 +365,7 @@
   .menu-open {
     width: 50% !important;
     transition: all 0.3s ease;
-    margin-top: 115px;
+    margin-top: 126px;
      margin-left: -12px;
   }
 
@@ -396,8 +382,8 @@
     color: #f6e57a8e;
     border: none;
     border-radius: 4px;
-    margin-top: -29px;
-    margin-left: -30px;
+    margin-top: -14px;
+    margin-left: -31px;
   }
 
   .sidebar-top {
@@ -423,6 +409,10 @@
     margin-top: -68px;
   }
 
+
+.ulmob-scroll{
+      margin-bottom: 120px !important;
+}
 
 
 }
@@ -456,8 +446,13 @@
   .notiicon {
     margin-top: -55px; /* adjust for smaller height */
   }
+
+.ulmob-scroll{
+      margin-bottom: 100px !important;
 }
 
+
+}
 .btn-add-doc{
     text-align: center;
     border-radius: 100%;
@@ -571,7 +566,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 10px;
+    /* padding: 6px 10px; */
     cursor: pointer;
     color: #fff;
     transition: background 0.3s;
@@ -583,9 +578,9 @@
   }
   
   .subfolder-list {
-    margin-left: 20px;
+    margin-left: 5px !important;
     list-style: none;
-    padding-left: 10px;
+    padding-left: 0px !important;
     border-left: 2px solid rgba(255, 255, 255, 0.1);
   }
   
@@ -605,6 +600,73 @@
   }
   
   .arrow-icon {
-    font-size: 18px;
+    font-size: 14px;
   }
   
+
+  .folder-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .left-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .add-sub-icon {
+    font-size: 14px;
+    cursor: pointer;
+    /* margin-right: 8px; */
+  }
+  
+  .add-sub-icon:hover {
+    opacity: 0.7;
+  }
+  
+
+  .folder-icon-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .folder-icon {
+    font-size: 28px;
+    color: #f4b400;
+  }
+  
+  .folder-plus-icon {
+    position: absolute;
+    top: 5px;
+    right: -3px;
+    font-size: 16px;
+    background: transparent;
+    border-radius: 50%;
+    padding: 2px;
+    color:white;
+    cursor: pointer;
+  }
+  
+  .folder-name {
+    margin-left: 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .arrow-icon {
+    float: right;
+    cursor: pointer;
+  }
+  
+  .subfolder-list li {
+    font-size: 12px !important;
+  }
+
+  .subfolder-list .mat-icon{
+    margin-bottom: -10px;
+    
+    font-size: 18px;
+  }

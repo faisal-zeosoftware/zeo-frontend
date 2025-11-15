@@ -207,7 +207,7 @@ export class DocumentFoldersComponent {
 
 
     name: any = '';
-
+    parent: number | null = null;
 
     CreateFolder(): void {
     
@@ -267,6 +267,53 @@ toggleSubfolder(index: number): void {
     this.expandedFolderIndex = index;
   }
 }
+
+
+
+
+iscreatesubfolder: boolean = false;
+
+
+// Open SubFolder Popup
+openSubFolderPopup(folderId: number, event: Event): void {
+  event.stopPropagation(); // Prevent expand/collapse
+  this.parent = folderId;  // store clicked parent folder ID
+  this.name = '';          // reset input
+  this.iscreatesubfolder = true; // open modal
+
+  console.log("Open popup - Parent Folder ID:", this.parent);
+}
+
+closeSubfolderModal(): void {
+  this.iscreatesubfolder = false;
+}
+
+CreateFolderSubFolder(): void {
+  if (!this.name || !this.parent) {
+    alert("Enter subfolder name.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('name', this.name);
+  formData.append('parent', this.parent.toString());
+
+  this.employeeService.registerFolder(formData).subscribe(
+    (response) => {
+      console.log('Subfolder added:', response);
+      alert('Subfolder has been added.');
+
+      this.iscreatesubfolder = false;
+      this.loadDocumentfolders(); // reload list
+    },
+    (error) => {
+      console.error('Error adding subfolder:', error);
+      alert('Failed to create subfolder');
+    }
+  );
+}
+
+
     fetchDesignations(selectedSchema: string) {
       this.CatogaryService.getcatogarys(selectedSchema).subscribe(
         (data: any) => {
