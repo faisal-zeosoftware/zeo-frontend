@@ -30,28 +30,46 @@
 
 
 
-         <!-- Folder List -->
+   
+<!-- Folder List -->
 <ul class="mt-4">
     <!-- Add Folder button -->
     <li (click)="openPopus()" class="add-folder-item">
       <mat-icon>add_circle</mat-icon>
-      <span>Add Folder</span>
+      <span class="mt-1">Add Folder</span>
     </li>
   
     <!-- Main Folders -->
     <li *ngFor="let folder of Documentfolders; let i = index" class="folder-item">
-      <div class="folder-header" (click)="toggleSubfolder(i)">
-        <mat-icon>folder</mat-icon>
-        {{ folder.name }}
-        <mat-icon class="arrow-icon">
-          {{ expandedFolderIndex === i ? 'expand_less' : 'expand_more' }}
-        </mat-icon>
-      </div>
+  
+        <div class="folder-header">
+  
+            <!-- FOLDER ICON + PLUS ICON WRAPPED TOGETHER -->
+            <div class="folder-icon-wrapper" (click)="toggleSubfolder(i)">
+              <mat-icon class="folder-icon">folder</mat-icon>
+          
+              <!-- Plus icon placed on top of folder -->
+              <mat-icon 
+                class="folder-plus-icon"
+                (click)="openSubFolderPopup(folder.id, $event)">add</mat-icon>
+            </div>
+          
+            <!-- Folder Name -->
+            <span class="folder-name mt-1" (click)="toggleSubfolder(i)">
+              {{ folder.name }}
+            </span>
+          
+            <!-- Arrow -->
+            <mat-icon class="arrow-icon mt-2" (click)="toggleSubfolder(i)">
+              {{ expandedFolderIndex === i ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
+          
+          </div>
   
       <!-- Subfolders: show only when expanded -->
       <ul *ngIf="expandedFolderIndex === i && folder.subfolders?.length > 0" class="subfolder-list">
         <li *ngFor="let sub of folder.subfolders"
-            [routerLink]="['/main-sidebar/document-folders', sub.id]"
+            [routerLink]="['/main-sidebar/document-folders/document-folder-files', sub.id]"
             routerLinkActive="active-link"
             class="subfolder-item">
           <a>
@@ -60,17 +78,19 @@
           </a>
         </li>
       </ul>
+  
     </li>
   </ul>
   
 
+          <!-- create folder modal pupup -->
 
               
         <div *ngIf="iscreateLoanApp" class="modal">
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h6>   Create Folder</h6>
+                  <h6>   Create  Folder</h6>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -108,7 +128,69 @@
             </div>
           </div>
 
-  
+
+
+          <!-- create sub folder modal pupup -->
+
+          <div *ngIf="iscreatesubfolder" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h6>   Create Sub Folder</h6>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeSubfolderModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+          
+        <form >
+
+         
+            <div class="col-md-6" >
+               
+                <label> Name</label>
+               <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter name"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
+
+
+          <div class="col-md-6" style="display: none;" >
+            <label>Select Parent folder</label>
+            <div class="custom-sel">
+              <select
+                class="form-control"
+                id="parent"
+                name="parent"
+                [(ngModel)]="parent"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <option *ngFor="let folder of Documentfolders" [value]="folder.id">
+                  {{ folder.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+    
+            <div class="row">
+                <div class="col-md-10">
+    
+                </div>
+    
+                <div class="col-md-2">
+                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateFolderSubFolder()">Add</button>  
+                 </div>
+            </div>
+            
+       
+    </form>
+
+            
+            </div>
+          </div>
+
                    
    
           </div>

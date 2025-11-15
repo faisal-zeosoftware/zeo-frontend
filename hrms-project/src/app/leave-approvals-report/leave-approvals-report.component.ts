@@ -50,11 +50,11 @@ export class LeaveApprovalsReportComponent {
 // your.component.ts
 
 fetchStandardReport() {
-  this.leaveService.getLeavebalanceReport().subscribe(
+  this.leaveService.getApprovalReport().subscribe(
     (response) => {
       if (response.length > 0 && response[0].report_data) {
         const jsonUrl = response[0].report_data;
-        this.leaveService.fetchLeavebalanceJsonData(jsonUrl).subscribe((jsonData: any) => {
+        this.leaveService.fetchApprovalJsonData(jsonUrl).subscribe((jsonData: any) => {
           // Directly assign the data since it's already flat
           this.approvalReportData = jsonData;
         });
