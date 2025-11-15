@@ -3,36 +3,36 @@
 
       <div class="header_section">
 
-        <div class="row">
-            <div class="col-md-4">
-                <h1> Loan Repayment</h1>
-            </div>
-            <div class="col-md-3">
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-            </div>
-            <div class="col-md-5">
-              <div class="button-group pull-right">
-                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission" ><span class="header-btn-icon"><mat-icon>add_circle
-                  </mat-icon></span>Create</button>
-                  <span *ngIf="!hasAddPermission"></span>
-
-                  <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                      <span class="header-btn-icon">
-                       <mat-icon>draw
-                  </mat-icon></span> Edit</button>
-                  <span *ngIf="hasEditPermission"></span>
-
-                  <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                      <span class="header-btn-icon">
-                          <mat-icon> delete
-                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                     
-                     <span *ngIf="!hasDeletePermission"></span>
+          <div class="row">
+              <div class="col-md-4">
+                  <h1> Loan Repayment</h1>
               </div>
+              <div class="col-md-3">
+                  
+                  <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+              </div>
+              <div class="col-md-5">
+                <div class="button-group pull-right">
+                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission" ><span class="header-btn-icon"><mat-icon>add_circle
+                    </mat-icon></span>Create</button>
+                    <span *ngIf="!hasAddPermission"></span>
+
+                    <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                        <span class="header-btn-icon">
+                        <mat-icon>draw
+                    </mat-icon></span> Edit</button>
+                    <span *ngIf="hasEditPermission"></span>
+
+                    <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                        <span class="header-btn-icon">
+                            <mat-icon> delete
+                      </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                      
+                      <span *ngIf="!hasDeletePermission"></span>
+                </div>
+            </div>
           </div>
-        </div>
        
        
 
@@ -45,7 +45,7 @@
 
       </div>
       <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLoanRepay()">Delete Selected </button>
 
       </div>
   </div>
@@ -67,6 +67,7 @@
           <form (ngSubmit)="CreateLoanrepayment()" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-6">
+
                 <label>Repayment date</label>
                 <input type="date" class="form-control" required [(ngModel)]="repayment_date" placeholder="Enter Repayment date"
                        [ngModelOptions]="{standalone: true}" >
@@ -121,8 +122,7 @@
               </div>
             </div>
           </form>
-          
-        
+
         </div>
       </div>
 
@@ -131,7 +131,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit  Loan Repayment</h2>
+    <h2>Edit Location</h2>
   </div>
   <div class="col-md-2">
     <span class="close pull-right" (click)="closeEditModal()">&times;</span>

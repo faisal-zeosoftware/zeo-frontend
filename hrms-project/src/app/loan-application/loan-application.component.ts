@@ -41,7 +41,8 @@ export class LoanApplicationComponent {
 
   Employees: any[] = []; // Array to store schema names
   LoanTypes:any []=[];
-  LoanApplications:any []=[];
+LoanApplications: any[] = [];  // Already exists — use this!
+
 
 
 
@@ -171,21 +172,7 @@ private employeeService: EmployeeService,
       );
   }
 }
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leave_type' ||'change_leave_type' ||'delete_leave_type' ||'view_leave_type';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
+
   
 
 showEditBtn: boolean = false;
@@ -345,12 +332,25 @@ this.Delete = !this.Delete;
 
       iscreateLoanApp: boolean = false;
 
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
 
 
 
       openPopus():void{
         this.iscreateLoanApp = true;
 
+      }
+
+      openEditModal(asset: any): void {
+      this.editAsset = { ...asset }; // copy asset data
+      this.isEditModalOpen = true;
+       }
+
+     closeEditModal(): void {
+      this.isEditModalOpen = false;
+      this.editAsset = {};
       }
     
       closeapplicationModal():void{
@@ -442,4 +442,73 @@ submitResumeLoan(): void {
   );
 }
 
+toggleSelectAllEmployees() {
+  this.allSelecteds = !this.allSelecteds;
+this.LoanApplications.forEach(employee => employee.selected = this.allSelecteds);
+
 }
+
+
+
+deleteSelectedLoanApplication() { 
+  const selectedIds = this.LoanApplications
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedIds.length === 0) {
+    alert('No Loan Application selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected Loan Application(s)?')) {
+
+    let total = selectedIds.length;
+    let completed = 0;
+
+    selectedIds.forEach(id => {
+      this.employeeService.deleteLoanApplication(id).subscribe(
+        () => {
+          // remove locally
+          this.LoanApplications = this.LoanApplications.filter(employee => employee.id !== id);
+
+          completed++;
+          if (completed === total) {
+            alert('Loan Application(s) deleted successfully');
+          }
+        },
+        (error) => {
+          alert('Error deleting Loan Application: ' + error.statusText);
+        }
+      );
+    });
+  }
+}
+
+updateAssetType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  this.employeeService.updateLoanApplication(this.editAsset.id, this.editAsset).subscribe(
+    (response) => {
+      alert(' Loan Approval Level  updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Error updating asset:', error);
+      alert('Update failed');
+    }
+  );
+}
+
+
+}
+
+
+
+
+
+

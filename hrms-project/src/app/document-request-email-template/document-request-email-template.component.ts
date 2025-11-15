@@ -508,19 +508,28 @@ onCheckboxChange(employee:number) {
       }
     
       if (confirm('Are you sure you want to delete the selected Email Template?')) {
+
+        let total = selectedEmployeeIds.length;
+        let completed = 0;
+
         selectedEmployeeIds.forEach(categoryId => {
           this.employeeService.deleteEmailTemplateDocReq(categoryId).subscribe(
             () => {
               console.log('Email Template deleted successfully:', categoryId);
               // Remove the deleted employee from the local list
               this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
+
+              completed++;
+
+            if (completed === total) {
               alert(' Email Template deleted successfully');
               window.location.reload();
+             }
     
             },
             (error) => {
               console.error('Error deleting Email Template:', error);
-              alert(error)
+              alert('Error deleting Email Template: ' + error.statusText);
             }
           );
         });

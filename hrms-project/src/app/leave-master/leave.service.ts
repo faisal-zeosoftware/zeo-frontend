@@ -212,9 +212,41 @@ export class LeaveService {
 }
 
 
+
+  deleteLeavetype(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/leave-type/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+
 updateLeaveBalance(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/calendars/api/Leave_balance/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+updateLeavetype(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/leave-type/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(
@@ -389,18 +421,18 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
 
 
 
-    getEmailTemplatesLeave(selectedSchema: string): Observable<any> {
-      const apiUrl = `${this.apiUrl}/calendars/api/leave-template/?schema=${selectedSchema}`;
-    
-      // Fetch employees from the API
-      return this.http.get(apiUrl);
-  
-      
-    }
 
 
   getLeaveType(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/calendars/api/leave-type/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+  
+  }
+
+  getEmailTemplatesLeave(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/leave-template/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);

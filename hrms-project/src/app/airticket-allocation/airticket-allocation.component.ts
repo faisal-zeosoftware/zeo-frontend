@@ -453,29 +453,39 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedAirTicketAllocation() { 
   const selectedEmployeeIds = this.Policies
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
   if (selectedEmployeeIds.length === 0) {
-    alert('No Asset type selected for deletion.');
+    alert('No AirTicket Allocation type selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset ?')) {
+  if (confirm('Are you sure you want to delete the selected AirTicket Allocation  ?')) {
+
+        let total = selectedEmployeeIds.length;
+        let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteAirPolicy(categoryId).subscribe(
         () => {
-          console.log('policy  deleted successfully:', categoryId);
+          console.log('AirTicket  deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.Policies = this.Policies.filter(employee => employee.id !== categoryId);
-          alert(' policy  deleted successfully');
+
+             completed++;
+
+          if (completed === total) {   
+          alert(' AirTicket Allocation deleted successfully');
           window.location.reload();
+          }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting AirTicket Allocation:', error);
+           alert('Error deleting AirTicket Allocation: ' + error.statusText);
         }
       );
     });

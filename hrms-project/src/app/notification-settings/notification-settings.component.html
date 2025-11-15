@@ -33,6 +33,21 @@
                 </div>
             </div>
         </div>
+
+
+           <div class="row">
+      <div class="col-md-2">
+
+        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedDocNotify()">Delete
+          Selected </button>
+
+      </div>
+    </div>
        
        
 
@@ -159,6 +174,8 @@
         
         </div>
       </div>
+
+
 <!-- Edit Modal -->
 <div *ngIf="isEditModalOpen" class="modal">
 <div class="modal-content">
@@ -190,11 +207,6 @@
         <div *ngIf="registerButtonClicked && !days_after_expiry" class="error-message">days_after_expiry field is required.</div>
       </div>
   
-    
-
- 
-
- 
 
 
       <div class="col-md-6">
@@ -216,17 +228,6 @@
 
 <div class="col-md-6">
 <label>Notify users</label>
-
-
-<!-- <div class="custom-sel">
-<label>Select Group</label>
-<select class="form-control" id="groups" multiple required [(ngModel)]="groups"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !groups}" >
-<option value="" >Select</option>
-<option *ngFor="let deparmentsec of   Groups" [value]="deparmentsec.id">{{ deparmentsec.name     }} </option>
-</select>
-<div *ngIf="registerButtonClicked && !groups" class="error-message">Please Select Your Company</div>
-</div> -->
-
 
 <div class="custom-sel">
 <div class="form-control-wrapper">

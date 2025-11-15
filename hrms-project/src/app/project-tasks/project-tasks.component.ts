@@ -544,18 +544,27 @@ deleteSelectedProjectTasks() {
   }
 
   if (confirm('Are you sure you want to delete the selected Project Task ?')) {
+    
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteProjectTask(categoryId).subscribe(
         () => {
           console.log('Project Task deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+           completed++;
+
+          if (completed === total) {
           alert('Project Task deleted successfully');
           window.location.reload();
+          }
 
         },
         (error) => {
           console.error('Error deleting Project Task:', error);
+          alert('Error deleting Project Task: ' + error.statusText);
         }
       );
     });

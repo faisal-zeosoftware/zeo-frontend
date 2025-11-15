@@ -33,102 +33,26 @@
                     </div>
                 </div>
             </div>
-           
-           
 
-        </div>
-       
-       
-        <!-- <div class="com_list " >
-
-                <h2>Create Loan Application</h2>
-                <hr>
-                
-             
-                  
-
-
-
-
-
-            </div> -->
-
-
-
-            <div class="com_list mt-4 table-scroll"  *ngIf="hasViewPermission">
-
-                <table class="table-container " width="100%">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th>Actions</th>
-
-                        <th>Employee</th>
-
-                        <th>Amount requested </th>
-                        <th>Repayment period</th>
-                        <th>Status</th>
-
-                        <th>Emi amount</th>
-                        <!-- <th>Disbursement date</th> -->
-                        <th>Remaining balance</th>
-                        <!-- <th>Approved on</th> -->
-                        <!-- <th>Rejection reason</th> -->
-                        <th>Pause start date</th>
-                        <th>Pause reason</th>
-                        <th>Resume date</th>
-
-                        <th>Loan type</th>
-
+ <div class="row">
+      <div class="col-md-2">
           
-            
-                       
-                      </tr>
-                    </thead>
-                    <tbody>
-                        
-                      <tr *ngFor="let docs of LoanApplications;let i = index">
-                        <td data-label="No">{{ i + 1 }}</td> 
-                        <td data-label="Action">
-                            <!-- Show buttons only if the loan status is 'Approved' -->
-                            <ng-container *ngIf="docs.status === 'Approved'">
-                              <button  class="btn btn-full btn-warning" (click)="openPauseModal(docs)">Pause</button>
-                             </ng-container>
-                             <ng-container *ngIf="docs.status === 'Paused'">
-                             
-                              <button class="btn btn-full btn-primary" (click)="openResumeModal(docs)">Resume</button>
-                            </ng-container>
-                          </td>
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
 
-                          <td data-label="Employee">{{ docs.employee }}</td>
+      </div>
+      <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLoanApplication  ()">Delete Selected </button>
 
-                        <td data-label="Amount Requested">{{ docs.amount_requested }}</td>
-                        <td data-label="Repayment Period">{{ docs.repayment_period }}</td> 
-                        <td data-label="Status">{{ docs.status }}</td>
-                        <td data-label="EMI Amount">{{ docs.emi_amount }}</td>
-                        <!-- <td>{{ docs.disbursement_date }}</td>  -->
-                        <td data-label="Remaining Balance">{{ docs.remaining_balance }}</td>
-                        <!-- <td>{{ docs.approved_on }}</td> -->
-                        <!-- <td>{{ docs.rejection_reason }}</td>  -->
-                        <td data-label="Pause Start Date">{{ docs.pause_start_date }}</td>
-                        <td data-label="Pause Reason">{{ docs.pause_reason }}</td> 
-                        <td data-label="Resume Date">{{ docs.resume_date }}</td>
-
-                        <td data-label="Loan Type">{{ docs.loan_type }}</td>
-
-                      </tr>
-                  
-                    </tbody>
-                  </table>
-    
-                  </div>
+      </div>
+  </div>
+           
+           
 
         </div>
 
 
 
-
-        <div *ngIf="iscreateLoanApp" class="modal">
+                <div *ngIf="iscreateLoanApp" class="modal">
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
@@ -162,13 +86,7 @@
                   
                   </div>
               
-               
-<!-- 
-                  <div class="col-md-4">
-                    <label>Disbursement date</label>
-                    <input type="date" class="form-control" required [(ngModel)]="disbursement_date" placeholder="Enter Disbursement date"
-                           [ngModelOptions]="{standalone: true}">
-                  </div> -->
+
                
 
                   <div class="col-md-4">
@@ -177,41 +95,7 @@
                            [ngModelOptions]="{standalone: true}">
                   
                   </div>
-              
-                  <!-- <div class="col-md-4">
-                    <label>Approved on</label>
-                    <input type="date" class="form-control" required [(ngModel)]="approved_on" placeholder="Enter Approved on"
-                           [ngModelOptions]="{standalone: true}" >
-                  </div> -->
 
-              
-             
-              
-                  <!-- <div class="col-md-12">
-                    <label>Rejection reason</label>
-                    <textarea class="form-control" [(ngModel)]="rejection_reason" [ngModelOptions]="{standalone: true}"></textarea>
-                  </div> -->
-
-<!-- 
-                  <div class="col-md-4">
-                    <label>Pause start date</label>
-                    <input type="date" class="form-control" required [(ngModel)]="pause_start_date" placeholder="Enter Pause start date"
-                           [ngModelOptions]="{standalone: true}" >
-                  </div>
-
-                  
-                  <div class="col-md-4">
-                    <label>Resume date</label>
-                    <input type="date" class="form-control" required [(ngModel)]="resume_date" placeholder="Enter resume date"
-                           [ngModelOptions]="{standalone: true}" >
-                  </div>
-
-
-                  
-                  <div class="col-md-12">
-                    <label>Pause reason</label>
-                    <textarea class="form-control" [(ngModel)]="pause_reason" [ngModelOptions]="{standalone: true}"></textarea>
-                  </div> -->
 
                   <div class="col-md-6" >
                     <label>Employee</label>
@@ -260,6 +144,195 @@
               </form>
             </div>
           </div>
+
+
+                         <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+<div class="modal-content">
+<div class="row">
+  <div class="col-md-10">
+    <h2>Edit Application</h2>
+  </div>
+  <div class="col-md-2">
+    <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+  </div>
+</div>
+<hr />
+              <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
+                <div class="row">
+                  <div class="col-md-4">
+                    <label>Amount requested</label>
+                    <input type="text" class="form-control" required [(ngModel)]="editAsset.amount_requested" placeholder="Enter Amount requested"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+              
+                  <div class="col-md-4">
+                    <label>Repayment period</label>
+                    <input type="number" class="form-control" required [(ngModel)]="editAsset.repayment_period" placeholder="Enter Repayment period"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+
+                  <div class="col-md-4">
+                    <label>Emi amount</label>
+                    <input type="text" class="form-control" required [(ngModel)]="editAsset.emi_amount" placeholder="Enter Repayment period"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+              
+
+               
+
+                  <div class="col-md-4">
+                    <label>Remaining balance</label>
+                    <input type="text" class="form-control" required [(ngModel)]="editAsset.remaining_balance" placeholder="Enter remaining balance"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+
+
+                  <div class="col-md-6" >
+                    <label>Employee</label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="employee"
+                        name="employee"
+                        [(ngModel)]="editAsset.employee"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let employees of Employees" [value]="employees.id">
+                          {{ employees.emp_code }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+
+                  <div class="col-md-6" >
+                    <label>Loan Type</label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="loan_type"
+                        name="loan_type"
+                        [(ngModel)]="editAsset.loan_type"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+                          {{ employees.loan_type }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+
+                </div>
+              
+  <div class="row" >
+    <div class="col-md-8"></div>
+    <div class="col-md-2">
+      <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-4">Close</button>
+
+    </div>
+    <div class="col-md-2">
+      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+    </div>
+  </div>
+              </form>
+
+
+
+</div>
+</div>
+
+       
+       
+
+
+
+
+            <div class="com_list mt-4 table-scroll"  *ngIf="hasViewPermission">
+
+                <table class="table-container " width="100%">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Employee</th>
+                        <th>Amount requested </th>
+                        <th>Repayment period</th>
+                        <th>Status</th>
+                        <th>Emi amount</th>
+                        <!-- <th>Disbursement date</th> -->
+                        <th>Remaining balance</th>
+                        <!-- <th>Approved on</th> -->
+                        <!-- <th>Rejection reason</th> -->
+                        <th>Pause start date</th>
+                        <th>Pause reason</th>
+                        <th>Resume date</th>
+                        <th>Loan type</th>
+                        <th>Action</th>
+
+          
+            
+                       
+                      </tr>
+                    </thead>
+                    <tbody>
+                        
+                      <tr *ngFor="let docs of LoanApplications;let i = index">
+                        <td data-label="No">{{ i + 1 }}</td> 
+
+
+                          <td data-label="Employee">{{ docs.employee }}</td>
+
+                        <td data-label="Amount Requested">{{ docs.amount_requested }}</td>
+                        <td data-label="Repayment Period">{{ docs.repayment_period }}</td> 
+                        <td data-label="Status">{{ docs.status }}</td>
+                        <td data-label="EMI Amount">{{ docs.emi_amount }}</td>
+                        <!-- <td>{{ docs.disbursement_date }}</td>  -->
+                        <td data-label="Remaining Balance">{{ docs.remaining_balance }}</td>
+                        <!-- <td>{{ docs.approved_on }}</td> -->
+                        <!-- <td>{{ docs.rejection_reason }}</td>  -->
+                        <td data-label="Pause Start Date">{{ docs.pause_start_date }}</td>
+                        <td data-label="Pause Reason">{{ docs.pause_reason }}</td> 
+                        <td data-label="Resume Date">{{ docs.resume_date }}</td>
+
+                        <td data-label="Loan Type">{{ docs.loan_type }}</td>
+                                                <td data-label="Action">
+                            <!-- Show buttons only if the loan status is 'Approved' -->
+                            <ng-container *ngIf="docs.status === 'Approved'">
+                              <button  class="btn btn-full btn-warning" (click)="openPauseModal(docs)">Pause</button>
+                             </ng-container>
+                             <ng-container *ngIf="docs.status === 'Paused'">
+                             
+                              <button class="btn btn-full btn-primary" (click)="openResumeModal(docs)">Resume</button>
+                            </ng-container>
+                                     <button
+                            mat-fab
+                            color="primary"
+                            aria-label="Edit icon"
+                            *ngIf="showEditBtn"
+          
+                            
+                            (click)="openEditModal(docs)"
+                          >
+                            <mat-icon style="color: white;">draw</mat-icon>
+                          </button>
+          
+                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+                          </td>
+
+                      </tr>
+                  
+                    </tbody>
+                  </table>
+    
+                  </div>
+
+        </div>
+
+
         
 
 <!-- Modal Popup for selected loan to pause details -->

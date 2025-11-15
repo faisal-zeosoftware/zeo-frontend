@@ -24,6 +24,33 @@
 }
 
 
+.btn-Create{
+   /* padding: 5px 15px; */
+   /* border: none; */
+margin-right: 10px;     
+ 
+}
+
+.btn-Edit{
+  margin-right: 10px;
+}
+
+.btn-Delete{
+  margin-right: 10px;
+}
+
+.header-btn-icon{
+  vertical-align: middle;
+}
+
+.btn-Create .mat-icon{
+  margin-top: 4px;
+}
+.btn-Create .mat-icon{
+  margin-top: 2px;
+}
+
+
 .com_list{
   padding: 20px;
   width: 100%;

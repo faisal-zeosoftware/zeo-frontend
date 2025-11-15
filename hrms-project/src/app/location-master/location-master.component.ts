@@ -6,6 +6,7 @@ import { CompanyRegistrationService } from '../company-registration.service';
 import { CountryService } from '../country.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
   selector: 'app-location-master',
@@ -24,10 +25,13 @@ export class LocationMasterComponent {
   country:any='';
   countries:any[]=[];
 
-  hasAddPermission: boolean = false;
-hasDeletePermission: boolean = false;
-hasViewPermission: boolean =false;
-hasEditPermission: boolean = false;
+  Locations:any[]=[];
+    LoanTypes:any []=[];
+
+ hasAddPermission: boolean = false;
+ hasDeletePermission: boolean = false;
+ hasViewPermission: boolean =false;
+ hasEditPermission: boolean = false;
 
 userId: number | null | undefined;
 userDetails: any;
@@ -45,7 +49,8 @@ schemas: string[] = [];
     private countryService:CountryService,
     private companyRegistrationService: CompanyRegistrationService,
     private DesignationService: DesignationService,
-private sessionService: SessionService,
+    private sessionService: SessionService,
+    private employeeService: EmployeeService,
    ) {}
 
 
@@ -182,23 +187,72 @@ if (this.userId !== null) {
     
    }
 
-  //  checkViewPermission(permissions: any[]): boolean {
-  //   const requiredPermission = 'add_company' ||'change_company' ||'delete_company' ||'view_company';
+     iscreateLoanApp: boolean = false;
+
+
+
+
+      openPopus():void{
+        this.iscreateLoanApp = true;
+
+      }
     
-    
-  //   // Check user permissions
-  //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-  //     return true;
-  //   }
-    
-  //   // Check group permissions (if applicable)
-  //   // Replace `// TODO: Implement group permission check`
-  //   // with your logic to retrieve and check group permissions
-  //   // (consider using a separate service or approach)
-  //   return false; // Replace with actual group permission check
-  //   }
-    
-    
+      closeapplicationModal():void{
+        this.iscreateLoanApp = false;
+
+      }
+
+      closeEditModal(): void {
+     this.isEditModalOpen = false;
+     this.editAsset = {};
+      }
+
+
+             
+
+showEditBtn: boolean = false;
+isEditModalOpen: boolean = false;
+editAsset: any = {}; 
+  
+EditShowButtons() {
+  this.showEditBtn = !this.showEditBtn;
+}
+
+
+Delete: boolean = false;
+allSelecteds: boolean = false;
+
+toggleCheckboxes() {
+this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+  this.allSelecteds = !this.allSelecteds;
+this.Locations.forEach(employee => employee.selected = this.allSelecteds);
+
+}
+
+
+openEditModal(asset: any): void {
+this.editAsset = { ...asset }; // copy asset data
+this.isEditModalOpen = true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -264,6 +318,84 @@ if (this.userId !== null) {
     }
     );
   }
+
+
+  deleteSelectedLocationmaster() { 
+  const selectedEmployeeIds = this.Locations
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedEmployeeIds.length === 0) {
+    alert('No Loan Repayment selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected  ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+    selectedEmployeeIds.forEach(categoryId => {
+      this.employeeService.deleteLocations(categoryId).subscribe(
+        () => {
+          console.log(' Loan Repayment deleted successfully:', categoryId);
+          // Remove the deleted employee from the local list
+          this.Locations = this.Locations.filter(employee => employee.id !== categoryId);
+
+          completed++;
+
+         if (completed === total) { 
+          alert(' Loan Repayment  deleted successfully');
+          window.location.reload();
+         }
+
+        },
+        (error) => {
+          console.error('Error deleting Loan Repayment:', error);
+          alert('Error deleting Loan Repayment: ' + error.statusText);
+        }
+      );
+    });
+  }
+}
+
+
+updateAssetType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  this.employeeService.updateLocations(this.editAsset.id, this.editAsset).subscribe(
+    (response) => {
+      alert(' Loan Repayment  updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Error updating asset:', error);
+      alert('Update failed');
+    }
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
   loadCountries(): void {
     this.countryService.getCountries().subscribe(

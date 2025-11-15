@@ -360,7 +360,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedGratuity() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -371,19 +371,28 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Gratuity ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteGratuity(categoryId).subscribe(
         () => {
           console.log(' Gratuity deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
-          this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+          this.LoanTypes = this.LoanTypes.filter(emp  => emp .id !== categoryId);
+
+            completed++;
+
+        if (completed === total) {
           alert(' Gratuity  deleted successfully');
           window.location.reload();
+        }
 
         },
         (error) => {
           console.error('Error deleting Gratuity:', error);
-          alert(error)
+         alert('Error deleting category: ' + error.statusText);
         }
       );
     });

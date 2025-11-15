@@ -51,7 +51,7 @@ export class ResignationRequestComponent {
   DocType: any[] = [];
 
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -88,11 +88,11 @@ schemas: string[] = []; // Array to store schema names
 
       this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
-  this.authService.getUserData(this.userId).subscribe(
+    this.authService.getUserData(this.userId).subscribe(
     async (userData: any) => {
       this.userDetails = userData; // Store user details in userDetails property
 
-this.userDetails = this.created_by;
+      
       console.log('User ID:', this.userId); // Log user ID
       console.log('User Details:', this.userDetails); // Log user details
 
@@ -204,24 +204,7 @@ this.userDetails = this.created_by;
     }
 
 
-    
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leaveapprovallevels' ||'change_leaveapprovallevels' 
-//   ||'delete_leaveapprovallevels' ||'view_leaveapprovallevels';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
+
   
   
   
@@ -231,11 +214,6 @@ this.userDetails = this.created_by;
 
 
 
-
-
-  
- 
-  
   
 
     LoadLeaveApprovalLevel(selectedSchema: string) {
@@ -378,12 +356,6 @@ selectedLoanId: number | null = null;
 
 
 
-
-
-
-
-
-
 openPopus():void{
   this.iscreateLoanApp = true;
 
@@ -448,19 +420,27 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Resignation Request ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteResignationReq(categoryId).subscribe(
         () => {
-          console.log(' type deleted successfully:', categoryId);
+          console.log(' Request deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.DocRequest = this.DocRequest.filter(employee => employee.id !== categoryId);
+             completed++;
+               if (completed === total) {
           alert(' Request  deleted successfully');
           window.location.reload();
+               }
 
         },
         (error) => {
-          console.error('Error deleting General Request:', error);
-          alert(error)
+          console.error('Error deleting Resignation Request:', error);
+            alert('Error deleting Resignation Request:' + error.statusText);
+
         }
       );
     });

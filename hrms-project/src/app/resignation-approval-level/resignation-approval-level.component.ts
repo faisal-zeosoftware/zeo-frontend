@@ -325,7 +325,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedResignationAprlvl() { 
   const selectedEmployeeIds = this.approvalLevels
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -336,19 +336,30 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Resignation Approval Level ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteResignationApprovaLevel(categoryId).subscribe(
         () => {
           console.log(' Approval Level deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
-          this.approvalLevels = this.approvalLevels.filter(employee => employee.id !== categoryId);
+          this.approvalLevels = this.approvalLevels.filter(emp  => emp .id !== categoryId);
+
+          completed++;
+
+if (completed === total) {
           alert(' Approval Level  deleted successfully');
           window.location.reload();
+}
 
         },
         (error) => {
           console.error('Error deleting General Request:', error);
-          alert(error)
+         alert('Error deleting General Request: ' + error.statusText);
+
         }
       );
     });

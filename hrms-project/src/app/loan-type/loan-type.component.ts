@@ -362,7 +362,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedLoanType() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -373,19 +373,27 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Loan Types ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteLoanType(categoryId).subscribe(
         () => {
           console.log(' Loan Types deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+
+           completed++;
+          if (completed === total) { 
           alert(' Loan Types  deleted successfully');
           window.location.reload();
+          }
 
         },
         (error) => {
           console.error('Error deleting Loan Types:', error);
-          alert(error)
+           alert('Error deleting Loan Types: ' + error.statusText);
         }
       );
     });

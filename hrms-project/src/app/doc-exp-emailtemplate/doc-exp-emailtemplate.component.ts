@@ -473,22 +473,28 @@ onCheckboxChange(employee:number) {
     .map(employee => employee.id);
 
   if (selectedEmployeeIds.length === 0) {
-    alert('No Asset type selected for deletion.');
+    alert('No Email Template selected for deletion.');
     return;
   }
 
   if (confirm('Are you sure you want to delete the selected Email Template?')) {
+        let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteEmailTemplateDocmentExp(categoryId).subscribe(
         () => {
-          console.log('Email Configuration deleted successfully:', categoryId);
+          console.log('Email Template deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
+             completed++;
+                  if (completed === total) {
           alert('Email Template deleted successfully');
           window.location.reload();
+                  }
         },
         (error) => {
-          console.error('Error deleting Email Configuration:', error);
+          console.error('Error deleting Email Template:', error);
 
           // Extract meaningful message
           let errorMessage = 'Failed to delete the Email Template.';
@@ -500,6 +506,7 @@ onCheckboxChange(employee:number) {
           }
 
           alert(errorMessage);
+          alert('Error deleting Email Template: ' + error.statusText);
         }
       );
     });

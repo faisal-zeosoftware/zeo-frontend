@@ -366,32 +366,68 @@ updateDocumentNumber(): void {
 
 
 
+deleteSelectedDocNotify() { 
+  const selectedIds = this.NotSettings
+    .filter(item => item.selected)
+    .map(item => item.id);
 
-deleteDoc(permissionId: number): void {
-  if (confirm('Are you sure you want to delete this Notification Setting?')) {
-    const selectedSchema = this.authService.getSelectedSchema();
-    if (selectedSchema) {
-    this.leaveService.deleteNotification(permissionId,selectedSchema).subscribe(
-      (response) => {
-        console.log('Document type deleted successfully', response);
-        alert('Notification deleted successfully');
-          
-    const selectedSchema = this.authService.getSelectedSchema();
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return;
-    }
-    this.loadLoanTypes();
-        // this.fetchDesignations(selectedSchema); // Refresh the list after deletion
-      },
-      (error) => {
-        console.error('Error deleting Document type:', error);
-        alert('Failed to delete permission');
-      }
-    );
+  if (selectedIds.length === 0) {
+    alert('No Document Notification selected for deletion.');
+    return;
   }
+
+  if (confirm('Are you sure you want to delete the selected Document Notification ?')) {
+
+    let total = selectedIds.length;
+    let completed = 0;
+
+    selectedIds.forEach(id => {
+      this.employeeService.deleteDocumentNotify(id).subscribe(
+        () => {
+          this.NotSettings = this.NotSettings.filter(item => item.id !== id);
+          completed++;
+          if (completed === total) {
+            alert('Document Notification deleted successfully');
+          }
+        },
+        (error) => {
+          alert('Error deleting Document Notification');
+        }
+      );
+    });
   }
 }
+
+
+
+
+
+
+// deleteDoc(permissionId: number): void {
+//   if (confirm('Are you sure you want to delete this Notification Setting?')) {
+//     const selectedSchema = this.authService.getSelectedSchema();
+//     if (selectedSchema) {
+//     this.leaveService.deleteNotification(permissionId,selectedSchema).subscribe(
+//       (response) => {
+//         console.log('Document type deleted successfully', response);
+//         alert('Notification deleted successfully');
+          
+//     const selectedSchema = this.authService.getSelectedSchema();
+//     if (!selectedSchema) {
+//       console.error('No schema selected.');
+//       return;
+//     }
+//     this.loadLoanTypes();
+//         // this.fetchDesignations(selectedSchema); // Refresh the list after deletion
+//       },
+//       (error) => {
+//         console.error('Error deleting Document type:', error);
+//         alert('Failed to delete permission');
+//       }
+//     );
+//   }
+//   }
+// }
 
 
 

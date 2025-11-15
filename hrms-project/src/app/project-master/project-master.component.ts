@@ -517,18 +517,28 @@ deleteSelectedProject() {
   }
 
   if (confirm('Are you sure you want to delete the selected Project ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteProjects(categoryId).subscribe(
         () => {
           console.log('Project  deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+
+             completed++;
+
+          if (completed === total) {     
           alert(' Project  deleted successfully');
           window.location.reload();
+            }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting Project:', error);
+          alert('Error deleting Project: ' + error.statusText);
         }
       );
     });

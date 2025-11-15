@@ -777,18 +777,26 @@ deleteSelectedShifts() {
   }
 
   if (confirm('Are you sure you want to delete the selected shifts?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteShifts(categoryId).subscribe(
         () => {
           console.log('shifts deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.Shifts = this.Shifts.filter(employee => employee.id !== categoryId);
+           completed++;
+         if (completed === total) {   
           alert(' shifts deleted successfully');
           window.location.reload();
+         }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting shifts:', error);
+        alert('Error deleting shifts: ' + error.statusText);
         }
       );
     });

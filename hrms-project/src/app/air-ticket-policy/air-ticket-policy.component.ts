@@ -543,7 +543,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedAirTicketPolicy() { 
   const selectedEmployeeIds = this.LoanTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -553,19 +553,29 @@ deleteSelectedAssetType() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset ?')) {
+  if (confirm('Are you sure you want to delete the selected AirTicket Policy ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteAirPolicy(categoryId).subscribe(
         () => {
-          console.log('policy  deleted successfully:', categoryId);
+          console.log('Policy  deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-          alert(' policy  deleted successfully');
+
+          completed++;
+
+      if (completed === total) {
+          alert(' Policy  deleted successfully');
           window.location.reload();
+        }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting Policy:', error);
+          alert('Error deleting Policy: ' + error.statusText);
         }
       );
     });

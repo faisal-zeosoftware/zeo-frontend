@@ -552,18 +552,27 @@ deleteSelectedProjectTimesheet() {
   }
 
   if (confirm('Are you sure you want to delete the selected projectTimesheet ?')) {
+
+        let total = selectedEmployeeIds.length;
+        let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteProjectTimsesheet(categoryId).subscribe(
         () => {
           console.log('projectTimesheet  deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+           completed++;
+
+        if (completed === total) {
           alert(' projectTimesheet  deleted successfully');
           window.location.reload();
+           }
 
         },
         (error) => {
           console.error('Error deleting ProjectTimesheet:', error);
+          alert('Error deleting projectTimesheet: ' + error.statusText);
         }
       );
     });

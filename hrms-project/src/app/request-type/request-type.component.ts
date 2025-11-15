@@ -427,7 +427,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedRequestType() { 
   const selectedEmployeeIds = this.ReqTypes
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -438,19 +438,29 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected  Request Type?')) {
+
+     let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleterequestType(categoryId).subscribe(
         () => {
           console.log(' type deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
-          this.ReqTypes = this.ReqTypes.filter(employee => employee.id !== categoryId);
+          this.ReqTypes = this.ReqTypes.filter(emp  => emp .id !== categoryId);
+
+          completed++;
+
+          if (completed === total) {          
           alert(' Request Type deleted successfully');
           window.location.reload();
+          }
 
         },
         (error) => {
           console.error('Error deleting General Request:', error);
-          alert(error)
+         alert('Error deleting General Request: ' + error.statusText);
         }
       );
     });

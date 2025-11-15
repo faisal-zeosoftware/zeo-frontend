@@ -418,7 +418,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedAssetMaster() { 
   const selectedEmployeeIds = this.Assets
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -429,18 +429,28 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Asset ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteAsset(categoryId).subscribe(
         () => {
-          console.log('Asset  deleted successfully:', categoryId);
+          console.log('Asset deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-          alert(' Asset  deleted successfully');
+
+           completed++;
+
+         if (completed === total) {
+          alert(' Asset Master deleted successfully');
           window.location.reload();
+          }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting Asset Master:', error);
+          alert('Error deleting Asset Master: ' + error.statusText);
         }
       );
     });

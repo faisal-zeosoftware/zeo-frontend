@@ -285,6 +285,10 @@ if (this.userId !== null) {
     }
   
     if (confirm('Are you sure you want to delete the selected user?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
       selectedEmployeeIds.forEach(userId => {
         this.UserMasterService.markUserAsDeleted(userId).subscribe(
           () => {
@@ -293,6 +297,7 @@ if (this.userId !== null) {
 
             // Update the local list to hide the user
             this.Users = this.Users.map(employee => {
+                completed++;
               if (employee.id === userId) {
                 return { ...employee, is_deleted: true }; // Mark as deleted locally
               }
@@ -303,6 +308,7 @@ if (this.userId !== null) {
           },
           (error) => {
             console.error('Error marking user as deleted:', error);
+            alert('Error deleting user: ' + error.statusText);
           }
         );
       });

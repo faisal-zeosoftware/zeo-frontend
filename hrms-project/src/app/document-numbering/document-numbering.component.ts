@@ -483,7 +483,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedDocNum() { 
 const selectedEmployeeIds = this.docsNumbers
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -494,19 +494,26 @@ return;
 }
 
 if (confirm('Are you sure you want to delete the selected Document Numbering ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
 selectedEmployeeIds.forEach(categoryId => {
   this.employeeService.deleteDocumentNumber(categoryId).subscribe(
     () => {
       console.log(' Document Numbering deleted successfully:', categoryId);
       // Remove the deleted employee from the local list
       this.docsNumbers = this.docsNumbers.filter(employee => employee.id !== categoryId);
-      alert(' Document Numbering  deleted successfully');
+      completed++;
+      if (completed === total) {
+      alert(' Document Numbering deleted successfully');
       window.location.reload();
+      }
 
     },
     (error) => {
-      console.error('Error deleting Loan Types:', error);
-      alert(error)
+      console.error('Error deleting Document Numbering:', error);
+      alert('Error deleting Document Numbering: ' + error.statusText);
     }
   );
 });

@@ -237,23 +237,19 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
         );
       }
     }
+
+  selectedPlaceholders: string[] = []; // Store multiple placeholders
   
     // Method to handle placeholder selection
-    selectPlaceholder(placeholder: string): void {
-      const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
+  selectPlaceholder(placeholder: string): void {
+    const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
+    
+    const updatedContent = currentContent + ' ' + placeholder;
+    $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
   
-      // If a placeholder is already selected, replace it with the new one
-      if (this.selectedPlaceholder) {
-        const updatedContent = currentContent.replace(this.selectedPlaceholder, placeholder);
-        $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
-      } else {
-        // If no placeholder is selected yet, just append the new placeholder
-        $(this.el.nativeElement).find('#summernote').summernote('code', currentContent + placeholder);
-      }
+    this.selectedPlaceholders.push(placeholder); // Allow duplicates
+  }
   
-      // Update the selected placeholder
-      this.selectedPlaceholder = placeholder; // Store the latest selected placeholder
-    }
   
 
     ngAfterViewInit(): void {
@@ -472,30 +468,37 @@ onCheckboxChange(employee:number) {
 
 
 
-   deleteSelectedAssetType() { 
+   deleteSelectedLeaveTemp() { 
       const selectedEmployeeIds = this.tempEmails
         .filter(employee => employee.selected)
         .map(employee => employee.id);
     
       if (selectedEmployeeIds.length === 0) {
-        alert('No Asset type selected for deletion.');
+        alert('No Leave template selected for deletion.');
         return;
       }
     
-      if (confirm('Are you sure you want to delete the selected Email Template?')) {
+      if (confirm('Are you sure you want to delete the selected Leave template?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
         selectedEmployeeIds.forEach(categoryId => {
           this.employeeService.deleteEmailTemplateLeave(categoryId).subscribe(
             () => {
-              console.log('Email Configuration deleted successfully:', categoryId);
+              console.log('Leave template deleted successfully:', categoryId);
               // Remove the deleted employee from the local list
               this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
-              alert(' Email Template deleted successfully');
+               completed++;
+             if (completed === total) {  
+              alert(' Leave template deleted successfully');
               window.location.reload();
+             }
     
             },
             (error) => {
-              console.error('Error deleting Email Configuration:', error);
-              alert(error)
+              console.error('Error deleting Leave template:', error);
+             alert('Error deleting category: ' + error.statusText);
             }
           );
         });

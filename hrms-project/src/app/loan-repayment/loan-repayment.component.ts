@@ -6,6 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+
 @Component({
   selector: 'app-loan-repayment',
   templateUrl: './loan-repayment.component.html',
@@ -316,7 +317,7 @@ onCheckboxChange(employee:number) {
 
 
 isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
+editAsset: any = {}; 
 
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
@@ -329,7 +330,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedLoanRepay() { 
   const selectedEmployeeIds = this.LoanRepayements
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -340,19 +341,28 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Loan Repayment ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteLoanRepayment(categoryId).subscribe(
         () => {
           console.log(' Loan Repayment deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanRepayements = this.LoanRepayements.filter(employee => employee.id !== categoryId);
+
+          completed++;
+
+         if (completed === total) { 
           alert(' Loan Repayment  deleted successfully');
           window.location.reload();
+         }
 
         },
         (error) => {
           console.error('Error deleting Loan Repayment:', error);
-          alert(error)
+          alert('Error deleting Loan Repayment: ' + error.statusText);
         }
       );
     });

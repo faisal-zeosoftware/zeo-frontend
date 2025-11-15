@@ -417,19 +417,27 @@ return;
 }
 
 if (confirm('Are you sure you want to delete the selected Document Request  ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;                  
+
 selectedEmployeeIds.forEach(categoryId => {
   this.employeeService.deleteDocReq(categoryId).subscribe(
     () => {
       console.log(' Document Type deleted successfully:', categoryId);
       // Remove the deleted employee from the local list
       this.DocRequest = this.DocRequest.filter(employee => employee.id !== categoryId);
+      completed++;
+
+      if (completed === total) {
       alert(' Document Request  deleted successfully');
       window.location.reload();
+      }
 
     },
     (error) => {
-      console.error('Error deleting Loan Types:', error);
-      alert(error)
+      console.error('Error deleting Document Request:', error);
+      alert('Error deleting Document Request: ' + error.statusText);
     }
   );
 });

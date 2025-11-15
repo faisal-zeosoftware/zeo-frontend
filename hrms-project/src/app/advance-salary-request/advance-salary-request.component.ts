@@ -96,7 +96,7 @@ if (this.userId !== null) {
     async (userData: any) => {
       this.userDetails = userData; // Store user details in userDetails property
 
-this.userDetails = this.created_by;
+
       console.log('User ID:', this.userId); // Log user ID
       console.log('User Details:', this.userDetails); // Log user details
 
@@ -530,19 +530,25 @@ return;
 }
 
 if (confirm('Are you sure you want to delete the selected  Advance Salary Request ?')) {
+      let total = selectedEmployeeIds.length;
+    let completed = 0;
 selectedEmployeeIds.forEach(categoryId => {
   this.employeeService.deletepayrolladvSalary(categoryId).subscribe(
     () => {
-      console.log(' Document Type deleted successfully:', categoryId);
+      console.log(' Advance Salary Request  deleted successfully:', categoryId);
       // Remove the deleted employee from the local list
       this.DocRequest = this.DocRequest.filter(employee => employee.id !== categoryId);
+      completed++;
+       if (completed === total) {
       alert(' Advance Salary Request  deleted successfully');
       window.location.reload();
+       }
 
     },
     (error) => {
-      console.error('Error deleting Loan Types:', error);
-      alert(error)
+      console.error('Error deleting  Advance Salary Request :', error);
+        alert('Error deleting  Advance Salary Request : ' + error.statusText);
+
     }
   );
 });

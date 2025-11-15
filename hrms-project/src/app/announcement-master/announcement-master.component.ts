@@ -478,19 +478,25 @@ registerAnnouncement(): void {
       }
       
       if (confirm('Are you sure you want to delete the selected Announcement ?')) {
+
+          let total = selectedEmployeeIds.length;
+          let completed = 0;
       selectedEmployeeIds.forEach(categoryId => {
         this.employeeService.deleteAnnouncement(categoryId).subscribe(
           () => {
-            console.log(' Document Numbering deleted successfully:', categoryId);
+            console.log('Announcement deleted successfully:', categoryId);
             // Remove the deleted employee from the local list
             this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+                completed++;
+                   if (completed === total) { 
             alert(' Announcement  deleted successfully');
             window.location.reload();
+                   }
       
           },
           (error) => {
-            console.error('Error deleting Loan Types:', error);
-            alert(error)
+            console.error('Error deleting Announcement:', error);
+            alert('Error deleting Announcement: ' + error.statusText);
           }
         );
       });

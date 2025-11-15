@@ -444,19 +444,26 @@ if (selectedEmployeeIds.length === 0) {
 }
 
 if (confirm('Are you sure you want to delete the selected policies ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
   selectedEmployeeIds.forEach(categoryId => {
     this.employeeService.deletePolicy(categoryId).subscribe(
       () => {
         console.log(' policies deleted successfully:', categoryId);
         // Remove the deleted employee from the local list
         this.policies = this.policies.filter(employee => employee.id !== categoryId);
+        completed++;
+         if (completed === total) {
         alert(' policies deleted successfully');
         window.location.reload();
+         }
 
       },
       (error) => {
-        console.error('Error deleting Loan Types:', error);
-        alert(error)
+        console.error('Error deleting policies:', error);
+        alert('Error deleting policies: ' + error.statusText);
       }
     );
   });

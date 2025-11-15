@@ -443,7 +443,7 @@ this.editAsset = {};
 
 
 
-deleteSelectedAssetType() { 
+deleteSelectedLeaveReq() { 
 const selectedEmployeeIds = this.LeaveRequests
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -454,19 +454,29 @@ return;
 }
 
 if (confirm('Are you sure you want to delete the selected Request ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
 selectedEmployeeIds.forEach(categoryId => {
   this.employeeService.deleteLeaveRequest(categoryId).subscribe(
     () => {
       console.log(' Request deleted successfully:', categoryId);
       // Remove the deleted employee from the local list
-      this.LeaveRequests = this.LeaveRequests.filter(employee => employee.id !== categoryId);
+      this.LeaveRequests = this.LeaveRequests.filter(emp  => emp .id !== categoryId);
+
+         completed++;
+
+ if (completed === total) {
       alert(' Request  deleted successfully');
       window.location.reload();
+ }
 
     },
     (error) => {
       console.error('Error deleting Request:', error);
-      alert(error)
+      alert('Error deleting Request: ' + error.statusText);
     }
   );
 });

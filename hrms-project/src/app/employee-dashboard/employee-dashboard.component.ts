@@ -1139,7 +1139,7 @@ loadRequestType(): void {
   notice_period:any='' ;
 
   last_working_date:any='' ;
-  location: any = '';
+  location:any = '';
   termination_type: any = '';
   reason_for_leaving: any = '';
 

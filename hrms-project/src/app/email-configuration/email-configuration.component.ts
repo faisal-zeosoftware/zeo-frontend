@@ -358,30 +358,37 @@ closeEditModal(): void {
     }
     
     
-    deleteSelectedAssetType() { 
+    deleteSelectedEmailConfig() { 
       const selectedEmployeeIds = this.EmailConfg
         .filter(employee => employee.selected)
         .map(employee => employee.id);
     
       if (selectedEmployeeIds.length === 0) {
-        alert('No Asset type selected for deletion.');
+        alert('No EmailConfig selected for deletion.');
         return;
       }
     
       if (confirm('Are you sure you want to delete the selected Email Configuration?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
         selectedEmployeeIds.forEach(categoryId => {
           this.employeeService.deleteEmailConfig(categoryId).subscribe(
             () => {
               console.log('Email Configuration deleted successfully:', categoryId);
               // Remove the deleted employee from the local list
               this.EmailConfg = this.EmailConfg.filter(employee => employee.id !== categoryId);
+              completed++;
+              if (completed === total) {
               alert(' Email Configuration deleted successfully');
               window.location.reload();
+              }
     
             },
             (error) => {
               console.error('Error deleting Email Configuration:', error);
-              alert(error)
+              alert('Error deleting EmailConfig: ' + error.statusText);
             }
           );
         });

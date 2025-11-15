@@ -342,20 +342,29 @@ deleteSelectedEmployees() {
   }
 
   if (confirm('Are you sure you want to delete the selected Branch?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.BrachRegistrationService.deleteBranch(categoryId).subscribe(
         () => {
           console.log('Branch deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.branches = this.branches.filter(employee => employee.id !== categoryId);
+
+           completed++;
+ if (completed === total) {
           alert(' Branch deleted successfully')
           window.location.reload();
+ }
 
         },
         (error) => {
           console.error('Error deleting Branch:', error);
           const errorMessage = error.error?.detail || 'Error deleting Branch';
           alert(`deleting error: ${errorMessage}`);
+          alert('Error deleting Branch: ' + error.statusText);
         }
       );
     });

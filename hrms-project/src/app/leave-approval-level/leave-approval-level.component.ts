@@ -438,7 +438,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedLeaveAprlvl() { 
 const selectedEmployeeIds = this.LeaveapprovalLevels
   .filter(employee => employee.selected)
   .map(employee => employee.id);
@@ -449,19 +449,29 @@ if (selectedEmployeeIds.length === 0) {
 }
 
 if (confirm('Are you sure you want to delete the selected  Approval Level ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
   selectedEmployeeIds.forEach(categoryId => {
     this.employeeService.deleteLeaveApprovalLevel(categoryId).subscribe(
       () => {
         console.log('  Approval Level deleted successfully:', categoryId);
         // Remove the deleted employee from the local list
-        this.LeaveapprovalLevels = this.LeaveapprovalLevels.filter(employee => employee.id !== categoryId);
+        this.LeaveapprovalLevels = this.LeaveapprovalLevels.filter(emp => emp.id !== categoryId);
+
+            completed++;
+            
+     if (completed === total) {         
         alert('  Approval Level  deleted successfully');
         window.location.reload();
+     }
 
       },
       (error) => {
         console.error('Error deleting Gratuity:', error);
-        alert(error)
+      alert('Error deleting category: ' + error.statusText);
       }
     );
   });

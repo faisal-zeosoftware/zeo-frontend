@@ -423,7 +423,7 @@ updateAssetType(): void {
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedAssetReq() { 
   const selectedEmployeeIds = this.AssetsRequest
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -433,19 +433,29 @@ deleteSelectedAssetType() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Asset ?')) {
+  if (confirm('Are you sure you want to delete the selected Asset Request ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteAssetRequest(categoryId).subscribe(
         () => {
-          console.log('Asset  deleted successfully:', categoryId);
+          console.log('Asset Request deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.AssetsRequest = this.AssetsRequest.filter(employee => employee.id !== categoryId);
-          alert(' Asset  deleted successfully');
+          
+          completed++;
+
+        if (completed === total) {
+          alert(' Asset Request deleted successfully');
           window.location.reload();
+        }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting Asset Request:', error);
+          alert('Error deleting Asset Request: ' + error.statusText);
         }
       );
     });

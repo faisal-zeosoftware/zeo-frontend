@@ -388,18 +388,27 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Asset type?')) {
+
+     let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteAssetType(categoryId).subscribe(
         () => {
           console.log('Asset type deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+          completed++;
+     if (completed === total) {        
           alert(' Asset type deleted successfully');
           window.location.reload();
+     }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting Asset type:', error);
+          alert('Error deleting Asset type: ' + error.statusText);
         }
       );
     });

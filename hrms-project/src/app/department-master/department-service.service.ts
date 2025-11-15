@@ -279,6 +279,8 @@ export class DepartmentServiceService {
     
   }
 
+  
+
 
   getEmailTemplatesDoc(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/?schema=${selectedSchema}`;

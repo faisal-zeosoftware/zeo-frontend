@@ -414,7 +414,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedLeavebalance() { 
 const selectedEmployeeIds = this.LeaveBalances
 .filter(employee => employee.selected)
 .map(employee => employee.id);
@@ -425,19 +425,29 @@ return;
 }
 
 if (confirm('Are you sure you want to delete the selected Leave Balance ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
 selectedEmployeeIds.forEach(categoryId => {
 this.leaveService.deleteLeaveBalance(categoryId).subscribe(
   () => {
     console.log(' Leave Balances deleted successfully:', categoryId);
     // Remove the deleted employee from the local list
     this.LeaveBalances = this.LeaveBalances.filter(employee => employee.id !== categoryId);
+
+    completed++;
+
+    if (completed === total) {
     alert(' Leave Balances  deleted successfully');
     window.location.reload();
+    }
 
   },
   (error) => {
     console.error('Error deleting Leave Balances:', error);
-    alert(error)
+     alert('Error deleting category: ' + error.statusText);
   }
 );
 });

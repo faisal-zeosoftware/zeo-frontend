@@ -20,7 +20,7 @@
                 <div class="button-group pull-right">
                     <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><mat-icon>add_circle
                     </mat-icon></span> Create</button>
-                  <span *ngIf="!hasAddPermission"></span>
+                  <span *ngIf="hasAddPermission"></span>
 
                     <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()"  >
                         <span class="header-btn-icon">
@@ -32,7 +32,7 @@
                             <mat-icon> delete
                        </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
 
-                       <span *ngIf="!hasDeletePermission"></span>
+                       <span *ngIf="hasDeletePermission"></span>
                 </div>
             </div>
         </div>

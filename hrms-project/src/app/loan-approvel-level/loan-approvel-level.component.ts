@@ -386,7 +386,7 @@ this.editAsset = {};
 }
 
 
-deleteSelectedAssetType() { 
+deleteSelectedLoanAprlvl() { 
   const selectedEmployeeIds = this.approvalLevels
     .filter(employee => employee.selected)
     .map(employee => employee.id);
@@ -397,19 +397,29 @@ deleteSelectedAssetType() {
   }
 
   if (confirm('Are you sure you want to delete the selected Loan Approval Level ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteLoanApprovalLevel(categoryId).subscribe(
         () => {
           console.log(' Loan Approval Level deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.approvalLevels = this.approvalLevels.filter(employee => employee.id !== categoryId);
+
+           completed++;
+
+         if (completed === total) { 
           alert(' Loan Approval Level  deleted successfully');
           window.location.reload();
+         }
 
         },
         (error) => {
           console.error('Error deleting Loan Approval Level:', error);
-          alert(error)
+            alert('Error deleting Loan Approval Level: ' + error.statusText);
         }
       );
     });

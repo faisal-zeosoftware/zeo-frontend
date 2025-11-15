@@ -451,18 +451,28 @@ deleteSelectedShiftOverride() {
   }
 
   if (confirm('Are you sure you want to delete the selected shift Override?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteShiftOverride(categoryId).subscribe(
         () => {
-          console.log('shift pattern deleted successfully:', categoryId);
+          console.log('shift Override deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.ShiftsOverride = this.ShiftsOverride.filter(employee => employee.id !== categoryId);
-          alert(' shift pattern deleted successfully');
+
+          completed++;
+
+   if (completed === total) {
+          alert(' shift Override deleted successfully');
           window.location.reload();
+      }
 
         },
         (error) => {
-          console.error('Error deleting Category:', error);
+          console.error('Error deleting shift Override:', error);
+          alert('Error deleting shift Override: ' + error.statusText);
         }
       );
     });

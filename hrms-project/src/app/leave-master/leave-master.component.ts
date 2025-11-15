@@ -107,6 +107,7 @@ export class LeaveMasterComponent {
 
   Employees: any[] = []; // Array to store schema names
   leaveRests: any[] = []; // Array to store schema names
+  LeaveMaster: any[] = [];
 
 
   name: any = '';
@@ -325,6 +326,124 @@ export class LeaveMasterComponent {
 
 
   }
+
+
+
+
+  showEditBtn: boolean = false;
+
+EditShowButtons() {
+this.showEditBtn = !this.showEditBtn;
+}
+
+
+Delete: boolean = false;
+allSelecteds: boolean = false;
+
+toggleCheckboxes() {
+this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+this.allSelecteds = !this.allSelecteds;
+this.LeaveMaster.forEach(employee => employee.selected = this.allSelecteds);
+
+}
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+
+openEditModal(asset: any): void {
+this.editAsset = { ...asset }; // copy asset data
+this.isEditModalOpen = true;
+}
+
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+
+
+deleteSelectedLeavetype() { 
+const selectedEmployeeIds = this.LeaveMaster
+.filter(employee => employee.selected)
+.map(employee => employee.id);
+
+if (selectedEmployeeIds.length === 0) {
+alert('No Leave Type selected for deletion.');
+return;
+}
+
+if (confirm('Are you sure you want to delete the selected Leave Type ?')) {
+
+    let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
+selectedEmployeeIds.forEach(categoryId => {
+this.leaveService.deleteLeavetype(categoryId).subscribe(
+  () => {
+    console.log(' Leave Type deleted successfully:', categoryId);
+    // Remove the deleted employee from the local list
+    this.LeaveMaster = this.LeaveMaster.filter(employee => employee.id !== categoryId);
+
+    completed++;
+
+    if (completed === total) {
+    alert(' Leave Type  deleted successfully');
+    window.location.reload();
+    }
+
+  },
+  (error) => {
+    console.error('Error deleting Leave Type:', error);
+     alert('Error deleting Leave Type: ' + error.statusText);
+  }
+);
+});
+}
+}
+
+
+updateLeavetype(): void {
+const selectedSchema = localStorage.getItem('selectedSchema');
+if (!selectedSchema || !this.editAsset.id) {
+alert('Missing schema or asset ID');
+return;
+}
+
+this.leaveService.updateLeaveBalance(this.editAsset.id, this.editAsset).subscribe(
+(response) => {
+alert(' Leave Balances  updated successfully!');
+this.closeEditModal();
+window.location.reload();
+},
+(error) => {
+console.error('Error updating asset:', error);
+alert('Update failed');
+}
+);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
