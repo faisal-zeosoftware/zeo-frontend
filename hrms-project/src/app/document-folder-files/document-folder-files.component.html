@@ -16,8 +16,9 @@
           </div>
           <div class="col-md-5">
                     <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span> Create</button>
+                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>cloud_upload
+
+                        </mat-icon></span> upload</button>
 
                         <!-- <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
                             <span class="header-btn-icon">
@@ -56,7 +57,23 @@
  <!-- Documents List -->
  <div *ngIf="documents.length > 0; else noDocs" class="doc-grid">
 
-    <div class="row">
+
+    <div class="doc-card" >
+     
+            <div class="doc-sec" *ngFor="let doc of documents">
+                   <a [href]="doc.file" target="_blank">
+    <div class="folder">
+        
+    </div>
+    <h4>{{ doc.name }}</h4>
+</a>
+    </div>
+
+   
+
+</div>
+
+    <!-- <div class="row">
         <div class="col-md-4">
             <div class="doc-card" *ngFor="let doc of documents">
                 <a [href]="doc.file" target="_blank">
@@ -67,7 +84,6 @@
           
                           </div>
                           <div class="col-md-9">
-                              <h4>{{ doc.name }}</h4>
           
                               </div>
           
@@ -76,10 +92,14 @@
                
                 </a>
               </div>
+
+
+
           
         </div>
-    </div>
+    </div> -->
 
+  
   
   </div>
 

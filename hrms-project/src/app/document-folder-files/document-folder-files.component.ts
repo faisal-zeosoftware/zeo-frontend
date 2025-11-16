@@ -31,10 +31,13 @@ export class DocumentFolderFilesComponent {
     folderId: number | null = null;
 
     ngOnInit(): void {
-      this.folderId = Number(this.route.snapshot.paramMap.get('id'));
-      console.log("Selected Folder ID → ", this.folderId);
-    
-      this.getDocuments();  // ⬅️ load docs when page opens
+      // 🔥 This listens every time routerLink changes the folder ID
+  this.route.paramMap.subscribe(params => {
+    this.folderId = Number(params.get('id'));
+    console.log("Folder changed → ", this.folderId);
+
+    this.getDocuments(); // reload documents
+  });
     }
 
   
@@ -113,6 +116,7 @@ uploadfolderDocument(): void {
       this.isopenDocement = false;
       this.selectedFile = null;
       this.name = '';
+      this.getDocuments();
     },
     (error) => {
       console.error('Upload failed', error);
