@@ -206,7 +206,7 @@ export class EmployeeEditComponent {
           // Category mapping
           const cat = this.catogories?.find(c => c.ctgry_title === Emp.emp_ctgry_id);
           if (cat) this.Emp.emp_ctgry_id = cat.id;
-        }, 500);
+        }, 1000);
       },
       (error) => {
         console.error('Error fetching employee:', error);

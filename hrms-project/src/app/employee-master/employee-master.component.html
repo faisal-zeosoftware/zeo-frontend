@@ -93,7 +93,7 @@
             </div>
         </div>
 
-  
+            
 
 <!-- Toggle Button -->
  <div class="row">
@@ -142,6 +142,11 @@
 
                         </div>
                     </div>
+                        <!-- <button mat-fab class="" color="warn" aria-label="Example icon button with a delete icon" (click)="onDeleteEmployee(employeesec.id)">
+                          <mat-icon>delete</mat-icon>
+                        </button> -->
+                    <!-- <button type="button" class="btn btn-danger" >Delete Employee</button> -->
+<!-- <button type="button" class="btn" >      Edit</button> -->
 
                 </div>
             </div>
@@ -244,46 +249,41 @@
       
       </div>
   
- <div class="table-responsive">
-  <table class="table table-striped custom-table">
-    <thead>
-      <tr>
-        <th>Profile</th>
-        <th>Employee Code</th>
-        <th>Name</th>
-        <th>Branch</th>
-        <th>Department</th>
-        <th>Category</th>
-        <th>Designation</th>
-        <th>Active</th>
-        <th *ngIf="showEditBtn">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let emp of filteredEmployees" (click)="showEmployeeDetails(emp.id)">
-        <td data-label="Profile">
-          <img [src]="emp.emp_profile_pic" alt="Profile"
-               class="img-fluid rounded-circle"
-               style="width: 40px; height: 40px; object-fit: cover;">
-        </td>
-        <td data-label="Employee Code">{{ emp.emp_code }}</td>
-        <td data-label="Name">{{ emp.emp_first_name }} {{ emp.emp_last_name }}</td>
-        <td data-label="Branch">{{ emp.emp_branch_id }}</td>
-        <td data-label="Department">{{ emp.emp_dept_id }}</td>
-        <td data-label="Category">{{ emp.emp_ctgry_id }}</td>
-        <td data-label="Designation">{{ emp.emp_desgntn_id }}</td>
-        <td data-label="Active">{{ emp.is_active ? 'Yes' : 'No' }}</td>
-        <td data-label="Actions" *ngIf="showEditBtn">
-          <button mat-icon-button color="primary" (click)="openEditEmpPopuss(emp.id); $event.stopPropagation()">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-
+      <table class="table  table-striped">
+        <thead>
+          <tr>
+            <th>Profile</th>
+            <th>Employee Code</th>
+            <th>Name</th>
+            <th>Branch</th>
+            <th>Department</th>
+            <th>Category</th>
+            <th>Designation</th>
+            <th>Active</th>
+            <th *ngIf="showEditBtn">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of filteredEmployees" (click)="showEmployeeDetails(emp.id)">
+            <td>
+              <img [src]="emp.emp_profile_pic" alt="Profile"
+                   style="width: 40px; height: 40px; border-radius: 50%;">
+            </td>
+            <td>{{ emp.emp_code }}</td>
+            <td>{{ emp.emp_first_name }} {{ emp.emp_last_name }}</td>
+            <td>{{ emp.emp_branch_id }}</td>
+            <td>{{ emp.emp_dept_id }}</td>
+            <td>{{ emp.emp_ctgry_id }}</td>
+            <td>{{ emp.emp_desgntn_id }}</td>
+            <td>{{ emp.is_active ? 'Yes' : 'No' }}</td>
+            <td *ngIf="showEditBtn">
+              <button mat-icon-button color="primary" (click)="openEditEmpPopuss(emp.id)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
   
@@ -364,6 +364,8 @@
 
         
       </div>
+      
+
     </form>
   </div>
 
