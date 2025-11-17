@@ -358,6 +358,8 @@ editAsset: any = {}; // holds the asset being edited
 
       }
 
+
+
 selectedLoanId: number | null = null;
 
 
@@ -460,7 +462,7 @@ deleteSelectedLoanApplication() {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Loan Application(s)?')) {
+  if (confirm('Are you sure you want to delete the selected Loan Applications ?')) {
 
     let total = selectedIds.length;
     let completed = 0;
@@ -473,7 +475,7 @@ deleteSelectedLoanApplication() {
 
           completed++;
           if (completed === total) {
-            alert('Loan Application(s) deleted successfully');
+            alert('Loan Applications deleted successfully');
           }
         },
         (error) => {

@@ -86,7 +86,7 @@
        <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div>
     </div>
     
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
     
     
         <div class="custom-sel">
@@ -99,7 +99,7 @@
         </div>
               
         
-        </div>
+        </div> -->
 
         <div class="col-md-6">
         <div class="custom-sel">
@@ -156,7 +156,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit  Loan Repayment</h2>
+    <h2>Edit Company Location</h2>
   </div>
   <div class="col-md-2">
     <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -164,7 +164,7 @@
 </div>
 <hr />
 
-        <form (ngSubmit)="registerCategory()" enctype="multipart/form-data">
+        <form (ngSubmit)="updateLocations()" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-6" >
                    
@@ -185,7 +185,7 @@
        <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div>
     </div>
     
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
     
     
         <div class="custom-sel">
@@ -198,7 +198,7 @@
         </div>
               
         
-        </div>
+        </div> -->
 
         <div class="col-md-6">
         <div class="custom-sel">
@@ -221,7 +221,7 @@
               id="logo"
               name="logo"
               required
-              (change)="onFileSelected(editAsset.$event)"
+              (change)="onFileSelected($event)"
               [ngClass]="{'error-field': registerButtonClicked && !logo}"
             />
             <div *ngIf="registerButtonClicked && !logo" class="error-message">
@@ -259,7 +259,7 @@
         <th>No</th>
         <th>Location Name</th>
         <th>Name</th>
-        <th>Owner Name</th>
+        <!-- <th>Owner Name</th> -->
         <th>Action</th>
       </tr>
     </thead>
@@ -268,6 +268,7 @@
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Location Name">{{ schema.schema_name }}</td>
         <td data-label="Name">{{ schema.name }}</td>
+        <!-- <td data-label="OwnerName">{{ schema.owner }}</td> -->
              <td data-label="Action">
                       <button
                         mat-fab
@@ -288,6 +289,13 @@
     </tbody>
   </table>
 </div>
+
+
+    <!-- Loader -->
+    <div class="loader-container" [class.show]="isLoading">
+      <div class="loader"></div>
+    </div>
+  
 
 
 </div>

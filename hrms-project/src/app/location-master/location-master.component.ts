@@ -202,11 +202,6 @@ if (this.userId !== null) {
 
       }
 
-      closeEditModal(): void {
-     this.isEditModalOpen = false;
-     this.editAsset = {};
-      }
-
 
              
 
@@ -238,6 +233,12 @@ this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
 }
 
+closeEditModal(): void {
+   this.isEditModalOpen = false;
+     this.editAsset = {};
+      }
+
+
 
 
 
@@ -258,6 +259,8 @@ this.isEditModalOpen = true;
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
     }
+
+       isLoading: boolean = false;
     
 
    registerCategory(): void {
@@ -289,15 +292,19 @@ this.isEditModalOpen = true;
     if (this.logo) {
       formData.append('logo', this.logo, this.logo.name);
     }
+
+            this.isLoading = true;
   
     // Make API call
     this.userService.getSchema(formData).subscribe(
       (response) => {
+         this.isLoading = false;
         console.log('Registration successful', response);
         alert('Location has been Registered!');
         window.location.reload();
       },
       (error) => {
+                 this.isLoading = false;
         console.error('Registration failed', error);
   let errorMessage = 'Enter all required fields!';
 
@@ -360,7 +367,7 @@ this.isEditModalOpen = true;
 }
 
 
-updateAssetType(): void {
+updateLocations(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
   if (!selectedSchema || !this.editAsset.id) {
     alert('Missing schema or asset ID');
