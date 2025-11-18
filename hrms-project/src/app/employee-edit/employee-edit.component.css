@@ -96,3 +96,44 @@
       transform: translateX(0);
     }
   }
+
+
+  .profile-container {
+    width: 140px;
+    height: 140px;
+    margin: 0 0px 20px 0px;
+    position: relative;
+}
+
+.profile-img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.2);
+}
+
+.edit-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #007bff;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.3);
+}
+
+.edit-btn i {
+    margin-top: 8px;
+    font-size: 15px;
+}
+
+.hidden-file-input {
+    display: none;
+}

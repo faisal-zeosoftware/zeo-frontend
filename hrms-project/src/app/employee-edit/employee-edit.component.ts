@@ -1,4 +1,4 @@
-import { Component , OnInit, Renderer2} from '@angular/core';
+import { Component , ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -22,6 +22,8 @@ import { catchError, Observable, of, switchMap, tap } from 'rxjs';
   styleUrl: './employee-edit.component.css'
 })
 export class EmployeeEditComponent {
+
+  @ViewChild('profileInput') profileInput!: ElementRef;
 
 
   selectedFile: File | undefined;
@@ -208,7 +210,7 @@ export class EmployeeEditComponent {
           if (cat) this.Emp.emp_ctgry_id = cat.id;
         }, 1000);
       },
-      (error) => {
+      (error) => {  
         console.error('Error fetching employee:', error);
       }
     );
@@ -229,6 +231,26 @@ export class EmployeeEditComponent {
     this.loadNationality();
   }
   
+
+  previewImage: any = null;  // to show selected image instantly
+
+triggerFileInput() {
+  this.profileInput.nativeElement.click();
+}
+
+onProfilePicSelected(event: any) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  this.selectedFile = file;
+
+  // instant preview
+  const reader = new FileReader();
+  reader.onload = () => {
+    this.previewImage = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];

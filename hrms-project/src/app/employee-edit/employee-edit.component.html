@@ -5,6 +5,32 @@
         <h1>Employee Details</h1><hr>
 
         <form (submit)="updateEmp"  enctype="multipart/form-data">
+
+            <!-- EMPLOYEE PROFILE IMAGE SECTION -->
+<div class="profile-container">
+
+    <!-- Profile Image -->
+    <img 
+        [src]="previewImage || Emp.emp_profile_pic || 'assets/default-user.png'" 
+        class="profile-img"
+    />
+
+    <!-- Edit Pencil Button -->
+    <button class="edit-btn" (click)="triggerFileInput()">
+        <i class="fa fa-pencil"></i>
+    </button>
+
+    <!-- Hidden File Input -->
+    <input 
+        type="file"
+        #profileInput
+        class="hidden-file-input"
+        accept="image/*"
+        (change)="onProfilePicSelected($event)"
+    >
+
+</div>
+
             
             <div class="row">
 

@@ -181,10 +181,7 @@
 </div>
 </div>
 
-<div class="col-md-6">
-<label for="policy_file">Policy Image</label>
-<input type="file" class="form-control" id="policy_file" name="policy_file" (change)="onFileSelected($event)">
-</div>
+
 
 <div class="col-md-6">
 <label>Department</label>
@@ -204,6 +201,29 @@
 </div>
 </div>
 
+<div class="col-md-6">
+  <label>Policy Image</label>
+
+  <!-- Custom File Input Display -->
+  <div class="custom-file-box" (click)="triggerFileInput()">
+    <span *ngIf="editAsset.policy_file && !selectedFile">
+      {{ getFileName(editAsset.policy_file) }}
+    </span>
+
+    <span *ngIf="selectedFile">
+      {{ selectedFile.name }}
+    </span>
+
+    <i class="fa fa-upload upload-icon"></i>
+  </div>
+
+  <!-- Hidden Actual File Input -->
+  <input 
+      type="file" 
+      #fileInput 
+      class="hidden-file-input" 
+      (change)="onFileSelected($event)">
+</div>
 
 
 </div>

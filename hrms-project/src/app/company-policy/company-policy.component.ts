@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -15,6 +15,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 })
 export class CompanyPolicyComponent {
 
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   title:any='';
   description:any='';
@@ -492,7 +493,19 @@ this.employeeService.updatePolicy(this.editAsset.id, this.editAsset).subscribe(
 }
 
 
+isImage(fileUrl: string): boolean {
+  return fileUrl.match(/\.(jpeg|jpg|png|gif|bmp)$/i) !== null;
+}
 
+
+
+triggerFileInput() {
+  this.fileInput.nativeElement.click();
+}
+
+getFileName(fileUrl: string): string {
+  return fileUrl.split('/').pop() || 'Existing File';
+}
 
 
 }
