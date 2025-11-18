@@ -247,15 +247,15 @@ updateLeaveBalance(id: number, data: any): Observable<any> {
 updateLeavetype(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/calendars/api/leave-type/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
+  return this.http.patch(apiUrl, data).pipe(
     catchError((error) => {
-      console.error('Error updating asset:', error);
+      console.error('Error updating leave type:', error);
       return throwError(error);
     })
   );
 }
+
 
   
   CreateEmployeeOvertime(formData: FormData): Observable<any> {

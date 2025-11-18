@@ -7,7 +7,10 @@
         <form (submit)="updateEmp"  enctype="multipart/form-data">
 
             <!-- EMPLOYEE PROFILE IMAGE SECTION -->
+                <label>Profile Picture</label>
 <div class="profile-container">
+
+  
 
     <!-- Profile Image -->
     <img 
@@ -15,10 +18,14 @@
         class="profile-img"
     />
 
+  
+
     <!-- Edit Pencil Button -->
     <button class="edit-btn" (click)="triggerFileInput()">
         <i class="fa fa-pencil"></i>
     </button>
+
+     
 
     <!-- Hidden File Input -->
     <input 
@@ -413,11 +420,11 @@
         </div> -->
     
 
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
             <label>Profile Picture</label>
             <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*" />
         </div>
-       <div class="col-md-6"></div>
+       <div class="col-md-6"></div> -->
 
 
         <div class="row mt-4">

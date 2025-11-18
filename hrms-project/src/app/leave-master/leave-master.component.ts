@@ -56,6 +56,8 @@ export class LeaveMasterComponent {
 
 
 
+
+
   // entitlement field variables declaration
 
   min_experience: any = '';
@@ -128,6 +130,7 @@ export class LeaveMasterComponent {
   allow_half_day: boolean = false;
   include_weekend_and_holiday: boolean = false;
   use_common_workflow: boolean = false;
+      include_dashboard: boolean = false;
 
 
 
@@ -350,6 +353,27 @@ this.LeaveMaster.forEach(employee => employee.selected = this.allSelecteds);
 
 }
 
+toggleSelectAllLeaveTypes() {
+  this.allSelecteds = !this.allSelecteds;
+  this.LeaveTypes.forEach(leave => leave.selected = this.allSelecteds);
+}
+
+
+isLeaveTypeEditModalOpen: boolean = false;
+editLeaveType: any = {};
+
+openEditLeaveTypeModal(type: any): void {
+  this.editLeaveType = { ...type };
+  this.isLeaveTypeEditModalOpen = true;
+}
+
+closeEditLeaveTypeModal(): void {
+  this.isLeaveTypeEditModalOpen = false;
+  this.editLeaveType = {};
+}
+
+
+
 isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
@@ -368,67 +392,70 @@ this.editAsset = {};
 
 
 
-deleteSelectedLeavetype() { 
-const selectedEmployeeIds = this.LeaveMaster
-.filter(employee => employee.selected)
-.map(employee => employee.id);
+deleteSelectedLeavetype() {
+  const selectedLeaveIds = this.LeaveTypes
+    .filter(leave => leave.selected)
+    .map(leave => leave.id);
 
-if (selectedEmployeeIds.length === 0) {
-alert('No Leave Type selected for deletion.');
-return;
-}
+  if (selectedLeaveIds.length === 0) {
+    alert('No Leave Type selected for deletion.');
+    return;
+  }
 
-if (confirm('Are you sure you want to delete the selected Leave Type ?')) {
-
-    let total = selectedEmployeeIds.length;
+  if (confirm('Are you sure you want to delete the selected Leave Type(s)?')) {
+    let total = selectedLeaveIds.length;
     let completed = 0;
 
+    selectedLeaveIds.forEach(id => {
+      this.leaveService.deleteLeavetype(id).subscribe(
+        () => {
+          console.log('Leave Type deleted successfully:', id);
+          // Remove deleted leave type from local list
+          this.LeaveTypes = this.LeaveTypes.filter(leave => leave.id !== id);
 
-selectedEmployeeIds.forEach(categoryId => {
-this.leaveService.deleteLeavetype(categoryId).subscribe(
-  () => {
-    console.log(' Leave Type deleted successfully:', categoryId);
-    // Remove the deleted employee from the local list
-    this.LeaveMaster = this.LeaveMaster.filter(employee => employee.id !== categoryId);
-
-    completed++;
-
-    if (completed === total) {
-    alert(' Leave Type  deleted successfully');
-    window.location.reload();
-    }
-
-  },
-  (error) => {
-    console.error('Error deleting Leave Type:', error);
-     alert('Error deleting Leave Type: ' + error.statusText);
+          completed++;
+          if (completed === total) {
+            alert('Selected Leave Types deleted successfully!');
+            window.location.reload();
+          }
+        },
+        (error) => {
+          console.error('Error deleting Leave Type:', error);
+          alert('Error deleting Leave Type: ' + error.statusText);
+        }
+      );
+    });
   }
-);
-});
 }
-}
+
+
+
+
 
 
 updateLeavetype(): void {
-const selectedSchema = localStorage.getItem('selectedSchema');
-if (!selectedSchema || !this.editAsset.id) {
-alert('Missing schema or asset ID');
-return;
-}
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editLeaveType.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
 
-this.leaveService.updateLeaveBalance(this.editAsset.id, this.editAsset).subscribe(
-(response) => {
-alert(' Leave Balances  updated successfully!');
-this.closeEditModal();
-window.location.reload();
-},
-(error) => {
-console.error('Error updating asset:', error);
-alert('Update failed');
-}
-);
-}
+  const payload = { ...this.editLeaveType };
+  delete payload.image;  // IMPORTANT
 
+  this.leaveService.updateLeavetype(this.editLeaveType.id, payload)
+    .subscribe(
+      () => {
+        alert('Leave Type updated successfully!');
+        this.closeEditLeaveTypeModal();
+        window.location.reload();
+      },
+      (error) => {
+        console.error('Error updating leave type:', error);
+        alert('Update failed');
+      }
+    );
+}
 
 
 
@@ -479,6 +506,7 @@ alert('Update failed');
     formData.append('allow_half_day', this.allow_half_day.toString());
     formData.append('include_weekend_and_holiday', this.include_weekend_and_holiday.toString());
     formData.append('use_common_workflow', this.use_common_workflow.toString());
+    formData.append('include_dashboard', this.include_dashboard.toString());
   
     if (this.selectedFile) {
       formData.append('image', this.selectedFile);

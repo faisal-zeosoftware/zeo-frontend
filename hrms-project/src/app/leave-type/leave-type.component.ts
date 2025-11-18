@@ -27,6 +27,7 @@ export class LeaveTypeComponent {
   negative: boolean = false;
   
   allow_opening_balance: boolean = false;
+  include_dashboard: boolean = false;
 
 
   selectedFile!: File | null;

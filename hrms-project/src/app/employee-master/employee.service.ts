@@ -492,18 +492,6 @@ updateLoanRepayment(id: number, data: any): Observable<any> {
   );
 }
 
-updateLocations(id: number, data: any): Observable<any> {
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  const apiUrl = `${this.apiUrl}/users/api/company/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-  return this.http.put(apiUrl, data, { headers }).pipe(
-    catchError((error) => {
-      console.error('Error updating asset:', error);
-      return throwError(error);
-    })
-  );
-}
 
 deleteLoanApprovalLevel(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
@@ -548,6 +536,22 @@ updateLoanApprovalLevel(id: number, data: any): Observable<any> {
     })
   );
 }
+
+
+
+
+updateLC(id: number, data: FormData): Observable<any> {
+  const apiUrl = `${this.apiUrl}/users/api/company/${id}/`;
+
+  // ❗ DO NOT set Content-Type manually for FormData
+  return this.http.put(apiUrl, data).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
 
 updateLoanApplication(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');

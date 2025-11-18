@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -14,6 +14,8 @@ import { EmployeeService } from '../employee-master/employee.service';
   styleUrl: './location-master.component.css'
 })
 export class LocationMasterComponent {
+
+    @ViewChild('logoInput') logoInput!: ElementRef;
 
 
   registerButtonClicked = false;
@@ -223,7 +225,7 @@ this.Delete = !this.Delete;
 
 toggleSelectAllEmployees() {
   this.allSelecteds = !this.allSelecteds;
-this.Locations.forEach(employee => employee.selected = this.allSelecteds);
+this.Schemas.forEach(employee => employee.selected = this.allSelecteds);
 
 }
 
@@ -328,12 +330,12 @@ closeEditModal(): void {
 
 
   deleteSelectedLocationmaster() { 
-  const selectedEmployeeIds = this.Locations
+  const selectedEmployeeIds = this.Schemas
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
   if (selectedEmployeeIds.length === 0) {
-    alert('No Loan Repayment selected for deletion.');
+    alert('No Location selected for deletion.');
     return;
   }
 
@@ -345,14 +347,14 @@ closeEditModal(): void {
     selectedEmployeeIds.forEach(categoryId => {
       this.employeeService.deleteLocations(categoryId).subscribe(
         () => {
-          console.log(' Loan Repayment deleted successfully:', categoryId);
+          console.log(' Location deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
           this.Locations = this.Locations.filter(employee => employee.id !== categoryId);
 
           completed++;
 
          if (completed === total) { 
-          alert(' Loan Repayment  deleted successfully');
+          alert(' Company  deleted successfully');
           window.location.reload();
          }
 
@@ -374,9 +376,21 @@ updateLocations(): void {
     return;
   }
 
-  this.employeeService.updateLocations(this.editAsset.id, this.editAsset).subscribe(
+  const formData = new FormData();
+
+  // Append text fields
+  formData.append('schema_name', this.editAsset.schema_name);
+  formData.append('name', this.editAsset.name);
+  formData.append('country', this.editAsset.country);
+
+  // Append file if present
+  if (this.logo) {
+    formData.append('logo', this.logo);
+  }
+
+  this.employeeService.updateLC(this.editAsset.id, formData).subscribe(
     (response) => {
-      alert(' Loan Repayment  updated successfully!');
+      alert('Location updated successfully!');
       this.closeEditModal();
       window.location.reload();
     },
@@ -386,7 +400,6 @@ updateLocations(): void {
     }
   );
 }
-
 
 
 
@@ -439,6 +452,30 @@ updateLocations(): void {
       }
     );
   }
+
+
+  // logo view
+
+  selectedLogoFile: File | null = null;
+
+
+
+  triggerLogoInput() {
+  this.logoInput.nativeElement.click();
+}
+
+onLogoSelected(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedLogoFile = file;
+  }
+}
+
+getFileName(fileUrl: string): string {
+  return fileUrl.split('/').pop() || 'Existing File';
+}
+
+
 
 
 }

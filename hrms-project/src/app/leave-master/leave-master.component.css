@@ -433,6 +433,15 @@ label{
   
 }
 
+.edit-fab-button {
+  position: absolute;
+  right: 10px;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+}
+
+
 
 
 @media only screen and (max-width: 768px) {

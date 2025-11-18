@@ -35,6 +35,8 @@ export class CreateLeavetypeComponent {
   include_weekend_and_holiday: boolean = false;
   use_common_workflow: boolean = false;
 
+    include_dashboard: boolean = false;
+
 
   registerButtonClicked: boolean = false;
 
@@ -107,6 +109,8 @@ export class CreateLeavetypeComponent {
     formData.append('negative', this.negative.toString());
     formData.append('allow_half_day', this.allow_half_day.toString());
     formData.append('include_weekend_and_holiday', this.include_weekend_and_holiday.toString());
+    formData.append('include_dashboard', this.include_dashboard.toString());
+
     formData.append('use_common_workflow', this.use_common_workflow.toString());
   
     if (this.selectedFile) {

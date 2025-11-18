@@ -211,27 +211,39 @@
         </div>
         </div>
 
-        <div class="col-md-6">
+<div class="col-md-6">
+  <label>Company Logo</label>
 
-        <div class="custom-sel">
-            <label for="company_logo">Company Logo:</label>
-            <input
-              type="file"
-              class="form-control"
-              id="logo"
-              name="logo"
-              required
-              (change)="onFileSelected($event)"
-              [ngClass]="{'error-field': registerButtonClicked && !logo}"
-            />
-            <div *ngIf="registerButtonClicked && !logo" class="error-message">
-              No file was selected for the Company Logo.
-            </div>
-          </div>
-  
-        
-    </div>
+  <!-- Custom File Input Display -->
+  <div class="custom-file-box" (click)="triggerLogoInput()">
     
+    <!-- Show existing file if editing and no new file selected -->
+    <span *ngIf="editAsset?.logo && !selectedLogoFile">
+      {{ getFileName(editAsset.logo) }}
+    </span>
+
+    <!-- Show new selected file -->
+    <span *ngIf="selectedLogoFile">
+      {{ selectedLogoFile.name }}
+    </span>
+
+    <i class="fa fa-upload upload-icon"></i>
+  </div>
+
+  <!-- Hidden Actual File Input -->
+  <input 
+      type="file"
+      #logoInput
+      class="hidden-file-input"
+      (change)="onLogoSelected($event)">
+  
+  <!-- Validation -->
+  <div *ngIf="registerButtonClicked && !selectedLogoFile && !editAsset?.logo" 
+       class="error-message">
+    No file was selected for the Company Logo.
+  </div>
+</div>
+
     </div>
         
 
