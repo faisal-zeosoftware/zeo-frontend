@@ -41,6 +41,8 @@ export class LoginComponent implements OnInit {
 
   constructor(private UserMasterService: UserMasterService,
      private router: Router,
+          private http: HttpClient,
+
       private authService: AuthenticationService,
       private EmployeeService: EmployeeService) { }
 
@@ -79,92 +81,118 @@ export class LoginComponent implements OnInit {
   isEssUser: boolean = true; // Default value, adjust based on your logic
 
 
-  login(): void {
-    this.registerButtonClicked = true;
+  step = 1;   // Step 1 = login, Step 2 = send otp, Step 3 = verify otp
+  otp: string = '';
+  userId: number | null = null;
 
-     // Basic validation for username and password fields
-  if (!this.username || !this.password) {
-    if (!this.username) {
-      alert('Username field is blank.');
+  isLoading = false;
+  
+  validateCredentials() {
+    if (!this.username || !this.password) {
+      alert("Username & password required");
+      return;
     }
-    if (!this.password) {
-      alert('Password field is blank.');
+    this.isLoading = true;
+
+  
+    const body = {
+      username: this.username,
+      password: this.password
+    };
+  
+    this.http.post("http://127.0.0.1:8000/users/validate-credentials/", body)
+      .subscribe(
+        (res: any) => {
+                  this.isLoading = false;
+
+          this.userId = res.user_id;
+          this.step = 2; // Go to OTP send step
+        },
+        () => 
+          {
+            this.isLoading = false;
+
+            alert("Invalid username or password")
+          }
+      );
+  }
+  
+  sendOtp() {
+      this.isLoading = true;
+
+    if (!this.userId) return;
+  
+    const body = { user_id: this.userId };
+  
+    this.http.post("http://127.0.0.1:8000/users/send-otp/", body)
+      .subscribe(
+        () => {
+          this.isLoading = false;
+
+          alert("OTP sent to your registered email/phone");
+          this.step = 3;
+        },
+        () =>
+          { 
+            this.isLoading = false;
+
+            alert("Failed to send OTP")
+          }
+      );
+  }
+  
+  verifyOtp() {
+
+    if (!this.userId || !this.otp) {
+      alert("Enter OTP");
+      return;
     }
-    // return; // Exit the function if validation fails
+    this.isLoading = true;
+
+    const body = {
+      user_id: this.userId,
+      otp: this.otp
+    };
+  
+    this.http.post("http://127.0.0.1:8000/users/verify-otp/", body)
+      .subscribe(
+        (res: any) => {
+          this.isLoading = false;
+
+          const token = res.access;
+          this.authService.setAuthToken(token);
+  
+          // Now fetch user data → same as your current login code
+          this.afterLoginRedirect();
+        },
+        () => {
+          this.isLoading = false;
+          alert("Invalid OTP");
+        }
+      );
   }
     
   
-    this.authService.login( this.password,this.username,).subscribe(
-      (response: any) => {
-        const token = response.access;
-        this.authService.setAuthToken(token);
+  afterLoginRedirect() {
+    this.authService.getUserData(this.userId!).subscribe(
+      (userData: any) => {
+        const isEssUser = userData.is_ess;
+        const tenants = userData.allocated_tenants;
   
-        // Extract the user ID from the login response
-        const userId = response.user_id; // Adjust this according to your login response structure
+        if (isEssUser && tenants.length > 0) {
+          const tenant = tenants[0];
+          localStorage.setItem('selectedSchema', tenant.schema_name);
   
-      
-        
-        // Proceed with fetching user data using the obtained user ID
-        this.authService.getUserData(userId).subscribe(
-          (userData: any) => {
-            console.log('User Data:', userData); // Log user data
-            const isEssUser = userData.is_ess;
-            const tenants = userData.allocated_tenants;
-
-
-            if (isEssUser && tenants.length > 0) {
-              
-              // Automatically select the first tenant for the employee
-              const tenant = tenants[0]; // Assuming the first tenant in the array is to be used
-              const selectedSchema = tenant.schema_name; // Assuming the tenant ID is in the tenants array
-              localStorage.setItem('selectedSchema', selectedSchema.toString());
-
-              this.router.navigate(['/employee-dashboard']);
-       
-              // this.EmployeeService.getEmployeeDetails(userId).subscribe(
-              //   (employeeDetails) => {
-              //     console.log('Employee Details:', employeeDetails); // Log employee details
-              //     this.router.navigate(['/employee-dashboard/employee-master']);
-              //   },
-              //   (error) => {
-              //     console.error('Failed to fetch employee details', error);
-              //     alert('Failed to fetch employee details. Please try again.');
-              //   }
-              // );
-            } else if (!isEssUser) {
-              this.router.navigate(['/schema-selection']);
-              alert('Login Successful.');
-            } else {
-              alert('No tenant available for the user.');
-              console.error('No tenant available for the user.');
-            }
-          },
-          error => {
-            console.error('Error fetching user data:', error);
-            alert('An error occurred while fetching user data. Please try again.');
-          }
-        );
-      },
-      (error:HttpErrorResponse) => {
-
-        if (error.status === 401) {
-          // Unauthorized error (wrong credentials)
-          alert('Incorrect username or password.');
-        } else if (error.error?.non_field_errors) {
-          // Handle deactivated account error
-          alert(error.error.non_field_errors[0]); // "Your account is deactivated. Please contact support."
+          this.router.navigate(['/employee-dashboard']);
+        } else if (!isEssUser) {
+          this.router.navigate(['/schema-selection']);
         } else {
-          // General error message
-          const errorMessage = error.error?.detail || 'Enter correct user ID and Password';
-          alert(`Login error: ${errorMessage}`);
+          alert("No tenant available for this user");
         }
-      
-        console.error('Login error', error);
-      }
+      },
+      () => alert("Error loading user data")
     );
   }
-  
-  
 
   
   
@@ -219,42 +247,6 @@ export class LoginComponent implements OnInit {
     );
 
   }
-
-
-  // login event code here
-
-  // onLogin() {
-
-  //   this.userService.loginUser(this.input).subscribe(
-  //     _Response => {
-
-  //       this.router.navigate(['/company-selection']);
-  //       alert('User has been Login!')
-  //       // alert(`Welcome, ${this.username}!`);
-  //     },
-
-  //     (error) => {
-  //       if (error instanceof HttpErrorResponse && error.status === 400) {
-  //         // Handle validation errors
-  //         console.log('Validation errors:', error.error);
-  //         // Display error messages to the user
-  //         alert('Please enter all fields');
-  //         // style.border = '8px solid green';
-
-
-  //       } else {
-  //         // Handle other types of errors
-  //         console.error('Unexpected error:', error);
-  //         // console.log('Please fill in the required fields.');
-  //         // alert('enter all fields')
-  //       }
-
-  //     }
-  //   );
-
-  // }
-
-
 
 
 

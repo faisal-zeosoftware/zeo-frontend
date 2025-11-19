@@ -41,27 +41,46 @@
   <div class="form-container sign-in" *ngIf="showCurrentDiv">
     <!--  -->
 
-    
-    <form (submit)="login()">
+    <form (ngSubmit)="validateCredentials()" *ngIf="step === 1">
       <h1>Sign In</h1>
-
-      <input type="text" id="email" class="form-control" [(ngModel)]="username" name="username" placeholder="enter user id" required 
-       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !username}">
-     
-      <div *ngIf="registerButtonClicked && !username" class="error-message">email or user ID is required.</div>
-
-
-
     
-        <input type="password" id="password" class="form-control" [(ngModel)]="password" name="password" placeholder="enter password" required
-        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !password}">
+      <input type="text" class="form-control"
+             [(ngModel)]="username"
+             placeholder="enter user id"
+             [ngModelOptions]="{standalone: true}">
+    
+      <input type="password" class="form-control"
+             [(ngModel)]="password"
+             placeholder="enter password"
+             [ngModelOptions]="{standalone: true}">
+    
+      <button class="btn-log" type="submit">Continue</button>
+    </form>
+    
+    
+    
+    <!-- STEP 2: SEND OTP -->
+     <form>
+    <div *ngIf="step === 2" class="otp-section">
+      <p>User validated successfully.</p>
+      <button class="btn-log" (click)="sendOtp()">Send OTP</button>
+    </div>
+    </form>
      
-        <div *ngIf="registerButtonClicked && !password" class="error-message">Password is required.</div>
-
-      <a href="#">Forget your Password?</a>
-      <button class="btn-log" type="submit" >Login</button>
-
-    </form >
+    
+    <form>
+    <!-- STEP 3: OTP VERIFY -->
+    <div *ngIf="step === 3" class="otp-section">
+      <input type="text"
+             class="form-control"
+             placeholder="Enter OTP"
+             [(ngModel)]="otp"
+             [ngModelOptions]="{standalone: true}">
+    
+      <button class="btn-log" (click)="verifyOtp()">Verify OTP</button>
+    </div>
+    </form>
+    
 
   </div>
 
@@ -124,4 +143,11 @@
     </div>
   </div>
 
+</div>
+
+
+<!-- GLOBAL LOADING SPINNER -->
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner"></div>
+  <p>Please wait...</p>
 </div>

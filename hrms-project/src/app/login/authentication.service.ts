@@ -228,5 +228,18 @@ export class AuthenticationService {
     
 
 
+    validateCredentials(username: string, password: string) {
+      return this.http.post(`${this.apiUrl}/users/validate-credentials/`, { username, password });
+    }
+    
+    sendOtp(user_id: number) {
+      return this.http.post(`${this.apiUrl}/users/send-otp/`, { user_id });
+    }
+    
+    verifyOtp(user_id: number, otp: string) {
+      return this.http.post(`${this.apiUrl}/users/verify-otp/`, { user_id, otp });
+    }
+
+
 
 }
