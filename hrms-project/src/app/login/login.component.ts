@@ -88,13 +88,17 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   
   validateCredentials() {
+
+    // Basic field validation
     if (!this.username || !this.password) {
-      alert("Username & password required");
+      if (!this.username) alert('Username field is blank.');
+      if (!this.password) alert('Password field is blank.');
       return;
     }
-    this.isLoading = true;
-
   
+    this.isLoading = true;
+  
+    // Step 1 → Validate credentials API
     const body = {
       username: this.username,
       password: this.password
@@ -103,19 +107,86 @@ export class LoginComponent implements OnInit {
     this.http.post("http://127.0.0.1:8000/users/validate-credentials/", body)
       .subscribe(
         (res: any) => {
+  
+          // If credentials validated → get user_id
+          const validatedUserId = res.user_id;
+  
+          // Step 2 → Login to get token
+          this.authService.login(this.password, this.username).subscribe(
+            (response: any) => {
+  
+              const token = response.access;
+              this.authService.setAuthToken(token);
+  
+              const loggedUserId = response.user_id;
+  
+              // Step 3 → Fetch full user profile
+              this.authService.getUserData(loggedUserId).subscribe(
+                (userData: any) => {
+  
                   this.isLoading = false;
-
-          this.userId = res.user_id;
-          this.step = 2; // Go to OTP send step
+  
+                  const isSuperUser = userData.is_superuser;
+                  const isEssUser = userData.is_ess;
+                  const tenants = userData.allocated_tenants;
+  
+                  // **************************************************
+                  // 1️⃣ SUPERUSER LOGIN → DIRECT (NO OTP)
+                  // **************************************************
+                  if (isSuperUser === true) {
+                    alert("Admin login successful.");
+                    this.router.navigate(['/schema-selection']);
+                    return;
+                  }
+  
+                  // **************************************************
+                  // 2️⃣ ESS EMPLOYEE LOGIN → DIRECT (NO OTP)
+                  // **************************************************
+                  if (isEssUser === true) {
+  
+                    if (tenants.length > 0) {
+                      const tenant = tenants[0];
+                      const selectedSchema = tenant.schema_name;
+                      localStorage.setItem('selectedSchema', selectedSchema);
+  
+                      this.router.navigate(['/employee-dashboard']);
+                      return;
+                    }
+  
+                    alert("No tenant assigned for this employee.");
+                    return;
+                  }
+  
+                  // **************************************************
+                  // 3️⃣ NORMAL USER LOGIN → OTP REQUIRED
+                  // **************************************************
+                  // is_superuser = false AND is_ess = null/false
+                  this.userId = loggedUserId;
+                  this.step = 2;  // Move to OTP send step
+  
+                },
+                () => {
+                  this.isLoading = false;
+                  alert("Failed to load user details.");
+                }
+              );
+  
+            },
+            () => {
+              this.isLoading = false;
+              alert("Incorrect username or password.");
+            }
+          );
+  
         },
-        () => 
-          {
-            this.isLoading = false;
-
-            alert("Invalid username or password")
-          }
+        () => {
+          this.isLoading = false;
+          alert("Invalid username or password");
+        }
       );
   }
+  
+  
   
   sendOtp() {
       this.isLoading = true;
