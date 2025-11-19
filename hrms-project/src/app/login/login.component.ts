@@ -9,6 +9,7 @@ import { AuthenticationService } from './authentication.service';
 import { UserMasterComponent } from '../user-master/user-master.component';
 import { UserMasterService } from '../user-master/user-master.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -18,6 +19,11 @@ import { EmployeeService } from '../employee-master/employee.service';
   providers: [UserService]
 })
 export class LoginComponent implements OnInit {
+
+  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
+
+
+
   username: string = 'admin@zeo.com';
   hide: boolean = true;
   input: any;
@@ -103,9 +109,8 @@ export class LoginComponent implements OnInit {
       username: this.username,
       password: this.password
     };
-    localStorage.clear();
   
-    this.http.post("http://127.0.0.1:8000/users/validate-credentials/", body)
+    this.http.post(`${this.apiUrl}/users/validate-credentials/`, body)
       .subscribe(
         (res: any) => {
   
@@ -182,6 +187,7 @@ export class LoginComponent implements OnInit {
         },
         () => {
           this.isLoading = false;
+    
           alert("Invalid username or password");
         }
       );
@@ -197,7 +203,7 @@ export class LoginComponent implements OnInit {
   
     const body = { user_id: this.userId };
   
-    this.http.post("http://127.0.0.1:8000/users/send-otp/", body)
+    this.http.post(`${this.apiUrl}/users/send-otp/`, body)
       .subscribe(
         () => {
           this.isLoading = false;
@@ -227,7 +233,7 @@ export class LoginComponent implements OnInit {
       otp: this.otp
     };
   
-    this.http.post("http://127.0.0.1:8000/users/verify-otp/", body)
+    this.http.post(`${this.apiUrl}/users/verify-otp/`, body)
       .subscribe(
         (res: any) => {
           this.isLoading = false;
