@@ -18,7 +18,7 @@ import { EmployeeService } from '../employee-master/employee.service';
   providers: [UserService]
 })
 export class LoginComponent implements OnInit {
-  username: string = 'admin';
+  username: string = 'admin@zeo.com';
   hide: boolean = true;
   input: any;
   register: any;
@@ -81,7 +81,7 @@ export class LoginComponent implements OnInit {
   isEssUser: boolean = true; // Default value, adjust based on your logic
 
 
-  step = 1;   // Step 1 = login, Step 2 = send otp, Step 3 = verify otp
+  step: number = 1;  
   otp: string = '';
   userId: number | null = null;
 

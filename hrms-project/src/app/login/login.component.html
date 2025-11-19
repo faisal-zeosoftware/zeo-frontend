@@ -59,18 +59,24 @@
     
     
     
-    <!-- STEP 2: SEND OTP -->
-     <form>
-    <div *ngIf="step === 2" class="otp-section">
-      <p>User validated successfully.</p>
-      <button class="btn-log" (click)="sendOtp()">Send OTP</button>
-    </div>
-    </form>
-     
+  <!-- STEP 2: SEND OTP -->
+   <form *ngIf="step === 2">
+<div  class="otp-success-box">
+
+  <div class="success-icon">
+    <span class="checkmark"></span>
+  </div>
+
+  <p class="success-text">User validated successfully!</p>
+
+  <button class="btn-log" (click)="sendOtp()">Send OTP</button>
+
+</div>
+</form>
     
-    <form>
+    <form *ngIf="step === 3">
     <!-- STEP 3: OTP VERIFY -->
-    <div *ngIf="step === 3" class="otp-section">
+ 
       <input type="text"
              class="form-control"
              placeholder="Enter OTP"
@@ -78,12 +84,21 @@
              [ngModelOptions]="{standalone: true}">
     
       <button class="btn-log" (click)="verifyOtp()">Verify OTP</button>
-    </div>
+ 
     </form>
     
 
   </div>
 
+
+
+
+
+
+
+
+
+  
   <div class="form-container sign-in" *ngIf="!showCurrentDiv">
 
     <form (submit)="registerUser()">
