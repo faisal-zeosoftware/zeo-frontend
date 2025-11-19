@@ -103,6 +103,7 @@ export class LoginComponent implements OnInit {
       username: this.username,
       password: this.password
     };
+    localStorage.clear();
   
     this.http.post("http://127.0.0.1:8000/users/validate-credentials/", body)
       .subscribe(
