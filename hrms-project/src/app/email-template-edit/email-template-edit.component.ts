@@ -136,14 +136,46 @@ getTextContent(): void {
 
   
 
-  // Method to update the email template
-  updateTemplate(): void {
-    console.log('Updating template:', this.templateData);
-    // Call your update logic here (e.g., API call to save changes)
-    
-    // After successful update, close the modal
-    this.dialogRef.close(this.templateData);
+updateTemplate() {
+  if (!this.templateData.template_type || !this.templateData.subject) {
+    alert("Please fill all fields.");
+    return;
   }
+
+  // Get Schema
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    alert("Schema not found. Please select a schema again.");
+    return;
+  }
+
+  // Get Summernote content
+  const bodyContent = ($('#summernote') as any).summernote('code');
+
+  const payload = {
+    template_type: this.templateData.template_type,
+    subject: this.templateData.subject,
+    body: bodyContent
+  };
+
+  this.DepartmentServiceService.updateEmailTemplate(
+    selectedSchema,               // now guaranteed string
+    this.templateData.id,
+    payload
+  )
+  .subscribe(
+    (response: any) => {
+      alert("Template updated successfully!");
+      this.dialogRef.close(true);
+    },
+    (error) => {
+      console.error(error);
+      alert("Failed to update template.");
+    }
+  );
+}
+
 
   ClosePopup(){
     this.ref.close('Closed using function')

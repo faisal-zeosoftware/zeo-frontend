@@ -280,7 +280,10 @@ export class DepartmentServiceService {
   }
 
   
-
+  updateEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/email-template/${templateId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, data);
+  }
 
   getEmailTemplatesDoc(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/?schema=${selectedSchema}`;
