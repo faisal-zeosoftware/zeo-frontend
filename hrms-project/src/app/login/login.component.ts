@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     
 
-    this.loadEmployee();
+    this.loadUser();
     // user register  section
 
     this.register = {
@@ -169,6 +169,7 @@ export class LoginComponent implements OnInit {
                   // is_superuser = false AND is_ess = null/false
                   this.userId = loggedUserId;
                   this.step = 2;  // Move to OTP send step
+                  
   
                 },
                 () => {
@@ -276,7 +277,7 @@ export class LoginComponent implements OnInit {
   
   
 
-  loadEmployee(): void {
+  loadUser(): void {
     this.authService.getEmployee().subscribe(
       (result: any) => {
         this.users = result;

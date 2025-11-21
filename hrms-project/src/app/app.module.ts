@@ -211,6 +211,7 @@ import { ShiftOverrideComponent } from './shift-override/shift-override.componen
 import { DocumentRequestTypeComponent } from './document-request-type/document-request-type.component';
 import { DocumentFoldersComponent } from './document-folders/document-folders.component';
 import { DocumentFolderFilesComponent } from './document-folder-files/document-folder-files.component';
+import { GeneralRequestEscalationComponent } from './general-request-escalation/general-request-escalation.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -380,7 +381,8 @@ import { DocumentFolderFilesComponent } from './document-folder-files/document-f
      ShiftOverrideComponent,
      DocumentRequestTypeComponent,
      DocumentFoldersComponent,
-     DocumentFolderFilesComponent
+     DocumentFolderFilesComponent,
+     GeneralRequestEscalationComponent
      
      
 

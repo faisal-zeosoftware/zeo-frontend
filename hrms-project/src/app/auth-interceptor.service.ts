@@ -1,7 +1,7 @@
 // auth-interceptor.service.ts
 
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent ,  HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthenticationService } from './login/authentication.service';
@@ -25,21 +25,18 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     return next.handle(request).pipe(
-      catchError((error) => {
-        if (error.status === 403) {
-          // Handle unauthorized access here, e.g., re-login or redirect to login page
-          // console.error('Unauthorized access. Redirecting to login page...');
-          // alert('Unauthorized access. Redirecting to login page...');
-          // this.authService.handleSessionExpiration();
-          // You may want to clear the user's session or perform other actions
+      catchError((error: HttpErrorResponse) => {
+        // 🔥 Auto logout if token expired or invalid
+        if (
+          error.status === 401 &&
+          error.error?.code === 'token_not_valid'
+        ) {
+          this.authService.logout();
         }
-        // alert('Session expired. You will be redirected to the login page.');
-        // this.router.navigate(['/login']);
-        return throwError(error);
-      })
-      
-    );
 
+        return throwError(() => error);
+      })
+    );
 
     
   }

@@ -95,7 +95,6 @@ export class AuthenticationService {
 
 
 
-// 2 fact
   
   
   getEmployeeDetails(employeeId: number): Observable<any> {
@@ -189,6 +188,10 @@ export class AuthenticationService {
   }
   
   
+   getToken(): string | null {
+    return localStorage.getItem('access_token');
+  }
+
 
   setAuthToken(token: string): void {
     localStorage.setItem(this.tokenKey, token);

@@ -1,0 +1,365 @@
+<div class="container" >
+    <div class="comapny_section">
+
+
+        <div class="header_section">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <h1> General Request Escalation</h1>
+                </div>
+
+                <div class="col-md-3">
+                    
+                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+                </div>
+                <div class="col-md-5">
+                    <div class="button-group pull-right">
+                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                        </mat-icon></span> Create</button>
+                      <span *ngIf="!hasAddPermission"></span>
+
+                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
+                            <span class="header-btn-icon">
+                             <mat-icon>draw
+                        </mat-icon></span> Edit</button>
+                        <span *ngIf="hasEditPermission"></span>
+                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                            <span class="header-btn-icon">
+                                <mat-icon> delete
+                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+                           <span *ngIf="!hasDeletePermission"></span>
+                    </div>
+                </div>
+            </div>
+           
+           
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+
+            </div>
+            <div class="col-md-3">
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedGeneralReq()">Delete Selected </button>
+
+            </div>
+        </div>
+      
+
+      
+
+        <div *ngIf="iscreateLoanApp" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2> Create General Request Escalation</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+          
+              <form >
+
+                <div class="row">
+    
+                 
+              <div class="col-md-6">
+                <div class="custom-sel">
+                  <label>Select Request Type</label>
+                  <select class="form-control"
+                          id="request_type"
+                          required
+                          [(ngModel)]="request_type"
+                          [ngModelOptions]="{standalone: true}"
+                       
+                          (change)="onRequestTypeChange($event)">
+                    <option value="">Select</option>
+                    <option *ngFor="let req of RequestType" [value]="req.id">{{ req.name }}</option>
+                  </select>
+              
+                </div>
+              </div>
+<!-- LEVEL DROPDOWN -->
+<div class="col-md-6 " *ngIf="EscalationLevels.length > 0">
+    <div class="custom-sel">
+      <label>Select Level</label>
+      <select class="form-control"
+              [(ngModel)]="selectedLevel"
+              [ngModelOptions]="{standalone: true}">
+        <option value="">Select Level</option>
+        <option *ngFor="let lvl of EscalationLevels" [ngValue]="lvl">
+            Level {{ lvl.level }} - {{ lvl.approver_name }}
+          </option>
+      </select>
+    </div>
+  </div>
+  
+
+ <div class="col-md-6">
+                            <div class="custom-sel">
+                                <label>Select User</label>
+                                <select class="form-control" id="escalate_to" required [(ngModel)]="escalate_to"  [ngModelOptions]="{standalone: true}" >
+                                    <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+
+                    <div class="col-md-6">
+                        <label>Escalate after days</label>
+                        <input type="text" class="form-control" required [(ngModel)]="escalate_after_days" placeholder="Enter escalate after days"
+                             [ngModelOptions]="{standalone: true}" >
+                    </div>
+                    
+    
+                    <div class="col-md-6">
+                        <label>Escalate after hours</label>
+                        <input type="text" class="form-control" required [(ngModel)]="escalate_after_hours" placeholder="Enter escalate after hours"
+                             [ngModelOptions]="{standalone: true}" >
+                    </div>
+                    
+           
+              
+                    <div class="col-md-6">
+                        <label>Escalate after minutes</label>
+                        <input type="text" class="form-control" required [(ngModel)]="escalate_after_minutes" placeholder="Enter escalate after minutes"
+                             [ngModelOptions]="{standalone: true}" >
+                    </div>
+                    
+        
+    
+        
+            
+       
+    
+    
+
+        
+  
+    
+          
+       
+                </div>
+    
+    
+                <div class="row">
+                    <div class="col-md-8">
+        
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
+                     </div>
+        
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Save</button>  
+                     </div>
+    
+                     
+                </div>
+                
+           
+        </form>
+    
+    
+            
+            </div>
+          </div>
+
+
+             <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col-md-10">
+          <h2>Edit General Request Escalation</h2>
+        </div>
+        <div class="col-md-2">
+          <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+        </div>
+      </div>
+      <hr />
+  
+      <form >
+
+    
+        <div class="row">
+    
+                 
+            <div class="col-md-6">
+              <div class="custom-sel">
+                <label>Select Request Type</label>
+                <select class="form-control"
+                        id="request_type"
+                        required
+                        [(ngModel)]="request_type"
+                        [ngModelOptions]="{standalone: true}"
+                     
+                        (change)="onRequestTypeChange($event)">
+                  <option value="">Select</option>
+                  <option *ngFor="let req of RequestType" [value]="req.id">{{ req.name }}</option>
+                </select>
+            
+              </div>
+            </div>
+<!-- LEVEL DROPDOWN -->
+<div class="col-md-6 " *ngIf="EscalationLevels.length > 0">
+  <div class="custom-sel">
+    <label>Select Level</label>
+    <select class="form-control"
+            [(ngModel)]="selectedLevel"
+            [ngModelOptions]="{standalone: true}">
+      <option value="">Select Level</option>
+      <option *ngFor="let lvl of EscalationLevels" [ngValue]="lvl">
+          Level {{ lvl.level }} - {{ lvl.approver_name }}
+        </option>
+    </select>
+  </div>
+</div>
+
+
+<div class="col-md-6">
+                          <div class="custom-sel">
+                              <label>Select User</label>
+                              <select class="form-control" id="escalate_to" required [(ngModel)]="editAsset.escalate_to"  [ngModelOptions]="{standalone: true}" >
+                                  <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username }}</option>
+                              </select>
+                          </div>
+                      </div>
+                      
+
+                  <div class="col-md-6">
+                      <label>Escalate after days</label>
+                      <input type="text" class="form-control" required [(ngModel)]="editAsset.escalate_after_days" placeholder="Enter escalate after days"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+                  
+  
+                  <div class="col-md-6">
+                      <label>Escalate after hours</label>
+                      <input type="text" class="form-control" required [(ngModel)]="editAsset.escalate_after_hours" placeholder="Enter escalate after hours"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+                  
+         
+            
+                  <div class="col-md-6">
+                      <label>Escalate after minutes</label>
+                      <input type="text" class="form-control" required [(ngModel)]="editAsset.escalate_after_minutes" placeholder="Enter escalate after minutes"
+                           [ngModelOptions]="{standalone: true}" >
+                  </div>
+                  
+      
+  
+      
+          
+     
+  
+  
+
+      
+
+  
+        
+     
+              </div>
+
+        <div class="row">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="updateAssetType()"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        
+   
+</form>
+
+
+
+    </div>
+  </div>
+
+    
+
+
+
+
+
+
+
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+    <div style="overflow-x: auto; width: 100%;">
+    <table width="100%">
+    <thead class="thead-dark">
+      <tr>
+        <th>No</th>
+        <th>Request Type</th>
+        <th>Approval Level</th>
+        <th>Approver</th>
+        <th>Escalater Name</th>
+        <th>Escalate After Days</th>
+         <th>Escalate After Hour</th>
+                  <th>Escalate After Minitus</th>
+
+
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let docs of GeneralReq; let i = index">
+        <td >{{ i + 1 }}</td>
+        <td >{{ docs.request_type }}</td>
+        <td >{{ docs.level }}</td>
+
+        <td >{{ docs.approver_name }}</td>
+
+        <td >{{ docs.escalate_to_name }}</td>
+
+        <td >{{ docs.escalate_after_days }}</td>
+
+        <td >{{ docs.escalate_after_hours }}</td>
+
+        <td >{{ docs.escalate_after_minutes }}</td>
+
+       
+        <td data-label="Action" class="text-center">
+          <button
+            mat-fab
+            color="primary"
+            aria-label="Edit"
+            *ngIf="showEditBtn"
+            (click)="openEditModal(docs)"
+            style="transform: scale(0.7); margin-right: 6px;"
+          >
+            <mat-icon style="color: white;">draw</mat-icon>
+          </button>
+
+          <mat-checkbox
+            *ngIf="Delete"
+            [(ngModel)]="docs.selected"
+          ></mat-checkbox>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+</div>
+
+
+        </div>
+        </div>
+        

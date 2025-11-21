@@ -83,6 +83,16 @@ export class DepartmentServiceService {
     
   }
 
+  getEscalationLevels(selectedSchema: string, requestTypeId: number): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/escalation-rules/?request_type=${requestTypeId}&schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
+updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Observable<any> {
+  const apiUrl = `${this.apiUrl}/employee/api/escalation-rules/${levelId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, data);
+}
+
   getApprovalLEvelGen(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/request-approvals-levels/?schema=${selectedSchema}`;
   

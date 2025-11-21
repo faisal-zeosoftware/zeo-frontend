@@ -359,3 +359,8 @@ option { width: 200px; }
   }
 }
 
+
+
+table thead th {
+  white-space: nowrap !important;
+}
