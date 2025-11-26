@@ -38,7 +38,7 @@ export class WpsComponent {
 
   selectedFile!: File | null;
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -119,22 +119,23 @@ private employeeService: EmployeeService,
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
+
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_leave_type', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_wps', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_leave_type', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_wps', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_leave_type', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_wps', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_leave_type', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_wps', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     

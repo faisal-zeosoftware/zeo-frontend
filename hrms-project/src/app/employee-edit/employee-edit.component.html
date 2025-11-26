@@ -7,6 +7,8 @@
         <form (submit)="updateEmp"  enctype="multipart/form-data">
 
             <!-- EMPLOYEE PROFILE IMAGE SECTION -->
+
+            <div class="col-md-6">
                 <label>Profile Picture</label>
 <div class="profile-container">
 
@@ -35,6 +37,8 @@
         accept="image/*"
         (change)="onProfilePicSelected($event)"
     >
+
+</div>
 
 </div>
 

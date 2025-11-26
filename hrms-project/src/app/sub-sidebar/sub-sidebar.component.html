@@ -24,7 +24,7 @@
                  
                   <li routerLink="/main-sidebar/sub-sidebar/designation-master" *ngIf="hasViewPermissiondesg"><a ><mat-icon>peoples</mat-icon> Designation Master</a></li>
                   
-                  <li routerLink="/main-sidebar/sub-sidebar/catogary-master" *ngIf="hasViewPermission"><a ><mat-icon>peoples</mat-icon> Category Master</a></li>
+                  <li routerLink="/main-sidebar/sub-sidebar/catogary-master" *ngIf="hasViewPermissionCat"><a ><mat-icon>peoples</mat-icon> Category Master</a></li>
                  
                   <li routerLink="/main-sidebar/sub-sidebar/general-request" *ngIf="hasViewPermissionGenreq"><a ><mat-icon>peoples</mat-icon> General Request</a></li>
                  
@@ -33,12 +33,13 @@
                   <li routerLink="/main-sidebar/sub-sidebar/approvals" *ngIf="hasViewPermissionAprv"><a ><mat-icon>peoples</mat-icon> Approvals</a></li>
                   
                   <li routerLink="/main-sidebar/sub-sidebar/approval-level" *ngIf="hasViewPermissionAprvlvl"><a ><mat-icon>peoples</mat-icon> Approval Level</a></li>
-                  <li routerLink="/main-sidebar/sub-sidebar/general-request-escalation" *ngIf="hasViewPermissionAprvlvl"><a ><mat-icon>peoples</mat-icon>General Request Escalation</a></li>
+
+                  <li routerLink="/main-sidebar/sub-sidebar/general-request-escalation" *ngIf="hasViewPermissionGenReqEsc"><a ><mat-icon>peoples</mat-icon>General Request Escalation</a></li>
 
                  
                   <li routerLink="/main-sidebar/sub-sidebar/attendace-marking" *ngIf="hasViewPermissionAttd"><a ><mat-icon>peoples</mat-icon> Attendance Marking</a></li>
 
-                  <li routerLink="/main-sidebar/sub-sidebar/document-expired" *ngIf="hasViewNotification"><a ><mat-icon>peoples</mat-icon> Expired Documents</a></li>
+                  <li routerLink="/main-sidebar/sub-sidebar/document-expired" *ngIf="hasViewExpDocNotification"><a ><mat-icon>peoples</mat-icon> Expired Documents</a></li>
 
                   <li routerLink="/main-sidebar/sub-sidebar/employee-overtime" *ngIf="hasViewEmpOverTime"><a><mat-icon>peoples</mat-icon> Employee Overtime</a></li>
 

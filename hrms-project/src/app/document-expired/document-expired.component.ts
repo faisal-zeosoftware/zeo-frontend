@@ -19,7 +19,7 @@ export class DocumentExpiredComponent {
   Documents: any[] = [];
 
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -108,17 +108,17 @@ if (this.userId !== null) {
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_emp_documents', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_notification', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_emp_documents', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_notification', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_approvallevel', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_notification', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_emp_documents', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_notification', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 

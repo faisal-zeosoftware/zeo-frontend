@@ -43,7 +43,7 @@ export class ApprovalLevelComponent {
   userDetails: any;
   userDetailss: any;
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;

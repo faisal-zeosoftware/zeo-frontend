@@ -94,6 +94,8 @@
               <div *ngIf="!hasViewDocNotifySettings"></div>
             </mat-expansion-panel>
 
+            <!-- Calenders -->
+
             <mat-expansion-panel>
               <mat-expansion-panel-header class="mar-expantion-span">
                 <a mat-list-item>
@@ -135,7 +137,8 @@
 
             <!-- Keep rest of your expansion panels as in your code -->
             
-        
+        <!-- Report -->
+
         <mat-expansion-panel>
           <mat-expansion-panel-header class="mar-expantion-span">
             <a mat-list-item>
@@ -188,7 +191,11 @@
           </div>
           <div *ngIf="!hasViewPermissiongenreport"></div>
 
-          <div class="mat-expansion-panel-body">
+          <div
+           class="mat-expansion-panel-body"
+           *ngIf="hasViewPermissiondeptreport"
+           
+           >
             <a
               class="set_siding"
               mat-list-item
@@ -197,8 +204,12 @@
             </a>
             <!-- <p class="side_option">I'm visible because I am open</p> -->
           </div>
+         <div *ngIf="!hasViewPermissiondeptreport"></div>
 
-          <div class="mat-expansion-panel-body">
+          <div
+           class="mat-expansion-panel-body"
+          *ngIf="hasViewPermissiondesreport"
+           >
             <a
               class="set_siding"
               mat-list-item
@@ -207,6 +218,7 @@
             </a>
             <!-- <p class="side_option">I'm visible because I am open</p> -->
           </div>
+          <div *ngIf="!hasViewPermissiondesreport"></div>
 
           <div
             class="mat-expansion-panel-body"
@@ -223,7 +235,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionLeavereport"
+            *ngIf="hasViewPermissionLeaveAprreport"
           >
             <a
               class="set_siding"
@@ -236,7 +248,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionLeavereport"
+            *ngIf="hasViewPermissionLeaveBalancereport"
           >
             <a
               class="set_siding"
@@ -249,7 +261,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionLeavereport"
+            *ngIf="hasViewPermissionEmpAttendancereport"
           >
             <a
               class="set_siding"
@@ -262,7 +274,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionLeavereport"
+            *ngIf="hasViewPermissionAssetreport"
           >
             <a
               class="set_siding"
@@ -275,7 +287,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionLeavereport"
+            *ngIf="hasViewPermissionAssettransreport"
           >
             <a
               class="set_siding"
@@ -287,6 +299,8 @@
           </div>
         </mat-expansion-panel>
 
+        <!-- Customization -->
+
         <mat-expansion-panel>
           <mat-expansion-panel-header class="mar-expantion-span">
             <a mat-list-item>
@@ -297,7 +311,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionFormdes"
+            *ngIf="hasViewPermissionEmpForm"
           >
             <a
               class="set_siding"
@@ -309,7 +323,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionFormdes"
+            *ngIf="hasviewPermissionAssetForm"
           >
             <a
               class="set_siding"
@@ -320,17 +334,21 @@
           </div>
         </mat-expansion-panel>
 
+        <!-- Email Configuration -->
+
         <mat-expansion-panel>
           <mat-expansion-panel-header
             class="mar-expantion-span"
             routerLink="/main-sidebar/settings/email-configuration"
-            *ngIf="hasViewPermissionCmp"
+            *ngIf="hasViewPermissionConfig"
           >
             <a mat-list-item>
               <mat-icon>dashboard_customize </mat-icon>
               <span class="con_clr"> Email Configuration</span></a
             >
           </mat-expansion-panel-header>
+
+          <!-- Email Template -->
 
           <mat-expansion-panel-header class="mar-expantion-span">
             <a mat-list-item>
@@ -362,7 +380,7 @@
           <div
             class="mat-expansion-panel-body"
             routerLink="/main-sidebar/settings/doc-exp-emailtemplate"
-            *ngIf="hasViewPermissionLeaveEmtemp"
+            *ngIf="hasViewPermissionDocExpEmtemp"
           >
             <a class="set_siding" mat-list-item
               ><span class="side_option">Document Expired</span>
@@ -372,7 +390,7 @@
           <div
             class="mat-expansion-panel-body"
             routerLink="/main-sidebar/settings/document-request-email-template"
-            *ngIf="hasViewPermissionLeaveEmtemp"
+            *ngIf="hasViewPermissionDocReqEmtemp"
           >
             <a class="set_siding" mat-list-item
               ><span class="side_option">Document Request</span>
@@ -382,7 +400,7 @@
           <div
           class="mat-expansion-panel-body"
           routerLink="/main-sidebar/settings/advance-salary-emailtemplate"
-          *ngIf="hasViewPermissionLeaveEmtemp"
+          *ngIf="hasViewPermissionAdvSalEmtemp"
         >
           <a class="set_siding" mat-list-item
             ><span class="side_option">Advance Salary Request</span>
@@ -392,7 +410,7 @@
         <div
         class="mat-expansion-panel-body"
         routerLink="/main-sidebar/settings/loan-email-template"
-        *ngIf="hasViewPermissionLeaveEmtemp"
+        *ngIf="hasViewPermissionLoanReqEmtemp"
       > 
         <a class="set_siding" mat-list-item
           ><span class="side_option"> Loan Request</span>
@@ -404,7 +422,7 @@
           <mat-expansion-panel-header
             class="mar-expantion-span"
             routerLink="/main-sidebar/settings/company-policy"
-            *ngIf="hasViewPermissionCmp"
+            *ngIf="hasViewPermissionCmpnyPol"
           >
             <a mat-list-item>
               <mat-icon>dashboard_customize </mat-icon>
@@ -424,7 +442,7 @@
 
            <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionFormdes"
+            *ngIf="hasViewPermissionDocReqType"
           >
             <a
               class="set_siding"
@@ -436,7 +454,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionFormdes"
+            *ngIf="hasViewPermissionDocReqApr"
           >
             <a
               class="set_siding"
@@ -448,7 +466,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionFormdes"
+            *ngIf="hasViewPermissionDocAprlvl"
           >
             <a
               class="set_siding"
@@ -460,7 +478,7 @@
 
           <div
             class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionFormdes"
+            *ngIf="hasViewPermissionDocReq"
           >
             <a
               class="set_siding"

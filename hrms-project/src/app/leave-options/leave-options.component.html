@@ -15,17 +15,17 @@
         </div>
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul>
-                <li routerLink="/main-sidebar/leave-options/leave-approvals" *ngIf="hasViewPermission"><a ><mat-icon>peoples</mat-icon> Leave Approvals</a></li>
+                <li routerLink="/main-sidebar/leave-options/leave-approvals" *ngIf="hasViewPermissionLeaveApr"><a ><mat-icon>peoples</mat-icon> Leave Approvals</a></li>
                 <!-- <li routerLink="/main-sidebar/leave-options/leave-type" *ngIf="hasViewPermissiondesg"><a><mat-icon>peoples</mat-icon> Leave Type</a></li> -->
-                <li  routerLink="/main-sidebar/leave-options/leave-master" *ngIf="hasViewPermissiondept"><a ><mat-icon>peoples</mat-icon> Leave Master</a></li>
-                <li  routerLink="/main-sidebar/leave-options/leave-request" *ngIf="hasViewPermissionEmp"><a ><mat-icon>peoples</mat-icon> Leave Request</a></li>
+                <li  routerLink="/main-sidebar/leave-options/leave-master" *ngIf="hasViewPermissionLeaveMas"><a ><mat-icon>peoples</mat-icon> Leave Master</a></li>
+                <li  routerLink="/main-sidebar/leave-options/leave-request" *ngIf="hasViewPermissionEmpLeaveReq"><a ><mat-icon>peoples</mat-icon> Leave Request</a></li>
                 <li  routerLink="/main-sidebar/leave-options/compensatory-leave" *ngIf="hasViewPermissioncmpL"><a ><mat-icon>peoples</mat-icon> Compensatory Leave</a></li>
                 <li  routerLink="/main-sidebar/leave-options/leave-approval-level" *ngIf="hasViewPermissionLeaveAprvlvl"  ><a ><mat-icon>peoples</mat-icon> Leave Approval Level</a></li>
 
-                <li  routerLink="/main-sidebar/leave-options/leave-balance" *ngIf="hasViewPermissionLeaveAprvlvl"  ><a ><mat-icon>peoples</mat-icon> Leave Balance</a></li>
-                <li  routerLink="/main-sidebar/leave-options/immediate-rejection" *ngIf="hasViewPermissionLeaveAprvlvl"  ><a ><mat-icon>peoples</mat-icon> Leave Cancellation</a></li>
-                <li  routerLink="/main-sidebar/leave-options/leave-accruval" *ngIf="hasViewPermissionLeaveAprvlvl"  ><a ><mat-icon>peoples</mat-icon> Test Leave Accrual</a></li>
-                <li  routerLink="/main-sidebar/leave-options/employee-leave-rejoin" *ngIf="hasViewPermissionLeaveAprvlvl"  ><a ><mat-icon>peoples</mat-icon> Employee Leave Rejoin</a></li>
+                <li  routerLink="/main-sidebar/leave-options/leave-balance" *ngIf="hasViewPermissionLeaveBalance"  ><a ><mat-icon>peoples</mat-icon> Leave Balance</a></li>
+                <li  routerLink="/main-sidebar/leave-options/immediate-rejection" *ngIf="hasViewPermissionLeaveCancel"  ><a ><mat-icon>peoples</mat-icon> Leave Cancellation</a></li>
+                <li  routerLink="/main-sidebar/leave-options/leave-accruval" *ngIf="hasViewPermissionLeaveAccrual"  ><a ><mat-icon>peoples</mat-icon> Test Leave Accrual</a></li>
+                <li  routerLink="/main-sidebar/leave-options/employee-leave-rejoin" *ngIf="hasViewPermissionLeaveRejoin"  ><a ><mat-icon>peoples</mat-icon> Employee Leave Rejoin</a></li>
 
                 <mat-nav-list>
    

@@ -34,14 +34,15 @@ export class SubSidebarComponent {
   user_permissions: string[] = [];
   hasViewPermissionEmp: boolean = false;
   hasViewPermissiondesg: boolean = false;
-  hasViewPermission: boolean =false;
+  hasViewPermissionCat: boolean =false;
   hasViewPermissiondept: boolean = false;
   hasViewPermissionGenreq: boolean = false;
   hasViewPermissionReqType: boolean = false;
   hasViewPermissionAprv: boolean = false;
   hasViewPermissionAprvlvl: boolean = false;
+  hasViewPermissionGenReqEsc: boolean = false;
   hasViewPermissionAttd: boolean = false;
-  hasViewNotification: boolean = false;
+  hasViewExpDocNotification: boolean = false;
   hasViewEmpOverTime: boolean = false;
 
   hasViewApprovalList: boolean = false;
@@ -99,7 +100,7 @@ if (this.userId !== null) {
       if (isSuperuser) {
         console.log('User is superuser or ESS user');
         // Grant all permissions
-        this.hasViewPermission = true;
+        this.hasViewPermissionCat = true;
         this.hasViewPermissionEmp = true;
         this.hasViewPermissiondesg = true;
         this.hasViewPermissiondept = true;
@@ -107,8 +108,9 @@ if (this.userId !== null) {
         this.hasViewPermissionReqType = true;
         this.hasViewPermissionAprv = true;
         this.hasViewPermissionAprvlvl = true;
+        this.hasViewPermissionGenReqEsc = true;
         this.hasViewPermissionAttd = true;
-        this.hasViewNotification = true;
+        this.hasViewExpDocNotification = true;
         this.hasViewEmpOverTime = true;
         
         this.hasViewApprovalList = true;
@@ -138,7 +140,7 @@ if (this.userId !== null) {
               if (firstItem.is_superuser) {
                 console.log('User is superuser according to permissions API');
                 // Grant all permissions
-                this.hasViewPermission = true;
+                this.hasViewPermissionCat = true;
                 this.hasViewPermissionEmp = true;
                 this.hasViewPermissiondesg = true;
                 this.hasViewPermissiondept = true;
@@ -146,8 +148,9 @@ if (this.userId !== null) {
                 this.hasViewPermissionReqType = true;
                 this.hasViewPermissionAprv = true;
                 this.hasViewPermissionAprvlvl = true;
+                this.hasViewPermissionGenReqEsc = true;
                 this.hasViewPermissionAttd = true;
-                this.hasViewNotification = true;
+                this.hasViewExpDocNotification = true;
                 this.hasViewEmpOverTime = true;
 
                 this.hasViewApprovalList = true;
@@ -164,17 +167,18 @@ if (this.userId !== null) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
 
-                this.hasViewPermission = this.checkGroupPermission('view_ctgry_master', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermission);
-    
-                     this.hasViewPermissiondesg = this.checkGroupPermission('view_desgntn_master', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermissiondesg);
-                        
-                     this.hasViewPermissiondept = this.checkGroupPermission('view_dept_master', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermissiondept);
-      
                      this.hasViewPermissionEmp = this.checkGroupPermission('view_emp_master', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionEmp);
+
+                     this.hasViewPermissiondept = this.checkGroupPermission('view_dept_master', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissiondept);
+
+                     this.hasViewPermissiondesg = this.checkGroupPermission('view_desgntn_master', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissiondesg);
+
+                     this.hasViewPermissionCat = this.checkGroupPermission('view_ctgry_master', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionCat); 
+
 
                      
                      this.hasViewPermissionGenreq = this.checkGroupPermission('view_generalrequest', groupPermissions);
@@ -191,30 +195,31 @@ if (this.userId !== null) {
 
                      this.hasViewPermissionAttd = this.checkGroupPermission('view_attendance', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionAttd);
-
                      
-                    this.hasViewNotification = this.checkGroupPermission('view_notification', groupPermissions);
-                    console.log('Has view permission:', this.hasViewNotification);
+                     this.hasViewExpDocNotification = this.checkGroupPermission('view_notification', groupPermissions);
+                     console.log('Has view permission:', this.hasViewExpDocNotification);
+
+                     this.hasViewEmpOverTime = this.checkGroupPermission('view_employeeovertime', groupPermissions);
+                     console.log('Has view permission:', this.hasViewEmpOverTime);
 
 
+                     this.hasViewApprovalList = this.checkGroupPermission('view_resignationapproval', groupPermissions);
+                     console.log('Has view permission:', this.hasViewApprovalList);
 
-                    this.hasViewApprovalList = this.checkGroupPermission('view_resignationapproval', groupPermissions);
-                    console.log('Has view permission:', this.hasViewApprovalList);
-
-                     this.hasViewResignationApprovedList = this.checkGroupPermission('view_resignationapproval', groupPermissions);
-                    console.log('Has view permission:', this.hasViewResignationApprovedList);
+                     this.hasViewResignationApprovedList = this.checkGroupPermission('view_approved_resignations', groupPermissions);
+                     console.log('Has view permission:', this.hasViewResignationApprovedList);
 
                      this.hasViewEndOfService = this.checkGroupPermission('view_endofservice', groupPermissions);
-                    console.log('Has view permission:', this.hasViewEndOfService);
+                     console.log('Has view permission:', this.hasViewEndOfService);
 
                      this.hasViewResignationRequest = this.checkGroupPermission('view_employeeresignation', groupPermissions);
-                    console.log('Has view permission:', this.hasViewResignationRequest);
+                     console.log('Has view permission:', this.hasViewResignationRequest);
 
                      this.hasViewResignationApprovalLevel = this.checkGroupPermission('view_resignationapprovallevel', groupPermissions);
-                    console.log('Has view permission:', this.hasViewResignationApprovalLevel);
+                     console.log('Has view permission:', this.hasViewResignationApprovalLevel);
 
                      this.hasViewGratuity = this.checkGroupPermission('view_gratuitytable', groupPermissions);
-                    console.log('Has view permission:', this.hasViewGratuity);
+                     console.log('Has view permission:', this.hasViewGratuity);
 
 
               } else {

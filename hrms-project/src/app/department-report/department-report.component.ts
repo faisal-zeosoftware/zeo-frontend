@@ -22,10 +22,10 @@ export class DepartmentReportComponent  implements OnInit  {
   displayedColumns: string[] = ['Department Name', 'Department Code', 'Description', 'Active'];
   cardOpen = false;
 
-  hasAddPermission: boolean = false;
-hasDeletePermission: boolean = false;
+// hasAddPermission: boolean = false;
+// hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
-hasEditPermission: boolean = false;
+// hasEditPermission: boolean = false;
 hasExportPermission: boolean = false;
 
 
@@ -80,10 +80,10 @@ private sessionService: SessionService,
             console.log('User is superuser or ESS user');
             // Grant all permissions
             this.hasViewPermission = true;
-            this.hasAddPermission = true;
-            this.hasDeletePermission = true;
-            this.hasEditPermission = true;
-        this.hasExportPermission=true;
+            // this.hasAddPermission = true;
+            // this.hasDeletePermission = true;
+            // this.hasEditPermission = true;
+             this.hasExportPermission=true;
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
     
@@ -106,29 +106,29 @@ private sessionService: SessionService,
                     console.log('User is superuser according to permissions API');
                     // Grant all permissions
                     this.hasViewPermission = true;
-                    this.hasAddPermission = true;
-                    this.hasDeletePermission = true;
-                    this.hasEditPermission = true;
+                    // this.hasAddPermission = true;
+                    // this.hasDeletePermission = true;
+                    // this.hasEditPermission = true;
                     this.hasExportPermission=true;
 
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
     
-                      this.hasViewPermission = this.checkGroupPermission('view_report', groupPermissions);
+                      this.hasViewPermission = this.checkGroupPermission('view_dept_report', groupPermissions);
                  console.log('Has view permission:', this.hasViewPermission);
             
-                   this.hasAddPermission = this.checkGroupPermission('add_report', groupPermissions);
-                  console.log('Has add permission:', this.hasAddPermission);
+              //      this.hasAddPermission = this.checkGroupPermission('add_report', groupPermissions);
+              //     console.log('Has add permission:', this.hasAddPermission);
             
-                 this.hasDeletePermission = this.checkGroupPermission('delete_report', groupPermissions);
-              console.log('Has delete permission:', this.hasDeletePermission);
+              //    this.hasDeletePermission = this.checkGroupPermission('delete_report', groupPermissions);
+              // console.log('Has delete permission:', this.hasDeletePermission);
             
-                  this.hasEditPermission = this.checkGroupPermission('change_report', groupPermissions);
-                 console.log('Has edit permission:', this.hasEditPermission);
+              //     this.hasEditPermission = this.checkGroupPermission('change_report', groupPermissions);
+              //    console.log('Has edit permission:', this.hasEditPermission);
 
                  
-                 this.hasExportPermission = this.checkGroupPermission('export_report', groupPermissions);
+                 this.hasExportPermission = this.checkGroupPermission('export_dept_report', groupPermissions);
                  console.log('Has export permission:', this.hasExportPermission);
                   } else {
                     console.error('No groups found in data or groups array is empty.', firstItem);

@@ -22,7 +22,7 @@ export class SalaryOptionsComponent {
   hasViewPermissionApprovalList: boolean = false;
   hasViewPermissionAdvanceSalaryRequest: boolean = false;
   hasViewPermissionAdvanceSalaryApprovalLevel: boolean = false;
-  // hasViewPermissionWPS: boolean = false;
+  hasViewPermissionWPS: boolean = false;
 
 
 
@@ -88,7 +88,7 @@ export class SalaryOptionsComponent {
           this.hasViewPermissionApprovalList = true;
           this.hasViewPermissionAdvanceSalaryRequest = true;
           this.hasViewPermissionAdvanceSalaryApprovalLevel = true;
-          // this.hasViewPermissionWPS = true;
+          this.hasViewPermissionWPS = true;
        
   
   
@@ -121,7 +121,7 @@ export class SalaryOptionsComponent {
                    this.hasViewPermissionApprovalList = true;
                    this.hasViewPermissionAdvanceSalaryRequest = true;
                    this.hasViewPermissionAdvanceSalaryApprovalLevel = true;
-                  //  this.hasViewPermissionWPS = true;
+                   this.hasViewPermissionWPS = true;
                  
   
   
@@ -153,8 +153,8 @@ export class SalaryOptionsComponent {
                         this.hasViewPermissionAdvanceSalaryApprovalLevel = this.checkGroupPermission('view_advancecommonworkflow', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryApprovalLevel);
 
-                      //   this.hasViewPermissionWPS = this.checkGroupPermission('view_wps', groupPermissions);
-                      //  console.log('Has view permission:', this.hasViewPermissionWPS);
+                        this.hasViewPermissionWPS = this.checkGroupPermission('view_wps', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionWPS);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

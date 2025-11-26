@@ -166,17 +166,17 @@ if (this.userId !== null) {
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_leave_entitlement', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_salarycomponent', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_leave_entitlement', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_salarycomponent', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_leave_entitlement', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_salarycomponent', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_leave_entitlement', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_salarycomponent', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 

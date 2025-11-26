@@ -53,7 +53,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsDnMaster: any[] = [];
   GrouppermissionsCpMaster: any[] = [];
   // GrouppermissionsEmtMaster: any[] = [];
-  GrouppermissionsFormdesMaster: any[] = [];
+  // GrouppermissionsFormdesMaster: any[] = [];
   GrouppermissionsConfigMaster: any[] = [];
   GrouppermissionsAnnounceMaster: any[] = [];
   GrouppermissionsNotify: any[] = [];
@@ -73,6 +73,12 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsAttendReport: any[] =[];
   GrouppermissionsAssetReport: any[] =[];
   GrouppermissionsAssetTransReport: any[] =[];
+
+
+  // permissions stored arrays for Customization
+
+  GrouppermissionsEmpform: any[] = [];
+  GrouppermissionsAssetform: any[] = [];
 
 
 
@@ -98,6 +104,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsLeaveaprvlvl:any[] =[];
   // GrouppermissionsLeaveaprvlvltemp:any[] =[];
   GrouppermissionsLeaveBalance:any[] =[];
+  GrouppermissionsLeaveCancel:any[] =[];
   GrouppermissionsLeaveAccrual:any[] =[];
   GrouppermissionsLeaveRejoin:any[] =[];
 
@@ -242,6 +249,15 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   AssetTransReportInderminate = false;
 
 
+  
+  //selected Customization checkboxes
+
+  EmpformInderminate= false;
+  AssetformInderminate = false;
+
+
+
+
   //selected calendars checkboxes.
 
   calenderdetailInderminate= false;
@@ -266,6 +282,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   LeaveaprvlvlInderminate=false;
   // LeaveaprvlvltempInderminate=false;
   LeaveBalanceInderminate=false;
+  LaaveCancelInderminate=false;
   LeaveAccrualInderminate=false;
   LeaveRejoinInderminate=false;
 
@@ -389,7 +406,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   CpMasterChecked:boolean = false;
   // EmtMasterChecked:boolean = false;
 
-  FormdesMasterChecked:boolean = false;
+  // FormdesMasterChecked:boolean = false;
   ConfigMasterChecked:boolean = false;
   AnnounceMasterChecked:boolean = false;
   NotefyChecked:boolean = false;
@@ -412,6 +429,11 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   AssetReportChecked:boolean = false;
   AssetTransReportChecked:boolean = false;
 
+  //Customization checkbox checked values
+
+  EmpformChecked:boolean = false;
+  AssetformChecked:boolean = false;
+
   
   
   //Calendars checkbox checked values
@@ -433,6 +455,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     LeaveaprvlvlChecked:boolean= false;
     // LeaveaprvlvltempChecked:boolean= false;
     LeaveBalanceChecked:boolean= false;
+    LeaveCancelChecked:boolean= false;
     LeaveAccrualChecked:boolean= false;
     LeaveRejoinChecked:boolean= false;
 
@@ -519,6 +542,8 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   selectAllChecked: boolean = false;
   settingsChecked: boolean = false;
   reportchecked:boolean = false;
+ customizationchecked:boolean = false;
+
   calenderchecked:boolean = false;
   Leavechecked:boolean = false;
   Payrollchecked:boolean = false;
@@ -537,6 +562,8 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   expandedMasters: boolean = true;
   expandedMastersvalue: boolean = true;
   reportMastersvalue:boolean =true;
+  CustomizationMastersvalue:boolean =true;
+
   calenderMastersvalue:boolean =true;
   LeaveMastersvalue:boolean =true;
   PayrollMastersvalue:boolean =true;
@@ -602,153 +629,6 @@ isEmployeeManagementMasterChecked(): boolean {
       this.RegAprlvlChecked &&
       this.GratuityChecked
 }
-
-isSettingsMasterChecked(): boolean {
-    return this.branchMasterChecked &&
-      this.userMasterChecked &&
-      this.usergroupingMasterChecked &&
-      this.assignpermissionMasterChecked &&
-      this.stationMasterChecked &&
-      this.documenttypeMasterChecked &&
-      // this.expireddocumnetsMasterChecked &&
-      this.locationMasterChecked &&
-      this.DnMasterChecked &&
-      this.CpMasterChecked &&
-      // this.EmtMasterChecked &&
-      this.FormdesMasterChecked &&
-      this.ConfigMasterChecked &&
-      this.AnnounceMasterChecked &&
-      this.NotefyChecked;
-}
-
-isReportManagementMasterChecked(): boolean {
-    return this.emportReportChecked &&
-      this.documentReportChecked &&
-      this.generelReportChecked  &&
-      this.LeaveReportChecked &&
-      this.DeptReportChecked &&
-      this.DesReportChecked &&
-      this.LeaveAprRepChecked &&
-      this.LeaveBalReportChecked &&
-      this.AttendReportChecked &&
-      this.AssetReportChecked &&
-      this.AssetTransReportChecked
-      
-}
-
-isCalenderMangementMasterChecked():boolean{
-    return this.addweekChecked &&
-          this.assignweekChecked &&
-          this.addholidayChecked &&
-          this.assignholidayChecked
-          // this.ShiftChecked 
-
-}
-
-
-isLeaveMangementMasterChecked():boolean{
-    return this.LeaveaprvChecked &&
-    this.LeavetypeChecked &&
-    this.LeavemasterChecked &&
-    this.LeavereqChecked &&
-    this.LeavecomChecked &&
-    this.LeaveaprvlvlChecked &&
-    // this.LeaveaprvlvltempChecked
-    this.LeaveBalanceChecked &&
-    this.LeaveAccrualChecked &&
-    this.LeaveRejoinChecked;
-       
-}
-
-// Payroll ManagementMaster Checked 
-
-
-isPayrollManagementMasterChecked():boolean{
-  return this.PayrollrunChecked &&
-  this.SalarycomponentChecked &&
-  this.PayslipAprvChecked &&
-  this.PayrollaprlvlChecked &&
-  this.AdvanceSalaryAprvlstChecked &&
-  this.AdvanceSalaryReqChecked &&
-  this.AdvanceSalaryAprlvlChecked &&
-  this.WpsChecked
-}
-
-// Loan ManagementMaster Checked 
-
-isLoanManagementMasterChecked():boolean{
-  return this.LoanApprovalChecked &&
-  this.LoanTypeChecked &&
-  this.LoanAprvlvlChecked &&
-  this.LoanAppChecked &&
-  this.LoanRepayChecked;
-
-}
-
-// Asset ManagementMaster Checked 
-
-
-isAssetManagementMasterChecked():boolean{
-  return this.AssetTypeChecked &&
-  this.AssetmasterChecked &&
-  this.AssetAlonChecked &&
-  this.AssetReqChecked
- 
-
-}
-
-// Project ManagementMaster Checked 
-
-isProjectManagementMasterChecked():boolean{
-   return this.ProjectsChecked &&
-   this.ProjectStagesChecked &&
-   this.ProjectTaskChecked &&
-   this.ProjectTimeChecked
-}
-
-// AirTicket ManagementMaster Checked 
-
-isAirTicketManagementMasterChecked():boolean{
-   return this.AirTicketPolChecked &&
-   this.AirTicketAlonChecked &&
-   this.AirTicketReqChecked &&
-   this.AirTicketRuleChecked
-   
-}
-
-//  Document ManageMaster Checked
-
-    isDocumentMangementMasterChecked():boolean{
-    return this.DocumentAprlvlChecked &&
-    this.DocumentAprChecked &&
-    this.DocumentReqChecked &&
-    this.DocumentTypeChecked;
-
-       
-  }
-
-//  Email Template ManageMaster Checked
-
-  isEmailTemplateMangementMasterChecked():boolean{
-    return this.GeneralReqTempChecked &&
-    this.LeaveEmTempChecked &&
-    this.DocExpTempChecked &&
-    this.DocReqTempChecked &&
-    this.AdvSalReqTempChecked &&
-    this.LoanReqTempChecked;   
-  }
-
-  //  Shift ManageMaster Checked
-
-
-    isShiftManagementMasterChecked():boolean{
-    return this.ShiftsChecked &&
-     this.ShiftPatternChecked &&
-     this.ShiftEmployeeChecked &&
-     this.ShiftOverRideChecked;
- 
-  }
-
 
 
   
@@ -872,6 +752,25 @@ isAirTicketManagementMasterChecked():boolean{
     );
     return selectedGratuityPermissions.length > 0 && selectedGratuityPermissions.length < this.GrouppermissionsGratuity.length;
   }
+
+
+  isSettingsMasterChecked(): boolean {
+    return this.branchMasterChecked &&
+      this.userMasterChecked &&
+      this.usergroupingMasterChecked &&
+      this.assignpermissionMasterChecked &&
+      this.stationMasterChecked &&
+      this.documenttypeMasterChecked &&
+      // this.expireddocumnetsMasterChecked &&
+      this.locationMasterChecked &&
+      this.DnMasterChecked &&
+      this.CpMasterChecked &&
+      // this.EmtMasterChecked &&
+      // this.FormdesMasterChecked &&
+      this.ConfigMasterChecked &&
+      this.AnnounceMasterChecked &&
+      this.NotefyChecked;
+}
   
    isBranchMasterIndeterminate(): boolean {
     const selectedBranchPermissions = this.selectedPermissions.filter(permission =>
@@ -915,13 +814,6 @@ isAirTicketManagementMasterChecked():boolean{
     return selecteddocumentPermissions.length > 0 && selecteddocumentPermissions.length < this.Grouppermissionsdocumentype.length;
   }
 
-  //  isExpireddocumentsIndeterminate(): boolean {
-  //   const selectedexpiredPermissions = this.selectedPermissions.filter(permission =>
-  //     this.Grouppermissionsexpirydocuments.map(p => p.id).includes(permission)
-  //   );
-  //   return selectedexpiredPermissions.length > 0 && selectedexpiredPermissions.length < this.Grouppermissionsexpirydocuments.length;
-  // }
-
    isloactionmasterIndeterminate(): boolean {
     const selectedlocationPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissionslocationMaster.map(p => p.id).includes(permission)
@@ -941,20 +833,6 @@ isAirTicketManagementMasterChecked():boolean{
       this.GrouppermissionsCpMaster.map(p => p.id).includes(permission)
     );
     return selectedlocationPermissions.length > 0 && selectedlocationPermissions.length < this.GrouppermissionsCpMaster.length;
-  }
-
-  // isEmtmasterIndeterminate(): boolean {
-  //   const selectedlocationPermissions = this.selectedPermissions.filter(permission =>
-  //     this.GrouppermissionsEmtMaster.map(p => p.id).includes(permission)
-  //   );
-  //   return selectedlocationPermissions.length > 0 && selectedlocationPermissions.length < this.GrouppermissionsEmtMaster.length;
-  // }
-
-  isFormdesmasterIndeterminate(): boolean {
-    const selectedlocationPermissions = this.selectedPermissions.filter(permission =>
-      this.GrouppermissionsFormdesMaster.map(p => p.id).includes(permission)
-    );
-    return selectedlocationPermissions.length > 0 && selectedlocationPermissions.length < this.GrouppermissionsFormdesMaster.length;
   }
 
 isConfigmasterIndeterminate(): boolean {
@@ -977,6 +855,21 @@ isNotifyIndeterminate(): boolean {
     );
     return selectedlocationPermissions.length > 0 && selectedlocationPermissions.length < this.GrouppermissionsNotify.length;
   }
+
+  isReportManagementMasterChecked(): boolean {
+    return this.emportReportChecked &&
+      this.documentReportChecked &&
+      this.generelReportChecked  &&
+      this.LeaveReportChecked &&
+      this.DeptReportChecked &&
+      this.DesReportChecked &&
+      this.LeaveAprRepChecked &&
+      this.LeaveBalReportChecked &&
+      this.AttendReportChecked &&
+      this.AssetReportChecked &&
+      this.AssetTransReportChecked
+      
+}
   
 isEmployeeReportIndeterminate(): boolean {
     const selectedempreportPermissions = this.selectedPermissions.filter(permission =>
@@ -1059,6 +952,37 @@ isDesReportIndeterminate(): boolean {
     return selectedDesReportPermissions.length > 0 && selectedDesReportPermissions.length < this.GrouppermissiionsDesReport.length;
 }
 
+isCustomizationManagementMasterChecked(): boolean {
+    return this.EmpformChecked &&
+    this.AssetformChecked
+      
+}
+
+isEmpformIndeterminate(): boolean {
+    const selectedEmpformPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsEmpform.map(p => p.id).includes(permission)
+    );
+    return selectedEmpformPermissions.length > 0 && selectedEmpformPermissions.length < this.GrouppermissionsEmpform.length;
+}
+
+isAssetformIndeterminate(): boolean {
+    const selectedAssetformPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsAssetform.map(p => p.id).includes(permission)
+    );
+    return selectedAssetformPermissions.length > 0 && selectedAssetformPermissions.length < this.GrouppermissionsAssetform.length;
+}
+
+
+isCalenderMangementMasterChecked():boolean{
+    return this.addweekChecked &&
+          this.assignweekChecked &&
+          this.addholidayChecked &&
+          this.assignholidayChecked
+
+
+}
+
+
 isAddWeekIndeterminate(): boolean {
     const selectedaddweekPermissions = this.selectedPermissions.filter(permission =>
       this.Grouppermissionsaddweek.map(p => p.id).includes(permission)
@@ -1086,14 +1010,23 @@ isAssignHolidayIndeterminate(): boolean {
     );
     return selectedassignholidayPermissions.length > 0 && selectedassignholidayPermissions.length < this.Grouppermissionsassisgnholiday.length;
 }
+
+isLeaveMangementMasterChecked():boolean{
+    return this.LeaveaprvChecked &&
+    this.LeavetypeChecked &&
+    this.LeavemasterChecked &&
+    this.LeavereqChecked &&
+    this.LeavecomChecked &&
+    this.LeaveaprvlvlChecked &&
+    this.LeaveBalanceChecked &&
+    this.LeaveCancelChecked &&
+    this.LeaveAccrualChecked &&
+    this.LeaveRejoinChecked;
+       
+}
+
  
-// isShiftIndeterminate(): boolean {
-//     const selectedShiftPermissions = this.selectedPermissions.filter(permission =>
-//       this.GrouppermissionsShift.map(p => p.id).includes(permission)
-//     );
-//     return selectedShiftPermissions.length > 0 && selectedShiftPermissions.length < this.GrouppermissionsShift.length;
-// }
-  
+
 isLeaveaprvIndeterminate(): boolean {
     const selectedLeaveaprvPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissionsLeaveaprv.map(p => p.id).includes(permission)
@@ -1136,12 +1069,6 @@ isLeaveaprvlvlIndeterminate(): boolean {
     return selectedLeaveaprvlvlPermissions.length > 0 && selectedLeaveaprvlvlPermissions.length < this.GrouppermissionsLeaveaprvlvl.length;
 }
 
-// isLeaveaprvlvltempIndeterminate(): boolean {
-//     const selectedLeaveaprvlvltempPermissions = this.selectedPermissions.filter(permission =>
-//       this.GrouppermissionsLeaveaprvlvltemp.map(p => p.id).includes(permission)
-//     );
-//     return selectedLeaveaprvlvltempPermissions.length > 0 && selectedLeaveaprvlvltempPermissions.length < this.GrouppermissionsLeaveaprvlvltemp.length;
-// }
 
 isLeaveBalanceIndeterminate(): boolean {
     const selectedLeaveBalancePermissions = this.selectedPermissions.filter(permission =>
@@ -1149,6 +1076,15 @@ isLeaveBalanceIndeterminate(): boolean {
     );
     return selectedLeaveBalancePermissions.length > 0 && selectedLeaveBalancePermissions.length < this.GrouppermissionsLeaveBalance.length;
 }
+
+
+isLeaveCancelIndeterminate(): boolean {
+    const selectedLeaveCancelPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsLeaveCancel.map(p => p.id).includes(permission)
+    );
+    return selectedLeaveCancelPermissions.length > 0 && selectedLeaveCancelPermissions.length < this.GrouppermissionsLeaveCancel.length;
+}
+
 
 isLeaveAccrualIndeterminate(): boolean {
     const selectedLeaveAccrualPermissions = this.selectedPermissions.filter(permission =>
@@ -1163,6 +1099,23 @@ isLeaveRejoinIndeterminate(): boolean {
     );
     return selectedLeaveRejoinPermissions.length > 0 && selectedLeaveRejoinPermissions.length < this.GrouppermissionsLeaveRejoin.length;
 }
+
+// Payroll ManagementMaster Checked 
+
+
+isPayrollManagementMasterChecked():boolean{
+  return this.PayrollrunChecked &&
+  this.SalarycomponentChecked &&
+  this.PayslipAprvChecked &&
+  this.PayrollaprlvlChecked &&
+  this.AdvanceSalaryAprvlstChecked &&
+  this.AdvanceSalaryReqChecked &&
+  this.AdvanceSalaryAprlvlChecked &&
+  this.WpsChecked
+}
+
+
+
 
 
 
@@ -1225,6 +1178,17 @@ isWpsIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsWps.length;
 }
 
+// Loan ManagementMaster Checked 
+
+isLoanManagementMasterChecked():boolean{
+  return this.LoanApprovalChecked &&
+  this.LoanTypeChecked &&
+  this.LoanAprvlvlChecked &&
+  this.LoanAppChecked &&
+  this.LoanRepayChecked;
+
+}
+
 
 isLoanApprovalIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
@@ -1261,6 +1225,18 @@ isLoanAppIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsLoanApp.length;
 }
 
+// Asset ManagementMaster Checked 
+
+
+isAssetManagementMasterChecked():boolean{
+  return this.AssetTypeChecked &&
+  this.AssetmasterChecked &&
+  this.AssetAlonChecked &&
+  this.AssetReqChecked
+
+}
+
+
 isAssetTypeIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
     this.GrouppermissionsAssetType.map(p => p.id).includes(id)
@@ -1289,6 +1265,16 @@ isAssetReqIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsAssetReq.length;
 }
 
+// Project ManagementMaster Checked 
+
+isProjectManagementMasterChecked():boolean{
+   return this.ProjectsChecked &&
+   this.ProjectStagesChecked &&
+   this.ProjectTaskChecked &&
+   this.ProjectTimeChecked
+}
+
+
 isProjectsIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
     this.GrouppermissionsProjects.map(p => p.id).includes(id)
@@ -1316,6 +1302,18 @@ isProjectTimeIndeterminate(): boolean {
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsProjectTime.length;
 }
+
+// AirTicket ManagementMaster Checked 
+
+isAirTicketManagementMasterChecked():boolean{
+   return this.AirTicketPolChecked &&
+   this.AirTicketAlonChecked &&
+   this.AirTicketReqChecked &&
+   this.AirTicketRuleChecked
+   
+}
+
+
 
 isAirTicketPolIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
@@ -1346,6 +1344,17 @@ isAirTicketRuleIndeterminate(): boolean {
 }
 
 
+//  Document ManageMaster Checked
+
+    isDocumentMangementMasterChecked():boolean{
+    return this.DocumentAprlvlChecked &&
+    this.DocumentAprChecked &&
+    this.DocumentReqChecked &&
+    this.DocumentTypeChecked;
+
+       
+  }
+
 
   isDocumentAprlvlIndeterminate(): boolean {
     const selectedDocumentAprlvlPermissions = this.selectedPermissions.filter(permission =>
@@ -1373,6 +1382,17 @@ isAirTicketRuleIndeterminate(): boolean {
       this.GrouppermissionsDocumentType.map(p => p.id).includes(permission)
     );
     return selectedDocumentTypePermissions.length > 0 && selectedDocumentTypePermissions.length < this.GrouppermissionsDocumentType.length;
+  }
+
+  //  Email Template ManageMaster Checked
+
+  isEmailTemplateMangementMasterChecked():boolean{
+    return this.GeneralReqTempChecked &&
+    this.LeaveEmTempChecked &&
+    this.DocExpTempChecked &&
+    this.DocReqTempChecked &&
+    this.AdvSalReqTempChecked &&
+    this.LoanReqTempChecked;   
   }
 
 
@@ -1417,6 +1437,19 @@ isAirTicketRuleIndeterminate(): boolean {
     );
     return selectedLoanReqTempPermissions.length > 0 && selectedLoanReqTempPermissions.length < this.GrouppermissionsLoanReqTemp.length;
   }
+
+
+    //  Shift ManageMaster Checked
+
+
+    isShiftManagementMasterChecked():boolean{
+    return this.ShiftsChecked &&
+     this.ShiftPatternChecked &&
+     this.ShiftEmployeeChecked &&
+     this.ShiftOverRideChecked;
+ 
+  }
+
 
 
   isShiftsIndeterminate(): boolean {
@@ -1468,6 +1501,8 @@ isAirTicketRuleIndeterminate(): boolean {
     this.loadPermissions();
     this.loadSettingPermissions();
     this.loadReportPermissions();
+    this.loadCustomizationPermissions();
+
     this.loadCalenderPermissions();
     this.loadLeavePermissions();
     this.loadPayrollPermissions();
@@ -1483,6 +1518,8 @@ isAirTicketRuleIndeterminate(): boolean {
     this.updateIndeterminateStates();
     this.updateIndeterminateStatesvalue();
     this.updateIndeterminateReports();
+    this.updateIndeterminateCustomization();
+
     this.updateInderminateCalenders();
     this.updateInderminateLeave();
     this.updateInderminatePayroll();
@@ -1537,7 +1574,7 @@ isAirTicketRuleIndeterminate(): boolean {
     this.isDnmasterIndeterminate();
     this.isCpmasterIndeterminate();
   // this.isEmtmasterIndeterminate();
-    this.isFormdesmasterIndeterminate();
+    // this.isFormdesmasterIndeterminate();
     this.isConfigmasterIndeterminate();
     this.isAnnounceIndeterminate();
     this.isNotifyIndeterminate();
@@ -1563,6 +1600,13 @@ updateIndeterminateReports(): void{
 
 }
 
+updateIndeterminateCustomization(): void{
+  this.isEmpformIndeterminate();
+  this.isAssetformIndeterminate();
+
+
+}
+
 updateInderminateCalenders():void{
   this.isAddHolidayIndeterminate();
   this.isAddWeekIndeterminate();
@@ -1582,6 +1626,7 @@ updateInderminateLeave():void{
   this.isLeaveaprvlvlIndeterminate();
   // this.isLeaveaprvlvltempIndeterminate();
   this.isLeaveBalanceIndeterminate();
+  this.isLeaveCancelIndeterminate();
   this.isLeaveAccrualIndeterminate();
   this.isLeaveRejoinIndeterminate();
 
@@ -1750,7 +1795,7 @@ updateInderminateShift():void{
     this.loadpermissionDnmaster();
     this.loadpermissionCpmaster();
     // this.loadpermissionEmtmaster();
-    this.loadpermissionFormdesmaster();
+    // this.loadpermissionFormdesmaster();
     this.loadpermissionConfig();
     this.loadpermissionAnnouncement();
     this.loadpermissionNotification();
@@ -1759,7 +1804,8 @@ updateInderminateShift():void{
   }
 
 
-  // load permissions Sections
+
+  // load Report permissions Sections
 
   loadReportPermissions():void{
     this.loadpermissionsEmpReport();
@@ -1773,6 +1819,17 @@ updateInderminateShift():void{
     this.loadpermissionsAttendReport();
     this.loadpermissionsAssetReport();
     this.loadpermissionsAssetTransReport();
+
+
+
+  }
+
+  // load Customization permissions Sections
+
+  loadCustomizationPermissions():void{
+
+    this.loadpermissionsEmpform();
+    this.loadpermissionsAssetform();
 
 
 
@@ -1796,8 +1853,8 @@ updateInderminateShift():void{
     this.loadpermissionsLeavereq();
     this.loadpermissionsLeavecom();
     this.loadpermissionsLeaveaprvlvl();
-    // this.loadpermissionsLeaveaprvlvltemp();
     this.loadpermissionsLeaveBalance();
+    this.loadpermissionsLeaveCancel();
     this.loadpermissionsLeaveAccrual();
     this.loadpermissionsLeaveRejoin();
 
@@ -2401,7 +2458,7 @@ updateInderminateShift():void{
               this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                 (result: any[]) => {
                   // Specify the codenames you want to filter
-                  const requiredCodenames = ['add_emp_documents', 'change_emp_documents', 'delete_emp_documents', 'view_emp_documents'];
+                  const requiredCodenames = ['add_notification', 'change_notification', 'delete_notification', 'view_notification'];
           
                   // Filter and remove duplicates based on codename
                   const uniquePermissionsMap = new Map();
@@ -2429,13 +2486,13 @@ updateInderminateShift():void{
         
            getDisplayNameExpDocument(permissionCodename: string): string {
             switch (permissionCodename.trim().toLowerCase()) {
-              case 'add_emp_documents':
+              case 'add_notification':
                 return 'Add';
-              case 'change_emp_documents':
+              case 'change_notification':
                 return 'Edit';
-              case 'delete_emp_documents':
+              case 'delete_notification':
                 return 'Delete';
-              case 'view_emp_documents':
+              case 'view_notification':
                 return 'View';
               default:
                 return permissionCodename;
@@ -2549,54 +2606,68 @@ updateInderminateShift():void{
 
 
           
-        loadpermissionsEmpRegAprList(): void {
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+loadpermissionsEmpRegAprList(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  console.log('schemastore', selectedSchema);
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
         
-            console.log('schemastore', selectedSchema);
-          
-            if (selectedSchema) {
-              this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-                (result: any[]) => {
-                  // Specify the codenames you want to filter
-                  const requiredCodenames = ['add_resignationapprovallist', 
-                                           'change_resignationapprovallist',
-                                           'delete_resignationapprovallist', 
-                                           'view_resignationapprovallist'];
-          
-                  // Filter and remove duplicates based on codename
-                  const uniquePermissionsMap = new Map();
-                  result.forEach(permission => {
-                    const codename = permission.codename.trim().toLowerCase();
-                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                      uniquePermissionsMap.set(codename, permission);
-                    }
-                  });
-          
-                  // Convert map values to an array
-                  this.GrouppermissionsEmpRegAprList = Array.from(uniquePermissionsMap.values());
-          
-                  console.log('Filtered Unique Permissions:', this.GrouppermissionsEmpRegAprList);
-                },
-                (error: any) => {
-                  console.error('Error fetching permissions:', error);
-                }
-              );
-            }
+        // Required permission codenames
+        const requiredCodenames = [
+          'add_create_eos_for_resignation',
+          'view_approved_resignations',
+        ];
+
+        // Filter and remove duplicates using Map
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
           }
+        });
+
+        // Desired display order
+        const displayOrder = [
+          'add_create_eos_for_resignation',
+          'view_approved_resignations',
+        ];
+
+        // Convert & SORT, store directly in the array used by HTML
+        this.GrouppermissionsEmpRegAprList = Array.from(uniquePermissionsMap.values())
+          .sort((a, b) => {
+            return (
+              displayOrder.indexOf(a.codename.trim().toLowerCase()) -
+              displayOrder.indexOf(b.codename.trim().toLowerCase())
+            );
+          });
+
+        console.log('Filtered & Sorted Permissions:', this.GrouppermissionsEmpRegAprList);
+      },
+      (error: any) => {
+        console.error('Error fetching permissions:', error);
+      }
+    );
+  }
+}
+
         
         
            //Display Name  add view delte code for Employee Resignation Approval List -------
         
            getDisplayNameEmpregAprList(permissionCodename: string): string {
             switch (permissionCodename.trim().toLowerCase()) {
-              case 'add_resignationapproval':
-                return 'Add';
-              case 'change_resignationapproval':
-                return 'Edit';
-              case 'delete_resignationapproval':
-                return 'Delete';
-              case 'view_resignationapproval':
+              case 'view_approved_resignations':
                 return 'View';
+              case 'add_create_eos_for_resignation':
+                return 'Add';
+              // case 'change_resignationapproval':
+              //   return 'Edit';
+              // case 'delete_resignationapproval':
+              //   return 'Delete';
               default:
                 return permissionCodename;
             }
@@ -3436,54 +3507,54 @@ getDisplayNameGratuity(permissionCodename: string): string {
             //   }
             // }
 
-        loadpermissionFormdesmaster(): void {
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        // loadpermissionFormdesmaster(): void {
+        //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-          console.log('schemastore', selectedSchema);
+        //   console.log('schemastore', selectedSchema);
         
-          if (selectedSchema) {
-            this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-              (result: any[]) => {
-                // Specify the codenames you want to filter
-                const requiredCodenames = ['add_emp_customfield', 'change_emp_customfield', 'delete_emp_customfield', 'view_emp_customfield'];
+        //   if (selectedSchema) {
+        //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+        //       (result: any[]) => {
+        //         // Specify the codenames you want to filter
+        //         const requiredCodenames = ['add_emp_customfield', 'change_emp_customfield', 'delete_emp_customfield', 'view_emp_customfield'];
         
-                // Filter and remove duplicates based on codename
-                const uniquePermissionsMap = new Map();
-                result.forEach(permission => {
-                  const codename = permission.codename.trim().toLowerCase();
-                  if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                    uniquePermissionsMap.set(codename, permission);
-                  }
-                });
+        //         // Filter and remove duplicates based on codename
+        //         const uniquePermissionsMap = new Map();
+        //         result.forEach(permission => {
+        //           const codename = permission.codename.trim().toLowerCase();
+        //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+        //             uniquePermissionsMap.set(codename, permission);
+        //           }
+        //         });
         
-                // Convert map values to an array
-                this.GrouppermissionsFormdesMaster = Array.from(uniquePermissionsMap.values());
+        //         // Convert map values to an array
+        //         this.GrouppermissionsFormdesMaster = Array.from(uniquePermissionsMap.values());
         
-                console.log('Filtered Unique Permissions:', this.GrouppermissionsFormdesMaster);
-              },
-              (error: any) => {
-                console.error('Error fetching permissions:', error);
-              }
-            );
-          }
-        }
+        //         console.log('Filtered Unique Permissions:', this.GrouppermissionsFormdesMaster);
+        //       },
+        //       (error: any) => {
+        //         console.error('Error fetching permissions:', error);
+        //       }
+        //     );
+        //   }
+        // }
       
           //Display Name  add view delte code for Company master-------
       
-          getDisplayNameFormdes(permissionCodename: string): string {
-            switch (permissionCodename.trim().toLowerCase()) {
-              case 'add_emp_customfield':
-                return 'Add';
-              case 'change_emp_customfield':
-                return 'Edit';
-              case 'delete_emp_customfield':
-                return 'Delete';
-              case 'view_emp_customfield':
-                return 'View';
-              default:
-                return permissionCodename;
-            }
-          }
+          // getDisplayNameFormdes(permissionCodename: string): string {
+          //   switch (permissionCodename.trim().toLowerCase()) {
+          //     case 'add_emp_customfield':
+          //       return 'Add';
+          //     case 'change_emp_customfield':
+          //       return 'Edit';
+          //     case 'delete_emp_customfield':
+          //       return 'Delete';
+          //     case 'view_emp_customfield':
+          //       return 'View';
+          //     default:
+          //       return permissionCodename;
+          //   }
+          // }
 
 
 
@@ -3646,52 +3717,72 @@ getDisplayNameGratuity(permissionCodename: string): string {
           }
 
 
-      loadpermissionsEmpReport(): void {
-        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+loadpermissionsEmpReport(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
 
-        console.log('schemastore', selectedSchema);
-      
-        if (selectedSchema) {
-          this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-            (result: any[]) => {
-              // Specify the codenames you want to filter
-              const requiredCodenames = ['add_report', 'change_report', 'delete_report', 'export_report','view_report'];
-      
-              // Filter and remove duplicates based on codename
-              const uniquePermissionsMap = new Map();
-              result.forEach(permission => {
-                const codename = permission.codename.trim().toLowerCase();
-                if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                  uniquePermissionsMap.set(codename, permission);
-                }
-              });
-      
-              // Convert map values to an array
-              this.GrouppermissionsemployeeReport = Array.from(uniquePermissionsMap.values());
-      
-              console.log('Filtered Unique Permissions:', this.GrouppermissionsemployeeReport);
-            },
-            (error: any) => {
-              console.error('Error fetching permissions:', error);
-            }
-          );
-        }
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+
+        const requiredCodenames = [
+          'add_report',
+          'change_report',
+          'delete_report',
+          'view_report',
+          'export_report'
+        ];
+
+        const uniquePermissionsMap = new Map();
+
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        // Define your sort order
+        const displayOrder = [
+          'add_report',
+          'change_report',
+          'delete_report',
+          'view_report',
+          'export_report'
+        ];
+
+        // Convert & sort
+        this.GrouppermissionsemployeeReport = Array.from(uniquePermissionsMap.values())
+          .sort((a, b) => {
+            return (
+              displayOrder.indexOf(a.codename.trim().toLowerCase()) -
+              displayOrder.indexOf(b.codename.trim().toLowerCase())
+            );
+          });
+
+        console.log('Sorted Permissions:', this.GrouppermissionsemployeeReport);
+      },
+      (error: any) => {
+        console.error('Error fetching permissions:', error);
       }
+    );
+  }
+}
+
     
         //Display Name  add view delte code for Company master-------
     
         getDisplayNameEmpReport(permissionCodename: string): string {
           switch (permissionCodename.trim().toLowerCase()) {
-            case 'add_report':
+          case 'add_report':
               return 'Add';
             case 'change_report':
               return 'Edit';
             case 'delete_report':
               return 'Delete';
-            case 'export_report':
-              return 'Export';
-            case 'view_report':
+              case 'view_report':
                 return 'View';
+              case 'export_report':
+              return 'Export';
             default:
               return permissionCodename;
           }
@@ -3821,7 +3912,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_leavereport', 'change_leavereport', 'delete_leavereport', 'export_report','view_leavereport'];
+          const requiredCodenames = ['add_leavereport', 'change_leavereport', 'delete_leavereport', 'lv_export_report','view_leavereport'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -3855,7 +3946,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
                   return 'Edit';
                 case 'delete_leavereport':
                   return 'Delete';
-                case 'export_report':
+                case 'lv_export_report':
                   return 'Export';
                   case 'view_leavereport':
                     return 'View';
@@ -3877,7 +3968,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
           const requiredCodenames = ['add_leaveapprovalreport',
                                   'change_leaveapprovalreport',
                                   'delete_leaveapprovalreport',
-                                      // 'export_report',
+                                      'lv_approval_export_report',
                                     'view_leaveapprovalreport'];
   
           // Filter and remove duplicates based on codename
@@ -3912,8 +4003,8 @@ getDisplayNameGratuity(permissionCodename: string): string {
                   return 'Edit';
                 case 'delete_leaveapprovalreport':
                   return 'Delete';
-                // case 'export_report':
-                //   return 'Export';
+                case 'lv_approval_export_report':
+                  return 'Export';
                 case 'view_leaveapprovalreport':
                     return 'View';
 
@@ -3935,7 +4026,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
                 const requiredCodenames = ['add_lvbalancereport',
                                          'change_lvbalancereport', 
                                           'delete_lvbalancereport',
-                                          // 'export_document_report',
+                                          'lv_balance_export_report',
                                            'view_lvbalancereport'];
         
                 // Filter and remove duplicates based on codename
@@ -3969,8 +4060,8 @@ getDisplayNameGratuity(permissionCodename: string): string {
               return 'Edit';
             case 'delete_lvbalancereport':
               return 'Delete';
-            // case 'export_document_report':
-            //   return 'Export';
+            case 'lv_balance_export_report':
+              return 'Export';
               case 'view_lvbalancereport':
                 return 'View';
             default:
@@ -3993,7 +4084,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
                 const requiredCodenames = ['add_attendancereport',
                                          'change_attendancereport', 
                                           'delete_attendancereport',
-                                          // 'export_document_report',
+                                          'attendance_export_report',
                                            'view_attendancereport'];
         
                 // Filter and remove duplicates based on codename
@@ -4027,8 +4118,8 @@ getDisplayNameGratuity(permissionCodename: string): string {
               return 'Edit';
             case 'delete_attendancereport':
               return 'Delete';
-            // case 'export_document_report':
-            //   return 'Export';
+            case 'attendance_export_report':
+              return 'Export';
               case 'view_attendancereport':
                 return 'View';
             default:
@@ -4051,7 +4142,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
                 const requiredCodenames = ['add_assetreport',
                                          'change_assetreport', 
                                           'delete_assetreport',
-                                          // 'export_document_report',
+                                          'asset_export_report',
                                            'view_assetreport'];
         
                 // Filter and remove duplicates based on codename
@@ -4085,8 +4176,8 @@ getDisplayNameGratuity(permissionCodename: string): string {
               return 'Edit';
             case 'delete_assetreport':
               return 'Delete';
-            // case 'export_document_report':
-            //   return 'Export';
+            case 'asset_export_report':
+              return 'Export';
               case 'view_assetreport':
                 return 'View';
             default:
@@ -4107,7 +4198,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
                 const requiredCodenames = ['add_assettransactionreport',
                                          'change_assettransactionreport', 
                                           'delete_assettransactionreport',
-                                          // 'export_document_report',
+                                          'asset_transaction_export_report',
                                            'view_assettransactionreport'];
         
                 // Filter and remove duplicates based on codename
@@ -4141,8 +4232,8 @@ getDisplayNameGratuity(permissionCodename: string): string {
               return 'Edit';
             case 'delete_assettransactionreport':
               return 'Delete';
-            // case 'export_document_report':
-            //   return 'Export';
+            case 'asset_transaction_export_report':
+              return 'Export';
               case 'view_assettransactionreport':
                 return 'View';
             default:
@@ -4151,7 +4242,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
         }
   
 
-            loadpermissionsDeptReport(): void {
+       loadpermissionsDeptReport(): void {
               const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
       console.log('schemastore', selectedSchema);
@@ -4160,7 +4251,11 @@ getDisplayNameGratuity(permissionCodename: string): string {
         this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
           (result: any[]) => {
             // Specify the codenames you want to filter
-            const requiredCodenames = ['add_leavereport', 'change_leavereport', 'delete_leavereport', 'export_report','view_leavereport'];
+            const requiredCodenames = [ // 'add_leavereport',
+                                      // 'change_leavereport',
+                                      //  'delete_dept_report', 
+                                       'export_dept_report',
+                                       'view_dept_report'];
     
             // Filter and remove duplicates based on codename
             const uniquePermissionsMap = new Map();
@@ -4188,23 +4283,23 @@ getDisplayNameGratuity(permissionCodename: string): string {
           
               getDisplayNameDeptReport(permissionCodename: string): string {
                 switch (permissionCodename.trim().toLowerCase()) {
-                  case 'add_deptreport':
-                    return 'Add';
-                  case 'change_deptreport':
-                    return 'Edit';
-                  case 'delete_deptreport':
-                    return 'Delete';
-                  case 'export_report':
+                  // case 'add_deptreport':
+                  //   return 'Add';
+                  // case 'change_deptreport':
+                  //   return 'Edit';
+                  // case 'delete_dept_report':
+                  //   return 'Delete';
+                  case 'export_dept_report':
                     return 'Export';
-                    case 'view_deptreport':
+                    case 'view_dept_report':
                       return 'View';
                   default:
                     return permissionCodename;
                 }
               }
     
-              loadpermissionsDesReport(): void {
-                const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+     loadpermissionsDesReport(): void {
+           const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
         console.log('schemastore', selectedSchema);
       
@@ -4212,7 +4307,12 @@ getDisplayNameGratuity(permissionCodename: string): string {
           this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
             (result: any[]) => {
               // Specify the codenames you want to filter
-              const requiredCodenames = ['add_leavereport', 'change_leavereport', 'delete_leavereport', 'export_report','view_leavereport'];
+              const requiredCodenames = [
+                // 'add_leavereport',
+                //  'change_leavereport',
+                  // 'delete_designtn_report', 
+                  'export_designtn_report',
+                  'view_designtn_report'];
       
               // Filter and remove duplicates based on codename
               const uniquePermissionsMap = new Map();
@@ -4224,9 +4324,9 @@ getDisplayNameGratuity(permissionCodename: string): string {
               });
       
               // Convert map values to an array
-              this.GrouppermissiionsDeptReport = Array.from(uniquePermissionsMap.values());
+              this.GrouppermissiionsDesReport = Array.from(uniquePermissionsMap.values());
       
-              console.log('Filtered Unique Permissions:', this.GrouppermissiionsDeptReport);
+              console.log('Filtered Unique Permissions:', this.GrouppermissiionsDesReport);
             },
             (error: any) => {
               console.error('Error fetching permissions:', error);
@@ -4240,20 +4340,144 @@ getDisplayNameGratuity(permissionCodename: string): string {
             
                 getDisplayNameDesReport(permissionCodename: string): string {
                   switch (permissionCodename.trim().toLowerCase()) {
-                    case 'add_designationreport':
-                      return 'Add';
-                    case 'change_designationreport':
-                      return 'Edit';
-                    case 'delete_designationreport':
-                      return 'Delete';
-                    case 'export_report':
+                    // case 'add_designationreport':
+                    //   return 'Add';
+                    // case 'change_designationreport':
+                    //   return 'Edit';
+                    // case 'delete_designtn_report':
+                    //   return 'Delete';
+                    case 'export_designtn_report':
                       return 'Export';
-                      case 'view_designationreport':
+                      case 'view_designtn_report':
                         return 'View';
                     default:
                       return permissionCodename;
                   }
                 }   
+
+
+ loadpermissionsEmpform(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+
+        const requiredCodenames = [
+          'add_emp_customfield',
+          'change_emp_customfield',
+          'delete_emp_customfield',
+          'view_emp_customfield',
+        ];
+
+        const uniquePermissionsMap = new Map();
+
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        // Define your sort order
+        const displayOrder = [
+          'add_emp_customfield',
+          'change_emp_customfield',
+          'delete_emp_customfield',
+          'view_emp_customfield',
+        ];
+
+        // Convert & sort
+        this.GrouppermissionsEmpform = Array.from(uniquePermissionsMap.values())
+          .sort((a, b) => {
+            return (
+              displayOrder.indexOf(a.codename.trim().toLowerCase()) -
+              displayOrder.indexOf(b.codename.trim().toLowerCase())
+            );
+          });
+
+        console.log('Sorted Permissions:', this.GrouppermissionsEmpform);
+      },
+      (error: any) => {
+        console.error('Error fetching permissions:', error);
+      }
+    );
+  }
+}
+
+    
+        //Display Name  add view delte code for Company master-------
+    
+        getDisplayNameEmpform(permissionCodename: string): string {
+          switch (permissionCodename.trim().toLowerCase()) {
+          case 'add_emp_customfield':
+              return 'Add';
+            case 'change_emp_customfield':
+              return 'Edit';
+            case 'delete_emp_customfield':
+              return 'Delete';
+              case 'view_emp_customfield':
+                return 'View';
+            default:
+              return permissionCodename;
+          }
+        }
+
+
+ loadpermissionsAssetform(): void {
+          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+          console.log('schemastore', selectedSchema);
+        
+          if (selectedSchema) {
+            this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+              (result: any[]) => {
+                // Specify the codenames you want to filter
+                const requiredCodenames = ['add_assetcustomfield',
+                                         'change_assetcustomfield', 
+                                          'delete_assetcustomfield',
+                                          'view_assetcustomfield'];
+                          
+        
+                // Filter and remove duplicates based on codename
+                const uniquePermissionsMap = new Map();
+                result.forEach(permission => {
+                  const codename = permission.codename.trim().toLowerCase();
+                  if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                    uniquePermissionsMap.set(codename, permission);
+                  }
+                });
+        
+                // Convert map values to an array
+                this.GrouppermissionsAssetform = Array.from(uniquePermissionsMap.values());
+        
+                console.log('Filtered Unique Permissions:', this.GrouppermissionsAssetform);
+              },
+              (error: any) => {
+                console.error('Error fetching permissions:', error);
+              }
+            );
+          }
+      }
+    
+        //Display Name  add view delte code for Company master-------
+    
+        getDisplayNameAssetform(permissionCodename: string): string {
+          switch (permissionCodename.trim().toLowerCase()) {
+            case 'add_assetcustomfield':
+              return 'Add';
+            case 'change_assetcustomfield':
+              return 'Edit';
+            case 'delete_assetcustomfield':
+              return 'Delete';
+              case 'view_assetcustomfield':
+                return 'View';
+            default:
+              return permissionCodename;
+          }
+        }
+
         
           // loadpermissionsAddweekDetail
             loadpermissionsAddweekDetail(): void {
@@ -4366,7 +4590,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
                     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                       (result: any[]) => {
                         // Specify the codenames you want to filter
-                        const requiredCodenames = ['add_holiday', 'change_holiday', 'delete_holiday', 'view_holiday'];
+                        const requiredCodenames = ['add_holiday_calendar', 'change_holiday_calendar', 'delete_holiday_calendar', 'view_holiday_calendar'];
                 
                         // Filter and remove duplicates based on codename
                         const uniquePermissionsMap = new Map();
@@ -4819,10 +5043,10 @@ getDisplayNameGratuity(permissionCodename: string): string {
                               this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                                 (result: any[]) => {
                                   // Specify the codenames you want to filter
-                                  const requiredCodenames = ['add_compensatoryleavebalance',
-                                                           'change_compensatoryleavebalance',
-                                                            'delete_compensatoryleavebalance',
-                                                            'view_compensatoryleavebalance'];
+                                  const requiredCodenames = ['add_emp_leave_balance',
+                                                           'change_emp_leave_balance',
+                                                            'delete_emp_leave_balance',
+                                                            'view_emp_leave_balance'];
                           
                                   // Filter and remove duplicates based on codename
                                   const uniquePermissionsMap = new Map();
@@ -4850,13 +5074,68 @@ getDisplayNameGratuity(permissionCodename: string): string {
                         
                 getDisplayNameLeaveBalance(permissionCodename: string): string {
                               switch (permissionCodename.trim().toLowerCase()) {
-                                case 'add_compensatoryleavebalance':
+                                case 'add_emp_leave_balance':
                                   return 'Add';
-                                case 'change_compensatoryleavebalance':
+                                case 'change_emp_leave_balance':
                                   return 'Edit';
-                                case 'delete_compensatoryleavebalance':
+                                case 'delete_emp_leave_balance':
                                   return 'Delete';
-                                case 'view_compensatoryleavebalance':
+                                case 'view_emp_leave_balance':
+                                  return 'View';
+                                default:
+                                  return permissionCodename;
+                              }
+                            }
+
+
+
+                  loadpermissionsLeaveCancel(): void {
+                            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+                            console.log('schemastore', selectedSchema);
+                          
+                            if (selectedSchema) {
+                              this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+                                (result: any[]) => {
+                                  // Specify the codenames you want to filter
+                                  const requiredCodenames = ['add_lv_cancellation',
+                                                          //  'change_compensatoryleavebalance',
+                                                          //   'delete_lv_cancellation',
+                                                            'view_lv_cancellation'];
+                          
+                                  // Filter and remove duplicates based on codename
+                                  const uniquePermissionsMap = new Map();
+                                  result.forEach(permission => {
+                                    const codename = permission.codename.trim().toLowerCase();
+                                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                                      uniquePermissionsMap.set(codename, permission);
+                                    }
+                                  });
+                          
+                                  // Convert map values to an array
+                                  this.GrouppermissionsLeaveCancel = Array.from(uniquePermissionsMap.values());
+                          
+                                  console.log('Filtered Unique Permissions:', this.GrouppermissionsLeaveCancel);
+                                },
+                                (error: any) => {
+                                  console.error('Error fetching permissions:', error);
+                                }
+                              );
+                            }
+                          }
+                        
+                        
+                            //Display Name add view delte code for Leave balance-------
+                        
+                getDisplayNameLeaveCancel(permissionCodename: string): string {
+                              switch (permissionCodename.trim().toLowerCase()) {
+                                case 'add_lv_cancellation':
+                                  return 'Add';
+                                // case 'view_lv_cancellation':
+                                //   return 'Edit';
+                                // case 'delete_lv_cancellation':
+                                //   return 'Delete';
+                                case 'view_lv_cancellation':
                                   return 'View';
                                 default:
                                   return permissionCodename;
@@ -5385,10 +5664,11 @@ loadpermissionsWps(): void {
       (result: any[]) => {
         console.log("All permissions from API:", result); // Debug
         const requiredCodenames = [
-          'add_Wps',
-          'change_Wps',
-          'delete_Wps',
-          'view_Wps',
+          'add_wps',
+           'export_wps',
+            'view_wps',
+          // 'change_wps',
+          // 'delete_wps',
         ];
 
         const uniqueMap = new Map();
@@ -5414,12 +5694,14 @@ getDisplayNameWps(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
     case 'add_wps':
       return 'Add';
-    case 'change_wps':
-      return 'Edit';
-    case 'delete_wps':
-      return 'Delete';
+    case 'export_wps':
+      return 'Export';
     case 'view_wps':
       return 'View';
+    // case 'change_wps':
+    //   return 'Edit';
+    // case 'delete_wps':
+    //   return 'Delete';
     default:
       return permissionCodename;
   }
@@ -7531,27 +7813,27 @@ getDisplayNameShiftOverRide(permissionCodename: string): string {
   // }
 
 
-  onCheckboxChangesFormdes(permission: string): void {
-    if (this.selectedPermissions.includes(permission)) {
-      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-    } else {
-      this.selectedPermissions.push(permission);
-    }
+  // onCheckboxChangesFormdes(permission: string): void {
+  //   if (this.selectedPermissions.includes(permission)) {
+  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+  //   } else {
+  //     this.selectedPermissions.push(permission);
+  //   }
   
    
-    // Update selectAll checkbox status
-    this.updateFormdesMasterCheckbox();
-    this.updateSelectAlls();
+  //   // Update selectAll checkbox status
+  //   this.updateFormdesMasterCheckbox();
+  //   this.updateSelectAlls();
 
-  }
+  // }
 
-  updateFormdesMasterCheckbox(): void {
-    const allPermissionsSelected = this.GrouppermissionsFormdesMaster.every(permission => 
-      this.selectedPermissions.includes(permission.id)
-    );
-    this.FormdesMasterChecked = allPermissionsSelected;
-    this.FormdesMasterInderminate = this.isFormdesmasterIndeterminate();
-  }
+  // updateFormdesMasterCheckbox(): void {
+  //   const allPermissionsSelected = this.GrouppermissionsFormdesMaster.every(permission => 
+  //     this.selectedPermissions.includes(permission.id)
+  //   );
+  //   this.FormdesMasterChecked = allPermissionsSelected;
+  //   this.FormdesMasterInderminate = this.isFormdesmasterIndeterminate();
+  // }
 
   onCheckboxChangesConfig(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
@@ -7712,6 +7994,51 @@ updateNotifyCheckbox(): void {
   }
 
 
+    onCheckboxChangesDeptReport(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateDeptReportCheckbox();
+    this.updateReport();
+
+  }
+
+  updateDeptReportCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissiionsDeptReport.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.DeptReportChecked= allPermissionsSelected;
+    this.DeptReportInderminate = this.isDeptReportIndeterminate();
+  }
+
+  onCheckboxChangesDesReport(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateDesReportCheckbox();
+    this.updateReport();
+
+  }
+
+  updateDesReportCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissiionsDesReport.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.DesReportChecked= allPermissionsSelected;
+    this.DesReportInderminate = this.isDesReportIndeterminate();
+  }
+
+
   onCheckboxChangesLeaveReport(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
@@ -7823,6 +8150,52 @@ updateLeaveAprRepCheckbox(): void {
     );
     this.LeaveAprRepChecked= allPermissionsSelected;
     this.LeaveAprRepInderminate = this.isLeaveAprRepIndeterminate();
+  }
+
+
+    onCheckboxChangesEmpform(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateEmpformCheckbox();
+    this.updateCustomization();
+
+  }
+
+  updateEmpformCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsEmpform.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.EmpformChecked = allPermissionsSelected;
+    this.EmpformInderminate = this.isEmpformIndeterminate();
+  }
+
+
+    onCheckboxChangesAssetform(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateAssetformCheckbox();
+    this.updateCustomization();
+
+  }
+
+  updateAssetformCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsAssetform.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.AssetformChecked = allPermissionsSelected;
+    this.AssetformInderminate = this.isAssetformIndeterminate();
   }
 
   onCheckboxChangesAddweek(permission: string): void {
@@ -8112,6 +8485,28 @@ updateLeaveAprRepCheckbox(): void {
     );
     this.LeaveBalanceChecked = allPermissionsSelected;
     this.LeaveBalanceInderminate = this.isLeaveBalanceIndeterminate();
+  }
+
+  onCheckboxChangesLeaveCancel(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateLeaveCancelCheckbox();
+    this.updateLeave();
+
+  }
+
+  updateLeaveCancelCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsLeaveCancel.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.LeaveCancelChecked = allPermissionsSelected;
+    this.LaaveCancelInderminate = this.isLeaveCancelIndeterminate();
   }
 
     onCheckboxChangesLeaveAccrual(permission: string): void {
@@ -9002,7 +9397,7 @@ updateShiftOverRideCheckbox(): void {
     // this.updateexpiryMasterCheckbox();
     this.updatelocMasterCheckbox();
     this.updateDnMasterCheckbox();
-    this.updateFormdesMasterCheckbox();
+    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -9024,6 +9419,7 @@ updateShiftOverRideCheckbox(): void {
     this.updateSelectAll();
     this.updateSelectAlls();
     this.updateReport();
+    this.updateCustomization();
     this.updateCalender();
     this.updateLeave();
     this.updatePayroll();
@@ -9144,7 +9540,7 @@ issettings(): boolean {
   const CpMasterInderminate = this.isCpmasterIndeterminate();
   // const EmtMasterInderminate = this.isEmtmasterIndeterminate();
 
-  const FormdesMasterInderminate = this.isFormdesmasterIndeterminate();
+  // const FormdesMasterInderminate = this.isFormdesmasterIndeterminate();
   const ConfigMasterInderminate = this.isConfigmasterIndeterminate();
   const AnnounceInderminate = this.isAnnounceIndeterminate();
   const NotifyInderminate = this.isNotifyIndeterminate();
@@ -9154,13 +9550,15 @@ issettings(): boolean {
 
     // Return true only if some but not all checkboxes are selected
     return branchMasterInderminate || userMasterInderminate || userGroupMasterInderminate || assignMasterInderminate||stateMasterInderminate || documentMasterInderminate || userGroupMasterInderminate ||locationMasterInderminate||
-    DnMasterInderminate || CpMasterInderminate || FormdesMasterInderminate || ConfigMasterInderminate || AnnounceInderminate || NotifyInderminate || otherGroupIndeterminate;
+    DnMasterInderminate || CpMasterInderminate || ConfigMasterInderminate || AnnounceInderminate || NotifyInderminate || otherGroupIndeterminate;
 }
 
 isreports(): boolean {
   const emportReportInderminate = this.isEmployeeReportIndeterminate();
   const documentReportInderminate = this.isDocumentReportIndeterminate();
   const generalReportInderminate = this.isGeneralReportIndeterminate();
+  const DeptReportInderminate = this.isDeptReportIndeterminate();
+  const DesReportInderminate = this.isDesReportIndeterminate();
   const LeaveReportInderminate = this.isLeaveReportIndeterminate();
   const LeaveAprRepInderminate = this.isLeaveAprRepIndeterminate();
   const LeaveBalReportInderminate = this.isLeaveBalReportIndeterminate();
@@ -9172,8 +9570,20 @@ isreports(): boolean {
 
     // Return true only if some but not all checkboxes are selected
     return emportReportInderminate || documentReportInderminate || 
-    generalReportInderminate ||  LeaveReportInderminate || LeaveAprRepInderminate || LeaveBalReportInderminate ||
+    generalReportInderminate || DeptReportInderminate || DesReportInderminate || LeaveReportInderminate || LeaveAprRepInderminate || LeaveBalReportInderminate ||
     AttendReportInderminate || AssetReportInderminate || AssetTransReportInderminate || otherGroupIndeterminate;
+}
+
+
+isCustomization(): boolean {
+  const EmpformInderminate = this.isEmpformIndeterminate();
+  const AssetformInderminate = this.isAssetformIndeterminate();
+
+
+    const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
+
+    // Return true only if some but not all checkboxes are selected
+    return EmpformInderminate || AssetformInderminate || otherGroupIndeterminate;
 }
 
 iscalenders(): boolean {
@@ -9197,6 +9607,7 @@ isLeaves(): boolean {
   const LeaveaprvlvlInderminate = this.isLeaveaprvlvlIndeterminate();
   // const LeaveaprvlvltempInderminate = this.isLeaveaprvlvltempIndeterminate();
   const LeaveBalanceInderminate = this.isLeaveBalanceIndeterminate();
+  const LeaveCancelInderminate = this.isLeaveCancelIndeterminate();
   const LeaveAccrualInderminate = this.isLeaveAccrualIndeterminate();
   const LeaveRejoinInderminate = this.isLeaveRejoinIndeterminate();
 
@@ -9204,7 +9615,7 @@ isLeaves(): boolean {
 
   const otherGroupIndeterminate = false;
   return LeaveaprvInderminate || LeavetypeInderminate ||LeavemasterInderminate || LeavereqInderminate ||  LeavecomInderminate ||
-   LeaveaprvlvlInderminate || LeaveRejoinInderminate || LeaveAccrualInderminate || LeaveBalanceInderminate || otherGroupIndeterminate;
+   LeaveaprvlvlInderminate || LeaveRejoinInderminate || LeaveAccrualInderminate || LeaveBalanceInderminate || LeaveCancelInderminate || otherGroupIndeterminate;
 } 
 
 isPayrolls(): boolean {
@@ -9702,18 +10113,19 @@ isShift(): boolean {
 
   // }
 
-  onUserFormdesChange(): void {
-    if (this.FormdesMasterChecked) {
-      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsFormdesMaster.map(permission => permission.id));
-    } else {
-      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsFormdesMaster.map(p => p.id).includes(permission));
-    }
-    this.updateSettingsCheckbox();
-    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
-    // this.settingsChecked = this.locationMasterChecked;
+  // onUserFormdesChange(): void {
+  //   if (this.FormdesMasterChecked) {
+  //     this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsFormdesMaster.map(permission => permission.id));
+  //   } else {
+  //     this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsFormdesMaster.map(p => p.id).includes(permission));
+  //   }
+  //   this.updateSettingsCheckbox();
+  //   // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+  //   // this.settingsChecked = this.locationMasterChecked;
 
 
-  }
+  // }
+
   onConfigChange(): void {
     if (this.ConfigMasterChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsConfigMaster.map(permission => permission.id));
@@ -9802,6 +10214,31 @@ isShift(): boolean {
 
   }
 
+    onDeptReportChange(): void {
+    if (this.DeptReportChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsDeptReport.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissiionsDeptReport.map(p => p.id).includes(permission));
+    }
+    this.updateReportCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+  }
+
+    onDesReportChange(): void {
+    if (this.DesReportChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsDesReport.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissiionsDesReport.map(p => p.id).includes(permission));
+    }
+    this.updateReportCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+  }
+
+
   onLeaveReportChange(): void {
     if (this.LeaveReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsLeaveReport.map(permission => permission.id));
@@ -9862,6 +10299,35 @@ isShift(): boolean {
     // this.settingsChecked = this.locationMasterChecked;
 
   }
+
+
+    onEmpformChange(): void {
+    if (this.EmpformChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEmpform.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsEmpform.map(p => p.id).includes(permission));
+    }
+    this.updateCustomizationCheckbox();
+    // this.updateSelectedPermissions(this.documenttypeMasterChecked, this.Grouppermissionsdocumentype);
+    // this.settingsChecked = this.documenttypeMasterChecked;
+
+
+  }
+
+
+    onAssetformChange(): void {
+    if (this.AssetformChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAssetform.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsAssetform.map(p => p.id).includes(permission));
+    }
+    this.updateCustomizationCheckbox();
+    // this.updateSelectedPermissions(this.expireddocumnetsMasterChecked, this.Grouppermissionsexpirydocuments);
+    // this.settingsChecked = this.expireddocumnetsMasterChecked;
+
+
+  }
+
 
 
   onAddweekChange(): void {
@@ -10028,6 +10494,19 @@ isShift(): boolean {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveBalance.map(permission => permission.id));
     } else {
       this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeaveBalance.map(p => p.id).includes(permission));
+    }
+    this.updateLeaveCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+
+  }
+
+  onLeaveCancelChange(): void {
+    if (this.LeaveCancelChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveCancel.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeaveCancel.map(p => p.id).includes(permission));
     }
     this.updateLeaveCheckbox();
     // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
@@ -10566,6 +11045,11 @@ updateSettingsCheckbox(): void {
 updateReportCheckbox(): void {
     this.reportchecked = this.isReportManagementMasterChecked();
 }
+
+updateCustomizationCheckbox(): void {
+    this.customizationchecked = this.isCustomizationManagementMasterChecked();
+}
+   
    
 
 updateCalenderCheckbox(): void {
@@ -10699,7 +11183,7 @@ updateShiftCheckbox(): void {
       ...this.GrouppermissionsCpMaster,
       // ...this.GrouppermissionsEmtMaster,
 
-      ...this.GrouppermissionsFormdesMaster,
+      // ...this.GrouppermissionsFormdesMaster,
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
@@ -10725,7 +11209,7 @@ updateShiftCheckbox(): void {
     this.updateCpMasterCheckbox();
     // this.updateEmtMasterCheckbox();
 
-    this.updateFormdesMasterCheckbox();
+    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -10739,6 +11223,8 @@ updateShiftCheckbox(): void {
       ...this.GrouppermissionsemployeeReport,
       ...this.GrouppermissionsdocumnetReport,
       ...this.GrouppermissiionsgeneralReport,
+      ...this.GrouppermissiionsDeptReport,
+      ...this.GrouppermissiionsDesReport,
       ...this.GrouppermissiionsLeaveReport,
       ...this.GrouppermissiionsLeaveAprRep,
       ...this.GrouppermissionsLeaveBalReport,
@@ -10757,6 +11243,8 @@ updateShiftCheckbox(): void {
     this.updateEmpReportCheckbox();
     this.updatedocReportCheckbox();
     this.updateGenReportCheckbox();
+    this.updateDeptReportCheckbox();
+    this.updateDesReportCheckbox();
     this.updateLeaveReportCheckbox();
     this.updateLeaveAprRepCheckbox();
     this.updateLeaveBalReportCheckbox();
@@ -10768,6 +11256,29 @@ updateShiftCheckbox(): void {
 
     this.updateReportCheckbox();
   }
+
+
+
+    selectCustomization(): void {
+    const allPermissions = [
+      ...this.GrouppermissionsEmpform,
+      ...this.GrouppermissionsAssetform
+    
+
+
+    ].map(permission => permission.id);
+  
+    if (this.customizationchecked) {
+      this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...allPermissions]));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !allPermissions.includes(permission));
+    }
+  
+    this.updateEmpformCheckbox();
+    this.updateAssetformCheckbox();
+
+  }
+
 
 selectCalender(): void {
   const allPermissions = [
@@ -10805,6 +11316,7 @@ selectLeave(): void {
     ...this.GrouppermissionsLeaveaprvlvl,
     // ...this.GrouppermissionsLeaveaprvlvltemp,
     ...this.GrouppermissionsLeaveBalance,
+    ...this.GrouppermissionsLeaveCancel,
     ...this.GrouppermissionsLeaveAccrual,
     ...this.GrouppermissionsLeaveRejoin,
 
@@ -10828,6 +11340,7 @@ selectLeave(): void {
   this.updateLeaveaprvlvlCheckbox();
   // this.updateLeaveaprvlvltempCheckbox();
   this.updateLeaveBalanceCheckbox();
+  this.updateLeaveCancelCheckbox();
   this.updateLeaveAccrualCheckbox();
   this.updateLeaveRejoinCheckbox();
 
@@ -11116,7 +11629,7 @@ updateSelectAlls():void{
     this.updateCpMasterCheckbox();
     // this.updateEmtMasterCheckbox();
 
-    this.updateFormdesMasterCheckbox();
+    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -11132,6 +11645,8 @@ updateReport(): void {
   this.updateEmpReportCheckbox();
   this.updatedocReportCheckbox();
   this.updateGenReportCheckbox();
+  this.updateDeptReportCheckbox();
+  this.updateDesReportCheckbox();
   this.updateLeaveReportCheckbox();
   this.updateLeaveAprRepCheckbox();
   this.updateLeaveBalReportCheckbox();
@@ -11141,6 +11656,11 @@ updateReport(): void {
 
 
   this.updateIndeterminateReports();
+}
+
+updateCustomization(): void {
+  this.updateEmpformCheckbox();
+  this.updateAssetformCheckbox();
 }
 
 
@@ -11168,6 +11688,7 @@ updateLeave():void{
   this.updateInderminateLeave();
   this.updateLeaveCheckbox();
   this.updateLeaveBalanceCheckbox();
+  this.updateLeaveCancelCheckbox();
   this.updateLeaveAccrualCheckbox();
   this.updateLeaveRejoinCheckbox();
 
@@ -11283,7 +11804,7 @@ updateShift():void{
       ...this.GrouppermissionsDnMaster,
       ...this.GrouppermissionsCpMaster,
       // ...this.GrouppermissionsEmtMaster,
-      ...this.GrouppermissionsFormdesMaster,
+      // ...this.GrouppermissionsFormdesMaster,
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
@@ -11301,6 +11822,8 @@ isReportInderminate(): boolean {
     ...this.GrouppermissionsemployeeReport,
     ...this.GrouppermissionsdocumnetReport,
     ...this.GrouppermissiionsgeneralReport,
+    ...this.GrouppermissiionsDeptReport,
+    ...this.GrouppermissiionsDesReport,
     ...this.GrouppermissiionsLeaveReport,
     ...this.GrouppermissiionsLeaveAprRep,
     ...this.GrouppermissionsLeaveBalReport,
@@ -11311,6 +11834,16 @@ isReportInderminate(): boolean {
   ].some(permission => this.selectedPermissions.includes(permission.id));
 
   return hasSelectedPermissions && !this.isReportManagementMasterChecked();
+}
+
+isCustomizationInderminate(): boolean {
+  const hasSelectedPermissions = [
+    ...this.GrouppermissionsEmpform,
+    ...this.GrouppermissionsAssetform
+
+  ].some(permission => this.selectedPermissions.includes(permission.id));
+
+  return hasSelectedPermissions && !this.isCustomizationManagementMasterChecked();
 }
 
 
@@ -11339,6 +11872,7 @@ isLeaveInderminate(): boolean {
     ...this.GrouppermissionsLeaveaprvlvl,
     // ...this.GrouppermissionsLeaveaprvlvltemp,
     ...this.GrouppermissionsLeaveBalance,
+    ...this.GrouppermissionsLeaveCancel,
     ...this.GrouppermissionsLeaveAccrual,
     ...this.GrouppermissionsLeaveRejoin,
 
@@ -11496,6 +12030,10 @@ showexpandables(): void {
   }
 showreports(): void {
   this.reportMastersvalue =!this.reportMastersvalue;
+}
+
+showCustomization(): void {
+  this.CustomizationMastersvalue =!this.CustomizationMastersvalue;
 }
 
 showcalenders(): void{

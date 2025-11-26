@@ -38,10 +38,26 @@ export class SettingsComponent {
   hasViewNotification: boolean = false;
   hasViewDN : boolean = false;
   hasViewPermissionFormdes : boolean = false;
-  hasViewPermissionEmtemp : boolean = false;
-  hasViewPermissionCmp : boolean = false;
 
+  hasViewPermissionCmpnyPol : boolean = false;
+
+  hasViewPermissionConfig: boolean = false;
+
+  hasViewPermissionEmtemp : boolean = false;
   hasViewPermissionLeaveEmtemp : boolean = false;
+  hasViewPermissionDocExpEmtemp : boolean = false;
+  hasViewPermissionDocReqEmtemp : boolean = false;
+  hasViewPermissionAdvSalEmtemp : boolean = false;
+  hasViewPermissionLoanReqEmtemp : boolean = false;
+
+
+  hasViewPermissionDocReqType: boolean = false;
+  hasViewPermissionDocReqApr: boolean = false;
+  hasViewPermissionDocAprlvl: boolean = false;
+  hasViewPermissionDocReq: boolean = false;
+
+
+
 
 
 
@@ -56,7 +72,18 @@ export class SettingsComponent {
   hasViewPermissionempreport:boolean = false;
   hasViewPermissiondocreport:boolean = false;
   hasViewPermissiongenreport:boolean = false;
+  hasViewPermissiondeptreport:boolean = false;
+  hasViewPermissiondesreport:boolean = false;
   hasViewPermissionLeavereport:boolean = false;
+  hasViewPermissionLeaveAprreport:boolean = false;
+  hasViewPermissionLeaveBalancereport:boolean = false;
+  hasViewPermissionEmpAttendancereport:boolean = false;
+  hasViewPermissionAssetreport:boolean = false;
+  hasViewPermissionAssettransreport:boolean = false;
+
+
+  hasViewPermissionEmpForm: boolean = false;
+  hasviewPermissionAssetForm: boolean = false;
 
   stateLabel: string = ''; // Default value
 
@@ -127,9 +154,15 @@ if (this.userId !== null) {
         this.hasViewAnnounceMaster = true;
         this.hasViewDocNotifySettings = true;
         this.hasViewPermissionFormdes = true;
+
+        this.hasViewPermissionCmpnyPol = true;
+
         this.hasViewPermissionEmtemp = true;
-        this.hasViewPermissionCmp = true;
         this.hasViewPermissionLeaveEmtemp = true;
+        this.hasViewPermissionDocExpEmtemp = true;
+        this.hasViewPermissionDocReqEmtemp = true;
+        this.hasViewPermissionAdvSalEmtemp = true;
+        this.hasViewPermissionLoanReqEmtemp = true;
 
 
 
@@ -144,7 +177,25 @@ if (this.userId !== null) {
         this.hasViewPermissionempreport = true;
         this.hasViewPermissiondocreport = true;
         this.hasViewPermissiongenreport = true;
+        this.hasViewPermissiondeptreport = true;
+        this.hasViewPermissiondesreport = true;
         this.hasViewPermissionLeavereport = true;
+        this.hasViewPermissionLeaveAprreport = true;
+        this.hasViewPermissionLeaveBalancereport = true;
+        this.hasViewPermissionEmpAttendancereport = true;
+        this.hasViewPermissionAssetreport = true;
+        this.hasViewPermissionAssettransreport = true;
+
+        this.hasViewPermissionEmpForm = true;
+        this.hasviewPermissionAssetForm = true;
+
+         this.hasViewPermissionConfig = true;
+
+
+         this.hasViewPermissionDocReqType = true;
+         this.hasViewPermissionDocReqApr = true;
+         this.hasViewPermissionDocAprlvl = true;
+         this.hasViewPermissionDocReq = true;
 
 
 
@@ -183,9 +234,15 @@ if (this.userId !== null) {
                 this.hasViewAnnounceMaster = true;
                 this.hasViewDocNotifySettings = true;
                 this.hasViewPermissionFormdes = true;
+
+                this.hasViewPermissionCmpnyPol = true;
+
                 this.hasViewPermissionEmtemp = true;
-                this.hasViewPermissionCmp = true;
                 this.hasViewPermissionLeaveEmtemp = true;
+                this.hasViewPermissionDocExpEmtemp = true;
+                this.hasViewPermissionDocReqEmtemp = true;
+                this.hasViewPermissionAdvSalEmtemp = true;
+                this.hasViewPermissionLoanReqEmtemp = true;
 
 
 
@@ -201,7 +258,25 @@ if (this.userId !== null) {
                 this.hasViewPermissionempreport = true;
                 this.hasViewPermissiondocreport = true;
                 this.hasViewPermissiongenreport = true;
+                this.hasViewPermissiondeptreport = true;
+                this.hasViewPermissiondesreport = true;
                 this.hasViewPermissionLeavereport = true;
+                this.hasViewPermissionLeaveAprreport = true;
+                this.hasViewPermissionLeaveBalancereport = true;
+                this.hasViewPermissionEmpAttendancereport = true;
+                this.hasViewPermissionAssetreport = true;
+                this.hasViewPermissionAssettransreport = true;
+
+
+                this.hasViewPermissionEmpForm = true;
+                this.hasviewPermissionAssetForm = true;
+
+                 this.hasViewPermissionConfig = true;
+
+                 this.hasViewPermissionDocReqType = true;
+                 this.hasViewPermissionDocReqApr = true;
+                 this.hasViewPermissionDocAprlvl = true;
+                 this.hasViewPermissionDocReq = true;
 
 
         
@@ -242,20 +317,35 @@ if (this.userId !== null) {
                     this.hasViewDocNotifySettings = this.checkGroupPermission('view_notificationsettings', groupPermissions);
                     console.log('Has view permission:', this.hasViewDocNotifySettings);
                     
-                    this.hasViewPermissionFormdes = this.checkGroupPermission('view_emp_customfield', groupPermissions);
-                    console.log('Has view permission:', this.hasViewPermissionFormdes);
+                    // this.hasViewPermissionFormdes = this.checkGroupPermission('view_emp_customfield', groupPermissions);
+                    // console.log('Has view permission:', this.hasViewPermissionFormdes);
 
+                    // Email Template Permissions
                    
                     this.hasViewPermissionEmtemp = this.checkGroupPermission('view_emailtemplate', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermissionEmtemp);
-
-                    this.hasViewPermissionCmp = this.checkGroupPermission('view_companypolicy', groupPermissions);
-                    console.log('Has view permission:', this.hasViewPermissionCmp);
                   
                     this.hasViewPermissionLeaveEmtemp = this.checkGroupPermission('view_lvemailtemplate', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermissionLeaveEmtemp);
+
+                    this.hasViewPermissionDocExpEmtemp = this.checkGroupPermission('view_docexpemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionDocExpEmtemp);
+
+                    this.hasViewPermissionDocReqEmtemp = this.checkGroupPermission('view_docrequestemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionDocReqEmtemp);
+
+                    this.hasViewPermissionAdvSalEmtemp = this.checkGroupPermission('view_advancesalaryemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionAdvSalEmtemp);
+
+                     this.hasViewPermissionLoanReqEmtemp = this.checkGroupPermission('view_loanemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionLoanReqEmtemp);
+
+                  //  Company Policy Permissions
+
+                    this.hasViewPermissionCmpnyPol = this.checkGroupPermission('view_companypolicy', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionCmpnyPol);
                    
-                   
+                  //  Calender Permissions
                    
                     this.hasViewWeek = this.checkGroupPermission('view_weekend_calendar', groupPermissions);
                     console.log('Has view permission:', this.hasViewWeek);
@@ -271,19 +361,71 @@ if (this.userId !== null) {
                   
                     this.hasViewShift = this.checkGroupPermission('view_shift', groupPermissions);
                     console.log('Has view permission:', this.hasViewShift);
+
+                    // Report List Permissions
                   
-                    this.hasViewPermissionempreport = this.checkGroupPermission('view_report', groupPermissions);
-                   console.log('Has view permission:', this.hasViewPermissionempreport);
+                  this.hasViewPermissionempreport = this.checkGroupPermission('view_report', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionempreport);
       
-                    this.hasViewPermissiondocreport = this.checkGroupPermission('view_doc_report', groupPermissions);
-                    console.log('Has view permission:', this.hasViewPermissiondocreport);
+                  this.hasViewPermissiondocreport = this.checkGroupPermission('view_doc_report', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissiondocreport);
               
-                    this.hasViewPermissiongenreport = this.checkGroupPermission('view_generalrequestreport', groupPermissions);
+                  this.hasViewPermissiongenreport = this.checkGroupPermission('view_generalrequestreport', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermissiongenreport);
 
+                  this.hasViewPermissiondeptreport = this.checkGroupPermission('view_dept_report', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissiondeptreport);
+
+                  this.hasViewPermissiondesreport = this.checkGroupPermission('view_designtn_report', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissiondesreport);
                   
                   this.hasViewPermissionLeavereport = this.checkGroupPermission('view_leavereport', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermissionLeavereport);
+
+                  this.hasViewPermissionLeaveAprreport = this.checkGroupPermission('view_leaveapprovalreport', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionLeaveAprreport);
+
+                  this.hasViewPermissionLeaveBalancereport = this.checkGroupPermission('view_lvbalancereport', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionLeaveBalancereport);
+
+                  this.hasViewPermissionEmpAttendancereport = this.checkGroupPermission('view_attendancereport', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionEmpAttendancereport);
+
+                  this.hasViewPermissionAssetreport = this.checkGroupPermission('view_assetreport', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionAssetreport);
+
+                  this.hasViewPermissionAssettransreport = this.checkGroupPermission('view_assettransactionreport', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionAssettransreport);
+
+
+                  // Customization permissions
+
+                this.hasViewPermissionEmpForm = this.checkGroupPermission('view_emp_customfield', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionEmpForm);
+
+                this.hasviewPermissionAssetForm = this.checkGroupPermission('view_assetcustomfield', groupPermissions);
+                  console.log('Has view permission:', this.hasviewPermissionAssetForm);
+
+
+                  // Customization permissions
+
+                  this.hasViewPermissionConfig = this.checkGroupPermission('view_emailconfiguration', groupPermissions);
+                  console.log('Has view permission:', this.hasViewPermissionConfig);
+
+
+                  // Document Permissions
+
+                this.hasViewPermissionDocReqType = this.checkGroupPermission('view_docrequesttype', groupPermissions);
+                console.log('Has view permission:', this.hasViewPermissionDocReqType);
+
+                this.hasViewPermissionDocReqApr = this.checkGroupPermission('view_documentapproval', groupPermissions);
+                console.log('Has view permission:', this.hasViewPermissionDocReqApr);
+
+                this.hasViewPermissionDocAprlvl = this.checkGroupPermission('view_documentapprovallevel', groupPermissions);
+                console.log('Has view permission:', this.hasViewPermissionDocAprlvl);
+
+                this.hasViewPermissionDocReq = this.checkGroupPermission('view_documentrequest', groupPermissions);
+                console.log('Has view permission:', this.hasViewPermissionDocReq);
       
                  
               } else {

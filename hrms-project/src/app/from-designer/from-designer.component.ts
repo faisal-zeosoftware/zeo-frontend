@@ -223,7 +223,8 @@ bloodDropdownOptions: string[] = [];  // Property to store the dropdown options
 
 
 
-  constructor(private EmployeeService: EmployeeService ,
+  constructor(
+    private EmployeeService: EmployeeService ,
     private http: HttpClient,
     private authService: AuthenticationService,
     private dialog: MatDialog,
@@ -388,25 +389,10 @@ if (this.userId !== null) {
 
    }
 
-  //  checkViewPermission(permissions: any[]): boolean {
-  //   const requiredPermission = 'add_emp_customfield' ||'change_emp_customfield' ||'delete_emp_customfield' ||'view_emp_customfield';
+
     
     
-  //   // Check user permissions
-  //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-  //     return true;
-  //   }
-    
-  //   // Check group permissions (if applicable)
-  //   // Replace `// TODO: Implement group permission check`
-  //   // with your logic to retrieve and check group permissions
-  //   // (consider using a separate service or approach)
-  //   return false; // Replace with actual group permission check
-  //   }
-    
-    
-    
-    
+
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
     }

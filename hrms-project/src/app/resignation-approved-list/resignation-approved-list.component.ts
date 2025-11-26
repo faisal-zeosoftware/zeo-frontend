@@ -124,17 +124,17 @@ if (this.userId !== null) {
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_resignationapproval', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_create_eos_for_resignation', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_resignationapproval', groupPermissions);
-                console.log('Has edit permission:', this.hasEditPermission);
+              //   this.hasEditPermission = this.checkGroupPermission('change_resignationapproval', groupPermissions);
+              //   console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_resignationapproval', groupPermissions);
-               console.log('Has delete permission:', this.hasDeletePermission);
+              //  this.hasDeletePermission = this.checkGroupPermission('delete_resignationapproval', groupPermissions);
+              //  console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_resignationapproval', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_approved_resignations', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 

@@ -130,22 +130,23 @@ if (this.userId !== null) {
                 this.hasAddPermission = true;
                 this.hasDeletePermission = true;
                 this.hasEditPermission = true;
+                
               } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_emailtemplate', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_advancesalaryemailtemplate', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_emailtemplate', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_advancesalaryemailtemplate', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_emailtemplate', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_advancesalaryemailtemplate', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_emailtemplate', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_advancesalaryemailtemplate', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 

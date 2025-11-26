@@ -114,16 +114,16 @@ if (this.userId !== null) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
 
-               this.hasViewPermission = this.checkGroupPermission('view_document_type', groupPermissions);
+               this.hasViewPermission = this.checkGroupPermission('view_docrequesttype', groupPermissions);
              console.log('Has view permission:', this.hasViewPermission);
         
-              this.hasAddPermission = this.checkGroupPermission('add_document_type', groupPermissions);
+              this.hasAddPermission = this.checkGroupPermission('add_docrequesttype', groupPermissions);
              console.log('Has add permission:', this.hasAddPermission);
         
-             this.hasDeletePermission = this.checkGroupPermission('delete_document_type', groupPermissions);
+             this.hasDeletePermission = this.checkGroupPermission('delete_docrequesttype', groupPermissions);
              console.log('Has delete permission:', this.hasDeletePermission);
         
-       this.hasEditPermission = this.checkGroupPermission('change_document_type', groupPermissions);
+       this.hasEditPermission = this.checkGroupPermission('change_docrequesttype', groupPermissions);
               console.log('Has edit permission:', this.hasEditPermission);
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);

@@ -43,7 +43,7 @@ export class HolidayCalendarComponent {
   calendars: any[] = [];
 
 
-  hasAddPermission: boolean = false;
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;

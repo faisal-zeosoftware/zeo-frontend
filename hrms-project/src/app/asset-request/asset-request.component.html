@@ -298,16 +298,6 @@
                 <tbody>
                   <tr *ngFor="let docs of AssetsRequest; let i = index">
                     <td data-label="No">
-                      <button
-                        mat-fab
-                        color="primary"
-                        aria-label="Edit icon"
-                        *ngIf="showEditBtn"
-                        (click)="openEditModal(docs)"
-                      >
-                        <mat-icon style="color: white;">draw</mat-icon>
-                      </button>
-              
                       <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
                       {{ i + 1 }}
                     </td>
@@ -335,6 +325,17 @@
                         style="margin-left: 5px;"
                       >
                         Reject
+                      </button>
+                       
+                       <button
+                        mat-fab
+                        color="primary"
+                        aria-label="Edit icon"
+                        *ngIf="showEditBtn"
+                        (click)="openEditModal(docs)"
+                        style="margin-left: 5px;"
+                      >
+                        <mat-icon style="color: white;">draw</mat-icon>
                       </button>
                     </td>
                   </tr>

@@ -132,17 +132,17 @@ if (this.userId !== null) {
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_emailtemplate', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_docexpemailtemplate', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_emailtemplate', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_docexpemailtemplate', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_emailtemplate', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_docexpemailtemplate', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_emailtemplate', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_docexpemailtemplate', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 

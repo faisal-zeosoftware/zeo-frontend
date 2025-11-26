@@ -34,13 +34,18 @@ export class LeaveOptionsComponent {
   user_permissions: string[] = [];
 
   
-  hasViewPermissionEmp: boolean = false;
+  hasViewPermissionEmpLeaveReq: boolean = false;
   hasViewPermissiondesg: boolean = false;
-  hasViewPermission: boolean =false;
-  hasViewPermissiondept: boolean = false;
+  hasViewPermissionLeaveApr: boolean =false;
+  hasViewPermissionLeaveMas: boolean = false;
   hasViewPermissioncmpL: boolean = false;
   hasViewPermissionLeaveAprvlvl: boolean = false;
   hasViewPermissionLeavetemp: boolean = false;
+
+  hasViewPermissionLeaveBalance: boolean = false;
+  hasViewPermissionLeaveCancel: boolean = false;
+  hasViewPermissionLeaveAccrual: boolean = false;
+  hasViewPermissionLeaveRejoin: boolean = false;
 
 
 
@@ -90,13 +95,18 @@ if (this.userId !== null) {
       if (isSuperuser) {
         console.log('User is superuser or ESS user');
         // Grant all permissions
-        this.hasViewPermission = true;
-        this.hasViewPermissionEmp = true;
+        this.hasViewPermissionLeaveApr = true;
+        this.hasViewPermissionEmpLeaveReq = true;
         this.hasViewPermissiondesg = true;
-        this.hasViewPermissiondept = true;
+        this.hasViewPermissionLeaveMas = true;
         this.hasViewPermissioncmpL = true;
         this.hasViewPermissionLeaveAprvlvl = true;
         this.hasViewPermissionLeavetemp = true;
+ 
+        this.hasViewPermissionLeaveBalance = true;
+        this.hasViewPermissionLeaveCancel = true;
+        this.hasViewPermissionLeaveAccrual = true;
+        this.hasViewPermissionLeaveRejoin = true;
 
 
 
@@ -158,13 +168,19 @@ if (this.userId !== null) {
               if (firstItem.is_superuser) {
                 console.log('User is superuser according to permissions API');
                 // Grant all permissions
-                this.hasViewPermission = true;
-                this.hasViewPermissionEmp = true;
+                this.hasViewPermissionLeaveApr = true;
+                this.hasViewPermissionEmpLeaveReq = true;
                 this.hasViewPermissiondesg = true;
-                this.hasViewPermissiondept = true;
+                this.hasViewPermissionLeaveMas = true;
                 this.hasViewPermissioncmpL = true;
                 this.hasViewPermissionLeaveAprvlvl = true;
                 this.hasViewPermissionLeavetemp = true;
+
+                 
+               this.hasViewPermissionLeaveBalance = true;
+               this.hasViewPermissionLeaveCancel = true;
+               this.hasViewPermissionLeaveAccrual = true;
+               this.hasViewPermissionLeaveRejoin = true;
 
 
         
@@ -172,17 +188,17 @@ if (this.userId !== null) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
 
-                this.hasViewPermission = this.checkGroupPermission('view_leaveapproval', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermission);
+                this.hasViewPermissionLeaveApr = this.checkGroupPermission('view_leaveapproval', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionLeaveApr);
     
-                     this.hasViewPermissiondesg = this.checkGroupPermission('view_leave_type', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermissiondesg);
+                     this.hasViewPermissionLeaveMas = this.checkGroupPermission('view_leave_type', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionLeaveMas);
                         
-                     this.hasViewPermissiondept = this.checkGroupPermission('view_leave_entitlement', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermissiondept);
+                    //  this.hasViewPermissiondesg = this.checkGroupPermission('view_leave_entitlement', groupPermissions);
+                    //  console.log('Has view permission:', this.hasViewPermissiondesg);
       
-                     this.hasViewPermissionEmp = this.checkGroupPermission('view_employee_leave_request', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermissionEmp);
+                     this.hasViewPermissionEmpLeaveReq = this.checkGroupPermission('view_employee_leave_request', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionEmpLeaveReq);
                     
                      this.hasViewPermissioncmpL = this.checkGroupPermission('view_compensatoryleavetransaction', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissioncmpL);
@@ -190,8 +206,21 @@ if (this.userId !== null) {
                      this.hasViewPermissionLeaveAprvlvl = this.checkGroupPermission('view_leaveapprovallevels', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionLeaveAprvlvl);
                     
-                     this.hasViewPermissionLeavetemp = this.checkGroupPermission('view_lvemailtemplate', groupPermissions);
-                     console.log('Has view permission:', this.hasViewPermissionLeavetemp);
+                    //  this.hasViewPermissionLeavetemp = this.checkGroupPermission('view_lvemailtemplate', groupPermissions);
+                    //  console.log('Has view permission:', this.hasViewPermissionLeavetemp);
+
+
+                     this.hasViewPermissionLeaveBalance = this.checkGroupPermission('view_emp_leave_balance', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionLeaveBalance);
+                    
+                     this.hasViewPermissionLeaveCancel = this.checkGroupPermission('view_lv_cancellation', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionLeaveCancel);
+                     
+                     this.hasViewPermissionLeaveAccrual = this.checkGroupPermission('view_leave_accrual_transaction', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionLeaveAccrual);
+                    
+                     this.hasViewPermissionLeaveRejoin = this.checkGroupPermission('view_employeerejoining', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionLeaveRejoin);
                      
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);
