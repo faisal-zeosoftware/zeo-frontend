@@ -252,6 +252,7 @@ private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` fo
     this.generateReport();
     this.selectedFields = this.employeefields.filter(field => field.selected);
     this.fetchStandardReport();
+    
   
 
     this.userId = this.sessionService.getUserId();
@@ -1144,7 +1145,34 @@ saveAsExcelFile(buffer: any, fileName: string): void {
   }
 
 
+  iscreateFieldmodel: boolean = false;
 
+
+
+
+  openPopus():void{
+    this.iscreateFieldmodel = true;
+
+  }
+
+    closeapplicationModal():void{
+        this.iscreateFieldmodel = false;
+
+      }
+
+      showEditBtn: boolean = false;
+  
+      EditShowButtons() {
+        this.showEditBtn = !this.showEditBtn;
+      }
+  
+
+           Default: boolean = false;
+  
+    toggleCheckboxes() {
+      this.Default = !this.Default;
+    }
+  
 
   generateReportstest(): void {
     if (!this.selectedReportId) {
