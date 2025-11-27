@@ -570,8 +570,20 @@ this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).s
   window.location.reload();
 },
 (error) => {
-  console.error('Error updating asset:', error);
-  alert('Update failed');
+  console.error('Error updating Adv Salary Requset:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
 }
 );
 }

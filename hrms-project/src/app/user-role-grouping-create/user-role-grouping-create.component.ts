@@ -25,6 +25,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsReqtype: any[] = [];
   GrouppermissionsApr: any[] = [];
   GrouppermissionsAprlvl: any[] = [];
+  GrouppermissionsGenReqEsc: any[] = [];
   GrouppermissionsAtd: any[] = [];
   GrouppermissionsExpDocument: any[] = [];
   GrouppermissionsEmpOver: any[] = [];
@@ -132,6 +133,13 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsAssetmaster:any[] =[];
   GrouppermissionsAssetAlon:any[] =[];
   GrouppermissionsAssetReq:any[] =[];
+
+  //permission stored arrays for Document Management
+
+  GrouppermissionsDocumentAddFol:any[] =[];
+
+  
+
   
   
  //permission stored arrays for Project
@@ -197,6 +205,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   ReqtypeMasterInderminate = false;
   AprMasterInderminate = false;
   AprlvlMasterInderminate = false;
+  GenReqEscMasterInderminate = false;
   AtdMasterInderminate = false;
   ExpDocumentInderminate = false;
   EmpOverInderminate = false;
@@ -315,6 +324,12 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     AssetAlonInderminate= false;
     AssetReqInderminate= false;
 
+
+    //selected Document Management checkboxes.
+
+    DocumentAddFolInderminate= false;
+
+
     //selected Project checkboxes.
 
     ProjectsInderminate= false;
@@ -374,6 +389,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   ReqtypeMasterChecked: boolean = false;
   AprMasterChecked: boolean = false;
   AprlvlMasterChecked: boolean = false;
+  GenReqEscMasterChecked: boolean = false;
   AtdMasterChecked: boolean = false;
   ExpDocumentChecked: boolean = false;
   EmpOverChecked: boolean = false;
@@ -486,6 +502,14 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     AssetAlonChecked:boolean= false;
     AssetReqChecked:boolean= false;
 
+    //Document Managemet checkbox checked values
+
+     DocumentAddFolChecked:boolean= false;
+
+
+
+
+
     //Project checkbox checked values
 
     ProjectsChecked:boolean= false;
@@ -502,7 +526,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
      AirTicketRuleChecked:boolean= false;
 
 
-    //Document checkbox checked values
+    //Document Req checkbox checked values
      DocumentAprlvlChecked:boolean= false;
      DocumentAprChecked:boolean= false;
      DocumentReqChecked:boolean= false;
@@ -549,6 +573,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   Payrollchecked:boolean = false;
   Loanchecked:boolean = false;
   Assetchecked:boolean = false;
+  DocumentAddchecked:boolean = false;
   Projectchecked:boolean = false;
   AirTicketchecked:boolean = false;
   Documentchecked:boolean = false;
@@ -569,6 +594,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   PayrollMastersvalue:boolean =true;
   LoanMastersvalue:boolean =true;
   AssetMastersvalue:boolean =true;
+  DocumentAddMastersvalue:boolean =true;
   ProjectMastersvalue:boolean =true;
   AirTicketMastersvalue:boolean =true;
   DocumentMastersvalue:boolean =true;
@@ -687,6 +713,13 @@ isEmployeeManagementMasterChecked(): boolean {
       this.GrouppermissionsAprlvl.map(p => p.id).includes(permission)
     );
     return selectedGenPermissions.length > 0 && selectedGenPermissions.length < this.GrouppermissionsAprlvl.length;
+  }
+
+  isGenReqEscMasterIndeterminate(): boolean {
+    const selectedGenPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsGenReqEsc.map(p => p.id).includes(permission)
+    );
+    return selectedGenPermissions.length > 0 && selectedGenPermissions.length < this.GrouppermissionsGenReqEsc.length;
   }
 
   isAtdMasterIndeterminate(): boolean {
@@ -870,6 +903,8 @@ isNotifyIndeterminate(): boolean {
       this.AssetTransReportChecked
       
 }
+
+
   
 isEmployeeReportIndeterminate(): boolean {
     const selectedempreportPermissions = this.selectedPermissions.filter(permission =>
@@ -899,7 +934,6 @@ isGeneralReportIndeterminate(): boolean {
     return selectedGenReportPermissions.length > 0 && selectedGenReportPermissions.length < this.GrouppermissiionsgeneralReport.length;
 }
   
-
 isLeaveReportIndeterminate(): boolean {
     const selectedLeaveReportPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissiionsLeaveReport.map(p => p.id).includes(permission)
@@ -928,7 +962,6 @@ isAssetTransReportIndeterminate(): boolean {
     return selectedAssetTransReportPermissions.length > 0 && selectedAssetTransReportPermissions.length < this.GrouppermissionsAssetTransReport.length;
 }
 
-
 isLeaveAprRepIndeterminate(): boolean {
     const selectedLeaveAprReportPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissiionsLeaveAprRep.map(p => p.id).includes(permission)
@@ -936,14 +969,12 @@ isLeaveAprRepIndeterminate(): boolean {
     return selectedLeaveAprReportPermissions.length > 0 && selectedLeaveAprReportPermissions.length < this.GrouppermissiionsLeaveAprRep.length;
 }
 
-
 isDeptReportIndeterminate(): boolean {
     const selectedDeptReportPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissiionsDeptReport.map(p => p.id).includes(permission)
     );
     return selectedDeptReportPermissions.length > 0 && selectedDeptReportPermissions.length < this.GrouppermissiionsDeptReport.length;
 }
-
 
 isDesReportIndeterminate(): boolean {
     const selectedDesReportPermissions = this.selectedPermissions.filter(permission =>
@@ -957,6 +988,7 @@ isCustomizationManagementMasterChecked(): boolean {
     this.AssetformChecked
       
 }
+
 
 isEmpformIndeterminate(): boolean {
     const selectedEmpformPermissions = this.selectedPermissions.filter(permission =>
@@ -1011,6 +1043,7 @@ isAssignHolidayIndeterminate(): boolean {
     return selectedassignholidayPermissions.length > 0 && selectedassignholidayPermissions.length < this.Grouppermissionsassisgnholiday.length;
 }
 
+
 isLeaveMangementMasterChecked():boolean{
     return this.LeaveaprvChecked &&
     this.LeavetypeChecked &&
@@ -1026,7 +1059,6 @@ isLeaveMangementMasterChecked():boolean{
 }
 
  
-
 isLeaveaprvIndeterminate(): boolean {
     const selectedLeaveaprvPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissionsLeaveaprv.map(p => p.id).includes(permission)
@@ -1077,14 +1109,12 @@ isLeaveBalanceIndeterminate(): boolean {
     return selectedLeaveBalancePermissions.length > 0 && selectedLeaveBalancePermissions.length < this.GrouppermissionsLeaveBalance.length;
 }
 
-
 isLeaveCancelIndeterminate(): boolean {
     const selectedLeaveCancelPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissionsLeaveCancel.map(p => p.id).includes(permission)
     );
     return selectedLeaveCancelPermissions.length > 0 && selectedLeaveCancelPermissions.length < this.GrouppermissionsLeaveCancel.length;
 }
-
 
 isLeaveAccrualIndeterminate(): boolean {
     const selectedLeaveAccrualPermissions = this.selectedPermissions.filter(permission =>
@@ -1113,9 +1143,6 @@ isPayrollManagementMasterChecked():boolean{
   this.AdvanceSalaryAprlvlChecked &&
   this.WpsChecked
 }
-
-
-
 
 
 
@@ -1177,6 +1204,7 @@ isWpsIndeterminate(): boolean {
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsWps.length;
 }
+
 
 // Loan ManagementMaster Checked 
 
@@ -1264,6 +1292,22 @@ isAssetReqIndeterminate(): boolean {
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsAssetReq.length;
 }
+
+
+// Document ManagementMaster Checked 
+
+isDocumentAddManagementMasterChecked():boolean{
+   return this.DocumentAddFolChecked 
+
+}
+
+isDocumentAddFolIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsDocumentAddFol.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsDocumentAddFol.length;
+}
+
 
 // Project ManagementMaster Checked 
 
@@ -1508,6 +1552,7 @@ isAirTicketRuleIndeterminate(): boolean {
     this.loadPayrollPermissions();
     this.loadLoanPermissions();
     this.loadAssetPermissions();
+    this.loadDocumentAddPermissions();
     this.loadProjectPermissions();
     this.loadAirTicketPermissions();
     this.loadDocumentPermissions();
@@ -1525,6 +1570,7 @@ isAirTicketRuleIndeterminate(): boolean {
     this.updateInderminatePayroll();
     this.updateInderminateLoan();
     this.updateInderminateAsset();
+    this.updateInderminateDocumentAdd();
     this.updateInderminateProject();
     this.updateInderminateAirTicket();
     this.updateInderminateDocument();
@@ -1669,6 +1715,14 @@ updateInderminateAsset():void{
  
 }
 
+// Update Interminate Document Management
+
+updateInderminateDocumentAdd():void{
+  this.isDocumentAddFolIndeterminate();
+
+ 
+}
+
 // Update Interminate Project
 
 updateInderminateProject():void{
@@ -1768,6 +1822,7 @@ updateInderminateShift():void{
     this.loadpermissionsReqtypeMaster();
     this.loadpermissionsAprMaster();
     this.loadpermissionsAprlvlMaster();
+    this.loadpermissionsGenReqEscMaster();
     this.loadpermissionsAtdMaster();
     this.loadpermissionsExpDocument();
     this.loadpermissionsEmpOver();
@@ -1896,6 +1951,15 @@ updateInderminateShift():void{
   this.loadpermissionsAssetmaster();
   this.loadpermissionsAssetAlon();
   this.loadpermissionsAssetReq();
+
+  }
+
+    // Document Management Permissions
+
+  loadDocumentAddPermissions():void{
+
+  this.loadpermissionsDocumnetAddFol();
+
 
   }
 
@@ -2386,6 +2450,61 @@ updateInderminateShift():void{
           case 'delete_approvallevel':
             return 'Delete';
           case 'view_approvallevel':
+            return 'View';
+          default:
+            return permissionCodename;
+        }
+      }
+
+
+      
+      loadpermissionsGenReqEscMaster(): void {
+        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+        console.log('schemastore', selectedSchema);
+      
+        if (selectedSchema) {
+          this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+            (result: any[]) => {
+              // Specify the codenames you want to filter
+              const requiredCodenames = ['add_genrl_escalation', 
+                                        'change_genrl_escalation', 
+                                        'delete_genrl_escalation', 
+                                        'view_genrl_escalation'];
+      
+              // Filter and remove duplicates based on codename
+              const uniquePermissionsMap = new Map();
+              result.forEach(permission => {
+                const codename = permission.codename.trim().toLowerCase();
+                if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                  uniquePermissionsMap.set(codename, permission);
+                }
+              });
+      
+              // Convert map values to an array
+              this.GrouppermissionsGenReqEsc = Array.from(uniquePermissionsMap.values());
+      
+              console.log('Filtered Unique Permissions:', this.GrouppermissionsGenReqEsc);
+            },
+            (error: any) => {
+              console.error('Error fetching permissions:', error);
+            }
+          );
+        }
+      }
+    
+    
+       //Display Name  add view delte code for General request master-------
+    
+       getDisplayNameGenReqEsc(permissionCodename: string): string {
+        switch (permissionCodename.trim().toLowerCase()) {
+          case 'add_genrl_escalation':
+            return 'Add';
+          case 'change_genrl_escalation':
+            return 'Edit';
+          case 'delete_genrl_escalation':
+            return 'Delete';
+          case 'view_genrl_escalation':
             return 'View';
           default:
             return permissionCodename;
@@ -6195,6 +6314,54 @@ getDisplayNameAssetReq(permissionCodename: string): string {
   }
 }
 
+
+loadpermissionsDocumnetAddFol(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_folder',
+          'change_folder',
+          'delete_folder',
+          'view_folder',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsDocumentAddFol = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Document Folder permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Allocation permissions ===
+getDisplayNameDocumentAddFol(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_folder':
+      return 'Add';
+    case 'change_folder':
+      return 'Edit';
+    case 'delete_folder':
+      return 'Delete';
+    case 'view_folder':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 loadpermissionsProjects(): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
@@ -6220,7 +6387,7 @@ loadpermissionsProjects(): void {
         this.GrouppermissionsProjects = Array.from(uniqueMap.values());
       },
       (error: any) => {
-        console.error('Error fetching Projects permissions:', error);
+        console.error('Error fetching Document permissions:', error);
       }
     );
   }
@@ -7390,6 +7557,25 @@ getDisplayNameShiftOverRide(permissionCodename: string): string {
     this.AprlvlMasterInderminate = this.isAprlvlMasterIndeterminate();
 
   }
+
+  onCheckboxChangeGenReqEsc(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateGenReqEscMasterCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateGenReqEscMasterCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsGenReqEsc.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.GenReqEscMasterChecked = allPermissionsSelected;
+    this.GenReqEscMasterInderminate = this.isGenReqEscMasterIndeterminate();
+
+  }
   
   onCheckboxChangeAtd(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
@@ -7701,27 +7887,7 @@ getDisplayNameShiftOverRide(permissionCodename: string): string {
     this.documentMasterInderminate = this.isdocumenttypeIndeterminate();
   }
 
-  // onCheckboxChangesexpiry(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   // Update selectAll checkbox status
-  //   this.updateexpiryMasterCheckbox();
-  //   this.updateSelectAlls();
 
-  // }
-
-  // updateexpiryMasterCheckbox(): void {
-  //   const allPermissionsSelected = this.Grouppermissionsexpirydocuments.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.expireddocumnetsMasterChecked = allPermissionsSelected;
-  //   this.expiredMasterInderminate = this.isExpireddocumentsIndeterminate();
-  // }
 
   onCheckboxChangesloc(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
@@ -7790,50 +7956,10 @@ getDisplayNameShiftOverRide(permissionCodename: string): string {
     this.CpMasterInderminate = this.isCpmasterIndeterminate();
   }
 
-  // onCheckboxChangesEmt(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   // Update selectAll checkbox status
-  //   this.updateEmtMasterCheckbox();
-  //   this.updateSelectAlls();
-
-  // }
-
-  // updateEmtMasterCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsEmtMaster.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.EmtMasterChecked = allPermissionsSelected;
-  //   this.EmtMasterInderminate = this.isEmtmasterIndeterminate();
-  // }
 
 
-  // onCheckboxChangesFormdes(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   // Update selectAll checkbox status
-  //   this.updateFormdesMasterCheckbox();
-  //   this.updateSelectAlls();
 
-  // }
 
-  // updateFormdesMasterCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsFormdesMaster.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.FormdesMasterChecked = allPermissionsSelected;
-  //   this.FormdesMasterInderminate = this.isFormdesmasterIndeterminate();
-  // }
 
   onCheckboxChangesConfig(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
@@ -8287,27 +8413,6 @@ updateLeaveAprRepCheckbox(): void {
     this.assignholidayInderminate= this.isAssignHolidayIndeterminate();
   }
 
-  // onCheckboxChangesShifts(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   // Update selectAll checkbox status
-  //   this.updateShiftCheckbox();
-  //   this.updateCalender();
-
-  // }
-
-  // updateShiftsCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsShift.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.ShiftChecked= allPermissionsSelected;
-  //   this.ShiftInderminate= this.isShiftIndeterminate();
-  // }
 
   onCheckboxChangesLeaveaprv(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
@@ -8443,27 +8548,6 @@ updateLeaveAprRepCheckbox(): void {
     this.LeaveaprvlvlInderminate = this.isLeaveaprvlvlIndeterminate();
   }
 
-  // onCheckboxChangesLeaveaprvlvltemp(permission: string): void {
-  //   if (this.selectedPermissions.includes(permission)) {
-  //     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-  //   } else {
-  //     this.selectedPermissions.push(permission);
-  //   }
-  
-   
-  //   // Update selectAll checkbox status
-  //   this.updateLeaveaprvlvltempCheckbox();
-  //   this.updateLeave();
-
-  // }
-
-  // updateLeaveaprvlvltempCheckbox(): void {
-  //   const allPermissionsSelected = this.GrouppermissionsLeaveaprvlvltemp.every(permission => 
-  //     this.selectedPermissions.includes(permission.id)
-  //   );
-  //   this.LeaveaprvlvltempChecked = allPermissionsSelected;
-  //   this.LeaveaprvlvltempInderminate = this.isLeaveaprvlvltempIndeterminate();
-  // }
 
     onCheckboxChangesLeaveBalance(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
@@ -8872,6 +8956,24 @@ updateAssetReqCheckbox(): void {
     this.selectedPermissions.includes(p.id)
   );
   this.AssetReqChecked = allSelected;
+}
+
+onCheckboxChangesDocumentAddFol(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateDocumentAddFolCheckbox();
+  this.updateDocumentAdd();
+}
+
+updateDocumentAddFolCheckbox(): void {
+  const allSelected = this.GrouppermissionsDocumentAddFol.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.DocumentAddFolChecked = allSelected;
 }
 
 onCheckboxChangesProjects(permissionId: number): void {
@@ -9374,6 +9476,7 @@ updateShiftOverRideCheckbox(): void {
     this.updateReqtypeMasterCheckbox();
     this.updateAprMasterCheckbox();
     this.updateAprlvlMasterCheckbox();
+    this.updateGenReqEscMasterCheckbox();
     this.updateAtdMasterCheckbox();
     this.updateExpDocumentCheckbox();
     this.updateEmpOverCheckbox();
@@ -9394,10 +9497,8 @@ updateShiftOverRideCheckbox(): void {
     this.updateassignMasterCheckbox();
     this.updateStateMasterCheckbox();
     this.updatedoctypeMasterCheckbox();
-    // this.updateexpiryMasterCheckbox();
     this.updatelocMasterCheckbox();
     this.updateDnMasterCheckbox();
-    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -9413,7 +9514,6 @@ updateShiftOverRideCheckbox(): void {
     this.updateAddWeekCheckbox();
     this.updateAssignHolidayCheckbox();
     this.updateAssignweekCheckbox();
-    // this.updateShiftCheckbox();
     this.updateLeaveaprvCheckbox();
 
     this.updateSelectAll();
@@ -9425,6 +9525,7 @@ updateShiftOverRideCheckbox(): void {
     this.updatePayroll();
     this.updateLoan();
     this.updateAsset();
+    this.updateDocumentAdd();
     this.updateProject();
     this.updateAirTicket();
     this.updateDocument();
@@ -9443,6 +9544,7 @@ updateShiftOverRideCheckbox(): void {
                             this.ReqtypeMasterChecked&&
                             this.AprMasterChecked &&
                             this.AprlvlMasterChecked &&
+                            this.GenReqEscMasterChecked &&
                             this.AtdMasterChecked &&
                             this.ExpDocumentChecked &&
                             this.EmpOverChecked &&
@@ -9459,7 +9561,7 @@ updateShiftOverRideCheckbox(): void {
 isEmpDeptDisCatPermission(permission: string): boolean {
   return [...this.GrouppermissionsEmp, ...this.GrouppermissionsDept, ...this.GrouppermissionsDis, 
     ...this.GrouppermissionsCat, ...this.GrouppermissionsGen,...this.GrouppermissionsReqtype,
-    ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,...this.GrouppermissionsAtd,...this.GrouppermissionsExpDocument,...this.GrouppermissionsEmpOver,
+    ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,...this.GrouppermissionsGenReqEsc,...this.GrouppermissionsAtd,...this.GrouppermissionsExpDocument,...this.GrouppermissionsEmpOver,
   ...this.GrouppermissionsEmpAprList,...this.GrouppermissionsEmpRegAprList,this.GrouppermissionsEndofSer,this.GrouppermissionsRegReq,
 ...this.GrouppermissionsRegAprlvl,...this.GrouppermissionsGratuity]
     .some(p => p.id === permission);
@@ -9477,6 +9579,7 @@ isIndeterminate(): boolean {
     ...this.GrouppermissionsReqtype,
     ...this.GrouppermissionsApr,
     ...this.GrouppermissionsAprlvl,
+    ...this.GrouppermissionsGenReqEsc,
     ...this.GrouppermissionsAtd,
     ...this.GrouppermissionsExpDocument,
     ...this.GrouppermissionsEmpOver,
@@ -9503,9 +9606,9 @@ isemployee(): boolean {
   const ReqtypeMasterInderminate = this.isReqtypeMasterIndeterminate();
   const AprMasterInderminate = this.isAprMasterIndeterminate();
   const AprlvlMasterInderminate = this.isAprlvlMasterIndeterminate();
+  const GenReqEscMasterInderminate = this.isGenReqEscMasterIndeterminate();
   const AtdMasterInderminate = this.isAtdMasterIndeterminate();
   const ExpDocumentInderminate = this.isExpDocumentIndeterminate();
-
   const EmpOverInderminate = this.isEmpOverIndeterminate();
   const EmpAprListInderminate = this.isEmpAprListIndeterminate();
   const EmpRegAprListInderminate = this.isEmpRegAprListIndeterminate();
@@ -9521,7 +9624,7 @@ isemployee(): boolean {
 
     // Return true only if some but not all checkboxes are selected
     return employeeMasterIndeterminate || departmentMasterInderminate || designationMasterInderminate || categoryMasterInderminate|| 
-    GenMasterInderminate|| ReqtypeMasterInderminate|| AprMasterInderminate|| AprlvlMasterInderminate|| AtdMasterInderminate|| ExpDocumentInderminate ||
+    GenMasterInderminate|| ReqtypeMasterInderminate|| AprMasterInderminate|| AprlvlMasterInderminate || GenReqEscMasterInderminate || AtdMasterInderminate|| ExpDocumentInderminate ||
      EmpOverInderminate || EmpAprListInderminate || EmpRegAprListInderminate || EndofSerInderminate || RegReqInderminate || RegAprlvlInderminate ||
       GratuityInderminate || otherGroupIndeterminate;
 }
@@ -9658,6 +9761,19 @@ isAsset(): boolean {
 
   return AssetTypeIndeterminate || AssetmasterIndeterminate || AssetAlonIndeterminate || AssetReqIndeterminate || otherGroupIndeterminate;
 }
+
+
+isDocumentAdd(): boolean {
+  const DocumentAddFolInderminate = this.isDocumentAddFolIndeterminate();
+
+
+
+    const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
+
+    // Return true only if some but not all checkboxes are selected
+    return DocumentAddFolInderminate || otherGroupIndeterminate;
+}
+
 
 isProject(): boolean {
   const ProjectsIndeterminate = this.isProjectsIndeterminate();
@@ -9849,6 +9965,21 @@ isShift(): boolean {
 
   }
 
+    onGenReqEscMasterChange(): void {
+
+    if (this.GenReqEscMasterChecked) {
+
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsGenReqEsc.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsGenReqEsc.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
   onAtdMasterChange(): void {
     if (this.AtdMasterChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAtd.map(permission => permission.id));
@@ -9890,7 +10021,7 @@ isShift(): boolean {
 
   }
 
-    onEmpAprListChange(): void {
+  onEmpAprListChange(): void {
     if (this.EmpAprListChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEmpAprList.map(permission => permission.id));
     } else {  
@@ -9917,7 +10048,7 @@ isShift(): boolean {
   }
 
 
-    onEndofSerChange(): void {
+  onEndofSerChange(): void {
     if (this.EndofSerChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEndofSer.map(permission => permission.id));
     } else {  
@@ -10049,18 +10180,7 @@ isShift(): boolean {
 
 
   }
-  // onUserExpireChange(): void {
-  //   if (this.expireddocumnetsMasterChecked) {
-  //     this.selectedPermissions = this.selectedPermissions.concat(this.Grouppermissionsexpirydocuments.map(permission => permission.id));
-  //   } else {
-  //     this.selectedPermissions = this.selectedPermissions.filter(permission => !this.Grouppermissionsexpirydocuments.map(p => p.id).includes(permission));
-  //   }
-  //   this.updateSettingsCheckbox();
-  //   // this.updateSelectedPermissions(this.expireddocumnetsMasterChecked, this.Grouppermissionsexpirydocuments);
-  //   // this.settingsChecked = this.expireddocumnetsMasterChecked;
 
-
-  // }
   onUserLocationChange(): void {
     if (this.locationMasterChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionslocationMaster.map(permission => permission.id));
@@ -10100,31 +10220,6 @@ isShift(): boolean {
 
   }
 
-  // onUserEmtChange(): void {
-  //   if (this.EmtMasterChecked) {
-  //     this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsEmtMaster.map(permission => permission.id));
-  //   } else {
-  //     this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsEmtMaster.map(p => p.id).includes(permission));
-  //   }
-  //   this.updateSettingsCheckbox();
-  //   // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
-  //   // this.settingsChecked = this.locationMasterChecked;
-
-
-  // }
-
-  // onUserFormdesChange(): void {
-  //   if (this.FormdesMasterChecked) {
-  //     this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsFormdesMaster.map(permission => permission.id));
-  //   } else {
-  //     this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsFormdesMaster.map(p => p.id).includes(permission));
-  //   }
-  //   this.updateSettingsCheckbox();
-  //   // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
-  //   // this.settingsChecked = this.locationMasterChecked;
-
-
-  // }
 
   onConfigChange(): void {
     if (this.ConfigMasterChecked) {
@@ -10382,17 +10477,6 @@ isShift(): boolean {
 
   }
 
-  // onShiftChange(): void {
-  //   if (this.ShiftChecked) {
-  //     this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsShift.map(permission => permission.id));
-  //   } else {
-  //     this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsShift.map(p => p.id).includes(permission));
-  //   }
-  //   this.updateCalenderCheckbox();
- 
-
-
-  // }
 
 
   onLeaveaprvChange(): void {
@@ -10475,19 +10559,6 @@ isShift(): boolean {
 
 
   }
-
-  // onLeaveaprvlvltempChange(): void {
-  //   if (this.LeaveaprvlvltempChecked) {
-  //     this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveaprvlvltemp.map(permission => permission.id));
-  //   } else {
-  //     this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeaveaprvlvltemp.map(p => p.id).includes(permission));
-  //   }
-  //   this.updateLeaveCheckbox();
-  //   // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
-  //   // this.settingsChecked = this.locationMasterChecked;
-
-
-  // }
 
     onLeaveBalanceChange(): void {
     if (this.LeaveBalanceChecked) {
@@ -10654,7 +10725,6 @@ onLoanApprovalChange(): void {
 }
 
 
-
 onLoanTypeChange(): void {
   if (this.LoanTypeChecked) {
     const idsToAdd = this.GrouppermissionsLoanType.map(p => p.id);
@@ -10747,6 +10817,19 @@ onAssetReqChange(): void {
   } else {
     this.selectedPermissions = this.selectedPermissions.filter(
       id => !this.GrouppermissionsAssetReq.some(p => p.id === id)
+    );
+  }
+  this.updateAssetCheckbox();
+}
+
+
+onDocumentAddFolChange(): void {
+  if (this.DocumentAddFolChecked) {
+    const idsToAdd = this.GrouppermissionsDocumentAddFol.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsDocumentAddFol.some(p => p.id === id)
     );
   }
   this.updateAssetCheckbox();
@@ -10973,6 +11056,9 @@ onLoanReqTempChange(): void {
   }
 
 
+  // Shifts 
+
+
  onShiftsChange(): void {
   if (this.ShiftsChecked) {
     const idsToAdd = this.GrouppermissionsShifts.map(p => p.id);
@@ -11073,6 +11159,10 @@ updateLeaveCheckbox(): void {
   this.Assetchecked = this.isAssetManagementMasterChecked();
 }
 
+  updateDocumentAddCheckbox(): void {
+  this.DocumentAddchecked = this.isAssetManagementMasterChecked();
+}
+
   updateProjectCheckbox(): void {
   this.Projectchecked = this.isProjectManagementMasterChecked();
 }
@@ -11120,9 +11210,9 @@ updateShiftCheckbox(): void {
     ...this.GrouppermissionsReqtype,
     ...this.GrouppermissionsApr,
     ...this.GrouppermissionsAprlvl,
+    ...this.GrouppermissionsGenReqEsc,
     ...this.GrouppermissionsAtd,
     ...this.GrouppermissionsExpDocument,
-
     ...this.GrouppermissionsEmpOver,
     ...this.GrouppermissionsEmpAprList,
     ...this.GrouppermissionsEmpRegAprList,
@@ -11150,9 +11240,9 @@ updateShiftCheckbox(): void {
   this.updateReqtypeMasterCheckbox();
   this.updateAprMasterCheckbox();
   this.updateAprlvlMasterCheckbox();
+  this.updateGenReqEscMasterCheckbox();
   this.updateAtdMasterCheckbox();
   this.updateExpDocumentCheckbox();
-
   this.updateEmpOverCheckbox();
   this.updateEmpAprListCheckbox();
   this.updateEmpRegAprListCheckbox();
@@ -11177,13 +11267,9 @@ updateShiftCheckbox(): void {
       ...this.GrouppermissionsassigneddUser,
       ...this.GrouppermissionsstateMaster,
       ...this.Grouppermissionsdocumentype,
-      // ...this.Grouppermissionsexpirydocuments,
       ...this.GrouppermissionslocationMaster,
       ...this.GrouppermissionsDnMaster,
       ...this.GrouppermissionsCpMaster,
-      // ...this.GrouppermissionsEmtMaster,
-
-      // ...this.GrouppermissionsFormdesMaster,
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
@@ -11203,13 +11289,9 @@ updateShiftCheckbox(): void {
     this.updateStateMasterCheckbox();
     this.updateassignMasterCheckbox();
     this.updatedoctypeMasterCheckbox();
-    // this.updateexpiryMasterCheckbox();
     this.updatelocMasterCheckbox();
     this.updateDnMasterCheckbox();
     this.updateCpMasterCheckbox();
-    // this.updateEmtMasterCheckbox();
-
-    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -11259,7 +11341,7 @@ updateShiftCheckbox(): void {
 
 
 
-    selectCustomization(): void {
+selectCustomization(): void {
     const allPermissions = [
       ...this.GrouppermissionsEmpform,
       ...this.GrouppermissionsAssetform
@@ -11277,7 +11359,7 @@ updateShiftCheckbox(): void {
     this.updateEmpformCheckbox();
     this.updateAssetformCheckbox();
 
-  }
+}
 
 
 selectCalender(): void {
@@ -11428,6 +11510,28 @@ selectAsset(): void {
   this.updateAssetmasterCheckbox();
   this.updateAssetAlonCheckbox();
   this.updateAssetReqCheckbox();
+
+ 
+}
+
+selectDocumentAdd(): void {
+  const allPermissions = [
+    ...this.GrouppermissionsDocumentAddFol,
+
+
+
+  ].map(permission => permission.id);
+
+  if (this.DocumentAddchecked) {
+    // Select all payroll permissions
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...allPermissions]));
+  } else {
+    // Deselect all payroll permissions
+    this.selectedPermissions = this.selectedPermissions.filter(p => !allPermissions.includes(p));
+  }
+
+  this.updateDocumentAddFolCheckbox();
+
 
  
 }
@@ -11590,6 +11694,7 @@ updateSelectAll(): void {
   this.updateReqtypeMasterCheckbox();
   this.updateAprMasterCheckbox();
   this.updateAprlvlMasterCheckbox();
+  this.updateGenReqEscMasterCheckbox();
   this.updateAtdMasterCheckbox();
   this.updateExpDocumentCheckbox();
   this.updateEmpOverCheckbox();
@@ -11623,19 +11728,12 @@ updateSelectAlls():void{
     this.updateStateMasterCheckbox();
     this.updateassignMasterCheckbox();
     this.updatedoctypeMasterCheckbox();
-    // this.updateexpiryMasterCheckbox();
     this.updatelocMasterCheckbox();
     this.updateDnMasterCheckbox();
     this.updateCpMasterCheckbox();
-    // this.updateEmtMasterCheckbox();
-
-    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
-
-
-
     this.updateSettingsCheckbox();
     this.updateIndeterminateStatesvalue();
 }
@@ -11653,8 +11751,6 @@ updateReport(): void {
   this.updateAttendReportCheckbox();
   this.updateAssetReportCheckbox();
   this.updateAssetTransReportCheckbox();
-
-
   this.updateIndeterminateReports();
 }
 
@@ -11670,8 +11766,6 @@ updateCalender():void{
   this.updateAddWeekCheckbox();
   this.updateAssignweekCheckbox();
   this.updateShiftCheckbox();
-
-
   this.updateInderminateCalenders();
   this.updateCalenderCheckbox();
 
@@ -11723,6 +11817,11 @@ updateAsset():void{
   this.updateAssetmasterCheckbox();
   this.updateAssetAlonCheckbox();
   this.updateAssetReqCheckbox();
+}
+
+updateDocumentAdd():void{
+  this.updateDocumentAddFolCheckbox();
+
 }
 
 updateProject():void{
@@ -11799,12 +11898,9 @@ updateShift():void{
       ...this.GrouppermissionsassigneddUser,
       ...this.GrouppermissionsstateMaster,
       ...this.Grouppermissionsdocumentype,
-      // ...this.Grouppermissionsexpirydocuments,
       ...this.GrouppermissionslocationMaster,
       ...this.GrouppermissionsDnMaster,
       ...this.GrouppermissionsCpMaster,
-      // ...this.GrouppermissionsEmtMaster,
-      // ...this.GrouppermissionsFormdesMaster,
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
@@ -11926,6 +12022,18 @@ isAssetInderminate(): boolean {
   ].some(permission => this.selectedPermissions.includes(permission.id));
 
   return hasSelectedPermissions && !this.isAssetManagementMasterChecked();
+}
+
+isDocumentAddInderminate(): boolean {
+  const hasSelectedPermissions = [
+    ...this.GrouppermissionsDocumentAddFol,
+
+    
+ 
+
+  ].some(permission => this.selectedPermissions.includes(permission.id));
+
+  return hasSelectedPermissions && !this.isDocumentAddManagementMasterChecked();
 }
 
 
@@ -12054,6 +12162,10 @@ showLoan(): void{
 
 showAsset(): void{
   this.AssetMastersvalue =!this.AssetMastersvalue;
+}
+
+showDocumentAdd(): void{
+  this.DocumentAddMastersvalue =!this.DocumentAddMastersvalue;
 }
 
 showProject(): void{

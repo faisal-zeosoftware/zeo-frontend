@@ -193,6 +193,9 @@ if (this.userId !== null) {
                      this.hasViewPermissionAprvlvl = this.checkGroupPermission('view_approvallevel', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionAprvlvl);
 
+                     this.hasViewPermissionGenReqEsc = this.checkGroupPermission('view_genrl_escalation', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionGenReqEsc);
+
                      this.hasViewPermissionAttd = this.checkGroupPermission('view_attendance', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionAttd);
                      

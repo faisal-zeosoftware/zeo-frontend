@@ -249,16 +249,13 @@
                   <div class="col-md-3">
                     <mat-checkbox [(ngModel)]="AprlvlMasterChecked" 
                               [indeterminate]="isAprlvlMasterIndeterminate()" 
-
-                                  (change)="onAprlvlMasterChange()" 
-                                  [ngModelOptions]="{standalone: true}">
+                              (change)="onAprlvlMasterChange()" 
+                              [ngModelOptions]="{standalone: true}">
                      Approvals Level
                     </mat-checkbox>
                   </div>
+
                   <div class="col-md-9">
-
-
-                    
                     <div class="selection_checkmark_sec">
                       <div class="all_selection_Sec">
                         <div class="row">
@@ -267,6 +264,33 @@
                                           (change)="onCheckboxChangeAprlvl(permission.id)" 
                                           [checked]="selectedPermissions.includes(permission.id)">
                               {{ getDisplayNameAprlvl(permission.codename) }}
+                            </mat-checkbox>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-3">
+                    <mat-checkbox [(ngModel)]="GenReqEscMasterChecked" 
+                              [indeterminate]="isGenReqEscMasterIndeterminate()" 
+                                  (change)="onGenReqEscMasterChange()" 
+                                  [ngModelOptions]="{standalone: true}">
+                     General Request Escalation
+                    </mat-checkbox>
+                  </div>
+
+                  <div class="col-md-9">
+                    <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                        <div class="row">
+                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsGenReqEsc">
+                            <mat-checkbox [value]="permission.id" 
+                                          (change)="onCheckboxChangeGenReqEsc(permission.id)" 
+                                          [checked]="selectedPermissions.includes(permission.id)">
+                              {{ getDisplayNameGenReqEsc(permission.codename) }}
                             </mat-checkbox>
                           </div>
                         </div>
@@ -749,30 +773,6 @@
                 </div>
               
                 
-                <!-- <div class="col-md-3">
-                  <span class=""><mat-checkbox [(ngModel)]="expireddocumnetsMasterChecked"
-                    [indeterminate]="isExpireddocumentsIndeterminate()" 
-                     (change)="onUserExpireChange()" 
-                     [ngModelOptions]="{standalone: true}" >
-                    Expired Documents
-                  </mat-checkbox> </span><br>
-        
-              </div>
-        
-              <div class="col-md-9">
-                  <div class="selection_checkmark_sec">
-                      <div class="all_selection_Sec">
-                          <div class="row">
-                              <div class="col-md-3" *ngFor="let permission of  Grouppermissionsexpirydocuments">
-                                  <h2> <span> <mat-checkbox [value]="permission.id" (change)="onCheckboxChangesexpiry(permission.id)"
-                                     [checked]="selectedPermissions.includes(permission.id)" > {{ getDisplayNameDocExpired(permission.codename) }} </mat-checkbox> </span> </h2>
-                                </div>
-                              
-                          </div>
-                      </div>
-                  </div>
-        
-              </div> -->
               
               <div class="col-md-3">
                 <span class=""><mat-checkbox [(ngModel)]="locationMasterChecked" 
@@ -858,61 +858,6 @@
     
         </div>
 
-        <!-- <div class="col-md-3">
-          <span class=""><mat-checkbox [(ngModel)]="EmtMasterChecked" 
-            [indeterminate]="isEmtmasterIndeterminate()" 
-            (change)="onUserEmtChange()" 
-            [ngModelOptions]="{standalone: true}" >
-           Email Template
-          </mat-checkbox> </span><br>
-  
-      </div>
-   
-      <div class="col-md-9">
-          <div class="selection_checkmark_sec">
-              <div class="all_selection_Sec">
-                  <div class="row">
-                      <div class="col-md-3" *ngFor="let permission of  GrouppermissionsEmtMaster">
-                          <h2> <span> <mat-checkbox [value]="permission.id" 
-                            (change)="onCheckboxChangesEmt(permission.id)" 
-                            [checked]="selectedPermissions.includes(permission.id)" > 
-                            {{ getDisplayNameEmt(permission.codename) }} 
-                          </mat-checkbox> </span> </h2>
-                        </div>
-                      
-                  </div>
-              </div>
-          </div>
-  
-      </div> -->
-        
-          <!-- <div class="col-md-3">
-            <span class=""><mat-checkbox [(ngModel)]="FormdesMasterChecked" 
-              [indeterminate]="isFormdesmasterIndeterminate()" 
-              (change)="onUserFormdesChange()" 
-              [ngModelOptions]="{standalone: true}" >
-              Form Designer
-            </mat-checkbox> </span><br>
-    
-        </div>
-     
-        <div class="col-md-9">
-            <div class="selection_checkmark_sec">
-                <div class="all_selection_Sec">
-                    <div class="row">
-                        <div class="col-md-3" *ngFor="let permission of  GrouppermissionsFormdesMaster">
-                            <h2> <span> <mat-checkbox [value]="permission.id" 
-                              (change)="onCheckboxChangesFormdes(permission.id)" 
-                              [checked]="selectedPermissions.includes(permission.id)" > 
-                              {{ getDisplayNameFormdes(permission.codename) }} 
-                            </mat-checkbox> </span> </h2>
-                          </div>
-                        
-                    </div>
-                </div>
-            </div>
-    
-        </div> -->
 
 
           <div class="col-md-3">
@@ -1604,36 +1549,6 @@
                         </div>
         
                     </div>
-                
-               
-<!-- 
-                    <div class="col-md-3">
-                      <span class=""><mat-checkbox [(ngModel)]="ShiftChecked"
-                        [indeterminate]="isShiftIndeterminate()" 
-                         (change)="onShiftChange()"
-                          [ngModelOptions]="{standalone: true}" >
-                         Shift Allocation
-                      </mat-checkbox> </span><br>
-    
-                  </div>
-    
-                  <div class="col-md-9">
-                      <div class="selection_checkmark_sec">
-                          <div class="all_selection_Sec">
-                              <div class="row">
-                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsShift">
-                                      <h2> <span> <mat-checkbox [value]="permission.id" 
-                                        (change)="onCheckboxChangesShift(permission.id)" 
-                                        [checked]="selectedPermissions.includes(permission.id)" >
-                                         {{ getDisplayNameShiftDetail(permission.codename) }} </mat-checkbox> </span> </h2>
-                                    </div>
-                                  
-                              </div>
-                          </div>
-                      </div>
-      
-                  </div>
-               -->
                  
         
                 </div>
@@ -2084,39 +1999,7 @@
             </div>
         </div>
 
-        <!-- <div class="col-md-3">
-          <span class="">
-              <mat-checkbox [(ngModel)]="LeaveaprvlvltempChecked" 
-              [indeterminate]="isLeaveaprvlvltempIndeterminate()" 
-              (change)="onLeaveaprvlvltempChange()" 
-              [ngModelOptions]="{standalone: true}">
-              Leave Email Template
-              </mat-checkbox>
-          </span><br>
-      </div> -->
-      
-      <!-- <div class="col-md-9">
-          <div class="selection_checkmark_sec">
-              <div class="all_selection_Sec">
-                  <div class="row">
-                
-                      <div class="col-md-2" *ngFor="let permission of GrouppermissionsLeaveaprvlvltemp">
-                          <h2> 
-                              <span> 
-                                  <mat-checkbox [value]="permission.id" 
-                                  (change)="onCheckboxChangesLeaveaprvlvltemp(permission.id)"
-                                   [checked]="selectedPermissions.includes(permission.id)">
-                                      {{ getDisplayNameLeaveaprvlvltemp(permission.codename) }}
-                                  </mat-checkbox> 
-                              </span> 
-                          </h2>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div> -->
-      
-
+    
         <div class="col-md-3">
             <span class="">
                 <mat-checkbox [(ngModel)]="LeaveBalanceChecked" 
@@ -2254,7 +2137,7 @@
 
                   <!-- Payroll Management -->
 
-                 <div class="row mt-3">
+                <div class="row mt-3">
        
                   <div class="col-md-4">
                     <span class="head_group_list">
@@ -2274,7 +2157,7 @@
                 </div>
 
 
-                    <div class="child_per">
+                <div class="child_per">
                 <div class="row"  *ngIf="PayrollMastersvalue" >
                 
                   
@@ -2550,7 +2433,7 @@
                 <!-- Loan Management -->
 
 
-                 <div class="row mt-3">
+                <div class="row mt-3">
        
                   <div class="col-md-4">
                     <span class="head_group_list">
@@ -2568,7 +2451,7 @@
                                  
                 </div>
 
-                    <div class="child_per">
+                <div class="child_per">
                 <div class="row"  *ngIf="LoanMastersvalue" >
                 
                   
@@ -2909,6 +2792,73 @@
         
         
                 </div>
+
+                 <!-- Document Management -->
+
+               <div class="row mt-3">
+       
+                  <div class="col-md-4">
+                    <span class="head_group_list">
+
+
+                      <mat-checkbox [(ngModel)]="DocumentAddchecked" 
+                                    (change)="selectDocumentAdd()"
+                                    (change)="updateDocumentAddCheckbox()" 
+                                    [indeterminate]="isDocumentAddInderminate()"
+                                    [ngModelOptions]="{standalone: true}">
+                      </mat-checkbox>
+                      <span (click)="showDocumentAdd()">Document Management</span>
+                    </span>
+                  </div>                 
+                  
+                </div>
+
+                    <div class="child_per">
+                <div class="row"  *ngIf="DocumentAddMastersvalue" >
+
+              <div class="col-md-3">
+                <span class="">
+                    <mat-checkbox [(ngModel)]="DocumentAddFolChecked" 
+                    [indeterminate]="isDocumentAddFolIndeterminate()" 
+                    (change)="onDocumentAddFolChange()" 
+                    [ngModelOptions]="{standalone: true}">
+                      Add Folder
+                    </mat-checkbox>
+                </span><br>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="selection_checkmark_sec">
+                    <div class="all_selection_Sec">
+                        <div class="row">
+                      
+                            <div class="col-md-2" *ngFor="let permission of GrouppermissionsDocumentAddFol">
+                                <h2>
+                                    <span>
+                                        <mat-checkbox [value]="permission.id"
+                                        (change)="onCheckboxChangesDocumentAddFol(permission.id)"
+                                         [checked]="selectedPermissions.includes(permission.id)">
+                                            {{ getDisplayNameDocumentAddFol(permission.codename) }}
+                                        </mat-checkbox> 
+                                    </span> 
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                </div>
+                
+        
+        
+                </div>
+
+
+
+
+
+
                 
                 <!-- Project Management -->
               
@@ -3240,14 +3190,13 @@
         
                 </div>
 
-                <!-- Document Management -->
+                <!-- Document Request -->
 
 
                  <div class="row mt-3">
        
                   <div class="col-md-4">
                     <span class="head_group_list">
-                      <!-- [indeterminate]="isreports()" -->
 
                       <mat-checkbox [(ngModel)]="Documentchecked" 
                                     (change)="selectDocumnet()"
@@ -3255,7 +3204,7 @@
                                     [indeterminate]="isDocumentInderminate()"
                                     [ngModelOptions]="{standalone: true}">
                       </mat-checkbox>
-                      <span (click)="showDocument()">Document Managment</span>
+                      <span (click)="showDocument()">Document Requests</span>
                     </span>
                   </div>
                   
@@ -3408,7 +3357,7 @@
                 </div>
 
 
-    <!-- Shift Management -->
+               <!-- Shift Management -->
 
                 <div class="row mt-3">
        

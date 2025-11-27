@@ -361,10 +361,22 @@ updateUserPermission(): void {
         this.loadAssignedPermissionsForUser(); // Refresh the table
         this.closeEditPerModal();
       },
-      (error) => {
-        console.error('Error updating permission:', error);
-        alert('Failed to update permission');
-      }
+(error) => {
+  console.error('Error updating Permissions:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
     );
 }
 

@@ -151,20 +151,21 @@ ngOnInit(): void {
                   this.hasAddPermission = true;
                   this.hasDeletePermission = true;
                   this.hasEditPermission = true;
+                  
                 } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                   const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                   console.log('Group Permissions:', groupPermissions);
   
-                  this.hasAddPermission = this.checkGroupPermission('add_generalrequest', groupPermissions);
+                  this.hasAddPermission = this.checkGroupPermission('add_genrl_escalation', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_generalrequest', groupPermissions);
+                 this.hasDeletePermission = this.checkGroupPermission('delete_genrl_escalation', groupPermissions);
                  console.log('Has delete permission:', this.hasDeletePermission);
     
-                  this.hasEditPermission = this.checkGroupPermission('change_generalrequest', groupPermissions);
+                  this.hasEditPermission = this.checkGroupPermission('change_genrl_escalation', groupPermissions);
                   console.log('Has edit permission:', this.hasEditPermission);
   
-                  this.hasViewPermission = this.checkGroupPermission('view_generalrequest', groupPermissions);
+                  this.hasViewPermission = this.checkGroupPermission('view_genrl_escalation', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
 
 
@@ -333,14 +334,26 @@ updateAssetType(): void {
 
   this.employeeService.updateGeneralReq(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
-      alert('General Request updated successfully!');
+      alert('General Request Escalation updated successfully!');
       this.closeEditModal();
       this.loadgeneralReq(); // reload updated list
     },
-    (error) => {
-      console.error('Error updating asset:', error);
-      alert('Update failed');
-    }
+(error) => {
+  console.error('Error updating General Request Escalation:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
   );
 }
 

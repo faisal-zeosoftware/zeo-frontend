@@ -136,14 +136,57 @@ getTextContent(): void {
 
   
 
-  // Method to update the email template
-  updateTemplate(): void {
-    console.log('Updating template:', this.templateData);
-    // Call your update logic here (e.g., API call to save changes)
-    
-    // After successful update, close the modal
-    this.dialogRef.close(this.templateData);
+updateLoanTemplate() {
+  if (!this.templateData.template_type || !this.templateData.subject) {
+    alert("Please fill all fields.");
+    return;
   }
+
+  // Get Schema
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    alert("Schema not found. Please select a schema again.");
+    return;
+  }
+
+  // Get Summernote content
+  const bodyContent = ($('#summernote') as any).summernote('code');
+
+  const payload = {
+    template_type: this.templateData.template_type,
+    subject: this.templateData.subject,
+    body: bodyContent
+  };
+
+  this.DepartmentServiceService.updateLoanEmailTemplate(
+    selectedSchema,               // now guaranteed string
+    this.templateData.id,
+    payload
+  )
+  .subscribe(
+    (response: any) => {
+      alert("Template updated successfully!");
+      this.dialogRef.close(true);
+    },
+(error) => {
+  console.error('Error updating Template:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
+  );
+}
 
   ClosePopup(){
     this.ref.close('Closed using function')

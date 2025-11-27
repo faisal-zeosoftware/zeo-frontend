@@ -444,10 +444,22 @@ updateAssetType(): void {
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
     },
-    (error) => {
-      console.error('Error updating asset:', error);
-      alert('Update failed');
-    }
+(error) => {
+  console.error('Error updating Airticket Rule:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
   );
 }
 

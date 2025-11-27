@@ -169,10 +169,22 @@ updateTemplate() {
       alert("Template updated successfully!");
       this.dialogRef.close(true);
     },
-    (error) => {
-      console.error(error);
-      alert("Failed to update template.");
-    }
+(error) => {
+  console.error('Error updating Template:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
   );
 }
 

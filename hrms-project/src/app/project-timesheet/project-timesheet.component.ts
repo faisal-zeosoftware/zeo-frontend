@@ -533,10 +533,22 @@ updateProjecttimesheet(): void {
       this.loadLAssetType(); // reload updated list
       window.location.reload();
     },
-    (error) => {
-      console.error('Error updating Project Timesheet:', error);
-      alert('Update failed');
-    }
+(error) => {
+  console.error('Error updating Project TimeSheet:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
   );
 }
 

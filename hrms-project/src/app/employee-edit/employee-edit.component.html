@@ -103,7 +103,7 @@
     <div class="col-md-6" >
                    
         <label>{{emailFieldName}}</label>
-       <input type="text"  class="form-control" required id="emp_personal_email" name="emp_personal_email"  [(ngModel)]="Emp.emp_personal_email"  placeholder="Enter Company Email ID"
+       <input type="email"  class="form-control" required id="emp_personal_email" name="emp_personal_email"  [(ngModel)]="Emp.emp_personal_email"  placeholder="Enter Company Email ID"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_personal_email}">
        
        <div *ngIf="registerButtonClicked && !emp_personal_email" class="error-message">Description is required.</div>
@@ -112,7 +112,7 @@
     <div class="col-md-6" >
                    
         <label>Personal Email ID</label>
-       <input type="text"  class="form-control"   [(ngModel)]="emp_company_email"  placeholder="Enter Company email"
+       <input type="email"  class="form-control"   [(ngModel)]="emp_company_email"  placeholder="Enter Company email"
        [ngModelOptions]="{standalone: true}">
    
        

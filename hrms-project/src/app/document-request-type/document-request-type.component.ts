@@ -449,8 +449,20 @@ this.employeeService.updateDocumentReqType(this.editDocReqtype.id, this.editDocR
   window.location.reload();
 },
 (error) => {
-  console.error('Error updating Document Request Type:', error);
-  alert('Update failed');
+  console.error('Error updating Doc Request Type:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
 }
 );
 }
