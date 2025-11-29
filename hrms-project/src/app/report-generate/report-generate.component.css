@@ -675,7 +675,7 @@ margin-right: 10px;
   }
   
   .field-list {
-    max-height: 400px; /* Increase height for more content */
+    max-height: 150px; /* Increase height for more content */
     overflow-y: auto;
     padding: 15px;
     border: 1px solid #ddd;

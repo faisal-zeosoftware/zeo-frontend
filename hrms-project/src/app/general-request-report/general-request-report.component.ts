@@ -179,22 +179,12 @@ public datePipe: DatePipe;
     created_at_date:"Created At"
   };
   
-  displayedColumns: string[] = [
-    'emp_first_name',
-    'emp_dept_id',
-    'emp_desgntn_id',
-    'emp_ctgry_id',
-    'doc_number',
-    'reason',
-    'emp_branch_id',
-    'request_type',
-    'employee',
-    'total',
-    // 'remarks',
-    'status',
-
-    'created_at_date'
+  displayedColumns = [
+    'emp_first_name','emp_branch_id','emp_dept_id','emp_desgntn_id',
+    'emp_ctgry_id','document_number','reason','request_type','employee',
+    'total','remarks','status','created_at_date'
   ];
+  
   
   isEditModalOpen=false;
 
@@ -495,33 +485,27 @@ public datePipe: DatePipe;
   }
   
 
-  fetchStandardReport(): void {
-    this.generalService.getStandardReport().subscribe(
-      (response: any) => {
-        console.log('Report response:', response);
-        if (response.report_data) {
-          this.http.get<any>(response.report_data).subscribe(
-            (data: any) => {
-              console.log('Report data:', data);
-              this.reportData = new MatTableDataSource<any>(data);
-              this.reportData.sort = this.sort;
-              this.reportData.paginator = this.paginator;
-            },
-            (error: any) => {
-              console.error('Error fetching report data:', error);
-              // Handle error as needed
-            }
-          );
-        } else {
-          console.error('Invalid response format - report_data not found:', response);
-        }
-      },
-      (error: any) => {
-        console.error('Error fetching standard report:', error);
-        // Handle error as needed
+// ================== FETCH STANDARD REPORT ================== //
+fetchStandardReport(): void {
+
+  this.generalService.getStandardReport().subscribe((response: any) => {
+      
+      if (!response.report_data) {
+        console.error("❌ API response does not contain report_data");
+        return;
       }
-    );
-  }
+
+      this.http.get<any[]>(response.report_data).subscribe(data => {
+        
+        this.reportData = new MatTableDataSource(data);
+        setTimeout(() => {      // To avoid ExpressionChangedAfterItHasBeenCheckedError
+          this.reportData.sort = this.sort;
+          this.reportData.paginator = this.paginator;
+        });
+
+      }, error => console.error("❌ Error fetching report data:", error));
+  });
+}
 
  // Example method to get object keys
 getObjectKeys(obj: any): string[] {
@@ -530,105 +514,6 @@ getObjectKeys(obj: any): string[] {
 
 
 
-
-
-// StandardDownload(): void {
-//   if (!this.reportData || this.reportData.data.length === 0) {
-//     this.snackBar.open('No valid report data to download.', 'Error', {
-//       duration: 3000,
-//     });
-//     console.error('No valid report data to download.');
-//     return;
-//   }
-
-//   try {
-//     const displayNames: { [key: string]: string } = {
-//       emp_first_name: "First Name",
-//       emp_active_date: "Active Date",
-//       emp_branch_id: "Branch",
-//       emp_dept_id: "Department",
-//       emp_desgntn_id: "Designation",
-//       emp_ctgry_id: "Category",
-//       emp_id: "Emp Id",
-//       emp_doc_type: "Doc Type",
-//       emp_doc_number: "Doc Number",
-//       emp_doc_issued_date: "Issue Date",
-//       emp_doc_expiry_date: "Expiry Date",
-//       is_active: "Active",
-//       document_type:"Document Type"
-
-//     };
-
-//     const worksheetData: any[][] = [];
-//     const title = 'Document Master Standard Report';
-
-//     const headers = Object.keys(displayNames).map(key => displayNames[key]);
-
-//     const titleRow = new Array(headers.length).fill('');
-//     titleRow[0] = title;
-
-//     worksheetData.push(titleRow);
-//     worksheetData.push(headers);
-
-//     const filteredData = this.reportData.data.filter((item: any) => {
-//       const activeDate = new Date(item.emp_doc_expiry_date );
-//       return (!this.startDate || activeDate >= this.startDate) &&
-//              (!this.endDate || activeDate <= this.endDate);
-//     });
-
-//     console.log('Filtered Data:', filteredData); // Log filtered data
-
-//     const mappedData = filteredData.map((item: { [key: string]: any }) => {
-//       const newItem: { [key: string]: any } = {};
-//       for (const key in item) {
-//         if (item.hasOwnProperty(key) && displayNames[key]) {
-//           newItem[displayNames[key]] = item[key];
-//         }
-//       }
-//       return newItem;
-//     });
-
-//     console.log('Mapped Data:', mappedData); // Log mapped data
-
-//     mappedData.forEach(row => {
-//       const values = headers.map(header => row[header] || '');
-//       worksheetData.push(values);
-//     });
-
-//     const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(worksheetData);
-
-//     if (!worksheet['!merges']) worksheet['!merges'] = [];
-//     worksheet['!merges'].push({ s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } });
-    
-//     worksheet['A1'].s = {
-//       alignment: { horizontal: 'center' },
-//       font: { sz: 14, bold: true, color: { rgb: 'FF0000' } }
-//     };
-
-//     const maxWidths: number[] = [];
-//     worksheetData.forEach(row => {
-//       row.forEach((value, colIdx) => {
-//         const colWidth = value ? value.toString().length : 10;
-//         if (!maxWidths[colIdx] || maxWidths[colIdx] < colWidth) {
-//           maxWidths[colIdx] = colWidth;
-//         }
-//       });
-//     });
-//     worksheet['!cols'] = maxWidths.map(width => ({ wch: width }));
-
-//     const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
-//     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-//     this.saveAsExcelFile(excelBuffer, 'standard_report');
-//     this.snackBar.open('Report downloaded successfully.', 'Success', {
-//       duration: 3000,
-//     });
-//   } catch (error) {
-//     this.snackBar.open('Failed to download report.', 'Error', {
-//       duration: 3000,
-//     });
-//     console.error('Failed to download report:', error);
-//   }
-// }
 
 StandardDownload(): void {
   // Check for valid report data
@@ -661,7 +546,7 @@ StandardDownload(): void {
     };
 
     const worksheetData: any[][] = [];
-    const title = 'Document Master Standard Report';
+    const title = 'General request Report';
 
     const headers = Object.keys(displayNames).map(key => displayNames[key]);
 
@@ -756,10 +641,7 @@ saveAsExcelFile(buffer: any, fileName: string): void {
 
 
 
-  toggleCard(): void {
-    this.cardOpen = !this.cardOpen;
-  }
-
+ 
 
   loadSavedReported(): void {
     const selectedSchema = localStorage.getItem('selectedSchema');
@@ -2395,7 +2277,20 @@ openReportDialog(reportId: number | null, uniqueValues: any): void {
  
 
 
+  iscreateFieldmodel: boolean = false;
 
+
+
+
+  openPopus():void{
+    this.iscreateFieldmodel = true;
+
+  }
+
+    closeapplicationModal():void{
+        this.iscreateFieldmodel = false;
+
+      }
 
 
 

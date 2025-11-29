@@ -1,993 +1,1350 @@
-
 .card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin: 10px;
-    overflow: hidden;
-  }
-  /* Small card container */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin: 10px;
+  overflow: hidden;
+}
+/* Small card container */
+.small-card {
+  border: 1px solid #dcdcdc; /* Light gray border */
+  border-radius: 5px; /* Slightly rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow */
+  overflow: hidden; /* Clip overflow */
+  max-width: 200px; /* Restrict maximum width */
+  margin: 10px auto; /* Center horizontally with margin */
+  background-color: #f8f8f8; /* Light gray background */
+}
+
+/* Small card header */
+.small-card-header {
+  background-color: #007bff; /* Primary blue color */
+  color: white; /* White text */
+  padding: 5px 10px; /* Padding for header */
+  font-size: 0.85rem; /* Smaller font size */
+  text-align: center; /* Center-align text */
+  border-bottom: 1px solid #dcdcdc; /* Border to separate header */
+}
+
+/* Small card body */
+.small-card-body {
+  padding: 5px 10px; /* Padding for body */
+  font-size: 0.8rem; /* Smaller font size */
+}
+
+/* List within the small card body */
+.small-card-list {
+  padding-left: 15px; /* Padding for list */
+  margin: 0; /* No margin */
+  list-style: none; /* Remove default list styling */
+}
+
+/* List items within the small card */
+.small-card-list li {
+  padding: 3px 0; /* Vertical padding for list items */
+  border-bottom: 1px solid #ececec; /* Light border for separation */
+  font-size: 0.75rem; /* Even smaller font size */
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 400px) {
   .small-card {
-    border: 1px solid #dcdcdc; /* Light gray border */
-    border-radius: 5px; /* Slightly rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow */
-    overflow: hidden; /* Clip overflow */
-    max-width: 200px; /* Restrict maximum width */
-    margin: 10px auto; /* Center horizontally with margin */
-    background-color: #f8f8f8; /* Light gray background */
+    max-width: 100%; /* Full width on small screens */
+    margin: 5px; /* Reduce margin */
   }
-  
-  /* Small card header */
+
   .small-card-header {
-    background-color: #007bff; /* Primary blue color */
-    color: white; /* White text */
-    padding: 5px 10px; /* Padding for header */
-    font-size: 0.85rem; /* Smaller font size */
-    text-align: center; /* Center-align text */
-    border-bottom: 1px solid #dcdcdc; /* Border to separate header */
+    font-size: 0.8rem; /* Slightly smaller font size */
   }
-  
-  /* Small card body */
+
   .small-card-body {
-    padding: 5px 10px; /* Padding for body */
-    font-size: 0.8rem; /* Smaller font size */
+    font-size: 0.75rem; /* Smaller font size */
   }
-  
-  /* List within the small card body */
-  .small-card-list {
-    padding-left: 15px; /* Padding for list */
-    margin: 0; /* No margin */
-    list-style: none; /* Remove default list styling */
-  }
-  
-  /* List items within the small card */
+
   .small-card-list li {
-    padding: 3px 0; /* Vertical padding for list items */
-    border-bottom: 1px solid #ececec; /* Light border for separation */
-    font-size: 0.75rem; /* Even smaller font size */
+    font-size: 0.7rem; /* Smaller font size */
+  }
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  margin: 0; /* Remove any default margin */
+}
+.card-header {
+  background-color: #f0f0f0;
+  /* padding: 10px; */
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  /* padding: 10px; */
+  max-height: 300px; /* Example height for the card body */
+  overflow-y: auto; /* Enable vertical scrolling for the card body */
+  width: fit-content;
+}
+
+.table-container {
+  max-height: 250px; /* Example height for the table container */
+  overflow: auto; /* Enable vertical scrolling for the table container */
+}
+
+.mat-table-scroll {
+  width: 100%;
+  table-layout: auto;
+}
+
+.mat-header-row, .mat-row {
+  display: table-row;
+}
+
+.mat-header-cell, .mat-cell {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  /* border: 1px solid #ccc;  */
+}
+
+table.mat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th.mat-header-cell {
+  border: 1px solid #ddd; /* Header cell border */
+  border-bottom: none; /* Remove bottom border */
+  background-color: #f0f0f0; /* Header background color */
+  padding: 8px; /* Padding inside header cells */
+  text-align: left; /* Adjust text alignment as needed */
+}
+.preview-panel {
+  width: 100%;
+  padding: 40px;
+  margin: 40px 0;
+  background-color: #fafafa;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.preview-heading {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
+  padding-right: 20px;
+}
+
+.divider {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #ccc;
+  border: none;
+  margin: 0 20px;
+}
+
+.close-button {
+  font-size: 18px;
+  padding: 10px 20px;
+}
+
+.table-container {
+  overflow-x: auto;
+  /* margin-top: 10px; */
+}
+
+.preview-table {
+  width: 100%;
+  font-size: 20px;
+  border-collapse: collapse;
+}
+
+.preview-table th,
+.preview-table td {
+  padding: 15px;
+  text-align: left;
+  border: 2px solid #ddd;
+}
+
+.preview-table th {
+  background-color: #f2f2f2;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+
+
+td.mat-cell {
+  border: 1px solid #ddd; /* Data cell border */
+  padding: 8px; /* Padding inside data cells */
+  text-align: left; /* Adjust text alignment as needed */
+}
+
+tr.mat-header-row,
+tr.mat-row {
+  background-color: #f9f9f9; /* Row background color */
+}
+
+
+.table-container {
+  overflow-x: auto;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.me-2 {
+  margin-right: 0.5rem; /* Adjust the margin as needed */
+}
+
+  .centered-button {
+    margin-top: 20px; /* Add margin above the button */
+  }
+  .options-container {
+    margin-top: 20px; /* Add some space above the options bar */
   }
   
-  /* Responsive adjustments for small screens */
-  @media (max-width: 400px) {
-    .small-card {
-      max-width: 100%; /* Full width on small screens */
-      margin: 5px; /* Reduce margin */
-    }
-  
-    .small-card-header {
-      font-size: 0.8rem; /* Slightly smaller font size */
-    }
-  
-    .small-card-body {
-      font-size: 0.75rem; /* Smaller font size */
-    }
-  
-    .small-card-list li {
-      font-size: 0.7rem; /* Smaller font size */
-    }
-  }
-  
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .header-title {
-    margin: 0; /* Remove any default margin */
-  }
-  .card-header {
-    background-color: #f0f0f0;
-    /* padding: 10px; */
-  }
-  
-  .card-body {
-    display: flex;
-    flex-direction: column;
-    /* padding: 10px; */
-    max-height: 300px; /* Example height for the card body */
-    overflow-y: auto; /* Enable vertical scrolling for the card body */
-    width: fit-content;
-  }
-  
-  .table-container {
-    max-height: 250px; /* Example height for the table container */
-    overflow: auto; /* Enable vertical scrolling for the table container */
-  }
-  
-  .mat-table-scroll {
-    width: 100%;
-    table-layout: auto;
-  }
-  
-  .mat-header-row, .mat-row {
-    display: table-row;
-  }
-  
-  .mat-header-cell, .mat-cell {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    /* border: 1px solid #ccc;  */
-  }
-  
-  table.mat-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th.mat-header-cell {
-    border: 1px solid #ddd; /* Header cell border */
-    border-bottom: none; /* Remove bottom border */
-    background-color: #f0f0f0; /* Header background color */
-    padding: 8px; /* Padding inside header cells */
-    text-align: left; /* Adjust text alignment as needed */
-  }
-  .preview-panel {
-    width: 100%;
-    padding: 40px;
-    margin: 40px 0;
-    background-color: #fafafa;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-  }
-  
-  .header-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-  
-  .preview-heading {
-    font-size: 20px;
-    font-weight: 500;
-    margin: 0;
-    padding-right: 20px;
-  }
-  
-  .divider {
-    flex-grow: 1;
-    height: 1px;
-    background-color: #ccc;
-    border: none;
-    margin: 0 20px;
-  }
-  
-  .close-button {
-    font-size: 18px;
-    padding: 10px 20px;
-  }
-  
-  .table-container {
-    overflow-x: auto;
-    margin-top: 20px;
-  }
-  
-  .preview-table {
-    width: 100%;
-    font-size: 20px;
-    border-collapse: collapse;
-  }
-  
-  .preview-table th,
-  .preview-table td {
-    padding: 15px;
-    text-align: left;
-    border: 2px solid #ddd;
-  }
-  
-  .preview-table th {
-    background-color: #f2f2f2;
-    font-size: 22px;
-    font-weight: bold;
-  }
-  
-  
-  
-  td.mat-cell {
-    border: 1px solid #ddd; /* Data cell border */
-    padding: 8px; /* Padding inside data cells */
-    text-align: left; /* Adjust text alignment as needed */
-  }
-  
-  tr.mat-header-row,
-  tr.mat-row {
-    background-color: #f9f9f9; /* Row background color */
-  }
-  
-  
-  .table-container {
-    overflow-x: auto;
-  }
-  
-  .btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-  }
-  
-  .me-2 {
-    margin-right: 0.5rem; /* Adjust the margin as needed */
-  }
-  
-    .centered-button {
-      margin-top: 20px; /* Add margin above the button */
-    }
-    .options-container {
-      margin-top: 20px; /* Add some space above the options bar */
-    }
-    
-  
-  
-    .filter-options h3, .column-options h3 {
-      margin-right: 10px;
-    }
-    
-    .filter-options div, .column-options div {
-      background-color: #fff;
-      padding: 5px;
-      margin-right: 5px;
-     
-    }
-    
-    .filter-options {
-      border-right: 1px solid #ccc; /* Add border between filter and column options */
-    }
-    .container {
-      padding: 20px;
-    }
-    
-    .options-container {
-      display: flex;
-      justify-content: space-between;
-    }
-    
-    .options-bar {
-      display: flex;
-      gap: 20px;
-    }
-    
-    .filter-options, .column-options {
-      border: 1px solid #ccc;
-      padding: 5px;
-      border-radius: 5px;
-      /* width: 30%; */
-    }
-    
-    .centered-button {
-      display: block;
-      margin: 20px auto;
-    }
-    
-    .save-message {
-      margin-top: 20px;
-      color: green;
-      text-align: center;
-      font-weight: bold;
-    }
-    /* General Container */
-  .container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    background: #f9f9f9;
-  }
-  
-  /* Header Section */
-  .header_section {
-    background: white;
-    padding: 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-bottom: 3px solid navy;
-    /* display: flex; */
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    margin-top: 20px;
-  }
-  
-  .header_section h1 {
-    font-size: 24px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  .button-group button {
+
+
+  .filter-options h3, .column-options h3 {
     margin-right: 10px;
-    padding: 8px 15px;
-    border: none;
+  }
+  
+  .filter-options div, .column-options div {
+    background-color: #fff;
+    padding: 5px;
+    margin-right: 5px;
+   
+  }
+  
+  .filter-options {
+    border-right: 1px solid #ccc; /* Add border between filter and column options */
+  }
+
+  .options-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .options-bar {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .filter-options, .column-options {
+    border: 1px solid #ccc;
+    padding: 5px;
     border-radius: 5px;
-    background-color: navy;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    /* width: 30%; */
   }
   
-  .button-group button:hover {
-    background-color: darkblue;
-  }
-  
-  /* Report Section */
-  .report_sec {
-    background: whitesmoke;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    padding: 20px;
-    border-radius: 5px;
-    margin-top: 20px;
-    overflow: auto;
-    height: 400px;
-  }
-  
-  .report_list_show {
-    background: white;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .report_list_show:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.3);
-  }
-  
-  .selected-item-user {
-    border-left: 5px solid navy;
-    background-color: #e7f0fe;
-  }
-  
-  .user_img_sec {
-    text-align: center;
-    margin-bottom: 10px;
-  }
-  
-  .user_lis_name h5 {
-    font-size: 16px;
-    font-weight: 500;
-  }
-  
-  .mat-icon {
-    color: grey;
-  }
-  
-  /* Centered Button */
   .centered-button {
     display: block;
     margin: 20px auto;
-    padding: 10px 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-    color: #333;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
-  .centered-button:hover {
-    background-color: #f0f0f0;
-    color: #000;
-  }
-  
-  /* Cards */
-  .card {
-    max-width: 100%;
-    overflow: hidden;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    transition: box-shadow 0.3s ease;
-    /* padding: 10px; */
-  }
-  .padding{
-    padding: 10px;
-  }
-  .card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
-  
-  .card-body {
-    padding: 15px;
-    width: 100%;
-    border: solid 0px white !important;
-  }
-  
-  .card-title {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .card-text {
-    color: #666;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  
-  /* Table */
-  .table-container {
-    max-width: 100%;
-    overflow-x: auto;
-  }
-  
-  .table-container {
-    max-width: 100%;
-    overflow-x: auto;
-    padding: 10px;
-  }
-  
-  .table {
-    width: 100%;
+  .save-message {
     margin-top: 20px;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: 1px solid #ddd;
-  }
-  
-  .table th {
-    border: 1px solid #ddd;
-    padding: 20px; /* Extraordinary cell padding */
-    background-color: #f8f8f8;
-  }
-  
-  .table td {
-    border: 1px solid #ddd;
-    padding: 20px; /* Extraordinary cell padding */
-  }
-  
-  
-  .table th {
-    background-color: #f8f8f8;
-  }
-  
-  .table thead th {
-    background-color: #f2f2f2; /* Alternate header color */
-  }
-  
-  .table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.075);
-  }
-  
-  .table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  
-  .table-bordered {
-    border-width: 2px;
-    border-style: solid;
-    border-color: #ddd;
-  }
-  /* Apply styles to the dropdown */
-  select {
-    padding: 8px; /* Adjust padding as needed */
-    font-size: 16px; /* Adjust font size as needed */
-    border: 1px solid #ccc; /* Adjust border color and width as needed */
-    border-radius: 4px; /* Adjust border radius as needed */
-    background-color: #fff; /* Adjust background color as needed */
-  }
-  
-  /* Apply styles to the options */
-  select option {
-    font-size: 14px; /* Adjust font size as needed */
-    padding: 8px; /* Adjust padding as needed */
-    background-color: #fff; /* Adjust background color as needed */
-    color: #333; /* Adjust text color as needed */
-  }
-  
-  /* Style the selected option */
-  select option:checked {
-    background-color: #007bff; /* Adjust background color of selected option */
-    color: gray; /* Adjust text color of selected option */
-  }
-  .field-list {
-    display: flex;
-    flex-direction: column;  /* Make the list display in a column */
-    gap: 1px;  /* Add space between each row */
-  }
-  
-  .field-item {
-    display: flex;
-    align-items: center;  /* Align items vertically */
-  }
-  
-  .field-label {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 5px;
-    background: #f9f9f9;  /* Light background for each row */
-    border-radius: 4px;  /* Rounded corners */
-    cursor: pointer;  /* Pointer cursor on hover */
-  }
-  
-  .field-label input {
-    margin-right: 10px;  /* Space between checkbox and label */
-  }
-  .table-bordered {
-    border: 1px solid #dee2e6;
-  }
-  
-  .table-bordered th,
-  .table-bordered td {
-    border: 1px solid #dee2e6;
-  }
-  .card-title.active-file {
-    color: #007bff; /* Change this color to your preferred color */
-    font-weight: bold;
-  }
-  
-  .card:hover .card-title {
-    color: #0056b3; /* Slightly darker shade for hover effect */
-  }
-  .table-bordered thead th,
-  .table-bordered thead td {
-    border-bottom-width: 2px;
-  }
-  
-  .table-hover tbody tr:hover {
-    background-color: #f5f5f5;
-  }
-  .table-responsive {
-    overflow-x: auto;
-    max-width: 100%;
-  }
-  
-  
-  .table_outer_new{
-    width: 100%;
-    overflow: hidden;
-    padding: 20px;
-  
-  }
-  
-  .table_new{
-  
-    overflow-y: scroll;
-    overflow-x: scroll;
-    width: 100%;
-    display: block;
-  
-  }
-  
-  
-  .card-title{
-    font-size: 16px;
-    font-weight: 400;
+    color: green;
     text-align: center;
-    margin-top: 10px;
-  }
-  
-  
-  .table-bordered thead  th, 
-  .table-bordered thead td {
-    border-bottom-width: 2px;
-    text-wrap: nowrap;
-  }
-  
-  .report_common_box{
-  
-    background: whitesmoke;
-    height: 500px;
-  
-  
-  }
-  
-  .card-body{
-    max-height: 430px;
-  }
-  
-  
-  
-  
-  
-  
-  
-  
-  .report-section-main{
-    padding: 20px;
-  }
-  
-  .table-bordered thead th{
-    font-size: 14px;
-    font-weight: 400;
-  }
-  
-  table td{
-    font-size: 14px;
-    font-weight: 400;
-  }
-  
-  .preview-heading{
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .card-titles{
-    font-size: 16px;
-    font-weight: 500;
-  }
-  
-  
-  .broder_side{
-    border-right: solid 1px grey;
-    height: 500px;
-    overflow: hidden;
-    overflow-y: scroll;
-  }
-  
-  .field-list{
-    cursor: -webkit-grab; 
-    cursor: grab;
-  }
-  
-  ::ng-deep .mat-mdc-checkbox .mdc-form-field label{
-    cursor: grab;
-  }
-  
-  
-  /* Add your CSS styles here */
-  .modal.show.d-block {
-    display: block;
-    background: rgba(0, 0, 0, 0.5);
-  }
-  
-  .modal-dialog.modal-xl {
-    max-width: 90%; /* Adjust width as needed */
-  }
-  .invisible-button {
-    visibility: hidden; /* Makes the button invisible but still occupies space */
-    /* display: none;  This will completely remove the button from the layout, so use visibility: hidden if you want to keep the space occupied */
-  }
-  
-  
-  .modal-content {
-    padding: 30px; /* Increase padding for a spacious feel */
-  }
-  
-  .modal-header .close {
-    font-size: 1.5rem;
-  }
-  
-  .field-list {
-    max-height: 400px; /* Increase height for more content */
-    overflow-y: auto;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-top: 10px;
-  }
-  
-  .field-item {
-    margin-bottom: 10px;
-  }
-  
-  .modal-body {
-    font-size: 1.2rem; /* Increase font size for better readability */
-  }
-  
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
     font-weight: bold;
-    text-align: right;
   }
-  
-  .close:hover,
-  .close:focus {
-    color: red;
-    text-decoration: none;
-    cursor: pointer;
-  }
+  /* General Container */
 
 
-  /* ===== Report Table Styles ===== */
-#reportTable {
+/* Header Section */
+.header_section {
+  background: white;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid navy;
+  /* display: flex; */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.header_section h1 {
+  font-size: 24px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+
+.btn-Create{
+/* padding: 5px 15px; */
+/* border: none; */
+margin-right: 10px;     
+
+}
+
+.btn-Edit{
+margin-right: 10px;
+}
+
+.btn-Delete{
+margin-right: 10px;
+}
+
+.header-btn-icon{
+vertical-align: middle;
+}
+
+.btn-Create .mat-icon{
+margin-top: 4px;
+}
+.btn-Create .mat-icon{
+margin-top: 2px;
+}
+
+
+/* .button-group button {
+  margin-right: 10px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: navy;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+} */
+
+.button-group button:hover {
+  background-color: darkblue;
+}
+
+/* Report Section */
+.report_sec {
+  background: whitesmoke;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  padding: 20px;
+  border-radius: 5px;
+  margin-top: 20px;
+  overflow: auto;
+  height: 400px;
+}
+
+.report_list_show {
+  background: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.report_list_show:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.selected-item-user {
+  border-left: 5px solid navy;
+  background-color: #e7f0fe;
+}
+
+.user_img_sec {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.user_lis_name h5 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* .mat-icon {
+  color: grey;
+}
+ */
+/* Centered Button */
+.centered-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.centered-button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+/* Cards */
+.card {
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  transition: box-shadow 0.3s ease;
+  /* padding: 10px; */
+}
+.padding{
+  padding: 10px;
+}
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+  padding: 15px;
   width: 100%;
-  max-height: 300px; /* Instead of fixed height for better responsiveness */
-  overflow: auto; /* Scroll if content overflows */
-  border-collapse: collapse;
+  border: solid 0px white !important;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.card-text {
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Table */
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #ddd;
+}
+
+.table th {
+  border: 1px solid #ddd;
+  padding: 20px; /* Extraordinary cell padding */
+  background-color: #f8f8f8;
+}
+
+.table td {
+  border: 1px solid #ddd;
+  padding: 20px; /* Extraordinary cell padding */
+}
+
+
+.table th {
+  background-color: #f8f8f8;
+}
+
+.table thead th {
+  background-color: #f2f2f2; /* Alternate header color */
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.table-bordered {
+  border-width: 2px;
+  border-style: solid;
+  border-color: #ddd;
+}
+/* Apply styles to the dropdown */
+select {
+  padding: 8px; /* Adjust padding as needed */
+  font-size: 16px; /* Adjust font size as needed */
+  border: 1px solid #ccc; /* Adjust border color and width as needed */
+  border-radius: 4px; /* Adjust border radius as needed */
+  background-color: #fff; /* Adjust background color as needed */
+}
+
+/* Apply styles to the options */
+select option {
+  font-size: 14px; /* Adjust font size as needed */
+  padding: 8px; /* Adjust padding as needed */
+  background-color: #fff; /* Adjust background color as needed */
+  color: #333; /* Adjust text color as needed */
+}
+
+/* Style the selected option */
+select option:checked {
+  background-color: #007bff; /* Adjust background color of selected option */
+  color: gray; /* Adjust text color of selected option */
+}
+.field-list {
+  display: flex;
+  flex-direction: column;  /* Make the list display in a column */
+  gap: 1px;  /* Add space between each row */
+}
+
+.field-item {
+  display: flex;
+  align-items: center;  /* Align items vertically */
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px;
+  background: #f9f9f9;  /* Light background for each row */
+  border-radius: 4px;  /* Rounded corners */
+  cursor: pointer;  /* Pointer cursor on hover */
+}
+
+.field-label input {
+  margin-right: 10px;  /* Space between checkbox and label */
+}
+.table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6;
+}
+.card-title.active-file {
+  color: #007bff; /* Change this color to your preferred color */
+  font-weight: bold;
+}
+
+.card:hover .card-title {
+  color: #0056b3; /* Slightly darker shade for hover effect */
+}
+.table-bordered thead th,
+.table-bordered thead td {
+  border-bottom-width: 2px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f5f5f5;
+}
+.table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+
+.table_outer_new{
+  width: 100%;
+  overflow: hidden;
+  padding: 20px;
+
+}
+
+.table_new{
+
+  overflow-y: scroll;
+  overflow-x: scroll;
+  width: 100%;
+  display: block;
+
+}
+
+
+.card-title{
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 10px;
+}
+
+
+.table-bordered thead  th, 
+.table-bordered thead td {
+  border-bottom-width: 2px;
+  text-wrap: nowrap;
+}
+
+.report_common_box{
+
+  background: whitesmoke;
+  height: 500px;
+  padding: 20px;
+
+
+}
+
+.card-body{
+  max-height: 430px;
+}
+
+
+
+
+
+
+
+
+/* .report-section-main{
+  padding: 20px;
+} */
+
+.table-bordered thead th{
+  font-size: 14px;
+  font-weight: 400;
+}
+
+table td{
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.preview-heading{
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.card-titles{
+  font-size: 16px;
+  font-weight: 500;
+}
+
+
+.broder_side{
+  border-right: solid 1px grey;
+  height: 500px;
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.field-list{
+  cursor: -webkit-grab; 
+  cursor: grab;
+}
+
+::ng-deep .mat-mdc-checkbox .mdc-form-field label{
+  cursor: grab;
+}
+
+
+/* Add your CSS styles here */
+.modal.show.d-block {
+  display: block;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog.modal-xl {
+  max-width: 90%; /* Adjust width as needed */
+}
+.invisible-button {
+  visibility: hidden; /* Makes the button invisible but still occupies space */
+  /* display: none;  This will completely remove the button from the layout, so use visibility: hidden if you want to keep the space occupied */
+}
+
+
+.modal-content {
+  padding: 30px; /* Increase padding for a spacious feel */
+}
+
+.modal-header .close {
+  font-size: 1.5rem;
+}
+
+.field-list {
+  max-height: 400px; /* Increase height for more content */
+  overflow-y: auto;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.field-item {
+  margin-bottom: 10px;
+}
+
+.modal-body {
+  font-size: 1.2rem; /* Increase font size for better readability */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: right;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+/* ===== Report Table Styles ===== */
+#reportTable {
+width: 100%;
+max-height: 300px; /* Instead of fixed height for better responsiveness */
+overflow: auto; /* Scroll if content overflows */
+border-collapse: collapse;
 }
 
 /* Table header cells */
 #reportTable th {
-  border: 1px solid #ddd;
-  background-color: #f9f9f9;
-  text-align: center;
-  font-size: 14px;
-  padding: 8px;
-  position: sticky; /* Makes header fixed on scroll */
-  top: 0;
-  z-index: 2;
+border: 1px solid #ddd;
+background-color: #f9f9f9;
+text-align: center;
+font-size: 14px;
+padding: 8px;
+position: sticky; /* Makes header fixed on scroll */
+top: 0;
+z-index: 2;
 }
 
 /* Table data cells */
 #reportTable td {
-  min-width: 100px; /* Keeps columns wide enough */
-  height: 50px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  background-color: #fff;
-  text-align: center;
-  font-size: 14px;
+min-width: 100px; /* Keeps columns wide enough */
+height: 50px;
+padding: 10px;
+border: 1px solid #ddd;
+background-color: #fff;
+text-align: center;
+font-size: 14px;
 }
 
 /* Table scroll container */
 .table-container {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 300px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+overflow-x: auto;
+overflow-y: auto;
+max-height: 450px;
+
 }
 
 /* Inside body padding (used in your outer container) */
 .inside_body {
-  padding: 20px 30px 20px 55px;
+padding: 20px 30px 20px 55px;
 }
 
 
 
 
-  /* 🌐 Mobile Responsive Overrides */
+/* 🌐 Mobile Responsive Overrides */
 @media (max-width: 768px) {
 
-  /* General container adjustments */
-  .container {
-    padding: 10px;
-    margin: 0;
-    width: 100%;
-  }
+/* General container adjustments */
+.container {
+  padding: 10px;
+  margin: 0;
+  width: 100%;
+}
 
-  .inside_body {
-    padding: 10px;
-  }
+.inside_body {
+  padding: 10px;
+}
 
-  .header_section {
-    padding: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-    box-shadow: none;
-  }
+.header_section {
+  padding: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  box-shadow: none;
+}
 
-  .header_section h1,
-  .header_section h4 {
-    font-size: 16px;
-    text-align: left;
-    margin-bottom: 10px;
-  }
+.header_section h1,
+.header_section h4 {
+  font-size: 16px;
+  text-align: left;
+  margin-bottom: 10px;
+}
 
-  /* Tab styling */
-  ::ng-deep .mat-mdc-tab-labels {
-    flex-direction: column;
-    align-items: stretch;
-  }
+/* Tab styling */
+::ng-deep .mat-mdc-tab-labels {
+  flex-direction: column;
+  align-items: stretch;
+  background: white !important;
+}
 
-  ::ng-deep .mat-mdc-tab-label {
-    font-size: 14px;
-    text-align: center;
-    width: 100%;
-    border-bottom: 1px solid #ddd;
-  }
+::ng-deep .mat-mdc-tab-label {
+  font-size: 14px;
+  text-align: center;
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+}
 
-  /* Buttons */
-  button,
-  .btn {
-    font-size: 13px;
-    padding: 8px 12px;
-    width: 100%;
-    margin-bottom: 8px;
-  }
+/* Buttons */
+button,
+.btn {
+  font-size: 13px;
+  padding: 8px 12px;
+  width: 100%;
+  margin-bottom: 8px;
+}
 
-  .btn-full {
-    width: 100%;
-  }
+.btn-full {
+  width: 100%;
+}
 
-  .button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-  /* Cards */
-  .card {
-    margin: 10px 0;
-    box-shadow: none;
-    border-radius: 6px;
-  }
+/* Cards */
+.card {
+  margin: 10px 0;
+  box-shadow: none;
+  border-radius: 6px;
+}
 
-  .card-body {
-    padding: 10px;
-    max-height: unset;
-  }
+.card-body {
+  padding: 10px;
+  max-height: unset;
+}
 
-  /* Left panel (Saved Reports) and Right panel stacked */
-  .broder_side {
-    border: none;
-    border-bottom: 1px solid #ccc;
-    height: auto;
-    max-height: 200px;
-    overflow-y: auto;
-  }
+/* Left panel (Saved Reports) and Right panel stacked */
+.broder_side {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  height: auto;
+  max-height: 200px;
+  overflow-y: auto;
+}
 
-  .report_common_box {
-    background: #fff;
-    height: auto;
-    padding: 10px;
-  }
+.report_common_box {
+  background: #fff;
+  height: auto;
+  padding: 10px;
+}
 
-  /* Table adjustments */
-  .table-container {
-    overflow-x: auto;
-  }
+/* Table adjustments */
+.table-container {
+  overflow-x: auto;
+}
 
-  table {
-    font-size: 12px;
-    border-collapse: collapse;
-    width: 100%;
-  }
+table {
+  font-size: 12px;
+  border-collapse: collapse;
+  width: 100%;
+}
 
-  table th,
-  table td {
-    padding: 8px;
-    text-wrap: nowrap;
-  }
+table th,
+table td {
+  padding: 8px;
+  text-wrap: nowrap;
+}
 
-  .preview-table th {
-    font-size: 13px;
-  }
+.preview-table th {
+  font-size: 13px;
+}
 
-  .preview-table td {
-    font-size: 12px;
-  }
+.preview-table td {
+  font-size: 12px;
+}
 
-  /* Modal adjustments */
-  .modal-dialog {
-    width: 95%;
-    margin: 10px auto;
-  }
+/* Modal adjustments */
+.modal-dialog {
+  width: 95%;
+  margin: 10px auto;
+}
 
-  .modal-content {
-    padding: 15px;
-  }
+.modal-content {
+  padding: 15px;
+}
 
-  .modal-body {
-    font-size: 14px;
-  }
+.modal-body {
+  font-size: 14px;
+}
 
-  /* Field lists */
-  .field-list {
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 5px;
-  }
+/* Field lists */
+.field-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 5px;
+}
 
-  .field-item {
-    font-size: 13px;
-    padding: 5px;
-  }
+.field-item {
+  font-size: 13px;
+  padding: 5px;
+}
 
-  /* Layout simplification */
-  .row {
-    display: flex;
-    flex-direction: column;
-  }
+/* Layout simplification */
+.row {
+  display: flex;
+  flex-direction: column;
+}
 
-  .col-md-4,
-  .col-md-6,
-  .col-md-9,
-  .col-md-12 {
-    width: 100%;
-  }
+.col-md-4,
+.col-md-6,
+.col-md-9,
+.col-md-12 {
+  width: 100%;
+}
 
-  /* Text alignments */
-  .text-center {
-    text-align: left !important;
-  }
+/* Text alignments */
+.text-center {
+  text-align: left !important;
+}
 
-  /* Headings */
-  .preview-heading,
-  .card-titles {
-    font-size: 14px;
-    font-weight: 500;
-    text-align: left;
-  }
+/* Headings */
+.preview-heading,
+.card-titles {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
 
-  /* Tabs spacing */
-  mat-tab-group {
-    width: 100%;
-  }
+/* Tabs spacing */
+mat-tab-group {
+  width: 100%;
+}
 
-  /* Reduced height for scrolling sections */
-  .report-section-main {
-    padding: 10px;
-  }
-    /* Target only that header section where buttons live */
-  .header-container {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    width: 100%;
-    text-align: left;
-  }
+/* Reduced height for scrolling sections */
+.report-section-main {
+  padding: 10px;
+}
+  /* Target only that header section where buttons live */
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+}
 
-  .header-container h6.preview-heading {
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
+.header-container h6.preview-heading {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
 
-  /* Stack the buttons neatly below heading */
-  .header-container button {
-    width: 100%;
-    padding: 10px;
-    font-size: 13px;
-    border-radius: 6px;
-  }
+/* Stack the buttons neatly below heading */
+.header-container button {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  border-radius: 6px;
+}
 
-  /* Add some breathing room between buttons */
-  .header-container button + button {
-    margin-top: 6px;
-  }
+/* Add some breathing room between buttons */
+.header-container button + button {
+  margin-top: 6px;
+}
 
-  /* Optional: make buttons distinct visually */
-  .header-container button[color="success"] {
-    background-color: #28a745 !important;
-    color: #fff !important;
-  }
+/* Optional: make buttons distinct visually */
+.header-container button[color="success"] {
+  background-color: #28a745 !important;
+  color: #fff !important;
+}
 
-  .header-container button[color="primary"] {
-    background-color: #007bff !important;
-    color: #fff !important;
-  }
+.header-container button[color="primary"] {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
 
+  :host ::ng-deep .table-container {
+  overflow-x: auto;
+}
 
-      :host ::ng-deep .table-container {
-    overflow-x: auto;
-  }
-
-  :host ::ng-deep .table-container table {
-    width: max-content;
-    min-width: 100%;
-  }
-
-
+:host ::ng-deep .table-container table {
+  width: max-content;
+  min-width: 100%;
 }
 
 
+
+}
 
 
 /* ✅ Override global table styles inside report-generate only */
 :host ::ng-deep .table-container table {
-  display: table !important;
-  width: 100% !important;
-  border-collapse: collapse !important;
+display: table !important;
+width: 100% !important;
+border-collapse: collapse !important;
 }
 
 /* :host ::ng-deep .table-container thead {
-  display: table-header-group !important;
+display: table-header-group !important;
 } */
 
 :host ::ng-deep .table-container tbody {
-  display: table-row-group !important;
+display: table-row-group !important;
 }
 
 :host ::ng-deep .table-container tr {
-  display: table-row !important;
+display: table-row !important;
 }
 
 :host ::ng-deep .table-container td,
 :host ::ng-deep .table-container th {
-  display: table-cell !important;
-  padding: 8px !important;
-  border: 1px solid #ddd !important;
-  text-align: left !important;
+display: table-cell !important;
+padding: 8px !important;
+border: 1px solid #ddd !important;
+text-align: left !important;
+white-space: nowrap;
+}
+
+
+
+
+
+.comapny_section{
+
+  margin-top: 100px;
+  margin-left: 50px;
+  
+}
+
+.header_section{
+  background: white;
+  padding: 24px 20px 15px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  width: 100%;
+  border-bottom: solid 3px navy;
+}
+
+.header_section h1{
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+
+}
+
+  .tab_boddy h1{
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+
+}
+
+
+.com_list{
+  padding: 20px;
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  border-top: solid 3px navy;
+  margin-bottom: 20px;
+
+
+}
+
+.com_list h2{
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+
+
+
+table thead th {
+  color: #ffffff;
+  background: #004976;
+  padding: 15px;
+  border: 1px solid #ebebec;
+  font-weight: 500;
+}
+
+table tr {
+  background: #ffffff;
+}
+
+table tr td {
+  border: 1px solid #e6edf1;
+  padding: 15px;
+}
+
+
+
+
+p{
+  margin-bottom: 0px;
+}
+
+
+.form-control-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .form-control-wrapper mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-wrapper {
+  padding: 0;
+  margin: 0;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-flex {
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-underline {
+  display: none;
+}
+
+::ng-deep .form-control-wrapper .mat-select {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  height: auto;
+  line-height: 1.5;
+}
+
+::ng-deep .form-control-wrapper .mat-select-trigger {
+  height: auto;
+  padding: 0;
+}
+
+::ng-deep .form-control-wrapper .mat-select-value-text {
+  padding: 0;
+  margin: 0;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-infix {
+  padding: 0;
+  border: none;
+}
+
+::ng-deep .form-control-wrapper .mat-select-placeholder {
+  transform: translateY(-50%);
+  top: 50%;
+}
+
+
+::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
+  margin-top: -14px;
+}
+
+::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
+
+background-color: white;
+}
+
+::ng-deep .form-control-wrapper .mdc-text-field{
+padding: 0px;
+}
+
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
+outline: none-webkit-focus-ring-color auto 0px;
+
+
+}
+
+
+/* Remove :focus-visible style from all input elements */
+input:focus-visible {
+outline: none;
+}
+
+/* Remove :focus-visible style from mat-select */
+.mat-select:focus-visible {
+outline: none;
+}
+
+/* Use !important to ensure the outline is removed */
+::ng-deep .form-control-wrapper:focus-visible {
+outline: none !important;
+}
+
+
+::ng-deep .mat-select:focus-visible {
+outline: none;
+}
+
+/* Optionally, you can also override other styles */
+::ng-deep .mat-select:focus-visible .mat-select-value {
+outline: none;
+}
+
+::ng-deep .mdc-text-field--no-label{
+border:1px solid #ced4da;
+}
+
+::ng-deep .mat-mdc-form-field-flex {
+padding: 4px 7px;
+height: 35px;
+}
+
+.check-box-selection-sec{
+  padding: 0px !important;
+}
+
+
+
+
+.tab_boddy{
+  padding: 30px;
+  background: white;
+   margin-top: 20px;
+
+}
+
+
+.header-btn-icon{
+  vertical-align: middle;
+}
+
+
+table thead th {
   white-space: nowrap;
 }
 
+
+
+
+@media only screen and (max-width: 640px) {
+  table thead {
+    display: none;
+  }
+
+  table tbody {
+    display: block;
+  }
+
+  table tbody tr td {
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+
+  table tbody tr {
+    margin-bottom: 20px;
+    display: block;
+    border: 1px solid #5c1e81;
+    background: #f9f9f9;
+    overflow: hidden;
+  }
+
+  table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 30%;
+    display: flex;
+    background: #5c1e81;
+    color: #fff;
+    padding: 15px;
+    margin-inline-end: 10px;
+  }
+}
+
+
+
+
+
+
+
+/* Add your CSS styles here */
+.modal {
+display: block; /* Hidden by default */
+position: fixed; /* Stay in place */
+z-index: 1; /* Sit on top */
+margin-left: auto;
+margin-right: auto;
+top: 0;
+width: 100%; /* Full width */
+height: 100%; /* Full height */
+overflow: auto; /* Enable scroll if needed */
+background-color: rgb(0,0,0); /* Fallback color */
+background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+
+/* Add your CSS styles here */
+.modal {
+display: block; /* Hidden by default */
+position: fixed; /* Stay in place */
+z-index: 1; /* Sit on top */
+margin-left: auto;
+margin-right: auto;
+top: 0;
+width: 100%; /* Full width */
+height: 100%; /* Full height */
+overflow: auto; /* Enable scroll if needed */
+background-color: rgb(0,0,0); /* Fallback color */
+background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+background-color: #fefefe;
+padding: 20px;
+border: 1px solid #888;
+width: 70%; /* Could be more or less, depending on screen size */
+margin-right: auto;
+margin-left: 25%;
+margin-top: 100px;
+height: auto;
+
+}
+
+.close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+text-align: right;
+}
+
+.close:hover,
+.close:focus {
+color: red;
+text-decoration: none;
+cursor: pointer;
+}
+
+.modal h2{
+
+font-size: 16px;
+text-transform: capitalize;
+font-weight: 600;
+font-family: math;
+}
+
+
+
+::ng-deep   ::ng-deep .mat-mdc-tab-labels{
+  background: white;
+}
+
+select.form-select {
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100% !important;
+}

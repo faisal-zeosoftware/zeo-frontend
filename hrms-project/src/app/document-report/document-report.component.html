@@ -10,14 +10,7 @@
     <!-- ========================================================
         HEADER SECTION
     ======================================================== -->
-    <div class="header_section">
-      <div class="row">
-        <div class="col-md-7">
-          <h4 class="mr-3">Document Master Report</h4>
-          <hr>
-        </div>
-      </div>
-    </div>
+   
 
     <!-- ========================================================
         TAB GROUP
@@ -29,45 +22,39 @@
       ======================================================== -->
       <mat-tab label="Document Standard Report ">
 
-        <div class="report-section-main">
 
-          <!-- ===== BUTTON ROW ===== -->
+        <div class="tab_boddy " style="padding: 15px 15px;">
+
           <div class="row">
-            <div class="col-md-4">
-              <button type="button" (click)="toggleCard()" class="btn btn-success btn-full" *ngIf="hasViewPermission">
-                View Standard Report
-              </button>
-            </div>
+              <div class="col-md-5">
+                  <h1>Document Reports</h1>
+              </div>
+  
+              <div class="col-md-2">
+               
+                  <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
+  
+              </div>
+              <div class="col-md-5">
+                  <div class="button-group pull-right">
+                    <button mat-raised-button color="primary" class="btn  btn-success mt-2" *ngIf="hasExportPermission" (click)="StandardDownload()"> <i class="fa fa-download" aria-hidden="true"></i>  Download</button>
+
+                    
+                 
+                 
+                        </div>
+              </div>
+               
           </div>
+         
+         
+  
+      </div>
+
+
+      <div class="tab_boddy p-3">
 
           <!-- ========================================================
-              STANDARD REPORT CARD
-          ======================================================== -->
-          <div class="card" *ngIf="cardOpen">
-
-            <div class="card-body">
-
-              <!-- ===== CARD HEADER ===== -->
-              <div class="header-container">
-                <h6 class="header-title">Document Report Data</h6>
-
-                <div class="mat-card">
-                  <div class="mat-card-content">
-                    <div class="row">
-                      <div class="col-md-12 text-right">
-                        <button mat-raised-button color="primary" class="btn btn-success me-2"
-                                *ngIf="hasExportPermission" (click)="StandardDownload()">
-                          Download
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <hr>
-
-              <!-- ========================================================
                   STANDARD REPORT TABLE
               ======================================================== -->
               <div class="table-container">
@@ -177,19 +164,17 @@
                 </table>
 
               </div> <!-- table-container -->
-
-            </div> <!-- card-body -->
-
-          </div> <!-- card -->
-
-          <div class="padding" *ngIf="!cardOpen">
-            <p>View Standard List</p>
-          </div>
+        
 
         </div>
+     
 
       </mat-tab>
 
+
+
+
+      
       <!-- ========================================================
           TAB 2: CUSTOM REPORT
       ======================================================== -->
