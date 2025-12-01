@@ -138,17 +138,17 @@ if (this.userId !== null) {
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_holiday', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_holiday_calendar', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_holiday', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_holiday_calendar', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_holiday', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_holiday_calendar', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_holiday', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_holiday_calendar', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 

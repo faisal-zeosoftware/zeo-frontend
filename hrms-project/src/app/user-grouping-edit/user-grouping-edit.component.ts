@@ -45,6 +45,7 @@ export class UserGroupingEditComponent {
   GrouppermissionsReqtype: any[] = [];
   GrouppermissionsApr: any[] = [];
   GrouppermissionsAprlvl: any[] = [];
+  GrouppermissionsGenReqEsc: any[] = [];
   GrouppermissionsAtd: any[] = [];
   GrouppermissionsExpDocument: any[] = [];
   GrouppermissionsEmpOver: any[] = [];
@@ -68,12 +69,9 @@ export class UserGroupingEditComponent {
   GrouppermissionsassigneddUser: any[] = [];
   GrouppermissionsstateMaster: any[] = [];
   Grouppermissionsdocumentype: any[] = [];
-  // Grouppermissionsexpirydocuments: any[] = [];
   GrouppermissionslocationMaster: any[] = [];
   GrouppermissionsDnMaster: any[] = [];
   GrouppermissionsCpMaster: any[] = [];
-  // GrouppermissionsEmtMaster: any[] = [];
-  // GrouppermissionsFormdesMaster: any[] = [];
   GrouppermissionsConfigMaster: any[] = [];
   GrouppermissionsAnnounceMaster: any[] = [];
   GrouppermissionsNotify: any[] = [];
@@ -122,7 +120,6 @@ export class UserGroupingEditComponent {
   GrouppermissionsLeavereq:any[] =[];
   GrouppermissionsLeavecom:any[] =[];
   GrouppermissionsLeaveaprvlvl:any[] =[];
-  // GrouppermissionsLeaveaprvlvltemp:any[] =[];
   GrouppermissionsLeaveBalance:any[] =[];
   GrouppermissionsLeaveCancel:any[] =[];
   GrouppermissionsLeaveAccrual:any[] =[];
@@ -152,6 +149,11 @@ export class UserGroupingEditComponent {
   GrouppermissionsAssetmaster:any[] =[];
   GrouppermissionsAssetAlon:any[] =[];
   GrouppermissionsAssetReq:any[] =[];
+
+//permission stored arrays for Document Management
+
+  GrouppermissionsDocumentAddFol:any[] =[];
+
   
   
  //permission stored arrays for Project
@@ -206,6 +208,7 @@ export class UserGroupingEditComponent {
   ReqtypeMasterInderminate = false;
   AprMasterInderminate = false;
   AprlvlMasterInderminate = false;
+  GenReqEscMasterInderminate = false;
   AtdMasterInderminate = false;
   ExpDocumentInderminate = false;
   EmpOverInderminate = false;
@@ -235,7 +238,6 @@ export class UserGroupingEditComponent {
   locationMasterInderminate= false;
   DnMasterInderminate= false;
   CpMasterInderminate= false;
-  // EmtMasterInderminate= false;
   FormdesMasterInderminate= false;
   ConfigMasterInderminate= false;
   AnnounceInderminate= false;
@@ -274,7 +276,7 @@ export class UserGroupingEditComponent {
   assignweekInderminate= false;
   addholidayInderminate= false;
   assignholidayInderminate= false;
-  // ShiftInderminate= false;
+
 
 
 
@@ -289,7 +291,6 @@ export class UserGroupingEditComponent {
   LeavereqInderminate=false;
   LeavecomInderminate=false;
   LeaveaprvlvlInderminate=false;
-  // LeaveaprvlvltempInderminate=false;
   LeaveBalanceInderminate=false;
   LaaveCancelInderminate=false;
   LeaveAccrualInderminate=false;
@@ -323,6 +324,10 @@ export class UserGroupingEditComponent {
     AssetmasterInderminate= false;
     AssetAlonInderminate= false;
     AssetReqInderminate= false;
+
+  //selected Document Management checkboxes.
+
+    DocumentAddFolInderminate= false;
 
     //selected Project checkboxes.
 
@@ -377,6 +382,7 @@ export class UserGroupingEditComponent {
   ReqtypeMasterChecked: boolean = false;
   AprMasterChecked: boolean = false;
   AprlvlMasterChecked: boolean = false;
+  GenReqEscMasterChecked: boolean = false;
   AtdMasterChecked: boolean = false;
   ExpDocumentChecked: boolean = false;
   EmpOverChecked: boolean = false;
@@ -403,13 +409,9 @@ export class UserGroupingEditComponent {
   assignpermissionMasterChecked: boolean =false;
   stationMasterChecked:boolean =false;
   documenttypeMasterChecked:boolean = false;
-  // expireddocumnetsMasterChecked:boolean = false;
   locationMasterChecked:boolean = false;
   DnMasterChecked:boolean = false;
   CpMasterChecked:boolean = false;
-  // EmtMasterChecked:boolean = false;
-
-  // FormdesMasterChecked:boolean = false;
   ConfigMasterChecked:boolean = false;
   AnnounceMasterChecked:boolean = false;
   NotefyChecked:boolean = false;
@@ -445,7 +447,6 @@ export class UserGroupingEditComponent {
   assignweekChecked:boolean = false;
   addholidayChecked:boolean= false;
   assignholidayChecked:boolean = false;
-  // ShiftChecked:boolean = false;
 
 
 
@@ -456,7 +457,6 @@ export class UserGroupingEditComponent {
     LeavereqChecked:boolean= false;
     LeavecomChecked:boolean= false;
     LeaveaprvlvlChecked:boolean= false;
-    // LeaveaprvlvltempChecked:boolean= false;
     LeaveBalanceChecked:boolean= false;
     LeaveCancelChecked:boolean= false;
     LeaveAccrualChecked:boolean= false;
@@ -488,6 +488,10 @@ export class UserGroupingEditComponent {
     AssetmasterChecked:boolean= false;
     AssetAlonChecked:boolean= false;
     AssetReqChecked:boolean= false;
+
+    //Document Managemet checkbox checked values
+
+     DocumentAddFolChecked:boolean= false;
 
     //Project checkbox checked values
 
@@ -543,6 +547,7 @@ export class UserGroupingEditComponent {
   Payrollchecked:boolean = false;
   Loanchecked:boolean = false;
   Assetchecked:boolean = false;
+  DocumentAddchecked:boolean = false;
   Projectchecked:boolean = false;
   AirTicketchecked:boolean = false;
   Documentchecked:boolean = false;
@@ -565,6 +570,7 @@ export class UserGroupingEditComponent {
   PayrollMastersvalue:boolean =true;
   LoanMastersvalue:boolean =true;
   AssetMastersvalue:boolean =true;
+  DocumentAddMastersvalue:boolean =true;
   ProjectMastersvalue:boolean =true;
   AirTicketMastersvalue:boolean =true;
   DocumentMastersvalue:boolean =true;
@@ -617,6 +623,7 @@ isEmployeeManagementMasterChecked(): boolean {
       this.ReqtypeMasterChecked &&
       this.AprMasterChecked &&
       this.AprlvlMasterChecked &&
+      this.GenReqEscMasterChecked &&
       this.AtdMasterChecked &&
       this.ExpDocumentChecked &&
       this.EmpOverChecked &&
@@ -679,11 +686,19 @@ isEmployeeManagementMasterChecked(): boolean {
     );
     return selectedGenPermissions.length > 0 && selectedGenPermissions.length < this.GrouppermissionsApr.length;
   }
+
   isAprlvlMasterIndeterminate(): boolean {
     const selectedGenPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissionsAprlvl.map(p => p.id).includes(permission)
     );
     return selectedGenPermissions.length > 0 && selectedGenPermissions.length < this.GrouppermissionsAprlvl.length;
+  }
+
+isGenReqEscMasterIndeterminate(): boolean {
+    const selectedGenPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsGenReqEsc.map(p => p.id).includes(permission)
+    );
+    return selectedGenPermissions.length > 0 && selectedGenPermissions.length < this.GrouppermissionsGenReqEsc.length;
   }
 
   isAtdMasterIndeterminate(): boolean {
@@ -1246,6 +1261,22 @@ isAssetReqIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsAssetReq.length;
 }
 
+
+// Document ManagementMaster Checked 
+
+isDocumentAddManagementMasterChecked():boolean{
+   return this.DocumentAddFolChecked 
+
+}
+
+isDocumentAddFolIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsDocumentAddFol.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsDocumentAddFol.length;
+}
+
+
 isProjectManagementMasterChecked():boolean{
    return this.ProjectsChecked &&
    this.ProjectStagesChecked &&
@@ -1540,8 +1571,6 @@ isAssetformIndeterminate(): boolean {
 
 
     this.loadpermissionsEmpMaster();
-    // this.loadpermissionsall();
-
     this.loadPermissions();
     this.loadSettingPermissions();
     this.loadReportPermissions();
@@ -1552,6 +1581,7 @@ isAssetformIndeterminate(): boolean {
     this.loadPayrollPermissions();
     this.loadLoanPermissions();
     this.loadAssetPermissions();
+    this.loadDocumentAddPermissions();
     this.loadProjectPermissions();
     this.loadAirTicketPermissions();
     this.loadDocumentPermissions();
@@ -1569,6 +1599,7 @@ isAssetformIndeterminate(): boolean {
     this.updateInderminatePayroll();
     this.updateInderminateLoan();
     this.updateInderminateAsset();
+    this.updateInderminateDocumentAdd();
     this.updateInderminateProject();
     this.updateInderminateAirTicket();
     this.updateInderminateDocument();
@@ -1643,6 +1674,7 @@ isAssetformIndeterminate(): boolean {
     this.isReqtypeMasterIndeterminate();
     this.isAprMasterIndeterminate();
     this.isAprlvlMasterIndeterminate();
+    this.isGenReqEscMasterIndeterminate();
     this.isAtdMasterIndeterminate();
     this.isExpDocumentIndeterminate();
     this.isEmpOverIndeterminate();
@@ -1666,12 +1698,9 @@ isAssetformIndeterminate(): boolean {
     this.isAssignPermissionsIndeterminate();
     this.isStateMasterIndeterminate();
     this.isdocumenttypeIndeterminate();
-    // this.isExpireddocumentsIndeterminate();
     this.isloactionmasterIndeterminate();
     this.isDnmasterIndeterminate();
     this.isCpmasterIndeterminate();
-  // this.isEmtmasterIndeterminate();
-    // this.isFormdesmasterIndeterminate();
     this.isConfigmasterIndeterminate();
     this.isAnnounceIndeterminate();
     this.isNotifyIndeterminate();
@@ -1709,7 +1738,6 @@ updateInderminateCalenders():void{
   this.isAddWeekIndeterminate();
   this.isAssignWeekIndeterminate();
   this.isAssignHolidayIndeterminate();
-  // this.isShiftIndeterminate();
 
 }
 
@@ -1721,7 +1749,6 @@ updateInderminateLeave():void{
   this.isLeavereqIndeterminate();
   this.isLeavecomIndeterminate();
   this.isLeaveaprvlvlIndeterminate();
-  // this.isLeaveaprvlvltempIndeterminate();
   this.isLeaveBalanceIndeterminate();
   this.isLeaveCancelIndeterminate();
   this.isLeaveAccrualIndeterminate();
@@ -1763,6 +1790,15 @@ updateInderminateAsset():void{
   this.isAssetmasterIndeterminate();
   this.isAssetAlonIndeterminate();
   this.isAssetReqIndeterminate();
+ 
+}
+
+// Update Interminate Document Management
+
+updateInderminateDocumentAdd():void{
+
+  this.isDocumentAddFolIndeterminate();
+
  
 }
 
@@ -1851,6 +1887,7 @@ updateInderminateShift():void{
     this.loadpermissionsReqtypeMaster();
     this.loadpermissionsAprMaster();
     this.loadpermissionsAprlvlMaster();
+    this.loadpermissionsGenReqEscMaster();
     this.loadpermissionsAtdMaster();
     this.loadpermissionsExpDocument();
     this.loadpermissionsEmpOver();
@@ -1873,12 +1910,9 @@ updateInderminateShift():void{
     this.loadpermissionsassigneduser();
     this.loadpermissionsstatemaster();
     this.loadpermissionsdocumnettype();
-    // this.loadpermissionexpirydocuments();
     this.loadpermissionlocationmaster();
     this.loadpermissionDnmaster();
     this.loadpermissionCpmaster();
-    // this.loadpermissionEmtmaster();
-    // this.loadpermissionFormdesmaster();
     this.loadpermissionConfig();
     this.loadpermissionAnnouncement();
     this.loadpermissionNotification();
@@ -1924,7 +1958,6 @@ updateInderminateShift():void{
     this.loadpermissionsAssignweekDetail();
     this.loadpermissionsAddholidayDetail();
     this.loadpermissionsAssignholidayDetail();
-    // this.loadpermissionsShiftDetail();
 
   }
 
@@ -1979,6 +2012,15 @@ updateInderminateShift():void{
   this.loadpermissionsAssetmaster();
   this.loadpermissionsAssetAlon();
   this.loadpermissionsAssetReq();
+
+  }
+
+      // Document Management Permissions
+
+  loadDocumentAddPermissions():void{
+
+  this.loadpermissionsDocumnetAddFol();
+
 
   }
 
@@ -2469,6 +2511,60 @@ updateInderminateShift():void{
             return permissionCodename;
         }
       }
+
+
+            loadpermissionsGenReqEscMaster(): void {
+              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      
+              console.log('schemastore', selectedSchema);
+            
+              if (selectedSchema) {
+                this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+                  (result: any[]) => {
+                    // Specify the codenames you want to filter
+                    const requiredCodenames = ['add_genrl_escalation', 
+                                              'change_genrl_escalation', 
+                                              'delete_genrl_escalation', 
+                                              'view_genrl_escalation'];
+            
+                    // Filter and remove duplicates based on codename
+                    const uniquePermissionsMap = new Map();
+                    result.forEach(permission => {
+                      const codename = permission.codename.trim().toLowerCase();
+                      if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                        uniquePermissionsMap.set(codename, permission);
+                      }
+                    });
+            
+                    // Convert map values to an array
+                    this.GrouppermissionsGenReqEsc = Array.from(uniquePermissionsMap.values());
+            
+                    console.log('Filtered Unique Permissions:', this.GrouppermissionsGenReqEsc);
+                  },
+                  (error: any) => {
+                    console.error('Error fetching permissions:', error);
+                  }
+                );
+              }
+            }
+          
+          
+             //Display Name  add view delte code for General request master-------
+          
+             getDisplayNameGenReqEsc(permissionCodename: string): string {
+              switch (permissionCodename.trim().toLowerCase()) {
+                case 'add_genrl_escalation':
+                  return 'Add';
+                case 'change_genrl_escalation':
+                  return 'Edit';
+                case 'delete_genrl_escalation':
+                  return 'Delete';
+                case 'view_genrl_escalation':
+                  return 'View';
+                default:
+                  return permissionCodename;
+              }
+            }
     
 
          //load permission for General request master
@@ -3332,57 +3428,6 @@ getDisplayNameGratuity(permissionCodename: string): string {
   }
   
 
-//load permission for expiring document-----------
-
-  // loadpermissionexpirydocuments(): void {
-
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore', selectedSchema);
-  
-  //   if (selectedSchema) {
-  //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-  //       (result: any[]) => {
-  //         // Specify the codenames you want to filter
-  //         const requiredCodenames = ['add_emp_documents', 'change_emp_documents', 'delete_emp_documents', 'view_emp_documents'];
-  
-  //         // Filter and remove duplicates based on codename
-  //         const uniquePermissionsMap = new Map();
-  //         result.forEach(permission => {
-  //           const codename = permission.codename.trim().toLowerCase();
-  //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-  //             uniquePermissionsMap.set(codename, permission);
-  //           }
-  //         });
-  
-  //         // Convert map values to an array
-  //         this.Grouppermissionsexpirydocuments = Array.from(uniquePermissionsMap.values());
-  
-  //         console.log('Filtered Unique Permissions:', this.Grouppermissionsexpirydocuments);
-  //       },
-  //       (error: any) => {
-  //         console.error('Error fetching permissions:', error);
-  //       }
-  //     );
-  //   }
-  // }
-
-    //Display Name  add view delte code for Document type master-------
-
-    // getDisplayNameDocExpired(permissionCodename: string): string {
-    //   switch (permissionCodename.trim().toLowerCase()) {
-    //     case 'add_emp_documents':
-    //       return 'Add';
-    //     case 'change_emp_documents':
-    //       return 'Edit';
-    //     case 'delete_emp_documents':
-    //       return 'Delete';
-    //     case 'view_emp_documents':
-    //       return 'View';
-    //     default:
-    //       return permissionCodename;
-    //   }
-    // }
 
 
   // load permission for company master-----------
@@ -3536,104 +3581,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
             }
           }
 
-          // loadpermissionEmtmaster(): void {
-          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-          //   console.log('schemastore', selectedSchema);
-          
-          //   if (selectedSchema) {
-          //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-          //       (result: any[]) => {
-          //         // Specify the codenames you want to filter
-          //         const requiredCodenames = ['add_emailtemplate', 'change_emailtemplate', 'delete_emailtemplate', 'view_emailtemplate'];
-          
-          //         // Filter and remove duplicates based on codename
-          //         const uniquePermissionsMap = new Map();
-          //         result.forEach(permission => {
-          //           const codename = permission.codename.trim().toLowerCase();
-          //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-          //             uniquePermissionsMap.set(codename, permission);
-          //           }
-          //         });
-          
-          //         // Convert map values to an array
-          //         this.GrouppermissionsEmtMaster = Array.from(uniquePermissionsMap.values());
-          
-          //         console.log('Filtered Unique Permissions:', this.GrouppermissionsEmtMaster);
-          //       },
-          //       (error: any) => {
-          //         console.error('Error fetching permissions:', error);
-          //       }
-          //     );
-          //   }
-          // }
-        
-            //Display Name  add view delte code for Company master-------
-        
-            // getDisplayNameEmt(permissionCodename: string): string {
-            //   switch (permissionCodename.trim().toLowerCase()) {
-            //     case 'add_emailtemplate':
-            //       return 'Add';
-            //     case 'change_emailtemplate':
-            //       return 'Edit';
-            //     case 'delete_emailtemplate':
-            //       return 'Delete';
-            //     case 'view_emailtemplate':
-            //       return 'View';
-            //     default:
-            //       return permissionCodename;
-            //   }
-            // }
-
-        // loadpermissionFormdesmaster(): void {
-        //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-        //   console.log('schemastore', selectedSchema);
-        
-        //   if (selectedSchema) {
-        //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-        //       (result: any[]) => {
-        //         // Specify the codenames you want to filter
-        //         const requiredCodenames = ['add_emp_customfield', 'change_emp_customfield', 'delete_emp_customfield', 'view_emp_customfield'];
-        
-        //         // Filter and remove duplicates based on codename
-        //         const uniquePermissionsMap = new Map();
-        //         result.forEach(permission => {
-        //           const codename = permission.codename.trim().toLowerCase();
-        //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-        //             uniquePermissionsMap.set(codename, permission);
-        //           }
-        //         });
-        
-        //         // Convert map values to an array
-        //         this.GrouppermissionsFormdesMaster = Array.from(uniquePermissionsMap.values());
-        
-        //         console.log('Filtered Unique Permissions:', this.GrouppermissionsFormdesMaster);
-        //       },
-        //       (error: any) => {
-        //         console.error('Error fetching permissions:', error);
-        //       }
-        //     );
-        //   }
-        // }
-      
-          //Display Name  add view delte code for Company master-------
-      
-          // getDisplayNameFormdes(permissionCodename: string): string {
-          //   switch (permissionCodename.trim().toLowerCase()) {
-          //     case 'add_emp_customfield':
-          //       return 'Add';
-          //     case 'change_emp_customfield':
-          //       return 'Edit';
-          //     case 'delete_emp_customfield':
-          //       return 'Delete';
-          //     case 'view_emp_customfield':
-          //       return 'View';
-          //     default:
-          //       return permissionCodename;
-          //   }
-          // }
-
+ 
 
 
       loadpermissionConfig(): void {
@@ -4695,13 +4643,13 @@ loadpermissionsEmpReport(): void {
               
                   getDisplayNameAddholiday(permissionCodename: string): string {
                     switch (permissionCodename.trim().toLowerCase()) {
-                      case 'add_holiday':
+                      case 'add_holiday_calendar':
                         return 'Add';
-                      case 'change_holiday':
+                      case 'change_holiday_calendar':
                         return 'Edit';
-                      case 'delete_holiday':
+                      case 'delete_holiday_calendar':
                         return 'Delete';
-                        case 'view_holiday':
+                        case 'view_holiday_calendar':
                           return 'View';
                       default:
                         return permissionCodename;
@@ -4758,54 +4706,6 @@ loadpermissionsEmpReport(): void {
                       }
                     }
 
-                    // loadpermissionsShiftDetail(): void {
-                    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-                    //   console.log('schemastore', selectedSchema);
-                    
-                    //   if (selectedSchema) {
-                    //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-                    //       (result: any[]) => {
-                    //         // Specify the codenames you want to filter
-                    //         const requiredCodenames = ['add_shift', 'change_shift', 'delete_shift', 'view_shift'];
-                    
-                    //         // Filter and remove duplicates based on codename
-                    //         const uniquePermissionsMap = new Map();
-                    //         result.forEach(permission => {
-                    //           const codename = permission.codename.trim().toLowerCase();
-                    //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                    //             uniquePermissionsMap.set(codename, permission);
-                    //           }
-                    //         });
-                    
-                    //         // Convert map values to an array
-                    //         this.GrouppermissionsShift = Array.from(uniquePermissionsMap.values());
-                    
-                    //         console.log('Filtered Unique Permissions:', this.GrouppermissionsShift);
-                    //       },
-                    //       (error: any) => {
-                    //         console.error('Error fetching permissions:', error);
-                    //       }
-                    //     );
-                    //   }
-                    // }
-                  
-                      //Display Name  add view delte code for Company master-------
-                  
-    // getDisplayNameShiftDetail(permissionCodename: string): string {
-    //                     switch (permissionCodename.trim().toLowerCase()) {
-    //                       case 'add_shift':
-    //                         return 'Add';
-    //                       case 'change_shift':
-    //                         return 'Edit';
-    //                       case 'delete_shift':
-    //                         return 'Delete';
-    //                         case 'view_shift':
-    //                           return 'View';
-    //                       default:
-    //                         return permissionCodename;
-    //                     }
-    //                   }
 
                       // Leave permisson fetching code here
 
@@ -5329,54 +5229,6 @@ loadpermissionsEmpReport(): void {
                               }
                             }
       
-                            //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-                            //   console.log('schemastore', selectedSchema);
-                            
-                            //   if (selectedSchema) {
-                            //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-                            //       (result: any[]) => {
-                            //         // Specify the codenames you want to filter
-                            //         const requiredCodenames = ['add_lvemailtemplate', 'change_lvemailtemplate', 'delete_lvemailtemplate', 'view_lvemailtemplate'];
-                            
-                            //         // Filter and remove duplicates based on codename
-                            //         const uniquePermissionsMap = new Map();
-                            //         result.forEach(permission => {
-                            //           const codename = permission.codename.trim().toLowerCase();
-                            //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                            //             uniquePermissionsMap.set(codename, permission);
-                            //           }
-                            //         });
-                            
-                            //         // Convert map values to an array
-                            //         this.GrouppermissionsLeaveaprvlvltemp = Array.from(uniquePermissionsMap.values());
-                            
-                            //         console.log('Filtered Unique Permissions:', this.GrouppermissionsLeaveaprvlvltemp);
-                            //       },
-                            //       (error: any) => {
-                            //         console.error('Error fetching permissions:', error);
-                            //       }
-                            //     );
-                            //   }
-                            // }
-                          
-                          
-    //Display Name add view delte code for emplotee master-------
-                          
-    // getDisplayNameLeaveaprvlvltemp(permissionCodename: string): string {
-    //                             switch (permissionCodename.trim().toLowerCase()) {
-    //                               case 'add_lvemailtemplate':
-    //                                 return 'Add';
-    //                               case 'change_lvemailtemplate':
-    //                                 return 'Edit';
-    //                               case 'delete_lvemailtemplate':
-    //                                 return 'Delete';
-    //                               case 'view_lvemailtemplate':
-    //                                 return 'View';
-    //                               default:
-    //                                 return permissionCodename;
-    //                             }
-    //   }
 
 
 
@@ -6267,6 +6119,55 @@ getDisplayNameAssetReq(permissionCodename: string): string {
       return permissionCodename;
   }
 }
+
+
+loadpermissionsDocumnetAddFol(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_folder',
+          'change_folder',
+          'delete_folder',
+          'view_folder',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsDocumentAddFol = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Document Folder permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Allocation permissions ===
+getDisplayNameDocumentAddFol(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_folder':
+      return 'Add';
+    case 'change_folder':
+      return 'Edit';
+    case 'delete_folder':
+      return 'Delete';
+    case 'view_folder':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 
 loadpermissionsProjects(): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -7455,6 +7356,25 @@ getDisplayNameShiftOverRide(permissionCodename: string): string {
     );
     this.AprlvlMasterChecked = allPermissionsSelected;
     this.AprlvlMasterInderminate = this.isAprlvlMasterIndeterminate();
+
+  }
+
+    onCheckboxChangeGenReqEsc(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateGenReqEscMasterCheckbox();
+    this.updateSelectAll();
+  }
+
+  updateGenReqEscMasterCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsGenReqEsc.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.GenReqEscMasterChecked = allPermissionsSelected;
+    this.GenReqEscMasterInderminate = this.isGenReqEscMasterIndeterminate();
 
   }
   
@@ -8836,6 +8756,25 @@ updateAssetReqCheckbox(): void {
   this.AssetReqChecked = allSelected;
 }
 
+
+onCheckboxChangesDocumentAddFol(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateDocumentAddFolCheckbox();
+  this.updateDocumentAdd();
+}
+
+updateDocumentAddFolCheckbox(): void {
+  const allSelected = this.GrouppermissionsDocumentAddFol.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.DocumentAddFolChecked = allSelected;
+}
+
 onCheckboxChangesProjects(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
@@ -9316,6 +9255,7 @@ updateShiftOverRideCheckbox(): void {
     this.updateReqtypeMasterCheckbox();
     this.updateAprMasterCheckbox();
     this.updateAprlvlMasterCheckbox();
+    this.updateGenReqEscMasterCheckbox();
     this.updateAtdMasterCheckbox();
     this.updateExpDocumentCheckbox();
     this.updateEmpOverCheckbox();
@@ -9336,10 +9276,8 @@ updateShiftOverRideCheckbox(): void {
     this.updateassignMasterCheckbox();
     this.updateStateMasterCheckbox();
     this.updatedoctypeMasterCheckbox();
-    // this.updateexpiryMasterCheckbox();
     this.updatelocMasterCheckbox();
     this.updateDnMasterCheckbox();
-    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -9355,7 +9293,6 @@ updateShiftOverRideCheckbox(): void {
     this.updateAddWeekCheckbox();
     this.updateAssignHolidayCheckbox();
     this.updateAssignweekCheckbox();
-    // this.updateShiftCheckbox();
     this.updateLeaveaprvCheckbox();
 
     this.updateSelectAll();
@@ -9367,6 +9304,7 @@ updateShiftOverRideCheckbox(): void {
     this.updatePayroll();
     this.updateLoan();
     this.updateAsset();
+    this.updateDocumentAdd();
     this.updateProject();
     this.updateAirTicket();
     this.updateDocument();
@@ -9385,6 +9323,7 @@ updateShiftOverRideCheckbox(): void {
     ...this.GrouppermissionsReqtype,
     ...this.GrouppermissionsApr,
     ...this.GrouppermissionsAprlvl,
+    ...this.GrouppermissionsGenReqEsc,
     ...this.GrouppermissionsAtd,
     ...this.GrouppermissionsExpDocument,
     ...this.GrouppermissionsEmpOver,
@@ -9512,6 +9451,21 @@ updateShiftOverRideCheckbox(): void {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAprlvl.map(permission => permission.id));
     } else {  
       this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsAprlvl.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+  onGenReqEscMasterChange(): void {
+
+    if (this.GenReqEscMasterChecked) {
+
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsGenReqEsc.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsGenReqEsc.map(p => p.id).includes(permission));
     }
   
     // Update related checkboxes
@@ -9696,6 +9650,7 @@ updateShiftOverRideCheckbox(): void {
     // this.settingsChecked = this.assignpermissionMasterChecked;
 
   }
+
   onUserStateChange(): void {
     if (this.stationMasterChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsstateMaster.map(permission => permission.id));
@@ -9708,6 +9663,7 @@ updateShiftOverRideCheckbox(): void {
 
 
   }
+
   onUserDocumentChange(): void {
     if (this.documenttypeMasterChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.Grouppermissionsdocumentype.map(permission => permission.id));
@@ -9811,6 +9767,7 @@ updateShiftOverRideCheckbox(): void {
 
 
   }
+
   onDocReportChange(): void {
     if (this.documentReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsdocumnetReport.map(permission => permission.id));
@@ -9824,7 +9781,7 @@ updateShiftOverRideCheckbox(): void {
 
   }
 
-    onLeaveBalReportChange(): void {
+  onLeaveBalReportChange(): void {
     if (this.LeaveBalReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveBalReport.map(permission => permission.id));
     } else {
@@ -9836,6 +9793,7 @@ updateShiftOverRideCheckbox(): void {
 
 
   }
+
   onGenReportChange(): void {
     if (this.generelReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsgeneralReport.map(permission => permission.id));
@@ -9849,7 +9807,7 @@ updateShiftOverRideCheckbox(): void {
 
   }
 
-    onDeptReportChange(): void {
+  onDeptReportChange(): void {
     if (this.DeptReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsDeptReport.map(permission => permission.id));
     } else {
@@ -9861,7 +9819,7 @@ updateShiftOverRideCheckbox(): void {
 
   }
 
-    onDesReportChange(): void {
+  onDesReportChange(): void {
     if (this.DesReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissiionsDesReport.map(permission => permission.id));
     } else {
@@ -9910,7 +9868,7 @@ updateShiftOverRideCheckbox(): void {
 
   }
 
-    onAssetTransReportChange(): void {
+  onAssetTransReportChange(): void {
     if (this.AssetTransReportChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAssetTransReport.map(permission => permission.id));
     } else {
@@ -9950,7 +9908,7 @@ updateShiftOverRideCheckbox(): void {
   }
 
 
-    onAssetformChange(): void {
+  onAssetformChange(): void {
     if (this.AssetformChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsAssetform.map(permission => permission.id));
     } else {
@@ -10102,7 +10060,7 @@ updateShiftOverRideCheckbox(): void {
 
 
 
-    onLeaveBalanceChange(): void {
+  onLeaveBalanceChange(): void {
     if (this.LeaveBalanceChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveBalance.map(permission => permission.id));
     } else {
@@ -10128,7 +10086,7 @@ updateShiftOverRideCheckbox(): void {
 
   }
 
-    onLeaveAccrualChange(): void {
+  onLeaveAccrualChange(): void {
     if (this.LeaveAccrualChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveAccrual.map(permission => permission.id));
     } else {
@@ -10141,7 +10099,7 @@ updateShiftOverRideCheckbox(): void {
 
   }
 
-    onLeaveRejoinChange(): void {
+  onLeaveRejoinChange(): void {
     if (this.LeaveRejoinChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveRejoin.map(permission => permission.id));
     } else {
@@ -10363,6 +10321,18 @@ onAssetReqChange(): void {
     );
   }
   this.updateAssetCheckbox();
+}
+
+onDocumentAddFolChange(): void {
+  if (this.DocumentAddFolChecked) {
+    const idsToAdd = this.GrouppermissionsDocumentAddFol.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsDocumentAddFol.some(p => p.id === id)
+    );
+  }
+  this.updateDocumentAddCheckbox();
 }
 
 onProjectsChange(): void {
@@ -10646,6 +10616,7 @@ onLoanReqTempChange(): void {
                             this.ReqtypeMasterChecked&&
                             this.AprMasterChecked &&
                             this.AprlvlMasterChecked &&
+                            this.GenReqEscMasterChecked &&
                             this.AtdMasterChecked &&
                             this.ExpDocumentChecked &&
                             this.EmpOverChecked &&
@@ -10656,6 +10627,15 @@ onLoanReqTempChange(): void {
                             this.RegAprlvlChecked &&
                             this.GratuityChecked;
 
+}
+
+isEmpDeptDisCatPermission(permission: string): boolean {
+  return [...this.GrouppermissionsEmp, ...this.GrouppermissionsDept, ...this.GrouppermissionsDis, 
+    ...this.GrouppermissionsCat, ...this.GrouppermissionsGen,...this.GrouppermissionsReqtype,
+    ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,...this.GrouppermissionsGenReqEsc,...this.GrouppermissionsAtd,...this.GrouppermissionsExpDocument,...this.GrouppermissionsEmpOver,
+  ...this.GrouppermissionsEmpAprList,...this.GrouppermissionsEmpRegAprList,this.GrouppermissionsEndofSer,this.GrouppermissionsRegReq,
+...this.GrouppermissionsRegAprlvl,...this.GrouppermissionsGratuity]
+    .some(p => p.id === permission);
 }
 
 
@@ -10704,6 +10684,10 @@ updateLeaveCheckbox(): void {
   this.Assetchecked = this.isAssetManagementMasterChecked();
 }
 
+  updateDocumentAddCheckbox(): void {
+  this.DocumentAddchecked = this.isAssetManagementMasterChecked();
+}
+
   updateProjectCheckbox(): void {
   this.Projectchecked = this.isProjectManagementMasterChecked();
 }
@@ -10723,6 +10707,256 @@ this.EmailTemplatechecked = this.isEmailTemplateMangementMasterChecked();
 updateShiftCheckbox(): void {
   this.Shiftchecked = this.isShiftManagementMasterChecked();
 }
+
+
+
+isemployee(): boolean {
+  
+  const employeeMasterIndeterminate = this.isEmployeeMasterIndeterminate();
+  const departmentMasterInderminate = this.isDepartmentMasterIndeterminate();
+  const designationMasterInderminate = this.isDesignationMasterIndeterminate();
+  const categoryMasterInderminate = this.isCategoryMasterIndeterminate();
+  const GenMasterInderminate = this.isGenMasterIndeterminate();
+  const ReqtypeMasterInderminate = this.isReqtypeMasterIndeterminate();
+  const AprMasterInderminate = this.isAprMasterIndeterminate();
+  const AprlvlMasterInderminate = this.isAprlvlMasterIndeterminate();
+  const GenReqEscMasterInderminate = this.isGenReqEscMasterIndeterminate();
+  const AtdMasterInderminate = this.isAtdMasterIndeterminate();
+  const ExpDocumentInderminate = this.isExpDocumentIndeterminate();
+  const EmpOverInderminate = this.isEmpOverIndeterminate();
+  const EmpAprListInderminate = this.isEmpAprListIndeterminate();
+  const EmpRegAprListInderminate = this.isEmpRegAprListIndeterminate();
+  const EndofSerInderminate = this.isEndofSerIndeterminate();
+  const RegReqInderminate = this.isRegReqIndeterminate();
+  const RegAprlvlInderminate = this.isRegAprlvlIndeterminate();
+  const GratuityInderminate = this.isGratuityIndeterminate();
+
+
+
+
+    const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
+
+    // Return true only if some but not all checkboxes are selected
+    return employeeMasterIndeterminate || departmentMasterInderminate || designationMasterInderminate || categoryMasterInderminate|| 
+    GenMasterInderminate|| ReqtypeMasterInderminate|| AprMasterInderminate|| AprlvlMasterInderminate || GenReqEscMasterInderminate || AtdMasterInderminate|| ExpDocumentInderminate ||
+     EmpOverInderminate || EmpAprListInderminate || EmpRegAprListInderminate || EndofSerInderminate || RegReqInderminate || RegAprlvlInderminate ||
+      GratuityInderminate || otherGroupIndeterminate;
+}
+
+
+
+issettings(): boolean {
+  const branchMasterInderminate = this.isBranchMasterIndeterminate();
+  const userMasterInderminate = this.isUserMasterIndeterminate();
+  const userGroupMasterInderminate = this.isUserGroupingIndeterminate();
+  const assignMasterInderminate = this.isAssignPermissionsIndeterminate();
+  const stateMasterInderminate = this.isStateMasterIndeterminate();
+  const documentMasterInderminate = this.isdocumenttypeIndeterminate();
+  const locationMasterInderminate = this.isloactionmasterIndeterminate();
+  const DnMasterInderminate = this.isDnmasterIndeterminate();
+  const CpMasterInderminate = this.isCpmasterIndeterminate();
+  const ConfigMasterInderminate = this.isConfigmasterIndeterminate();
+  const AnnounceInderminate = this.isAnnounceIndeterminate();
+  const NotifyInderminate = this.isNotifyIndeterminate();
+
+
+    const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
+
+    // Return true only if some but not all checkboxes are selected
+    return branchMasterInderminate || userMasterInderminate || userGroupMasterInderminate || assignMasterInderminate||stateMasterInderminate || documentMasterInderminate || userGroupMasterInderminate ||locationMasterInderminate||
+    DnMasterInderminate || CpMasterInderminate || ConfigMasterInderminate || AnnounceInderminate || NotifyInderminate || otherGroupIndeterminate;
+}
+
+isreports(): boolean {
+  const emportReportInderminate = this.isEmployeeReportIndeterminate();
+  const documentReportInderminate = this.isDocumentReportIndeterminate();
+  const generalReportInderminate = this.isGeneralReportIndeterminate();
+  const DeptReportInderminate = this.isDeptReportIndeterminate();
+  const DesReportInderminate = this.isDesReportIndeterminate();
+  const LeaveReportInderminate = this.isLeaveReportIndeterminate();
+  const LeaveAprRepInderminate = this.isLeaveAprRepIndeterminate();
+  const LeaveBalReportInderminate = this.isLeaveBalReportIndeterminate();
+  const AttendReportInderminate = this.isAttendReportIndeterminate();
+  const AssetReportInderminate = this.isAttendReportIndeterminate();
+  const AssetTransReportInderminate = this.isAssetTransReportIndeterminate();
+
+    const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
+
+    // Return true only if some but not all checkboxes are selected
+    return emportReportInderminate || documentReportInderminate || 
+    generalReportInderminate || DeptReportInderminate || DesReportInderminate || LeaveReportInderminate || LeaveAprRepInderminate || LeaveBalReportInderminate ||
+    AttendReportInderminate || AssetReportInderminate || AssetTransReportInderminate || otherGroupIndeterminate;
+}
+
+
+isCustomization(): boolean {
+  const EmpformInderminate = this.isEmpformIndeterminate();
+  const AssetformInderminate = this.isAssetformIndeterminate();
+
+
+    const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
+
+    // Return true only if some but not all checkboxes are selected
+    return EmpformInderminate || AssetformInderminate || otherGroupIndeterminate;
+}
+
+iscalenders(): boolean {
+  const addweekInderminate = this.isAddWeekIndeterminate();
+  const assignweekInderminate = this.isAssignWeekIndeterminate();
+  const addholidayInderminate = this.isAddHolidayIndeterminate();
+  const assignholidayInderminate = this.isAssignHolidayIndeterminate();
+
+
+
+  const otherGroupIndeterminate = false;
+  return addweekInderminate || assignweekInderminate || addholidayInderminate || assignholidayInderminate || otherGroupIndeterminate;
+}  
+
+isLeaves(): boolean {
+  const LeaveaprvInderminate = this.isLeaveaprvIndeterminate();
+  const LeavetypeInderminate = this.isLeavetypeIndeterminate();
+  const LeavemasterInderminate = this.isLeavemasterIndeterminate();
+  const LeavereqInderminate = this.isLeavereqIndeterminate();
+  const LeavecomInderminate = this.isLeavecomIndeterminate();
+  const LeaveaprvlvlInderminate = this.isLeaveaprvlvlIndeterminate();
+  const LeaveBalanceInderminate = this.isLeaveBalanceIndeterminate();
+  const LeaveCancelInderminate = this.isLeaveCancelIndeterminate();
+  const LeaveAccrualInderminate = this.isLeaveAccrualIndeterminate();
+  const LeaveRejoinInderminate = this.isLeaveRejoinIndeterminate();
+
+
+
+  const otherGroupIndeterminate = false;
+  return LeaveaprvInderminate || LeavetypeInderminate ||LeavemasterInderminate || LeavereqInderminate ||  LeavecomInderminate ||
+   LeaveaprvlvlInderminate || LeaveRejoinInderminate || LeaveAccrualInderminate || LeaveBalanceInderminate || LeaveCancelInderminate || otherGroupIndeterminate;
+} 
+
+isPayrolls(): boolean {
+  const PayrollrunIndeterminate = this.isPayrollrunIndeterminate();
+  const SalarycomponentIndeterminate = this.isSalarycomponentIndeterminate();
+  const PayslipAprvIndeterminate = this.isPayslipAprvIndeterminate();
+  const isPayrollaprlvlIndeterminate = this.isPayrollaprlvlIndeterminate();
+  const AdvanceSalaryAprvlstIndeterminate = this.isAdvanceSalaryAprvlstIndeterminate();
+  const AdvanceSalaryReqInderminate = this.isAdvanceSalaryReqIndeterminate();
+  const AdvanceSalaryAprlvlInderminate = this.isAdvanceSalaryAprlvlIndeterminate();
+  const WpsInderminate = this.isWpsIndeterminate();
+
+  const otherGroupIndeterminate = false;
+
+  return PayrollrunIndeterminate || SalarycomponentIndeterminate || PayslipAprvIndeterminate || isPayrollaprlvlIndeterminate || AdvanceSalaryAprvlstIndeterminate || AdvanceSalaryReqInderminate || AdvanceSalaryAprlvlInderminate || WpsInderminate || otherGroupIndeterminate;
+}
+
+
+isLoans(): boolean {
+  const LoanApprovalIndeterminate = this.isLoanApprovalIndeterminate();
+  const LoanTypeIndeterminate = this.isLoanTypeIndeterminate();
+  const LoanAprvlvlIndeterminate = this.isLoanAprvlvlIndeterminate();
+  const LoanAppIndeterminate = this.isLoanAppIndeterminate();
+  const LoanRepayIndeterminate = this.isLoanRepayIndeterminate();
+
+
+  const otherGroupIndeterminate = false;
+
+  return LoanApprovalIndeterminate || LoanTypeIndeterminate || LoanAprvlvlIndeterminate || LoanAppIndeterminate || LoanRepayIndeterminate  || otherGroupIndeterminate;
+}
+
+
+isAsset(): boolean {
+  const AssetTypeIndeterminate = this.isAssetTypeIndeterminate();
+  const AssetmasterIndeterminate = this.isAssetmasterIndeterminate();
+  const AssetAlonIndeterminate = this.isAssetAlonIndeterminate();
+  const AssetReqIndeterminate = this.isAssetReqIndeterminate();
+
+  const otherGroupIndeterminate = false;
+
+  return AssetTypeIndeterminate || AssetmasterIndeterminate || AssetAlonIndeterminate || AssetReqIndeterminate || otherGroupIndeterminate;
+}
+
+
+isDocumentAdd(): boolean {
+  const DocumentAddFolInderminate = this.isDocumentAddFolIndeterminate();
+
+
+
+    const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
+
+    // Return true only if some but not all checkboxes are selected
+    return DocumentAddFolInderminate || otherGroupIndeterminate;
+}
+
+
+isProject(): boolean {
+  const ProjectsIndeterminate = this.isProjectsIndeterminate();
+  const ProjectStagesIndeterminate = this.isProjectStagesIndeterminate();
+  const ProjectTaskIndeterminate = this.isProjectTaskIndeterminate();
+  const ProjectTimeIndeterminate = this.isProjectTimeIndeterminate();
+ 
+
+  const otherGroupIndeterminate = false;
+
+  return ProjectsIndeterminate || ProjectStagesIndeterminate || ProjectTaskIndeterminate || ProjectTimeIndeterminate || otherGroupIndeterminate;
+}
+
+isAirTicket(): boolean {
+  const AirTicketPolIndeterminate = this.isAirTicketPolIndeterminate();
+  const AirTicketAlonIndeterminate = this.isAirTicketAlonIndeterminate();
+  const AirTicketReqIndeterminate = this.isAirTicketReqIndeterminate();
+  const AirTicketRuleIndeterminate = this.isAirTicketRuleIndeterminate();
+
+
+  const otherGroupIndeterminate = false;
+
+  return AirTicketPolIndeterminate || AirTicketAlonIndeterminate || AirTicketReqIndeterminate || AirTicketRuleIndeterminate || otherGroupIndeterminate;
+}
+
+isDocument(): boolean {
+  const DocumentAprlvlInderminate = this.isDocumentAprlvlIndeterminate();
+  const DocumentAprInderminate = this.isDocumentAprIndeterminate();
+  const DocumentReqInderminate = this.isDocumentReqIndeterminate();
+  const DocumentTypeInderminate = this.isDocumentTypeIndeterminate();
+
+
+  const otherGroupIndeterminate = false;
+
+  return DocumentAprlvlInderminate || DocumentAprInderminate || DocumentReqInderminate || DocumentTypeInderminate || otherGroupIndeterminate;
+} 
+
+isEmailTemplate(): boolean {
+
+  const GeneralReqTempInderminate = this.isGeneralReqTempIndeterminate();
+  const LeaveEmTempInderminate = this.isLeaveEmTempIndeterminate();
+  const DocExpTempInderminate = this.isDocExpTempIndeterminate();
+  const DocReqTempInderminate = this.isDocReqTempIndeterminate();
+  const AdvSalReqTempInderminate = this.isAdvSalReqTempIndeterminate();
+  const LoanReqTempInderminate = this.isLoanReqTempIndeterminate();
+
+
+
+  const otherGroupIndeterminate = false;
+
+  return GeneralReqTempInderminate ||  LeaveEmTempInderminate || DocExpTempInderminate || DocReqTempInderminate ||
+   AdvSalReqTempInderminate || LoanReqTempInderminate ||  otherGroupIndeterminate;
+} 
+
+
+
+isShift(): boolean {
+
+  const ShiftsInderminate = this.isShiftsIndeterminate();
+  const ShiftPatternInderminate = this.isShiftPatternIndeterminate();
+  const ShiftEmployeeInderminate = this.isShiftEmployeeIndeterminate();
+  const ShiftOverRideInderminate = this.isShiftOverRideIndeterminate();
+
+
+
+
+  const otherGroupIndeterminate = false;
+
+  return ShiftsInderminate || ShiftOverRideInderminate || ShiftEmployeeInderminate || ShiftPatternInderminate || otherGroupIndeterminate;
+} 
+
+
+
 
 
 
@@ -10751,6 +10985,7 @@ updateShiftCheckbox(): void {
     ...this.GrouppermissionsReqtype,
     ...this.GrouppermissionsApr,
     ...this.GrouppermissionsAprlvl,
+    ...this.GrouppermissionsGenReqEsc,
     ...this.GrouppermissionsAtd,
     ...this.GrouppermissionsExpDocument,
 
@@ -10781,6 +11016,7 @@ updateShiftCheckbox(): void {
   this.updateReqtypeMasterCheckbox();
   this.updateAprMasterCheckbox();
   this.updateAprlvlMasterCheckbox();
+  this.updateGenReqEscMasterCheckbox();
   this.updateAtdMasterCheckbox();
   this.updateExpDocumentCheckbox();
 
@@ -10808,13 +11044,9 @@ updateShiftCheckbox(): void {
       ...this.GrouppermissionsassigneddUser,
       ...this.GrouppermissionsstateMaster,
       ...this.Grouppermissionsdocumentype,
-      // ...this.Grouppermissionsexpirydocuments,
       ...this.GrouppermissionslocationMaster,
       ...this.GrouppermissionsDnMaster,
       ...this.GrouppermissionsCpMaster,
-      // ...this.GrouppermissionsEmtMaster,
-
-      // ...this.GrouppermissionsFormdesMaster,
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
@@ -10834,13 +11066,9 @@ updateShiftCheckbox(): void {
     this.updateStateMasterCheckbox();
     this.updateassignMasterCheckbox();
     this.updatedoctypeMasterCheckbox();
-    // this.updateexpiryMasterCheckbox();
     this.updatelocMasterCheckbox();
     this.updateDnMasterCheckbox();
     this.updateCpMasterCheckbox();
-    // this.updateEmtMasterCheckbox();
-
-    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -10945,15 +11173,12 @@ selectLeave(): void {
     ...this.GrouppermissionsLeavereq,
     ...this.GrouppermissionsLeavecom,
     ...this.GrouppermissionsLeaveaprvlvl,
-    // ...this.GrouppermissionsLeaveaprvlvltemp,
     ...this.GrouppermissionsLeaveBalance,
     ...this.GrouppermissionsLeaveCancel,
     ...this.GrouppermissionsLeaveAccrual,
     ...this.GrouppermissionsLeaveRejoin,
 
-    // ...this.Grouppermisionsassignweek,
-    // ...this.Grouppermissionsaddholiday,
-    // ...this.Grouppermissionsassisgnholiday
+
   ].map(permission => permission.id);
 
   if (this.Leavechecked) {
@@ -10969,7 +11194,6 @@ selectLeave(): void {
   this.updateLeavereqCheckbox();
   this.updateLeavecomCheckbox();
   this.updateLeaveaprvlvlCheckbox();
-  // this.updateLeaveaprvlvltempCheckbox();
   this.updateLeaveBalanceCheckbox();
   this.updateLeaveCancelCheckbox();
   this.updateLeaveAccrualCheckbox();
@@ -11059,6 +11283,27 @@ selectAsset(): void {
   this.updateAssetmasterCheckbox();
   this.updateAssetAlonCheckbox();
   this.updateAssetReqCheckbox();
+
+ 
+}
+
+
+selectDocumentAdd(): void {
+  const allPermissions = [
+    ...this.GrouppermissionsDocumentAddFol,
+
+  ].map(permission => permission.id);
+
+  if (this.DocumentAddchecked) {
+    // Select all payroll permissions
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...allPermissions]));
+  } else {
+    // Deselect all payroll permissions
+    this.selectedPermissions = this.selectedPermissions.filter(p => !allPermissions.includes(p));
+  }
+
+  this.updateDocumentAddFolCheckbox();
+
 
  
 }
@@ -11221,6 +11466,7 @@ updateSelectAll(): void {
   this.updateReqtypeMasterCheckbox();
   this.updateAprMasterCheckbox();
   this.updateAprlvlMasterCheckbox();
+  this.updateGenReqEscMasterCheckbox();
   this.updateAtdMasterCheckbox();
   this.updateExpDocumentCheckbox();
   this.updateEmpOverCheckbox();
@@ -11254,13 +11500,9 @@ updateSelectAlls():void{
     this.updateStateMasterCheckbox();
     this.updateassignMasterCheckbox();
     this.updatedoctypeMasterCheckbox();
-    // this.updateexpiryMasterCheckbox();
     this.updatelocMasterCheckbox();
     this.updateDnMasterCheckbox();
     this.updateCpMasterCheckbox();
-    // this.updateEmtMasterCheckbox();
-
-    // this.updateFormdesMasterCheckbox();
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
@@ -11315,7 +11557,6 @@ updateLeave():void{
   this.updateLeavereqCheckbox();
   this.updateLeavecomCheckbox();
   this.updateLeaveaprvlvlCheckbox();
-  // this.updateLeaveaprvlvltempCheckbox();
   this.updateInderminateLeave();
   this.updateLeaveCheckbox();
   this.updateLeaveBalanceCheckbox();
@@ -11354,6 +11595,11 @@ updateAsset():void{
   this.updateAssetmasterCheckbox();
   this.updateAssetAlonCheckbox();
   this.updateAssetReqCheckbox();
+}
+
+updateDocumentAdd():void{
+  this.updateDocumentAddFolCheckbox();
+
 }
 
 updateProject():void{
@@ -11430,12 +11676,9 @@ updateShift():void{
       ...this.GrouppermissionsassigneddUser,
       ...this.GrouppermissionsstateMaster,
       ...this.Grouppermissionsdocumentype,
-      // ...this.Grouppermissionsexpirydocuments,
       ...this.GrouppermissionslocationMaster,
       ...this.GrouppermissionsDnMaster,
       ...this.GrouppermissionsCpMaster,
-      // ...this.GrouppermissionsEmtMaster,
-      // ...this.GrouppermissionsFormdesMaster,
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
@@ -11501,7 +11744,6 @@ isLeaveInderminate(): boolean {
     ...this.GrouppermissionsLeavereq,
     ...this.GrouppermissionsLeavecom,
     ...this.GrouppermissionsLeaveaprvlvl,
-    // ...this.GrouppermissionsLeaveaprvlvltemp,
     ...this.GrouppermissionsLeaveBalance,
     ...this.GrouppermissionsLeaveCancel,
     ...this.GrouppermissionsLeaveAccrual,
@@ -11557,6 +11799,19 @@ isAssetInderminate(): boolean {
   ].some(permission => this.selectedPermissions.includes(permission.id));
 
   return hasSelectedPermissions && !this.isAssetManagementMasterChecked();
+}
+
+
+isDocumentAddInderminate(): boolean {
+  const hasSelectedPermissions = [
+    ...this.GrouppermissionsDocumentAddFol,
+
+    
+ 
+
+  ].some(permission => this.selectedPermissions.includes(permission.id));
+
+  return hasSelectedPermissions && !this.isDocumentAddManagementMasterChecked();
 }
 
 
@@ -11685,6 +11940,10 @@ showLoan(): void{
 
 showAsset(): void{
   this.AssetMastersvalue =!this.AssetMastersvalue;
+}
+
+showDocumentAdd(): void{
+  this.DocumentAddMastersvalue =!this.DocumentAddMastersvalue;
 }
 
 showProject(): void{

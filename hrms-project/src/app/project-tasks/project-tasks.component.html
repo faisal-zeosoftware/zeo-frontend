@@ -442,18 +442,39 @@
   </div>
  
 
-  <div class="col-md-6">
+<div class="col-md-6">
   <label>Upload Document</label>
+
+  <!-- Custom File Input Box -->
+  <div class="custom-file-box" (click)="triggerProjectTaskFileInput()">
+
+    <!-- Show existing file (from DB) if no new file selected -->
+    <span *ngIf="editProjecttask.document && !selectedFile">
+      {{ getFileName(editProjecttask.document) }}
+    </span>
+
+    <!-- Show new selected file -->
+    <span *ngIf="selectedFile">
+      {{ selectedFile.name }}
+    </span>
+
+    <i class="fa fa-upload upload-icon"></i>
+  </div>
+
+  <!-- Hidden File Input -->
   <input
     type="file"
-    class="form-control"
-    (change)="onFileSelected($event)"
-    required
+    #projectTaskFileInput
+    class="hidden-file-input"
+    (change)="onTaskFileSelected($event)"
   />
-  <div *ngIf="registerButtonClicked && !selectedFile" class="error-message">
+
+  <div *ngIf="registerButtonClicked && !selectedFile && !editProjecttask.document"
+       class="error-message">
     Please upload a document
   </div>
 </div>
+
 
 
        

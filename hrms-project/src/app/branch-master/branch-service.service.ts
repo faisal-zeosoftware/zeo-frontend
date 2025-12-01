@@ -57,17 +57,23 @@ export class BranchServiceService {
     return this.http.get(url);
   }
   
-  updateBranch(employeeId: number, empData: any): Observable<any> {
-    
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError('No schema selected.'); // Return an error observable if no schema is selected
-    }
-    const url = `${this.apiUrl}/organisation/api/Branch/${employeeId}/?schema=${selectedSchema}`;
-    return this.http.put(url, empData);
-    
+updateBranch(employeeId: number, empData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    return throwError(() => new Error('No schema selected.'));
   }
+
+  const url = `${this.apiUrl}/organisation/api/Branch/${employeeId}/?schema=${selectedSchema}`;
+
+  return this.http.put(url, empData).pipe(
+    catchError(err => {
+      console.error('Error updating Branch:', err);
+      return throwError(() => err);
+    })
+  );
+}
+
     
   getCompany(): Observable<any> {
     const url = `${this.baseUrl}/Company/`;

@@ -416,13 +416,9 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   assignpermissionMasterChecked: boolean =false;
   stationMasterChecked:boolean =false;
   documenttypeMasterChecked:boolean = false;
-  // expireddocumnetsMasterChecked:boolean = false;
   locationMasterChecked:boolean = false;
   DnMasterChecked:boolean = false;
   CpMasterChecked:boolean = false;
-  // EmtMasterChecked:boolean = false;
-
-  // FormdesMasterChecked:boolean = false;
   ConfigMasterChecked:boolean = false;
   AnnounceMasterChecked:boolean = false;
   NotefyChecked:boolean = false;
@@ -458,7 +454,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   assignweekChecked:boolean = false;
   addholidayChecked:boolean= false;
   assignholidayChecked:boolean = false;
-  // ShiftChecked:boolean = false;
+
 
 
 
@@ -469,7 +465,6 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     LeavereqChecked:boolean= false;
     LeavecomChecked:boolean= false;
     LeaveaprvlvlChecked:boolean= false;
-    // LeaveaprvlvltempChecked:boolean= false;
     LeaveBalanceChecked:boolean= false;
     LeaveCancelChecked:boolean= false;
     LeaveAccrualChecked:boolean= false;
@@ -645,6 +640,7 @@ isEmployeeManagementMasterChecked(): boolean {
       this.ReqtypeMasterChecked &&
       this.AprMasterChecked &&
       this.AprlvlMasterChecked &&
+      this.GenReqEscMasterChecked &&
       this.AtdMasterChecked &&
       this.ExpDocumentChecked &&
       this.EmpOverChecked &&
@@ -1592,6 +1588,7 @@ isAirTicketRuleIndeterminate(): boolean {
     this.isReqtypeMasterIndeterminate();
     this.isAprMasterIndeterminate();
     this.isAprlvlMasterIndeterminate();
+    this.isGenReqEscMasterIndeterminate();
     this.isAtdMasterIndeterminate();
     this.isExpDocumentIndeterminate();
     this.isEmpOverIndeterminate();
@@ -1615,12 +1612,9 @@ isAirTicketRuleIndeterminate(): boolean {
     this.isAssignPermissionsIndeterminate();
     this.isStateMasterIndeterminate();
     this.isdocumenttypeIndeterminate();
-    // this.isExpireddocumentsIndeterminate();
     this.isloactionmasterIndeterminate();
     this.isDnmasterIndeterminate();
     this.isCpmasterIndeterminate();
-  // this.isEmtmasterIndeterminate();
-    // this.isFormdesmasterIndeterminate();
     this.isConfigmasterIndeterminate();
     this.isAnnounceIndeterminate();
     this.isNotifyIndeterminate();
@@ -3373,58 +3367,7 @@ getDisplayNameGratuity(permissionCodename: string): string {
   }
   
 
-//load permission for expiring document-----------
-
-  // loadpermissionexpirydocuments(): void {
-
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore', selectedSchema);
-  
-  //   if (selectedSchema) {
-  //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-  //       (result: any[]) => {
-  //         // Specify the codenames you want to filter
-  //         const requiredCodenames = ['add_emp_documents', 'change_emp_documents', 'delete_emp_documents', 'view_emp_documents'];
-  
-  //         // Filter and remove duplicates based on codename
-  //         const uniquePermissionsMap = new Map();
-  //         result.forEach(permission => {
-  //           const codename = permission.codename.trim().toLowerCase();
-  //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-  //             uniquePermissionsMap.set(codename, permission);
-  //           }
-  //         });
-  
-  //         // Convert map values to an array
-  //         this.Grouppermissionsexpirydocuments = Array.from(uniquePermissionsMap.values());
-  
-  //         console.log('Filtered Unique Permissions:', this.Grouppermissionsexpirydocuments);
-  //       },
-  //       (error: any) => {
-  //         console.error('Error fetching permissions:', error);
-  //       }
-  //     );
-  //   }
-  // }
-
-    //Display Name  add view delte code for Document type master-------
-
-    // getDisplayNameDocExpired(permissionCodename: string): string {
-    //   switch (permissionCodename.trim().toLowerCase()) {
-    //     case 'add_emp_documents':
-    //       return 'Add';
-    //     case 'change_emp_documents':
-    //       return 'Edit';
-    //     case 'delete_emp_documents':
-    //       return 'Delete';
-    //     case 'view_emp_documents':
-    //       return 'View';
-    //     default:
-    //       return permissionCodename;
-    //   }
-    // }
-
+//l
 
   // load permission for company master-----------
 
@@ -3576,104 +3519,6 @@ getDisplayNameGratuity(permissionCodename: string): string {
                 return permissionCodename;
             }
           }
-
-          // loadpermissionEmtmaster(): void {
-          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-          //   console.log('schemastore', selectedSchema);
-          
-          //   if (selectedSchema) {
-          //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-          //       (result: any[]) => {
-          //         // Specify the codenames you want to filter
-          //         const requiredCodenames = ['add_emailtemplate', 'change_emailtemplate', 'delete_emailtemplate', 'view_emailtemplate'];
-          
-          //         // Filter and remove duplicates based on codename
-          //         const uniquePermissionsMap = new Map();
-          //         result.forEach(permission => {
-          //           const codename = permission.codename.trim().toLowerCase();
-          //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-          //             uniquePermissionsMap.set(codename, permission);
-          //           }
-          //         });
-          
-          //         // Convert map values to an array
-          //         this.GrouppermissionsEmtMaster = Array.from(uniquePermissionsMap.values());
-          
-          //         console.log('Filtered Unique Permissions:', this.GrouppermissionsEmtMaster);
-          //       },
-          //       (error: any) => {
-          //         console.error('Error fetching permissions:', error);
-          //       }
-          //     );
-          //   }
-          // }
-        
-            //Display Name  add view delte code for Company master-------
-        
-            // getDisplayNameEmt(permissionCodename: string): string {
-            //   switch (permissionCodename.trim().toLowerCase()) {
-            //     case 'add_emailtemplate':
-            //       return 'Add';
-            //     case 'change_emailtemplate':
-            //       return 'Edit';
-            //     case 'delete_emailtemplate':
-            //       return 'Delete';
-            //     case 'view_emailtemplate':
-            //       return 'View';
-            //     default:
-            //       return permissionCodename;
-            //   }
-            // }
-
-        // loadpermissionFormdesmaster(): void {
-        //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-        //   console.log('schemastore', selectedSchema);
-        
-        //   if (selectedSchema) {
-        //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-        //       (result: any[]) => {
-        //         // Specify the codenames you want to filter
-        //         const requiredCodenames = ['add_emp_customfield', 'change_emp_customfield', 'delete_emp_customfield', 'view_emp_customfield'];
-        
-        //         // Filter and remove duplicates based on codename
-        //         const uniquePermissionsMap = new Map();
-        //         result.forEach(permission => {
-        //           const codename = permission.codename.trim().toLowerCase();
-        //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-        //             uniquePermissionsMap.set(codename, permission);
-        //           }
-        //         });
-        
-        //         // Convert map values to an array
-        //         this.GrouppermissionsFormdesMaster = Array.from(uniquePermissionsMap.values());
-        
-        //         console.log('Filtered Unique Permissions:', this.GrouppermissionsFormdesMaster);
-        //       },
-        //       (error: any) => {
-        //         console.error('Error fetching permissions:', error);
-        //       }
-        //     );
-        //   }
-        // }
-      
-          //Display Name  add view delte code for Company master-------
-      
-          // getDisplayNameFormdes(permissionCodename: string): string {
-          //   switch (permissionCodename.trim().toLowerCase()) {
-          //     case 'add_emp_customfield':
-          //       return 'Add';
-          //     case 'change_emp_customfield':
-          //       return 'Edit';
-          //     case 'delete_emp_customfield':
-          //       return 'Delete';
-          //     case 'view_emp_customfield':
-          //       return 'View';
-          //     default:
-          //       return permissionCodename;
-          //   }
-          // }
 
 
 
@@ -4736,13 +4581,13 @@ loadpermissionsEmpReport(): void {
               
                   getDisplayNameAddholiday(permissionCodename: string): string {
                     switch (permissionCodename.trim().toLowerCase()) {
-                      case 'add_holiday':
+                      case 'add_holiday_calendar':
                         return 'Add';
-                      case 'change_holiday':
+                      case 'change_holiday_calendar':
                         return 'Edit';
-                      case 'delete_holiday':
+                      case 'delete_holiday_calendar':
                         return 'Delete';
-                        case 'view_holiday':
+                        case 'view_holiday_calendar':
                           return 'View';
                       default:
                         return permissionCodename;
@@ -4799,54 +4644,6 @@ loadpermissionsEmpReport(): void {
                       }
                     }
 
-                    // loadpermissionsShiftDetail(): void {
-                    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-                    //   console.log('schemastore', selectedSchema);
-                    
-                    //   if (selectedSchema) {
-                    //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-                    //       (result: any[]) => {
-                    //         // Specify the codenames you want to filter
-                    //         const requiredCodenames = ['add_shift', 'change_shift', 'delete_shift', 'view_shift'];
-                    
-                    //         // Filter and remove duplicates based on codename
-                    //         const uniquePermissionsMap = new Map();
-                    //         result.forEach(permission => {
-                    //           const codename = permission.codename.trim().toLowerCase();
-                    //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                    //             uniquePermissionsMap.set(codename, permission);
-                    //           }
-                    //         });
-                    
-                    //         // Convert map values to an array
-                    //         this.GrouppermissionsShift = Array.from(uniquePermissionsMap.values());
-                    
-                    //         console.log('Filtered Unique Permissions:', this.GrouppermissionsShift);
-                    //       },
-                    //       (error: any) => {
-                    //         console.error('Error fetching permissions:', error);
-                    //       }
-                    //     );
-                    //   }
-                    // }
-                  
-                      //Display Name  add view delte code for Company master-------
-                  
-    // getDisplayNameShiftDetail(permissionCodename: string): string {
-    //                     switch (permissionCodename.trim().toLowerCase()) {
-    //                       case 'add_shift':
-    //                         return 'Add';
-    //                       case 'change_shift':
-    //                         return 'Edit';
-    //                       case 'delete_shift':
-    //                         return 'Delete';
-    //                         case 'view_shift':
-    //                           return 'View';
-    //                       default:
-    //                         return permissionCodename;
-    //                     }
-    //                   }
 
                       // Leave permisson fetching code here
 
@@ -5371,58 +5168,6 @@ loadpermissionsEmpReport(): void {
                             }
       
 
-
-
-
-                            // loadpermissionsLeaveaprvlvltemp(): void {
-                            //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-                            //   console.log('schemastore', selectedSchema);
-                            
-                            //   if (selectedSchema) {
-                            //     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-                            //       (result: any[]) => {
-                            //         // Specify the codenames you want to filter
-                            //         const requiredCodenames = ['add_lvemailtemplate', 'change_lvemailtemplate', 'delete_lvemailtemplate', 'view_lvemailtemplate'];
-                            
-                            //         // Filter and remove duplicates based on codename
-                            //         const uniquePermissionsMap = new Map();
-                            //         result.forEach(permission => {
-                            //           const codename = permission.codename.trim().toLowerCase();
-                            //           if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                            //             uniquePermissionsMap.set(codename, permission);
-                            //           }
-                            //         });
-                            
-                            //         // Convert map values to an array
-                            //         this.GrouppermissionsLeaveaprvlvltemp = Array.from(uniquePermissionsMap.values());
-                            
-                            //         console.log('Filtered Unique Permissions:', this.GrouppermissionsLeaveaprvlvltemp);
-                            //       },
-                            //       (error: any) => {
-                            //         console.error('Error fetching permissions:', error);
-                            //       }
-                            //     );
-                            //   }
-                            // }
-                          
-                          
-    //Display Name add view delte code for emplotee master-------
-                          
-    // getDisplayNameLeaveaprvlvltemp(permissionCodename: string): string {
-    //                             switch (permissionCodename.trim().toLowerCase()) {
-    //                               case 'add_lvemailtemplate':
-    //                                 return 'Add';
-    //                               case 'change_lvemailtemplate':
-    //                                 return 'Edit';
-    //                               case 'delete_lvemailtemplate':
-    //                                 return 'Delete';
-    //                               case 'view_lvemailtemplate':
-    //                                 return 'View';
-    //                               default:
-    //                                 return permissionCodename;
-    //                             }
-    //   }
 
 
 
@@ -10832,7 +10577,7 @@ onDocumentAddFolChange(): void {
       id => !this.GrouppermissionsDocumentAddFol.some(p => p.id === id)
     );
   }
-  this.updateAssetCheckbox();
+  this.updateDocumentAddCheckbox();
 }
 
 onProjectsChange(): void {

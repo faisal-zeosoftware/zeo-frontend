@@ -59,22 +59,23 @@ ngOnInit(): void {
 
 
   
-loadEmailPlaceholders(): void {
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  console.log('schemastore', selectedSchema);
-  // Check if selectedSchema is available
-  if (selectedSchema) {
-    this.employeeService.getEmailPlaceholderDocReq(selectedSchema).subscribe(
-      (result: any) => {
-        this.EmailPlaceHolders = result.employee; // Assuming the response structure
-        console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
-      },
-      (error) => {
-        console.error('Error fetching EmailPlaceHolders:', error);
+    loadEmailPlaceholders(): void {
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      console.log('schemastore', selectedSchema);
+      // Check if selectedSchema is available
+      if (selectedSchema) {
+        this.employeeService.getEmailPlaceholderDocReq(selectedSchema).subscribe(
+          (result: any) => {
+            this.EmailPlaceHolders = result.employee; // Assuming the response structure
+            console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
+          },
+          (error) => {
+            console.error('Error fetching EmailPlaceHolders:', error);
+          }
+        );
       }
-    );
-  }
-}
+    }
+  
 
     selectedPlaceholders: string[] = []; // Store multiple placeholders
 
@@ -161,7 +162,7 @@ updateTemplate() {
     body: bodyContent
   };
 
-  this.DepartmentServiceService.updateDocExpEmailTemplate(
+  this.DepartmentServiceService.updateDocReqEmailTemplate(
     selectedSchema,               // now guaranteed string
     this.templateData.id,
     payload

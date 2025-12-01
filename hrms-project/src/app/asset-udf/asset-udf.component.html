@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-md-5">
                     <div class="button-group pull-right">
-                        <button type="button" class="btn-Create btn btn-success "  (click)="openFamFieldModal()"><span class="header-btn-icon"><mat-icon>add_circle
+                        <button type="button" class="btn-Create btn btn-success "  (click)="openFamFieldModal()" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
                         </mat-icon></span> Create</button>
 
             
@@ -42,7 +42,7 @@
                 <div class="col-md-5">
                    {{field.data_type}}
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-1" *ngIf="hasDeletePermission">
                     <mat-icon class="trash" (click)="deleteCustomFieldFam(field.id)">delete</mat-icon>
                 </div>
   
@@ -99,7 +99,7 @@
                 <!-- Update Button -->
                 <div class="row">
                     <div class="col-md-12 text-right">
-                        <button type="button"  class="btn btn-zeo mt-3" mat-raised-button color="primary" (click)="updateCustomField(field)">Update</button>
+                        <button type="button"  class="btn btn-zeo mt-3" mat-raised-button color="primary" (click)="updateCustomField(field)" *ngIf="hasEditPermission">Update</button>
                     </div>
                 </div>
             </div>

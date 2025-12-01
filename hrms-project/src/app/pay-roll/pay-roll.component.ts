@@ -415,111 +415,6 @@ if (this.userId !== null) {
       }
 
      
-      
-      // registerPaySlip(): void {
-      //   this.registerButtonClicked = true;
-      
-      //   // Frontend validation
-      //   if (!this.basic_salary || !this.gross_salary) {
-      //     alert('Please select a Payslip PDF and Payroll.');
-      //     return;
-      //   }
-      
-      //   const formData = new FormData();
-      //   formData.append('basic_salary', this.basic_salary);
-      //   formData.append('gross_salary', this.gross_salary); // Append file to FormData
-
-      //   formData.append('net_salary', this.net_salary);
-
-      //   formData.append('total_deductions', this.total_deductions);
-
-      //   formData.append('total_additions', this.total_additions);
-
-
-      
-      //   this.leaveService.requestPaySlip(formData).subscribe(
-      //     (response) => {
-      //       console.log('Registration successful', response);
-      //       alert('Payslip has been added successfully.');
-      //       window.location.reload();
-      //     },
-      //     (error) => {
-      //       console.error('Upload failed', error);
-      
-      //       // Extract backend error message
-      //       let errorMessage = 'An unexpected error occurred. Please try again.';
-      
-      //       if (error.error) {
-      //         if (typeof error.error === 'string') {
-      //           errorMessage = error.error;
-      //         } else if (error.error.detail) {
-      //           errorMessage = error.error.detail;
-      //         } else if (error.error.non_field_errors) {
-      //           errorMessage = error.error.non_field_errors.join(', ');
-      //         } else {
-      //           const fieldErrors = Object.keys(error.error)
-      //             .map((field) => `${field}: ${error.error[field]}`)
-      //             .join('\n');
-      //           errorMessage = fieldErrors || errorMessage;
-      //         }
-      //       }
-      
-      //       alert(errorMessage); // Show extracted error
-      //     }
-      //   );
-      // }
-      
-      
-      // registerPaySlipComponent(): void {
-      //   this.registerButtonClicked = true;
-      
-      //   // Frontend validation
-      //   if (!this.amount || !this.payslip) {
-      //     alert('Please select a Payslip PDF and Payroll.');
-      //     return;
-      //   }
-      
-      //   const formData = new FormData();
-      //   formData.append('amount', this.amount);
-      //   formData.append('payslip', this.payslip); // Append file to FormData
-
-      //   formData.append('component', this.component);
-
-     
-
-
-      
-      //   this.leaveService.requestPayslipComponent(formData).subscribe(
-      //     (response) => {
-      //       console.log('Registration successful', response);
-      //       alert('Payslip has been added successfully.');
-      //       window.location.reload();
-      //     },
-      //     (error) => {
-      //       console.error('Upload failed', error);
-      
-      //       // Extract backend error message
-      //       let errorMessage = 'An unexpected error occurred. Please try again.';
-      
-      //       if (error.error) {
-      //         if (typeof error.error === 'string') {
-      //           errorMessage = error.error;
-      //         } else if (error.error.detail) {
-      //           errorMessage = error.error.detail;
-      //         } else if (error.error.non_field_errors) {
-      //           errorMessage = error.error.non_field_errors.join(', ');
-      //         } else {
-      //           const fieldErrors = Object.keys(error.error)
-      //             .map((field) => `${field}: ${error.error[field]}`)
-      //             .join('\n');
-      //           errorMessage = fieldErrors || errorMessage;
-      //         }
-      //       }
-      
-      //       alert(errorMessage); // Show extracted error
-      //     }
-      //   );
-      // }
 
 onFileSelected(event:any){
   const file = event.target.files[0];
@@ -620,20 +515,7 @@ onFileSelected(event:any){
       );
     }
 
-
-    // LoadPaySlip(selectedSchema: string) {
-    //   this.leaveService.getPaySlip(selectedSchema).subscribe(
-    //     (data: any) => {
-    //       this.PaySlips = data.map((payslip: any) => ({
-    //         ...payslip,
-    //         payslip_pdf: payslip.payslip_pdf ? payslip.payslip_pdf : null
-    //       }));
-    //     },
-    //     (error: any) => {
-    //       console.error('Error fetching Payslips:', error);
-    //     }
-    //   );
-    // }
+    
     
 
     LoadPaySlip(selectedSchema: string) {

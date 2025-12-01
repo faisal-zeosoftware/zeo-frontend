@@ -45,7 +45,7 @@
                         <h4>Reason </h4>
                         <h5>{{apr.note}}</h5>
                       </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2" *ngIf="hasAddPermission">
                         <button type="button" class="btn pull-right" (click)="selectedaprovaldetalis(apr.id)">View</button>
                     </div>
                   </div>

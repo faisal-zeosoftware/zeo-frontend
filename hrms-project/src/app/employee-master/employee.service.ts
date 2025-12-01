@@ -177,12 +177,11 @@ deleteGeneralReqEscalater(categoryId: number): Observable<any> {
 
 
 
-updateGeneralReq(id: number, data: any): Observable<any> {
+updateGeneralReq(id: number, data: FormData): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/employee/api/general-request/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
+  return this.http.put(apiUrl, data).pipe(
     catchError((error) => {
       console.error('Error updating asset:', error);
       return throwError(error);
@@ -2817,6 +2816,15 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   }
 
+    getEmailPlaceholderDocExp(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+  }
+
   getEmailPlaceholderLoan(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/placeholders/?schema=${selectedSchema}`;
 
@@ -2855,7 +2863,7 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
       return throwError('No schema selected.');
     }
 
-    const apiUrl = `${this.apiUrl}/employee/api/email-template/${updatedTemplate.id}/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/${updatedTemplate.id}/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.put(apiUrl, updatedTemplate, { headers }).pipe(
@@ -3575,7 +3583,7 @@ deleteEmailTemplateDocmentExp(categoryId: number): Observable<any> {
     return throwError('No schema selected.'); // Return an error observable if no schema is selected
   }
  
-  const apiUrl = `${this.apiUrl}/calendars/api/leave-template/${categoryId}/?schema=${selectedSchema}`;
+  const apiUrl = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/${categoryId}/?schema=${selectedSchema}`;
  
   return this.http.delete(apiUrl);
 }
@@ -4095,18 +4103,22 @@ deleteProjects(categoryId: number): Observable<any> {
 }
 
 
-updateProjects(id: number, data: any): Observable<any> {
+updateProjects(id: number, formData: FormData): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/project/api/projects/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
+
+  return this.http.put(apiUrl, formData).pipe(
     catchError((error) => {
-      console.error('Error updating asset:', error);
+      console.error('Error updating project:', error);
       return throwError(error);
     })
   );
 }
+
+
+
+
 
 
 deleteAirPolicy(categoryId: number): Observable<any> {
@@ -4159,15 +4171,15 @@ deleteProjectStages(categoryId: number): Observable<any> {
 updateProjectTask(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/project/api/tasks/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
+  return this.http.put(apiUrl, data).pipe(
     catchError((error) => {
-      console.error('Error updating ProjectTask:', error);
+      console.error('Error updating Project Task:', error);
       return throwError(error);
     })
   );
 }
+
 
 
 deleteProjectTask(categoryId: number): Observable<any> {

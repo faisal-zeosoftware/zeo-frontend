@@ -212,6 +212,8 @@ import { DocumentRequestTypeComponent } from './document-request-type/document-r
 import { DocumentFoldersComponent } from './document-folders/document-folders.component';
 import { DocumentFolderFilesComponent } from './document-folder-files/document-folder-files.component';
 import { GeneralRequestEscalationComponent } from './general-request-escalation/general-request-escalation.component';
+import { LeaveTemplateEditComponent } from './leave-template-edit/leave-template-edit.component';
+import { DocExpEmailtemplateEditComponent } from './doc-exp-emailtemplate-edit/doc-exp-emailtemplate-edit.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -382,7 +384,9 @@ import { GeneralRequestEscalationComponent } from './general-request-escalation/
      DocumentRequestTypeComponent,
      DocumentFoldersComponent,
      DocumentFolderFilesComponent,
-     GeneralRequestEscalationComponent
+     GeneralRequestEscalationComponent,
+     LeaveTemplateEditComponent,
+     DocExpEmailtemplateEditComponent
      
      
 

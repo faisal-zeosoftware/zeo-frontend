@@ -17,7 +17,23 @@ import { MatSelect } from '@angular/material/select';
 })
 export class ProjectTasksComponent {
 
-  
+  @ViewChild('projectTaskFileInput') projectTaskFileInput: any;
+
+  triggerProjectTaskFileInput() {
+  this.projectTaskFileInput.nativeElement.click();
+}
+
+onTaskFileSelected(event: any): void {
+  const file: File = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
+  }
+}
+
+getFileName(path: string): string {
+  return path?.split('/').pop() || '';
+}
+
   @ViewChild('select') select: MatSelect | undefined;
   @ViewChild('selectMng') selectMng: MatSelect | undefined;
 
@@ -54,6 +70,7 @@ export class ProjectTasksComponent {
   is_active:  boolean = false;
 
   selectedFile: File | null = null;
+
 
 
   Users:any []=[];
@@ -519,28 +536,41 @@ updateProjectTask(): void {
     return;
   }
 
-  this.employeeService.updateProjectTask(this.editProjecttask.id, this.editProjecttask).subscribe(
-    (response) => {
-      alert('Project Task  updated successfully!');
-      this.closeEditModal();
-      this.loadLAssetType(); // reload updated list
-    },
-(error) => {
-  console.error('Error updating Project Task:', error);
+  const formData = new FormData();
 
-  let errorMsg = 'Update failed';
+  // Append normal fields
+  Object.keys(this.editProjecttask).forEach(key => {
+    if (key !== 'document') {
+      formData.append(key, this.editProjecttask[key] ?? '');
+    }
+  });
 
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+  // Append uploaded file
+  if (this.selectedFile) {
+    formData.append('document', this.selectedFile);
   }
 
-  alert(errorMsg);
-}
+  this.employeeService.updateProjectTask(this.editProjecttask.id, formData).subscribe(
+    (response) => {
+      alert('Project Task updated successfully!');
+      window.location.reload();
+      this.closeEditModal();
+      this.loadLAssetType();
+    },
+    (error) => {
+      console.error('Error updating Project Task:', error);
+
+      let errorMsg = 'Update failed';
+      const backendError = error?.error;
+
+      if (backendError && typeof backendError === 'object') {
+        errorMsg = Object.keys(backendError)
+          .map(key => `${key}: ${backendError[key].join(', ')}`)
+          .join('\n');
+      }
+
+      alert(errorMsg);
+    }
   );
 }
 

@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import { LeaveTemplateEditComponent } from '../leave-template-edit/leave-template-edit.component';
 
 @Component({
   selector: 'app-leave-template',
@@ -316,7 +317,7 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
           console.log('Registration successful', response);
         
               alert('Email Template has been Added ');
-              // window.location.reload();
+              window.location.reload();
          
   
         },
@@ -410,7 +411,7 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
 
   
   openEditPopuss(selectedTemplate: any): void {
-    this.dialog.open(EmailTemplateEditComponent, {
+    this.dialog.open(LeaveTemplateEditComponent, {
       width: '80%',
       height: '700px',
       data: { template: selectedTemplate } // Passing the selected template data to the modal component

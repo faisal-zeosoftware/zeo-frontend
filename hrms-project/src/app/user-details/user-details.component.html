@@ -13,11 +13,11 @@
                         <!-- <button type="button"  class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>add_circle
                         </mat-icon></span> Create</button> -->
 
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="openEditEmpPopuss(Companies.id)">
+                        <button *ngIf="hasEditPermission" type="button" class="btn-Edit btn-info btn"  (click)="openEditEmpPopuss(Companies.id)">
                             <span class="header-btn-icon">
                              <mat-icon>draw
                         </mat-icon></span> Edit</button>
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="onDeleteEmployee(Companies.id)">
+                        <button *ngIf="hasDeletePermission" type="button" class="btn-Delete btn btn-danger" (click)="onDeleteEmployee(Companies.id)">
                             <span class="header-btn-icon">
                                 <mat-icon> delete
                            </mat-icon></span> Delete</button>

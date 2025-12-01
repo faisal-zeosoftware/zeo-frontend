@@ -15,19 +15,19 @@
         </div>
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul>
-                  <li routerLink="/main-sidebar/salary-options/salary" *ngIf="hasViewPermissionSalary"><a ><mat-icon>peoples</mat-icon> Salary Component</a></li>
+                  <li routerLink="/main-sidebar/salary-options/salary" *ngIf="hasViewPermissionSalary"><a ><mat-icon>attach_money</mat-icon> Salary Component</a></li>
                   <!-- <li routerLink="/main-sidebar/leave-options/leave-type" *ngIf="hasViewPermissiondesg"><a><mat-icon>peoples</mat-icon> Leave Type</a></li> -->
                  
-                  <li routerLink="/main-sidebar/salary-options/pay-roll" *ngIf="hasViewPermissionPayroll"><a ><mat-icon>peoples</mat-icon> Payroll</a></li>
+                  <li routerLink="/main-sidebar/salary-options/pay-roll" *ngIf="hasViewPermissionPayroll"><a ><mat-icon>attach_money</mat-icon> Payroll</a></li>
                   
-                  <li routerLink="/main-sidebar/salary-options/payslip-approval" *ngIf="hasViewPermissionPayslipApprovals"><a ><mat-icon>peoples</mat-icon> Payslip Approvals</a></li>
+                  <li routerLink="/main-sidebar/salary-options/payslip-approval" *ngIf="hasViewPermissionPayslipApprovals"><a ><mat-icon>attach_money</mat-icon> Payslip Approvals</a></li>
 
-                  <li routerLink="/main-sidebar/salary-options/payroll-appoval-level" *ngIf="hasViewPermissionPayrollApprovalLevel"><a ><mat-icon>peoples</mat-icon> payroll Approval Level</a></li>
+                  <li routerLink="/main-sidebar/salary-options/payroll-appoval-level" *ngIf="hasViewPermissionPayrollApprovalLevel"><a ><mat-icon>attach_money</mat-icon> payroll Approval Level</a></li>
                   
 
                   <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
                     <a>
-                      <mat-icon>peoples</mat-icon> Advance Salary
+                      <mat-icon>attach_money</mat-icon> Advance Salary
                       <mat-icon style="float: right;">{{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}</mat-icon>
                     </a>
                   </li>

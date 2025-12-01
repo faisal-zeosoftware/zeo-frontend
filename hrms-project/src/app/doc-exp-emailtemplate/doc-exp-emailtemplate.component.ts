@@ -11,6 +11,7 @@ import { EmailTemplateEditComponent } from '../email-template-edit/email-templat
 import { MatDialog } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import { DocExpEmailtemplateEditComponent } from '../doc-exp-emailtemplate-edit/doc-exp-emailtemplate-edit.component';
 
 @Component({
   selector: 'app-doc-exp-emailtemplate',
@@ -245,7 +246,7 @@ if (this.userId !== null) {
       console.log('schemastore', selectedSchema);
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.employeeService.getEmailPlaceholderDocReq(selectedSchema).subscribe(
+        this.employeeService.getEmailPlaceholderDocExp(selectedSchema).subscribe(
           (result: any) => {
             this.EmailPlaceHolders = result.employee; // Assuming the response structure
             console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
@@ -330,7 +331,7 @@ if (this.userId !== null) {
           console.log('Registration successful', response);
         
               alert('Email Template has been Added ');
-              // window.location.reload();
+              window.location.reload();
          
   
         },
@@ -390,38 +391,6 @@ if (this.userId !== null) {
           
 
 
-             // Method to update the template
-  updateTemplate(): void {
-    // Ensure Summernote content is captured
-    this.onContentChange();
-    this.body = $('#summernote').summernote('code'); // Get the content from Summernote before sending
-
-
-    // Prepare the updated data
-    const updatedTemplate = {
-      id: this.selectedTemplate.id, // Include the ID for updating the specific template
-      template_name: this.template_name,
-      subject: this.subject,
-      body: this.body,
-      request_type: this.request_type
-    };
-
-    // Send updated data to backend API
-    this.employeeService.updateEmailTemplate(updatedTemplate).subscribe(
-      (response) => {
-        console.log('Template updated successfully', response);
-        alert('Email Template has been updated');
-        this.loadtemp(); // Refresh the list of templates
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Error updating template:', error);
-        alert('Update failed');
-      }
-    );
-  }
-
-  
 
   iscreateLoanApp: boolean = false;
 
@@ -515,7 +484,7 @@ onCheckboxChange(employee:number) {
 
     
     openEditPopuss(selectedTemplate: any): void {
-      this.dialog.open(EmailTemplateEditComponent, {
+      this.dialog.open(DocExpEmailtemplateEditComponent, {
         width: '80%',
         height: '700px',
         data: { template: selectedTemplate } // Passing the selected template data to the modal component

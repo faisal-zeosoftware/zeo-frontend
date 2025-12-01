@@ -25,6 +25,33 @@
             <!-- <div  class=" d-block mx-auto" (click)="openPopus()">
                 <mat-icon class="d-block mx-auto">add_circle</mat-icon>
             </div> -->
+
+                     <ul>
+                
+
+                  <mat-nav-list>
+     
+  
+  
+                    <div>
+            
+            
+                 
+                    </div>
+                    <style>
+                      .mat-expansion-panel-body {
+                        padding: 0 0px 16px !important;
+                      }
+                      .mat-expansion-panel{
+                background: transparent;
+               
+              }
+                    </style>
+            
+                  </mat-nav-list>
+                   
+              </ul> 
+  
     
 
 
@@ -34,7 +61,7 @@
 <!-- Folder List -->
 <ul class="mt-4">
     <!-- Add Folder button -->
-    <li (click)="openPopus()" class="add-folder-item">
+    <li *ngIf="hasAddPermissionDocumentFolder" (click)="openPopus()" class="add-folder-item">
       <mat-icon>add_circle</mat-icon>
       <span class="mt-1">Add Folder</span>
     </li>
@@ -45,8 +72,8 @@
         <div class="folder-header">
   
             <!-- FOLDER ICON + PLUS ICON WRAPPED TOGETHER -->
-            <div class="folder-icon-wrapper" (click)="toggleSubfolder(i)">
-              <mat-icon class="folder-icon">folder</mat-icon>
+            <div class="folder-icon-wrapper" (click)="toggleSubfolder(i)" *ngIf="hasAddPermissionDocumentFolder">
+              <mat-icon  class="folder-icon">folder</mat-icon>
           
               <!-- Plus icon placed on top of folder -->
               <mat-icon 
@@ -55,20 +82,21 @@
             </div>
           
             <!-- Folder Name -->
-            <span class="folder-name mt-1" (click)="toggleSubfolder(i)">
+            <span *ngIf="hasViewPermissionDocumentFolder" class="folder-name mt-1" (click)="toggleSubfolder(i)">
               {{ folder.name }}
             </span>
           
             <!-- Arrow -->
-            <mat-icon class="arrow-icon mt-2" (click)="toggleSubfolder(i)">
+            <mat-icon class="arrow-icon mt-2" (click)="toggleSubfolder(i)" *ngIf="hasViewPermissionDocumentFolder">
               {{ expandedFolderIndex === i ? 'expand_less' : 'expand_more' }}
             </mat-icon>
           
           </div>
   
       <!-- Subfolders: show only when expanded -->
-      <ul *ngIf="expandedFolderIndex === i && folder.subfolders?.length > 0" class="subfolder-list">
-        <li *ngFor="let sub of folder.subfolders"
+       <div  *ngIf="hasViewPermissionDocumentFolder">
+      <ul  *ngIf="expandedFolderIndex === i && folder.subfolders?.length > 0" class="subfolder-list">
+        <li  *ngFor="let sub of folder.subfolders"
             [routerLink]="['/main-sidebar/document-folders/document-folder-files', sub.id]"
             routerLinkActive="active-link"
             class="subfolder-item">
@@ -78,9 +106,10 @@
           </a>
         </li>
       </ul>
-  
+   </div>
     </li>
   </ul>
+
   
 
           <!-- create folder modal pupup -->

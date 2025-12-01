@@ -321,34 +321,6 @@
 
 
 
-              <!-- Formula Writer -->
-              <!-- <div *ngIf="!is_fixed">
-                          <div class="row">
-                        <div class="col-md-8">
-                          <label>Formula Writer</label>
-                          <textarea 
-                            class="form-control display" 
-                            [(ngModel)]="formula" 
-                            [ngModelOptions]="{standalone: true}" 
-                            #formulaTextArea
-                            rows="6">
-                          </textarea>
-                        </div>
-                      
-                        <div class="col-md-4">
-                          <label>Select Components</label>
-                          <div class="email_placeholdername">
-                            <div 
-                              class="on_by_placeholders" 
-                              *ngFor="let component of Salarycomponent"
-                              (click)="insertComponentToFormula(component.code, formulaTextArea)">
-                              <h4>{{ component.code }}</h4>
-                            </div>
-                          </div>
-                        </div>
-                        </div>
-               </div>
-                       -->
 
 
 
@@ -363,7 +335,7 @@
                     (click)="resetForm()">Cancel</button>
                 </div>
                 <div class="col-md-3">
-                  <button type="submit" class="btn btn-success btn-full mt-4">
+                  <button *ngIf="hasAddPermission"  type="submit" class="btn btn-success btn-full mt-4">
                     {{ isEditMode ? 'Update' : 'Save' }}
                   </button>
                 </div>
@@ -408,9 +380,9 @@
         <td data-label="Description">{{ docs.description }}</td>
         <td data-label="Is Loan Component">{{ docs.is_loan_component }}</td>
         <td data-label="Action">
-          <i class="fa-solid fa-edit" style="cursor:pointer;"
+          <i *ngIf="hasEditPermission"  class="fa-solid fa-edit" style="cursor:pointer;"
              (click)="editSalaryComponent(docs)"></i>
-          <i class="fa-solid fa-trash"
+          <i *ngIf="hasDeletePermission"  class="fa-solid fa-trash"
              style="cursor:pointer; margin-left:10px;"
              (click)="deletePayroll(docs.id)"
              title="Delete Component"></i>
@@ -481,7 +453,7 @@
                   <button *ngIf="isEditModeEmp" type="button" class="btn btn-danger btn-full mt-4"
                     (click)="resetFormEmp()">Cancel</button>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3" *ngIf="hasAddPermission" >
                   <button type="submit" class="btn btn-success btn-full mt-4">
                     {{ isEditModeEmp ? 'Update' : 'Save' }}
                   </button>
@@ -510,7 +482,7 @@
         <td data-label="Employee">{{ docs.employee }}</td>
         <td data-label="Component">{{ docs.component }}</td>
         <td data-label="Action">
-          <i class="fa-solid fa-edit" style="cursor:pointer;"
+          <i *ngIf="hasEditPermission" class="fa-solid fa-edit" style="cursor:pointer;"
              (click)="editSalaryComponentEmp(docs)"></i>
         </td>
       </tr>

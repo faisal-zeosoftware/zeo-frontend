@@ -24,14 +24,6 @@
                             <label>Select Group</label>
 
 
-                            <!-- <div class="custom-sel">
-                                <label>Select Group</label>
-                                <select class="form-control" id="groups" multiple required [(ngModel)]="groups"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !groups}" >
-                                    <option value="" >Select</option>
-                                    <option *ngFor="let deparmentsec of   Groups" [value]="deparmentsec.id">{{ deparmentsec.name     }} </option>
-                                </select>
-                                <div *ngIf="registerButtonClicked && !groups" class="error-message">Please Select Your Company</div>
-                            </div> -->
 
 
                             <div class="custom-sel">
@@ -101,10 +93,10 @@
         </td>
         <td data-label="Action">
           <span class="table-btns">
-            <button type="button" class="btn btn-sm btn-info" (click)="openEditPerModal(per)">
+            <button *ngIf="hasEditPermission" type="button" class="btn btn-sm btn-info" (click)="openEditPerModal(per)">
               <i class="fa-solid fa-edit"></i>
             </button>
-            <button type="button" class="btn btn-sm btn-danger" (click)="deleteAssignedPermission(per.id)">
+            <button *ngIf="hasDeletePermission" type="button" class="btn btn-sm btn-danger" (click)="deleteAssignedPermission(per.id)">
               <i class="fa-solid fa-trash"></i>
             </button>
           </span>

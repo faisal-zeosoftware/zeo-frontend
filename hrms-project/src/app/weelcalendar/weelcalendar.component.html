@@ -1,7 +1,7 @@
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
         <div class="com_list ">
-    <div class="cpm-sec" *ngIf="hasAddPermission">
+    <div class="cpm-sec">
 
         <h2>Create Weekend Calendar</h2><hr>
 
@@ -138,10 +138,7 @@
             <option>2100</option>
         </select>
     </div>
-   <!-- <input type="date"  class="form-control" required  [(ngModel)]="year"  placeholder="Enter year "
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !year}">
-   
-   <div *ngIf="registerButtonClicked && !year" class="error-message">year is required.</div> -->
+
 </div>
 
 <div class="col-md-4">
@@ -228,7 +225,7 @@
 
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-2" *ngIf="hasAddPermission">
         <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerweekCalendar()">Save</button>  
      </div>
 </div>
@@ -289,7 +286,7 @@
                     <td data-label="Date">{{ formatDate(detail.date) }}</td>
                     <td data-label="Day">{{ getDayName(detail.date) }}</td>
                     <td class="leave_type_clm" data-label="Day Type">{{ getDayTypeDisplayName(detail.day_type) }}</td>
-                    <td data-label="Action">
+                    <td data-label="Action" *ngIf="hasEditPermission">
                       <button type="button" class="btn-Edit btn-info btn btn_tabl" (click)="openEditModal(detail)">
                         <span class="header-btn-icon">
                           <mat-icon>draw</mat-icon>

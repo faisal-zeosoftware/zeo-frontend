@@ -308,20 +308,36 @@
 </div>
 
 
-<!-- 
-<div class="col-md-3">
-    <div class="check-box-selection-sec form-control">
-        <div class="mat-set">
-            <mat-checkbox [(ngModel)]="approved" [ngModelOptions]="{standalone: true}">Approved</mat-checkbox>
-        </div>
-       
-    </div>
-</div> -->
 
 <div class="col-md-6">
-    <label>Request Document</label>
-    <input type="file" class="form-control" (change)="onFileChange($event)">
+  <label>Request Document</label>
+
+  <!-- Custom File Input Box -->
+  <div class="custom-file-box" (click)="triggerRequestDocInput()">
+    
+    <!-- If existing file & no newly selected file -->
+    <span *ngIf="editAsset.request_document && !selectedRequestFile">
+      {{ getFileName(editAsset.request_document) }}
+    </span>
+
+    <!-- If user selected new file -->
+    <span *ngIf="selectedRequestFile">
+      {{ selectedRequestFile.name }}
+    </span>
+
+    <i class="fa fa-upload upload-icon"></i>
   </div>
+
+  <!-- Hidden File Input -->
+  <input 
+      type="file" 
+      #requestDocInput 
+      class="hidden-file-input" 
+      (change)="onRequestDocSelected($event)">
+</div>
+
+
+
 <div class="col-md-12">
     <label>Remarks</label>
     <textarea class="form-control" rows="3" [(ngModel)]="editAsset.remarks" [ngModelOptions]="{standalone: true}" placeholder="Enter remarks"></textarea>

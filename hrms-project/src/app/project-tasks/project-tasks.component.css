@@ -260,6 +260,28 @@ input:focus-visible {
 
 
 
+.custom-file-box {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.upload-icon {
+  font-size: 18px;
+  color: #555;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+
+
     /* Phones */
 @media (max-width: 728px) {
 

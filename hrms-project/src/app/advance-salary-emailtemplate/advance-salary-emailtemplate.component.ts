@@ -388,39 +388,6 @@ getTextContent(): void {
 
         
         
-        
-          
-
-
-             // Method to update the template
-  updateTemplate(): void {
-    // Ensure Summernote content is captured
-    this.onContentChange();
-    this.body = $('#summernote').summernote('code'); // Get the content from Summernote before sending
-
-
-    // Prepare the updated data
-    const updatedTemplate = {
-      id: this.selectedTemplate.id, // Include the ID for updating the specific template
-      template_type: this.template_type,
-      subject: this.subject,
-      body: this.body,
-      request_type: this.request_type
-    };
-
-    // Send updated data to backend API
-    this.employeeService.updateEmailTemplateAdvanceSalary(updatedTemplate).subscribe(
-      (response) => {
-        console.log('Template updated successfully', response);
-        alert('Email Template has been updated');
-        this.loadtemp(); // Refresh the list of templates
-      },
-      (error) => {
-        console.error('Error updating template:', error);
-        alert('Update failed');
-      }
-    );
-  }
 
 
   openEditPopuss(selectedTemplate: any): void {

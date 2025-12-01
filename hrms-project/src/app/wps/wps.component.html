@@ -37,7 +37,7 @@
                       <h4 class="mt-3">Unified SIF Table</h4>
 
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3" *ngIf="hasAddPermission">
                       <button type="button" class="btn btn-info pull-right mt-2 " (click)="downloadSIFStyledExcel()">
                         Download 
                       </button>  

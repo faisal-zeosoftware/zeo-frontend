@@ -269,7 +269,7 @@
         <td data-label="Branch">{{ policy.branch }}</td>
         <td data-label="Department">{{ policy.department }}</td>
         <td data-label="Category">{{ policy.category }}</td>
-        <td data-label="Policy File">
+        <td data-label="Policy File" *ngIf="hasAddPermission">
           <button 
             (click)="downloadPolicy(policy.policy_file, policy.title + '.pdf')" 
             class="btn btn-sm btn-primary">

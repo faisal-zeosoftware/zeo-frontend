@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
@@ -16,8 +16,31 @@ import { DesignationService } from '../designation-master/designation.service';
 })
 export class GeneralRequestComponent {
 
-  // doc_number: any = '';
-  document_number: number | null = null;
+  @ViewChild('requestDocInput') requestDocInput!: ElementRef;
+
+  selectedRequestFile!: File | null;
+
+  triggerRequestDocInput() {
+  this.requestDocInput.nativeElement.click();
+}
+
+onRequestDocSelected(event: any): void {
+  this.selectedRequestFile = event.target.files.length > 0 ? event.target.files[0] : null;
+
+  if (this.selectedRequestFile) {
+    this.editAsset.request_document = this.selectedRequestFile;  
+  }
+}
+
+getFileName(fileUrl: string): string {
+  return fileUrl.split('/').pop() || 'Existing File';
+}
+
+
+
+  
+document_number: number | string | null = null;
+
   reason: any = '';
   total: any = '';
   branch: any = '';
@@ -337,29 +360,45 @@ updateAssetType(): void {
     return;
   }
 
-  this.employeeService.updateGeneralReq(this.editAsset.id, this.editAsset).subscribe(
-    (response) => {
-      alert('General Request updated successfully!');
-      this.closeEditModal();
-      this.loadgeneralReq(); // reload updated list
-    },
-(error) => {
-  console.error('Error updating General Request:', error);
+  const formData = new FormData();
 
-  let errorMsg = 'Update failed';
+  // Required fields
+  formData.append('employee', this.editAsset.employee || '');
+  formData.append('reason', this.editAsset.reason || '');
+  formData.append('request_type', this.editAsset.request_type || '');
 
-  const backendError = error?.error;
+  // Optional fields
+  formData.append('document_number', this.editAsset.document_number || '');
+  formData.append('total', this.editAsset.total?.toString() || '');
+  formData.append('remarks', this.editAsset.remarks || '');
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+  // File field
+  if (this.selectedRequestFile) {
+    formData.append('request_document', this.selectedRequestFile);
   }
 
-  alert(errorMsg);
-}
-  );
+  this.employeeService.updateGeneralReq(this.editAsset.id, formData)
+    .subscribe(
+      (response) => {
+        alert('General Request updated successfully!');
+        this.closeEditModal();
+        this.loadgeneralReq();
+      },
+      (error) => {
+        console.error('Error updating General Request:', error);
+
+        let errorMsg = 'Update failed';
+        const backendError = error?.error;
+
+        if (backendError && typeof backendError === 'object') {
+          errorMsg = Object.keys(backendError)
+            .map(key => `${key}: ${backendError[key].join(', ')}`)
+            .join('\n');
+        }
+
+        alert(errorMsg);
+      }
+    );
 }
 
 

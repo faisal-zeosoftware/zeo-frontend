@@ -14,10 +14,9 @@ export class DocumentFoldersComponent {
 
   
 
-  hasViewPermissionProjects: boolean = false;
-  hasViewPermissionProjectsStages: boolean = false;
-  hasViewPermissionProjectsTaks: boolean = false;
-  hasViewPermissionProjectsTimesheet: boolean = false;
+  hasViewPermissionDocumentFolder: boolean = false;
+  hasAddPermissionDocumentFolder: boolean = false;
+
 
 
   userId: number | null | undefined;
@@ -78,11 +77,11 @@ export class DocumentFoldersComponent {
       
         if (isSuperuser) {
           console.log('User is superuser or ESS user');
+
+
           // Grant all permissions
-          this.hasViewPermissionProjects = true;
-          this.hasViewPermissionProjectsStages = true;
-          this.hasViewPermissionProjectsTaks = true;
-          this.hasViewPermissionProjectsTimesheet = true;
+          this.hasViewPermissionDocumentFolder = true;
+          this.hasAddPermissionDocumentFolder = true;
 
        
   
@@ -107,12 +106,12 @@ export class DocumentFoldersComponent {
   
                 if (firstItem.is_superuser) {
                   console.log('User is superuser according to permissions API');
+
+
                   // Grant all permissions
-                  this.hasViewPermissionProjects = true;
-                  this.hasViewPermissionProjectsStages = true;
-                  this.hasViewPermissionProjectsTaks = true;
-                  this.hasViewPermissionProjectsTimesheet = true;
-                 
+                  this.hasViewPermissionDocumentFolder = true;
+                 this.hasAddPermissionDocumentFolder = true;
+
   
   
           
@@ -122,18 +121,12 @@ export class DocumentFoldersComponent {
   
               
                        
-                       this.hasViewPermissionProjects = this.checkGroupPermission('view_project', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjects);
-                      
-                       this.hasViewPermissionProjectsStages = this.checkGroupPermission('view_projectstage', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjectsStages);
+                this.hasViewPermissionDocumentFolder = this.checkGroupPermission('view_folder', groupPermissions);
+                 console.log('Has view permission:', this.hasViewPermissionDocumentFolder);
 
-                       this.hasViewPermissionProjectsTaks = this.checkGroupPermission('view_task', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjectsTaks);
-                      
-                       this.hasViewPermissionProjectsTimesheet = this.checkGroupPermission('view_timesheet', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionProjectsTimesheet);
-                       
+                  this.hasAddPermissionDocumentFolder = this.checkGroupPermission('add_folder', groupPermissions);
+                    console.log('Has add permission:', this.hasAddPermissionDocumentFolder);
+
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);
                 }

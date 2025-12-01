@@ -353,7 +353,7 @@ if (this.userId !== null) {
                     this.hasViewWeekAssgn = this.checkGroupPermission('view_assign_weekend', groupPermissions);
                     console.log('Has view permission:', this.hasViewWeekAssgn);
 
-                    this.hasViewHoly = this.checkGroupPermission('view_holiday', groupPermissions);
+                    this.hasViewHoly = this.checkGroupPermission('view_holiday_calendar', groupPermissions);
                     console.log('Has view permission:', this.hasViewHoly);
                    
                     this.hasViewHolyAssgn = this.checkGroupPermission('view_assign_holiday', groupPermissions);

@@ -18,6 +18,29 @@ import { MatSelect } from '@angular/material/select';
 })
 export class ProjectMasterComponent {
 
+  @ViewChild('projectFileInput') projectFileInput!: ElementRef;
+
+
+triggerProjectFileInput() {
+  this.projectFileInput.nativeElement.click();
+}
+
+getFileName(fileUrl: string): string {
+  return fileUrl?.split('/').pop() || 'Existing File';
+}
+
+
+onFileSelected(event: any): void {
+  this.selectedFile = event.target.files?.length ? event.target.files[0] : null;
+
+  if (this.selectedFile) {
+    this.editProject.document = this.selectedFile; // optional
+  }
+}
+
+
+
+
 
   @ViewChild('select') select: MatSelect | undefined;
   @ViewChild('selectMng') selectMng: MatSelect | undefined;
@@ -54,6 +77,7 @@ export class ProjectMasterComponent {
   is_active:  boolean = false;
 
   selectedFile: File | null = null;
+
 
 
   Users:any []=[];
@@ -234,12 +258,7 @@ ngOnInit(): void {
   }
   
 
-  onFileSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-    }
-  }
+
 
   toggleAllSelectionEmp(): void {
     if (this.select) {
@@ -492,30 +511,54 @@ updateProject(): void {
     return;
   }
 
-  this.employeeService.updateProjects(this.editProject.id, this.editProject).subscribe(
-    (response) => {
-      alert('Project updated successfully!');
-      this.closeEditModal();
-      this.loadLAssetType(); // reload updated list
-    },
-(error) => {
-  console.error('Error updating Project:', error);
+  const formData = new FormData();
 
-  let errorMsg = 'Update failed';
+  Object.keys(this.editProject).forEach(key => {
+    if (key === 'document') return;
 
-  const backendError = error?.error;
+    const value = this.editProject[key];
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+    // Handle array fields
+    if (Array.isArray(value)) {
+      value.forEach((item: any) => {
+        formData.append(key, String(item));  // Convert to string ✔
+      });
+
+    } else {
+      formData.append(key, value !== null && value !== undefined ? String(value) : '');
+    }
+  });
+
+  // Add file if selected
+  if (this.selectedFile) {
+    formData.append('document', this.selectedFile);
   }
 
-  alert(errorMsg);
-}
+  this.employeeService.updateProjects(this.editProject.id, formData).subscribe(
+    (response) => {
+      alert('Project updated successfully!');
+      window.location.reload();
+      this.closeEditModal();
+      this.loadLAssetType();
+    },
+    (error) => {
+      console.error('Error updating Project:', error);
+
+      let errorMsg = 'Update failed';
+
+      const backendError = error?.error;
+      if (backendError && typeof backendError === 'object') {
+        errorMsg = Object.keys(backendError)
+          .map(key => `${key}: ${backendError[key].join(', ')}`)
+          .join('\n');
+      }
+
+      alert(errorMsg);
+    }
   );
 }
+
+
 
 
 deleteSelectedProject() { 

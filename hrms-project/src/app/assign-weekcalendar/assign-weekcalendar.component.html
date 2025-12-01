@@ -288,7 +288,7 @@
           {{ (detail.employee && detail.employee.length > 0) ? detail.employee.join(', ') : 'Null' }}
         </td>
         <td data-label="Action">
-          <button class="btn btn-danger btn-sm" (click)="deleteAssignedWeekend(detail.id)">
+          <button *ngIf="hasAddPermission" class="btn btn-danger btn-sm" (click)="deleteAssignedWeekend(detail.id)">
             Delete
           </button>
         </td>

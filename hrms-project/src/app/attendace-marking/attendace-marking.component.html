@@ -13,7 +13,7 @@
             <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
   
           </div>
-          <div class="col-md-5">
+          <div class="col-md-5" *ngIf="hasAddPermission">
             <div class="button-group pull-right">
               <button type="button" class="btn-Create btn pull-right btn-danger" (click)="toggleBulkUpload()">
                 <span class="header-btn-icon">
@@ -22,20 +22,6 @@
                 {{ showBulkUpload ? 'Cancel Bulk Upload' : 'Bulk Upload Attendance' }}
               </button>
                            
-              <!-- <button type="button"  class="btn-Create btn btn-success " > <span class="header-btn-icon"><mat-icon>add_circle
-                          </mat-icon></span> Create</button> -->
-              <!-- <span *ngIf="!hasAddPermission"></span>
-  
-                          <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                              <span class="header-btn-icon">
-                               <mat-icon>draw
-                          </mat-icon></span> Edit</button>
-                          <span *ngIf="hasEditPermission"></span>
-                          <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                              <span class="header-btn-icon">
-                                  <mat-icon> delete
-                             </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                             <span *ngIf="!hasDeletePermission"></span> -->
   
   
   
@@ -77,11 +63,11 @@
 
             </div>
 
-            <div class="col-md-3"   >
+            <div class="col-md-3" *ngIf="hasAddPermission"  >
                 <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerCheckIn()">Check In</button>  
              </div>
 
-             <div class="col-md-3"   >
+             <div class="col-md-3" *ngIf="hasAddPermission" >
               <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="registerCheckOut()">Check Out</button>  
            </div>
              
@@ -90,7 +76,7 @@
 </div>
   
 
-    <div class="bulk_upload_section" *ngIf="showBulkUpload">
+    <div class="bulk_upload_section"  *ngIf="showBulkUpload">
       <label class="mt-4">Upload Excel File for Attendance</label>
     
       <input

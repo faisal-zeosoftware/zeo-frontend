@@ -306,7 +306,7 @@
                     <td data-label="Action">
 
                  
-                        <button
+                        <button *ngIf="hasAddPermission"
                         type="button"
                         class="btn btn-danger"
                         (click)="openReturnModal(docs)"

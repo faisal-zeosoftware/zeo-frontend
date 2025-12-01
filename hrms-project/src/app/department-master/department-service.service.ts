@@ -295,8 +295,14 @@ updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Obser
     return this.http.put(apiUrl, data);
   }
 
+    updateLeaveEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/leave-template/${templateId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, data);
+  }
+
+
     updateLoanEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
-    const apiUrl = `${this.apiUrl}/employee/api/loan-email-template/${templateId}/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/${templateId}/?schema=${selectedSchema}`;
     return this.http.put(apiUrl, data);
   }
 
@@ -305,8 +311,13 @@ updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Obser
     return this.http.put(apiUrl, data);
   }
 
+   updateDocReqEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/${templateId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, data);
+  }
+
   updateAdvSalEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
-    const apiUrl = `${this.apiUrl}/employee/api/advance-salary-email-template/${templateId}/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-email-template/${templateId}/?schema=${selectedSchema}`;
     return this.http.put(apiUrl, data);
   }
 

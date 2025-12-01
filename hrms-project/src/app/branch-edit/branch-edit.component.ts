@@ -1,4 +1,4 @@
-import { Component, Inject , Renderer2} from '@angular/core';
+import { Component, ElementRef, Inject , Renderer2, ViewChild} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA ,MatDialog} from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../country.service';
@@ -17,6 +17,8 @@ import { SessionService } from '../login/session.service';
   styleUrl: './branch-edit.component.css'
 })
 export class BranchEditComponent {
+
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   countries: any[] = [];
   states: any[] = [];
@@ -48,7 +50,7 @@ export class BranchEditComponent {
   state_label: string = ''; // For dynamically storing state_label
 
 
-  selectedFile!: File | null;
+ selectedFile: File | null = null;
 
 
   schemas: string[] = []; // Array to store schema names
@@ -135,89 +137,85 @@ if (this.userId !== null) {
  
 
   }
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.branch_logo = file;
-    }
+  
+onFileSelected(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    this.selectedFile = file;
   }
+}
 
   onStateChange(event: any): void {
     this.br_state_id = Number(event);
   }
 
 
-  updateBranch(): void {
-    const formData = new FormData();
-  
-    // Convert date field to 'YYYY-MM-DD' format before appending
-    const formattedDate = this.formatDate(this.Emp.br_start_date);
-  
-    // Append all form fields, ensuring proper type conversion
-    for (const key in this.Emp) {
-      if (this.Emp.hasOwnProperty(key)) {
-        let value = this.Emp[key];
-  
-        // Ensure primary key values are sent as numbers
-        if (key === 'br_state_id' || key === 'br_created_by' || key === 'br_updated_by') {
-          value = Number(value) || null;  // Convert to number or set to null if invalid
-        }
-  
-        if (key === 'br_start_date') {
-          formData.append(key, formattedDate); // Send the formatted date
-        } else {
-          formData.append(key, value);
-        }
-      }
+updateBranch(): void {
+
+  const formData = new FormData();
+
+  // Format date properly
+  const formattedDate = this.formatDate(this.Emp.br_start_date);
+
+  // Append all NON-FILE fields
+  for (const key in this.Emp) {
+    if (key === "branch_logo") continue;   // Skip file field
+
+    let value = this.Emp[key];
+
+    // Convert numeric primary keys
+    if (["br_state_id", "br_created_by", "br_updated_by"].includes(key)) {
+      value = value ? Number(value) : null;
     }
-  
-    // Append the file only if it's selected
-    if (this.branch_logo) {
-      formData.append('branch_logo', this.branch_logo);
-    } else {
-      formData.append('branch_logo', '');
+
+    // Date
+    if (key === "br_start_date") {
+      formData.append(key, formattedDate);
+    } 
+    else {
+      formData.append(key, value ?? "");
     }
-  
-    // Automatically set the created and updated user IDs
-    const loggedInUserId = this.authService.getLoggedInUserId(); // Replace with your actual method to get the user ID
+  }
 
-  
+  // FILE append
+  if (this.selectedFile) {
+    formData.append("branch_logo", this.selectedFile);
+  }
 
-    if (this.userId !== null && this.userId !== undefined) {
-      formData.append('br_created_by', this.userId.toString());
-      formData.append('br_updated_by', this.userId.toString());
-      formData.append('br_state_id', this.userId.toString());
+  // Logged-in user
+  if (this.userId != null) {
+    formData.append("br_created_by", String(this.userId));
+    formData.append("br_updated_by", String(this.userId));
+  } else {
+    console.error("Logged-in user ID is null or undefined.");
+  }
 
 
-    } else {
-      console.error('Logged-in user ID is null or undefined.');
-    }
-    
-    this.BranchServiceService.updateBranch(this.data.employeeId, formData).subscribe(
+  this.BranchServiceService.updateBranch(this.data.employeeId, formData)
+    .subscribe(
       (response) => {
-        console.log('Branches updated successfully:', response);
+        console.log("Branch updated successfully:", response);
+        alert('Branch updated successfully!');
         this.dialogRef.close();
         window.location.reload();
       },
- (error) => {
-  console.error('Error updating Branch:', error);
+      (error) => {
+        console.error("Error updating branch:", error);
 
-  let errorMsg = 'Update failed';
+        let errorMsg = "Update failed";
+        const backendError = error?.error;
 
-  const backendError = error?.error;
+        if (backendError && typeof backendError === "object") {
+          errorMsg = Object.keys(backendError)
+            .map(key => `${key}: ${backendError[key].join(", ")}`)
+            .join("\n");
+        }
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
+        alert(errorMsg);
+      }
     );
-  }
-  
+}
+
   // Date format function
   formatDate(date: any): string {
     const d = new Date(date);
@@ -305,8 +303,20 @@ if (this.userId !== null) {
         }
    
   }
-  
- 
+
+
+
+
+
+
+triggerFileInput() {
+  this.fileInput.nativeElement.click();
+}
+
+getFileName(path: string): string {
+  return path?.split('/').pop() || '';
+}
+
 
 ClosePopup(){
   this.ref.close('Closed using function')

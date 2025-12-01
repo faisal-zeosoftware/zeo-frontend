@@ -7,7 +7,6 @@ import { DepartmentServiceService } from '../department-master/department-servic
 
 declare var $: any;
 import 'summernote'; // Ensure you have summernote imported
-import { EmailTemplateEditComponent } from '../email-template-edit/email-template-edit.component';
 import { MatDialog } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
@@ -407,36 +406,6 @@ getTextContent(): void {
         
           
 
-
-             // Method to update the template
-  updateTemplate(): void {
-    // Ensure Summernote content is captured
-    this.onContentChange();
-    this.body = $('#summernote').summernote('code'); // Get the content from Summernote before sending
-
-
-    // Prepare the updated data
-    const updatedTemplate = {
-      id: this.selectedTemplate.id, // Include the ID for updating the specific template
-      template_type: this.template_type,
-      subject: this.subject,
-      body: this.body,
-      request_type: this.request_type
-    };
-
-    // Send updated data to backend API
-    this.employeeService.updateEmailTemplateLoan(updatedTemplate).subscribe(
-      (response) => {
-        console.log('Template updated successfully', response);
-        alert('Email Template has been updated');
-        this.loadtemp(); // Refresh the list of templates
-      },
-      (error) => {
-        console.error('Error updating template:', error);
-        alert('Update failed');
-      }
-    );
-  }
 
 
   openEditPopuss(selectedTemplate: any): void {

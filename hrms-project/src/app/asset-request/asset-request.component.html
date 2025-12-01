@@ -307,7 +307,7 @@
                     <td data-label="Requested asset">{{ docs.requested_asset }}</td>
                     <td data-label="Status">{{ docs.status }}</td>
                     
-                    <td data-label="Action">
+                    <td data-label="Action" *ngIf="hasAddPermission">
                       <button
                         type="button"
                         class="btn btn-success"

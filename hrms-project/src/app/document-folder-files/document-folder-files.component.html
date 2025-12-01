@@ -1,4 +1,4 @@
-<div class="container" >
+<div class="container" *ngIf="hasViewPermission">
 
 
     <div class="comapny_section">
@@ -16,7 +16,7 @@
           </div>
           <div class="col-md-5">
                     <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>cloud_upload
+                        <button type="button" (click)="openPopus()" *ngIf="hasAddPermission" class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>cloud_upload
 
                         </mat-icon></span> upload</button>
 
