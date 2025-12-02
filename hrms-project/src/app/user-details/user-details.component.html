@@ -44,7 +44,7 @@
                     </div>
 
                     <div class="col-md-9">
-                        <h1>{{Companies.username}}</h1>
+                        <h1>{{Companies.username}} <i class="fa fa-cog pull-right" (click)="openPopuSettings()"></i></h1>
                         <!-- <h3 style="color: #714b67">Front End Developer</h3> -->
 
 
@@ -100,3 +100,55 @@
         </div>
 
         </div>
+
+
+        <div *ngIf="isSettings" class="modal">
+            <div class="modal-content">
+          
+              <div class="row">
+                <div class="col-md-10">
+                  <h2>Change password</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeSettings()">&times;</span>
+                </div>
+              </div>
+          
+              <hr />
+          
+              <div class="row">
+                <div class="col-md-12">
+          
+                  <!-- EMAIL -->
+                  <label>Email ID</label>
+                  <input type="email" [(ngModel)]="email" class="form-control" placeholder="Enter email ID">
+          
+                  <button class="btn btn-success mt-2 d-block mx-auto" (click)="sendOtp()" *ngIf="!otpSent">
+                    Send OTP
+                  </button>
+          
+                  <!-- OTP INPUT -->
+                  <div *ngIf="otpSent && !otpVerified">
+                    <input type="text" [(ngModel)]="otp" class="form-control mt-3" placeholder="Enter OTP">
+          
+                    <button class="btn btn-primary mt-2 d-block mx-auto" (click)="verifyOtp()">
+                      Verify OTP
+                    </button>
+                  </div>
+          
+                  <!-- NEW PASSWORD -->
+                  <div *ngIf="otpVerified">
+                    <label class="mt-3">New Password</label>
+                    <input type="password" [(ngModel)]="newPassword" class="form-control" placeholder="Enter new password">
+          
+                    <button class="btn btn-danger mt-3 d-block mx-auto" (click)="resetPassword()">
+                      Reset Password
+                    </button>
+                  </div>
+          
+                </div>
+              </div>
+          
+            </div>
+          </div>
+          

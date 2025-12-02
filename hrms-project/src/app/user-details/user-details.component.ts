@@ -32,6 +32,19 @@ export class UserDetailsComponent {
   userDetailss: any;
   schemas: string[] = []; // Array to store schema names
 
+
+
+
+
+  // Form fields
+email: string = "";
+otp: string = "";
+newPassword: string = "";
+
+// States
+otpSent = false;
+otpVerified = false;
+
   constructor(private UserMasterService:UserMasterService,
     private companyRegistrationService: CompanyRegistrationService, 
     private http: HttpClient,
@@ -68,7 +81,8 @@ export class UserDetailsComponent {
           (details) => {
             this.Companies = details;
             // this.cdr.detectChanges(); // Manually trigger change detection
-            
+            this.email = details.email;  // auto-fill email
+
   
           },
           (error) => {
@@ -229,32 +243,6 @@ onCheckboxChange(employee:number) {
   // You can add any additional logic if needed.
 }
 
-// deleteSelectedEmployees() { 
-//   const selectedEmployeeIds = this.Users
-//     .filter(employee => employee.selected)
-//     .map(employee => employee.id);
-
-//   if (selectedEmployeeIds.length === 0) {
-//     alert('No employees selected for deletion.');
-//     return;
-//   }
-
-//   if (confirm('Are you sure you want to delete the selected employees?')) {
-//     selectedEmployeeIds.forEach(DeptId => {
-//       this.UserMasterService.deleteUser(DeptId).subscribe(
-//         () => {
-//           console.log('User deleted successfully:', DeptId);
-//           // Remove the deleted employee from the local list
-//           this.Users = this.Users.filter(employee => employee.id !== DeptId);
-//         },
-//         (error) => {
-//           console.error('Error deleting employee:', error);
-//         }
-//       );
-//     });
-//   }
-// }
-
 
 openEditEmpPopuss(employeeId: number, ):void{
   const dialogRef = this.dialog.open(UserEditComponent, {
@@ -343,6 +331,71 @@ if (confirm('Are you sure you want to delete this employee?')) {
     );
 }
 }
+
+
+isSettings: boolean = false;
+
+
+
+
+openPopuSettings():void{
+  this.isSettings = true;
+
+}
+
+closeSettings():void{
+  this.isSettings = false;
+  this.email = "";
+  this.otp = "";
+  this.newPassword = "";
+  this.otpSent = false;
+  this.otpVerified = false;
+
+}
+
+
+
+
+
+/* ------------------------------
+   STEP 1 — SEND OTP
+--------------------------------*/
+sendOtp() {
+  this.UserMasterService.sendResetOtp(this.email).subscribe(
+    () => {
+      alert("OTP sent to your email!");
+      this.otpSent = true;
+    },
+    (error) => alert("Failed to send OTP!")
+  );
+}
+
+/* ------------------------------
+   STEP 2 — VERIFY OTP
+--------------------------------*/
+verifyOtp() {
+  this.UserMasterService.verifyResetOtp(this.email, this.otp).subscribe(
+    () => {
+      alert("OTP Verified!");
+      this.otpVerified = true;
+    },
+    (error) => alert("Invalid OTP!")
+  );
+}
+
+/* ------------------------------
+   STEP 3 — RESET PASSWORD
+--------------------------------*/
+resetPassword() {
+  this.UserMasterService.resetPassword(this.email, this.newPassword).subscribe(
+    () => {
+      alert("Password successfully reset!");
+      this.closeSettings();
+    },
+    (error) => alert("Failed to reset password!")
+  );
+}
+
 
 
 

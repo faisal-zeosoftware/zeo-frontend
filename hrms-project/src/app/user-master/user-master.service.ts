@@ -379,6 +379,37 @@ return this.http.delete(apiUrl);
 
 
 
+    // password reset code
+// STEP 1 — SEND OTP
+sendResetOtp(email: string): Observable<any> {
+  const url = `${this.apiUrl}/users/send-reset-otp/`;
+  const body = { email: email };
+
+  return this.http.post(url, body).pipe(
+    catchError(error => throwError(() => error))
+  );
+}
+
+// STEP 2 — VERIFY OTP
+verifyResetOtp(email: string, otp: string): Observable<any> {
+  const url = `${this.apiUrl}/users/verify-reset-otp/`;
+  const body = { email: email, otp: otp };
+
+  return this.http.post(url, body).pipe(
+    catchError(error => throwError(() => error))
+  );
+}
+
+// STEP 3 — RESET PASSWORD
+resetPassword(email: string, newPassword: string): Observable<any> {
+  const url = `${this.apiUrl}/users/reset-password/`;
+  const body = { email: email, new_password: newPassword };
+
+  return this.http.post(url, body).pipe(
+    catchError(error => throwError(() => error))
+  );
+}
+
 
 
   

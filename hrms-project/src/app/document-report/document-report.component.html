@@ -180,6 +180,238 @@
       ======================================================== -->
       <mat-tab label="Document Custom Report " *ngIf="hasViewPermission">
 
+        <div class="tab_boddy " style="padding: 15px 15px;">
+
+          <div class="row">
+              <div class="col-md-5">
+                  <h1>Employees Reports</h1>
+              </div>
+  
+             
+              <div class="col-md-7">
+                  <div class="button-group pull-right">
+
+                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                    </mat-icon></span> Create Custom File</button>
+                 
+                    <button type="button" class="btn-Edit btn-info btn"  *ngIf="hasEditPermission" (click)="openAddFieldsModal()">
+                      <span class="header-btn-icon">
+                       <mat-icon>draw
+                  </mat-icon></span> Default Add Fields</button>
+                 
+                        </div>
+              </div>
+               
+          </div>
+         
+         
+  
+      </div>
+
+      <div class="tab_boddy " style="padding: 20px;">
+        <div class="report-section-main">
+          <div class=" "  *ngIf="hasViewPermission">
+            <div class="row">
+
+              <div  class=" col-md-6">
+                <select class="form-control "
+            [(ngModel)]="activeReport"
+            (change)="showReportTable(activeReport)">
+      <option *ngFor="let report of savedReports" [ngValue]="report">
+        {{ report.file_name }}
+      </option>
+    </select>
+    
+                </div>
+                
+              <div class="col-md-6">
+                <div class="button-group ">
+    
+                  <button mat-raised-button color="primary" class="btn btn-success " (click)="togglePreview()">
+                    {{ isPreviewVisible ? 'Close Preview' : 'Preview List' }}
+                  </button>  
+    
+                              </div>
+              </div>
+
+              <div class="col-md-12" style="height: 100%;">
+ 
+                <div class="container   mt-4">
+                  <div class="row" (click)="toggleReportTable()">
+                    <div class="col-md-12">
+                
+                        <div class="report_common_box">
+                        
+                      
+
+                   
+                            <div *ngIf="isPreviewVisible" class="row ">
+                              <div class="col-md-12">
+
+                                <div class="row">
+                                  <div class="col-md-4">
+                                    <h6 class="preview-heading">{{ selectedFileName }}</h6>
+
+                                  </div>
+
+                                  <div class="col-md-8">
+                                    <div class="button-group pull-right">
+                                    <button type="button" class="btn btn-primary  me-2" (click)="generateReports()">Apply Default Filter</button>
+
+                                    <button type="button"
+                                    class="btn me-2"
+                                    [ngClass]="isAdvancedFilter ? 'btn-danger' : 'btn-primary'"
+                                    (click)="Filter()">
+                              {{ isAdvancedFilter ? 'Cancel Advanced Filter' : 'Advanced Filter' }}
+                            </button>    
+                                    <button mat-raised-button color="primary" class="btn btn-success me-2" *ngIf="!showReportTablevalue" (click)="exportToExcels()"> <i class="fa fa-download" aria-hidden="true"></i> Download</button>
+                                      </div>
+                                  </div>
+                                </div>
+                          
+                            
+                            
+                                <!-- <button  class="btn " (click)="openEditModal()">open</button> -->
+
+                             
+
+
+                         
+                              
+                              
+                              
+                            
+
+                                
+                             
+                              <div class="table-container" *ngIf="!showReportTablevalue" >
+                                <table class="table table-bordered table-hover preview-table">
+                                  <thead>
+                                    <tr>
+                                    <th *ngFor="let key of getObjectKeys(previewData[0])">
+                                      {{ display_names[key] || key }}                                          </th>
+
+                                      <!-- {{ display_names[key] || key }}                                          </th> -->
+                                  </thead>
+                                  <tbody>
+                                    <tr *ngFor="let item of previewData">
+                                      <td *ngFor="let key of getObjectKeys(item)">{{ item[key] }}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              </div>
+                            </div>
+
+
+                            <div class="row" *ngIf="showReportTablevalue">
+                              <div class="col-md-12" >
+                            
+                              
+                            
+                                <label>Select Fields</label>
+                                <mat-accordion>
+                                  <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                      <mat-panel-title> Field Selection for: </mat-panel-title>
+                                    </mat-expansion-panel-header>
+
+                                    <div class="field-list" cdkDropList (cdkDropListDropped)="drop($event)">
+                                      <div *ngFor="let empField of employeefields" cdkDrag class="field-item" title="drag fields here">
+                                        <mat-checkbox [(ngModel)]="empField.selected" (change)="onFieldSelectionChanged($event, empField)">
+                                          {{ empField.displayName }}
+                                        </mat-checkbox>
+                                      </div>
+                                    </div>
+                                  </mat-expansion-panel> 
+                                </mat-accordion>
+
+                                <div class="row">
+
+                                  <div class="col-md-12">
+                                    <label>Date Filter:</label>
+                                    <div class="date-picker-container">
+                                      <div class="row">
+                                        <div class="col-md-6">
+                                          <div class="date-picker-item">
+                                            <label for="start-date">Start Date</label>
+                                            <mat-form-field appearance="fill">
+                                              <input matInput id="start-date" [matDatepicker]="startDatePicker" 
+                                                     (dateChange)="onStartDateChange($event)" 
+                                                     [value]="dateRange.start ? datePipe.transform(dateRange.start, 'yyyy-MM-dd') : ''" />
+                                              <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                                              <mat-datepicker #startDatePicker></mat-datepicker>
+                                            </mat-form-field>
+                                          </div>
+                                          </div>
+                                          <div class="col-md-6">
+                                            <div class="date-picker-item">
+                                              <label for="end-date">End Date</label>
+                                              <mat-form-field appearance="fill">
+                                                <input matInput id="end-date" [matDatepicker]="endDatePicker" 
+                                                       (dateChange)="onEndDateChange($event)" 
+                                                       [value]="dateRange.end ? datePipe.transform(dateRange.end, 'yyyy-MM-dd') : ''" />
+                                                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                                                <mat-datepicker #endDatePicker></mat-datepicker>
+                                              </mat-form-field>
+                                            </div>
+                                          </div>
+                                      </div>
+                                      
+                                   
+                                  
+                                  
+                                  
+                                    </div>
+                                  </div>
+                                  
+                                  </div>
+                                  
+                                
+                                <br><br>
+                                <button class="btn btn-success" (click)=" generateReportstest()">Apply Filter</button>
+                                <br><br>
+                              </div>
+                            </div>
+
+
+                      </div>
+                       
+                  
+                  </div>
+                  
+                 
+                </div>
+                
+              </div>
+              
+          
+        
+
+<!-- report-generate.component.html -->
+
+
+ <!-- Display report data dynamically -->
+
+
+
+<!-- Optional: Loading spinner or message -->
+<div *ngIf="generatingReport" class="mt-3">
+<p>Loading...</p>
+</div>
+  </div>
+
+
+              
+              
+    
+            </div>
+            </div>
+          </div>
+
+        </div>
+
+
         <div class="report-section-main">
 
           <!-- ========================================================
@@ -325,56 +557,84 @@
           <!-- ========================================================
               ADD FIELDS MODAL
           ======================================================== -->
-          <div *ngIf="isAddFieldsModalOpen" class="modal show d-block" tabindex="-1" role="dialog">
-
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-
-              <div class="modal-content">
-
-                <div class="modal-header">
-                  <h5 class="modal-title">Add More Fields</h5>
-                  <button type="button" class="close" (click)="closeAddFieldsModal()" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+     
+  <div *ngIf="isAddFieldsModalOpen" class="modal show d-block" tabindex="-1" role="dialog"> 
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add More Fields</h5>
+          <button type="button" class="close" (click)="closeAddFieldsModal()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <label>Select Additional Fields</label>
+          <mat-accordion>
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Additional Fields </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div class="field-list" cdkDropList (cdkDropListDropped)="drop($event)">
+                <div *ngFor="let empField of employeefields" cdkDrag class="field-item">
+                  <label class="field-label">
+                    <input type="checkbox" [checked]="empField.selected" (change)="onFieldSelectionChanges($event, empField)">
+                    {{ empField.displayName }}
+                  </label>
                 </div>
-
-                <div class="modal-body">
-
-                  <label>Select Additional Fields</label>
-
-                  <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-success" (click)="applyAdditionalFields()">Add Default Field</button>
-                  </div>
-
-                  <br>
-
-                  <mat-accordion>
-                    <mat-expansion-panel>
-                      <mat-expansion-panel-header>
-                        <mat-panel-title> Additional Fields </mat-panel-title>
-                      </mat-expansion-panel-header>
-
-                      <div class="field-list" cdkDropList (cdkDropListDropped)="drop($event)">
-                        <div *ngFor="let empField of employeefields" cdkDrag class="field-item">
-                          <label class="field-label">
-                            <input type="checkbox" [checked]="empField.selected"
-                                   (change)="onFieldSelectionChanges($event, empField)">
-                            {{ empField.displayName }}
-                          </label>
-                        </div>
-                      </div>
-
-                    </mat-expansion-panel>
-                  </mat-accordion>
-
-                </div>
-
               </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+          <div class="row">
 
-            </div>
-
+             <div class="col-md-12">
+                                          <label>Date Filter:</label>
+                                          <div class="date-picker-container">
+                                            <div class="row">
+                                              <div class="col-md-6">
+                                                <div class="date-picker-item">
+                                                  <label for="start-date">Start Date</label>
+                                                  <mat-form-field appearance="fill">
+                                                    <input matInput id="start-date" [matDatepicker]="startDatePicker" 
+                                                           (dateChange)="onStartDateChange($event)" 
+                                                           [value]="dateRange.start ? datePipe.transform(dateRange.start, 'yyyy-MM-dd') : ''" />
+                                                    <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                                                    <mat-datepicker #startDatePicker></mat-datepicker>
+                                                  </mat-form-field>
+                                                </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                  <div class="date-picker-item">
+                                                    <label for="end-date">End Date</label>
+                                                    <mat-form-field appearance="fill">
+                                                      <input matInput id="end-date" [matDatepicker]="endDatePicker" 
+                                                             (dateChange)="onEndDateChange($event)" 
+                                                             [value]="dateRange.end ? datePipe.transform(dateRange.end, 'yyyy-MM-dd') : ''" />
+                                                      <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                                                      <mat-datepicker #endDatePicker></mat-datepicker>
+                                                    </mat-form-field>
+                                                  </div>
+                                                </div>
+                                            </div>
+                                            
+                                         
+                                        
+                                        
+                                        
+                                          </div>
+                                        </div>
+          
           </div>
-
+          
+          <div class="d-flex justify-content-end mt-3">
+            <button class="btn btn-success" (click)="applyAdditionalFields()">Add Default Field</button>
+          </div>
+     
+       
+        </div>
+      </div>
+    </div>
+  </div>
+  
           <!-- ========================================================
               CUSTOM SAVED FILE LIST + FILTER SECTION
           ======================================================== -->
@@ -580,7 +840,60 @@
 
           
         
+<div *ngIf="iscreateFieldmodel" class="modal">
+  <div class="modal-content">
+    <div class="row">
+      <div class="col-md-10">
+        <h2> Create New Selected Fields File</h2>
+      </div>
+      <div class="col-md-2">
+        <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+      </div>
+    </div>
+    <hr />
+
+
+    <div class="row">
+      <div class="col-md-6">
+        <label>File Name</label>
+        <input type="text" class="form-control" [(ngModel)]="fileName" placeholder="Enter file name">
+      </div>
+    
+      <div class="col-md-6">
+        <label>Select Fields</label>
+        <div class="dropdown">
+          <mat-accordion>
+            <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Field Selection</mat-panel-title>
+              </mat-expansion-panel-header>
           
+              <div class="field-list" cdkDropList (cdkDropListDropped)="drop($event)">
+                <div *ngFor="let empField of employeefields" cdkDrag class="field-item">
+                  <label class="field-label">
+                    <input type="checkbox" [checked]="empField.selected" (change)="onFieldSelectionChanges($event, empField)">
+                    {{ empField.displayName }}
+                  </label>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+          
+        
+        </div>
+      </div>
+    
+      <div class="col-md-10"></div>
+      <div class="col-md-2">
+        <button class="btn btn-success btn-full mt-4" (click)="generateReport()"  *ngIf="hasAddPermission">Save</button>
+      </div>
+    </div>
+    
+
+  
+  </div>
+</div>
+
           
   
   

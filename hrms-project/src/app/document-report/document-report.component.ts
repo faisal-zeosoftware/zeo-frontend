@@ -2002,6 +2002,23 @@ openReportDialog(reportId: number | null, uniqueValues: any): void {
     this.showTableForReportId = null;
     this.tableData = []; // Clear table data when hiding the table
   }
+
+  iscreateFieldmodel: boolean = false;
+
+
+
+
+  openPopus():void{
+    this.iscreateFieldmodel = true;
+
+  }
+
+    closeapplicationModal():void{
+        this.iscreateFieldmodel = false;
+
+      }
+
+
  
   
 }
