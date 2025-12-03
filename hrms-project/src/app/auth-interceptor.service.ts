@@ -32,6 +32,9 @@ export class AuthInterceptor implements HttpInterceptor {
           error.error?.code === 'token_not_valid'
         ) {
           this.authService.logout();
+          this.authService.clearTokens();  // <-- important
+
+
         }
 
         return throwError(() => error);

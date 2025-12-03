@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthenticationService } from './login/authentication.service';
 
 @Component({
   selector: 'app-root',
@@ -7,6 +8,21 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'hrms-project';
+
+
+  constructor(private auth: AuthenticationService) {}
+
+ngOnInit() {
+  if (this.auth.isTokenExpired()) {
+    this.auth.logout(); // auto remove expired tokens on page refresh
+  }
+}
+
+
+
+
+
+
   onsubmit() {
     // Add the logic you want to execute when the form is submitted
   }
