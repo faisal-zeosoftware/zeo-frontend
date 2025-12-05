@@ -79,8 +79,8 @@ schemas: string[] = []; // Array to store schema names
       this.LoadUsers(selectedSchema);
       this.LoadLeaveApprovalLevel(selectedSchema);
 
-      this.LoadDocType(selectedSchema);
-      this.LoadEmployee(selectedSchema);
+      this.LoadDocType();
+      this.LoadEmployee();
       this.LoadDocRequest(selectedSchema);
 
       
@@ -239,11 +239,17 @@ schemas: string[] = []; // Array to store schema names
     }
 
     
-    LoadEmployee(selectedSchema: string) {
+    LoadEmployee(callback?: Function) {
+      
+     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
       this.leaveService.getemployeesMaster(selectedSchema).subscribe(
         (data: any) => {
           this.Employee = data;
-        
+         if (callback) callback();
           console.log('employee:', this.Employee);
         },
         (error: any) => {
@@ -251,14 +257,35 @@ schemas: string[] = []; // Array to store schema names
         }
       );
     }
+  }
+  
+    mapLoadEmpNameToId() {
+    
+  if (!this.Employee || !this.editAsset?.employee) return;
+
+  const emp = this.Employee.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
   
   
 
-    LoadDocType(selectedSchema: string) {
+    LoadDocType(callback?: Function) {
+     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
       this.leaveService.getDocRequestType(selectedSchema).subscribe(
         (data: any) => {
           this.DocType = data;
-        
+             if (callback) callback();
           console.log('DocType:', this.DocType);
         },
         (error: any) => {
@@ -266,6 +293,23 @@ schemas: string[] = []; // Array to store schema names
         }
       );
     }
+  }
+
+  mapBranchNameToId() {
+    
+  if (!this.DocType || !this.editAsset?.request_type) return;
+
+  const doc = this.DocType.find(
+    (d: any) => d.type_name === this.editAsset.request_type
+  );
+
+  if (doc) {
+    this.editAsset.request_type = doc.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.request_type);
+}
+
   
 
 
@@ -398,6 +442,9 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapBranchNameToId();
+this.mapLoadEmpNameToId();
 }
 
 closeEditModal(): void {

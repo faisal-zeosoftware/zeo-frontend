@@ -199,7 +199,7 @@
                 <select class="form-control"
                         id="request_type"
                         required
-                        [(ngModel)]="request_type"
+                        [(ngModel)]="editAsset.request_type"
                         [ngModelOptions]="{standalone: true}"
                      
                         (change)="onRequestTypeChange($event)">
@@ -214,7 +214,7 @@
   <div class="custom-sel">
     <label>Select Level</label>
     <select class="form-control"
-            [(ngModel)]="selectedLevel"
+            [(ngModel)]="editAsset.selectedLevel"
             [ngModelOptions]="{standalone: true}">
       <option value="">Select Level</option>
       <option *ngFor="let lvl of EscalationLevels" [ngValue]="lvl">
@@ -311,8 +311,8 @@
         <th>Approver</th>
         <th>Escalater Name</th>
         <th>Escalate After Days</th>
-         <th>Escalate After Hour</th>
-                  <th>Escalate After Minitus</th>
+        <th>Escalate After Hour</th>
+        <th>Escalate After Minitus</th>
 
 
         <th>Action</th>

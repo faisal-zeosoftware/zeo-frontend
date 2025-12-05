@@ -159,7 +159,7 @@
   <label>Employee</label>
   <div class="custom-sel">
 
-      <select class="form-control" id="employee_override" required [(ngModel)]="editoverride.employee_override"   [ngModelOptions]="{standalone: true}" >
+      <select class="form-control" id="employee_override" required [(ngModel)]="editoverride.employee"   [ngModelOptions]="{standalone: true}" >
           <option value="" >Select</option>
           <option *ngFor="let emp of Employee" [value]="emp.id">
             {{ emp.emp_first_name }}   {{ emp.emp_last_name }}  </option>

@@ -80,7 +80,7 @@
          <div class="col-md-6">
             <div class="custom-sel">
               <label>Country</label>
-              <select class="form-control" id="country" required [(ngModel)]="br_country" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}">
+              <select class="form-control" id="country" required [(ngModel)]="Emp.br_country" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}">
                 <option value="">Select</option>
                 <option *ngFor="let country of countries" [value]="country.id">{{ country.country_name }}</option>
               </select>

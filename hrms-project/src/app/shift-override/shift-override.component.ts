@@ -410,6 +410,11 @@ editoverride: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
   this.editoverride = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+
+    this.mapEmpNameToId();
+
+  
 }
 
 closeEditModal(): void {
@@ -430,7 +435,8 @@ updateOverrideType(): void {
       alert('Shift override  updated successfully!');
       this.closeEditModal();
       this.loadShiftsOverride(); // reload updated list
-      window.location.reload();
+      this.loadEmployee();
+      // window.location.reload();
     },
 (error) => {
   console.error('Error updating asset:', error);
@@ -498,7 +504,7 @@ deleteSelectedShiftOverride() {
   Employee: any[] = [];
 
 
-       loadEmployee(): void {
+       loadEmployee(callback?: Function): void {
       
                 const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
               
@@ -509,6 +515,7 @@ deleteSelectedShiftOverride() {
                     (result: any) => {
                       this.Employee = result;
                       console.log(' fetching Employees:');
+                       if (callback) callback();
               
                     },
                     (error) => {
@@ -517,6 +524,20 @@ deleteSelectedShiftOverride() {
                   );
                 }
                 }
+
+     mapEmpNameToId() {
+  if (!this.Employee || !this.editoverride?.employee) return;
+
+  const shif = this.Employee.find(
+    (s: any) => s.emp_first_name === this.editoverride.employee
+  );
+
+  if (shif) {
+    this.editoverride.employee = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editoverride.employee);
+}
 
 
 

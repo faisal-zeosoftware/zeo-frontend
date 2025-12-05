@@ -259,7 +259,7 @@ CreateLoanApproverLevel(): void {
 
       // non-ess-users usermaster services
 
-      loadUsers(): void {
+      loadUsers(callback?: Function): void {
     
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
@@ -270,6 +270,7 @@ CreateLoanApproverLevel(): void {
       (result: any) => {
         this.Users = result;
         console.log(' fetching Companies:');
+            if (callback) callback();
 
       },
       (error) => {
@@ -278,6 +279,22 @@ CreateLoanApproverLevel(): void {
     );
   }
   }
+
+     mapUsersNameToId() {
+
+  if (!this.Users || !this.editAsset?.approver) return;
+
+  const emp = this.Users.find(
+    (e: any) => e.username === this.editAsset.approver
+  );
+
+  if (emp) {
+    this.editAsset.approver = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approver);
+}
+    
 
 
 
@@ -337,6 +354,8 @@ CreateLoanApproverLevel(): void {
   openEditModal(asset: any): void {
     this.editAsset = { ...asset }; // copy asset data
     this.isEditModalOpen = true;
+
+    this.mapUsersNameToId();
   }
 
   closeEditModal(): void {

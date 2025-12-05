@@ -234,7 +234,7 @@ ngOnInit(): void {
   }
   
 
-  loadDeparmentBranch(): void {
+  loadDeparmentBranch(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
@@ -245,6 +245,7 @@ ngOnInit(): void {
         (result: any) => {
           this.branches = result;
           console.log(' fetching Companies:');
+             if (callback) callback();
   
         },
         (error) => {
@@ -253,6 +254,22 @@ ngOnInit(): void {
       );
     }
     }
+
+  mapBranchNameToId() {
+    
+  if (!this.branches || !this.editAsset?.branch_id) return;
+
+  const bra = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch_id
+  );
+
+  if (bra) {
+    this.editAsset.branch_id = bra.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch_id);
+}
+
 
 
     
@@ -475,6 +492,8 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapBranchNameToId();
 }
 
 closeEditModal(): void {

@@ -75,8 +75,8 @@ export class NotificationSettingsComponent {
       if (selectedSchema) {
 
 
-      this.LoadUsers(selectedSchema);
-      this.LoadBeanch(selectedSchema);
+      this.LoadUsers();
+      this.LoadBeanch();
 
 
       
@@ -246,11 +246,16 @@ if (this.userId !== null) {
     
    
     
-      LoadUsers(selectedSchema: string) {
+      LoadUsers(callback?: Function) {
+            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      
+        console.log('schemastore',selectedSchema )
+        // Check if selectedSchema is available
+        if (selectedSchema) {
         this.leaveService.getApproverUsers(selectedSchema).subscribe(
           (data: any) => {
             this.Users = data;
-          
+               if (callback) callback();
             console.log('employee:', this.LeaveTypes);
           },
           (error: any) => {
@@ -258,20 +263,82 @@ if (this.userId !== null) {
           }
         );
       }
+    }
+
+mapUsersNameToId() {
+
+  if (!this.Users || !this.editAsset?.notify_users) return;
+
+  let values = this.editAsset.notify_users;
+
+  // --- Case A: Already an array of IDs ---
+  if (Array.isArray(values) && typeof values[0] === 'number') {
+    return;
+  }
+
+  // --- Case B: Convert comma string → array ---
+  if (typeof values === "string") {
+    values = values.split(",").map((x: string) => x.trim());
+  }
+
+  // --- Case C: Ensure it's array ---
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  // Map each name → ID
+  const mappedIds = values
+    .map((name: string) => {
+      const user = this.Users.find(
+        (u: any) => u.username?.trim() === name?.trim()
+      );
+      return user ? user.id : null;
+    })
+    .filter((id: any) => id !== null);
+
+  this.editAsset.notify_users = mappedIds;
+
+  console.log("Mapped notify_users:", this.editAsset.notify_users);
+}
+ 
 
 
-      LoadBeanch(selectedSchema: string) {
+      LoadBeanch(callback?: Function) {
+          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      
+        console.log('schemastore',selectedSchema )
+        // Check if selectedSchema is available
+        if (selectedSchema) {
         this.leaveService.getBranches(selectedSchema).subscribe(
           (data: any) => {
             this.Branches = data;
           
             console.log('employee:', this.Branches);
+              if (callback) callback();
+  
           },
           (error: any) => {
             console.error('Error fetching categories:', error);
           }
         );
       }
+    }
+
+       mapBranchNameToId() {
+
+  if (!this.Branches || !this.editAsset?.branch) return;
+
+  const bra = this.Branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (bra) {
+    this.editAsset.branch = bra.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
+}
+    
 
 
 
@@ -483,6 +550,18 @@ deleteSelectedDocNotify() {
       openEditModal(asset: any): void {
       this.editAsset = { ...asset }; // copy asset data
       this.isEditModalOpen = true;
+
+
+   this.LoadUsers(() => {
+
+    this.mapUsersNameToId();
+   });
+
+
+
+
+
+      this.mapBranchNameToId();
       }
       
       closeEditModal(): void {

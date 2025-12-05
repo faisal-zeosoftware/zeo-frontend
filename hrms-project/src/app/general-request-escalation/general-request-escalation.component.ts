@@ -274,6 +274,10 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+
+this.mapReqTypeNameToId();
+this.mapUsersNameToId();
 }
 
 closeEditModal(): void {
@@ -332,7 +336,7 @@ updateAssetType(): void {
     return;
   }
 
-  this.employeeService.updateGeneralReq(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateGeneralReqEsc(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
       alert('General Request Escalation updated successfully!');
       this.closeEditModal();
@@ -401,7 +405,7 @@ updateAssetType(): void {
   
 
 
-    loadRequestType(): void {
+    loadRequestType(callback?: Function): void {
     
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
@@ -412,6 +416,7 @@ updateAssetType(): void {
           (result: any) => {
             this.RequestType = result;
             console.log(' fetching Companies:');
+             if (callback) callback();
     
           },
           (error) => {
@@ -420,6 +425,20 @@ updateAssetType(): void {
         );
       }
       }
+
+  mapReqTypeNameToId() {
+  if (!this.RequestType || !this.editAsset?.request_type) return;
+
+  const req = this.RequestType.find(
+    (r: any) => r.name === this.editAsset.request_type
+  );
+
+  if (req) {
+    this.editAsset.request_type = req.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.request_type);
+}
 
       loadEmp(): void {
     
@@ -471,7 +490,7 @@ updateAssetType(): void {
           }
       }
 
-        loadUsers(): void {
+        loadUsers(callback?: Function): void {
     
           const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
         
@@ -482,6 +501,7 @@ updateAssetType(): void {
               (result: any) => {
                 this.Users = result;
                 console.log(' fetching Companies:');
+                 if (callback) callback();
         
               },
               (error) => {
@@ -490,6 +510,22 @@ updateAssetType(): void {
             );
           }
           }
+
+
+  mapUsersNameToId() {
+
+  if (!this.Users || !this.editAsset?.escalate_to) return;
+
+  const use = this.Users.find(
+    (u: any) => u.username === this.editAsset.escalate_to
+  );
+
+  if (use) {
+    this.editAsset.escalate_to = use.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.escalate_to);
+}
 
           registerGeneralreq() {
             if (!this.selectedLevel) {

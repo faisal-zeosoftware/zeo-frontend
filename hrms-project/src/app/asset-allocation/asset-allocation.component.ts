@@ -290,7 +290,7 @@ this.loadEmployees();
 
 
       
-          loadLAssetType(): void {
+          loadLAssetType(callback?: Function): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
@@ -301,6 +301,7 @@ this.loadEmployees();
                 (result: any) => {
                   this.AssetAllocations = result;
                   console.log(' fetching Loantypes:');
+                     if (callback) callback();
           
                 },
                 (error) => {
@@ -310,7 +311,7 @@ this.loadEmployees();
             }
             }
         
-            loadEmployees(): void {
+            loadEmployees(callback?: Function): void {
     
               const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
             
@@ -321,6 +322,7 @@ this.loadEmployees();
                   (result: any) => {
                     this.Employees = result;
                     console.log(' fetching Loantypes:');
+                         if (callback) callback();
             
                   },
                   (error) => {
@@ -329,6 +331,21 @@ this.loadEmployees();
                 );
               }
               }
+
+  mapEmployeeNameToId() {
+
+  if (!this.Employees || !this.editAsset?.employee) return;
+
+  const emp = this.Employees.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
           
 
 
@@ -388,6 +405,9 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+  this.mapLAssetNameToId();
+  this.mapEmployeeNameToId();
 }
 
 closeEditModal(): void {
@@ -407,7 +427,7 @@ updateAssetType(): void {
     (response) => {
       alert('Asset  updated successfully!');
       this.closeEditModal();
-      this.loadLAssetType(); // reload updated list
+      this.loadLAssetType(); 
     },
 (error) => {
   console.error('Error updating Asset Allocation:', error);
@@ -467,7 +487,7 @@ deleteSelectedAssetAllocation() {
   }
 }
 
-loadLAsset(): void {
+loadLAsset(callback?: Function): void {
     
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
@@ -478,6 +498,7 @@ loadLAsset(): void {
       (result: any) => {
         this.Assets = result;
         console.log(' fetching Loantypes:');
+          if (callback) callback();
 
       },
       (error) => {
@@ -486,6 +507,22 @@ loadLAsset(): void {
     );
   }
   }
+
+  mapLAssetNameToId() {
+
+  if (!this.Assets || !this.editAsset?.asset) return;
+
+  const Ass = this.Assets.find(
+    (a: any) => a.name === this.editAsset.asset
+  );
+
+  if (Ass) {
+    this.editAsset.asset = Ass.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.asset);
+}
+
 
 
   

@@ -337,7 +337,7 @@ ngOnInit(): void {
     }
 
 
-    loadShiftsPattern(): void {
+    loadShiftsPattern(callback?: Function): void {
     
         const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
@@ -348,6 +348,7 @@ ngOnInit(): void {
             (result: any) => {
               this.ShiftsPattern = result;
               console.log(' fetching Companies:');
+                if (callback) callback();
       
             },
             (error) => {
@@ -356,6 +357,111 @@ ngOnInit(): void {
           );
         }
         }
+
+  mapShiftPatternNameToId() {
+  if (!this.Shifts || !this.editAsset?.monday_shift) return;
+
+  const shif = this.Shifts.find(
+    (s: any) => s.name === this.editAsset.monday_shift
+  );
+
+  if (shif) {
+    this.editAsset.monday_shift = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.monday_shift);
+}
+
+  mapTuesdayNameToId() {
+  if (!this.Shifts || !this.editAsset?.tuesday_shift) return;
+
+  const shif = this.Shifts.find(
+    (s: any) => s.name === this.editAsset.tuesday_shift
+  );
+
+  if (shif) {
+    this.editAsset.tuesday_shift = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.tuesday_shift);
+}
+
+  mapWednesdayNameToId() {
+  if (!this.Shifts || !this.editAsset?.wednesday_shift) return;
+
+  const shif = this.Shifts.find(
+    (s: any) => s.name === this.editAsset.wednesday_shift
+  );
+
+  if (shif) {
+    this.editAsset.wednesday_shift = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.wednesday_shift);
+}
+
+  mapThursdayNameToId() {
+  if (!this.Shifts || !this.editAsset?.thursday_shift) return;
+
+  const shif = this.Shifts.find(
+    (s: any) => s.name === this.editAsset.thursday_shift
+  );
+
+  if (shif) {
+    this.editAsset.thursday_shift = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.thursday_shift);
+}
+
+  mapFridayNameToId() {
+  if (!this.Shifts || !this.editAsset?.friday_shift) return;
+
+  const shif = this.Shifts.find(
+    (s: any) => s.name === this.editAsset.friday_shift
+  );
+
+  if (shif) {
+    this.editAsset.friday_shift = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.friday_shift);
+}
+
+  mapSaturdayNameToId() {
+  if (!this.Shifts || !this.editAsset?.saturday_shift) return;
+
+  const shif = this.Shifts.find(
+    (s: any) => s.name === this.editAsset.saturday_shift
+  );
+
+  if (shif) {
+    this.editAsset.saturday_shift = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.saturday_shift);
+}
+
+  mapSundayNameToId() {
+  if (!this.Shifts || !this.editAsset?.sunday_shift) return;
+
+  const shif = this.Shifts.find(
+    (s: any) => s.name === this.editAsset.sunday_shift
+  );
+
+  if (shif) {
+    this.editAsset.sunday_shift = shif.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.sunday_shift);
+}
+
+
+
+
+
+
+
 
 
 
@@ -440,6 +546,15 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+
+  this.mapShiftPatternNameToId();
+  this.mapTuesdayNameToId();
+  this.mapWednesdayNameToId();
+  this.mapThursdayNameToId();
+  this.mapFridayNameToId();
+  this.mapSaturdayNameToId();
+  this.mapSundayNameToId();
 }
 
 closeEditModal(): void {

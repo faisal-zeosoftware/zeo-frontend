@@ -220,7 +220,7 @@ CreateLoanrepayment(): void {
 
 
       
-  loadLoanTypes(): void {
+  loadLoanTypes(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
@@ -231,6 +231,7 @@ CreateLoanrepayment(): void {
         (result: any) => {
           this.LoanTypes = result;
           console.log(' fetching Loantypes:');
+            if (callback) callback();
   
         },
         (error) => {
@@ -239,6 +240,22 @@ CreateLoanrepayment(): void {
       );
     }
     }
+
+   mapLoanRepayNameToId() {
+
+  if (!this.LoanTypes || !this.editAsset?.loan) return;
+
+  const lon = this.LoanTypes.find(
+    (l: any) => l.loan_type === this.editAsset.loan
+  );
+
+  if (lon) {
+    this.editAsset.loan = lon.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.loan);
+}
+    
 
 
 
@@ -322,6 +339,9 @@ editAsset: any = {};
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapLoanRepayNameToId();
+
 }
 
 closeEditModal(): void {

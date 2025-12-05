@@ -70,9 +70,9 @@ schemas: string[] = []; // Array to store schema names
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
-        this.LoadBranch(selectedSchema);
+        this.LoadBranch();
 
-        this.LoadLeavetype(selectedSchema);
+        
       // this.LoadUsers(selectedSchema);
 
          this.loadUsers();
@@ -82,6 +82,8 @@ schemas: string[] = []; // Array to store schema names
 
       
       }
+
+      this.LoadLeavetype();
 
       this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
@@ -241,32 +243,93 @@ if (this.userId !== null) {
 
 
   
-  LoadBranch(selectedSchema: string) {
+  LoadBranch(callback?: Function) {
+
+       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    
+      console.log('schemastore',selectedSchema )
+      // Check if selectedSchema is available
+      if (selectedSchema) {
     this.leaveService.getBranches(selectedSchema).subscribe(
       (data: any) => {
         this.Branches = data;
       
         console.log('employee:', this.Branches);
+        if (callback) callback();
       },
       (error: any) => {
         console.error('Error fetching categories:', error);
       }
     );
   }
+}
+
+ 
+mapBranchesNameToId() {
+  if (!this.Branches || !this.editAsset?.branch) return;
+
+  // Case A: backend returns single ID
+  if (typeof this.editAsset.branch === 'number') {
+    this.editAsset.branch = [this.editAsset.branch];
+    return;
+  }
+
+  // Case B: backend returns single NAME
+  if (typeof this.editAsset.branch === 'string') {
+    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
+    this.editAsset.branch = found ? [found.id] : [];
+    return;
+  }
+
+  // Case C: backend returns an array of names
+  if (Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = this.Branches
+      .filter(b => this.editAsset.branch.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log("Mapped branch IDs:", this.editAsset.branch);
+}
+
+
   
 
-    LoadLeavetype(selectedSchema: string) {
+    LoadLeavetype(callback?: Function) {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    
+      console.log('schemastore',selectedSchema )
+      // Check if selectedSchema is available
+      if (selectedSchema) {
       this.leaveService.getLeaveType(selectedSchema).subscribe(
         (data: any) => {
           this.LeaveTypes = data;
-        
           console.log('employee:', this.LeaveTypes);
+            if (callback) callback();
+
         },
         (error: any) => {
           console.error('Error fetching categories:', error);
         }
       );
     }
+  }
+
+  mapLeaveTypeNameToId() {
+
+  if (!this.LeaveTypes || !this.editAsset?.request_type) return;
+
+  const lv = this.LeaveTypes.find(
+    (l: any) => l.name === this.editAsset.request_type
+  );
+
+  if (lv) {
+    this.editAsset.request_type = lv.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.request_type);
+}
+
   
   
 
@@ -300,7 +363,7 @@ if (this.userId !== null) {
 
     // non-ess-users usermaster services
 
-      loadUsers(): void {
+    loadUsers(callback?: Function): void {
     
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
@@ -311,6 +374,7 @@ if (this.userId !== null) {
       (result: any) => {
         this.Users = result;
         console.log(' fetching Companies:');
+         if (callback) callback();
 
       },
       (error) => {
@@ -319,6 +383,23 @@ if (this.userId !== null) {
     );
   }
   }
+
+  
+  mapApproverNameToId() {
+
+  if (!this.Users || !this.editAsset?.approver) return;
+
+  const use = this.Users.find(
+    (u: any) => u.username === this.editAsset.approver
+  );
+
+  if (use) {
+    this.editAsset.approver = use.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approver);
+}
+
   
 
 
@@ -430,6 +511,16 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+  // Load branches first, then convert names → ids
+  this.LoadBranch(() => {
+    this.mapBranchesNameToId();
+  });
+
+this.mapLeaveTypeNameToId();
+this.mapApproverNameToId();
+
+
 }
 
 closeEditModal(): void {

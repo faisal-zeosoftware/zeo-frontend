@@ -299,7 +299,7 @@ if (this.userId !== null) {
 
     // non-ess-users usermaster services
 
-      loadUsers(): void {
+      loadUsers(callback?: Function): void {
     
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
@@ -310,6 +310,7 @@ if (this.userId !== null) {
       (result: any) => {
         this.Users = result;
         console.log(' fetching Companies:');
+         if (callback) callback();
 
       },
       (error) => {
@@ -318,6 +319,22 @@ if (this.userId !== null) {
     );
   }
   }
+
+    mapBranchNameToId() {
+    
+  if (!this.Users || !this.editAsset?.approver) return;
+
+  const use = this.Users.find(
+    (u: any) => u.username === this.editAsset.approver
+  );
+
+  if (use) {
+    this.editAsset.approver = use.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approver);
+}
+
   
 
     LoadDocType(selectedSchema: string) {

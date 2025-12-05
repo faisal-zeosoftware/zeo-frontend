@@ -293,7 +293,7 @@ this.loadLAssetRequest();
 
 
       
-          loadLAssetType(): void {
+          loadLAssetType(callback?: Function): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
@@ -304,6 +304,7 @@ this.loadLAssetRequest();
                 (result: any) => {
                   this.AssetTypes = result;
                   console.log(' fetching Loantypes:');
+                   if (callback) callback();
           
                 },
                 (error) => {
@@ -312,6 +313,23 @@ this.loadLAssetRequest();
               );
             }
             }
+
+            
+   mapLAssetNameToId() {
+
+  if (!this.AssetTypes || !this.editAsset?.asset_type) return;
+
+  const as = this.AssetTypes.find(
+    (a: any) => a.name === this.editAsset.asset_type
+  );
+
+  if (as) {
+    this.editAsset.asset_type = as.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.asset_type);
+}
+
         
             loadEmployees(): void {
     
@@ -394,6 +412,9 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+  this.mapLAssetNameToId();
+  this.mapAssetreqNameToId();
 }
 
 closeEditModal(): void {
@@ -494,7 +515,7 @@ loadLAsset(): void {
   }
   }
 
-  loadLAssetRequest(): void {
+  loadLAssetRequest(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
@@ -505,6 +526,7 @@ loadLAsset(): void {
         (result: any) => {
           this.AssetsRequest = result;
           console.log(' fetching Loantypes:');
+          if (callback) callback();
   
         },
         (error) => {
@@ -513,6 +535,21 @@ loadLAsset(): void {
       );
     }
     }
+
+  mapAssetreqNameToId() {
+
+  if (!this.Assets || !this.editAsset?.requested_asset) return;
+
+  const as = this.Assets.find(
+    (a: any) => a.name === this.editAsset.requested_asset
+  );
+
+  if (as) {
+    this.editAsset.requested_asset = as.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.requested_asset);
+}
   
 
 

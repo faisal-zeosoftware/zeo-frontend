@@ -81,8 +81,8 @@ export class LeaveRequestComponent {
 
 
       // this.LoadLeavetype(selectedSchema);
-      this.LoadEmployee(selectedSchema);
-      this.LoadUsers(selectedSchema);
+      this.LoadEmployee();
+      this.LoadUsers();
       this.LoadLeaveRequest(selectedSchema);
 
 
@@ -338,32 +338,77 @@ requestLeave(): void {
   }
 
 
-  LoadEmployee(selectedSchema: string) {
+  LoadEmployee(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
     this.leaveService.getemployeesMaster(selectedSchema).subscribe(
       (data: any) => {
         this.Employees = data;
 
         console.log('employee:', this.Employees);
+         if (callback) callback();
       },
       (error: any) => {
         console.error('Error fetching categories:', error);
       }
     );
   }
+}
+
+  mapEmpNameToId() {
+
+  if (!this.Employees || !this.editAsset?.selectedEmployee) return;
+
+  const emp = this.Employees.find(
+    (e: any) => e.emp_code === this.editAsset.selectedEmployee
+  );
+
+  if (emp) {
+    this.editAsset.selectedEmployee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.selectedEmployee);
+}
+  
 
 
-  LoadUsers(selectedSchema: string) {
+  LoadUsers(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
     this.leaveService.getUsers(selectedSchema).subscribe(
       (data: any) => {
         this.Users = data;
 
         console.log('employee:', this.LeaveTypes);
+        if (callback) callback();
       },
       (error: any) => {
         console.error('Error fetching categories:', error);
       }
     );
   }
+}
+
+    mapLeaveTypeNameToId() {
+
+  if (!this.LeaveTypes || !this.editAsset?.leave_type) return;
+
+  const lv = this.LeaveTypes.find(
+    (l: any) => l.name === this.editAsset.leave_type
+  );
+
+  if (lv) {
+    this.editAsset.leave_type = lv.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.leave_type);
+}
 
 
   LoadLeaveRequest(selectedSchema: string) {
@@ -434,6 +479,8 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapEmpNameToId();
 }
 
 closeEditModal(): void {

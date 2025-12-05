@@ -307,7 +307,7 @@ if (this.userId !== null) {
     }
 
 
-    LoadBranches() {
+    LoadBranches(callback?: Function) {
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
       console.log('schemastore',selectedSchema )
@@ -317,6 +317,7 @@ if (this.userId !== null) {
           (result: any) => {
             this.Branches = result;
             console.log(' fetching Employees:');
+              if (callback) callback();
     
           },
           (error) => {
@@ -327,8 +328,24 @@ if (this.userId !== null) {
   
     }
 
+      mapBranchNameToId() {
+    
+  if (!this.Branches || !this.editAsset?.branch) return;
 
-    LoadDepts() {
+  const bra = this.Branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (bra) {
+    this.editAsset.branch = bra.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
+}
+
+
+
+    LoadDepts(callback?: Function) {
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
       console.log('schemastore',selectedSchema )
@@ -338,6 +355,7 @@ if (this.userId !== null) {
           (result: any) => {
             this.Depts = result;
             console.log(' fetching Depts:');
+              if (callback) callback();
     
           },
           (error) => {
@@ -347,7 +365,25 @@ if (this.userId !== null) {
       }
   
     }
-    LoadCats() {
+
+  mapDeptNameToId() {
+    
+  if (!this.Depts || !this.editAsset?.department) return;
+
+  const bra = this.Depts.find(
+    (b: any) => b.dept_name === this.editAsset.department
+  );
+
+  if (bra) {
+    this.editAsset.department = bra.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.department);
+}
+
+
+
+    LoadCats(callback?: Function) {
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
       console.log('schemastore',selectedSchema )
@@ -357,6 +393,7 @@ if (this.userId !== null) {
           (result: any) => {
             this.Cats = result;
             console.log(' fetching Cats:');
+              if (callback) callback();
     
           },
           (error) => {
@@ -366,6 +403,21 @@ if (this.userId !== null) {
       }
   
     }
+
+      mapCatsNameToId() {
+    
+  if (!this.Cats || !this.editAsset?.category) return;
+
+  const cat = this.Cats.find(
+    (c: any) => c.ctgry_title === this.editAsset.category
+  );
+
+  if (cat) {
+    this.editAsset.category = cat.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.category);
+}
 
 
 
@@ -427,6 +479,10 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapBranchNameToId();
+this.mapDeptNameToId();
+this.mapCatsNameToId();
 }
 
 closeEditModal(): void {

@@ -66,12 +66,13 @@ export class EmployeeOvertimeComponent {
 
   ngOnInit(): void {
     this.LoadEmployee();
+    this.LoadUsers();
     const selectedSchema = this.authService.getSelectedSchema();
     if (selectedSchema) {
 
 
       this.LoadLeavetype(selectedSchema);
-      this.LoadUsers(selectedSchema);
+      this.LoadUsers();
 
       this.LoadLeavebalance(selectedSchema);
 
@@ -227,7 +228,7 @@ export class EmployeeOvertimeComponent {
 
 
 
-  LoadEmployee() {
+  LoadEmployee(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
     console.log('schemastore', selectedSchema)
@@ -237,6 +238,7 @@ export class EmployeeOvertimeComponent {
         (result: any) => {
           this.Employees = result;
           console.log(' fetching Employees:');
+             if (callback) callback();
 
         },
         (error) => {
@@ -247,22 +249,60 @@ export class EmployeeOvertimeComponent {
 
   }
 
+  mapEmployeeNameToId() {
+  if (!this.Employees || !this.editAsset?.employee) return;
+
+  const emp = this.Employees.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
 
 
 
 
-  LoadUsers(selectedSchema: string) {
+
+  LoadUsers(callback?: Function) {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
     this.leaveService.getApproverUsers(selectedSchema).subscribe(
       (data: any) => {
         this.Users = data;
 
         console.log('employee:', this.LeaveTypes);
+             if (callback) callback();
       },
       (error: any) => {
         console.error('Error fetching categories:', error);
       }
     );
   }
+}
+
+  mapUsersNameToId() {
+    
+  if (!this.Users || !this.editAsset?.approved_by) return;
+
+  const use = this.Users.find(
+    (u: any) => u.username === this.editAsset.approved_by
+  );
+
+  if (use) {
+    this.editAsset.approved_by = use.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approved_by);
+}
+
 
 
 
@@ -394,6 +434,9 @@ export class EmployeeOvertimeComponent {
   openEditModal(asset: any): void {
     this.editAsset = { ...asset }; // copy asset data
     this.isEditModalOpen = true;
+
+    this.mapEmployeeNameToId();
+    this.mapUsersNameToId();
   }
 
   closeEditModal(): void {

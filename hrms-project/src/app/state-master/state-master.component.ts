@@ -272,7 +272,7 @@ this.authService.getUserSchema(this.userId).subscribe(
     
 
 
-  loadDeparmentBranch(): void {
+  loadDeparmentBranch(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
     console.log('schemastore',selectedSchema )
@@ -282,6 +282,7 @@ this.authService.getUserSchema(this.userId).subscribe(
     this.countryService.getCountriesList(selectedSchema).subscribe(
       (result: any) => {
         this.Countries = result;
+         if (callback) callback();
       },
       (error: any) => {
         console.error('Error fetching countries:', error);
@@ -289,6 +290,20 @@ this.authService.getUserSchema(this.userId).subscribe(
     );
     }
   }
+
+   mapDeptBranchNameToId() {
+  if (!this.Countries || !this.editAsset?.country) return;
+
+  const count = this.Countries.find(
+    (c: any) => c.country_name === this.editAsset.country
+  );
+
+  if (count) {
+    this.editAsset.country = count.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.country);
+}
 
   
   iscreateLoanApp: boolean = false;
@@ -346,6 +361,8 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapDeptBranchNameToId();
 }
 
 closeEditModal(): void {

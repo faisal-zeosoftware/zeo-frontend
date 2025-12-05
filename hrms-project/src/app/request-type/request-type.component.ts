@@ -81,7 +81,7 @@ ngOnInit(): void {
 
   const selectedSchema = this.authService.getSelectedSchema();
   if (selectedSchema) {
-    this.LoadSalaryCom(selectedSchema);
+    this.LoadSalaryCom();
 
   }
   this.userId = this.sessionService.getUserId();
@@ -351,18 +351,39 @@ registerGeneralreq(): void {
 
 
 
-          LoadSalaryCom(selectedSchema: string) {
+          LoadSalaryCom(callback?: Function) {
+             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          
+            console.log('schemastore',selectedSchema )
+            // Check if selectedSchema is available
+            if (selectedSchema) {
             this.leaveService.getSalaryCom(selectedSchema).subscribe(
               (data: any) => {
                 this.Salarycomponent = data;
               
                 console.log('employee:', this.Salarycomponent);
+                    if (callback) callback();
               },
               (error: any) => {
                 console.error('Error fetching categories:', error);
               }
             );
           }
+          }
+
+  mapSalaryComNameToId() {
+  if (!this.Salarycomponent || !this.editAsset?.salary_component) return;
+
+  const sal = this.Salarycomponent.find(
+    (s: any) => s.name === this.editAsset.salary_component
+  );
+
+  if (sal) {
+    this.editAsset.salary_component = sal.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.salary_component);
+}
 
 
 
@@ -419,7 +440,15 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+// Map employee name → ID
+this.mapSalaryComNameToId();
+
 }
+
+
+
+
 
 closeEditModal(): void {
 this.isEditModalOpen = false;

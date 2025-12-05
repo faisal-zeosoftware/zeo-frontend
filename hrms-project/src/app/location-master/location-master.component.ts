@@ -15,7 +15,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 })
 export class LocationMasterComponent {
 
-    @ViewChild('logoInput') logoInput!: ElementRef;
+   @ViewChild('logoInput') logoInput!: ElementRef;
 
 
   registerButtonClicked = false;
@@ -370,7 +370,11 @@ closeEditModal(): void {
 
 
 updateLocations(): void {
+
+  this.registerButtonClicked = true;
+
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema || !this.editAsset.id) {
     alert('Missing schema or asset ID');
     return;
@@ -383,9 +387,9 @@ updateLocations(): void {
   formData.append('name', this.editAsset.name);
   formData.append('country', this.editAsset.country);
 
-  // Append file if present
-  if (this.logo) {
-    formData.append('logo', this.logo);
+  // Append file ONLY if new file is selected
+  if (this.selectedLogoFile) {
+    formData.append('logo', this.selectedLogoFile);
   }
 
   this.employeeService.updateLC(this.editAsset.id, formData).subscribe(
@@ -394,25 +398,21 @@ updateLocations(): void {
       this.closeEditModal();
       window.location.reload();
     },
-(error) => {
-  console.error('Error updating Location:', error);
+    (error) => {
+      console.error('Error updating Location:', error);
 
-  let errorMsg = 'Update failed';
+      let errorMsg = 'Update failed';
 
-  const backendError = error?.error;
+      if (error?.error && typeof error.error === 'object') {
+        errorMsg = Object.keys(error.error)
+          .map(key => `${key}: ${error.error[key].join(', ')}`)
+          .join('\n');
+      }
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
+      alert(errorMsg);
+    }
   );
 }
-
 
 
 
@@ -472,10 +472,12 @@ updateLocations(): void {
 
 
 
-  triggerLogoInput() {
+
+
+
+triggerLogoInput() {
   this.logoInput.nativeElement.click();
 }
-
 onLogoSelected(event: any) {
   const file = event.target.files[0];
   if (file) {
@@ -484,9 +486,8 @@ onLogoSelected(event: any) {
 }
 
 getFileName(fileUrl: string): string {
-  return fileUrl.split('/').pop() || 'Existing File';
+  return fileUrl?.split('/').pop() || 'Existing File';
 }
-
 
 
 

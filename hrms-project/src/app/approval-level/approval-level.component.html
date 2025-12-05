@@ -94,7 +94,7 @@
                 <label>Approver</label>
                 <select class="form-control" id="approver" required [(ngModel)]="approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
                     <option value="" >Select</option>
-                    <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
+                    <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username }} </option>
                 </select>
                 <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
             </div>
@@ -267,9 +267,11 @@
       </mat-form-field>
       
     </div>
-    <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
-      Please Select Your branch
-    </div>
+<div *ngIf="registerButtonClicked && (!editAsset.branch || editAsset.branch.length === 0)"
+     class="error-message">
+     Please Select Your Branch
+</div>
+
   </div>
             
 

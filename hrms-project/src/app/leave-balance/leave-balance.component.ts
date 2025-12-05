@@ -66,9 +66,9 @@ export class LeaveBalanceComponent {
       if (selectedSchema) {
 
 
-        this.LoadLeavetype(selectedSchema);
+        this.LoadLeavetype();
       this.LoadUsers(selectedSchema);
-      this.LoadEmployees(selectedSchema);
+      this.LoadEmployees();
       this.LoadLeavebalance(selectedSchema);
 
 
@@ -207,33 +207,82 @@ if (this.userId !== null) {
 
 
 
-      LoadLeavetype(selectedSchema: string) {
+      LoadLeavetype(callback?: Function) {
+
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    
+       console.log('schemastore',selectedSchema )
+       // Check if selectedSchema is available
+       if (selectedSchema) {
+
         this.leaveService.getLeaveType(selectedSchema).subscribe(
           (data: any) => {
             this.LeaveTypes = data;
           
             console.log('employee:', this.LeaveTypes);
+              if (callback) callback();
           },
           (error: any) => {
             console.error('Error fetching categories:', error);
           }
         );
       }
+    }
+
+    mapLeaveTypeNameToId() {
+
+  if (!this.LeaveTypes || !this.editAsset?.leave_type) return;
+
+  const lv = this.LeaveTypes.find(
+    (l: any) => l.name === this.editAsset.leave_type
+  );
+
+  if (lv) {
+    this.editAsset.leave_type = lv.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.leave_type);
+}
+
     
 
       
-      LoadEmployees(selectedSchema: string) {
+      LoadEmployees(callback?: Function) {
+
+          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    
+       console.log('schemastore',selectedSchema )
+       // Check if selectedSchema is available
+       if (selectedSchema) {
+
         this.leaveService.getemployeesMaster(selectedSchema).subscribe(
           (data: any) => {
             this.Employees = data;
           
             console.log('employee:', this.Employees);
+             if (callback) callback();
           },
           (error: any) => {
             console.error('Error fetching Employees:', error);
           }
         );
       }
+    }
+
+   mapLoadEmployeeNameToId() {
+
+  if (!this.Employees || !this.editAsset?.employee) return;
+
+  const emp = this.Employees.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
     
     
     
@@ -406,6 +455,9 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapLeaveTypeNameToId();
+this.mapLoadEmployeeNameToId();
 }
 
 closeEditModal(): void {

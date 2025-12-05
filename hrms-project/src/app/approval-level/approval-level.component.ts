@@ -71,14 +71,11 @@ schemas: string[] = []; // Array to store schema names
 ngOnInit(): void {
 
   const selectedSchema = this.authService.getSelectedSchema();
-  if (selectedSchema) {
-    this.LoadBranch(selectedSchema);
 
-  }
- 
   this.loadUsers();
   this.loadRequestType();
   this.loadApprovalLevelGen();
+  this.LoadBranch();
 
   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
@@ -204,7 +201,7 @@ ngOnInit(): void {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
   
-loadUsers(): void {
+loadUsers(callback?: Function): void {
     
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
@@ -215,6 +212,7 @@ loadUsers(): void {
       (result: any) => {
         this.Users = result;
         console.log(' fetching Companies:');
+        if (callback) callback();
 
       },
       (error) => {
@@ -224,7 +222,21 @@ loadUsers(): void {
   }
   }
 
-  loadRequestType(): void {
+    mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.approver) return;
+
+  const apr = this.Users.find(
+    (a: any) => a.username === this.editAsset.approver
+  );
+
+  if (apr) {
+    this.editAsset.approver = apr.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approver);
+}
+
+  loadRequestType(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
@@ -235,6 +247,7 @@ loadUsers(): void {
         (result: any) => {
           this.RequestType = result;
           console.log(' fetching Companies:');
+           if (callback) callback();
   
         },
         (error) => {
@@ -243,6 +256,21 @@ loadUsers(): void {
       );
     }
     }
+
+
+   mapReqTypeNameToId() {
+  if (!this.RequestType || !this.editAsset?.request_type) return;
+
+  const req = this.RequestType.find(
+    (r: any) => r.name === this.editAsset.request_type
+  );
+
+  if (req) {
+    this.editAsset.request_type = req.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.request_type);
+}
 
 
   
@@ -336,18 +364,50 @@ registerApproveLevel(): void {
 
 
     
-    LoadBranch(selectedSchema: string) {
-      this.leaveService.getBranches(selectedSchema).subscribe(
-        (data: any) => {
-          this.Branches = data;
-        
-          console.log('employee:', this.Branches);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
+LoadBranch(callback?: Function) {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.leaveService.getBranches(selectedSchema).subscribe(
+      (data: any) => {
+        this.Branches = data;
+
+        if (callback) callback();
+      },
+      (error: any) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
+  }
+}
+
+mapBranchesNameToId() {
+  if (!this.Branches || !this.editAsset?.branch) return;
+
+  // Case A: backend returns single ID
+  if (typeof this.editAsset.branch === 'number') {
+    this.editAsset.branch = [this.editAsset.branch];
+    return;
+  }
+
+  // Case B: backend returns single NAME
+  if (typeof this.editAsset.branch === 'string') {
+    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
+    this.editAsset.branch = found ? [found.id] : [];
+    return;
+  }
+
+  // Case C: backend returns an array of names
+  if (Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = this.Branches
+      .filter(b => this.editAsset.branch.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log("Mapped branch IDs:", this.editAsset.branch);
+}
+
+
 
 
 
@@ -401,8 +461,16 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = { ...asset };
+  this.isEditModalOpen = true;
+
+  // Load branches first, then convert names → ids
+  this.LoadBranch(() => {
+    this.mapBranchesNameToId();
+  });
+
+  this.mapApproverNameToId();
+  this.mapReqTypeNameToId();
 }
 
 closeEditModal(): void {

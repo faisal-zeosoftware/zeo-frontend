@@ -302,6 +302,12 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+// Map employee name → ID
+  this.mapEmployeeNameToId();
+  this.mapBranchesNameToId();
+  this.mapRequestTypeNameToId();
+
 }
 
 closeEditModal(): void {
@@ -366,6 +372,7 @@ updateAssetType(): void {
   formData.append('employee', this.editAsset.employee || '');
   formData.append('reason', this.editAsset.reason || '');
   formData.append('request_type', this.editAsset.request_type || '');
+  formData.append('branch', this.editAsset.branch || '');
 
   // Optional fields
   formData.append('document_number', this.editAsset.document_number || '');
@@ -403,7 +410,7 @@ updateAssetType(): void {
 
 
 
-  loadDeparmentBranch(): void {
+  loadDeparmentBranch(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
@@ -414,7 +421,8 @@ updateAssetType(): void {
         (result: any) => {
           this.branches = result;
           console.log(' fetching Companies:');
-  
+            if (callback) callback();
+
         },
         (error) => {
           console.error('Error fetching Companies:', error);
@@ -422,6 +430,22 @@ updateAssetType(): void {
       );
     }
     }
+
+    
+  mapBranchesNameToId() {
+  if (!this.branches || !this.editAsset?.branch) return;
+
+  const Bran = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (Bran) {
+    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
+}
+
 
     onBranchChange(event: any): void {
       const selectedBranchId = event.target.value;
@@ -445,7 +469,7 @@ updateAssetType(): void {
   
 
 
-    loadRequestType(): void {
+    loadRequestType(callback?: Function): void {
     
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
@@ -456,6 +480,8 @@ updateAssetType(): void {
           (result: any) => {
             this.RequestType = result;
             console.log(' fetching Companies:');
+
+             if (callback) callback();
     
           },
           (error) => {
@@ -465,25 +491,51 @@ updateAssetType(): void {
       }
       }
 
-      loadEmp(): void {
-    
-        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-      
-        console.log('schemastore',selectedSchema )
-        // Check if selectedSchema is available
-        if (selectedSchema) {
-          this.employeeService.getemployeesMaster(selectedSchema).subscribe(
-            (result: any) => {
-              this.employees = result;
-              console.log(' fetching Companies:');
-      
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
-        }
-        }
+  mapRequestTypeNameToId() {
+  if (!this.RequestType || !this.editAsset?.request_type) return;
+
+  const req = this.RequestType.find(
+    (r: any) => r.name === this.editAsset.request_type
+  );
+
+  if (req) {
+    this.editAsset.request_type = req.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.request_type);
+}
+
+
+loadEmp(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+      (result: any) => {
+        this.employees = result;
+        
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+}
+
+        mapEmployeeNameToId() {
+  if (!this.employees || !this.editAsset?.employee) return;
+
+  const emp = this.employees.find(
+    (e: any) => e.emp_first_name === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
 
         onEmployeeChange(event: any): void {
           const selectedEmployeeId = event.target.value;

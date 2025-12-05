@@ -590,6 +590,9 @@ updateLC(id: number, data: FormData): Observable<any> {
 }
 
 
+
+
+
 updateLoanApplication(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/payroll/api/loan-application/${id}/?schema=${selectedSchema}`;

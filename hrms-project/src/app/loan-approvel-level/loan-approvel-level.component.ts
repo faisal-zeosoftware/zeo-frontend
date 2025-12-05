@@ -230,7 +230,7 @@ CreateLoanApproverLevel(): void {
 
 
       
-  loadLoanTypes(): void {
+  loadLoanTypes(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
@@ -241,6 +241,7 @@ CreateLoanApproverLevel(): void {
         (result: any) => {
           this.LoanTypes = result;
           console.log(' fetching Loantypes:');
+            if (callback) callback();
   
         },
         (error) => {
@@ -249,6 +250,21 @@ CreateLoanApproverLevel(): void {
       );
     }
     }
+
+  mapLoanTypeNameToId() {
+
+  if (!this.LoanTypes || !this.editAsset?.loan_type) return;
+
+  const lon = this.LoanTypes.find(
+    (l: any) => l.loan_type === this.editAsset.loan_type
+  );
+
+  if (lon) {
+    this.editAsset.loan_type = lon.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.loan_type);
+}
 
 
 
@@ -275,7 +291,7 @@ CreateLoanApproverLevel(): void {
   
 
 
-      loadLoanapprover(): void {
+      loadLoanapprover(callback?: Function): void {
     
         const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
@@ -286,6 +302,7 @@ CreateLoanApproverLevel(): void {
             (result: any) => {
               this.Approvers = result;
               console.log(' fetching Loantypes:');
+              if (callback) callback();
       
             },
             (error) => {
@@ -294,6 +311,21 @@ CreateLoanApproverLevel(): void {
           );
         }
         }
+
+    mapLoanAprNameToId() {
+
+  if (!this.Approvers || !this.editAsset?.approver) return;
+
+  const apr = this.Approvers.find(
+    (l: any) => l.username === this.editAsset.approver
+  );
+
+  if (apr) {
+    this.editAsset.approver = apr.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approver);
+}
 
 
 
@@ -378,6 +410,10 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
+
+this.mapLoanAprNameToId();
+this.mapLoanTypeNameToId();
+
 }
 
 closeEditModal(): void {

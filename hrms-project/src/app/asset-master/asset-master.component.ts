@@ -310,7 +310,7 @@ this.loadFormFieldsFam();
 
 
       
-          loadLAssetType(): void {
+          loadLAssetType(callback?: Function): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
@@ -321,6 +321,7 @@ this.loadFormFieldsFam();
                 (result: any) => {
                   this.LoanTypes = result;
                   console.log(' fetching Loantypes:');
+                  if (callback) callback();
           
                 },
                 (error) => {
@@ -329,6 +330,22 @@ this.loadFormFieldsFam();
               );
             }
             }
+
+   mapLAssetNameToId() {
+
+  if (!this.LoanTypes || !this.editAsset?.asset_type) return;
+
+  const Loan = this.LoanTypes.find(
+    (l: any) => l.name === this.editAsset.asset_type
+  );
+
+  if (Loan) {
+    this.editAsset.asset_type = Loan.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.asset_type);
+}
+
         
 
 
@@ -389,6 +406,8 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+  this.mapLAssetNameToId();
 }
 
 closeEditModal(): void {

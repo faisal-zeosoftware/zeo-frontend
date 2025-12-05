@@ -260,7 +260,7 @@ this.Delete = !this.Delete;
 
 
 
-  LoadEmployees() {
+  LoadEmployees(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
     console.log('schemastore',selectedSchema )
@@ -270,6 +270,7 @@ this.Delete = !this.Delete;
         (result: any) => {
           this.Employees = result;
           console.log(' fetching Employees:');
+          if (callback) callback();
   
         },
         (error) => {
@@ -278,11 +279,26 @@ this.Delete = !this.Delete;
       );
     }
     }
+
+    mapEmployeeNameToId() {
+
+  if (!this.Employees || !this.editAsset?.employee) return;
+
+  const emp = this.Employees.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
   
 
 
       
-  loadLoanTypes(): void {
+  loadLoanTypes(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
@@ -293,6 +309,7 @@ this.Delete = !this.Delete;
         (result: any) => {
           this.LoanTypes = result;
           console.log(' fetching Loantypes:');
+                if (callback) callback();
   
         },
         (error) => {
@@ -301,6 +318,23 @@ this.Delete = !this.Delete;
       );
     }
     }
+
+    
+  mapLoanNameToId() {
+
+  if (!this.LoanTypes || !this.editAsset?.loan_type) return;
+
+  const lon = this.LoanTypes.find(
+    (l: any) => l.loan_type === this.editAsset.loan_type
+  );
+
+  if (lon) {
+    this.editAsset.loan_type = lon.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.loan_type);
+}
+  
 
 
 
@@ -346,6 +380,10 @@ editAsset: any = {}; // holds the asset being edited
       openEditModal(asset: any): void {
       this.editAsset = { ...asset }; // copy asset data
       this.isEditModalOpen = true;
+      
+      this.mapEmployeeNameToId();
+      this.mapLoanNameToId();
+
        }
 
      closeEditModal(): void {

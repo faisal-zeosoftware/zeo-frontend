@@ -172,7 +172,7 @@
          <input type="text"  class="form-control" required  [(ngModel)]="editAsset.schema_name"  placeholder="Enter Catogary Name"
           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !schema_name}">
          
-         <div *ngIf="registerButtonClicked && !schema_name" class="error-message">Company Name is required.</div>
+      
     </div>
     
     
@@ -182,7 +182,7 @@
        <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter Description "
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
        
-       <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div>
+     
     </div>
     
     <!-- <div class="col-md-6">
@@ -237,11 +237,7 @@
       class="hidden-file-input"
       (change)="onLogoSelected($event)">
   
-  <!-- Validation -->
-  <div *ngIf="registerButtonClicked && !selectedLogoFile && !editAsset?.logo" 
-       class="error-message">
-    No file was selected for the Company Logo.
-  </div>
+
 </div>
 
     </div>
