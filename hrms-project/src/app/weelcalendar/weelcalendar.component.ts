@@ -32,11 +32,45 @@ export class WeelcalendarComponent {
   saturday:any='';
   sunday:any='';
 
+  selectedWeekOff: string = 'general'; // default selected
+
+
+
 
   calendars: any[] = [];
   selectedCalendar: any;
   yearDays: any[] = [];
   months: any[] = [];
+
+  weekDays = [
+  { key: 'monday', label: 'Monday' },
+  { key: 'tuesday', label: 'Tuesday' },
+  { key: 'wednesday', label: 'Wednesday' },
+  { key: 'thursday', label: 'Thursday' },
+  { key: 'friday', label: 'Friday' },
+  { key: 'saturday', label: 'Saturday' },
+  { key: 'sunday', label: 'Sunday' }
+];
+
+weekList = [
+  { key: 'week1', name: '1st' },
+  { key: 'week2', name: '2nd' },
+  { key: 'week3', name: '3rd' },
+  { key: 'week4', name: '4th' },
+  { key: 'week5', name: '5th' }
+];
+
+// Store checkbox values
+alternativeWeekOff: any = {
+  monday:   { week1: false, week2: false, week3: false, week4: false, week5: false },
+  tuesday:  { week1: false, week2: false, week3: false, week4: false, week5: false },
+  wednesday:{ week1: false, week2: false, week3: false, week4: false, week5: false },
+  thursday: { week1: false, week2: false, week3: false, week4: false, week5: false },
+  friday:   { week1: false, week2: false, week3: false, week4: false, week5: false },
+  saturday: { week1: false, week2: false, week3: false, week4: false, week5: false },
+  sunday:   { week1: false, week2: false, week3: false, week4: false, week5: false },
+};
+
 
   isEditModalOpen = false;
   editDateDetails: any = {};
@@ -188,23 +222,9 @@ if (this.userId !== null) {
 
   }
 
-
-  
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_weekend_calendar' ||'change_weekend_calendar' ||'delete_weekend_calendar' ||'view_weekend_calendar';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
+  onWeekOffChange(event: any) {
+    this.selectedWeekOff = event.target.value;
+  }
   
   
   
@@ -213,13 +233,7 @@ if (this.userId !== null) {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
   
-  // selectCalendar(event: Event): void {
-  //   const selectedCalendarId = (event.target as HTMLSelectElement).value;
-  //   this.selectedCalendar = this.calendars.find(calendar => calendar.id == selectedCalendarId);
-  //   if (this.selectedCalendar) {
-  //     this.generateYearDays(this.selectedCalendar.year);
-  //   }
-  // }
+
 
   dayTypeDisplayNames: { [key: string]: string } = {
     'fullday': 'Full Day',
@@ -298,81 +312,62 @@ if (this.userId !== null) {
     this.isSearchVisible = !this.isSearchVisible;  // Add this method
   }
   
-  // generateYearDays(year: number): void {
-  //   this.months = [];
-  //   for (let month = 0; month < 12; month++) {
-  //     const daysInMonth = new Date(year, month + 1, 0).getDate();
-  //     const monthDays = [];
-  //     for (let day = 1; day <= daysInMonth; day++) {
-  //       const date = new Date(year, month, day);
-  //       const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-  //       monthDays.push({
-  //         date: date,
-  //         dayName: dayName,
-  //         status: this.selectedCalendar[dayName.toLowerCase()]
-  //       });
-  //     }
-  //     this.months.push({
-  //       name: new Date(year, month).toLocaleString('en-US', { month: 'long' }),
-  //       days: monthDays
-  //     });
-  //   }
-  // }
 
-
-  registerweekCalendar(): void {
-    this.registerButtonClicked = true;
-    const companyData = {
-      calander_title: this.calander_title,
-    
-      description:this.description,
-      calendar_code:this.calendar_code,
-      year:this.year,
-      monday:this.monday,
-      tuesday:this.tuesday,
-      wednesday:this.wednesday,
-      thursday:this.thursday,
-      friday:this.friday,
-      saturday:this.saturday,
-      sunday:this.sunday,
-
-   
-
-      // Add other form field values to the companyData object
-    };
+  convertToAlternateWeekendFormat(weeksObj: any) {
+    const result: any = {};
+  
+    for (const day in weeksObj) {
+      const weekValues = weeksObj[day];
+      const selectedWeeks: number[] = [];
+  
+      Object.keys(weekValues).forEach((w, index) => {
+        if (weekValues[w]) {
+          selectedWeeks.push(index + 1); // week1 → 1, week2 → 2
+        }
+      });
+  
+      if (selectedWeeks.length > 0) {
+        result[this.capitalize(day)] = selectedWeeks.join(",");
+      }
+    }
+  
+    return result;
+  }
+  
+  capitalize(day: string) {
+    return day.charAt(0).toUpperCase() + day.slice(1);
+  }
   
 
-    this.countryService.registerWeekCalendar(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-      
-            alert('week calendar has been Added ');
-            window.location.reload();
-            // window.location.reload();
-       
-
+  registerweekCalendar(): void {
+  
+    const altWeekendData = this.convertToAlternateWeekendFormat(this.alternativeWeekOff);
+  
+    let payload: any = {
+      calander_title: this.calander_title,
+      description: this.description,
+      calendar_code: this.calendar_code,
+      year: this.year,
+      is_alternate: true,
+      alternate_weekends: altWeekendData
+    };
+  
+    console.log("FINAL PAYLOAD:", payload);
+  
+    this.countryService.registerWeekCalendar(payload).subscribe(
+      (res) => {
+        alert("Added Successfully");
+        window.location.reload();
       },
       (error) => {
-        console.error('Added failed', error);
- let errorMessage = 'Enter all required fields!';
-
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
+        console.error(error);
       }
-
-      alert(errorMessage);
-    }
     );
   }
+  
+
+
+
 
   openEditModal(detail: any): void {
 

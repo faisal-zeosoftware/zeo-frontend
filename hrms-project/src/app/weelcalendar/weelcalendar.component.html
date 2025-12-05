@@ -4,12 +4,23 @@
     <div class="cpm-sec">
 
         <h2>Create Weekend Calendar</h2><hr>
+        <!-- RADIO BUTTONS -->
+<div class="weekoff-type">
+  <label>
+    <input type="radio" name="weekoff" value="general" checked (change)="onWeekOffChange($event)">
+    General Week Off
+  </label>
+
+  <label class="ms-3">
+    <input type="radio" name="weekoff" value="alternative" (change)="onWeekOffChange($event)">
+    Alternative Week Off
+  </label>
+</div>
 
         <form >
-
-            <div class="row">
           
-
+          <div class="row">
+            
 
           <div class="col-md-4" >
                
@@ -140,35 +151,16 @@
     </div>
 
 </div>
+          </div>
 
 
-<div class="col-md-12">
-  <div class="toggle-container">
-    <span> Monday</span>
-    <input type="checkbox" id="is_ess"   name="is_ess" class="toggle">
-    
-    <label for="is_ess" class="label">
-      <div class="ball"></div>
-      <div class="background">
-        <div class="fill"></div>
-      </div>
-      <!-- <div class="checked"><i class="fa-solid fa-check"></i></div> -->
-    </label>
-  
-    <span> Tuesday</span>
-    <input type="checkbox" id="tue"   name="tue" class="toggle">
-    
-    <label for="tue" class="label">
-      <div class="ball"></div>
-      <div class="background">
-        <div class="fill"></div>
-      </div>
-      <!-- <div class="checked"><i class="fa-solid fa-check"></i></div> -->
-    </label>
-  
-  </div>
-  
-</div>
+<div class="general-week-sec" *ngIf="selectedWeekOff === 'general'">
+
+            <div class="row">
+          
+
+
+
 
 
 
@@ -253,6 +245,49 @@
 </div>
      
 </div>
+</div>
+
+
+<div class="alternative-section mt-4" *ngIf="selectedWeekOff === 'alternative'">
+
+  <h4>Alternating Weekly Offs</h4>
+
+  <div *ngFor="let day of weekDays" class="alter-week-sec mt-4">
+    <h4>{{ day.label }}</h4>
+
+    <div class="toggle-container ">
+      <ng-container *ngFor="let week of weekList">
+        <span>{{ week.name }}</span>
+
+        <input 
+          type="checkbox" 
+          class="toggle"
+          [id]="day.key + '_' + week.key"
+          [(ngModel)]="alternativeWeekOff[day.key][week.key]"
+          [ngModelOptions]="{standalone: true}"
+        >
+
+        <label [for]="day.key + '_' + week.key" class="label">
+          <div class="ball"></div>
+          <div class="background">
+            <div class="fill"></div>
+          </div>
+        </label>
+      </ng-container>
+    </div>
+  </div>
+
+</div>
+
+
+
+ 
+
+
+
+
+
+
 
 <div class="row">
     <div class="col-md-10">
