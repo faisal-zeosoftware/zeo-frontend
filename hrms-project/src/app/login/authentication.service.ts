@@ -220,13 +220,13 @@ export class AuthenticationService {
   }
 
 
-  isTokenExpired(): boolean {
-  const token = this.getToken();
-  if (!token) return true;
+//   isTokenExpired(): boolean {
+//   const token = this.getToken();
+//   if (!token) return true;
 
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  return (payload.exp * 1000) < Date.now();
-}
+//   const payload = JSON.parse(atob(token.split('.')[1]));
+//   return (payload.exp * 1000) < Date.now();
+// }
  
 
   handleSessionExpiration(): void {

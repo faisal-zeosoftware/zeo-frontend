@@ -13,9 +13,9 @@ export class AppComponent {
   constructor(private auth: AuthenticationService) {}
 
 ngOnInit() {
-  if (this.auth.isTokenExpired()) {
-    this.auth.logout(); // auto remove expired tokens on page refresh
-  }
+  // if (this.auth.isTokenExpired()) {
+  //   this.auth.logout(); // auto remove expired tokens on page refresh
+  // }
 }
 
 
