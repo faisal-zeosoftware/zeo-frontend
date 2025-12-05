@@ -34,6 +34,8 @@ export class AssignWeekcalendarComponent {
   branches: any[] = [];
   Departments: any[] = [];
   Categories: any[] = [];
+  Designations: any[] = [];
+
   Employee: any[] = [];
 
 
@@ -42,6 +44,8 @@ export class AssignWeekcalendarComponent {
   branch: number[] = [];
   department: number[] = [];
   category: number[] = [];
+  designation: number[] = [];
+
   employee: number[] = [];
 
   AssignWeekCalendar: any[] = [];
@@ -57,6 +61,8 @@ export class AssignWeekcalendarComponent {
   allSelected = false;
   allSelecteddept = false;
   allSelectedcat = false;
+  allSelecteddes = false;
+
   allSelectedEmp = false;
 
   hasAddPermission: boolean = false;
@@ -75,6 +81,7 @@ export class AssignWeekcalendarComponent {
 
 
   @ViewChild('select') select: MatSelect | undefined;
+  @ViewChild('selectdes') selectdes: MatSelect | undefined;
 
 
   constructor(private DepartmentServiceService: DepartmentServiceService,
@@ -103,6 +110,7 @@ export class AssignWeekcalendarComponent {
     this.loadDEpartments();
     this.loadWeekendCalendar();
     this.loadEmployee();
+    this.loadDesignations();
 
     this.loadAssignedWeekendCalendar();
 
@@ -305,6 +313,17 @@ export class AssignWeekcalendarComponent {
   }
 
 
+  toggleAllSelectiondes(): void {
+    if (this.selectdes) {
+      if (this.allSelecteddes) {
+        this.selectdes.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectdes.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+
   toggleAllSelectionEmp(): void {
     if (this.select) {
       if (this.allSelectedEmp) {
@@ -357,6 +376,28 @@ export class AssignWeekcalendarComponent {
       );
     }
   }
+
+
+  loadDesignations(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getDesignations(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Designations:', error);
+        }
+      );
+    }
+  }
+
 
   loadEmployee(): void {
 
@@ -465,6 +506,8 @@ export class AssignWeekcalendarComponent {
       department: this.department,
 
       category: this.category,
+      designation: this.designation,
+
       employee: this.employee,
       weekend_model: this.weekend_model,
 
