@@ -97,6 +97,11 @@ export class LeaveMasterComponent {
   department: any = '';
   role: any = '';
 
+  branches: any = '';
+  departments: any = '';
+  designations: any = '';
+  categories: any = '';
+
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean = false;
@@ -577,60 +582,48 @@ updateLeavetype(): void {
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
+  
   registerleaveEntitlement(): void {
     this.registerButtonClicked = true;
-    // if (!this.name || !this.code || !this.valid_to) {
-    //   return;
-    // }
-
-    const formData = new FormData();
-    formData.append('min_experience', this.min_experience);
-    formData.append('effective_after_from', this.effective_after_from);
-
-    formData.append('effective_after_unit', this.effective_after_unit);
-    formData.append('accrual_rate', this.accrual_rate);
-    formData.append('accrual_frequency', this.accrual_frequency);
-    formData.append('accrual_month', this.accrual_month);
-    formData.append('accrual_day', this.accrual_day);
-    // formData.append('round_of', this.round_of);
-    formData.append('prorate_type', this.prorate_type);
-
-    formData.append('leave_type', this.selectedLeaveTypeForModal.id);
-    formData.append('created_by', this.created_by);
-
-
-    formData.append('prorate_accrual', this.prorate_accrual.toString());
-    formData.append('accrual', this.accrual.toString());
-    // Append the profile picture only if it's selected
-    // if (this.selectedFile) {
-    //   formData.append('image', this.selectedFile);
-    // } else {
-    //   // Append a null or empty value to indicate no file was selected
-    //   formData.append('image', '');
-    // }
-
-
-    this.leaveService.registerLeaveEntitlement(formData).subscribe(
+  
+    const companyData = {
+      min_experience: this.min_experience,
+      effective_after_from: this.effective_after_from,
+      effective_after_unit: this.effective_after_unit,
+  
+      accrual_rate: this.accrual_rate,
+      accrual_frequency: this.accrual_frequency,
+      accrual_month: this.accrual_month,
+      accrual_day: this.accrual_day,
+  
+      prorate_type: this.prorate_type,
+  
+      leave_type: this.selectedLeaveTypeForModal.id,
+      created_by: this.created_by,
+  
+      // ⭐ MULTI SELECT FIELDS — now sent as JSON arrays
+      branches: this.branches ?? [],
+      categories: this.categories ?? [],
+      departments: this.departments ?? [],
+      designations: this.designations ?? [],
+  
+      prorate_accrual: this.prorate_accrual,
+      accrual: this.accrual,
+    };
+  
+    this.leaveService.registerLeaveEntitlement(companyData).subscribe(
       (response) => {
         console.log('Registration successful', response);
         alert('Leave Entitlement has been added');
-        // window.location.reload();
         this.loadLeaveEntitlements();
-
       },
       (error) => {
         console.error('Added failed', error);
         alert('Enter all required fields!');
       }
-
-
-
-
-
-      
     );
   }
-
+  
 
   registerleaveReset(): void {
     this.registerButtonClicked = true;

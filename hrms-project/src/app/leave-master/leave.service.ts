@@ -35,7 +35,7 @@ export class LeaveService {
   }
 
 
-  registerLeaveEntitlement(formData: FormData): Observable<any> {
+  registerLeaveEntitlement(data: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
       console.error('No schema selected.');
@@ -44,7 +44,7 @@ export class LeaveService {
   
     const apiUrl = `${this.apiUrl}/calendars/api/leave-entitlement/?schema=${selectedSchema}`;
   
-    return this.http.post(apiUrl, formData).pipe(
+    return this.http.post(apiUrl, data).pipe(
       catchError((error) => {
         console.error('Error during leave type registration:', error);
         return throwError(error);
