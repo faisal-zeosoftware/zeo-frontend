@@ -280,20 +280,30 @@ this.Delete = !this.Delete;
     }
     }
 
-    mapEmployeeNameToId() {
-
+mapEmployeeNameToId() {
   if (!this.Employees || !this.editAsset?.employee) return;
 
+  const currentValue = this.editAsset.employee;
+
+  // Case 1 — Already an ID (number)
+  if (typeof currentValue === 'number') {
+    return; // Nothing to map
+  }
+
+  // Case 2 — Find match by emp_code string
   const emp = this.Employees.find(
-    (e: any) => e.emp_code === this.editAsset.employee
+    (e: any) => e.emp_code?.trim() === String(currentValue).trim()
   );
 
   if (emp) {
-    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+    this.editAsset.employee = emp.id;
+    console.log("Mapped employee_id:", this.editAsset.employee);
+    return;
   }
 
-  console.log("Mapped employee_id:", this.editAsset.employee);
+  console.warn("No matching employee found for:", currentValue);
 }
+
   
 
 
@@ -377,14 +387,16 @@ editAsset: any = {}; // holds the asset being edited
 
       }
 
-      openEditModal(asset: any): void {
-      this.editAsset = { ...asset }; // copy asset data
-      this.isEditModalOpen = true;
-      
-      this.mapEmployeeNameToId();
-      this.mapLoanNameToId();
+openEditModal(asset: any): void {
+  this.editAsset = { ...asset };
+  this.isEditModalOpen = true;
 
-       }
+  this.LoadEmployees(() => {
+    this.mapEmployeeNameToId();
+    this.mapLoanNameToId();
+  });
+}
+
 
      closeEditModal(): void {
       this.isEditModalOpen = false;

@@ -112,7 +112,7 @@
     <div class="col-md-6" >
                    
         <label>Personal Email ID</label>
-       <input type="email"  class="form-control"   [(ngModel)]="emp_company_email"  placeholder="Enter Company email"
+       <input type="email"  class="form-control"   [(ngModel)]="Emp.emp_company_email"  placeholder="Enter Company email"
        [ngModelOptions]="{standalone: true}">
    
        
@@ -136,7 +136,7 @@
     <div class="col-md-6" >
                    
         <label>{{pernoFieldName}}</label>
-       <input type="text"  class="form-control" required  [(ngModel)]="emp_mobile_number_2"  placeholder="Enter Contact Number"
+       <input type="text"  class="form-control" required  [(ngModel)]="Emp.emp_mobile_number_2"  placeholder="Enter Contact Number"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_mobile_number_2}">
        
        <div *ngIf="registerButtonClicked && !emp_mobile_number_2" class="error-message">Description is required.</div>
@@ -224,11 +224,7 @@
                 
             </select>
         </div>
-        <!-- <label>Last Name</label>
-       <input type="radio"  class="form-control" required  [(ngModel)]="emp_gender"  placeholder="Enter Department Name"
-        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_gender}">
-       
-       <div *ngIf="registerButtonClicked && !emp_gender" class="error-message">Department Name is required.</div> -->
+
     </div>
     
     <div class="col-md-6" >
@@ -269,7 +265,7 @@
     
         <div class="custom-sel">
             <label>{{nationFieldName}}</label>
-            <select class="form-control" id="emp_nationality" name="emp_nationality" required [(ngModel)]="emp_nationality"  [ngModelOptions]="{standalone: true}"  >
+            <select class="form-control" id="emp_nationality" name="emp_nationality" required [(ngModel)]="Emp.emp_nationality"  [ngModelOptions]="{standalone: true}"  >
                 <option value="" >Select</option>
                 <option *ngFor="let emp_nationality of Nationations" [value]="emp_nationality.id">{{ emp_nationality.N_name }}</option>
             </select>
@@ -300,7 +296,7 @@
         <div class="custom-sel">
           <!-- Dynamically displaying the state_label from the API response -->
           <label>{{ state_label }}</label>
-          <select class="form-control" id="state" required [(ngModel)]="emp_state_id" [ngModelOptions]="{standalone:true}">
+          <select class="form-control" id="state" required [(ngModel)]="Emp.emp_state_id" [ngModelOptions]="{standalone:true}">
             <option value="">Select</option>
             <option *ngFor="let state of states" [value]="state.id">{{ state.state_name }}</option>
           </select>

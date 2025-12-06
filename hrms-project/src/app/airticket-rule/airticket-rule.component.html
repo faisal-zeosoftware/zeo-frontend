@@ -179,12 +179,90 @@
       </div>
       <hr />
   
-      <form>
-      
-      
+        <form >
 
-        
+            <div class="row">
+
+
+                <div class="col-md-6">
+
+
+                    <div class="custom-sel">
+                        <label>Policy</label>
+                        <select class="form-control" id="policy" required [(ngModel)]="editAsset.policy"  [ngModelOptions]="{standalone: true}"  >
+                            <option value="" >Select</option>
+                            <option *ngFor="let user of Policies" [value]="user.id">{{ user.name }}</option>
+                        </select>
+                       
+                    </div>
+                                
+                
+                
+                       
+                       
+                    
+                </div> 
+                
+<div class="col-md-6" >
+    <label>Rule Type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.rule_type" [ngModelOptions]="{ standalone: true }">
+        <option value="ONE_WAY">One Way Ticket </option>
+        <option value="TWO_WAY">Two Way Ticket</option>
+        <option value="ENCASHMENT">Encashment </option>
   
+    
+  
+      </select>
+    </div>
+  </div>
+  
+                      
+
+              <div class="col-md-6" >
+               
+                <label> required service years</label>
+               <input type="number"  class="form-control" required  [(ngModel)]="editAsset.required_service_years"  placeholder="Enter required service years"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
+   
+  
+
+
+
+          
+
+
+
+ 
+  <div class="col-md-6">
+    <label></label>
+    <div class="check-box-selection-sec form-control mt-3">
+      <div class="mat-set">
+        <mat-checkbox [(ngModel)]="editAsset.apply_in_next_payroll" [ngModelOptions]="{standalone: true}">apply in next payroll</mat-checkbox>
+      </div>
+    </div>
+  </div>
+     
+
+
+  <div class="col-md-12">
+    <label>remarks</label>
+    <textarea class="form-control" [(ngModel)]="editAsset.remarks"  placeholder="Enter remarks... "
+    [ngModelOptions]="{standalone: true}"></textarea>
+</div>
+   
+      
+   
+
+
+
+    
+            </div>
+
+    
         <div class="row">
           <div class="col-md-10"></div>
           <div class="col-md-2">
@@ -197,7 +275,9 @@
             </button>
           </div>
         </div>
-      </form>
+            
+       
+    </form>
     </div>
   </div>
   

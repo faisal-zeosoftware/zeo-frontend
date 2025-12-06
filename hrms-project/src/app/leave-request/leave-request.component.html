@@ -207,7 +207,7 @@
       <label>Employee</label>
       <div class="custom-sel">
         <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.selectedEmployee"
-                (change)="onEmployeeChange()" [ngModelOptions]="{standalone: true}">
+                (change)="onEmployeeChangeEdit()" [ngModelOptions]="{standalone: true}">
           <option *ngFor="let employee of Employees" [value]="employee.id">{{ employee.emp_code }}</option>
         </select>
       </div>
@@ -227,15 +227,6 @@
       </div>
     </div>
     
-
-    <!-- <div class="col-md-3">
-      <label>Document Number</label>
-      <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter Document number"
-             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !document_number}">
-      <div *ngIf="registerButtonClicked && !document_number" class="error-message">Document number is required.</div>
-    </div> -->
-
-
 
   
    

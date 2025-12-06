@@ -300,7 +300,7 @@ ngOnInit(): void {
 
 
       
-          loadLAssetType(): void {
+          loadLAssetType(callback?: Function): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
@@ -311,6 +311,7 @@ ngOnInit(): void {
                 (result: any) => {
                   this.Policies = result;
                   console.log(' fetching Loantypes:');
+                    if (callback) callback();
           
                 },
                 (error) => {
@@ -319,6 +320,21 @@ ngOnInit(): void {
               );
             }
             }
+
+  mappolicyNameToId() {
+
+  if (!this.Policies || !this.editAsset?.policy) return;
+
+  const emp = this.Policies.find(
+    (e: any) => e.name === this.editAsset.policy
+  );
+
+  if (emp) {
+    this.editAsset.policy = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.policy);
+}
         
 
 
@@ -423,6 +439,8 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+  this.mappolicyNameToId();
 }
 
 closeEditModal(): void {
@@ -438,11 +456,12 @@ updateAssetType(): void {
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateAirRule(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Airticket updated successfully!');
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
+      window.location.reload();
     },
 (error) => {
   console.error('Error updating Airticket Rule:', error);

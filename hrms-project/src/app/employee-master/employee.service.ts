@@ -159,6 +159,17 @@ deleteGeneralReq(categoryId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+resetGeneralReq(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/employee/api/escalation-rules/${id}/reset/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, {});  // Reset API usually requires POST
+}
+
+
 
 deleteGeneralReqEscalater(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
@@ -4080,6 +4091,45 @@ getairticketpolicy(selectedSchema: string): Observable<any> {
 updateAirpolicy(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/payroll/api/airticket-policy/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateAirRule(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-rule/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateAirAllocation(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-allocation/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateAirRequest(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-request/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(

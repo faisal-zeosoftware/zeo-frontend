@@ -95,10 +95,16 @@
       <div class="col-md-6" >
                
         <label>Travel Class</label>
-       <input type="text"  class="form-control" required  [(ngModel)]="travel_class"  placeholder="Enter travel class"
-        [ngModelOptions]="{standalone: true}" >
-       
+            <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="travel_class"  [ngModelOptions]="{ standalone: true }">
+        <option value="ECONOMY">Economy</option>
+        <option value="BUSINESS">Business</option>
+        <option value="FIRST">First Class</option>
+      </select>
+    </div>
   </div>
+
 
 
 
@@ -261,109 +267,178 @@
       </div>
       <hr />
   
-      <form>
-      
-        <div class="row">
+        <form >
+
+            <div class="row">
                
 
-            <div class="col-md-6" >
-             
-              <label>Asset Name</label>
-             <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter name"
-              [ngModelOptions]="{standalone: true}" >
-             
-        </div>
-
-         <div class="col-md-6" >
-             
-              <label>Serial No</label>
-             <input type="text"  class="form-control" required  [(ngModel)]="editAsset.serial_number"  placeholder="Enter Serial no"
-              [ngModelOptions]="{standalone: true}" >
-             
-        </div>
-        <div class="col-md-6" >
-             
-          <label>Model</label>
-         <input type="text"  class="form-control" required  [(ngModel)]="editAsset.model"  placeholder="Enter Model"
-          [ngModelOptions]="{standalone: true}" >
-         
-    </div>
-
-    <div class="col-md-6" >
-             
-      <label>Purchase date</label>
-     <input type="date"  class="form-control" required  [(ngModel)]="editAsset.purchase_date"  placeholder="Enter Purchase date"
-      [ngModelOptions]="{standalone: true}" >
-     
-</div>
-
-<div class="col-md-6" >
-  <label>Status</label>
-  <div class="custom-sel">
-    <select
-      class="form-control" [(ngModel)]="editAsset.status" [ngModelOptions]="{ standalone: true }">
-      <option value="available">Available </option>
-      <option value="assigned">Assigned </option>
-
-      <option value="maintenance">Under Maintenance </option>
-
-      <option value="disposed">Disposed </option>
-
-    </select>
-  </div>
-</div>
-
-
-<div class="col-md-6" >
-  <label>Condition</label>
-  <div class="custom-sel">
-    <select
-      class="form-control" [(ngModel)]="editAsset.condition" [ngModelOptions]="{ standalone: true }">
-      <option value="healthy">Healthy </option>
-      <option value="minor_damage">Minor Damage </option>
-      <option value="major_damage">Major Damage </option>
-
-  
-
-    </select>
-  </div>
-</div>
-
-
-
-
-<div class="col-md-6" >
-  <label>Select Asset Type</label>
-  <div class="custom-sel">
-    <select
-      class="form-control"
-      id="asset_type"
-      name="asset_type"
-      [(ngModel)]="editAsset.asset_type"
-      [ngModelOptions]="{ standalone: true }"
-    >
-      <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-        {{ employees.name }}
-      </option>
-    </select>
-  </div>
-</div>
-
-   
-        
-    
-    
- 
-
-
-
-  
+              <div class="col-md-6" >
+               
+                <label> Name</label>
+               <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter name"
+                [ngModelOptions]="{standalone: true}" >
+               
           </div>
 
+           <div class="col-md-6" >
+               
+                <label>frequency years</label>
+               <input type="number"  class="form-control" required  [(ngModel)]="editAsset.frequency_years"  placeholder="Enter frequency years"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
+          <div class="col-md-6" >
+               
+            <label>amount</label>
+           <input type="number"  class="form-control" required  [(ngModel)]="editAsset.amount"  placeholder="Enter amount"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+      <div class="col-md-6" >
+               
+        <label>Travel Class</label>
+            <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.travel_class"  [ngModelOptions]="{ standalone: true }">
+        <option value="ECONOMY">Economy</option>
+        <option value="BUSINESS">Business</option>
+        <option value="FIRST">First Class</option>
+      </select>
+    </div>
+  </div>
 
-        
-  
-        <div class="row">
+
+
+  <div class="col-md-6" >
+    <label>allowance type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.allowance_type" [ngModelOptions]="{ standalone: true }">
+        <option value="CASH">Cash </option>
+        <option value="TICKET">Ticket </option>
+
+        <option value="BOTH"> Both </option>
+
+
+      </select>
+    </div>
+  </div>
+
+
+    
+<div class="col-md-6" >
+    <label>Department</label>
+    <div class="custom-sel">
+        <div class="form-control-wrapper">
+          <mat-form-field>
+            <mat-select  placeholder="Select" [(ngModel)]="editAsset.eligible_departments" [ngModelOptions]="{standalone: true}" #selectDept  multiple>
+              <div class="select-all">
+                <mat-checkbox [(ngModel)]="editAsset.allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                  Select All
+                </mat-checkbox>
+              </div>
+              <mat-option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">
+                {{ deparmentsec.dept_name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+    
+      </div>
+</div>
+
+<div class="col-md-6" >
+    <label>Category</label>
+    <div class="custom-sel">
+        <div class="form-control-wrapper">
+          <mat-form-field>
+            <mat-select  placeholder="Select" [(ngModel)]="editAsset.eligible_categories" [ngModelOptions]="{standalone: true}" #selectCat multiple>
+              <div class="select-all">
+                <mat-checkbox [(ngModel)]="editAsset.allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                  Select All
+                </mat-checkbox>
+              </div>
+             
+              <mat-option *ngFor="let deparmentsec of Categories" [value]="deparmentsec.id">
+                {{ deparmentsec.ctgry_title }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+       
+      </div>
+</div>
+
+<div class="col-md-6" >
+  <label>Designation</label>
+  <div class="custom-sel">
+      <div class="form-control-wrapper">
+        <mat-form-field>
+          <mat-select  placeholder="Select" [(ngModel)]="editAsset.eligible_designations" [ngModelOptions]="{standalone: true}" #selectDes multiple>
+            <div class="select-all">
+              <mat-checkbox [(ngModel)]="editAsset.allSelectedDes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDes()">
+                Select All
+              </mat-checkbox>
+            </div>
+           
+            <mat-option *ngFor="let deparmentsec of Designations" [value]="deparmentsec.id">
+              {{ deparmentsec.desgntn_job_title }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    
+    </div>
+</div>
+
+ 
+
+     
+  <div class="col-md-6">
+
+
+    <div class="custom-sel">
+        <label>Country</label>
+        <select class="form-control" id="country" required [(ngModel)]="editAsset.country"  [ngModelOptions]="{standalone: true}"  >
+            <option value="" >Select</option>
+            <option *ngFor="let user of countries" [value]="user.id">{{ user.country_name }}</option>
+        </select>
+       
+    </div>
+                
+
+
+       
+       
+    
+</div> 
+      
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="editAsset.allowed_in_probation" [ngModelOptions]="{standalone: true}">allowed in probation</mat-checkbox>
+    </div>
+  </div>
+</div>
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
+      
+   
+
+
+
+    
+            </div>
+
+    
+          <div class="row">
           <div class="col-md-10"></div>
           <div class="col-md-2">
             <button
@@ -375,7 +450,9 @@
             </button>
           </div>
         </div>
-      </form>
+            
+       
+    </form>
     </div>
   </div>
   

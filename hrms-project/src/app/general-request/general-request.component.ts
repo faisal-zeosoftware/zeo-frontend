@@ -598,6 +598,7 @@ registerGeneralreq(): void {
   formData.append('total', this.total?.toString() || '');
   formData.append('request_type', this.request_type || '');
   formData.append('employee', this.employee || '');
+  formData.append('branch', this.branch || '');
   formData.append('created_by', this.created_by || '');
   formData.append('approved', this.approved ? 'true' : 'false');
   formData.append('remarks', this.remarks || '');

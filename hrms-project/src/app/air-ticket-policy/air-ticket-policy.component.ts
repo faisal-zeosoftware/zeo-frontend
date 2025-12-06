@@ -289,7 +289,7 @@ toggleAllSelectionDes(): void {
 
  
 
-    loadDEpartments(): void {
+    loadDEpartments(callback?: Function): void {
 
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
@@ -300,6 +300,7 @@ toggleAllSelectionDes(): void {
           (result: any) => {
             this.Departments = result;
             console.log(' fetching Companies:');
+              if (callback) callback();
     
           },
           (error) => {
@@ -309,7 +310,44 @@ toggleAllSelectionDes(): void {
       }
       }
 
-      loadCAtegory(): void {
+     mapDeptNameToId() {
+
+  if (!this.Departments || !this.editAsset?.eligible_departments) return;
+
+  let values = this.editAsset.eligible_departments;
+
+  // Case A — Already array of IDs
+  if (Array.isArray(values) && typeof values[0] === "number") {
+    return; // nothing to map
+  }
+
+  // Case B — If string → make array split by comma
+  if (typeof values === 'string') {
+    values = values.split(",").map(x => x.trim());
+  }
+
+  // Case C — Ensure always an array
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  // Map each designation name → ID
+  const mappedIds = values
+    .map((name: string) => {
+      const d = this.Departments.find(
+        (e: any) => e.dept_name?.trim() === name?.trim()
+      );
+      return d ? d.id : null;
+    })
+    .filter((id: number | null) => id !== null);
+
+
+  this.editAsset.eligible_departments = mappedIds;
+
+  console.log("Mapped eligible_designations:", this.editAsset.eligible_departments);
+}
+
+      loadCAtegory(callback?: Function): void {
 
         const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
@@ -320,6 +358,7 @@ toggleAllSelectionDes(): void {
             (result: any) => {
               this.Categories = result;
               console.log(' fetching Companies:');
+                   if (callback) callback();
       
             },
             (error) => {
@@ -328,8 +367,44 @@ toggleAllSelectionDes(): void {
           );
         }
         }
+
+   mapCategoryNameToId() {
+  if (!this.Categories || !this.editAsset?.eligible_categories) return;
+
+  let values = this.editAsset.eligible_categories;
+
+  // Case A — Already array of IDs
+  if (Array.isArray(values) && typeof values[0] === "number") {
+    return; // nothing to map
+  }
+
+  // Case B — If string → make array split by comma
+  if (typeof values === 'string') {
+    values = values.split(",").map(x => x.trim());
+  }
+
+  // Case C — Ensure always an array
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  // Map each designation name → ID
+  const mappedIds = values
+    .map((name: string) => {
+      const d = this.Categories.find(
+        (e: any) => e.ctgry_title?.trim() === name?.trim()
+      );
+      return d ? d.id : null;
+    })
+    .filter((id: number | null) => id !== null);
+
+
+  this.editAsset.eligible_categories = mappedIds;
+
+  console.log("Mapped eligible_designations:", this.editAsset.eligible_categories);
+}
   
-        loadDesignation(): void {
+        loadDesignation(callback?: Function): void {
 
           const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
         
@@ -340,6 +415,7 @@ toggleAllSelectionDes(): void {
               (result: any) => {
                 this.Designations = result;
                 console.log(' fetching Companies:');
+                    if (callback) callback();
         
               },
               (error) => {
@@ -348,7 +424,43 @@ toggleAllSelectionDes(): void {
             );
           }
           }
-    
+
+mapDesigNameToId() {
+  if (!this.Designations || !this.editAsset?.eligible_designations) return;
+
+  let values = this.editAsset.eligible_designations;
+
+  // Case A — Already array of IDs
+  if (Array.isArray(values) && typeof values[0] === "number") {
+    return; // nothing to map
+  }
+
+  // Case B — If string → make array split by comma
+  if (typeof values === 'string') {
+    values = values.split(",").map(x => x.trim());
+  }
+
+  // Case C — Ensure always an array
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  // Map each designation name → ID
+  const mappedIds = values
+    .map((name: string) => {
+      const d = this.Designations.find(
+        (e: any) => e.desgntn_job_title?.trim() === name?.trim()
+      );
+      return d ? d.id : null;
+    })
+    .filter((id: number | null) => id !== null);
+
+
+  this.editAsset.eligible_designations = mappedIds;
+
+  console.log("Mapped eligible_designations:", this.editAsset.eligible_designations);
+}
+
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
@@ -509,12 +621,20 @@ toggleAllSelectionDes(): void {
 
 
     isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
+    editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
+  this.editAsset = { ...asset };
   this.isEditModalOpen = true;
+
+  this.loadDesignation(() => {
+    this.mapDesigNameToId();
+  });
+  this.mapCategoryNameToId();
+  this.mapDeptNameToId();
+  this.mapCountryNameToId();
 }
+
 
 closeEditModal(): void {
   this.isEditModalOpen = false;
@@ -531,9 +651,10 @@ updateAssetType(): void {
 
   this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Airticket updated successfully!');
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
+      window.location.reload();
     },
 (error) => {
   console.error('Error updating Airticket Policy:', error);
@@ -617,15 +738,32 @@ deleteSelectedAirTicketPolicy() {
 
 
 countries:any[]=[];
-loadCountries(): void {
+
+loadCountries(callback?: Function): void {
   this.countryService.getCountries().subscribe(
     (result: any) => {
       this.countries = result;
+       if (callback) callback();
     },
     (error) => {
       console.error('Error fetching countries:', error);
     }
   );
+}
+
+  mapCountryNameToId() {
+
+  if (!this.countries || !this.editAsset?.country) return;
+
+  const emp = this.countries.find(
+    (e: any) => e.country_name === this.editAsset.country
+  );
+
+  if (emp) {
+    this.editAsset.country = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.country);
 }
 
 

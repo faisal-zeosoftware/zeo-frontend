@@ -301,7 +301,7 @@ ngOnInit(): void {
 
 
       
-          loadLAssetType(): void {
+          loadLAssetType(callback?: Function): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
@@ -312,6 +312,7 @@ ngOnInit(): void {
                 (result: any) => {
                   this.Policies = result;
                   console.log(' fetching Loantypes:');
+                   if (callback) callback();
           
                 },
                 (error) => {
@@ -320,6 +321,22 @@ ngOnInit(): void {
               );
             }
             }
+
+ mappolicyNameToId() {
+
+  if (!this.Policies || !this.editAsset?.policy) return;
+
+  const emp = this.Policies.find(
+    (e: any) => e.name === this.editAsset.policy
+  );
+
+  if (emp) {
+    this.editAsset.policy = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.policy);
+}
+
         
 
 
@@ -347,7 +364,7 @@ ngOnInit(): void {
               Employee:any[]=[];
 
 
-              loadEmployee(): void {
+              loadEmployee(callback?: Function): void {
     
                 const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
               
@@ -358,6 +375,7 @@ ngOnInit(): void {
                     (result: any) => {
                       this.Employee = result;
                       console.log(' fetching Loantypes:');
+                      if (callback) callback();
               
                     },
                     (error) => {
@@ -366,6 +384,21 @@ ngOnInit(): void {
                   );
                 }
                 }
+
+  mapEmployeeNameToId() {
+
+  if (!this.Employee || !this.editAsset?.employee) return;
+
+  const emp = this.Employee.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
 
 
                iscreateLoanApp: boolean = false;
@@ -424,6 +457,9 @@ editAsset: any = {}; // holds the asset being edited
 openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+  this.mapEmployeeNameToId();
+  this.mappolicyNameToId();
 }
 
 closeEditModal(): void {
@@ -439,11 +475,12 @@ updateAssetType(): void {
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateAirAllocation(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Airticket updated successfully!');
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
+      window.location.reload();
     },
 (error) => {
   console.error('Error updating AirTicket Allocation:', error);

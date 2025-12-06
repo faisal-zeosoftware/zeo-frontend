@@ -326,6 +326,57 @@ deleteSelectedGeneralReq() {
   }
 }
 
+resetSelectedGeneralReq() {
+  const selectedIds = this.GeneralReq
+    .filter(item => item.selected)
+    .map(item => item.id);
+
+  if (selectedIds.length === 0) {
+    alert('No General Request selected for reset.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to reset the selected General Request(s)?')) {
+
+    let total = selectedIds.length;
+    let completed = 0;
+
+    selectedIds.forEach(id => {
+      this.employeeService.resetGeneralReq(id).subscribe(
+        () => {
+          console.log('General Request reset successfully:', id);
+          completed++;
+
+          if (completed === total) {
+            alert('General Request reset successfully');
+            window.location.reload();
+          }
+        },
+        (error) => {
+          console.error('Error resetting General Request:', error);
+          alert('Error resetting General Request: ' + error.statusText);
+        }
+      );
+    });
+  }
+}
+
+resetSingleReq(id: number) {
+  if (confirm("Are you sure you want to reset this rule?")) {
+    this.employeeService.resetGeneralReq(id).subscribe(
+      () => {
+        alert("Reset successful!");
+        window.location.reload();
+      },
+      (error) => {
+        alert("Reset failed: " + error.statusText);
+      }
+    );
+  }
+}
+
+
+
 
 
 

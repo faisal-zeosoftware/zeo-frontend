@@ -189,13 +189,100 @@
       </div>
       <hr />
   
-      <form>
-      
-      
+        <form >
 
-        
-  
-        <div class="row">
+            <div class="row">
+
+                <div class="col-md-6">
+
+
+                    <div class="custom-sel">
+                        <label>Employee</label>
+                        <select class="form-control" id="employee" required [(ngModel)]="editAsset.employee"  [ngModelOptions]="{standalone: true}"  >
+                            <option value="" >Select</option>
+                            <option *ngFor="let user of Employee" [value]="user.id">{{ user.emp_code }}</option>
+                        </select>
+                       
+                    </div>
+                                
+                
+                
+                       
+                       
+                    
+                </div> 
+               
+
+                <div class="col-md-6">
+
+
+                    <div class="custom-sel">
+                        <label>Policy</label>
+                        <select class="form-control" id="policy" required [(ngModel)]="editAsset.policy"  [ngModelOptions]="{standalone: true}"  >
+                            <option value="" >Select</option>
+                            <option *ngFor="let user of Policies" [value]="user.id">{{ user.name }}</option>
+                        </select>
+                       
+                    </div>
+                                
+                
+                
+                       
+                       
+                    
+                </div> 
+                      
+
+              <div class="col-md-6" >
+               
+                <label> Amount</label>
+               <input type="number"  class="form-control" required  [(ngModel)]="editAsset.amount"  placeholder="Enter amount"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
+          <div class="col-md-6" >
+               
+            <label> remaining amount</label>
+           <input type="number"  class="form-control" required  [(ngModel)]="editAsset.remaining_amount"  placeholder="Enter remaining amount"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+      <div class="col-md-6" >
+               
+        <label> Expiry date</label>
+       <input type="date"  class="form-control" required  [(ngModel)]="editAsset.expiry_date"  placeholder="Enter Expiry date"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
+
+
+
+
+          
+
+
+
+ 
+  <div class="col-md-6">
+    <label></label>
+    <div class="check-box-selection-sec form-control mt-3">
+      <div class="mat-set">
+        <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">is active</mat-checkbox>
+      </div>
+    </div>
+  </div>
+     
+
+      
+   
+
+
+
+    
+            </div>
+
+            <div class="row">
           <div class="col-md-10"></div>
           <div class="col-md-2">
             <button
@@ -207,7 +294,9 @@
             </button>
           </div>
         </div>
-      </form>
+            
+       
+    </form>
     </div>
   </div>
   

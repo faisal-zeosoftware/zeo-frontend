@@ -388,8 +388,13 @@ ngOnInit(): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
+  this.editAsset = { ...asset };
   this.isEditModalOpen = true;
+
+
+  this.mapAllocationNameToId();
+
+  this.mapEmployeeNameToId()
 }
 
 closeEditModal(): void {
@@ -405,11 +410,12 @@ updateAssetType(): void {
     return;
   }
 
-  this.employeeService.updateAirpolicy(this.editAsset.id, this.editAsset).subscribe(
+  this.employeeService.updateAirRequest(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
-      alert('Asset  updated successfully!');
+      alert('Airticket updated successfully!');
       this.closeEditModal();
       this.loadLAssetType(); // reload updated list
+      window.location.reload(); 
     },
 (error) => {
   console.error('Error updating Airticket Request:', error);
@@ -495,7 +501,7 @@ Requests:any[]=[];
 Employees:any[]=[];
 
 
-loadAllocations(): void {
+loadAllocations(callback?: Function): void {
 
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
@@ -506,6 +512,7 @@ loadAllocations(): void {
       (result: any) => {
         this.Allocations = result;
         console.log(' fetching Loantypes:');
+          if (callback) callback();
 
       },
       (error) => {
@@ -514,6 +521,43 @@ loadAllocations(): void {
     );
   }
   }
+
+mapAllocationNameToId() {
+  if (!this.Allocations || !this.editAsset?.allocation) return;
+
+  let value = this.editAsset.allocation;
+
+  // Case A — Already an ID
+  if (typeof value === "number") {
+    return; // nothing to map
+  }
+
+  // Case B — Value returned as "Employee - Amount"
+  const match = this.Allocations.find(
+    (a: any) =>
+      `${a.employee} - ${a.amount}`.trim() === String(value).trim()
+  );
+
+  if (match) {
+    this.editAsset.allocation = match.id;
+    console.log("Mapped allocation:", this.editAsset.allocation);
+    return;
+  }
+
+  // Case C — Value is only employee name
+  const byEmployee = this.Allocations.find(
+    (a: any) => a.employee.trim() === String(value).trim()
+  );
+
+  if (byEmployee) {
+    this.editAsset.allocation = byEmployee.id;
+    console.log("Mapped allocation:", this.editAsset.allocation);
+    return;
+  }
+
+  console.warn("No matching allocation found for:", value);
+}
+
 
 
   loadAirticketRequest(): void {
@@ -535,7 +579,7 @@ loadAllocations(): void {
       );
     }
     }
-    loademployee(): void {
+    loademployee(callback?: Function): void {
 
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
@@ -550,6 +594,7 @@ loadAllocations(): void {
            (employee: any) => employee.is_active === true || employee.is_active === null
                 );    
             console.log(' fetching Loantypes:');
+            if (callback) callback();
     
           },
           (error) => {
@@ -558,6 +603,21 @@ loadAllocations(): void {
         );
       }
       }
+
+ mapEmployeeNameToId() {
+
+  if (!this.Employees || !this.editAsset?.employee) return;
+
+  const emp = this.Employees.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
 
 
 }

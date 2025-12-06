@@ -81,13 +81,14 @@ export class LeaveRequestComponent {
 
 
       // this.LoadLeavetype(selectedSchema);
-      this.LoadEmployee();
-      this.LoadUsers();
-      this.LoadLeaveRequest(selectedSchema);
+
 
 
 
     }
+      this.LoadEmployee();
+      this.LoadUsers();
+      this.LoadLeaveRequest();
 
     this.userId = this.sessionService.getUserId();
     if (this.userId !== null) {
@@ -337,6 +338,30 @@ requestLeave(): void {
     );
   }
 
+  onEmployeeChangeEdit() {
+
+
+    if (!this.editAsset.selectedEmployee) return;
+
+    this.leaveService.getLeaveBalance(this.editAsset.selectedEmployee).subscribe(
+      (data: any) => {
+
+        this.leaveBalances = data.leave_balance;
+        this.allLeaveTypes = data.available_leave_types;
+
+        // Filter available leave types based on the employee's leave balance
+        const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
+        this.LeaveTypes = this.allLeaveTypes.filter(lt => leaveTypeNames.includes(lt.name));
+
+        console.log('Filtered Leave Types:', this.LeaveTypes);
+      },
+      (error: any) => {
+        console.error('Error fetching leave balance:', error);
+        alert('something went wrong')
+      }
+    );
+  }
+
 
   LoadEmployee(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -385,7 +410,7 @@ requestLeave(): void {
       (data: any) => {
         this.Users = data;
 
-        console.log('employee:', this.LeaveTypes);
+        console.log('employee:', this.Users);
         if (callback) callback();
       },
       (error: any) => {
@@ -411,18 +436,26 @@ requestLeave(): void {
 }
 
 
-  LoadLeaveRequest(selectedSchema: string) {
+  LoadLeaveRequest() {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+
     this.leaveService.getLeaveRequest(selectedSchema).subscribe(
       (data: any) => {
         this.LeaveRequests = data;
 
         console.log('employee:', this.LeaveRequests);
+     
       },
       (error: any) => {
         console.error('Error fetching categories:', error);
       }
     );
   }
+}
 
 
 

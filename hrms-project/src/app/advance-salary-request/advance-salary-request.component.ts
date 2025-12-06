@@ -271,7 +271,7 @@ if (this.userId !== null) {
 
     
     LoadEmployee(selectedSchema: string) {
-      this.leaveService.getEmployee(selectedSchema).subscribe(
+      this.leaveService.getemployeesMaster(selectedSchema).subscribe(
         (data: any) => {
           this.Employee = data;
         
