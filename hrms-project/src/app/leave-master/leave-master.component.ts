@@ -97,10 +97,10 @@ export class LeaveMasterComponent {
   department: any = '';
   role: any = '';
 
-  branches: any = '';
-  departments: any = '';
-  designations: any = '';
-  categories: any = '';
+  branches: any[] = [];
+  departments: any[] = [];
+  designations: any[] = [];
+  categories: any[] = [];
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -602,11 +602,10 @@ updateLeavetype(): void {
       created_by: this.created_by,
   
       // ⭐ MULTI SELECT FIELDS — now sent as JSON arrays
-      branches: this.branches ?? [],
-      categories: this.categories ?? [],
-      departments: this.departments ?? [],
-      designations: this.designations ?? [],
-  
+      branches: this.branches?.length ? this.branches : [],
+      categories: this.categories?.length ? this.categories : [],
+      departments: this.departments?.length ? this.departments : [],
+      designations: this.designations?.length ? this.designations : [],
       prorate_accrual: this.prorate_accrual,
       accrual: this.accrual,
     };
