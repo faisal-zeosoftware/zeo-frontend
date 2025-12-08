@@ -633,9 +633,9 @@
   
                           <mat-form-field>
                             <!-- <mat-label>Favorite food</mat-label> -->
-                            <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #select multiple>
+                            <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #selectcon multiple>
                               <div class="select-all">
-                                <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                                <mat-checkbox [(ngModel)]="allSelectedcon" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncon()">
                                   Select All
                                 </mat-checkbox>
                               </div>
@@ -662,9 +662,9 @@
                       <div class="custom-sel">
                           <div class="form-control-wrapper">
                             <mat-form-field>
-                              <mat-select  placeholder="Select" [(ngModel)]="departments" [ngModelOptions]="{standalone: true}" #selectDept  multiple>
+                              <mat-select  placeholder="Select" [(ngModel)]="departments" [ngModelOptions]="{standalone: true}" #selectDeptcon  multiple>
                                 <div class="select-all">
-                                  <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                                  <mat-checkbox [(ngModel)]="allSelecteddeptcon" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondeptcon()">
                                     Select All
                                   </mat-checkbox>
                                 </div>
@@ -687,9 +687,9 @@
                       <div class="custom-sel">
                           <div class="form-control-wrapper">
                             <mat-form-field>
-                              <mat-select  placeholder="Select" [(ngModel)]="designations" [ngModelOptions]="{standalone: true}" #selectDes multiple>
+                              <mat-select  placeholder="Select" [(ngModel)]="designations" [ngModelOptions]="{standalone: true}" #selectDescon multiple>
                                 <div class="select-all">
-                                  <mat-checkbox [(ngModel)]="allSelectedDes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDes()">
+                                  <mat-checkbox [(ngModel)]="allSelectedDescon" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDescon()">
                                     Select All
                                   </mat-checkbox>
                                 </div>
@@ -713,9 +713,9 @@
                       <div class="custom-sel">
                           <div class="form-control-wrapper">
                             <mat-form-field>
-                              <mat-select  placeholder="Select" [(ngModel)]="categories" [ngModelOptions]="{standalone: true}" #selectCat multiple>
+                              <mat-select  placeholder="Select" [(ngModel)]="categories" [ngModelOptions]="{standalone: true}" #selectCatcon multiple>
                                 <div class="select-all">
-                                  <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                                  <mat-checkbox [(ngModel)]="allSelectedcatcon" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncatcon()">
                                     Select All
                                   </mat-checkbox>
                                 </div>
@@ -1014,7 +1014,7 @@
           
                       <div class="col-md-4">
                         <label>Cf value</label>
-                        <input type="number" class="form-control" required [(ngModel)]="cf_value" placeholder="Enter cf value"
+                        <input type="number" class="form-control"  [(ngModel)]="cf_value" placeholder="Enter cf value"
                                [ngModelOptions]="{standalone: true}" >
                       </div>
           
@@ -1030,12 +1030,12 @@
           
                       <div class="col-md-4">
                         <label>Cf max limit</label>
-                        <input type="number" class="form-control" required [(ngModel)]="cf_max_limit" placeholder="Enter cf Max Limit"
+                        <input type="number" class="form-control"  [(ngModel)]="cf_max_limit" placeholder="Enter cf Max Limit"
                                [ngModelOptions]="{standalone: true}" >
                       </div>
                       <div class="col-md-4" *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
                         <label>Cf expires in value</label>
-                        <input type="number" class="form-control" required [(ngModel)]="cf_expires_in_value" placeholder="Enter value"
+                        <input type="number" class="form-control"  [(ngModel)]="cf_expires_in_value" placeholder="Enter value"
                                [ngModelOptions]="{standalone: true}" >
                       </div>
           
@@ -1071,7 +1071,7 @@
                     <div class="row" *ngIf="allow_encashment">
                       <div class="col-md-4">
                         <label>Encashment value</label>
-                        <input type="number" class="form-control" required [(ngModel)]="encashment_value" placeholder="Enter Value"
+                        <input type="number" class="form-control"  [(ngModel)]="encashment_value" placeholder="Enter Value"
                                [ngModelOptions]="{standalone: true}" >
                       </div>
           
@@ -1087,7 +1087,7 @@
           
                       <div class="col-md-4">
                         <label>Encashment max limit</label>
-                        <input type="number" class="form-control" required [(ngModel)]="encashment_max_limit" placeholder="Enter Limit"
+                        <input type="number" class="form-control"  [(ngModel)]="encashment_max_limit" placeholder="Enter Limit"
                                [ngModelOptions]="{standalone: true}" >
                       </div>
   
@@ -1116,7 +1116,7 @@
         
                           </div>
                       </div>
-                  </form> 
+                  </form>  
                   
                   <div class="table-container mt-5">
 
@@ -1173,6 +1173,7 @@
                     </div>
 
                     </div>
+                    
                  </mat-tab>
   
   

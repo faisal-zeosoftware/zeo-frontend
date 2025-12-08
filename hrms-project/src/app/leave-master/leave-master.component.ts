@@ -183,6 +183,13 @@ export class LeaveMasterComponent {
   @ViewChild('selectCat') selectCat: MatSelect | undefined;
 
 
+  
+  @ViewChild('selectcon') selectcon: MatSelect | undefined;
+  @ViewChild('selectDeptcon') selectDeptcon: MatSelect | undefined;
+  @ViewChild('selectDescon') selectDescon: MatSelect | undefined;
+  @ViewChild('selectCatcon') selectCatcon: MatSelect | undefined;
+
+
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,
@@ -590,7 +597,8 @@ updateLeavetype(): void {
       min_experience: this.min_experience,
       effective_after_from: this.effective_after_from,
       effective_after_unit: this.effective_after_unit,
-  
+   
+       
       accrual_rate: this.accrual_rate,
       accrual_frequency: this.accrual_frequency,
       accrual_month: this.accrual_month,
@@ -900,6 +908,58 @@ loadLeaveEntitlements(): void {
       }
     }
   }
+
+
+
+
+  allSelectedcon = false;
+  allSelecteddeptcon = false;
+  allSelectedcatcon = false;
+  allSelectedEmpcon = false;
+  allSelectedDescon = false;
+
+
+  toggleAllSelectioncon(): void {
+    if (this.selectcon) {
+      if (this.allSelectedcon) {
+
+        this.selectcon.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectcon.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+  toggleAllSelectiondeptcon(): void {
+    if (this.selectDeptcon) {
+      if (this.allSelecteddeptcon) {
+        this.selectDeptcon.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectDeptcon.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+  toggleAllSelectioncatcon(): void {
+    if (this.selectCatcon) {
+      if (this.allSelectedcatcon) {
+        this.selectCatcon.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectCatcon.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+  toggleAllSelectionDescon(): void {
+    if (this.selectDescon) {
+      if (this.allSelectedDescon) {
+        this.selectDescon.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectDescon.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
 
 
 
