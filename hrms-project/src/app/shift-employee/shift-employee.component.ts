@@ -82,7 +82,7 @@ ShiftsPattern: any[] = [];
 
 
   
-  branches:any []=[];
+  Branches:any []=[];
   Departments:any []=[];
   Categories:any []=[];
   Employee: any[] = [];
@@ -316,6 +316,10 @@ ngOnInit(): void {
   departments:any='';
   single_shift_pattern:any='';
   employee:any='';
+  categories:any='';
+  designations:any='';
+
+  branches:any='';
 
 
   automaticNumbering: boolean = false;
@@ -339,8 +343,13 @@ ngOnInit(): void {
       week4_pattern: this.week4_pattern || null,
 
       employee: this.employee || null,
+      branches: this.branches || null,
+     
+      designations: this.designations || null,
+      categories: this.categories || null,
       // For a multi-select field, ensure we send an array.
       departments: (this.departments && Array.isArray(this.departments)) ? this.departments : [],
+
       // If nothing is selected for single shift pattern, send null.
       single_shift_pattern: this.single_shift_pattern || null,
     };
@@ -448,7 +457,7 @@ ngOnInit(): void {
               if (selectedSchema) {
                 this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
                   (result: any) => {
-                    this.branches = result;
+                    this.Branches = result;
                     console.log(' fetching Companies:');
             
                   },
@@ -507,7 +516,7 @@ ngOnInit(): void {
         
                 
               
-              toggleAllSelectiondes(): void {
+              toggleAllSelectionDes(): void {
                 if (this.selectDes) {
                   if (this.allSelecteddes) {
                     this.selectDes.options.forEach((item: MatOption) => item.select());
