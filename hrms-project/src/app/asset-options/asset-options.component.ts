@@ -15,7 +15,9 @@ export class AssetOptionsComponent {
   hasViewPermissionAssetTypes: boolean = false;
   hasViewPermissionAssetMaster: boolean = false;
   hasViewPermissionAssetAllocation: boolean = false;
+  hasViewPermissionAssetAprlvl: boolean = false;
   hasViewPermissionAssetRequest: boolean = false;
+  hasViewPermissionAssetApprovals: boolean = false;
 
 
 
@@ -82,7 +84,9 @@ export class AssetOptionsComponent {
           this.hasViewPermissionAssetTypes = true;
           this.hasViewPermissionAssetMaster = true;
           this.hasViewPermissionAssetAllocation = true;
+          this.hasViewPermissionAssetAprlvl = true;
           this.hasViewPermissionAssetRequest = true;
+          this.hasViewPermissionAssetApprovals = true;
 
 
   
@@ -113,7 +117,9 @@ export class AssetOptionsComponent {
                   this.hasViewPermissionAssetTypes = true;
                   this.hasViewPermissionAssetMaster = true;
                   this.hasViewPermissionAssetAllocation = true;
+                  this.hasViewPermissionAssetAprlvl = true;
                   this.hasViewPermissionAssetRequest = true;
+                  this.hasViewPermissionAssetApprovals = true;
 
               
                  
@@ -131,6 +137,13 @@ export class AssetOptionsComponent {
                       
                        this.hasViewPermissionAssetMaster = this.checkGroupPermission('view_asset', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAssetMaster);
+
+                       this.hasViewPermissionAssetAprlvl = this.checkGroupPermission('view_asset', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAssetAprlvl);
+
+                       this.hasViewPermissionAssetApprovals = this.checkGroupPermission('view_asset', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAssetApprovals);
+
 
                        this.hasViewPermissionAssetAllocation = this.checkGroupPermission('view_assetallocation', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAssetAllocation);

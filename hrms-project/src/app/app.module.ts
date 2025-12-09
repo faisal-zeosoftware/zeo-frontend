@@ -214,6 +214,10 @@ import { DocumentFolderFilesComponent } from './document-folder-files/document-f
 import { GeneralRequestEscalationComponent } from './general-request-escalation/general-request-escalation.component';
 import { LeaveTemplateEditComponent } from './leave-template-edit/leave-template-edit.component';
 import { DocExpEmailtemplateEditComponent } from './doc-exp-emailtemplate-edit/doc-exp-emailtemplate-edit.component';
+import { AssetApprovelLevelComponent } from './asset-approvel-level/asset-approvel-level.component';
+import { AssetApprovalComponent } from './asset-approval/asset-approval.component';
+import { AirticketApprovalLevelComponent } from './airticket-approval-level/airticket-approval-level.component';
+import { AirticketApprovalsComponent } from './airticket-approvals/airticket-approvals.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -386,7 +390,11 @@ import { DocExpEmailtemplateEditComponent } from './doc-exp-emailtemplate-edit/d
      DocumentFolderFilesComponent,
      GeneralRequestEscalationComponent,
      LeaveTemplateEditComponent,
-     DocExpEmailtemplateEditComponent
+     DocExpEmailtemplateEditComponent,
+     AssetApprovelLevelComponent,
+     AssetApprovalComponent,
+     AirticketApprovalLevelComponent,
+     AirticketApprovalsComponent
      
      
 

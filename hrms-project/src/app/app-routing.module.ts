@@ -85,12 +85,15 @@ import { LoanApprovelLevelComponent } from './loan-approvel-level/loan-approvel-
 import { LoanApprovalComponent } from './loan-approval/loan-approval.component';
 import { LeaveBalanceReportComponent } from './leave-balance-report/leave-balance-report.component';
 import { AnnouncementMasterComponent } from './announcement-master/announcement-master.component';
+
 import { AssetOptionsComponent } from './asset-options/asset-options.component';
 import { AssetTypesComponent } from './asset-types/asset-types.component';
 import { AssetMasterComponent } from './asset-master/asset-master.component';
+import { AssetApprovelLevelComponent } from './asset-approvel-level/asset-approvel-level.component';
 import { AssetAllocationComponent } from './asset-allocation/asset-allocation.component';
 import { AssetRequestComponent } from './asset-request/asset-request.component';
 import { AssetUdfComponent } from './asset-udf/asset-udf.component';
+
 import { PayrollAppovalLevelComponent } from './payroll-appoval-level/payroll-appoval-level.component';
 import { PayslipApprovalComponent } from './payslip-approval/payslip-approval.component';
 import { WpsComponent } from './wps/wps.component';
@@ -125,15 +128,21 @@ import { AdvanceSalaryEmailtemplateComponent } from './advance-salary-emailtempl
 import { LoanEmailtemplateEditComponent } from './loan-emailtemplate-edit/loan-emailtemplate-edit.component';
 import { LoanEmailTemplateComponent } from './loan-email-template/loan-email-template.component';
 import { AirticketRuleComponent } from './airticket-rule/airticket-rule.component';
+
 import { ShiftOptionsComponent } from './shift-options/shift-options.component';
 import { ShiftsComponent } from './shifts/shifts.component';
 import { ShiftPatternComponent } from './shift-pattern/shift-pattern.component';
 import { ShiftEmployeeComponent } from './shift-employee/shift-employee.component';
 import { ShiftOverrideComponent } from './shift-override/shift-override.component';
+
 import { DocumentRequestTypeComponent } from './document-request-type/document-request-type.component';
 import { DocumentFoldersComponent } from './document-folders/document-folders.component';
 import { DocumentFolderFilesComponent } from './document-folder-files/document-folder-files.component';
 import { GeneralRequestEscalationComponent } from './general-request-escalation/general-request-escalation.component';
+import { AssetApprovalComponent } from './asset-approval/asset-approval.component';
+import { AirticketApprovalLevelComponent } from './airticket-approval-level/airticket-approval-level.component';
+import { AirticketApprovalsComponent } from './airticket-approvals/airticket-approvals.component';
+
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
@@ -606,6 +615,14 @@ const routes: Routes = [
       path:'asset-request',
       component:AssetRequestComponent,
     },
+    {
+      path:'asset-approvel-level',
+      component:AssetApprovelLevelComponent,
+    },
+    {
+      path:'asset-approval',
+      component:AssetApprovalComponent,
+    },
 
 
   ]
@@ -636,6 +653,16 @@ const routes: Routes = [
     {
       path:'airticket-rule',
       component:AirticketRuleComponent,
+    },
+
+    {
+      path:'airticket-approval-level',
+      component:AirticketApprovalLevelComponent,
+    },
+
+     {
+      path:'airticket-approvals',
+      component:AirticketApprovalsComponent,
     },
 
 

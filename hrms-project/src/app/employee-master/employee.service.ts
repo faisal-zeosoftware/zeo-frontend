@@ -556,6 +556,38 @@ deleteLoanApprovalLevel(categoryId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+deleteAssetApprovalLevel(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+deleteAirticketApprovalLevel(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-levels/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
 deleteLoanApplication(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
   // return this.http.delete(url);
@@ -575,6 +607,33 @@ deleteLoanApplication(categoryId: number): Observable<any> {
 updateLoanApprovalLevel(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-levels/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateAssetApprovalLevel(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+updateAirticketApprovalLevel(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-levels/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(
@@ -3181,12 +3240,57 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
     );
   }
 
+    registerAssetApproverLevel(formData: FormData): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+  
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/?schema=${selectedSchema}`;
+  
+    return this.http.post(apiUrl, formData).pipe(
+      catchError((error) => {
+        console.error('Error during leave type registration:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+
+   registerAirticketApproverLevel(formData: FormData): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+  
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-levels/?schema=${selectedSchema}`;
+  
+    return this.http.post(apiUrl, formData).pipe(
+      catchError((error) => {
+        console.error('Error during leave type registration:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+
 
 
   // get method for loans
 
   getLoanTypes(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-type/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+    getAssetTypes(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-type/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);
@@ -3235,6 +3339,17 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
   }
 
 
+    getAssetApprovalLevels(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+
+
 
 
 
@@ -3246,6 +3361,25 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   getApprovalslistLeave(selectedSchema: string, userId: number): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-approval/?schema=${selectedSchema}`;
+  
+    // Fetch approvals for the user from the API
+    
+    return this.http.get(apiUrl);
+  }
+
+  
+  getApprovalslistAsset(selectedSchema: string, userId: number): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals/?schema=${selectedSchema}`;
+  
+    // Fetch approvals for the user from the API
+    
+    return this.http.get(apiUrl);
+  }
+
+
+    
+  getApprovalslistAirticket(selectedSchema: string, userId: number): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval/?schema=${selectedSchema}`;
   
     // Fetch approvals for the user from the API
     

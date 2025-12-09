@@ -19,6 +19,8 @@ export class AirTicketOptionsComponent {
   hasViewPermissionAirticketAllocation:boolean = false;
   hasViewPermissionAirticketRequest:boolean = false;
   hasViewPermissionAirticketRule:boolean = false;
+  hasViewPermissionAirticketAprlvl:boolean = false;
+  hasViewPermissionAirticketApprovals:boolean = false;
 
 
   
@@ -84,6 +86,8 @@ export class AirTicketOptionsComponent {
           this.hasViewPermissionAirticketAllocation = true;
           this.hasViewPermissionAirticketRequest = true;
           this.hasViewPermissionAirticketRule = true;
+          this.hasViewPermissionAirticketAprlvl = true;
+          this.hasViewPermissionAirticketApprovals = true;
        
   
   
@@ -113,6 +117,8 @@ export class AirTicketOptionsComponent {
           this.hasViewPermissionAirticketAllocation = true;
           this.hasViewPermissionAirticketRequest = true;
           this.hasViewPermissionAirticketRule = true;
+          this.hasViewPermissionAirticketAprlvl = true;
+          this.hasViewPermissionAirticketApprovals = true;
                  
   
   
@@ -128,6 +134,12 @@ export class AirTicketOptionsComponent {
                       
                        this.hasViewPermissionAirticketAllocation = this.checkGroupPermission('view_airticketallocation', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAirticketAllocation);
+
+                       this.hasViewPermissionAirticketApprovals = this.checkGroupPermission('view_airticketallocation', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAirticketApprovals);
+
+                       this.hasViewPermissionAirticketAprlvl = this.checkGroupPermission('view_airticketrequest', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAirticketAprlvl);
 
                         this.hasViewPermissionAirticketRequest = this.checkGroupPermission('view_airticketrequest', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAirticketRequest);

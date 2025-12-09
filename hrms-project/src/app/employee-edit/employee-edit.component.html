@@ -281,7 +281,7 @@
 
         <div class="custom-sel">
             <label>{{cntryFieldName}}</label>
-            <select class="form-control" id="emp_country_id" name="emp_country_id" required [(ngModel)]="emp_country_id" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}" >
+            <select class="form-control" id="emp_country_id" name="emp_country_id" required [(ngModel)]="Emp.emp_country_id" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}" >
                 <option value="" >Select</option>
                 <option *ngFor="let emp_country_id of countries" [value]="emp_country_id.id">{{ emp_country_id.country_name }}</option>
             </select>

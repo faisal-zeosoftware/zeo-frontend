@@ -208,7 +208,12 @@ export class EmployeeEditComponent {
           // Category mapping
           const cat = this.catogories?.find(c => c.ctgry_title === Emp.emp_ctgry_id);
           if (cat) this.Emp.emp_ctgry_id = cat.id;
-        }, 1000);
+
+           // Country mapping
+          const count = this.countries?.find(c => c.country_name === Emp.emp_country_id);
+          if (count) this.Emp.emp_country_id = count.id;
+
+        }, 500);
       },
       (error) => {  
         console.error('Error fetching employee:', error);
@@ -304,13 +309,13 @@ updateEmp(): void {
   safeAppend('emp_mother_name', this.Emp.emp_mother_name);
   safeAppend('emp_posting_location', this.Emp.emp_posting_location);
 
-  safeAppend('emp_country_id', this.emp_country_id);
-  safeAppend('emp_state_id', this.emp_state_id);
+  safeAppend('emp_country_id', this.Emp.emp_country_id);
+  safeAppend('emp_state_id', this.Emp.emp_state_id);
   safeAppend('emp_company_id', this.Emp.emp_company_id);
   safeAppend('emp_branch_id', this.Emp.emp_branch_id);
 
   safeAppend('emp_relegion', this.Emp.emp_relegion);
-    formData.append('emp_nationality', this.emp_nationality);
+    formData.append('emp_nationality', this.Emp.emp_nationality);
 
   safeAppend('emp_dept_id', this.Emp.emp_dept_id);
   safeAppend('emp_desgntn_id', this.Emp.emp_desgntn_id);
@@ -648,18 +653,18 @@ loadStates(): void {
 
 
 onCountryChange(): void {
-  if (this.emp_country_id !== undefined) {
+  if (this.Emp.emp_country_id !== undefined) {
     this.loadStatesByCountry();
   }
 }
 
 loadStatesByCountry(): void {
-  if (!this.emp_country_id) {
+  if (!this.Emp.emp_country_id) {
     console.error('Country ID is null or undefined.');
     return;
   }
 
-  this.CountryService.getStatesByCountryId(this.emp_country_id).subscribe(
+  this.CountryService.getStatesByCountryId(this.Emp.emp_country_id).subscribe(
     (result: any) => {
       console.log('State Response:', result);
       this.states = result.states;
