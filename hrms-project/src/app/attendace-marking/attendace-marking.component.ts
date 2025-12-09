@@ -253,75 +253,93 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   
 
 
+  getLocation(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject("Geolocation not supported");
+    }
 
-
-  registerCheckIn(): void {
-    this.registerButtonClicked = true;
-    
-    const companyData = {
-  
-    
-      employee: this.employee   ,
-
-
-   
-
-      // Add other form field values to the companyData object
-    };
-  
-
-    this.employeeService.registerEmployeeAttendenceCheckIn(companyData).subscribe(
-      (response) => {
-        console.log('Attendance Marking successful', response);
-      
-            alert('Check In successful ');
-            // window.location.reload();
-            // window.location.reload();
-       
-
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
       },
       (error) => {
-        console.error('Added failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
+        reject("Location access denied");
       }
     );
-  }
+  });
+}
+
+
+getAddress(lat: number, lng: number): Promise<string> {
+  return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+    .then(res => res.json())
+    .then(data => data.display_name || "")
+    .catch(() => "");
+}
 
 
 
-  registerCheckOut(): void {
+
+async registerCheckIn(): Promise<void> {
+  try {
     this.registerButtonClicked = true;
-    
-    const companyData = {
-  
-    
-      employee: this.employee   ,
 
+    const position = await this.getLocation();
+    const address = await this.getAddress(position.lat, position.lng);
 
-   
-
-      // Add other form field values to the companyData object
+    const data = {
+      employee: this.employee,
+      check_in_lat: position.lat,
+      check_in_lng: position.lng,
+      check_in_location: address
     };
-  
 
-    this.employeeService.registerEmployeeAttendenceCheckOut(companyData).subscribe(
+    this.employeeService.registerEmployeeAttendenceCheckIn(data).subscribe(
       (response) => {
-        console.log('Punch Out Marking successful', response);
-      
-            alert('Check Out successful ');
-            window.location.reload();
-            // window.location.reload();
-       
-
+        alert("Check In successful");
       },
       (error) => {
-        console.error('Added failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
+        alert("Check-In Failed");
       }
     );
+
+  } catch (error) {
+    alert("Please allow location access!");
   }
+}
+
+
+async registerCheckOut(): Promise<void> {
+  try {
+    this.registerButtonClicked = true;
+
+    const position = await this.getLocation();
+    const address = await this.getAddress(position.lat, position.lng);
+
+    const data = {
+      employee: this.employee,
+      check_out_lat: position.lat,
+      check_out_lng: position.lng,
+      check_out_location: address
+    };
+
+    this.employeeService.registerEmployeeAttendenceCheckOut(data).subscribe(
+      (response) => {
+        alert("Check Out successful");
+      },
+      (error) => {
+        alert("Check-Out Failed");
+      }
+    );
+
+  } catch (error) {
+    alert("Please allow location access!");
+  }
+}
 
 
   LoadEmployee() {
