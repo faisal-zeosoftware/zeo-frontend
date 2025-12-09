@@ -143,6 +143,15 @@ export class EmployeeService {
 
   }
 
+   getAllgeneralRequestEscalationsAdv(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+
   
 deleteGeneralReq(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
@@ -166,6 +175,17 @@ resetGeneralReq(id: number): Observable<any> {
   }
 
   const apiUrl = `${this.apiUrl}/employee/api/escalation-rules/${id}/reset/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, {});  // Reset API usually requires POST
+}
+
+
+resetAdvSalEsc(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/${id}/reset/?schema=${selectedSchema}`;
   return this.http.post(apiUrl, {});  // Reset API usually requires POST
 }
 
@@ -213,6 +233,20 @@ updateGeneralReqEsc(id: number, data: any): Observable<any> {
     })
   );
 }
+
+updateAdvSalEsc(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
 
 
 deleterequestType(categoryId: number): Observable<any> {
@@ -2806,6 +2840,54 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
         })
       );
     }
+
+
+     registerEmailTemplateAsset(companyData: any): Observable<any> {
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema) {
+        console.error('No schema selected.');
+        return throwError('No schema selected.'); // Return an error observable if no schema is selected
+      }
+  
+  
+  
+      const apiUrl = `${this.apiUrl}/organisation/api/asset-email-template/?schema=${selectedSchema}`;
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+      return this.http.post(apiUrl, companyData, { headers }).pipe(
+        catchError((error) => {
+          // Handle errors here (you can log, show a user-friendly message, etc.)
+          console.error('Error during company registration:', error);
+          return throwError(error);
+  
+        })
+      );
+    }
+
+
+
+     registerEmailTemplateAirticket(companyData: any): Observable<any> {
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema) {
+        console.error('No schema selected.');
+        return throwError('No schema selected.'); // Return an error observable if no schema is selected
+      }
+  
+  
+  
+      const apiUrl = `${this.apiUrl}/payroll/api/airticket-email-template/?schema=${selectedSchema}`;
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+      return this.http.post(apiUrl, companyData, { headers }).pipe(
+        catchError((error) => {
+          // Handle errors here (you can log, show a user-friendly message, etc.)
+          console.error('Error during company registration:', error);
+          return throwError(error);
+  
+        })
+      );
+    }
+  
   
 
 
@@ -2900,6 +2982,22 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   getEmailPlaceholderLoan(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+  }
+
+    getEmailPlaceholderAirticket(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-email-template/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+  }
+
+    getEmailPlaceholderAsset(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-email-template/placeholders/?schema=${selectedSchema}`;
 
     // Fetch employees from the API
     return this.http.get(apiUrl);
@@ -3781,6 +3879,36 @@ deleteEmailTemplateLoan(categoryId: number): Observable<any> {
   }
  
   const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+deleteEmailTemplateAsset(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-email-template/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+deleteEmailTemplateAirticket(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-email-template/${categoryId}/?schema=${selectedSchema}`;
  
   return this.http.delete(apiUrl);
 }

@@ -218,6 +218,11 @@ import { AssetApprovelLevelComponent } from './asset-approvel-level/asset-approv
 import { AssetApprovalComponent } from './asset-approval/asset-approval.component';
 import { AirticketApprovalLevelComponent } from './airticket-approval-level/airticket-approval-level.component';
 import { AirticketApprovalsComponent } from './airticket-approvals/airticket-approvals.component';
+import { AssetEmailTemplateComponent } from './asset-email-template/asset-email-template.component';
+import { AssetEmailTemplateEditComponent } from './asset-email-template-edit/asset-email-template-edit.component';
+import { AirticketEmailTemplateComponent } from './airticket-email-template/airticket-email-template.component';
+import { AirticketEmailTemplateEditComponent } from './airticket-email-template-edit/airticket-email-template-edit.component';
+import { AdvanceSalaryEscalationComponent } from './advance-salary-escalation/advance-salary-escalation.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -394,7 +399,12 @@ import { AirticketApprovalsComponent } from './airticket-approvals/airticket-app
      AssetApprovelLevelComponent,
      AssetApprovalComponent,
      AirticketApprovalLevelComponent,
-     AirticketApprovalsComponent
+     AirticketApprovalsComponent,
+     AssetEmailTemplateComponent,
+     AssetEmailTemplateEditComponent,
+     AirticketEmailTemplateComponent,
+     AirticketEmailTemplateEditComponent,
+     AdvanceSalaryEscalationComponent
      
      
 

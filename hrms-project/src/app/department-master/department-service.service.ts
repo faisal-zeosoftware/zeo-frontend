@@ -88,8 +88,20 @@ export class DepartmentServiceService {
   return this.http.get(apiUrl);
 }
 
+
+  getEscalationLevelsAdvSalary(selectedSchema: string, requestTypeId: number): Observable<any> {
+  const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
+
 updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Observable<any> {
   const apiUrl = `${this.apiUrl}/employee/api/escalation-rules/${levelId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, data);
+}
+
+updateEscalationLevelAdv(selectedSchema: string, levelId: number, data: any): Observable<any> {
+  const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/${levelId}/?schema=${selectedSchema}`;
   return this.http.put(apiUrl, data);
 }
 
@@ -306,6 +318,16 @@ updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Obser
     return this.http.put(apiUrl, data);
   }
 
+      updateAssetEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-email-template/${templateId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, data);
+  }
+
+   updateAirticketEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-email-template/${templateId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, data);
+  }
+
     updateDocExpEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/${templateId}/?schema=${selectedSchema}`;
     return this.http.put(apiUrl, data);
@@ -350,6 +372,24 @@ updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Obser
 
     getEmailTemplatesLoan(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+   getEmailTemplatesAsset(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-email-template/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+   getEmailTemplatesAirticket(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-email-template/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);

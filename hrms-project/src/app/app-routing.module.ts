@@ -142,6 +142,9 @@ import { GeneralRequestEscalationComponent } from './general-request-escalation/
 import { AssetApprovalComponent } from './asset-approval/asset-approval.component';
 import { AirticketApprovalLevelComponent } from './airticket-approval-level/airticket-approval-level.component';
 import { AirticketApprovalsComponent } from './airticket-approvals/airticket-approvals.component';
+import { AssetEmailTemplateComponent } from './asset-email-template/asset-email-template.component';
+import { AirticketEmailTemplateComponent } from './airticket-email-template/airticket-email-template.component';
+import { AdvanceSalaryEscalationComponent } from './advance-salary-escalation/advance-salary-escalation.component';
 
 
 const routes: Routes = [
@@ -435,6 +438,16 @@ const routes: Routes = [
             component:LoanEmailTemplateComponent
           },
 
+          {
+            path:'asset-email-template',
+            component:AssetEmailTemplateComponent
+          },
+
+          {
+            path:'airticket-email-template',
+            component:AirticketEmailTemplateComponent
+          },
+
 
 
             {
@@ -550,9 +563,13 @@ const routes: Routes = [
       path:'advance-salary-request',
       component:AdvanceSalaryRequestComponent,
     },
+    {
+      path:'advance-salary-request',
+      component:AdvanceSalaryRequestComponent,
+    },
      {
-      path:'advance-salary-approvals',
-      component:AdvanceSalaryApprovalsComponent,
+      path:'advance-salary-escalation',
+      component:AdvanceSalaryEscalationComponent,
     },
 
   ]
