@@ -25,6 +25,8 @@ export class AttendaceMarkingComponent {
   shift: any = '';
 
 Employees: any[] = [];
+Punching: any[] = [];
+
 userId: number | null | undefined;
 userDetails: any;
 userDetailss: any;
@@ -56,7 +58,8 @@ private sessionService: SessionService,
 ngOnInit(): void {
  
   this.LoadEmployee();
-
+  this.LoadEmployeePunching();
+  
   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
     this.authService.getUserData(this.userId).subscribe(
@@ -272,7 +275,7 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
         console.log('Attendance Marking successful', response);
       
             alert('Check In successful ');
-            window.location.reload();
+            // window.location.reload();
             // window.location.reload();
        
 
@@ -340,4 +343,28 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     }
 
   }
+
+
+  LoadEmployeePunching() {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getPunchings(selectedSchema).subscribe(
+        (result: any) => {
+          this.Punching = result;
+          console.log(' fetching Employees:');
+  
+        },
+        (error) => {
+          console.error('Error fetching Employees:', error);
+        }
+      );
+    }
+
+  }
+
+
+
 }

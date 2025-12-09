@@ -101,6 +101,47 @@
 
         </div>
 
+          <div class="com_list mt-4">
+    <div class="cpm-sec" *ngIf="hasViewPermission" >
+
+      <table width="100%" *ngIf="hasViewPermission">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Employee </th>
+            <th>Shift</th>
+            <th> Date</th>
+
+            <th>Check In</th>
+            <th>Check Out</th>
+
+           
+          </tr>
+        </thead>
+        <tbody>
+            
+          <tr *ngFor="let docs of Punching;let i = index">
+            <td data-label="No">{{ i + 1 }}</td> 
+            <td>{{ docs.employee }}</td> 
+            <td>{{ docs.shift }}</td> 
+            <td >{{ docs.date }}</td>
+            <td >{{ docs.check_in_time }}</td>
+            <td >{{ docs.check_out_time }}</td>
+
+
+            <td></td>
+
+      
+              
+      
+        </tbody>
+      </table>
+
+
+
+      </div>
+      </div>
+
 
 </div>
 
