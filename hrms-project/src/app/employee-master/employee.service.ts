@@ -81,6 +81,13 @@ export class EmployeeService {
   }
 
 
+  
+  getPunchings(selectedSchema: string): Observable<any> {
+    const url = `${this.apiUrl}/calendars/api/attendance/?schema=${selectedSchema}`;
+    return this.http.get(url);
+  }
+
+
   getemployeescusValue(selectedSchema: string): Observable<any> {
     const url = `${this.apiUrl}/employee/api/emp-custom-field/?schema=${selectedSchema}`;
     return this.http.get(url);
