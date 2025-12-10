@@ -18,6 +18,7 @@ export class LoanSidebarComponent {
   hasViewPermissionLoanApprovals: boolean = false;
   hasViewPermissionLoanApprovalLevel: boolean = false;
   hasViewPermissionLoanApplication: boolean = false;
+  hasViewPermissionLoanEscalation: boolean = false;
 
 
 
@@ -84,6 +85,7 @@ export class LoanSidebarComponent {
           this.hasViewPermissionLoanApprovals = true;
           this.hasViewPermissionLoanApplication = true;
           this.hasViewPermissionLoanApprovalLevel = true;
+          this.hasViewPermissionLoanEscalation = true;
        
   
   
@@ -114,6 +116,7 @@ export class LoanSidebarComponent {
                   this.hasViewPermissionLoanApprovals = true;
                   this.hasViewPermissionLoanApplication = true;
                   this.hasViewPermissionLoanApprovalLevel = true;
+                    this.hasViewPermissionLoanEscalation = true;
                  
   
   

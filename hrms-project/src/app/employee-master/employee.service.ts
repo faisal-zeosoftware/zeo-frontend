@@ -158,6 +158,15 @@ export class EmployeeService {
 
   }
 
+  getAllgeneralRequestEscalationsLoan(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+
 
   
 deleteGeneralReq(categoryId: number): Observable<any> {
@@ -193,6 +202,16 @@ resetAdvSalEsc(id: number): Observable<any> {
   }
 
   const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/${id}/reset/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, {});  // Reset API usually requires POST
+}
+
+resetLoanEsc(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/${id}/reset/?schema=${selectedSchema}`;
   return this.http.post(apiUrl, {});  // Reset API usually requires POST
 }
 
@@ -244,6 +263,19 @@ updateGeneralReqEsc(id: number, data: any): Observable<any> {
 updateAdvSalEsc(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateLoanEsc(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(

@@ -94,6 +94,11 @@ export class DepartmentServiceService {
   return this.http.get(apiUrl);
 }
 
+  getEscalationLevelsLoan(selectedSchema: string, requestTypeId: number): Observable<any> {
+  const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
 
 updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Observable<any> {
   const apiUrl = `${this.apiUrl}/employee/api/escalation-rules/${levelId}/?schema=${selectedSchema}`;
@@ -102,6 +107,11 @@ updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Obser
 
 updateEscalationLevelAdv(selectedSchema: string, levelId: number, data: any): Observable<any> {
   const apiUrl = `${this.apiUrl}/payroll/api/adv-salary-escalation/${levelId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, data);
+}
+
+updateEscalationLevelLoan(selectedSchema: string, levelId: number, data: any): Observable<any> {
+  const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/${levelId}/?schema=${selectedSchema}`;
   return this.http.put(apiUrl, data);
 }
 

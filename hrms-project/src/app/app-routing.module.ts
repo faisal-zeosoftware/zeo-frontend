@@ -145,6 +145,7 @@ import { AirticketApprovalsComponent } from './airticket-approvals/airticket-app
 import { AssetEmailTemplateComponent } from './asset-email-template/asset-email-template.component';
 import { AirticketEmailTemplateComponent } from './airticket-email-template/airticket-email-template.component';
 import { AdvanceSalaryEscalationComponent } from './advance-salary-escalation/advance-salary-escalation.component';
+import { LoanEscalationComponent } from './loan-escalation/loan-escalation.component';
 
 
 const routes: Routes = [
@@ -601,6 +602,11 @@ const routes: Routes = [
     {
       path:'loan-approval',
       component:LoanApprovalComponent,
+    },
+
+    {
+      path:'loan-escalation',
+      component:LoanEscalationComponent,
     },
    
 

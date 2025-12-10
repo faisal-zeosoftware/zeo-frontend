@@ -223,6 +223,7 @@ import { AssetEmailTemplateEditComponent } from './asset-email-template-edit/ass
 import { AirticketEmailTemplateComponent } from './airticket-email-template/airticket-email-template.component';
 import { AirticketEmailTemplateEditComponent } from './airticket-email-template-edit/airticket-email-template-edit.component';
 import { AdvanceSalaryEscalationComponent } from './advance-salary-escalation/advance-salary-escalation.component';
+import { LoanEscalationComponent } from './loan-escalation/loan-escalation.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -404,7 +405,8 @@ import { AdvanceSalaryEscalationComponent } from './advance-salary-escalation/ad
      AssetEmailTemplateEditComponent,
      AirticketEmailTemplateComponent,
      AirticketEmailTemplateEditComponent,
-     AdvanceSalaryEscalationComponent
+     AdvanceSalaryEscalationComponent,
+     LoanEscalationComponent
      
      
 
