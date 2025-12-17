@@ -105,6 +105,8 @@ interface KeyValue {
   templateUrl: './leave-report.component.html',
   styleUrl: './leave-report.component.css'
 })
+
+
 export class LeaveReportComponent {
 
   @ViewChild('filteredReportModal') filteredReportModal!: ElementRef;
@@ -844,11 +846,7 @@ saveAsExcelFile(buffer: any, fileName: string): void {
   
   
 
-  // updateSelectedFields(): void {
-  //   this.selectedFields = this.employeefields.filter(field => field.selected);
-  //   console.log('Selected fields:', this.selectedFields);
-  // }
-  
+
   loadSavedReports(): void {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -1223,18 +1221,6 @@ saveAsExcelFile(buffer: any, fileName: string): void {
   }
   
   
-  // onFieldSelectionChanges(event: any, field: EmployeeField): void {
-  //   field.selected = event.target.checked;
-  //   console.log(field.selected)
-  //   if (field.selected) {
-  //     const existingField = this.selectedFields.find(f => f.value === field.value);
-  //     if (!existingField) {
-  //       this.selectedFields.push(field);
-  //     }
-  //   } else {
-  //     this.selectedFields = this.selectedFields.filter(f => f.value !== field.value);
-  //   }
-  // }
   onFieldSelectionChanges(event: any, field: EmployeeField): void {
     field.selected = event.target.checked;
     console.log('Field selection changed:', field.displayName, 'Selected:', field.selected);
