@@ -158,84 +158,123 @@ export class EmployeeEditComponent {
 
   profilePicUrl: string | null = null;
 
-  ngOnInit(): void {
-    // 1. Load employee details
-    this.EmployeeService.getEmpById(this.data.employeeId).subscribe(
-      (Emp) => {
-        this.Emp = Emp;
-        this.EmpD.emp_master = Emp.id; // Assuming `Emp.id` corresponds to the employee ID
-  
+ngOnInit(): void {
 
-        // Bind profile picture
+  // 🔹 Load all dropdown masters FIRST
+  this.loadCountries();
+  this.loadCompanies();
+  this.loadbranches();
+  this.loadDepartments();
+  this.loadDesignation();
+  this.loadcatg();
+  this.loadLanguages();
+  this.loadReligoin();
+  this.loadNationality();
+
+  // 🔹 Load employee data
+  this.EmployeeService.getEmpById(this.data.employeeId).subscribe(
+    (Emp: any) => {
+
+      this.Emp = Emp;
+      this.EmpD.emp_master = Emp.id;
+
+      // Profile picture
       if (Emp.emp_profile_pic) {
-        this.profilePicUrl = Emp.emp_profile_pic; // Store image URL
+        this.profilePicUrl = Emp.emp_profile_pic;
       }
-        // Handle custom fields
+
+      // Custom fields
+      if (this.Emp.custom_fields) {
         this.Emp.custom_fields.forEach((field: any) => {
           this.customFieldValues[field.id] = field.field_value;
         });
-  
-        if (this.Emp.custom_fields && this.Emp.custom_fields.length > 0) {
+
+        if (this.Emp.custom_fields.length > 0) {
           this.selectedCustomField = this.Emp.custom_fields[0];
-        } else {
-          console.error('No custom fields available');
         }
-  
-        console.log('Selected Custom Field after initialization:', this.selectedCustomField);
-  
-        // 2. After loading dropdowns, map names → IDs
-        setTimeout(() => {
-          // Branch mapping
-          const branch = this.branches?.find(b => b.branch_name === Emp.emp_branch_id);
-          if (branch) this.Emp.emp_branch_id = branch.id;
-  
-          // Department mapping
-          const dept = this.departments?.find(d => d.dept_name === Emp.emp_dept_id);
-          if (dept) this.Emp.emp_dept_id = dept.id;
-  
-          // Designation mapping
-          const desg = this.designations?.find(ds => ds.desgntn_job_title === Emp.emp_desgntn_id);
-          if (desg) this.Emp.emp_desgntn_id = desg.id;
-
-        // religion mapping
-         const rel = this.Religions?.find(ds => ds.religion === Emp.emp_relegion);
-        if (rel) this.Emp.emp_relegion = rel.id;
-  
-         // nationality mapping
-             const nat = this.Nationations?.find(ds => ds.N_name === Emp.emp_nationality);
-            if (nat) this.Emp.emp_nationality = nat.id;
-  
-          // Category mapping
-          const cat = this.catogories?.find(c => c.ctgry_title === Emp.emp_ctgry_id);
-          if (cat) this.Emp.emp_ctgry_id = cat.id;
-
-           // Country mapping
-          const count = this.countries?.find(c => c.country_name === Emp.emp_country_id);
-          if (count) this.Emp.emp_country_id = count.id;
-
-        }, 500);
-      },
-      (error) => {  
-        console.error('Error fetching employee:', error);
       }
-    );
-  
-    // 3. Load all supporting dropdowns + data
-    this.loadEmployeeDetails(this.data.employeeId);
-    this.loadCountries();
-    this.loadCompanies();
-    this.loadbranches();
-    this.loadDepartments();
-    this.loadDesignation();
-    this.loadcatg();
-    this.loadLanguages();
-    this.loadEmployee();
-    this.loadEmployeecust_value();
-    this.loadFieldNames();
-    this.loadReligoin();
-    this.loadNationality();
-  }
-  
+
+      /**
+       * 🔴 IMPORTANT PART
+       * Map NAME → ID after dropdowns load
+       */
+      setTimeout(() => {
+
+        // ---------------- Branch ----------------
+        const branch = this.branches?.find(
+          b => b.branch_name === Emp.emp_branch_id
+        );
+        if (branch) this.Emp.emp_branch_id = branch.id;
+
+        // ---------------- Department ----------------
+        const dept = this.departments?.find(
+          d => d.dept_name === Emp.emp_dept_id
+        );
+        if (dept) this.Emp.emp_dept_id = dept.id;
+
+        // ---------------- Designation ----------------
+        const desg = this.designations?.find(
+          d => d.desgntn_job_title === Emp.emp_desgntn_id
+        );
+        if (desg) this.Emp.emp_desgntn_id = desg.id;
+
+        // ---------------- Religion ----------------
+        const rel = this.Religions?.find(
+          r => r.religion === Emp.emp_relegion
+        );
+        if (rel) this.Emp.emp_relegion = rel.id;
+
+        // ---------------- Nationality ----------------
+        const nat = this.Nationations?.find(
+          n => n.N_name === Emp.emp_nationality
+        );
+        if (nat) this.Emp.emp_nationality = nat.id;
+
+        // ---------------- Category ----------------
+        const cat = this.catogories?.find(
+          c => c.ctgry_title === Emp.emp_ctgry_id
+        );
+        if (cat) this.Emp.emp_ctgry_id = cat.id;
+
+        // ================= COUNTRY → STATE FIX =================
+
+        // 1️⃣ Map COUNTRY NAME → ID
+        const country = this.countries?.find(
+          c => c.country_name === Emp.emp_country_id
+        );
+
+        if (country) {
+          this.Emp.emp_country_id = country.id;
+
+          // 2️⃣ Load states for selected country
+          this.CountryService
+            .getStatesByCountryId(country.id)
+            .subscribe((res: any) => {
+
+              this.states = res.states;
+              this.state_label = res.state_label;
+
+              // 3️⃣ Map STATE NAME → ID
+              const state = this.states.find(
+                s => s.state_name === Emp.emp_state_id
+              );
+
+              if (state) {
+                this.Emp.emp_state_id = state.id;
+              }
+            });
+        }
+
+      }, 500); // wait for dropdown data
+
+    },
+    (error) => {
+      console.error('Error fetching employee:', error);
+    }
+  );
+
+}
+
 
   previewImage: any = null;  // to show selected image instantly
 
@@ -652,8 +691,17 @@ loadStates(): void {
 
 
 
+// onCountryChange(): void {
+//   if (this.Emp.emp_country_id !== undefined) {
+//     this.loadStatesByCountry();
+//   }
+// }
+
 onCountryChange(): void {
-  if (this.Emp.emp_country_id !== undefined) {
+  this.Emp.emp_state_id = null;
+  this.states = [];
+
+  if (this.Emp.emp_country_id) {
     this.loadStatesByCountry();
   }
 }

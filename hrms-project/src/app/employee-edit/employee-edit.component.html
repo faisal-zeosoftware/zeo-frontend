@@ -297,7 +297,6 @@
           <!-- Dynamically displaying the state_label from the API response -->
           <label>{{ state_label }}</label>
           <select class="form-control" id="state" required [(ngModel)]="Emp.emp_state_id" [ngModelOptions]="{standalone:true}">
-            <option value="">Select</option>
             <option *ngFor="let state of states" [value]="state.id">{{ state.state_name }}</option>
           </select>
         </div>

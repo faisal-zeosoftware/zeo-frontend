@@ -99,6 +99,22 @@ export class DepartmentServiceService {
   return this.http.get(apiUrl);
 }
 
+  getEscalationLevelsAirticket(selectedSchema: string, requestTypeId: number): Observable<any> {
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-escalation/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
+  getEscalationLevelsAsset(selectedSchema: string, requestTypeId: number): Observable<any> {
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-escalation-rules/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
+  getEscalationLevelsLeave(selectedSchema: string, requestTypeId: number): Observable<any> {
+  const apiUrl = `${this.apiUrl}/calendars/api/escalation-rules/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl);
+}
+
+
 
 updateEscalationLevel(selectedSchema: string, levelId: number, data: any): Observable<any> {
   const apiUrl = `${this.apiUrl}/employee/api/escalation-rules/${levelId}/?schema=${selectedSchema}`;
@@ -112,6 +128,21 @@ updateEscalationLevelAdv(selectedSchema: string, levelId: number, data: any): Ob
 
 updateEscalationLevelLoan(selectedSchema: string, levelId: number, data: any): Observable<any> {
   const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/${levelId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, data);
+}
+
+updateEscalationLevelAir(selectedSchema: string, levelId: number, data: any): Observable<any> {
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-escalation/${levelId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, data);
+}
+
+updateEscalationLevelAsset(selectedSchema: string, levelId: number, data: any): Observable<any> {
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-escalation-rules/${levelId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, data);
+}
+
+updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): Observable<any> {
+  const apiUrl = `${this.apiUrl}/calendars/api/escalation-rules/${levelId}/?schema=${selectedSchema}`;
   return this.http.put(apiUrl, data);
 }
 

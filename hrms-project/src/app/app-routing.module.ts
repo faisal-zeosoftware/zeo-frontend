@@ -146,6 +146,9 @@ import { AssetEmailTemplateComponent } from './asset-email-template/asset-email-
 import { AirticketEmailTemplateComponent } from './airticket-email-template/airticket-email-template.component';
 import { AdvanceSalaryEscalationComponent } from './advance-salary-escalation/advance-salary-escalation.component';
 import { LoanEscalationComponent } from './loan-escalation/loan-escalation.component';
+import { AirticketEscalationComponent } from './airticket-escalation/airticket-escalation.component';
+import { AssetEscalationComponent } from './asset-escalation/asset-escalation.component';
+import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
 
 
 const routes: Routes = [
@@ -520,6 +523,10 @@ const routes: Routes = [
       path:'employee-leave-rejoin',
       component:EmployeeLeaveRejoinComponent
     },
+    {
+      path:'leave-escalation',
+      component:LeaveEscalationComponent
+    },
   ]
 
 },
@@ -646,6 +653,10 @@ const routes: Routes = [
       path:'asset-approval',
       component:AssetApprovalComponent,
     },
+    {
+      path:'asset-escalation',
+      component:AssetEscalationComponent,
+    },
 
 
   ]
@@ -686,6 +697,11 @@ const routes: Routes = [
      {
       path:'airticket-approvals',
       component:AirticketApprovalsComponent,
+    },
+
+    {
+      path:'airticket-escalation',
+      component:AirticketEscalationComponent,
     },
 
 

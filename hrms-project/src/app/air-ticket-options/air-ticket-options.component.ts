@@ -21,6 +21,7 @@ export class AirTicketOptionsComponent {
   hasViewPermissionAirticketRule:boolean = false;
   hasViewPermissionAirticketAprlvl:boolean = false;
   hasViewPermissionAirticketApprovals:boolean = false;
+  hasViewPermissionAirticketEsc:boolean = false;
 
 
   
@@ -88,6 +89,7 @@ export class AirTicketOptionsComponent {
           this.hasViewPermissionAirticketRule = true;
           this.hasViewPermissionAirticketAprlvl = true;
           this.hasViewPermissionAirticketApprovals = true;
+          this.hasViewPermissionAirticketEsc = true;
        
   
   
@@ -119,6 +121,7 @@ export class AirTicketOptionsComponent {
           this.hasViewPermissionAirticketRule = true;
           this.hasViewPermissionAirticketAprlvl = true;
           this.hasViewPermissionAirticketApprovals = true;
+          this.hasViewPermissionAirticketEsc = true;
                  
   
   

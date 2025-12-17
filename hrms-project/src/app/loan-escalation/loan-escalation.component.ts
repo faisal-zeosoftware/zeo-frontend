@@ -391,7 +391,7 @@ export class LoanEscalationComponent {
   
     this.employeeService.updateLoanEsc(this.editAsset.id, this.editAsset).subscribe(
       (response) => {
-        alert('Advance Salary Escalation updated successfully!');
+        alert('Loan Escalation updated successfully!');
         this.closeEditModal();
         this.loadgeneralReq(); // reload updated list
       },

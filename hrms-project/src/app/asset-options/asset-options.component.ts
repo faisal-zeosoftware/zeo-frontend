@@ -18,6 +18,7 @@ export class AssetOptionsComponent {
   hasViewPermissionAssetAprlvl: boolean = false;
   hasViewPermissionAssetRequest: boolean = false;
   hasViewPermissionAssetApprovals: boolean = false;
+  hasViewPermissionAssetEsc:boolean = false;
 
 
 
@@ -87,6 +88,7 @@ export class AssetOptionsComponent {
           this.hasViewPermissionAssetAprlvl = true;
           this.hasViewPermissionAssetRequest = true;
           this.hasViewPermissionAssetApprovals = true;
+          this.hasViewPermissionAssetEsc = true;
 
 
   
@@ -120,6 +122,7 @@ export class AssetOptionsComponent {
                   this.hasViewPermissionAssetAprlvl = true;
                   this.hasViewPermissionAssetRequest = true;
                   this.hasViewPermissionAssetApprovals = true;
+                  this.hasViewPermissionAssetEsc = true;
 
               
                  

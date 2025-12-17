@@ -149,6 +149,9 @@ export class UserGroupingEditComponent {
   GrouppermissionsAssetmaster:any[] =[];
   GrouppermissionsAssetAlon:any[] =[];
   GrouppermissionsAssetReq:any[] =[];
+  GrouppermissionsAssetApprovals:any[] =[];
+  GrouppermissionsAssetApprovallvl:any[] =[];
+  GrouppermissionsAssetEscalation:any[] =[];
 
 //permission stored arrays for Document Management
 
@@ -171,6 +174,9 @@ export class UserGroupingEditComponent {
   GrouppermissionsAirTicketAlon:any[] =[];
   GrouppermissionsAirTicketReq:any[] =[];
   GrouppermissionsAirTicketRule:any[] =[];
+  GrouppermissionsAirTicketApr:any[] =[];
+  GrouppermissionsAirTicketAprlvl:any[] =[];
+  GrouppermissionsAirTicketEsc:any[] =[];
 
  //permission stored arrays for Document
   GrouppermissionsDocumentAprlvl:any[] =[];
@@ -324,6 +330,9 @@ export class UserGroupingEditComponent {
     AssetmasterInderminate= false;
     AssetAlonInderminate= false;
     AssetReqInderminate= false;
+    AssetApprovalsInderminate= false;
+    AssetApprovallvlInderminate= false;
+    AssetEscalationInderminate= false;
 
   //selected Document Management checkboxes.
 
@@ -342,6 +351,9 @@ export class UserGroupingEditComponent {
     AirTicketAlonIndeterminate=false;
     AirTicketReqIndeterminate=false;
     AirTicketRuleIndeterminate=false;
+    AirTicketAprIndeterminate=false;
+    AirTicketAprlvlIndeterminate=false;
+    AirTicketEscIndeterminate=false;
 
   //selected Document checkboxes.
 
@@ -488,6 +500,9 @@ export class UserGroupingEditComponent {
     AssetmasterChecked:boolean= false;
     AssetAlonChecked:boolean= false;
     AssetReqChecked:boolean= false;
+    AssetApprovalsChecked:boolean= false;
+    AssetApprovallvlChecked:boolean= false;
+    AssetEscalationChecked:boolean= false;
 
     //Document Managemet checkbox checked values
 
@@ -507,6 +522,9 @@ export class UserGroupingEditComponent {
      AirTicketAlonChecked:boolean= false;
      AirTicketReqChecked:boolean= false;
      AirTicketRuleChecked:boolean= false;
+     AirTicketAprChecked:boolean= false;
+     AirTicketAprlvlChecked:boolean= false;
+     AirTicketEscChecked:boolean= false;
 
 
     //Document checkbox checked values
@@ -1227,7 +1245,10 @@ isAssetManagementMasterChecked():boolean{
   return this.AssetTypeChecked &&
   this.AssetmasterChecked &&
   this.AssetAlonChecked &&
-  this.AssetReqChecked
+  this.AssetReqChecked &&
+  this.AssetApprovalsChecked &&
+  this.AssetApprovallvlChecked &&
+  this.AssetEscalationChecked
  
 }
 
@@ -1238,6 +1259,27 @@ isAssetTypeIndeterminate(): boolean {
     this.GrouppermissionsAssetType.map(p => p.id).includes(id)
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsAssetType.length;
+}
+
+isAssetApprovalsIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsAssetApprovals.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsAssetApprovals.length;
+}
+
+isAssetApprovalLvlIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsAssetApprovallvl.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsAssetApprovallvl.length;
+}
+
+isAssetEscalationIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsAssetEscalation.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsAssetEscalation.length;
 }
 
 isAssetmasterIndeterminate(): boolean {
@@ -1320,7 +1362,10 @@ isAirTicketManagementMasterChecked():boolean{
    return this.AirTicketPolChecked &&
    this.AirTicketAlonChecked &&
    this.AirTicketReqChecked &&
-   this.AirTicketRuleChecked
+   this.AirTicketRuleChecked &&
+   this.AirTicketAprChecked &&
+   this.AirTicketAprlvlChecked &&
+   this.AirTicketEscChecked
    
 }
 
@@ -1332,6 +1377,13 @@ isAirTicketPolIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsAirTicketPol.length;
 }
 
+isAirTicketAprIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsAirTicketApr.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsAirTicketApr.length;
+}
+
 isAirTicketAlonIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
     this.GrouppermissionsAirTicketAlon.map(p => p.id).includes(id)
@@ -1339,11 +1391,25 @@ isAirTicketAlonIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsAirTicketAlon.length;
 }
 
+isAirTicketEscIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsAirTicketEsc.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsAirTicketEsc.length;
+}
+
 isAirTicketReqIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
     this.GrouppermissionsAirTicketReq.map(p => p.id).includes(id)
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsAirTicketReq.length;
+}
+
+isAirTicketAprlvlIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsAirTicketAprlvl.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsAirTicketAprlvl.length;
 }
 
 isAirTicketRuleIndeterminate(): boolean {
@@ -1790,6 +1856,9 @@ updateInderminateAsset():void{
   this.isAssetmasterIndeterminate();
   this.isAssetAlonIndeterminate();
   this.isAssetReqIndeterminate();
+  this.isAssetApprovalsIndeterminate();
+  this.isAssetApprovalLvlIndeterminate();
+  this.isAssetEscalationIndeterminate();
  
 }
 
@@ -1820,6 +1889,9 @@ updateInderminateAirTicket():void{
   this.isAirTicketAlonIndeterminate();
   this.isAirTicketReqIndeterminate();
   this.isAirTicketRuleIndeterminate();
+  this.isAirTicketAprIndeterminate();
+  this.isAirTicketAprlvlIndeterminate();
+  this.isAirTicketEscIndeterminate();
 
 
 }
@@ -2012,6 +2084,9 @@ updateInderminateShift():void{
   this.loadpermissionsAssetmaster();
   this.loadpermissionsAssetAlon();
   this.loadpermissionsAssetReq();
+  this.loadpermissionsAssetApprovals();
+  this.loadpermissionsAssetApprovalLvl();
+  this.loadpermissionsAssetEscalation();
 
   }
 
@@ -2043,6 +2118,9 @@ updateInderminateShift():void{
   this.loadpermissionsAirTicketAlon();
   this.loadpermissionsAirTicketReq();
   this.loadpermissionsAirTicketRule();
+  this.loadpermissionsAirTicketApr();
+  this.loadpermissionsAirTicketAprlvl();
+  this.loadpermissionsAirTicketEsc();
 
 
   }
@@ -5977,6 +6055,152 @@ getDisplayNameAssetType(permissionCodename: string): string {
   }
 }
 
+loadpermissionsAssetApprovals(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_assetapproval',
+          'change_assetapproval',
+          'delete_assetapproval',
+          'view_assetapproval',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsAssetApprovals = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Asset Approvals permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Type permissions ===
+getDisplayNameAssetApprovals(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_assetapproval':
+      return 'Add';
+    case 'change_assetapproval':
+      return 'Edit';
+    case 'delete_assetapproval':
+      return 'Delete';
+    case 'view_assetapproval':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
+
+
+loadpermissionsAssetApprovalLvl(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_assetapprovallevel',
+          'change_assetapprovallevel',
+          'delete_assetapprovallevel',
+          'view_assetapprovallevel',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsAssetApprovallvl = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Asset Approval Level permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Type permissions ===
+getDisplayNameAssetApprovalLvl(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_assetapprovallevel':
+      return 'Add';
+    case 'change_assetapprovallevel':
+      return 'Edit';
+    case 'delete_assetapprovallevel':
+      return 'Delete';
+    case 'view_assetapprovallevel':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
+loadpermissionsAssetEscalation(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_asset_escalation',
+          'change_asset_escalation',
+          'delete_asset_escalation',
+          'view_asset_escalation',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsAssetEscalation = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Asset Escalation permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Type permissions ===
+getDisplayNameAssetEscalation(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_asset_escalation':
+      return 'Add';
+    case 'change_asset_escalation':
+      return 'Edit';
+    case 'delete_asset_escalation':
+      return 'Delete';
+    case 'view_asset_escalation':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
 
 loadpermissionsAssetmaster(): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -6406,6 +6630,53 @@ getDisplayNameAirTicketPol(permissionCodename: string): string {
   }
 }
 
+loadpermissionsAirTicketApr(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_airticketapproval',
+          'change_airticketapproval',
+          'delete_airticketapproval',
+          'view_airticketapproval',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsAirTicketApr = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Aieticket Policy permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for AirTicket policy permissions ===
+getDisplayNameAirTicketApr(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_airticketapproval':
+      return 'Add';
+    case 'change_airticketapproval':
+      return 'Edit';
+    case 'delete_airticketapproval':
+      return 'Delete';
+    case 'view_airticketapproval':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 
 loadpermissionsAirTicketAlon(): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -6454,6 +6725,54 @@ getDisplayNameAirTicketAlon(permissionCodename: string): string {
   }
 }
 
+loadpermissionsAirTicketEsc(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_airticket_escalation',
+          'change_airticket_escalation',
+          'delete_airticket_escalation',
+          'view_airticket_escalation',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsAirTicketEsc = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Aieticket Approval level permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for AirTicket policy permissions ===
+getDisplayNameAirTicketEsc(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_airticket_escalation':
+      return 'Add';
+    case 'change_airticket_escalation':
+      return 'Edit';
+    case 'delete_airticket_escalation':
+      return 'Delete';
+    case 'view_airticket_escalation':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
 
 loadpermissionsAirTicketReq(): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -6496,6 +6815,54 @@ getDisplayNameAirTicketReq(permissionCodename: string): string {
     case 'delete_airticketrequest':
       return 'Delete';
     case 'view_airticketrequest':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
+loadpermissionsAirTicketAprlvl(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_airticketworkflow',
+          'change_airticketworkflow',
+          'delete_airticketworkflow',
+          'view_airticketworkflow',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsAirTicketAprlvl = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Aieticket Approval level permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for AirTicket policy permissions ===
+getDisplayNameAirTicketAprlvl(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_airticketworkflow':
+      return 'Add';
+    case 'change_airticketworkflow':
+      return 'Edit';
+    case 'delete_airticketworkflow':
+      return 'Delete';
+    case 'view_airticketworkflow':
       return 'View';
     default:
       return permissionCodename;
@@ -8702,6 +9069,65 @@ updateAssetTypeCheckbox(): void {
   this.AssetTypeChecked = allSelected;
 }
 
+onCheckboxChangesAssetApprovals(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateAssetApprovalsCheckbox();
+  this.updateAsset();
+}
+
+
+updateAssetApprovalsCheckbox(): void {
+  const allSelected = this.GrouppermissionsAssetApprovals.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.AssetApprovalsChecked = allSelected;
+}
+
+onCheckboxChangesAssetApprovalLvl(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateAssetApprovalLvlCheckbox();
+  this.updateAsset();
+}
+
+
+updateAssetApprovalLvlCheckbox(): void {
+  const allSelected = this.GrouppermissionsAssetApprovallvl.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.AssetApprovallvlChecked = allSelected;
+}
+
+onCheckboxChangesAssetEscalation(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateAssetEscalationCheckbox();
+  this.updateAsset();
+}
+
+
+updateAssetEscalationCheckbox(): void {
+  const allSelected = this.GrouppermissionsAssetEscalation.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.AssetEscalationChecked = allSelected;
+}
+
+
+
 onCheckboxChangesAssetmaster(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
@@ -8865,6 +9291,24 @@ updateAirTicketPolCheckbox(): void {
   this.AirTicketPolChecked = allSelected;
 }
 
+onCheckboxChangesAirTicketApr(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateAirTicketAprCheckbox();
+  this.updateAirTicket();
+}
+
+updateAirTicketAprCheckbox(): void {
+  const allSelected = this.GrouppermissionsAirTicketApr.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.AirTicketAprChecked = allSelected;
+}
+
 onCheckboxChangesAirTicketAlon(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
@@ -8883,6 +9327,24 @@ updateAirTicketAlonCheckbox(): void {
   this.AirTicketAlonChecked = allSelected;
 }
 
+onCheckboxChangesAirTicketEsc(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateAirTicketEscCheckbox();
+  this.updateAirTicket();
+}
+
+updateAirTicketEscCheckbox(): void {
+  const allSelected = this.GrouppermissionsAirTicketEsc.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.AirTicketEscChecked = allSelected;
+}
+
 onCheckboxChangesAirTicketReq(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
@@ -8899,6 +9361,24 @@ updateAirTicketReqCheckbox(): void {
     this.selectedPermissions.includes(p.id)
   );
   this.AirTicketReqChecked = allSelected;
+}
+
+onCheckboxChangesAirTicketAprlvl(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateAirTicketAprlvlCheckbox();
+  this.updateAirTicket();
+}
+
+updateAirTicketAprlvlCheckbox(): void {
+  const allSelected = this.GrouppermissionsAirTicketAprlvl.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.AirTicketAprlvlChecked = allSelected;
 }
 
 onCheckboxChangesAirTicketRule(permissionId: number): void {
@@ -10287,6 +10767,42 @@ onAssetTypeChange(): void {
   this.updateAssetCheckbox();
 }
 
+onAssetApprovalsChange(): void {
+  if (this.AssetApprovalsChecked) {
+    const idsToAdd = this.GrouppermissionsAssetApprovals.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsAssetApprovals.some(p => p.id === id)
+    );
+  }
+  this.updateAssetCheckbox();
+}
+
+onAssetEscalationChange(): void {
+  if (this.AssetEscalationChecked) {
+    const idsToAdd = this.GrouppermissionsAssetEscalation.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsAssetEscalation.some(p => p.id === id)
+    );
+  }
+  this.updateAssetCheckbox();
+}
+
+onAssetApprovalLvlChange(): void {
+  if (this.AssetApprovallvlChecked) {
+    const idsToAdd = this.GrouppermissionsAssetApprovallvl.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsAssetApprovallvl.some(p => p.id === id)
+    );
+  }
+  this.updateAssetCheckbox();
+}
+
 onAssetmasterChange(): void {
   if (this.AssetmasterChecked) {
     const idsToAdd = this.GrouppermissionsAssetmaster.map(p => p.id);
@@ -10395,6 +10911,18 @@ onAirTicketPolChange(): void {
   this.updateAirTicketCheckbox();
 }
 
+onAirTicketAprChange(): void {
+  if (this.AirTicketAprChecked) {
+    const idsToAdd = this.GrouppermissionsAirTicketApr.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsAirTicketApr.some(p => p.id === id)
+    );
+  }
+  this.updateAirTicketCheckbox();
+}
+
 onAirTicketAlonChange(): void {
   if (this.AirTicketAlonChecked) {
     const idsToAdd = this.GrouppermissionsAirTicketAlon.map(p => p.id);
@@ -10407,6 +10935,18 @@ onAirTicketAlonChange(): void {
   this.updateAirTicketCheckbox();
 }
 
+onAirTicketEscChange(): void {
+  if (this.AirTicketEscChecked) {
+    const idsToAdd = this.GrouppermissionsAirTicketEsc.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsAirTicketEsc.some(p => p.id === id)
+    );
+  }
+  this.updateAirTicketCheckbox();
+}
+
 onAirTicketReqChange(): void {
   if (this.AirTicketReqChecked) {
     const idsToAdd = this.GrouppermissionsAirTicketReq.map(p => p.id);
@@ -10414,6 +10954,18 @@ onAirTicketReqChange(): void {
   } else {
     this.selectedPermissions = this.selectedPermissions.filter(
       id => !this.GrouppermissionsAirTicketReq.some(p => p.id === id)
+    );
+  }
+  this.updateAirTicketCheckbox();
+}
+
+onAirTicketAprlvlChange(): void {
+  if (this.AirTicketAprlvlChecked) {
+    const idsToAdd = this.GrouppermissionsAirTicketAprlvl.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsAirTicketAprlvl.some(p => p.id === id)
     );
   }
   this.updateAirTicketCheckbox();
@@ -10685,7 +11237,7 @@ updateLeaveCheckbox(): void {
 }
 
   updateDocumentAddCheckbox(): void {
-  this.DocumentAddchecked = this.isAssetManagementMasterChecked();
+  this.DocumentAddchecked = this.isDocumentAddManagementMasterChecked();
 }
 
   updateProjectCheckbox(): void {
@@ -10866,10 +11418,13 @@ isAsset(): boolean {
   const AssetmasterIndeterminate = this.isAssetmasterIndeterminate();
   const AssetAlonIndeterminate = this.isAssetAlonIndeterminate();
   const AssetReqIndeterminate = this.isAssetReqIndeterminate();
+  const AssetApprovalsIndeterminate = this.isAssetApprovalsIndeterminate();
+  const AssetApprovallvlInderminate = this.isAssetApprovalLvlIndeterminate();
+  const AssetEscalationInderminate = this.isAssetEscalationIndeterminate();
 
   const otherGroupIndeterminate = false;
 
-  return AssetTypeIndeterminate || AssetmasterIndeterminate || AssetAlonIndeterminate || AssetReqIndeterminate || otherGroupIndeterminate;
+  return AssetTypeIndeterminate || AssetEscalationInderminate || AssetmasterIndeterminate || AssetApprovalsIndeterminate || AssetAlonIndeterminate || AssetApprovallvlInderminate  || AssetReqIndeterminate || otherGroupIndeterminate;
 }
 
 
@@ -10902,11 +11457,14 @@ isAirTicket(): boolean {
   const AirTicketAlonIndeterminate = this.isAirTicketAlonIndeterminate();
   const AirTicketReqIndeterminate = this.isAirTicketReqIndeterminate();
   const AirTicketRuleIndeterminate = this.isAirTicketRuleIndeterminate();
+  const AirTicketAprIndeterminate = this.isAirTicketAprIndeterminate();
+  const AirTicketAprlvlIndeterminate = this.isAirTicketAprlvlIndeterminate();
+  const AirTicketEscIndeterminate = this.isAirTicketEscIndeterminate();
 
 
   const otherGroupIndeterminate = false;
 
-  return AirTicketPolIndeterminate || AirTicketAlonIndeterminate || AirTicketReqIndeterminate || AirTicketRuleIndeterminate || otherGroupIndeterminate;
+  return AirTicketPolIndeterminate || AirTicketEscIndeterminate || AirTicketAprlvlIndeterminate || AirTicketAprIndeterminate || AirTicketAlonIndeterminate || AirTicketReqIndeterminate || AirTicketRuleIndeterminate || otherGroupIndeterminate;
 }
 
 isDocument(): boolean {
@@ -11267,6 +11825,9 @@ selectAsset(): void {
     ...this.GrouppermissionsAssetmaster,
     ...this.GrouppermissionsAssetAlon,
     ...this.GrouppermissionsAssetReq,
+    ...this.GrouppermissionsAssetApprovals,
+    ...this.GrouppermissionsAssetApprovallvl,
+    ...this.GrouppermissionsAssetEscalation,
 
 
   ].map(permission => permission.id);
@@ -11283,6 +11844,9 @@ selectAsset(): void {
   this.updateAssetmasterCheckbox();
   this.updateAssetAlonCheckbox();
   this.updateAssetReqCheckbox();
+  this.updateAssetApprovalsCheckbox();
+  this.updateAssetApprovalLvlCheckbox();
+  this.updateAssetEscalationCheckbox();
 
  
 }
@@ -11342,6 +11906,9 @@ selectAirTicket(): void {
     ...this.GrouppermissionsAirTicketAlon,
     ...this.GrouppermissionsAirTicketReq,
     ...this.GrouppermissionsAirTicketRule,
+    ...this.GrouppermissionsAirTicketApr,
+    ...this.GrouppermissionsAirTicketAprlvl,
+    ...this.GrouppermissionsAirTicketEsc,
 
    
 
@@ -11360,6 +11927,9 @@ selectAirTicket(): void {
   this.updateAirTicketAlonCheckbox();
   this.updateAirTicketReqCheckbox();
   this.updateAirTicketRuleCheckbox();
+  this.updateAirTicketAprCheckbox();
+  this.updateAirTicketAprlvlCheckbox();
+  this.updateAirTicketEscCheckbox();
  
 }
 
@@ -11595,6 +12165,9 @@ updateAsset():void{
   this.updateAssetmasterCheckbox();
   this.updateAssetAlonCheckbox();
   this.updateAssetReqCheckbox();
+  this.updateAssetApprovalsCheckbox();
+  this.updateAssetApprovalLvlCheckbox();
+  this.updateAssetEscalationCheckbox();
 }
 
 updateDocumentAdd():void{
@@ -11615,6 +12188,9 @@ updateAirTicket():void{
   this.updateAirTicketAlonCheckbox();
   this.updateAirTicketReqCheckbox();
   this.updateAirTicketRuleCheckbox();
+  this.updateAirTicketAprCheckbox();
+  this.updateAirTicketAprlvlCheckbox();
+  this.updateAirTicketEscCheckbox();
 }
 
 updateDocument():void{
@@ -11793,6 +12369,9 @@ isAssetInderminate(): boolean {
     ...this.GrouppermissionsAssetmaster,
     ...this.GrouppermissionsAssetAlon,
     ...this.GrouppermissionsAssetReq,
+    ...this.GrouppermissionsAssetApprovals,
+    ...this.GrouppermissionsAssetApprovallvl,
+    ...this.GrouppermissionsAssetEscalation,
     
  
 
@@ -11837,6 +12416,9 @@ isAirTicketInderminate(): boolean {
     ...this.GrouppermissionsAirTicketAlon,
     ...this.GrouppermissionsAirTicketReq,
     ...this.GrouppermissionsAirTicketRule,
+    ...this.GrouppermissionsAirTicketApr,
+    ...this.GrouppermissionsAirTicketAprlvl,
+    ...this.GrouppermissionsAirTicketEsc,
 
   
     

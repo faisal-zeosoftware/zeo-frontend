@@ -2720,6 +2720,73 @@
   </div>
 </div>
 
+
+                   <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="AssetEscalationChecked" 
+                          [indeterminate]="isAssetEscalationIndeterminate()" 
+                          (change)="onAssetEscalationChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                          Asset Escalation
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsAssetEscalation">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesAssetEscalation(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameAssetEscalation(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+
+
+                  <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="AssetApprovalsChecked" 
+                          [indeterminate]="isAssetApprovalsIndeterminate()" 
+                          (change)="onAssetApprovalsChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                          Asset Approvals
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsAssetApprovals">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesAssetApprovals(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameAssetApprovals(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
                   
 
                 <div class="col-md-3">
@@ -2753,6 +2820,39 @@
                       </div>
                   </div>
               </div>
+
+
+              <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="AssetApprovallvlChecked" 
+                          [indeterminate]="isAssetApprovalLvlIndeterminate()" 
+                          (change)="onAssetApprovalLvlChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                          Asset Approval Level
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsAssetApprovallvl">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesAssetApprovalLvl(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameAssetApprovalLvl(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
                 
         
 
@@ -3079,6 +3179,38 @@
                       </div>
                   </div>
 
+                  <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="AirTicketAprChecked" 
+                          [indeterminate]="isAirTicketAprIndeterminate()" 
+                          (change)="onAirTicketAprChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                         Airticket Approvals
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsAirTicketApr">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesAirTicketApr(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameAirTicketApr(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
 
                     
             <div class="col-md-3">
@@ -3113,6 +3245,39 @@
   </div>
 </div>
 
+
+                  <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="AirTicketEscChecked" 
+                          [indeterminate]="isAirTicketEscIndeterminate()" 
+                          (change)="onAirTicketEscChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                         Airticket Escalation
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsAirTicketEsc">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesAirTicketEsc(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameAirTicketEsc(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
                   
 
                 <div class="col-md-3">
@@ -3146,6 +3311,39 @@
                       </div>
                   </div>
               </div>
+
+              
+                  <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="AirTicketAprlvlChecked" 
+                          [indeterminate]="isAirTicketAprlvlIndeterminate()" 
+                          (change)="onAirTicketAprlvlChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                         Airticket Approval Level
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsAirTicketAprlvl">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesAirTicketAprlvl(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameAirTicketAprlvl(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
                 
         
 

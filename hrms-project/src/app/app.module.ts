@@ -224,6 +224,9 @@ import { AirticketEmailTemplateComponent } from './airticket-email-template/airt
 import { AirticketEmailTemplateEditComponent } from './airticket-email-template-edit/airticket-email-template-edit.component';
 import { AdvanceSalaryEscalationComponent } from './advance-salary-escalation/advance-salary-escalation.component';
 import { LoanEscalationComponent } from './loan-escalation/loan-escalation.component';
+import { AirticketEscalationComponent } from './airticket-escalation/airticket-escalation.component';
+import { AssetEscalationComponent } from './asset-escalation/asset-escalation.component';
+import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -406,7 +409,10 @@ import { LoanEscalationComponent } from './loan-escalation/loan-escalation.compo
      AirticketEmailTemplateComponent,
      AirticketEmailTemplateEditComponent,
      AdvanceSalaryEscalationComponent,
-     LoanEscalationComponent
+     LoanEscalationComponent,
+     AirticketEscalationComponent,
+     AssetEscalationComponent,
+     LeaveEscalationComponent
      
      
 

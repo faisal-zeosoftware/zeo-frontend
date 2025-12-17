@@ -46,6 +46,7 @@ export class LeaveOptionsComponent {
   hasViewPermissionLeaveCancel: boolean = false;
   hasViewPermissionLeaveAccrual: boolean = false;
   hasViewPermissionLeaveRejoin: boolean = false;
+  hasViewPermissionLvEsc:boolean = false;
 
 
 
@@ -107,6 +108,7 @@ if (this.userId !== null) {
         this.hasViewPermissionLeaveCancel = true;
         this.hasViewPermissionLeaveAccrual = true;
         this.hasViewPermissionLeaveRejoin = true;
+        this.hasViewPermissionLvEsc = true;
 
 
 
@@ -181,6 +183,7 @@ if (this.userId !== null) {
                this.hasViewPermissionLeaveCancel = true;
                this.hasViewPermissionLeaveAccrual = true;
                this.hasViewPermissionLeaveRejoin = true;
+               this.hasViewPermissionLvEsc = true;
 
 
         

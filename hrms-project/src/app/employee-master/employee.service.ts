@@ -166,6 +166,30 @@ export class EmployeeService {
 
   }
 
+    getAllgeneralRequestEscalationsAirticket(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-escalation/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+      getAllgeneralRequestEscalationsAsset(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-escalation-rules/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+  getAllgeneralRequestEscalationsLeave(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/escalation-rules/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
 
 
   
@@ -214,6 +238,37 @@ resetLoanEsc(id: number): Observable<any> {
   const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/${id}/reset/?schema=${selectedSchema}`;
   return this.http.post(apiUrl, {});  // Reset API usually requires POST
 }
+
+resetAirticketEsc(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-escalation/${id}/reset/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, {});  // Reset API usually requires POST
+}
+
+resetAssetEsc(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-escalation-rules/${id}/reset/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, {});  // Reset API usually requires POST
+}
+
+resetLeaveEsc(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/escalation-rules/${id}/reset/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, {});  // Reset API usually requires POST
+}
+
 
 
 
@@ -285,6 +340,47 @@ updateLoanEsc(id: number, data: any): Observable<any> {
     })
   );
 }
+
+updateAirticketEsc(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-escalation/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateAssetEsc(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-escalation-rules/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateLeaveEsc(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/escalation-rules/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
 
 
 
