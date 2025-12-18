@@ -575,6 +575,10 @@ const routes: Routes = [
       path:'advance-salary-request',
       component:AdvanceSalaryRequestComponent,
     },
+    {
+      path:'advance-salary-approvals',
+      component:AdvanceSalaryApprovalsComponent,
+    },
      {
       path:'advance-salary-escalation',
       component:AdvanceSalaryEscalationComponent,

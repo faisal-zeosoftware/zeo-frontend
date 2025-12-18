@@ -26,6 +26,8 @@ export class AttendaceMarkingComponent {
 
 Employees: any[] = [];
 Punching: any[] = [];
+EmployeeAllAttendance: any[] = [];
+
 
 userId: number | null | undefined;
 userDetails: any;
@@ -59,6 +61,7 @@ ngOnInit(): void {
  
   this.LoadEmployee();
   this.LoadEmployeePunching();
+  this.LoadEmployeeAttendance();
   
   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
@@ -377,6 +380,27 @@ async registerCheckOut(): Promise<void> {
         },
         (error) => {
           console.error('Error fetching Employees:', error);
+        }
+      );
+    }
+
+  }
+
+
+  LoadEmployeeAttendance() {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getAllEmployeeAtttendance(selectedSchema).subscribe(
+        (result: any) => {
+          this.EmployeeAllAttendance = result;
+          console.log(' fetching EmployeeAllAttendance:');
+  
+        },
+        (error) => {
+          console.error('Error fetching EmployeeAllAttendance:', error);
         }
       );
     }
