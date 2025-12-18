@@ -13,7 +13,7 @@
     
 
 
-    <div class="col-md-6">
+    <div class="col-md-3">
         <label >Year</label>
         <input
           type="number"
@@ -22,7 +22,7 @@
           [ngModelOptions]="{standalone: true}"
         />
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
         <label >Month</label>
         <input
           type="text"
@@ -33,7 +33,7 @@
     </div>
 
 
-    <div class="col-md-6">
+    <div class="col-md-3">
         <label>Select Employee</label>
         <div class="custom-sel">
           <select class="form-control" id="employee" name="employee"
@@ -48,6 +48,130 @@
           </select>
         </div>
       </div>
+
+
+
+         
+              <div class="col-md-6" >
+                  <label>Select Branches</label>
+                  <div class="custom-sel">
+                    <div class="form-control-wrapper">
+                  
+
+                      <mat-form-field>
+                        <!-- <mat-label>Favorite food</mat-label> -->
+                        <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #select multiple>
+                          <div class="select-all">
+                            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                              Select All
+                            </mat-checkbox>
+                          </div>
+                          <input type="text" placeholder="serach" class="form-control">
+
+                          <mat-option *ngFor="let food of branches" [value]="food.id">
+                            {{ food.branch_name }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      
+                    </div>
+                   
+                  </div>
+                </div>
+                
+                  
+               
+                <div class="col-md-6" >
+                  <label>Department</label>
+                  <div class="custom-sel">
+                      <div class="form-control-wrapper">
+                        <mat-form-field>
+                          <mat-select  placeholder="Select" [(ngModel)]="department" [ngModelOptions]="{standalone: true}" #select  multiple>
+                            <div class="select-all">
+                              <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                                Select All
+                              </mat-checkbox>
+                            </div>
+                            <mat-option *ngFor="let deparmentsec of departments" [value]="deparmentsec.id">
+                              {{ deparmentsec.dept_name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                   
+                    </div>
+              </div>
+
+              <div class="col-md-6" >
+                  <label>Category</label>
+                  <div class="custom-sel">
+                      <div class="form-control-wrapper">
+                        <mat-form-field>
+                          <mat-select  placeholder="Select" [(ngModel)]="category" [ngModelOptions]="{standalone: true}" #select multiple>
+                            <div class="select-all">
+                              <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                                Select All
+                              </mat-checkbox>
+                            </div>
+                           
+                            <mat-option *ngFor="let deparmentsec of Categoried" [value]="deparmentsec.id">
+                              {{ deparmentsec.ctgry_title }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                     
+                    </div>
+              </div>
+              
+              <div class="col-md-6" >
+                <label>Designation </label>
+                <div class="custom-sel">
+                    <div class="form-control-wrapper">
+                      <mat-form-field>
+                        <mat-select  placeholder="Select" [(ngModel)]="designation" [ngModelOptions]="{standalone: true}" #selectdes multiple>
+                          <div class="select-all">
+                            <mat-checkbox [(ngModel)]="allSelecteddes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondes()">
+                              Select All
+                            </mat-checkbox>
+                          </div>
+                         
+                          <mat-option *ngFor="let deparmentsec of Designations" [value]="deparmentsec.id">
+                            {{ deparmentsec.desgntn_job_title }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                   
+                  </div>
+            </div>
+
+              <!-- <div class="col-md-6" >
+                <label>Employee</label>
+                <div class="custom-sel">
+                    <div class="form-control-wrapper">
+                      <mat-form-field>
+                        <mat-select  placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #select multiple>
+                          <div class="select-all">
+                            <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
+                              Select All
+                            </mat-checkbox>
+                          </div>
+                          <input type="text" placeholder="serach" class="form-control"
+                          [(ngModel)]="SearchEmployee" (input)="FilterEmployee">
+
+                          <mat-option *ngFor="let emp of FilteredEmployees" [value]="emp.id">
+                            {{ emp.emp_first_name }}   {{ emp.emp_last_name }}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  
+                  </div>
+            </div> -->
+
+
+      
       
 </div>
 

@@ -1,11 +1,14 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { CompanyRegistrationService } from '../company-registration.service';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 
 
 @Component({
@@ -21,6 +24,21 @@ export class EmployeeAttendanceComponent {
   allAttendanceData: any[] = []; // All employees attendance
 
   Employees: any[] = [];
+  branches: any[] = [];
+  departments: any[] = [];
+  Designations: any[] = [];
+  Categoried: any[] = [];
+
+
+
+    branch: any = '';
+
+  department: any = '';
+
+  category: any = '';
+    designation: any = '';
+
+
 
   year: any = '';
   month: any = '';
@@ -48,6 +66,8 @@ export class EmployeeAttendanceComponent {
     private sessionService: SessionService,
     private leaveService: LeaveService,
     private DesignationService: DesignationService,
+    private companyRegistrationService: CompanyRegistrationService, 
+
 
   ) { }
 
@@ -360,6 +380,162 @@ generateAttendanceReport(): void {
       }
     );
   }
+
+
+
+  
+  loadbranches(): void {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.companyRegistrationService.getBranchesList(selectedSchema).subscribe(
+        (result: any) => {
+          this.branches = result;
+        },
+        (error: any) => {
+          console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
+
+
+  
+loadDepartments(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore', selectedSchema)
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+
+    this.companyRegistrationService.getDepartmentsList(selectedSchema).subscribe(
+      (result: any) => {
+        this.departments = result;
+      },
+      (error: any) => {
+        console.error('Error fetching countries:', error);
+      }
+    );
+  }
+}
+
+
+    
+loadDesignations(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore', selectedSchema)
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+
+    this.companyRegistrationService.getDesignationList(selectedSchema).subscribe(
+      (result: any) => {
+        this.Designations = result;
+      },
+      (error: any) => {
+        console.error('Error fetching countries:', error);
+      }
+    );
+  }
+}
+
+loadCategoried(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore', selectedSchema)
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+
+    this.companyRegistrationService.getcatgoriesList(selectedSchema).subscribe(
+      (result: any) => {
+        this.Categoried = result;
+      },
+      (error: any) => {
+        console.error('Error fetching countries:', error);
+      }
+    );
+  }
+}
+
+
+
+
+
+allSelected = false;
+allSelecteddept = false;
+allSelectedcat = false;
+allSelecteddes = false;
+
+allSelectedEmp = false;
+
+  @ViewChild('select') select: MatSelect | undefined;
+    @ViewChild('selectdept') selectdept: MatSelect | undefined;
+
+  @ViewChild('selectdes') selectdes: MatSelect | undefined;
+
+  @ViewChild('selectcat') selectcat: MatSelect | undefined;
+  @ViewChild('selectemp') selectemp: MatSelect | undefined;
+
+
+
+
+  
+
+  toggleAllSelection(): void {
+    if (this.select) {
+      if (this.allSelected) {
+
+        this.select.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.select.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+  toggleAllSelectiondept(): void {
+    if (this.select) {
+      if (this.allSelecteddept) {
+        this.select.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.select.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+  toggleAllSelectioncat(): void {
+    if (this.select) {
+      if (this.allSelectedcat) {
+        this.select.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.select.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+
+  toggleAllSelectiondes(): void {
+    if (this.selectdes) {
+      if (this.allSelecteddes) {
+        this.selectdes.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectdes.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+
+  toggleAllSelectionEmp(): void {
+    if (this.select) {
+      if (this.allSelectedEmp) {
+        this.select.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.select.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
 
 
 }

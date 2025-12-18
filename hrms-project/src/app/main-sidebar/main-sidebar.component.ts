@@ -227,19 +227,19 @@ loadDocumentReqNotifications(selectedSchema: string): void {
 // ✅ Loan Request Notifications
 loadLoanReqNotifications(selectedSchema: string): void {
   this.EmployeeService.getLoanReqNot(selectedSchema).subscribe({
-    next: (loan: any) => {
-      this.LoanReqNot = Array.isArray(loan)
-        ? loan
-            .filter((item: any) => item.message?.toLowerCase().includes('loanrequest'))
-            .map((item) => ({ ...item, type: 'loanrequest', highlighted: false }))
-        : [];
+    next: (loan: any[]) => {
+      this.LoanReqNot = (loan || []).map(item => ({
+        ...item,
+        type: 'loanrequest',
+        highlighted: false
+      }));
       this.combineNotifications();
     },
     error: (err) => {
       console.error('❌ Error loading loan request notifications:', err);
       this.LoanReqNot = [];
       this.combineNotifications();
-    },
+    }
   });
 }
 
