@@ -124,6 +124,7 @@ export class UserGroupingEditComponent {
   GrouppermissionsLeaveCancel:any[] =[];
   GrouppermissionsLeaveAccrual:any[] =[];
   GrouppermissionsLeaveRejoin:any[] =[];
+  GrouppermissionsLeaveEscalation:any[] =[];
 
 
   //permission stored arrays for Payroll
@@ -135,6 +136,7 @@ export class UserGroupingEditComponent {
   GrouppermissionsAdvanceSalaryReq:any[] =[];
   GrouppermissionsAdvanceSalaryAprlvl:any[] =[];
   GrouppermissionsWps:any[] =[];
+  GrouppermissionsAdvanceSalaryEscalation:any[] =[];
 
   //permission stored arrays for Loan
   GrouppermissionsLoanApproval:any[] =[];
@@ -142,6 +144,7 @@ export class UserGroupingEditComponent {
   GrouppermissionsLoanAprvlvl:any[] =[];
   GrouppermissionsLoanApp:any[] =[];
   GrouppermissionsLoanRepay:any[] =[];
+  GrouppermissionsLoanEscalation:any[] =[];
 
   //permission stored arrays for Asset
 
@@ -301,6 +304,7 @@ export class UserGroupingEditComponent {
   LaaveCancelInderminate=false;
   LeaveAccrualInderminate=false;
   LeaveRejoinInderminate=false;
+  LeaveEscalationInderminate=false;
 
 
 
@@ -314,6 +318,7 @@ export class UserGroupingEditComponent {
     AdvanceSalaryReqInderminate= false;
     AdvanceSalaryAprlvlInderminate= false;
     WpsInderminate= false;
+    AdvanceSalaryEscalationInderminate= false;
 
 
     //selected Loan checkboxes.
@@ -322,7 +327,8 @@ export class UserGroupingEditComponent {
     LoanTypeInderminate= false;
     LoanAprvInderminate= false;
     LoanAppInderminate= false;
-    LoanRepayIndeterminate= false
+    LoanRepayIndeterminate= false;
+    LoanEscalationInderminate= false;
 
     //selected Asset checkboxes.
 
@@ -473,6 +479,7 @@ export class UserGroupingEditComponent {
     LeaveCancelChecked:boolean= false;
     LeaveAccrualChecked:boolean= false;
     LeaveRejoinChecked:boolean= false;
+    LeaveEscalationChecked:boolean= false;
 
    
 
@@ -486,6 +493,7 @@ export class UserGroupingEditComponent {
     AdvanceSalaryReqChecked:boolean= false;
     AdvanceSalaryAprlvlChecked:boolean= false;
     WpsChecked:boolean= false;
+    AdvanceSalaryEscalationChecked:boolean= false;
 
     //Loan checkbox checked values
     LoanApprovalChecked:boolean= false;
@@ -493,6 +501,7 @@ export class UserGroupingEditComponent {
     LoanAprvlvlChecked:boolean= false;
     LoanAppChecked:boolean= false;
     LoanRepayChecked:boolean= false;
+    LoanEscalationChecked:boolean= false;
 
     //Asset checkbox checked values
 
@@ -1036,7 +1045,8 @@ isLeaveMangementMasterChecked():boolean{
     this.LeaveBalanceChecked &&
     this.LeaveCancelChecked &&
     this.LeaveAccrualChecked &&
-    this.LeaveRejoinChecked;
+    this.LeaveRejoinChecked &&
+    this.LeaveEscalationChecked;
        
 }
   
@@ -1052,6 +1062,13 @@ isLeavetypeIndeterminate(): boolean {
       this.GrouppermissionsLeavetype.map(p => p.id).includes(permission)
     );
     return selectedLeavetypePermissions.length > 0 && selectedLeavetypePermissions.length < this.GrouppermissionsLeavetype.length;
+}
+
+isLeaveEscalationIndeterminate(): boolean {
+    const selectedLeaveEscalationPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsLeaveEscalation.map(p => p.id).includes(permission)
+    );
+    return selectedLeaveEscalationPermissions.length > 0 && selectedLeaveEscalationPermissions.length < this.GrouppermissionsLeaveEscalation.length;
 }
 
 isLeavemasterIndeterminate(): boolean {
@@ -1125,7 +1142,8 @@ isPayrollManagementMasterChecked():boolean{
   this.AdvanceSalaryAprvlstChecked &&
   this.AdvanceSalaryReqChecked &&
   this.AdvanceSalaryAprlvlChecked &&
-  this.WpsChecked
+  this.WpsChecked &&
+  this.AdvanceSalaryEscalationChecked ;
 }
 
 
@@ -1175,6 +1193,13 @@ isAdvanceSalaryReqIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsAdvanceSalaryReq.length;
 }
 
+isAdvanceSalaryEscalationIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsAdvanceSalaryEscalation.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsAdvanceSalaryEscalation.length;
+}
+
 isAdvanceSalaryAprlvlIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
     this.GrouppermissionsAdvanceSalaryAprlvl.map(p => p.id).includes(id)
@@ -1197,7 +1222,8 @@ isLoanManagementMasterChecked():boolean{
   this.LoanTypeChecked &&
   this.LoanAprvlvlChecked &&
   this.LoanAppChecked &&
-  this.LoanRepayChecked;
+  this.LoanRepayChecked &&
+  this.LoanEscalationChecked;
 
 }
 
@@ -1214,6 +1240,13 @@ isLoanTypeIndeterminate(): boolean {
     this.GrouppermissionsLoanType.map(p => p.id).includes(id)
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsLoanType.length;
+}
+
+isLoanEscalationIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsLoanEscalation.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsLoanEscalation.length;
 }
 
 isLoanRepayIndeterminate(): boolean { 
@@ -1819,6 +1852,7 @@ updateInderminateLeave():void{
   this.isLeaveCancelIndeterminate();
   this.isLeaveAccrualIndeterminate();
   this.isLeaveRejoinIndeterminate();
+  this.isLeaveEscalationIndeterminate();
 
 
 
@@ -1836,6 +1870,7 @@ updateInderminatePayroll():void{
   this.isAdvanceSalaryReqIndeterminate();
   this.isAdvanceSalaryAprlvlIndeterminate();
   this.isWpsIndeterminate();
+  this.isAdvanceSalaryEscalationIndeterminate();
 }
 
 // Update Interminate Loan
@@ -1846,6 +1881,7 @@ updateInderminateLoan():void{
   this.isLoanAprvlvlIndeterminate();
   this.isLoanAppIndeterminate();
   this.isLoanRepayIndeterminate();
+  this.isLoanEscalationIndeterminate();
 
 }
 
@@ -2045,6 +2081,7 @@ updateInderminateShift():void{
     this.loadpermissionsLeaveCancel();
     this.loadpermissionsLeaveAccrual();
     this.loadpermissionsLeaveRejoin();
+    this.loadpermissionsLeaveEscalation();
 
 
   }
@@ -2061,6 +2098,7 @@ updateInderminateShift():void{
   this.loadpermissionsAdvanceSalaryReq();
   this.loadpermissionsAdvanceSalaryAprlvl();
   this.loadpermissionsWps();
+  this.loadpermissionsAdvanceSalaryEscalation();
 
   }
 
@@ -2073,6 +2111,7 @@ updateInderminateShift():void{
   this.loadpermissionsLoanAprvlvl();
   this.loadpermissionsLoanApp();
   this.loadpermissionsLoanRepay();
+  this.loadpermissionsLoanEscalation();
  
   }
 
@@ -4889,6 +4928,57 @@ loadpermissionsEmpReport(): void {
                         }
                       }
 
+
+                                      loadpermissionsLeaveEscalation(): void {
+                                            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+                      
+                                            console.log('schemastore', selectedSchema);
+                                          
+                                            if (selectedSchema) {
+                                              this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+                                                (result: any[]) => {
+                                                  // Specify the codenames you want to filter
+                                                  const requiredCodenames = ['add_leave_escalation', 'change_leave_escalation', 'delete_leave_escalation', 'view_leave_escalation'];
+                                          
+                                                  // Filter and remove duplicates based on codename
+                                                  const uniquePermissionsMap = new Map();
+                                                  result.forEach(permission => {
+                                                    const codename = permission.codename.trim().toLowerCase();
+                                                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                                                      uniquePermissionsMap.set(codename, permission);
+                                                    }
+                                                  });
+                                          
+                                                  // Convert map values to an array
+                                                  this.GrouppermissionsLeaveEscalation = Array.from(uniquePermissionsMap.values());
+                                          
+                                                  console.log('Filtered Unique Permissions:', this.GrouppermissionsLeaveEscalation);
+                                                },
+                                                (error: any) => {
+                                                  console.error('Error fetching permissions:', error);
+                                                }
+                                              );
+                                            }
+                                          }
+                                        
+                                        
+                                            //Display Name add view delte code for emplotee master-------
+                                        
+                   getDisplayNameLeaveEscalation(permissionCodename: string): string {
+                          switch (permissionCodename.trim().toLowerCase()) {
+                             case 'add_leave_escalation':
+                                   return 'Add';
+                             case 'change_leave_escalation':
+                                   return 'Edit';
+                             case 'delete_leave_escalation':
+                                  return 'Delete';
+                             case 'view_leave_escalation':
+                                  return 'View';
+                                   default:
+                             return permissionCodename;
+                                              }
+                                            }
+
                       loadpermissionsLeavemaster(): void {
                         const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
@@ -5607,6 +5697,53 @@ getDisplayNameAdvanceSalaryReq(permissionCodename: string): string {
   }
 }
 
+loadpermissionsAdvanceSalaryEscalation(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        const requiredCodenames = [
+          'add_advsalary_escalation',
+          'change_advsalary_escalation',
+          'delete_advsalary_escalation',
+          'view_advsalary_escalation'
+        ];
+
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsAdvanceSalaryEscalation = Array.from(uniquePermissionsMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Payroll Advance Salary Escalation permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Payroll Advance salary Request permissions ===
+getDisplayNameAdvanceSalaryEscalation(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_advsalary_escalation':
+      return 'Add';
+    case 'change_advsalary_escalation':
+      return 'Edit';
+    case 'delete_advsalary_escalation':
+      return 'Delete';
+    case 'view_advsalary_escalation':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 
 
 loadpermissionsAdvanceSalaryAprlvl(): void {
@@ -5806,6 +5943,53 @@ getDisplayNameLoanType(permissionCodename: string): string {
     case 'delete_loantype':
       return 'Delete';
     case 'view_loantype':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+loadpermissionsLoanEscalation(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_loan_escalation',
+          'change_loan_escalation',
+          'delete_loan_escalation',
+          'view_loan_escalation',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsLoanEscalation = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Loan Approval level permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Loan Approval level permissions ===
+getDisplayNameLoanEscalation(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_loan_escalation':
+      return 'Add';
+    case 'change_loan_escalation':
+      return 'Edit';
+    case 'delete_loan_escalation':
+      return 'Delete';
+    case 'view_loan_escalation':
       return 'View';
     default:
       return permissionCodename;
@@ -8624,6 +8808,28 @@ updateLeaveAprRepCheckbox(): void {
     this.LeavetypeInderminate = this.isLeavetypeIndeterminate();
   }
 
+      onCheckboxChangesLeaveEscalation(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateLeaveEscalationCheckbox();
+    this.updateLeave();
+
+  }
+
+  updateLeaveEscalationCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsLeaveEscalation.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.LeaveEscalationChecked = allPermissionsSelected;
+    this.LeaveEscalationInderminate = this.isLeaveEscalationIndeterminate();
+  }
+
   onCheckboxChangesLeavemaster(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
@@ -8916,6 +9122,24 @@ updateAdvanceSalaryReqCheckbox(): void {
   this.AdvanceSalaryReqChecked = allSelected;
 }
 
+onCheckboxChangesAdvanceSalaryEscalation(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateAdvanceSalaryEscalationCheckbox();
+  this.updatePayroll();
+}
+
+updateAdvanceSalaryEscalationCheckbox(): void {
+  const allSelected = this.GrouppermissionsAdvanceSalaryEscalation.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.AdvanceSalaryEscalationChecked = allSelected;
+}
+
 
 onCheckboxChangesAdvanceSalaryAprlvl(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
@@ -8991,6 +9215,25 @@ updateLoanTypeCheckbox(): void {
   );
   this.LoanTypeChecked = allSelected;
 }
+
+onCheckboxChangesLoanEscalation(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateLoanEscalationCheckbox();
+  this.updateLoan();
+}
+
+updateLoanEscalationCheckbox(): void {
+  const allSelected = this.GrouppermissionsLoanEscalation.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.LoanEscalationChecked = allSelected;
+}
+
 
 
 
@@ -10483,6 +10726,20 @@ updateShiftOverRideCheckbox(): void {
 
   }
 
+      onLeaveEscalationChange(): void {
+    if (this.LeaveEscalationChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeaveEscalation.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeaveEscalation.map(p => p.id).includes(permission));
+    }
+    this.updateLeaveCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+
+  }
+
+
   onLeavemasterChange(): void {
     if (this.LeavemasterChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeavemaster.map(permission => permission.id));
@@ -10666,6 +10923,18 @@ onAdvanceSalaryReqChange(): void {
   this.updatePayrollCheckbox();
 }
 
+onAdvanceSalaryEscalationChange(): void {
+  if (this.AdvanceSalaryEscalationChecked) {
+    const idsToAdd = this.GrouppermissionsAdvanceSalaryEscalation.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsAdvanceSalaryEscalation.some(p => p.id === id)
+    );
+  }
+  this.updatePayrollCheckbox();
+}
+
 
 onAdvanceSalaryAprlvlChange(): void {
   if (this.AdvanceSalaryAprlvlChecked) {
@@ -10717,6 +10986,19 @@ onLoanTypeChange(): void {
   }
   this.updateLoanCheckbox();
 }
+
+onLoanEscalationChange(): void {
+  if (this.LoanEscalationChecked) {
+    const idsToAdd = this.GrouppermissionsLoanEscalation.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsLoanEscalation.some(p => p.id === id)
+    );
+  }
+  this.updateLoanCheckbox();
+}
+
 
 onLoanRepayChange(): void {
   if (this.LoanRepayChecked) {
@@ -11375,11 +11657,12 @@ isLeaves(): boolean {
   const LeaveCancelInderminate = this.isLeaveCancelIndeterminate();
   const LeaveAccrualInderminate = this.isLeaveAccrualIndeterminate();
   const LeaveRejoinInderminate = this.isLeaveRejoinIndeterminate();
+  const LeaveEscalationInderminate = this.isLeaveEscalationIndeterminate();
 
 
 
   const otherGroupIndeterminate = false;
-  return LeaveaprvInderminate || LeavetypeInderminate ||LeavemasterInderminate || LeavereqInderminate ||  LeavecomInderminate ||
+  return LeaveaprvInderminate || LeavetypeInderminate || LeaveEscalationInderminate || LeavemasterInderminate || LeavereqInderminate ||  LeavecomInderminate ||
    LeaveaprvlvlInderminate || LeaveRejoinInderminate || LeaveAccrualInderminate || LeaveBalanceInderminate || LeaveCancelInderminate || otherGroupIndeterminate;
 } 
 
@@ -11392,10 +11675,11 @@ isPayrolls(): boolean {
   const AdvanceSalaryReqInderminate = this.isAdvanceSalaryReqIndeterminate();
   const AdvanceSalaryAprlvlInderminate = this.isAdvanceSalaryAprlvlIndeterminate();
   const WpsInderminate = this.isWpsIndeterminate();
+  const AdavanceSalaryEscalationInderminate = this.isAdvanceSalaryEscalationIndeterminate();
 
   const otherGroupIndeterminate = false;
 
-  return PayrollrunIndeterminate || SalarycomponentIndeterminate || PayslipAprvIndeterminate || isPayrollaprlvlIndeterminate || AdvanceSalaryAprvlstIndeterminate || AdvanceSalaryReqInderminate || AdvanceSalaryAprlvlInderminate || WpsInderminate || otherGroupIndeterminate;
+  return PayrollrunIndeterminate || AdavanceSalaryEscalationInderminate || SalarycomponentIndeterminate || PayslipAprvIndeterminate || isPayrollaprlvlIndeterminate || AdvanceSalaryAprvlstIndeterminate || AdvanceSalaryReqInderminate || AdvanceSalaryAprlvlInderminate || WpsInderminate || otherGroupIndeterminate;
 }
 
 
@@ -11405,11 +11689,12 @@ isLoans(): boolean {
   const LoanAprvlvlIndeterminate = this.isLoanAprvlvlIndeterminate();
   const LoanAppIndeterminate = this.isLoanAppIndeterminate();
   const LoanRepayIndeterminate = this.isLoanRepayIndeterminate();
+  const LoanEscalationIndeterminate = this.isLoanEscalationIndeterminate();
 
 
   const otherGroupIndeterminate = false;
-
-  return LoanApprovalIndeterminate || LoanTypeIndeterminate || LoanAprvlvlIndeterminate || LoanAppIndeterminate || LoanRepayIndeterminate  || otherGroupIndeterminate;
+ 
+  return LoanApprovalIndeterminate || LoanEscalationIndeterminate || LoanTypeIndeterminate || LoanAprvlvlIndeterminate || LoanAppIndeterminate || LoanRepayIndeterminate  || otherGroupIndeterminate;
 }
 
 
@@ -11735,6 +12020,7 @@ selectLeave(): void {
     ...this.GrouppermissionsLeaveCancel,
     ...this.GrouppermissionsLeaveAccrual,
     ...this.GrouppermissionsLeaveRejoin,
+    ...this.GrouppermissionsLeaveEscalation,
 
 
   ].map(permission => permission.id);
@@ -11756,6 +12042,7 @@ selectLeave(): void {
   this.updateLeaveCancelCheckbox();
   this.updateLeaveAccrualCheckbox();
   this.updateLeaveRejoinCheckbox();
+  this.updateLeaveEscalationCheckbox();
 
 
 }
@@ -11771,6 +12058,7 @@ selectPayroll(): void {
     ...this.GrouppermissionsAdvanceSalaryReq,
     ...this.GrouppermissionsAdvanceSalaryAprlvl,
     ...this.GrouppermissionsWps,
+    ...this.GrouppermissionsAdvanceSalaryEscalation
   ].map(permission => permission.id);
 
   if (this.Payrollchecked) {
@@ -11789,6 +12077,7 @@ selectPayroll(): void {
   this.updateAdvanceSalaryReqCheckbox();
   this.updateAdvanceSalaryAprlvlCheckbox();
   this.updateWpsCheckbox();
+  this.updateAdvanceSalaryEscalationCheckbox();
 }
 
 
@@ -11799,6 +12088,7 @@ selectLoan(): void {
     ...this.GrouppermissionsLoanAprvlvl,
     ...this.GrouppermissionsLoanApp,
     ...this.GrouppermissionsLoanRepay,
+    ...this.GrouppermissionsLoanEscalation,
 
   ].map(permission => permission.id);
 
@@ -11815,6 +12105,7 @@ selectLoan(): void {
   this.updateLoanAprvlvlCheckbox();
   this.updateLoanAppCheckbox();
   this.updateLoanRepayCheckbox();
+  this.updateLoanEscalationCheckbox();
  
 }
 
@@ -12133,6 +12424,7 @@ updateLeave():void{
   this.updateLeaveCancelCheckbox();
   this.updateLeaveAccrualCheckbox();
   this.updateLeaveRejoinCheckbox();
+  this.updateLeaveEscalationCheckbox();
 
 }
 
@@ -12146,6 +12438,7 @@ updatePayroll():void{
   this.updateAdvanceSalaryReqCheckbox();
   this.updateAdvanceSalaryAprlvlCheckbox();
   this.updateWpsCheckbox();
+  this.updateAdvanceSalaryEscalationCheckbox();
 
 }
 
@@ -12156,6 +12449,7 @@ updateLoan():void{
   this.updateLoanAprvlvlCheckbox();
   this.updateLoanAppCheckbox();
   this.updateLoanRepayCheckbox();
+  this.updateLoanEscalationCheckbox();
   
 
 }
@@ -12324,6 +12618,7 @@ isLeaveInderminate(): boolean {
     ...this.GrouppermissionsLeaveCancel,
     ...this.GrouppermissionsLeaveAccrual,
     ...this.GrouppermissionsLeaveRejoin,
+    ...this.GrouppermissionsLeaveEscalation,
 
   ].some(permission => this.selectedPermissions.includes(permission.id));
 
@@ -12342,6 +12637,7 @@ isPayrollInderminate(): boolean {
     ...this.GrouppermissionsAdvanceSalaryReq,
     ...this.GrouppermissionsAdvanceSalaryAprlvl,
     ...this.GrouppermissionsWps,
+    ...this.GrouppermissionsAdvanceSalaryEscalation
 
   ].some(permission => this.selectedPermissions.includes(permission.id));
 
@@ -12355,6 +12651,7 @@ isLoanInderminate(): boolean {
     ...this.GrouppermissionsLoanAprvlvl,
     ...this.GrouppermissionsLoanApp,
     ...this.GrouppermissionsLoanRepay,
+    ...this.GrouppermissionsLoanEscalation,
  
 
   ].some(permission => this.selectedPermissions.includes(permission.id));

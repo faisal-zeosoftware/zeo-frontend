@@ -209,8 +209,8 @@ if (this.userId !== null) {
                      this.hasViewPermissionLeaveAprvlvl = this.checkGroupPermission('view_leaveapprovallevels', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionLeaveAprvlvl);
                     
-                    //  this.hasViewPermissionLeavetemp = this.checkGroupPermission('view_lvemailtemplate', groupPermissions);
-                    //  console.log('Has view permission:', this.hasViewPermissionLeavetemp);
+                     this.hasViewPermissionLvEsc = this.checkGroupPermission('view_leave_escalation', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissionLvEsc);
 
 
                      this.hasViewPermissionLeaveBalance = this.checkGroupPermission('view_emp_leave_balance', groupPermissions);

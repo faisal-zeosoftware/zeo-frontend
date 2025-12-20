@@ -17,7 +17,7 @@
                     <div class="button-group pull-right">
                         <button type="button"  class="btn-Create btn btn-success" (click)="CreateLeaveModal()"> <span class="header-btn-icon"><mat-icon>add_circle
                         </mat-icon></span> Create</button>
-                        <!-- <span *ngIf="!hasAddPermission"></span>
+                        <span *ngIf="!hasAddPermission"></span>
 
                         <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
                             <span class="header-btn-icon">
@@ -28,7 +28,7 @@
                             <span class="header-btn-icon">
                                 <mat-icon> delete
                            </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                           <span *ngIf="!hasDeletePermission"></span> -->
+                           <span *ngIf="!hasDeletePermission"></span>
                    
                    
                    
@@ -41,36 +41,58 @@
 
         </div>
 
+
+    <div class="row">
+      <div class="col-md-2">
+          
+          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllLeaveTypes()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLeavetype()">Delete Selected </button>
+
+      </div>
+  </div>
+
         
 
-        <!-- <div class="row">
-          <div class="col-md-4">
-            <div class="visitcount" >
-              <div class="row">
-                  <div class="col-md-9 col-8">
-                      <h4 id="tot_visitors">0</h4>
-                      <h6>TODAY'S VISITORS</h6>
-                  </div>
-                  <div class="col-md-3 col-4">
-                      <h5><i class="fa fa-people-fill"></i></h5>
-                  </div>
-              </div>
-          </div>
-          </div>
-        </div> -->
+
 
      <div class="row ">
       <div class="col-md-3 mt-4" *ngFor="let leavetype of LeaveTypes">
         <div class="flip-card" [class.flipped]="leavetype.flipped">
           <div class="flip-card-inner">
+
+
+
             <!-- Front Side -->
             <div class="flip-card-front">
               <div class="leave_type_outer">
+
+               <td>
+                <button style="height: 40px; width: 40px;"
+                  mat-fab
+                  color="primary"
+                  aria-label="Edit icon"
+                  *ngIf="showEditBtn"
+
+                  
+                  (click)="openEditLeaveTypeModal(leavetype)"
+                >
+                  <mat-icon style="color: white;">draw</mat-icon>
+                </button>
+
+                <mat-checkbox *ngIf="Delete" [(ngModel)]="leavetype.selected" ></mat-checkbox>
+
+              </td>
+
                 <div class="leave-img-section">
                   <div class="d-block mx-auto">
                     <img src="assets/2144792.jpg" width="100%" class="image-fluid">
                   </div>
                 </div>
+
+
       
                 <div class="leave-name-section mt-4">
                   <h4>{{ leavetype.name }}</h4>
@@ -88,6 +110,7 @@
                     <!-- <button type="button" class="btn btn-danger action-btn delete-btn">
                       <i class="fa fa-trash"></i>
                     </button> -->
+                                
                   </div>
                 </div>
               </div>
@@ -102,22 +125,22 @@
 
                   </div>
 
-                  <div class="col-md-1">
-                    <i class="fa-solid fa-trash"></i>
-
-                    </div>
-                    <div class="col-md-1">
-                      <i class="fa-solid fa-edit"></i>
-  
-                      </div>
-  
-
-                    <div class="col-md-1">
+                    <div class="col-md-3">
                       <i class="fa-solid fa-circle-chevron-left" (click)="toggleFlip(leavetype)"></i>
   
                       </div>
 
-                  
+
+
+<!-- 
+                  <div class="col-md-1">
+                    <i class="fa-solid fa-trash"></i>
+
+                    </div> -->
+                    <!-- <div class="col-md-1">
+                      <i class="fa-solid fa-edit"></i>
+  
+                      </div> -->
                   
                 </div>
 
@@ -561,7 +584,153 @@
 
 
 
+             <!-- Edit Modal -->
+<div *ngIf="isLeaveTypeEditModalOpen" class="modal">
+<div class="modal-content">
+<div class="row">
+  <div class="col-md-10">
+    <h2>Edit Leave Type</h2>
+  </div>
+  <div class="col-md-2">
+    <span class="close pull-right" (click)="closeEditLeaveTypeModal()">&times;</span>
+  </div>
+</div>
+<hr />
 
+
+        <form>
+            <div class="row">
+              <div class="col-md-4">
+                <label>Name</label>
+                <input type="text" class="form-control" required [(ngModel)]="editLeaveType.name" placeholder="Enter name"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
+              </div>
+          
+              <div class="col-md-4">
+                <label>Code</label>
+                <input type="text" class="form-control" required [(ngModel)]="editLeaveType.code" placeholder="Enter code"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !code}">
+              </div>
+          
+              <div class="col-md-4">
+                <label>Leave Type</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="type" name="type" [(ngModel)]="editLeaveType.type" [ngModelOptions]="{standalone: true}">
+                    <option>paid</option>
+                    <option>unpaid</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="col-md-4">
+                <label>Leave Unit</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="unit" name="unit" [(ngModel)]="editLeaveType.unit" [ngModelOptions]="{standalone: true}">
+                    <option>days</option>
+                    <option>hours</option>
+                  </select>
+                </div>
+              </div>
+          
+              <div class="col-md-4">
+                <label>Valid From</label>
+                <input type="date" class="form-control" required [(ngModel)]="editLeaveType.valid_from" placeholder="Enter valid from"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+           
+              <div class="col-md-4">
+                <label>Valid To</label>
+                <input type="date" class="form-control" required [(ngModel)]="editLeaveType.valid_to" placeholder="Enter valid to"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+
+              <div class="col-md-4">
+                <label>Branch</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="branch" name="branch" [(ngModel)]="editLeaveType.branch" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let designation of Branches" [value]="designation.id">{{ designation.branch_name }}</option>
+                 
+                  </select>
+                </div>
+              </div>
+
+              
+              <!-- <div class="col-md-4">
+                <label for="image">Leave Type Image</label>
+                <input type="file" class="form-control" id="image" name="image" (change)="onFileSelected($event)">
+              </div> -->
+          
+              <div class="col-md-4">
+                <label></label>
+                <div class="check-box-selection-sec form-control mt-3">
+                  <div class="mat-set">
+                    <mat-checkbox [(ngModel)]="editLeaveType.negative" [ngModelOptions]="{standalone: true}">Negative</mat-checkbox>
+                  </div>
+                </div>
+              </div>
+          
+              <div class="col-md-4">
+                <label></label>
+                <div class="check-box-selection-sec form-control mt-3">
+                  <div class="mat-set">
+                    <mat-checkbox [(ngModel)]="editLeaveType.allow_half_day" [ngModelOptions]="{standalone: true}">Allow Half Day</mat-checkbox>
+                  </div>
+                </div>
+              </div>
+
+                <div class="col-md-4">
+                <label></label>
+                <div class="check-box-selection-sec form-control mt-3">
+                  <div class="mat-set">
+                    <mat-checkbox [(ngModel)]="editLeaveType.include_holiday" [ngModelOptions]="{standalone: true}">Include Holiday</mat-checkbox>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label></label>
+                <div class="check-box-selection-sec form-control mt-3">
+                  <div class="mat-set">
+                    <mat-checkbox [(ngModel)]="editLeaveType.include_weekend" [ngModelOptions]="{standalone: true}">Include Weekend</mat-checkbox>
+                  </div>
+                </div>
+              </div>
+
+                  <div class="col-md-4">
+                        <label></label>
+                        <div class="check-box-selection-sec form-control mt-3">
+                          <div class="mat-set">
+                            <mat-checkbox [(ngModel)]="editLeaveType.include_dashboard" [ngModelOptions]="{standalone: true}">Include Dashboard</mat-checkbox>
+                          </div>
+                        </div>
+                      </div>
+          
+  
+              <div class="col-md-6">
+                <label>Description</label>
+                <textarea class="form-control" [(ngModel)]="editLeaveType.description" [ngModelOptions]="{standalone: true}"></textarea>
+              </div>
+              
+            </div>
+
+          
+            <div class="row">
+              <div class="col-md-6"></div>
+              <div class="col-md-3">
+                <button (click)="closeEditLeaveTypeModal()" type="button" class="btn btn-danger btn-full mt-4">Cancel</button>
+              </div>
+              <div class="col-md-3">
+                <button (click)="updateLeavetype()" type="submit" class="btn btn-success btn-full mt-4">Add Leave Type</button>
+              </div>
+            </div>
+          </form>
+
+
+
+
+
+</div>
+</div>
 
 
 

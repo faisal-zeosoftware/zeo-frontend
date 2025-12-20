@@ -148,6 +148,7 @@ ngOnInit(): void {
                   this.hasAddPermission = true;
                   this.hasDeletePermission = true;
                   this.hasEditPermission = true;
+                  
                 } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                   const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                   console.log('Group Permissions:', groupPermissions);

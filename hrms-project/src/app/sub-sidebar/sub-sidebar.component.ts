@@ -308,6 +308,13 @@ if (this.userId !== null) {
     }
 
 
+       showGeneralRequest = false;
+
+    toggleGeneralRequest() {
+      this.showGeneralRequest = !this.showGeneralRequest;
+    }
+
+
   
 
 }

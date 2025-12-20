@@ -141,10 +141,13 @@ export class AssetOptionsComponent {
                        this.hasViewPermissionAssetMaster = this.checkGroupPermission('view_asset', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAssetMaster);
 
-                       this.hasViewPermissionAssetAprlvl = this.checkGroupPermission('view_asset', groupPermissions);
+                       this.hasViewPermissionAssetAprlvl = this.checkGroupPermission('view_assetapprovallevel', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAssetAprlvl);
 
-                       this.hasViewPermissionAssetApprovals = this.checkGroupPermission('view_asset', groupPermissions);
+                       this.hasViewPermissionAssetEsc = this.checkGroupPermission('view_asset_escalation', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAssetEsc);
+
+                       this.hasViewPermissionAssetApprovals = this.checkGroupPermission('view_assetapproval', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAssetApprovals);
 
 

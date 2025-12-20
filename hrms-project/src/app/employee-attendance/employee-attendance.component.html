@@ -181,7 +181,7 @@
 
     </div>
     <div class="col-md-2 mt-3">
-        <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate Report</button>
+        <button class="btn btn-primary" *ngIf="hasAddPermission" (click)="generateAttendanceReport()">Generate Report</button>
       </div>
 </div>
 
@@ -204,7 +204,7 @@
         </div>
 
         <div class="col-md-2">
-            <button type="button" class="btn btn-success pull-right" (click)="exportToExcel()">Export</button>
+            <button type="button" class="btn btn-success pull-right" *ngIf="hasExportPermission" (click)="exportToExcel()">Export</button>
         </div>
     </div>
     <div class="table-container table-scroll">

@@ -344,25 +344,18 @@ export class LeaveMasterComponent {
 
 
 
-
-  showEditBtn: boolean = false;
-
+// Toggle edit icon
+showEditBtn: boolean = false;
 EditShowButtons() {
-this.showEditBtn = !this.showEditBtn;
+  this.showEditBtn = !this.showEditBtn;
 }
 
-
+// Delete logic
 Delete: boolean = false;
 allSelecteds: boolean = false;
 
 toggleCheckboxes() {
-this.Delete = !this.Delete;
-}
-
-toggleSelectAllEmployees() {
-this.allSelecteds = !this.allSelecteds;
-this.LeaveMaster.forEach(employee => employee.selected = this.allSelecteds);
-
+  this.Delete = !this.Delete;
 }
 
 toggleSelectAllLeaveTypes() {
@@ -370,12 +363,12 @@ toggleSelectAllLeaveTypes() {
   this.LeaveTypes.forEach(leave => leave.selected = this.allSelecteds);
 }
 
-
+// ===== EDIT LEAVE TYPE =====
 isLeaveTypeEditModalOpen: boolean = false;
 editLeaveType: any = {};
 
 openEditLeaveTypeModal(type: any): void {
-  this.editLeaveType = { ...type };
+  this.editLeaveType = { ...type }; // clone
   this.isLeaveTypeEditModalOpen = true;
 }
 
@@ -384,22 +377,6 @@ closeEditLeaveTypeModal(): void {
   this.editLeaveType = {};
 }
 
-
-
-isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
-
-
-openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
-}
-
-
-closeEditModal(): void {
-this.isEditModalOpen = false;
-this.editAsset = {};
-}
 
 
 
@@ -443,17 +420,14 @@ deleteSelectedLeavetype() {
 
 
 
-
-
 updateLeavetype(): void {
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema || !this.editLeaveType.id) {
-    alert('Missing schema or asset ID');
+  if (!this.editLeaveType.id) {
+    alert('Leave Type ID missing');
     return;
   }
 
   const payload = { ...this.editLeaveType };
-  delete payload.image;  // IMPORTANT
+  delete payload.image; // backend-safe
 
   this.leaveService.updateLeavetype(this.editLeaveType.id, payload)
     .subscribe(
@@ -462,22 +436,20 @@ updateLeavetype(): void {
         this.closeEditLeaveTypeModal();
         window.location.reload();
       },
-(error) => {
-  console.error('Error updating Leave Type:', error);
+      (error) => {
+        console.error('Error updating Leave Type:', error);
 
-  let errorMsg = 'Update failed';
+        let errorMsg = 'Update failed';
+        const backendError = error?.error;
 
-  const backendError = error?.error;
+        if (backendError && typeof backendError === 'object') {
+          errorMsg = Object.keys(backendError)
+            .map(key => `${key}: ${backendError[key].join(', ')}`)
+            .join('\n');
+        }
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
+        alert(errorMsg);
+      }
     );
 }
 
@@ -1014,6 +986,8 @@ openLeaveConfigurationModal(leavetype: any): void {
       height:'700px',
     })
   }
+
+
 
 
 

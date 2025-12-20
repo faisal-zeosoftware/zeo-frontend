@@ -138,11 +138,14 @@ export class AirTicketOptionsComponent {
                        this.hasViewPermissionAirticketAllocation = this.checkGroupPermission('view_airticketallocation', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAirticketAllocation);
 
-                       this.hasViewPermissionAirticketApprovals = this.checkGroupPermission('view_airticketallocation', groupPermissions);
+                       this.hasViewPermissionAirticketApprovals = this.checkGroupPermission('view_airticketapproval', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAirticketApprovals);
 
-                       this.hasViewPermissionAirticketAprlvl = this.checkGroupPermission('view_airticketrequest', groupPermissions);
+                       this.hasViewPermissionAirticketAprlvl = this.checkGroupPermission('view_airticketworkflow', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAirticketAprlvl);
+
+                      this.hasViewPermissionAirticketEsc = this.checkGroupPermission('view_airticket_escalation', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAirticketEsc);
 
                         this.hasViewPermissionAirticketRequest = this.checkGroupPermission('view_airticketrequest', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAirticketRequest);

@@ -21,6 +21,7 @@ export class SalaryOptionsComponent {
 
   hasViewPermissionApprovalList: boolean = false;
   hasViewPermissionAdvanceSalaryRequest: boolean = false;
+  hasViewPermissionAdvanceSalaryEscalation: boolean = false;
   hasViewPermissionAdvanceSalaryApprovalLevel: boolean = false;
   hasViewPermissionWPS: boolean = false;
 
@@ -87,6 +88,7 @@ export class SalaryOptionsComponent {
 
           this.hasViewPermissionApprovalList = true;
           this.hasViewPermissionAdvanceSalaryRequest = true;
+          this.hasViewPermissionAdvanceSalaryEscalation = true;
           this.hasViewPermissionAdvanceSalaryApprovalLevel = true;
           this.hasViewPermissionWPS = true;
        
@@ -120,6 +122,7 @@ export class SalaryOptionsComponent {
 
                    this.hasViewPermissionApprovalList = true;
                    this.hasViewPermissionAdvanceSalaryRequest = true;
+                   this.hasViewPermissionAdvanceSalaryEscalation = true;
                    this.hasViewPermissionAdvanceSalaryApprovalLevel = true;
                    this.hasViewPermissionWPS = true;
                  
@@ -150,8 +153,11 @@ export class SalaryOptionsComponent {
                         this.hasViewPermissionAdvanceSalaryRequest = this.checkGroupPermission('view_advancesalaryrequest', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryRequest);
 
-                        this.hasViewPermissionAdvanceSalaryApprovalLevel = this.checkGroupPermission('view_advancecommonworkflow', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryApprovalLevel);
+                       this.hasViewPermissionAdvanceSalaryRequest = this.checkGroupPermission('view_advancesalaryrequest', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryRequest);
+
+                        this.hasViewPermissionAdvanceSalaryEscalation = this.checkGroupPermission('view_advsalary_escalation', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryEscalation);
 
                         this.hasViewPermissionWPS = this.checkGroupPermission('view_wps', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionWPS);

@@ -21,7 +21,7 @@ export class LeaveApprovalsReportComponent {
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
-  // hasExportPermission: boolean = false;
+  hasExportPermission: boolean = false;
   
   userId: number | null | undefined;
   userDetails: any;
@@ -93,7 +93,7 @@ export class LeaveApprovalsReportComponent {
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
-        // this.hasExportPermission=true;
+            this.hasExportPermission=true;
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
     
@@ -118,7 +118,7 @@ export class LeaveApprovalsReportComponent {
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
-                    // this.hasExportPermission= true;
+                    this.hasExportPermission= true;
 
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
@@ -136,8 +136,8 @@ export class LeaveApprovalsReportComponent {
                   this.hasEditPermission = this.checkGroupPermission('change_leaveapprovalreport', groupPermissions);
                  console.log('Has edit permission:', this.hasEditPermission);
                  
-                //  this.hasExportPermission = this.checkGroupPermission('export_doc_report', groupPermissions);
-                //  console.log('Has export permission:', this.hasExportPermission);
+                 this.hasExportPermission = this.checkGroupPermission('lv_approval_export_report', groupPermissions);
+                 console.log('Has export permission:', this.hasExportPermission);
                   } else {
                     console.error('No groups found in data or groups array is empty.', firstItem);
                   }

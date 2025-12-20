@@ -32,10 +32,12 @@ export class CreateLeavetypeComponent {
   negative: boolean = false;
 
   allow_half_day: boolean = false;
-  include_weekend_and_holiday: boolean = false;
+  include_holiday: boolean = false;
+  include_weekend: boolean = false;
+
   use_common_workflow: boolean = false;
 
-    include_dashboard: boolean = false;
+  include_dashboard: boolean = false;
 
 
   registerButtonClicked: boolean = false;
@@ -75,9 +77,9 @@ export class CreateLeavetypeComponent {
 
   }
 
-   onFileSelected(event: any): void {
-    this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
-  }
+  //  onFileSelected(event: any): void {
+  //   this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
+  // }
 
 
    registerleaveType(): void {
@@ -108,14 +110,16 @@ export class CreateLeavetypeComponent {
     formData.append('created_by', this.created_by);
     formData.append('negative', this.negative.toString());
     formData.append('allow_half_day', this.allow_half_day.toString());
-    formData.append('include_weekend_and_holiday', this.include_weekend_and_holiday.toString());
+    formData.append('include_holiday', this.include_holiday.toString());
+    formData.append('include_weekend', this.include_weekend.toString());
     formData.append('include_dashboard', this.include_dashboard.toString());
 
     formData.append('use_common_workflow', this.use_common_workflow.toString());
   
-    if (this.selectedFile) {
-      formData.append('image', this.selectedFile);
-    }
+    // if (this.selectedFile) {
+    //   formData.append('image', this.selectedFile);
+    // }
+    
   
     this.leaveService.registerLeaveType(formData).subscribe(
       (response) => {
@@ -164,6 +168,11 @@ export class CreateLeavetypeComponent {
       }
     );
   }
+
+    ClosePopup(){
+    this.ref.close('Closed using function')
+  }
+
 
 
 }

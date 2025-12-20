@@ -16,6 +16,7 @@
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul>
                   <li routerLink="/main-sidebar/salary-options/salary" *ngIf="hasViewPermissionSalary"><a ><mat-icon>attach_money</mat-icon> Salary Component</a></li>
+
                   <!-- <li routerLink="/main-sidebar/leave-options/leave-type" *ngIf="hasViewPermissiondesg"><a><mat-icon>peoples</mat-icon> Leave Type</a></li> -->
                  
                   <li routerLink="/main-sidebar/salary-options/pay-roll" *ngIf="hasViewPermissionPayroll"><a ><mat-icon>attach_money</mat-icon> Payroll</a></li>
@@ -24,6 +25,9 @@
 
                   <li routerLink="/main-sidebar/salary-options/payroll-appoval-level" *ngIf="hasViewPermissionPayrollApprovalLevel"><a ><mat-icon>attach_money</mat-icon> payroll Approval Level</a></li>
                   
+                
+                     
+                   
 
                   <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
                     <a>
@@ -39,23 +43,17 @@
                     <li routerLink="/main-sidebar/salary-options/advance-salary-request" *ngIf="hasViewPermissionAdvanceSalaryRequest">
                       <a> Advance Salary Request</a>
                     </li>
-                     <li routerLink="/main-sidebar/salary-options/advance-salary-escalation" *ngIf="hasViewPermissionAdvanceSalaryRequest">
+                     <li routerLink="/main-sidebar/salary-options/advance-salary-escalation" *ngIf="hasViewPermissionAdvanceSalaryEscalation">
                       <a> Advance Salary Escalation</a>
                     </li>
                     <li routerLink="/main-sidebar/salary-options/advance-salary-approval-level" *ngIf="hasViewPermissionAdvanceSalaryApprovalLevel">
                       <a>Advance Salary Approval Level</a>
                     </li>
-                    <li routerLink="/main-sidebar/salary-options/wps" *ngIf="hasViewPermissionWPS">
-                      <a >WPS</a>
-                    </li>
                   </ul>
-                  
-                  
-                  
-     
 
-             
-                 
+
+                  <li routerLink="/main-sidebar/salary-options/wps" *ngIf="hasViewPermissionWPS"><a ><mat-icon>attach_money</mat-icon>WPS</a> </li>
+                  
 
                   <mat-nav-list>
      

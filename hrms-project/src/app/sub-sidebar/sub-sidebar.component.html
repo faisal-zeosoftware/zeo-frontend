@@ -26,13 +26,13 @@
                   
                   <li routerLink="/main-sidebar/sub-sidebar/catogary-master" *ngIf="hasViewPermissionCat"><a ><mat-icon>peoples</mat-icon> Category Master</a></li>
 
-                  <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
+                  <li (click)="toggleGeneralRequest()" style="cursor: pointer;">
                     <a>
                       <mat-icon>peoples</mat-icon> General Request 
-                      <mat-icon style="float: right;">{{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}</mat-icon>
+                      <mat-icon style="float: right;">{{ showGeneralRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
                     </a>
                   </li>
-                 <ul *ngIf="showAdvanceSalary" style="padding-left: 20px;">
+                 <ul *ngIf="showGeneralRequest" style="padding-left: 20px;">
                   <li routerLink="/main-sidebar/sub-sidebar/general-request" *ngIf="hasViewPermissionGenreq"><a ><mat-icon>peoples</mat-icon> General Request</a></li>
                  
                   <li routerLink="/main-sidebar/sub-sidebar/request-type" *ngIf="hasViewPermissionReqType"><a ><mat-icon>peoples</mat-icon> Request Type</a></li>

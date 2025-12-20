@@ -35,7 +35,7 @@
                 
             <div class="tab_boddy p-3">
                   <div class="table-container">
-                  <table mat-table [dataSource]="reportData" matSort *ngIf="hasViewPermission">
+                  <table mat-table [dataSource]="reportData" matSort >
 
                     <ng-container matColumnDef="emp_first_name">
                       <th mat-header-cell *matHeaderCellDef> First Name </th>
@@ -114,7 +114,7 @@
 
 
               
-            <mat-tab label="General Custom Report "  *ngIf="hasViewPermission">
+            <mat-tab label="General Custom Report " >
 
               <div class="tab_boddy " style="padding: 15px 15px;">
 
@@ -148,7 +148,7 @@
             <div class="tab_boddy " style="padding: 20px;">
 
               <div class="report-section-main">
-                <div class=" "  *ngIf="hasViewPermission">
+                <div class=" " >
                   <div class="row">
 
                     <div  class=" col-md-6">
@@ -194,15 +194,15 @@
       
                                         <div class="col-md-8">
                                           <div class="button-group pull-right">
-                                          <button type="button" class="btn btn-primary  me-2" (click)="generateReports()">Apply Default Filter</button>
+                                          <button type="button" class="btn btn-primary  me-2" *ngIf="hasAddPermission" (click)="generateReports()">Apply Default Filter</button>
       
-                                          <button type="button"
+                                          <button type="button" *ngIf="hasAddPermission"
                                           class="btn me-2"
                                           [ngClass]="isAdvancedFilter ? 'btn-danger' : 'btn-primary'"
                                           (click)="Filter()">
                                     {{ isAdvancedFilter ? 'Cancel Advanced Filter' : 'Advanced Filter' }}
                                   </button>    
-                                          <button mat-raised-button color="primary" class="btn btn-success me-2" *ngIf="!showReportTablevalue" (click)="exportToExcels()"> <i class="fa fa-download" aria-hidden="true"></i> Download</button>
+                                          <button mat-raised-button color="primary" class="btn btn-success me-2" *ngIf="!showReportTablevalue && hasExportPermission" (click)="exportToExcels()"> <i class="fa fa-download" aria-hidden="true"></i> Download</button>
                                             </div>
                                         </div>
                                       </div>

@@ -32,7 +32,7 @@
             <mat-tab-group> 
                 <mat-tab label="Standard Report">
                     <div class="tab_boddy p-3">
-                      <button class="btn btn-primary mb-3" (click)="downloadExcel()">Download Excel</button>
+                      <button class="btn btn-primary mb-3" *ngIf="hasExportPermission" (click)="downloadExcel()">Download Excel</button>
                   
                       <table class="table table-bordered table-striped" *ngIf="approvalReportData.length > 0">
                         <thead>

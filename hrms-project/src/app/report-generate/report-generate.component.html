@@ -9,11 +9,7 @@
       
     <div class="tab_back ">
         <mat-tab-group>
-          <mat-tab label="Employee Standard Report " *ngIf="hasViewPermission">
-
-
-
-      
+          <mat-tab label="Employee Standard Report">
 
             <div class="tab_boddy " style="padding: 15px 15px;">
 
@@ -30,9 +26,6 @@
                   <div class="col-md-5">
                       <div class="button-group pull-right">
                         <button mat-raised-button color="primary" class="btn  btn-success mt-2" *ngIf="hasExportPermission" (click)="StandardDownload()"> <i class="fa fa-download" aria-hidden="true"></i>  Download</button>
-
-                        
-                     
                      
                             </div>
                   </div>
@@ -69,7 +62,7 @@
         
         
         
-            <mat-tab label="Employee Custom Report "  *ngIf="hasViewPermission">
+            <mat-tab label="Employee Custom Report">
 
               
 
@@ -103,16 +96,7 @@
              
       
           </div>
-<!-- 
-          <div class="row mt-2"  *ngIf="Default">
-            <div class="col-md-4"></div>
-            <div class="col-md-4">
-              <button type="button" class="btn btn-primary btn-block"  (click)="openAddFieldsModal()">Default Add Fields</button>
-            </div>
-            <div class="col-md-4">
-            </div>
-            
-          </div> -->
+
         
 
           <div class="tab_boddy " style="padding: 20px;">
@@ -251,7 +235,7 @@
           
           
 
-        <div class=" "  *ngIf="hasViewPermission">
+        <div class=" ">
           <div class="row">
           
           <div  class=" col-md-6">
@@ -261,7 +245,7 @@
   <option *ngFor="let report of savedReports" [ngValue]="report">
     {{ report.file_name }}
   </option>
-</select>
+  </select>
 
             </div>
             
@@ -304,17 +288,19 @@
 
                                   </div>
 
-                                  <div class="col-md-8">
+                                  <div class="col-md-8" >
                                     <div class="button-group pull-right">
-                                    <button type="button" class="btn btn-primary  me-2" (click)="generateReports()">Apply Default Filter</button>
+                                    <button *ngIf="hasAddPermission" type="button" class="btn btn-primary  me-2" (click)="generateReports()">Apply Default Filter</button>
 
-                                    <button type="button"
+                                    <button *ngIf="hasAddPermission" type="button"
                                     class="btn me-2"
                                     [ngClass]="isAdvancedFilter ? 'btn-danger' : 'btn-primary'"
                                     (click)="Filter()">
-                              {{ isAdvancedFilter ? 'Cancel Advanced Filter' : 'Advanced Filter' }}
-                            </button>    
-                                    <button mat-raised-button color="primary" class="btn btn-success me-2" *ngIf="!showReportTablevalue" (click)="exportToExcels()"> <i class="fa fa-download" aria-hidden="true"></i> Download</button>
+                                    {{ isAdvancedFilter ? 'Cancel Advanced Filter' : 'Advanced Filter' }}
+                                    </button>    
+
+
+                                    <button mat-raised-button color="primary" class="btn btn-success me-2"   *ngIf="!showReportTablevalue && hasExportPermission"  (click)="exportToExcels()"  > Download </button>
                                       </div>
                                   </div>
                                 </div>

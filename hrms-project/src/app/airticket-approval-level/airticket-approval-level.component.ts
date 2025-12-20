@@ -46,6 +46,7 @@ export class AirticketApprovalLevelComponent {
     hasViewPermission: boolean =false;
     hasEditPermission: boolean = false;
     
+    
     userId: number | null | undefined;
     userDetails: any;
     userDetailss: any;
@@ -126,22 +127,23 @@ export class AirticketApprovalLevelComponent {
                         this.hasAddPermission = true;
                         this.hasDeletePermission = true;
                         this.hasEditPermission = true;
+                        
                       } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                         const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                         console.log('Group Permissions:', groupPermissions);
         
                        
-                        this.hasAddPermission = this.checkGroupPermission('add_loancommonworkflow', groupPermissions);
+                        this.hasAddPermission = this.checkGroupPermission('add_airticketworkflow', groupPermissions);
                         console.log('Has add permission:', this.hasAddPermission);
                         
-                        this.hasEditPermission = this.checkGroupPermission('change_loancommonworkflow', groupPermissions);
+                        this.hasEditPermission = this.checkGroupPermission('change_airticketworkflow', groupPermissions);
                         console.log('Has edit permission:', this.hasEditPermission);
           
-                       this.hasDeletePermission = this.checkGroupPermission('delete_loancommonworkflow', groupPermissions);
+                       this.hasDeletePermission = this.checkGroupPermission('delete_airticketworkflow', groupPermissions);
                        console.log('Has delete permission:', this.hasDeletePermission);
           
         
-                        this.hasViewPermission = this.checkGroupPermission('view_loancommonworkflow', groupPermissions);
+                        this.hasViewPermission = this.checkGroupPermission('view_airticketworkflow', groupPermissions);
                         console.log('Has view permission:', this.hasViewPermission);
         
         

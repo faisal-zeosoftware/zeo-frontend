@@ -70,6 +70,7 @@ export class AirticketEscalationComponent {
       hasDeletePermission: boolean = false;
       hasViewPermission: boolean =false;
       hasEditPermission: boolean = false;
+      hasExportPermission: boolean = false;
     
     
       registerButtonClicked = false;
@@ -127,6 +128,7 @@ export class AirticketEscalationComponent {
               this.hasAddPermission = true;
               this.hasDeletePermission = true;
               this.hasEditPermission = true;
+              this.hasExportPermission= true;
           
               // Fetch designations without checking permissions
               // this.fetchDesignations(selectedSchema);
@@ -152,22 +154,26 @@ export class AirticketEscalationComponent {
                       this.hasAddPermission = true;
                       this.hasDeletePermission = true;
                       this.hasEditPermission = true;
+                      this.hasExportPermission = true;
                       
                     } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                       const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                       console.log('Group Permissions:', groupPermissions);
       
-                      this.hasAddPermission = this.checkGroupPermission('add_genrl_escalation', groupPermissions);
+                      this.hasAddPermission = this.checkGroupPermission('add_airticket_escalation', groupPermissions);
                       console.log('Has add permission:', this.hasAddPermission);
         
-                     this.hasDeletePermission = this.checkGroupPermission('delete_genrl_escalation', groupPermissions);
+                     this.hasDeletePermission = this.checkGroupPermission('delete_airticket_escalation', groupPermissions);
                      console.log('Has delete permission:', this.hasDeletePermission);
         
-                      this.hasEditPermission = this.checkGroupPermission('change_genrl_escalation', groupPermissions);
+                      this.hasEditPermission = this.checkGroupPermission('change_airticket_escalation', groupPermissions);
                       console.log('Has edit permission:', this.hasEditPermission);
       
                       this.hasViewPermission = this.checkGroupPermission('view_genrl_escalation', groupPermissions);
                       console.log('Has view permission:', this.hasViewPermission);
+
+                      this.hasExportPermission = this.checkGroupPermission('export_airticket_escalation', groupPermissions);
+                      console.log('Has view permission:', this.hasExportPermission);
     
     
                     } else {

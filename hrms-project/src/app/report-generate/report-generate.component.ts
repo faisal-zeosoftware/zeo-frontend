@@ -315,16 +315,16 @@ private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` fo
                     console.log('Group Permissions:', groupPermissions);
     
                       this.hasViewPermission = this.checkGroupPermission('view_report', groupPermissions);
-                 console.log('Has view permission:', this.hasViewPermission);
+                     console.log('Has view permission:', this.hasViewPermission);
             
                    this.hasAddPermission = this.checkGroupPermission('add_report', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
             
-                 this.hasDeletePermission = this.checkGroupPermission('delete_report', groupPermissions);
-              console.log('Has delete permission:', this.hasDeletePermission);
+                  this.hasDeletePermission = this.checkGroupPermission('delete_report', groupPermissions);
+                  console.log('Has delete permission:', this.hasDeletePermission);
             
                   this.hasEditPermission = this.checkGroupPermission('change_report', groupPermissions);
-                 console.log('Has edit permission:', this.hasEditPermission);
+                  console.log('Has edit permission:', this.hasEditPermission);
 
                  
                  this.hasExportPermission = this.checkGroupPermission('export_report', groupPermissions);

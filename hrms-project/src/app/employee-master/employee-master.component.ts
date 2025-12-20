@@ -653,6 +653,7 @@ closeBulkuploadModal():void{
         (response) => {
           console.log('Bulk upload successful', response);
            alert('bulkupload upload successful');
+           window.location.reload();
     
         },
        (error: HttpErrorResponse) => {

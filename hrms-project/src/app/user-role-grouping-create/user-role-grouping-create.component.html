@@ -1884,7 +1884,7 @@
                                             <mat-checkbox [value]="permission.id" 
                                             (change)="onCheckboxChangesLeaveEscalation(permission.id)"
                                              [checked]="selectedPermissions.includes(permission.id)">
-                                                {{ getDisplayNameLeavetype(permission.codename) }}
+                                                {{ getDisplayNameLeaveEscalation(permission.codename) }}
                                             </mat-checkbox> 
                                         </span> 
                                     </h2>
@@ -2391,6 +2391,39 @@
             </div>
         </div>
 
+
+                  <div class="col-md-3">
+            <span class="">
+                <mat-checkbox [(ngModel)]="AdvanceSalaryEscalationChecked" 
+                [indeterminate]="isAdvanceSalaryEscalationIndeterminate()" 
+                (change)="onAdvanceSalaryEscalationChange()" 
+                [ngModelOptions]="{standalone: true}">
+                Advance Salary Escalation
+                </mat-checkbox>
+            </span><br>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="selection_checkmark_sec">
+                <div class="all_selection_Sec">
+                    <div class="row">
+                  
+                        <div class="col-md-2" *ngFor="let permission of GrouppermissionsAdvanceSalaryEscalation">
+                            <h2>
+                                <span>
+                                    <mat-checkbox [value]="permission.id"
+                                    (change)="onCheckboxChangesAdvanceSalaryEscalation(permission.id)"
+                                     [checked]="selectedPermissions.includes(permission.id)">
+                                        {{ getDisplayNameAdvanceSalaryEscalation(permission.codename) }}
+                                    </mat-checkbox> 
+                                </span> 
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-3">
           <span class="">
               <mat-checkbox [(ngModel)]="AdvanceSalaryAprlvlChecked" 
@@ -2552,6 +2585,39 @@
     </div>
   </div>
 </div>
+
+
+                <div class="col-md-3">
+                  <span class="">
+                      <mat-checkbox [(ngModel)]="LoanEscalationChecked" 
+                      [indeterminate]="isLoanEscalationIndeterminate()" 
+                      (change)="onLoanEscalationChange()" 
+                      [ngModelOptions]="{standalone: true}">
+                      Loan Escalation
+                      </mat-checkbox>
+                  </span><br>
+              </div>
+              
+              <div class="col-md-9">
+                  <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                          <div class="row">
+                        
+                              <div class="col-md-2" *ngFor="let permission of GrouppermissionsLoanEscalation">
+                                  <h2>
+                                      <span>
+                                          <mat-checkbox [value]="permission.id"
+                                          (change)="onCheckboxChangesLoanEscalation(permission.id)"
+                                           [checked]="selectedPermissions.includes(permission.id)">
+                                              {{ getDisplayNameLoanEscalation(permission.codename) }}
+                                          </mat-checkbox> 
+                                      </span> 
+                                  </h2>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
 
 
             <div class="col-md-3">

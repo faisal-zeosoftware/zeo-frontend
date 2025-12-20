@@ -21,6 +21,7 @@ export class AssetTransactionReportComponent {
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
+  hasExportPermission: boolean = false;
   
   userId: number | null | undefined;
   userDetails: any;
@@ -78,7 +79,7 @@ export class AssetTransactionReportComponent {
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
-        // this.hasExportPermission=true;
+            this.hasExportPermission=true;
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
     
@@ -103,26 +104,26 @@ export class AssetTransactionReportComponent {
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
-                    // this.hasExportPermission= true;
+                    this.hasExportPermission= true;
 
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
     
-                      this.hasViewPermission = this.checkGroupPermission('view_assettransactionreport', groupPermissions);
-                 console.log('Has view permission:', this.hasViewPermission);
+                    this.hasViewPermission = this.checkGroupPermission('view_assettransactionreport', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermission);
             
                    this.hasAddPermission = this.checkGroupPermission('add_assettransactionreport', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
             
-                 this.hasDeletePermission = this.checkGroupPermission('delete_assettransactionreport', groupPermissions);
-              console.log('Has delete permission:', this.hasDeletePermission);
+                  this.hasDeletePermission = this.checkGroupPermission('delete_assettransactionreport', groupPermissions);
+                  console.log('Has delete permission:', this.hasDeletePermission);
             
                   this.hasEditPermission = this.checkGroupPermission('change_assettransactionreport', groupPermissions);
-                 console.log('Has edit permission:', this.hasEditPermission);
+                  console.log('Has edit permission:', this.hasEditPermission);
                  
-                //  this.hasExportPermission = this.checkGroupPermission('export_doc_report', groupPermissions);
-                //  console.log('Has export permission:', this.hasExportPermission);
+                 this.hasExportPermission = this.checkGroupPermission('asset_transaction_export_report', groupPermissions);
+                 console.log('Has export permission:', this.hasExportPermission);
                   } else {
                     console.error('No groups found in data or groups array is empty.', firstItem);
                   }

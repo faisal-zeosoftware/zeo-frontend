@@ -161,6 +161,8 @@ export class LeaveReportComponent {
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
   hasExportPermission: boolean = false;
+
+
   userId: number | null | undefined;
   userDetails: any;
   selectedSchema: string | null = null;
@@ -276,7 +278,7 @@ export class LeaveReportComponent {
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
-        this.hasExportPermission=true;
+            this.hasExportPermission=true;
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
     
@@ -320,7 +322,7 @@ export class LeaveReportComponent {
                  console.log('Has edit permission:', this.hasEditPermission);
 
                  
-                 this.hasExportPermission = this.checkGroupPermission('export_leavereport', groupPermissions);
+                 this.hasExportPermission = this.checkGroupPermission('lv_export_report', groupPermissions);
                  console.log('Has export permission:', this.hasExportPermission);
                   } else {
                     console.error('No groups found in data or groups array is empty.', firstItem);

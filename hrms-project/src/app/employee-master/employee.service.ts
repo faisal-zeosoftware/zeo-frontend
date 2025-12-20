@@ -561,6 +561,8 @@ deleteLeaveRequest(categoryId: number): Observable<any> {
 }
 
 
+
+
 updateLeaveRequest(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/calendars/api/emp-leave-request/${id}/?schema=${selectedSchema}`;
@@ -573,6 +575,9 @@ updateLeaveRequest(id: number, data: any): Observable<any> {
     })
   );
 }
+
+
+
 
 
 

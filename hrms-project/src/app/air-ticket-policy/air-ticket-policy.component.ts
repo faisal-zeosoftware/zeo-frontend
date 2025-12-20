@@ -219,6 +219,8 @@ ngOnInit(): void {
         console.error('Failed to fetch user details:', error);
       }
     );
+
+
   
 
     this.authService.getUserSchema(this.userId).subscribe(
@@ -235,8 +237,19 @@ ngOnInit(): void {
     console.error('User ID is null.');
   }
 
+  
+
  
 }
+
+
+  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+  return groupPermissions.some(permission => permission.codename === codeName);
+  }
+  
+
+
+      
 
 
 // checkViewPermission(permissions: any[]): boolean {
@@ -462,10 +475,7 @@ mapDesigNameToId() {
 }
 
   
-  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-  return groupPermissions.some(permission => permission.codename === codeName);
-  }
-  
+
 
         loadUsers(): void {
     

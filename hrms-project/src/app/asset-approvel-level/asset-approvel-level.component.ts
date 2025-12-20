@@ -129,17 +129,17 @@ export class AssetApprovelLevelComponent {
                       console.log('Group Permissions:', groupPermissions);
       
                      
-                      this.hasAddPermission = this.checkGroupPermission('add_loancommonworkflow', groupPermissions);
+                      this.hasAddPermission = this.checkGroupPermission('add_assetapprovallevel', groupPermissions);
                       console.log('Has add permission:', this.hasAddPermission);
                       
-                      this.hasEditPermission = this.checkGroupPermission('change_loancommonworkflow', groupPermissions);
+                      this.hasEditPermission = this.checkGroupPermission('change_assetapprovallevel', groupPermissions);
                       console.log('Has edit permission:', this.hasEditPermission);
         
-                     this.hasDeletePermission = this.checkGroupPermission('delete_loancommonworkflow', groupPermissions);
+                     this.hasDeletePermission = this.checkGroupPermission('delete_assetapprovallevel', groupPermissions);
                      console.log('Has delete permission:', this.hasDeletePermission);
         
       
-                      this.hasViewPermission = this.checkGroupPermission('view_loancommonworkflow', groupPermissions);
+                      this.hasViewPermission = this.checkGroupPermission('view_assetapprovallevel', groupPermissions);
                       console.log('Has view permission:', this.hasViewPermission);
       
       

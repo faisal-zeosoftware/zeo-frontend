@@ -16,7 +16,7 @@
         </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
-            <button mat-raised-button color="primary" (click)="StandardDownload()"><i class="fa fa-download"></i>
+            <button mat-raised-button color="primary" *ngIf="hasExportPermission" (click)="StandardDownload()"><i class="fa fa-download"></i>
               Download Excel</button>
 
 

@@ -50,6 +50,7 @@ export class EmployeeAttendanceComponent {
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean = false;
   hasEditPermission: boolean = false;
+  hasExportPermission: boolean = false;
 
   userId: number | null | undefined;
   userDetails: any;
@@ -113,6 +114,7 @@ export class EmployeeAttendanceComponent {
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
+            this.hasExportPermission = true;
 
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
@@ -138,6 +140,8 @@ export class EmployeeAttendanceComponent {
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
+                    this.hasExportPermission = true;
+
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
@@ -155,6 +159,9 @@ export class EmployeeAttendanceComponent {
 
                     this.hasViewPermission = this.checkGroupPermission('view_attendancereport', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
+
+                    this.hasExportPermission = this.checkGroupPermission('attendance_export_report', groupPermissions);
+                    console.log('Has view permission:', this.hasExportPermission);
 
 
                   } else {

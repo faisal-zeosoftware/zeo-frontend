@@ -63,10 +63,10 @@
               </div>
 
               
-              <div class="col-md-4">
+              <!-- <div class="col-md-4">
                 <label for="image">Leave Type Image</label>
                 <input type="file" class="form-control" id="image" name="image" (change)="onFileSelected($event)">
-              </div>
+              </div> -->
           
               <div class="col-md-4">
                 <label></label>
@@ -90,7 +90,16 @@
                 <label></label>
                 <div class="check-box-selection-sec form-control mt-3">
                   <div class="mat-set">
-                    <mat-checkbox [(ngModel)]="include_weekend_and_holiday" [ngModelOptions]="{standalone: true}">Include Weekend & Holiday</mat-checkbox>
+                    <mat-checkbox [(ngModel)]="include_holiday" [ngModelOptions]="{standalone: true}">Include Holiday</mat-checkbox>
+                  </div>
+                </div>
+              </div>
+
+            <div class="col-md-4">
+                <label></label>
+                <div class="check-box-selection-sec form-control mt-3">
+                  <div class="mat-set">
+                    <mat-checkbox [(ngModel)]="include_weekend" [ngModelOptions]="{standalone: true}">Include Weekend</mat-checkbox>
                   </div>
                 </div>
               </div>
@@ -123,7 +132,7 @@
             <div class="row">
               <div class="col-md-8"></div>
               <div class="col-md-2">
-                <button type="button" class="btn btn-danger btn-full mt-4">Cancel</button>
+                <button (click)="ClosePopup()"  type="button" class="btn btn-danger btn-full mt-4">Cancel</button>
               </div>
               <div class="col-md-2">
                 <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Type</button>

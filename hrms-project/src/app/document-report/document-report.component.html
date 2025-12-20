@@ -59,7 +59,7 @@
               ======================================================== -->
               <div class="table-container">
 
-                <table mat-table [dataSource]="reportData" class="mat-table-scroll" *ngIf="hasViewPermission">
+                <table mat-table [dataSource]="reportData" class="mat-table-scroll" >
 
                   <!-- First Name -->
                   <ng-container matColumnDef="emp_first_name">
@@ -178,7 +178,7 @@
       <!-- ========================================================
           TAB 2: CUSTOM REPORT
       ======================================================== -->
-      <mat-tab label="Document Custom Report " *ngIf="hasViewPermission">
+      <mat-tab label="Document Custom Report ">
 
         <div class="tab_boddy " style="padding: 15px 15px;">
 
@@ -210,7 +210,7 @@
 
       <div class="tab_boddy " style="padding: 20px;">
         <div class="report-section-main">
-          <div class=" "  *ngIf="hasViewPermission">
+          <div class=" "  >
             <div class="row">
 
               <div  class=" col-md-6">
@@ -256,15 +256,15 @@
 
                                   <div class="col-md-8">
                                     <div class="button-group pull-right">
-                                    <button type="button" class="btn btn-primary  me-2" (click)="generateReports()">Apply Default Filter</button>
+                                    <button type="button" class="btn btn-primary  me-2" *ngIf="hasAddPermission" (click)="generateReports()">Apply Default Filter</button>
 
-                                    <button type="button"
+                                    <button type="button" *ngIf="hasAddPermission"
                                     class="btn me-2"
                                     [ngClass]="isAdvancedFilter ? 'btn-danger' : 'btn-primary'"
                                     (click)="Filter()">
                               {{ isAdvancedFilter ? 'Cancel Advanced Filter' : 'Advanced Filter' }}
                             </button>    
-                                    <button mat-raised-button color="primary" class="btn btn-success me-2" *ngIf="!showReportTablevalue" (click)="exportToExcels()"> <i class="fa fa-download" aria-hidden="true"></i> Download</button>
+                                    <button mat-raised-button color="primary" class="btn btn-success me-2" *ngIf="!showReportTablevalue && hasExportPermission" (click)="exportToExcels()"> <i class="fa fa-download" aria-hidden="true"></i> Download</button>
                                       </div>
                                   </div>
                                 </div>
@@ -516,7 +516,7 @@
 
           
         
-<div *ngIf="iscreateFieldmodel" class="modal">
+<div *ngIf="iscreateFieldmodel && hasViewPermission" class="modal" >
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">

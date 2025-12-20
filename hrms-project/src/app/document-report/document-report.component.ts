@@ -308,7 +308,7 @@ public datePipe: DatePipe;
                   this.hasEditPermission = this.checkGroupPermission('change_doc_report', groupPermissions);
                  console.log('Has edit permission:', this.hasEditPermission);
                  
-                 this.hasExportPermission = this.checkGroupPermission('export_doc_report', groupPermissions);
+                 this.hasExportPermission = this.checkGroupPermission('export_document_report', groupPermissions);
                  console.log('Has export permission:', this.hasExportPermission);
                   } else {
                     console.error('No groups found in data or groups array is empty.', firstItem);

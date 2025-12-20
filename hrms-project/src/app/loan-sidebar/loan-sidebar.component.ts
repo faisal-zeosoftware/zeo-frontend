@@ -136,6 +136,9 @@ export class LoanSidebarComponent {
                        this.hasViewPermissionLoanRepayment = this.checkGroupPermission('view_loanrepayment', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionLoanRepayment);
 
+                       this.hasViewPermissionLoanEscalation = this.checkGroupPermission('view_loan_escalation', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLoanEscalation);
+
                        this.hasViewPermissionLoanApprovalLevel = this.checkGroupPermission('view_loancommonworkflow', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionLoanApprovalLevel);
 
