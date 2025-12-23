@@ -1520,6 +1520,19 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
   }
 
 
+  markAsRead(selectedSchema: number) {
+  return this.http.post(
+    `${this.baseUrl}/payroll/api/loan-notification/${selectedSchema}/mark-read/`,
+    {},
+    { params: { schema: this.selectedSchema } }
+  );
+}
+
+
+
+
+
+
 
   getEmpAssetDetails(selectedSchema: string, empId: number): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/emp_asset/?schema=${selectedSchema}`;

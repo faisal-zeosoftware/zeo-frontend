@@ -7,6 +7,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 
+
 @Component({
   selector: 'app-dashboard-contents',
   templateUrl: './dashboard-contents.component.html',

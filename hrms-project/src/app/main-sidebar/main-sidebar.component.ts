@@ -304,6 +304,33 @@ onNotificationClick(noti: any): void {
     default:
       console.warn('⚠️ Unknown notification type:', noti.type);
   }
+
+
+
+  // Optimistic UI update
+  this.AllNotifications = this.AllNotifications.filter(n => n.id !== noti.id);
+  this.notificationCount--;
+
+  this.EmployeeService.markAsRead(noti.id).subscribe();
+
+
+    // 1️⃣ Call API
+  this.EmployeeService.markAsRead(noti.id).subscribe(() => {
+
+    // 2️⃣ Remove from UI
+    this.AllNotifications = this.AllNotifications.filter(
+      n => n.id !== noti.id
+    );
+
+    // 3️⃣ Update badge count
+    this.notificationCount = this.AllNotifications.length;
+
+  });
+
+  // // 4️⃣ (Optional) Navigate based on type
+  // if (noti.type === 'loanrequest') {
+  //   this.router.navigate(['/employee/loan']);
+  // }
 }
 
 selectSchema(event: any) {
@@ -389,5 +416,8 @@ showsidebarclick() {
       console.error('Logout failed:', error);
     });
   }
+
+
+
   
 }

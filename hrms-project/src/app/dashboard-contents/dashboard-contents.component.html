@@ -101,282 +101,189 @@
         
     </div>
 
-    <div class="content_sec_last">
+<div class="content_sec_last">
+  <div class="row mt-5 g-4">
+    <!-- Left Column: Holidays + Announcements -->
+    <div class="col-lg-4">
+      <!-- Holidays -->
+      <div class="dash_holidays mb-4">
+        <h6 class="section-title mb-4">Holidays</h6>
 
-    <div class="row mt-5">
-        <div class="col-md-4">
-            <div class="dash_holidays">
-              <div class="row">
-                <div class="col-md-5">
-                  <h6>Holidays</h6>
-                </div>
-                <div class="col-md-7">
-                  <!-- <div class="custom-sel pull-right">
-                    <select class="drop_list form-control" [(ngModel)]="selectedBranchIdhol" (change)="onBranchChange($event)">
-                      <option value="" disabled selected>Select Branch</option>
-                      <option *ngFor="let branch of branches" [value]="branch.id">
-                        {{ branch.branch_name }}
+        <div *ngIf="selectedBranchHolidays.length === 0" class="text-center py-4 text-muted">
+          <p>No holidays available for the selected branch.</p>
+        </div>
 
-                        
-                      </option>
-                    </select>
-                  </div> -->
-                </div>
-              </div>
-          
-              <div *ngIf="selectedBranchHolidays.length === 0" class="mt-3">
-                <p>No holidays available for the selected branch.</p>
-              </div>
-          
-              <div *ngFor="let holiday of selectedBranchHolidays"  class="row mt-3">
-                <div class="col-md-3">
-                  <div class="holi_date_sec">
-                    <h2>{{ getDate(holiday.start_date) }} <br><span>{{ getMonth(holiday.start_date) }}</span></h2>
-                  </div>
-                </div>
-                <div class="col-md-9">
-                  <h5 class="mt-2">{{ holiday.description }}</h5>
-                  <h4>{{ getDay(holiday.start_date) }}</h4>
-                </div>
-              </div>
+        <div *ngFor="let holiday of selectedBranchHolidays" class="holiday-item mb-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="holi_date_sec text-center text-white">
+              <h2 class="mb-0">{{ getDate(holiday.start_date) }}</h2>
+              <span class="month">{{ getMonth(holiday.start_date) }}</span>
             </div>
-
-            <div class="dash_announcements mt-4">
-              <div class="row align-items-center mb-3">
-                <div class="col-md-12">
-                  <h6> Announcements</h6>
-                </div>
-                
-              </div>
-        
-              <div *ngIf="selectedBranchAnnouncement.length === 0" class="no-announcements">
-                <p>No announcements available for this branch.</p>
-              </div>
-        
-              <div class="row">
-                <div class="col-md-12 mb-4" *ngFor="let announcement of selectedBranchAnnouncement">
-                  <div class="announcement-card">
-                    <div class="announcement-header">
-                      <mat-icon class="announce-icon">campaign</mat-icon>
-                      <h5>{{ announcement.title }}</h5>
-                    </div>
-                    <p class="message">{{ announcement.message }}</p>
-        
-                    <div class="date-range">
-                      <mat-icon>event</mat-icon>
-                      <span>{{ announcement.schedule_at | date: 'MMM d, y, h:mm a' }}</span>
-                      <span> → {{ announcement.expires_at | date: 'MMM d, y, h:mm a' }}</span>
-                    </div>
-        
-                    <div class="options mt-2">
-                      <span *ngIf="announcement.send_email" class="badge email">📧 Email Sent</span>
-                      <span *ngIf="announcement.is_sticky" class="badge sticky">📌 Sticky</span>
-                    </div>
-        
-                    <div *ngIf="announcement.attachment" class="mt-2">
-                      <a [href]="announcement.attachment" target="_blank" class="view-attachment">
-                        <mat-icon>attach_file</mat-icon> View Attachment
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <h5 class="mb-1 fw-semibold">{{ holiday.description }}</h5>
+              <p class="mb-0 text-muted small">{{ getDay(holiday.start_date) }}</p>
             </div>
-            
           </div>
-          
+        </div>
+      </div>
 
-          <div class="col-md-8">
-            <div class="dash_projects ">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6> Projects</h6>
-              </div>
-        
-              <!-- Empty State -->
-              <div *ngIf="selectedBranchProjects.length === 0" class="empty-state text-center">
-                <img src="assets/images/no-data.svg" width="150" alt="No projects" class="mb-3" />
-                <h5>No active projects available for this branch.</h5>
-              </div>
-        
-              <!-- Project Cards -->
-              <div class="row">
-                <div class="col-md-6 col-lg-6 mb-4" *ngFor="let project of selectedBranchProjects">
-                  <div class="project-card">
-                    <div class="project-header">
-                      <h4>{{ project.title }}</h4>
-                      <span class="status-badge" [ngClass]="{
-                        'status-new': project.status === 'new',
-                        'status-active': project.status === 'active',
-                        'status-completed': project.status === 'completed'
-                      }">{{ project.status | titlecase }}</span>
-                    </div>
-        
-                    <div class="project-body">
-                      <p>{{ project.description }}</p>
-        
-                      <div class="project-dates mb-2">
-                        <span><strong>Start:</strong> {{ project.start_date | date:'mediumDate' }}</span>
-                        <span><strong>End:</strong> {{ project.end_date | date:'mediumDate' }}</span>
-                      </div>
-        
-                      <div *ngIf="project.document" class="mt-2 mb-3">
-                        <a [href]="project.document" target="_blank" class="project-link">
-                          <mat-icon>insert_drive_file</mat-icon> View Document
-                        </a>
-                      </div>
-        
-                      <!-- 🧑‍💼 Project Managers & Members -->
-                      <div class="project-team mt-3">
-                        <h6><mat-icon>manage_accounts</mat-icon> Managers</h6>
-                        <div class="avatar-group">
-                          <span *ngFor="let manager of project.managers" class="avatar">{{ manager }}</span>
-                        </div>
-        
-                        <h6 class="mt-3"><mat-icon>group</mat-icon> Members</h6>
-                        <div class="avatar-group">
-                          <span *ngFor="let member of project.members" class="avatar member-avatar">{{ member }}</span>
-                        </div>
-                      </div>
-        
-                      <!-- ✅ Tasks -->
-                      <div *ngIf="project.tasks && project.tasks.length > 0" class="task-list mt-4">
-                        <h6><mat-icon>list</mat-icon> Tasks</h6>
-                        <div *ngFor="let task of project.tasks" class="task-card">
-                          <div class="d-flex justify-content-between align-items-center">
-                            <h5>{{ task.title }}</h5>
-                            <span class="task-status" [ngClass]="{
-                              'to_do': task.status === 'to_do',
-                              'in_progress': task.status === 'in_progress',
-                              'done': task.status === 'done'
-                            }">{{ task.status | titlecase }}</span>
-                          </div>
-                          <p>{{ task.description }}</p>
-                          <div class="task-dates">
-                            <span><strong>Start:</strong> {{ task.start_date | date:'mediumDate' }}</span>
-                            <span><strong>End:</strong> {{ task.end_date | date:'mediumDate' }}</span>
-                          </div>
-        
-                          <!-- 👤 Task Managers & Members -->
-                          <div class="task-team mt-2">
-                            <small><mat-icon>manage_accounts</mat-icon> Task Managers:</small>
-                            <div class="avatar-group small">
-                              <span *ngFor="let tm of task.task_managers" class="avatar small-avatar">{{ tm }}</span>
-                            </div>
-        
-                            <small class="mt-2"><mat-icon>group</mat-icon> Task Members:</small>
-                            <div class="avatar-group small">
-                              <span *ngFor="let mem of task.task_members" class="avatar small-avatar member-avatar">{{ mem }}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div> <!-- End Tasks -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <!-- Announcements -->
+      <div class="dash_announcements">
+        <h6 class="section-title mb-4">Announcements</h6>
 
+        <div *ngIf="selectedBranchAnnouncement.length === 0" class="text-center py-5 text-muted">
+          <p>No announcements available for this branch.</p>
+        </div>
 
-            <div class="dash_holidays mt-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="fw-bold">🏢 Company Policies</h6>
-                <span class="text-muted small"
-                  >Total Policies: {{ selectedBranchPolicies.length }}</span
-                >
-              </div>
-            
-              <!-- ✅ Policy Cards -->
-              <div class="row g-4">
-                <div
-                  class="col-md-12 col-lg-12"
-                  *ngFor="let policy of selectedBranchPolicies"
-                >
-                  <div class="policy-card p-4 shadow-sm rounded-4 h-100">
-                    <!-- Header -->
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                      <h5 class="fw-semibold text-primary">{{ policy.title }}</h5>
-                      <!-- <span
-                        class="badge bg-success"
-                        *ngIf="policy.branch"
-                        >{{ policy.branch }}</span
-                      > -->
-                    </div>
-            
-                    <!-- Description -->
-                    <p class="text-muted small mb-3" style="min-height: 50px;">
-                      {{ policy.description }}
-                    </p>
-            
-                    <!-- Department & Category -->
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                      <span class="badge bg-light text-dark border">
-                        <mat-icon class="me-1" style="font-size: 14px;">groups</mat-icon>
-                        {{ policy.department || 'N/A' }}
-                      </span>
-                      <span class="badge bg-light text-dark border">
-                        <mat-icon class="me-1" style="font-size: 14px;">category</mat-icon>
-                        {{ policy.category || 'N/A' }}
-                      </span>
-                    </div>
-            
-                    <!-- Footer -->
-                    <div
-                      class="d-flex justify-content-between align-items-center border-top pt-3"
-                    >
-                      <small class="text-secondary">
-                        <mat-icon style="font-size: 14px;" class="me-1">calendar_today</mat-icon>
-                        {{ policy.created_at | date: 'mediumDate' }}
-                      </small>
-            
-                      <div *ngIf="policy.policy_file">
-                        <a
-                          [href]="policy.policy_file"
-                          target="_blank"
-                          class="btn btn-sm btn-outline-primary d-flex align-items-center"
-                        >
-                          <mat-icon style="font-size: 16px;" class="me-1">description</mat-icon>
-                          View
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            
-              <!-- 🚫 No Policies -->
-              <div
-                class="text-center text-muted py-5"
-                *ngIf="selectedBranchPolicies.length === 0"
-              >
-                <mat-icon style="font-size: 40px; color: #aaa;">policy</mat-icon>
-                <h6 class="mt-2">No policies available for the selected branch.</h6>
-              </div>
-            </div>
-            
+        <div class="announcement-list">
+          <div class="announcement-card mb-3" *ngFor="let announcement of selectedBranchAnnouncement">
+            <div class="d-flex align-items-start gap-3">
+              <mat-icon class="announce-icon text-primary">campaign</mat-icon>
+              <div class="flex-grow-1">
+                <h5 class="fw-semibold mb-1">{{ announcement.title }}</h5>
+                <p class="message text-muted mb-2">{{ announcement.message }}</p>
 
-           
-          </div>
-          
-    </div>
-
-<!-- Announcements Section -->
-<div class="row mt-5">
-  <div class="col-md-12">
-   
-  </div>
+<div class="d-flex align-items-center gap-2 text-muted small mb-2">
+  <mat-icon fontSize="small">event</mat-icon>
+  <span>{{ announcement.schedule_at | date: 'MMM d, y, h:mm a' }}</span>
+  <span>→</span>
+  <span>{{ announcement.expires_at | date: 'MMM d, y, h:mm a' }}</span>
 </div>
 
-
-<!-- 🌟 Projects Section -->
-<div class="row mt-5">
-  <div class="col-md-12">
+<div class="d-flex flex-wrap gap-2 align-items-center">
+  <span *ngIf="announcement.send_email" class="badge email">📧 Email Sent</span>
+  <span *ngIf="announcement.is_sticky" class="badge sticky">📌 Sticky</span>
   
+  <a *ngIf="announcement.attachment" 
+     [href]="announcement.attachment" 
+     target="_blank"
+     class="view-attachment ms-auto text-primary small d-flex align-items-center gap-1">
+    <mat-icon fontSize="small">attach_file</mat-icon> 
+    View Attachment
+  </a>
+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Projects + Policies -->
+    <div class="col-lg-8">
+      <!-- Projects -->
+      <div class="dash_projects mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h6 class="section-title">Projects</h6>
+          <span class="text-muted small">{{ selectedBranchProjects.length }} Active</span>
+        </div>
+
+        <div *ngIf="selectedBranchProjects.length === 0" class="text-center py-5">
+          <img src="assets/images/no-data.svg" width="120" alt="No projects" class="mb-3 opacity-50" />
+          <h6 class="text-muted">No active projects available for this branch.</h6>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-12" *ngFor="let project of selectedBranchProjects">
+            <div class="project-card h-100">
+              <div class="project-header mb-3">
+                <div>
+                  <h5 class="fw-semibold mb-1">{{ project.title }}</h5>
+                  <small class="text-muted">{{ project.managers.length }} Managers • {{ project.members.length }} Members</small>
+                </div>
+                <span class="status-badge" [ngClass]="{
+                  'status-new': project.status === 'new',
+                  'status-active': project.status === 'active',
+                  'status-completed': project.status === 'completed'
+                }">
+                  {{ project.status | titlecase }}
+                </span>
+              </div>
+
+              <p class="project-desc text-muted small mb-3">{{ project.description }}</p>
+
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small d-flex align-items-center gap-1">
+                  <mat-icon fontSize="small" style="color: black;">event</mat-icon>
+                  {{ project.start_date | date:'MMM d' }} → {{ project.end_date | date:'MMM d' }}
+                </span>
+                <a *ngIf="project.document" [href]="project.document" target="_blank"
+                   class="text-primary small d-flex align-items-center gap-1">
+                  <mat-icon fontSize="small" style="color: black;">description</mat-icon> File
+                </a>
+              </div>
+
+              <details *ngIf="project.tasks?.length" class="task-collapse">
+                <summary class="task-summary">
+                  <mat-icon>list</mat-icon> Tasks ({{ project.tasks.length }})
+                </summary>
+                <div class="task-list mt-3">
+                  <div class="task-card" *ngFor="let task of project.tasks">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <div>
+                        <h6 class="mb-1">{{ task.title }}</h6>
+                        <small class="text-muted">{{ task.start_date | date:'shortDate' }} → {{ task.end_date | date:'shortDate' }}</small>
+                      </div>
+                      <span class="task-status" [class]="task.status">{{ task.status | titlecase }}</span>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Policies -->
+      <div class="dash_policies">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h6 class="section-title">🏢 Company Policies</h6>
+          <span class="text-muted small">Total: {{ selectedBranchPolicies.length }}</span>
+        </div>
+
+        <div *ngIf="selectedBranchPolicies.length === 0" class="text-center py-5 text-muted">
+          <mat-icon style="font-size: 48px; opacity: 0.3;">policy</mat-icon>
+          <h6 class="mt-3">No policies available for the selected branch.</h6>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12" *ngFor="let policy of selectedBranchPolicies">
+            <div class="policy-card">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h5 class="text-primary fw-semibold mb-2">{{ policy.title }}</h5>
+                  <p class="text-muted small mb-3">{{ policy.description }}</p>
+
+                  <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-light text-dark">
+                      <mat-icon fontSize="small">groups</mat-icon> {{ policy.department || 'N/A' }}
+                    </span>
+                    <span class="badge bg-light text-dark">
+                      <mat-icon fontSize="small">category</mat-icon> {{ policy.category || 'N/A' }}
+                    </span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted d-flex align-items-center gap-1">
+                      <mat-icon fontSize="small">calendar_today</mat-icon>
+                      {{ policy.created_at | date: 'mediumDate' }}
+                    </small>
+
+                    <a *ngIf="policy.policy_file" [href]="policy.policy_file" target="_blank"
+                       class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                      <mat-icon fontSize="small">description</mat-icon> View
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-
-
-    </div>
         </div>
         
 

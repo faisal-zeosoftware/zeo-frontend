@@ -54,6 +54,9 @@ export class DesignationMasterComponent {
   filteredEmployees: any[] = [];
   searchQuery: string = '';
 
+
+     isLoading: boolean = false;
+
   constructor(private DesignationService:DesignationService,
     private companyRegistrationService: CompanyRegistrationService, 
     private http: HttpClient,
@@ -338,6 +341,9 @@ if (this.userId !== null) {
       console.error('No schema selected.');
       // return throwError('No schema selected.'); // Return an error observable if no schema is selected
     }
+
+          /** 🔥 START LOADER */
+  this.isLoading = true;
    
    
     // return this.http.put(apiUrl, formData);
@@ -351,6 +357,9 @@ if (this.userId !== null) {
         window.location.reload();
   
       }, (error) => {
+
+        /** ❌ STOP LOADER EVEN ON ERROR */
+        this.isLoading = false;
         // Handle upload error
         console.error('Designations upload failed', error);
         alert('enter all fields correctly');

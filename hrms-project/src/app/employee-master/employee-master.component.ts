@@ -600,114 +600,120 @@ closeBulkuploadModal():void{
     emp_status: boolean = false;
 
     selectedFile!: File | null;
+    
+bulkuploaddocument(): void {
 
-    bulkuploaddocument(): void {
-    
-      const formData = new FormData();
-    
-      if (this.file) {
-        formData.append('file', this.file);
-      } else {
-        formData.append('file', '');
-      }
-    
-      formData.append('emp_code', this.emp_code);
-      formData.append('emp_first_name', this.emp_first_name);
-      formData.append('emp_last_name', this.emp_last_name);
-      formData.append('emp_gender', this.emp_gender);
-      formData.append('emp_date_of_birth', this.emp_date_of_birth);
-      formData.append('emp_personal_email', this.emp_personal_email);
-      formData.append('emp_mobile_number_1', this.emp_mobile_number_1);
-      formData.append('emp_mobile_number_2', this.emp_mobile_number_2);
-      formData.append('emp_city', this.emp_city);
-      formData.append('emp_permenent_address', this.emp_permenent_address);
-      formData.append('emp_present_address', this.emp_present_address);
-      formData.append('emp_relegion', this.emp_relegion);
-      formData.append('emp_blood_group', this.emp_blood_group);
-      formData.append('emp_nationality', this.emp_nationality);
-      formData.append('emp_marital_status', this.emp_marital_status);
-      formData.append('emp_father_name', this.emp_father_name);
-      formData.append('emp_mother_name', this.emp_mother_name);
-      formData.append('emp_posting_location', this.emp_posting_location);
-      formData.append('emp_country_id', this.emp_country_id);
-      formData.append('emp_state_id', this.emp_state_id);
-      formData.append('emp_company_id', this.emp_company_id);
-      formData.append('emp_branch_id', this.emp_branch_id);
-      formData.append('emp_dept_id', this.emp_dept_id);
-      formData.append('emp_desgntn_id', this.emp_desgntn_id);
-      formData.append('emp_ctgry_id', this.emp_ctgry_id);
-      formData.append('emp_languages', this.emp_languages);
-      formData.append('emp_date_of_confirmation', this.emp_date_of_confirmation);
-      formData.append('emp_joined_date', this.emp_joined_date);
-      formData.append('is_ess', this.is_ess ? '1' : '0');
-      formData.append('emp_status', this.emp_status ? '1' : '0');
-    
-      const selectedSchema = localStorage.getItem('selectedSchema');
-      if (!selectedSchema) {
-        console.error('No schema selected.');
-        return;
-      }
-    
-      this.http.post(`${this.apiUrl}/employee/api/emp-bulkupload/bulk_upload/?schema=${selectedSchema}`, formData)
-      .subscribe(
-        (response) => {
-          console.log('Bulk upload successful', response);
-           alert('bulkupload upload successful');
-           window.location.reload();
-    
-        },
-       (error: HttpErrorResponse) => {
-             console.error('Upload error:', error);
+  const formData = new FormData();
 
-  if (error.error) {
-    const errors = error.error.errors || error.error;
+  if (this.file) {
+    formData.append('file', this.file);
+  } else {
+    formData.append('file', '');
+  }
 
-    if (typeof errors === 'string') {
-      alert(errors);
-      return;
-    }
+  formData.append('emp_code', this.emp_code);
+  formData.append('emp_first_name', this.emp_first_name);
+  formData.append('emp_last_name', this.emp_last_name);
+  formData.append('emp_gender', this.emp_gender);
+  formData.append('emp_date_of_birth', this.emp_date_of_birth);
+  formData.append('emp_personal_email', this.emp_personal_email);
+  formData.append('emp_mobile_number_1', this.emp_mobile_number_1);
+  formData.append('emp_mobile_number_2', this.emp_mobile_number_2);
+  formData.append('emp_city', this.emp_city);
+  formData.append('emp_permenent_address', this.emp_permenent_address);
+  formData.append('emp_present_address', this.emp_present_address);
+  formData.append('emp_relegion', this.emp_relegion);
+  formData.append('emp_blood_group', this.emp_blood_group);
+  formData.append('emp_nationality', this.emp_nationality);
+  formData.append('emp_marital_status', this.emp_marital_status);
+  formData.append('emp_father_name', this.emp_father_name);
+  formData.append('emp_mother_name', this.emp_mother_name);
+  formData.append('emp_posting_location', this.emp_posting_location);
+  formData.append('emp_country_id', this.emp_country_id);
+  formData.append('emp_state_id', this.emp_state_id);
+  formData.append('emp_company_id', this.emp_company_id);
+  formData.append('emp_branch_id', this.emp_branch_id);
+  formData.append('emp_dept_id', this.emp_dept_id);
+  formData.append('emp_desgntn_id', this.emp_desgntn_id);
+  formData.append('emp_ctgry_id', this.emp_ctgry_id);
+  formData.append('emp_languages', this.emp_languages);
+  formData.append('emp_date_of_confirmation', this.emp_date_of_confirmation);
+  formData.append('emp_joined_date', this.emp_joined_date);
+  formData.append('is_ess', this.is_ess ? '1' : '0');
+  formData.append('emp_status', this.emp_status ? '1' : '0');
 
-    const allMessages: string[] = [];
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return;
+  }
 
-    Object.keys(errors).forEach((sheetKey) => {
-      const sheetErrors = errors[sheetKey];
-      if (Array.isArray(sheetErrors) && sheetErrors.length > 0) {
-        allMessages.push(`\n🔹 ${sheetKey.replace('_', ' ').toUpperCase()}:\n`);
-        sheetErrors.forEach((errObj: any) => {
-          if (errObj.error) {
-            try {
-              // Parse JSON-like string (e.g. ["error1", "error2"])
-              const parsedErrors = JSON.parse(errObj.error);
-              if (Array.isArray(parsedErrors)) {
-                allMessages.push(`Row ${errObj.row}:`);
-                parsedErrors.forEach((msg) => {
-                  allMessages.push(`   - ${msg}`);
-                });
-              } else {
-                allMessages.push(`Row ${errObj.row}: ${parsedErrors}`);
-              }
-            } catch {
-              // Fallback if JSON.parse fails
-              allMessages.push(`Row ${errObj.row}: ${errObj.error}`);
-            }
+  /** 🔥 START LOADER */
+  this.isLoading = true;
+
+  this.http
+    .post(`${this.apiUrl}/employee/api/emp-bulkupload/bulk_upload/?schema=${selectedSchema}`, formData)
+    .subscribe(
+      (response) => {
+        /** ✅ STOP LOADER */
+        this.isLoading = false;
+
+        console.log('Bulk upload successful', response);
+        alert('Bulk upload successful');
+        window.location.reload();
+      },
+      (error: HttpErrorResponse) => {
+        /** ❌ STOP LOADER EVEN ON ERROR */
+        this.isLoading = false;
+
+        console.error('Upload error:', error);
+
+        if (error.error) {
+          const errors = error.error.errors || error.error;
+
+          if (typeof errors === 'string') {
+            alert(errors);
+            return;
           }
-        });
-      }
-    });
 
-    if (allMessages.length > 0) {
-      alert(allMessages.join('\n'));
-    } else {
-      alert('An unexpected error occurred.');
-    }
-      } else {
-    alert('Something went wrong.');
-      }
+          const allMessages: string[] = [];
+
+          Object.keys(errors).forEach((sheetKey) => {
+            const sheetErrors = errors[sheetKey];
+            if (Array.isArray(sheetErrors) && sheetErrors.length > 0) {
+              allMessages.push(`\n🔹 ${sheetKey.replace('_', ' ').toUpperCase()}:\n`);
+              sheetErrors.forEach((errObj: any) => {
+                if (errObj.error) {
+                  try {
+                    const parsedErrors = JSON.parse(errObj.error);
+                    if (Array.isArray(parsedErrors)) {
+                      allMessages.push(`Row ${errObj.row}:`);
+                      parsedErrors.forEach((msg) => {
+                        allMessages.push(`   - ${msg}`);
+                      });
+                    } else {
+                      allMessages.push(`Row ${errObj.row}: ${parsedErrors}`);
+                    }
+                  } catch {
+                    allMessages.push(`Row ${errObj.row}: ${errObj.error}`);
+                  }
+                }
+              });
+            }
+          });
+
+          if (allMessages.length > 0) {
+            alert(allMessages.join('\n'));
+          } else {
+            alert('An unexpected error occurred.');
+          }
+        } else {
+          alert('Something went wrong.');
         }
+      }
+    );
+}
 
-      );
-    
-    }
     
   
   

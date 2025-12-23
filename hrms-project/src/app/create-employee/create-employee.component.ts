@@ -646,6 +646,8 @@ export class CreateEmployeeComponent implements OnInit {
             data: { message: 'Employee created successfully!', emp_id: createdEmployeeId },
           });
 
+          
+
           dialogRef.afterClosed().subscribe(() => {
             console.log('The success modal was closed');
           });

@@ -49,6 +49,7 @@ export class DepartmentMasterComponent {
   filteredDepartment: any[] = [];
   searchQuery: string = '';
 
+    isLoading: boolean = false;
 
   constructor(private DepartmentServiceService:DepartmentServiceService,
     private companyRegistrationService: CompanyRegistrationService, 
@@ -370,6 +371,9 @@ if (this.userId !== null) {
       console.error('No schema selected.');
       // return throwError('No schema selected.'); // Return an error observable if no schema is selected
     }
+
+      /** 🔥 START LOADER */
+  this.isLoading = true;
    
    
     // return this.http.put(apiUrl, formData);
@@ -394,10 +398,15 @@ if (this.userId !== null) {
         // });
       }, (error) => {
         // Handle upload error
+             /** ❌ STOP LOADER EVEN ON ERROR */
+        this.isLoading = false;
         console.error('Departments upload failed', error);
         alert('Departments upload failed!');
       });
       }
+
+
+      
 
 
 

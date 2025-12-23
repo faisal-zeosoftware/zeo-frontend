@@ -377,10 +377,11 @@ updateEmp(): void {
 
       this.updateCustomFieldValues();
       this.dialogRef.close();
-      this.dialog.open(SuccesModalComponent, {
-        width: '300px',
-        data: { message: 'Employee updated successfully!' }
-      });
+      // this.dialog.open(SuccesModalComponent, {
+      //   width: '300px',
+      //   data: { message: 'Employee updated successfully!' }
+      // });
+      window.location.reload();
     },
     (error) => {
       console.error('Error updating employee:', error);

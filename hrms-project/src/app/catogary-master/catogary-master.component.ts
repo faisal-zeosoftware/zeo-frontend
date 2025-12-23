@@ -73,6 +73,9 @@ export class CatogaryMasterComponent  implements OnInit{
   filteredEmployees: any[] = [];
   searchQuery: string = '';
 
+     isLoading: boolean = false;
+
+
 
   constructor(private CatogaryService:CatogaryService,
     private companyRegistrationService: CompanyRegistrationService, 
@@ -386,6 +389,9 @@ deleteSelectedEmployees() {
       console.error('No schema selected.');
       // return throwError('No schema selected.'); // Return an error observable if no schema is selected
     }
+
+  /** 🔥 START LOADER */
+  this.isLoading = true;
    
    
     // return this.http.put(apiUrl, formData);
@@ -401,6 +407,8 @@ deleteSelectedEmployees() {
   
        
       }, (error) => {
+      /** ❌ STOP LOADER EVEN ON ERROR */
+        this.isLoading = false;
         // Handle upload error
         console.error('Category upload failed', error);
         alert('Category upload failed!');

@@ -169,7 +169,7 @@ export class AirticketEscalationComponent {
                       this.hasEditPermission = this.checkGroupPermission('change_airticket_escalation', groupPermissions);
                       console.log('Has edit permission:', this.hasEditPermission);
       
-                      this.hasViewPermission = this.checkGroupPermission('view_genrl_escalation', groupPermissions);
+                      this.hasViewPermission = this.checkGroupPermission('view_airticket_escalation', groupPermissions);
                       console.log('Has view permission:', this.hasViewPermission);
 
                       this.hasExportPermission = this.checkGroupPermission('export_airticket_escalation', groupPermissions);

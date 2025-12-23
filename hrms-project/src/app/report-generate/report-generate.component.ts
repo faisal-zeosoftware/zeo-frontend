@@ -377,6 +377,11 @@ private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` fo
    
   }
 
+    checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+    return groupPermissions.some(permission => permission.codename === codeName);
+  }
+
+
 
   loadFieldNames(): void {
     // Define the mapping of localStorage keys to field names
@@ -472,9 +477,7 @@ private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` fo
     this.reportData.sort = this.sort;
     this.reportData.paginator = this.paginator;
   }
-  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-    return groupPermissions.some(permission => permission.codename === codeName);
-  }
+
 
 
   openEditModal(): void {
