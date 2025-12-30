@@ -4,16 +4,25 @@
         <div class="header_section">
 
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <h1>Asset Reports</h1>
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-5">
+
+
+                  <div class="input-group serarch_Sec mt-1">
+                    <input 
+                      type="text" 
+                      class="form-control" >
+                    <div class="search_op" title="Search" >
+                      <mat-icon >filter_alt</mat-icon>
+                    </div>
+                  </div>
                  
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
 
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="button-group pull-right">
 
                       
@@ -28,44 +37,47 @@
 
         </div>
 
-        <div class="tab_back mt-5">
+
+        <div  class="com_list mt-4" >
+          <button class="btn btn-primary mb-3" *ngIf="hasExportPermission" (click)="downloadExcel()">Download Excel</button>
+      
+          <table class="table table-bordered table-striped" *ngIf="approvalReportData.length > 0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Asset Type</th>
+                <th>Condition</th>
+                <th>Model</th>
+                <th>Purchase date</th>
+                <th>serial number</th>
+                <th>status</th>
+                <!-- <th>Created At</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of approvalReportData">
+                <td data-label="Name">{{ item.name || '-' }}</td>
+                <td data-label="Asset Type">{{ item.asset_type || '-' }}</td>
+                <td data-label="Condition">{{ item.condition || '-' }}</td>
+
+                <td data-label="Model">{{ item.model || '-' }}</td>
+                <td data-label="Purchase date">{{ item.purchase_date || '-' }}</td>
+                <td data-label="Serial number">{{ item.serial_number || '-' }}</td>
+                <td data-label="Status">{{ item.status || '-' }}</td>
+          
+                
+                <!-- <td>{{ item.created_at | date:'short' }}</td> -->
+              </tr>
+            </tbody>
+          </table>
+          
+          <p *ngIf="approvalReportData.length === 0">No report data available.</p>
+        </div>
+
+        <!-- <div class="tab_back mt-5">
             <mat-tab-group> 
                 <mat-tab label="Standard Report">
-                    <div class="tab_boddy p-3">
-                      <button class="btn btn-primary mb-3" *ngIf="hasExportPermission" (click)="downloadExcel()">Download Excel</button>
                   
-                      <table class="table table-bordered table-striped" *ngIf="approvalReportData.length > 0">
-                        <thead>
-                          <tr>
-                            <th>Name</th>
-                            <th>Asset Type</th>
-                            <th>Condition</th>
-                            <th>Model</th>
-                            <th>Purchase date</th>
-                            <th>serial number</th>
-                            <th>status</th>
-                            <!-- <th>Created At</th> -->
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let item of approvalReportData">
-                            <td data-label="Name">{{ item.name || '-' }}</td>
-                            <td data-label="Asset Type">{{ item.asset_type || '-' }}</td>
-                            <td data-label="Condition">{{ item.condition || '-' }}</td>
-
-                            <td data-label="Model">{{ item.model || '-' }}</td>
-                            <td data-label="Purchase date">{{ item.purchase_date || '-' }}</td>
-                            <td data-label="Serial number">{{ item.serial_number || '-' }}</td>
-                            <td data-label="Status">{{ item.status || '-' }}</td>
-                      
-                            
-                            <!-- <td>{{ item.created_at | date:'short' }}</td> -->
-                          </tr>
-                        </tbody>
-                      </table>
-                      
-                      <p *ngIf="approvalReportData.length === 0">No report data available.</p>
-                    </div>
                   </mat-tab>
                   
                   <mat-tab label="Custom Report ">
@@ -79,7 +91,7 @@
                       </mat-tab-group> 
       
                       </div>
-       
+        -->
         
            
   

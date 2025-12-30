@@ -240,3 +240,51 @@
       margin-inline-end: 10px;
     }
   }
+
+
+  
+  .search_op{
+    cursor: pointer;
+ 
+   }
+ 
+   .search_op:hover{
+     transform: scale(1.3);
+     /* background: whitesmoke; */
+     z-index: 2;
+     /* box-shadow: 2px 2px 2px #000; */
+     
+ }
+ 
+ 
+   .search_op .mat-icon{
+     /* color: #5d1e82; */
+     color: #9f9f9f;
+ 
+     
+ 
+   }
+   .search_op .mat-icon:hover{
+      font-size: 25px;
+   }
+ .serarch_Sec {
+     border: solid 1px gray;
+ }
+   .search_op{
+     padding:3px 8px;
+     ;
+   }
+   
+ 
+ 
+
+  
+.serarch_Sec {
+  border: solid 1px gray;
+}
+.search_op{
+  padding:3px 8px;
+  ;
+}
+
+
