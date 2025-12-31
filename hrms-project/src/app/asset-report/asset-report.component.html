@@ -1,99 +1,124 @@
-<div class="container" *ngIf="hasViewPermission">
+<div class="container">
     <div class="comapny_section" >
-
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-3">
-                    <h1>Asset Reports</h1>
-                </div>
-
-                <div class="col-md-5">
-
-
-                  <div class="input-group serarch_Sec mt-1">
-                    <input 
-                      type="text" 
-                      class="form-control" >
-                    <div class="search_op" title="Search" >
-                      <mat-icon >filter_alt</mat-icon>
+      <div class="header_section">
+        <div class="row align-items-center px-4">
+          <div class="col-md-3">
+            <h1 class="page-title">Asset Reports</h1>
+          </div>
+      
+          <div class="col-md-6">
+            <div class="input-group search_Sec">
+              <input type="text" class="form-control" placeholder="Search assets..." [(ngModel)]="searchText" (input)="applyFilters()">
+              
+              <div class="search_op" [matMenuTriggerFor]="filterMenu">
+                <mat-icon>filter_alt</mat-icon>
+              </div>
+      
+              <mat-menu #filterMenu="matMenu" class="custom-filter-menu" backdropClass="glass-backdrop" hasBackdrop="true">
+                <div class="filter-dropdown-container" (click)="$event.stopPropagation()">
+                  <div class="filter-main-header">
+                    <div class="d-flex align-items-center">
+                      <mat-icon class="me-2 text-primary">tune</mat-icon>
+                      <span>Report Configuration</span>
+                    </div>
+                    <small class="text-muted">Customize filters and column visibility</small>
+                  </div>
+              
+                  <div class="row m-0 p-3">
+                    <div class="col-md-3 filter-col">
+                      <div class="col-header"><mat-icon>filter_list</mat-icon> FILTERS</div>
+                      <div class="filter-scroll-area">
+                        <div class="filter-item" *ngFor="let status of uniqueStatuses">
+                          <mat-checkbox color="primary" [(ngModel)]="activeFilters.status[status]" (change)="applyFilters()">
+                            <span class="checkbox-label">{{ status | titlecase }}</span>
+                          </mat-checkbox>
+                        </div>
+                      </div>
+                    </div>
+              
+                    <div class="col-md-4 filter-col border-left">
+                      
+                      <div class="col-header"><mat-icon>view_column</mat-icon> SELECT FIELDS</div>
+                      <div class="filter-scroll-area">
+                        <div *ngFor="let field of fieldSettings" class="field-item">
+                          <mat-checkbox color="primary" [(ngModel)]="field.visible">
+                            <span class="checkbox-label">{{ field.label }}</span>
+                          </mat-checkbox>
+                        </div>
+                      </div>
+                    </div>
+              
+                    <div class="col-md-5 filter-col border-left">
+                      <div class="col-header"><mat-icon>auto_awesome</mat-icon> SAVED REPORTS</div>
+                      <div class="saved-reports-container mb-3">
+                        <div *ngFor="let report of savedReports" class="saved-report-item" (click)="loadSavedReport(report)">
+                          <div class="d-flex align-items-center">
+                            <mat-icon class="file-icon">description</mat-icon>
+                            <span class="report-name">{{ report.file_name }}</span>
+                          </div>
+                          <mat-icon class="load-icon">arrow_forward_ios</mat-icon>
+                        </div>
+                        <div *ngIf="savedReports.length === 0" class="empty-reports">
+                          No saved configurations found.
+                        </div>
+                      </div>
+              
+                      <div class="save-form-card">
+                        <label class="save-label">SAVE CURRENT CONFIGURATION</label>
+                        <div class="save-input-group">
+                          <input type="text" 
+                                 class="modern-input" 
+                                 [(ngModel)]="customFileName" 
+                                 placeholder="Enter configuration name...">
+                          <button class="save-action-btn" (click)="saveCustomFile()">
+                            <mat-icon>save</mat-icon>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                 
-
                 </div>
-                <div class="col-md-4">
-                    <div class="button-group pull-right">
-
-                      
-                   
-                   
-                          </div>
-                </div>
-                 
+              </mat-menu>
             </div>
-           
-           
-
+          </div>
         </div>
-
-
-        <div  class="com_list mt-4" >
-          <button class="btn btn-primary mb-3" *ngIf="hasExportPermission" (click)="downloadExcel()">Download Excel</button>
+      </div>
       
-          <table class="table table-bordered table-striped" *ngIf="approvalReportData.length > 0">
-            <thead>
+      <div class="table-stats-bar px-4 d-flex justify-content-between align-items-center mt-4">
+        <div class="d-flex align-items-center gap-3">
+          <h3 class="m-0">Inventory List</h3>
+          <span class="badge badge-pill badge-light border">Records: {{ displayData.length }}</span>
+          <span class="badge badge-pill badge-info" *ngIf="currentGroupBy">Grouped by: {{ currentGroupBy }}</span>
+        </div>
+        <button class="btn btn-success btn-sm" (click)="downloadExcel()">
+          <mat-icon>download</mat-icon> Export Excel
+        </button>
+      </div>
+      
+      <div class="com_list px-4 mt-3">
+        <div class="table-responsive shadow-sm border rounded">
+          <table class="table table-hover mb-0">
+            <thead class="bg-light">
               <tr>
-                <th>Name</th>
-                <th>Asset Type</th>
-                <th>Condition</th>
-                <th>Model</th>
-                <th>Purchase date</th>
-                <th>serial number</th>
-                <th>status</th>
-                <!-- <th>Created At</th> -->
+                <ng-container *ngFor="let field of fieldSettings">
+                  <th *ngIf="field.visible" class="text-uppercase small font-weight-bold">
+                    {{ field.label }}
+                  </th>
+                </ng-container>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of approvalReportData">
-                <td data-label="Name">{{ item.name || '-' }}</td>
-                <td data-label="Asset Type">{{ item.asset_type || '-' }}</td>
-                <td data-label="Condition">{{ item.condition || '-' }}</td>
-
-                <td data-label="Model">{{ item.model || '-' }}</td>
-                <td data-label="Purchase date">{{ item.purchase_date || '-' }}</td>
-                <td data-label="Serial number">{{ item.serial_number || '-' }}</td>
-                <td data-label="Status">{{ item.status || '-' }}</td>
-          
-                
-                <!-- <td>{{ item.created_at | date:'short' }}</td> -->
+              <tr *ngFor="let item of displayData">
+                <ng-container *ngFor="let field of fieldSettings">
+                  <td *ngIf="field.visible">
+                    {{ item[field.key] || '-' }}
+                  </td>
+                </ng-container>
               </tr>
             </tbody>
           </table>
-          
-          <p *ngIf="approvalReportData.length === 0">No report data available.</p>
         </div>
-
-        <!-- <div class="tab_back mt-5">
-            <mat-tab-group> 
-                <mat-tab label="Standard Report">
-                  
-                  </mat-tab>
-                  
-                  <mat-tab label="Custom Report ">
-      
-                    <div class="tab_boddy">
-                    
-                    </div>
-                      </mat-tab>
-      
-                 
-                      </mat-tab-group> 
-      
-                      </div>
-        -->
-        
-           
+      </div>
   
     </div>
     

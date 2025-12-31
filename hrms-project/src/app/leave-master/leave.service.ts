@@ -1018,6 +1018,8 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.get<any>(url);
   }
 
+  
+
   fetchAssetTransactionJsonData(url: string): Observable<any> {
     return this.http.get<any>(url);
   }
@@ -1297,5 +1299,26 @@ getFinalSettlementData(employeeId: number, selectedSchema: string): Observable<a
   const apiUrl = `${this.apiUrl}/employee/api/end-of-service/${employeeId}/final-settlement-data/?schema=${selectedSchema}`;
   return this.http.get(apiUrl);
 }
+
+
+
+
+
+// leave.service.ts
+
+getAvailableFields(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-Report/select_employee_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+saveCustomReport(payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-Report/generate_employee_filter_table/?schema=${selectedSchema}`;
+  return this.http.post(apiUrl, payload);
+}
+
+
+
 
 }

@@ -5,7 +5,14 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import * as XLSX from 'xlsx';
-import { EmployeeService } from '../employee-master/employee.service';
+import { environment } from '../../environments/environment';
+
+interface FieldSetting {
+  key: string;
+  label: string;
+  visible: boolean;
+}
+
 
 @Component({
   selector: 'app-asset-report',
@@ -14,15 +21,16 @@ import { EmployeeService } from '../employee-master/employee.service';
 })
 export class AssetReportComponent {
 
+  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
+
+
   
   Users: any[] = [];
-  username: any;
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
-  hasExportPermission: boolean = false;
   
   userId: number | null | undefined;
   userDetails: any;
@@ -32,200 +40,169 @@ export class AssetReportComponent {
 
   selectedFile: File | null = null;
 
-
-  approvalReportData: any[] = [];
-
-
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthenticationService,
-    private employeeService: EmployeeService,
-    private sessionService: SessionService,
-    private leaveService:LeaveService,
-    private DesignationService: DesignationService,
+  originalData: any[] = [];
+  displayData: any[] = [];
+  savedReports: any[] = [];
+  fieldSettings: any[] = [];
+  uniqueStatuses: string[] = [];
   
-    ) {}
+  searchText: string = '';
+  currentGroupBy: string | null = null;
+  activeFilters: any = { status: {} };
+  customFileName: string = '';
+  isLoading: boolean = false;
 
-    ngOnInit(): void {
-      this.fetchStandardReport();
+constructor(private leaveService: LeaveService,
+  private http: HttpClient,
+) {}
+// FIX FOR NG5002: Use a getter for the count
+get visibleFieldsCount(): number {
+  return this.fieldSettings.filter(f => f.visible).length;
+}
 
-    // Load available fields when the component initializes
+ngOnInit(): void {
+  this.initialLoad();
+}
 
+async initialLoad() {
+  this.isLoading = true;
+  try {
+    const fieldRes = await this.leaveService.getAvailableFields().toPromise();
+    this.fieldSettings = Object.keys(fieldRes.available_fields).map(key => ({
+      key: key,
+      label: fieldRes.available_fields[key],
+      visible: true
+    }));
 
-    this.userId = this.sessionService.getUserId();
-
-    // Fetch user details using the obtained user ID
-    if (this.userId !== null) {
-      this.authService.getUserData(this.userId).subscribe(
-        async (userData: any) => {
-          this.userDetails = userData; // Store user details in userDetails property
-          console.log('User ID:', this.userId); // Log user ID
-          console.log('User Details:', this.userDetails); // Log user details
-    
-          this.username = this.userDetails.username;
-          // Check if user is_superuser is true or false
-          let isSuperuser = this.userDetails.is_superuser || false;
-          const isEssUser = this.userDetails.is_ess || false; // Default to false if is_superuser is undefined
-          const selectedSchema = this.authService.getSelectedSchema();
-      if (!selectedSchema) {
-        console.error('No schema selected.');
-        return;
-      }
-    
-          if (isSuperuser || isEssUser) {
-            console.log('User is superuser or ESS user');
-            // Grant all permissions
-            this.hasViewPermission = true;
-            this.hasAddPermission = true;
-            this.hasDeletePermission = true;
-            this.hasEditPermission = true;
-            this.hasExportPermission=true;
-            // Fetch designations without checking permissions
-            // this.fetchDesignations(selectedSchema);
-    
-          } else {
-            console.log('User is not superuser');
-    
-            const selectedSchema = this.authService.getSelectedSchema();
-            if (selectedSchema) {
-              
-    
-              try {
-                const permissionsData: any = await this.employeeService.getDesignationsPermission(selectedSchema).toPromise();
-                console.log('Permissions data:', permissionsData);
-    
-                if (Array.isArray(permissionsData) && permissionsData.length > 0) {
-                  const firstItem = permissionsData[0];
-    
-                  if (firstItem.is_superuser) {
-                    console.log('User is superuser according to permissions API');
-                    // Grant all permissions
-                    this.hasViewPermission = true;
-                    this.hasAddPermission = true;
-                    this.hasDeletePermission = true;
-                    this.hasEditPermission = true;
-                    this.hasExportPermission= true;
-
-                  } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                    const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
-                    console.log('Group Permissions:', groupPermissions);
-    
-                 this.hasViewPermission = this.checkGroupPermission('view_assetreport', groupPermissions);
-                 console.log('Has view permission:', this.hasViewPermission);
-            
-                 this.hasAddPermission = this.checkGroupPermission('add_assetreport', groupPermissions);
-                 console.log('Has add permission:', this.hasAddPermission);
-            
-                 this.hasDeletePermission = this.checkGroupPermission('delete_assetreport', groupPermissions);
-                 console.log('Has delete permission:', this.hasDeletePermission);
-            
-                  this.hasEditPermission = this.checkGroupPermission('change_assetreport', groupPermissions);
-                 console.log('Has edit permission:', this.hasEditPermission);
-                 
-                 this.hasExportPermission = this.checkGroupPermission('asset_export_report', groupPermissions);
-                 console.log('Has export permission:', this.hasExportPermission);
-                  } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
-                  }
-                } else {
-                  console.error('Permissions data is not an array or is empty.', permissionsData);
-                }
-    
-                // Fetching designations after checking permissions
-                // this.fetchDesignations(selectedSchema);
-              }
-              
-              catch (error) {
-                console.error('Error fetching permissions:', error);
-              }
-            } else {
-              console.error('No schema selected.');
-            }
-    
-          }
-        },
-        (error) => {
-          console.error('Failed to fetch user details:', error);
-        }
-      );
-    
-      this.authService.getUserSchema(this.userId).subscribe(
-        (userData:any)=>{
-          this.userDetailss=userData;
-          console.log('Schema :',this.userDetailss);
-             // Extract schema names from userData and add them to the schemas array
-        this.schemas = userData.map((schema: any) => schema.schema_name);
-    
-        }
-        
-    
-      );
-    } else {
-      console.error('User ID is null.');
-    }
-  
+    this.fetchSavedReportsList();
+    this.fetchStandardReport();
+  } catch (error) {
+    console.error("Init Error", error);
+  } finally {
+    this.isLoading = false;
   }
+}
 
-
-
-    
-
-      checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-    return groupPermissions.some(permission => permission.codename === codeName);
-  }
-  
-// your.component.ts
+fetchSavedReportsList() {
+  this.leaveService.getAssetReport().subscribe(res => {
+    this.savedReports = res;
+  });
+}
 
 fetchStandardReport() {
-  this.leaveService.getAssetReport().subscribe(
-    (response) => {
-      if (response.length > 0 && response[0].report_data) {
-        const jsonUrl = response[0].report_data;
-        this.leaveService.fetchAssetJsonData(jsonUrl).subscribe((jsonData: any) => {
-          // Directly assign the data since it's already flat
-          this.approvalReportData = jsonData;
-        });
-      }
-    },
-    (error) => {
-      console.error('Error fetching report:', error);
+  this.leaveService.getAssetReport().subscribe(res => {
+    if (res.length > 0 && res[0].report_data) {
+      this.loadJsonData(res[0].report_data);
     }
-  );
-  
+  });
 }
 
+loadJsonData(url: string) {
+  this.leaveService.fetchAssetJsonData(url).subscribe(data => {
+    this.originalData = data;
+    this.extractUniqueStatuses();
+    this.applyFilters();
+  });
+}
 
+extractUniqueStatuses() {
+  this.uniqueStatuses = [...new Set(this.originalData.map(item => item.status))].filter(s => !!s);
+  this.uniqueStatuses.forEach(s => {
+    if (this.activeFilters.status[s] === undefined) this.activeFilters.status[s] = false;
+  });
+}
 
-downloadExcel() {
-  const headerMap: { [key: string]: string } = {
-    name: 'Name',
-    asset_type: 'Asset Type',
-    condition: 'Condition',
-    model: 'Model',
-    purchase_date: 'Purchase date',
-    serial_number: 'Serial number',
-    status: 'Status',
-   
-  };
+applyFilters() {
+  let temp = [...this.originalData];
+  if (this.searchText) {
+    const search = this.searchText.toLowerCase();
+    temp = temp.filter(item => 
+      Object.values(item).some(val => String(val).toLowerCase().includes(search))
+    );
+  }
+  const selectedStatuses = Object.keys(this.activeFilters.status).filter(k => this.activeFilters.status[k]);
+  if (selectedStatuses.length > 0) {
+    temp = temp.filter(item => selectedStatuses.includes(item.status));
+  }
+  this.displayData = temp;
+}
 
-  const exportData = this.approvalReportData.map(item => {
-    const transformed: any = {};
-    for (const key in headerMap) {
-      if (item.hasOwnProperty(key)) {
-        transformed[headerMap[key]] = item[key];
-      }
-    }
-    return transformed;
+saveCustomFile(): void {
+  // 1. Get Schema from LocalStorage
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.customFileName.trim()) return;
+
+  // 2. Prepare the URL
+  const url = `${this.apiUrl}/organisation/api/asset-Report/emp_select_report/?schema=${selectedSchema}`;
+  
+  // 3. Construct FormData (Following your model's logic)
+  const formData = new FormData();
+  formData.append('file_name', this.customFileName.trim());
+
+  // 4. Map and append selected field keys
+  // Only fields that are toggled 'visible' in your UI are added
+  const allFieldsToSubmit = this.fieldSettings
+    .filter(field => field.visible && field.key.trim() !== '')
+    .map(field => field.key.trim());
+
+  if (allFieldsToSubmit.length === 0) return;
+
+  // Append each field key to the 'fields' parameter
+  allFieldsToSubmit.forEach(fieldKey => {
+    formData.append('fields', fieldKey);
   });
 
-  const worksheet = XLSX.utils.json_to_sheet(exportData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Asset Report');
-  XLSX.writeFile(workbook, 'Asset_report.xlsx');
+  // 5. POST Method
+  this.isLoading = true;
+  this.http.post<any>(url, formData).subscribe({
+    next: (response) => {
+      console.log('Report generated successfully:', response);
+      
+      if (response.status === 'success') {
+        this.customFileName = ''; // Reset input
+        this.fetchSavedReportsList(); // Refresh the list of saved files
+        
+        // Optional: reload if your backend requires a fresh state
+        // window.location.reload(); 
+      }
+      this.isLoading = false;
+    },
+    error: (error) => {
+      console.error('Error generating report:', error);
+      this.isLoading = false;
+    }
+  });
 }
 
 
 
+loadSavedReport(report: any) {
+  this.isLoading = true;
+  this.leaveService.fetchAssetJsonData(report.report_data).subscribe(jsonData => {
+    if (jsonData && jsonData.length > 0) {
+      const savedKeys = Object.keys(jsonData[0]);
+      this.fieldSettings.forEach(f => f.visible = savedKeys.includes(f.key));
+      this.displayData = jsonData;
+      this.originalData = jsonData;
+    }
+    this.isLoading = false;
+  }, error => {
+    this.isLoading = false;
+    alert("Report not found or file empty.");
+  });
+}
+
+downloadExcel() {
+  const visibleFields = this.fieldSettings.filter(f => f.visible);
+  const exportData = this.displayData.map(item => {
+    let row: any = {};
+    visibleFields.forEach(f => row[f.label] = item[f.key]);
+    return row;
+  });
+  const ws = XLSX.utils.json_to_sheet(exportData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Report');
+  XLSX.writeFile(wb, `${this.customFileName || 'Asset_Report'}.xlsx`);
+}
 
 }

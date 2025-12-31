@@ -855,7 +855,9 @@ saveAsExcelFile(buffer: any, fileName: string): void {
       console.error('No schema selected.');
     }
   
-    const url = `${this.apiUrl}/employee/api/emp-report/?schema=${selectedSchema}`;
+    // const url = `${this.apiUrl}/employee/api/emp-report/?schema=${selectedSchema}`;
+        const url = `${this.apiUrl}/calendars/api/leave-report/?schema=${selectedSchema}`;
+
     this.http.get<any[]>(url).subscribe(
       (reports: any[]) => {
         this.savedReports = reports;
