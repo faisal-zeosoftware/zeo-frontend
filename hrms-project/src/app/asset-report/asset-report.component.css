@@ -879,3 +879,205 @@
  }
  
 
+/* Container Extensions */
+::ng-deep .custom-filter-menu {
+  width: 920px !important;
+  border-radius: 16px !important;
+}
+
+/* Header Badge */
+.header-icon-badge {
+  background: #eef2ff;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+}
+
+/* Column Wrappers */
+.section-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.border-left { border-left: 1px solid #edf2f7; }
+
+/* Grouping Pills (Vertical list) */
+.btn-group-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.btn-group-pill mat-icon { font-size: 16px; width: 16px; height: 16px; color: #10b981; }
+.btn-group-pill.active {
+  background: #f0f7ff;
+  border-color: #3b82f6;
+  color: #2563eb;
+}
+
+/* Column Item Cards */
+.field-item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.field-item-card:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.drag-handle { font-size: 18px; cursor: grab; opacity: 0.4; }
+
+/* Saved Reports Refinement */
+.report-info { display: flex; align-items: center; gap: 12px; }
+.report-meta { font-size: 10px; color: #94a3b8; margin-top: -2px; }
+.btn-load-report {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.saved-report-item:hover .btn-load-report { opacity: 1; }
+
+/* Modern Save Card */
+.save-card-modern {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 14px;
+  color: white;
+}
+
+.save-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.save-input-wrapper {
+  display: flex;
+  background: rgba(255,255,255,0.1);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.clean-input {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  font-size: 13px;
+  flex: 1;
+  outline: none;
+}
+
+.btn-save-confirm {
+  background: #3b82f6;
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-save-confirm:hover { background: #60a5fa; }
+
+/* Badges and Counts */
+.badge-count {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+
+
+.group-order-badge {
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  margin-right: 8px;
+}
+
+.btn-group-pill.active {
+  background: #eff6ff !important;
+  border: 1px solid #3b82f6 !important;
+}
+
+/* Indentation for nested headers */
+.level-1 td {
+    background-color: #f8fafc;
+    font-size: 0.9em;
+}
+
+
+/* Styling for the item while being dragged */
+.cdk-drag-preview {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  background: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  opacity: 0.8;
+}
+
+/* The blue line showing where the item will drop */
+.custom-placeholder {
+  background: #eff6ff;
+  border: 2px dashed #3b82f6;
+  min-height: 40px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+/* Animation when other items move out of the way */
+.cdk-drop-list-dragging .field-item-card:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.drag-handle {
+  cursor: grab;
+  color: #94a3b8;
+  font-size: 20px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}

@@ -6,6 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import * as XLSX from 'xlsx';
 import { environment } from '../../environments/environment';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 
 interface FieldSetting {
   key: string;
@@ -47,8 +48,8 @@ export class AssetReportComponent {
   uniqueStatuses: string[] = [];
   
   searchText: string = '';
-  currentGroupBy: string | null = null;
-  activeFilters: any = { status: {} };
+  currentGroupBy: string[] = [];
+    activeFilters: any = { status: {} };
   customFileName: string = '';
   isLoading: boolean = false;
 
@@ -91,25 +92,52 @@ fetchSavedReportsList() {
 
 fetchStandardReport() {
   this.leaveService.getAssetReport().subscribe(res => {
-    if (res.length > 0 && res[0].report_data) {
-      this.loadJsonData(res[0].report_data);
+    if (res && res.length > 0) {
+      // 1. Find the report where file_name is 'std_report'
+      const defaultReport = res.find(report => report.file_name === 'std_report');
+      
+      // 2. If found, load its data. Otherwise, fallback to the first one available.
+      if (defaultReport) {
+        this.loadJsonData(defaultReport.report_data);
+      } else {
+        // Fallback logic if std_report doesn't exist
+        this.loadJsonData(res[0].report_data);
+      }
     }
   });
 }
 
 loadJsonData(url: string) {
   this.leaveService.fetchAssetJsonData(url).subscribe(data => {
-    this.originalData = data;
+    this.originalData = data || [];
+    
+    // Auto-detect columns from the loaded JSON data
+    if (this.originalData.length > 0) {
+       const keys = Object.keys(this.originalData[0]);
+       this.fieldSettings.forEach(f => {
+         // Show the column only if it exists in the standard report data
+         f.visible = keys.includes(f.key);
+       });
+    }
+
     this.extractUniqueStatuses();
     this.applyFilters();
   });
 }
-
 extractUniqueStatuses() {
   this.uniqueStatuses = [...new Set(this.originalData.map(item => item.status))].filter(s => !!s);
   this.uniqueStatuses.forEach(s => {
     if (this.activeFilters.status[s] === undefined) this.activeFilters.status[s] = false;
   });
+}
+
+
+drop(event: CdkDragDrop<string[]>) {
+  // moveItemInArray is a built-in CDK utility that handles the index swap
+  moveItemInArray(this.fieldSettings, event.previousIndex, event.currentIndex);
+  
+  // Optional: If you want to persist the new order immediately
+  this.applyFilters();
 }
 
 applyFilters() {
@@ -194,15 +222,114 @@ loadSavedReport(report: any) {
 
 downloadExcel() {
   const visibleFields = this.fieldSettings.filter(f => f.visible);
-  const exportData = this.displayData.map(item => {
-    let row: any = {};
-    visibleFields.forEach(f => row[f.label] = item[f.key]);
-    return row;
+  let exportRows: any[] = [];
+
+  // Iterate through the grouped structure to maintain the visual order
+  this.groupedData.forEach(group => {
+    
+    // Optional: Add a "Header Row" in Excel for the group name if grouping is active
+    if (this.currentGroupBy.length > 0) {
+      const headerRow: any = {};
+      headerRow[visibleFields[0].label] = `--- GROUP: ${group.groupName.toUpperCase()} ---`;
+      exportRows.push(headerRow);
+    }
+
+    // CASE: Nested Grouping (length > 1)
+    if (this.currentGroupBy.length > 1) {
+      group.children.forEach((sub: any) => {
+        // Optional: Sub-group header
+        const subHeader: any = {};
+        subHeader[visibleFields[0].label] = `   > ${sub.groupName}`;
+        exportRows.push(subHeader);
+
+        sub.children.forEach((item: any) => {
+          exportRows.push(this.mapItemToRow(item, visibleFields));
+        });
+      });
+    } 
+    // CASE: Single Group or Standard View
+    else {
+      group.children.forEach((item: any) => {
+        exportRows.push(this.mapItemToRow(item, visibleFields));
+      });
+    }
   });
-  const ws = XLSX.utils.json_to_sheet(exportData);
+
+  const ws = XLSX.utils.json_to_sheet(exportRows);
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Report');
-  XLSX.writeFile(wb, `${this.customFileName || 'Asset_Report'}.xlsx`);
+  XLSX.utils.book_append_sheet(wb, ws, 'Filtered Assets');
+  
+  const fileName = this.customFileName || 'Asset_Report';
+  XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
+
+// Helper to map data keys to readable Labels
+private mapItemToRow(item: any, visibleFields: any[]) {
+  let row: any = {};
+  visibleFields.forEach(f => {
+    row[f.label] = item[f.key] || '-';
+  });
+  return row;
+}
+
+resetToStandard() {
+  this.searchText = '';
+  this.currentGroupBy = [];
+  // Reset all status checkboxes to false
+  Object.keys(this.activeFilters.status).forEach(key => this.activeFilters.status[key] = false);
+  this.fetchStandardReport(); 
+}
+
+
+// 2. Updated Method to toggle multiple selections
+setGroupBy(key: string) {
+  const index = this.currentGroupBy.indexOf(key);
+  if (index > -1) {
+    this.currentGroupBy.splice(index, 1); // Remove if already selected
+  } else {
+    this.currentGroupBy.push(key); // Add new grouping level
+  }
+  this.applyFilters();
+}
+
+
+
+get groupedData(): any[] {
+  // IF NO GROUPING: Return a single group where the data is in "children"
+  // This matches the HTML pattern <tr *ngFor="let item of group.children">
+  if (!this.currentGroupBy || this.currentGroupBy.length === 0) {
+    return [{ 
+      groupName: 'Standard Report', 
+      children: this.displayData, // Changed from 'items' to 'children'
+      level: 0 
+    }];
+  }
+
+  const groupRecursive = (data: any[], groupByKeys: string[], level: number): any[] => {
+    if (groupByKeys.length === 0) return data;
+
+    const currentKey = groupByKeys[0];
+    const remainingKeys = groupByKeys.slice(1);
+
+    const groups = data.reduce((acc, item) => {
+      const val = item[currentKey] || 'N/A';
+      if (!acc[val]) acc[val] = [];
+      acc[val].push(item);
+      return acc;
+    }, {} as any);
+
+    return Object.keys(groups).map(name => ({
+      groupName: name,
+      level: level,
+      children: remainingKeys.length > 0 
+                ? groupRecursive(groups[name], remainingKeys, level + 1) 
+                : groups[name]
+    }));
+  };
+
+  return groupRecursive(this.displayData, this.currentGroupBy, 0);
+}
+
+
 
 }
