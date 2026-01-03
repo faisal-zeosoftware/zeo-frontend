@@ -66,8 +66,12 @@
             <div class="col-md-6" *ngIf="!isLasstNameFieldHidden" >
                
                 <label>{{lastNameFieldName}}</label>
-               <input type="text"  class="form-control" required id="emp_last_name" name="emp_last_name"  [(ngModel)]="emp_last_name"  placeholder="Enter {{lastNameFieldName}}"
-                [ngModelOptions]="{standalone: true}" [required]="isLastNameMandatory" [ngClass]="{'error-field': registerButtonClicked && isLastNameMandatory && !emp_last_name}"  >
+               <input type="text"  class="form-control" id="emp_last_name" name="emp_last_name" 
+                [(ngModel)]="emp_last_name"  placeholder="Enter {{lastNameFieldName}}"
+                [required]="isLastNameMandatory" 
+                [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && isLastNameMandatory && !emp_last_name}" >
+
                 <div *ngIf="registerButtonClicked && isLastNameMandatory && !emp_last_name" class="error-message">
                     {{lastNameFieldName}} is required.
                 </div>
@@ -391,14 +395,10 @@
 </div> -->
 
 
-<div class="col-md-6"  *ngIf="!isLocationFieldHidden">
+<!-- <div class="col-md-6"  *ngIf="!isLocationFieldHidden">
     <label>{{locationFieldName}}</label>
 
-    
-    
-    <!-- Hidden input to store the final value to be posted -->
- 
-                  
+                 
     <select class="form-control"  [(ngModel)]="emp_posting_location"  [ngModelOptions]="{standalone: true}" style="display: none;"
     [required]="isLocationMandatory" 
     [ngClass]="{'error-field': registerButtonClicked && isLocationMandatory && !emp_posting_location}" >
@@ -410,16 +410,15 @@
                         {{locationFieldName}} is required.
                     </div>
 
-    <!-- <input type="text" class="form-control" [(ngModel)]="emp_gender" [ngModelOptions]="{standalone: true}" style="display: none;"> -->
 
     <ng-container [ngSwitch]="locationDataType">
-        <!-- Text Box for Gender -->
+     
         <input *ngSwitchCase="'Text Box'" type="text" class="form-control" 
                required placeholder="{{locationFieldName}}" 
                [(ngModel)]="temp_emp_location" 
                (ngModelChange)="synclocation($event)" [ngModelOptions]="{standalone: true}">
         
-        <!-- Dropdown for Gender -->
+       
         <div *ngSwitchCase="'Dropdown'" class="custom-sel">
             <select class="form-control" [(ngModel)]="temp_emp_location" (ngModelChange)="synclocation($event)" [ngModelOptions]="{standalone: true}">
 
@@ -428,7 +427,7 @@
             </select>
         </div>
     </ng-container>
-</div>
+</div> -->
 
 
 

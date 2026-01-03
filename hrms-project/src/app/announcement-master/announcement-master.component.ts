@@ -349,7 +349,7 @@ registerAnnouncement(): void {
   this.employeeService.registerAnnouncement(companyData).subscribe(
     (response) => {
       this.isLoading = false; // stop loader ✅
-      alert('Approval Level Assigned');
+      alert('Announcement Assigned');
       console.log('Registration successful', response);
       window.location.reload();
     },

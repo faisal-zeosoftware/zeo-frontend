@@ -39,11 +39,12 @@ export class EmployeeEditComponent {
   Fields:any[] = [];
   Religions: any[] = [];
   Nationations: any[] = [];
+  custom_fields: any[] = [];
 
 
   empCodeFieldName: string = 'Employee Code';
   firstNameFieldName: string = 'First Name';
-  lastNameFieldName: string = 'First Name';
+  lastNameFieldName: string = 'Last Name';
   emailFieldName: string = 'Email';
   dobFieldName: string = 'Date Of Birth';
   cmpnoFieldName: string = 'Company Number';

@@ -79,7 +79,7 @@
                                 placeholder="Enter name " [ngModelOptions]="{standalone: true}"
                                 [ngClass]="{'error-field': registerButtonClicked && !name}">
 
-                            <div *ngIf="registerButtonClicked && !name" class="error-message">name is required.</div>
+                            <!-- <div *ngIf="registerButtonClicked && !name" class="error-message">name is required.</div> -->
                         </div>
 
 
@@ -448,7 +448,7 @@
 
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-
+ <div style="overflow-x: auto; width: 100%;">
             <table class="table">
                 <thead>
                     <tr>
@@ -485,7 +485,7 @@
                     </tr>
                 </tbody>
             </table>
-
+</div>
         </div>
     </div>
 </div>

@@ -116,7 +116,7 @@
                                   
                       <div class="col-md-6">
                         <label>Days</label>
-                        <input type="date" class="form-control" required [(ngModel)]="days" placeholder="Enter  Days"
+                        <input type="number" class="form-control" required [(ngModel)]="days" placeholder="Enter  Days"
                                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !days}">
                         <div *ngIf="registerButtonClicked && !days" class="error-message"> Days is required.</div>
                       </div>

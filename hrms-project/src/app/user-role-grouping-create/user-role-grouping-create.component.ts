@@ -1310,7 +1310,7 @@ isAssetManagementMasterChecked():boolean{
   this.AssetReqChecked &&
   this.AssetApprovalsChecked &&
   this.AssetApprovallvlChecked &&
-  this.AssetEscalationChecked
+  this.AssetEscalationChecked;
 
 }
 
@@ -12091,6 +12091,7 @@ selectAsset(): void {
     ...this.GrouppermissionsAssetReq,
     ...this.GrouppermissionsAssetApprovals,
     ...this.GrouppermissionsAssetApprovallvl,
+    ...this.GrouppermissionsAssetEscalation,
 
 
   ].map(permission => permission.id);

@@ -90,6 +90,7 @@ ShiftsPattern: any[] = [];
 
   
   allSelectedbR=false;
+  allSelectedBrach=false;
   allSelecteddept=false;
   allSelectedcat=false;
   allSelectedEmp=false;
@@ -99,6 +100,8 @@ ShiftsPattern: any[] = [];
     @ViewChild('select') select: MatSelect | undefined;
   
     @ViewChild('selectDept') selectDept: MatSelect | undefined;
+
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
   
     @ViewChild('selectCat') selectCat: MatSelect | undefined;
     @ViewChild('selectEmp') selectEmp: MatSelect | undefined;
@@ -482,13 +485,23 @@ ngOnInit(): void {
                   }
                 }
               }
-          
-              toggleAllSelectiondept(): void {
+
+             toggleAllSelectiondept(): void {
                 if (this.selectDept) {
                   if (this.allSelecteddept) {
                     this.selectDept.options.forEach((item: MatOption) => item.select());
                   } else {
                     this.selectDept.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
+          
+              toggleAllSelectionBrach(): void {
+                if (this.selectBrach) {
+                  if (this.allSelectedBrach) {
+                    this.selectBrach.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
                   }
                 }
               }

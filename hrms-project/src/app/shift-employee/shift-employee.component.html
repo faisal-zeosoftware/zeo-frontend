@@ -168,9 +168,9 @@
 
             <mat-form-field>
               <!-- <mat-label>Favorite food</mat-label> -->
-              <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #select multiple>
+              <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
                 <div class="select-all">
-                  <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
                     Select All
                   </mat-checkbox>
                 </div>

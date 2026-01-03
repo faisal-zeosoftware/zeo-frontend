@@ -245,7 +245,7 @@
        <div *ngIf="registerButtonClicked && !emp_mother_name" class="error-message">Description is required.</div>
     </div>
     
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
 
 
         <div class="custom-sel">
@@ -258,7 +258,7 @@
         </div>
                     
     
-    </div>
+    </div> -->
     
     <div class="col-md-6" >
     
@@ -405,6 +405,97 @@
            
            <div *ngIf="registerButtonClicked && !emp_date_of_confirmation" class="error-message">Active date .</div>
         </div>
+
+        <div class="col-md-6">
+               
+        <label>Personal ID</label>
+       <input type="number"  class="form-control" required id="person_id"  [(ngModel)]="Emp.person_id"  placeholder="Enter person id"
+        [ngModelOptions]="{standalone: true}" >
+       
+        </div>
+
+            <div class="col-md-6">
+    
+    
+        <div class="custom-sel">
+            <label>Select work location</label>
+            <select class="form-control" id="empwork_location_branch_id" name="work_location" required [(ngModel)]="Emp.work_location"  [ngModelOptions]="{standalone: true}"
+              >
+                <option value="" >Select</option>
+                <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
+            </select>
+        </div>
+ </div>
+
+   <div class="col-md-6">
+
+
+        <div class="custom-sel">
+            <label>Select  visa location</label>
+            <select class="form-control" id="visa_location" name="visa_location" required [(ngModel)]="Emp.visa_location"  [ngModelOptions]="{standalone: true}"
+              >
+                <option value="" >Select</option>
+                <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
+            </select>
+        </div>
+                    
+
+    </div>
+
+
+      <div class="row" >
+        <div class="col-md-6" *ngFor="let field of custom_fields">
+            <label>{{ field.emp_custom_field }}</label>
+            <ng-container [ngSwitch]="field.data_type">
+              
+                <select *ngSwitchCase="'dropdown'" class="form-control" 
+                        [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}"
+                        [required]="field.mandatory">
+                    <option *ngFor="let value of field.dropdown_values" [value]="value">{{ value }}</option>
+                </select>
+               
+                <div class="radio-sec form-control" *ngSwitchCase="'radio'">
+                    <div *ngFor="let value of field.radio_values" class="form-check">
+                        <input type="radio" class="form-check-input" [id]="value + field.id" 
+                               [(ngModel)]="field.field_value" [value]="value" 
+                               [ngModelOptions]="{standalone: true}" [required]="field.mandatory">
+                        <label class="form-check-label" [for]="value + field.id">{{ value }}</label>
+                    </div>
+                </div>
+                
+                <input *ngSwitchCase="'date'" type="date" class="form-control" 
+                       [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
+                       [required]="field.mandatory" />
+              
+                <input *ngSwitchDefault type="text" class="form-control" 
+                       [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
+                       [required]="field.mandatory" />
+            </ng-container>
+        </div>
+        
+    </div>
+
+       <div class="row">
+        <div class="col-md-6">
+            <label></label>
+            <div class="check-box-selection-sec form-control mt-3">
+              <div class="mat-set">
+                <mat-checkbox [(ngModel)]="Emp.emp_ot_applicable" [ngModelOptions]="{standalone: true}">OT Applicable To</mat-checkbox>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label></label>
+            <div class="check-box-selection-sec form-control mt-3">
+              <div class="mat-set">
+                <mat-checkbox [(ngModel)]="Emp.is_active" [ngModelOptions]="{standalone: true}">Employee Is Active</mat-checkbox>
+              </div>
+            </div>
+          </div>
+    </div>
+
+
+        
      
 
         <!-- <div class="col-md-6">

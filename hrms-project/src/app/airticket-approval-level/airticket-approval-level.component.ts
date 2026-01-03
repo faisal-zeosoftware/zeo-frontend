@@ -68,7 +68,7 @@ export class AirticketApprovalLevelComponent {
     
       ngOnInit(): void {
     
-        this.loadAssetTypes();
+        // this.loadAssetTypes();
         this.loadAssetApprovalLevels();
         this.loadAssetapprover();
     
@@ -192,12 +192,12 @@ export class AirticketApprovalLevelComponent {
       formData.append('level', this.level);
       formData.append('role', this.role);
       formData.append('approver', this.approver);
-      formData.append('asset_type', this.asset_type);
+      // formData.append('asset_type', this.asset_type);
     
       this.employeeService.registerAirticketApproverLevel(formData).subscribe(
         (response) => {
           console.log('Registration successful', response);
-          alert('Loan Approval Level has been added');
+          alert('Airticket Approval Level has been added');
           window.location.reload();
         },
         (error) => {
@@ -231,26 +231,26 @@ export class AirticketApprovalLevelComponent {
     
     
           
-      loadAssetTypes(callback?: Function): void {
+      // loadAssetTypes(callback?: Function): void {
         
-        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
-        console.log('schemastore',selectedSchema )
-        // Check if selectedSchema is available
-        if (selectedSchema) {
-          this.employeeService.getAssetTypes(selectedSchema).subscribe(
-            (result: any) => {
-              this.LoanTypes = result;
-              console.log(' fetching Loantypes:');
-                if (callback) callback();
+      //   console.log('schemastore',selectedSchema )
+      //   // Check if selectedSchema is available
+      //   if (selectedSchema) {
+      //     this.employeeService.getAirTicketTypes(selectedSchema).subscribe(
+      //       (result: any) => {
+      //         this.LoanTypes = result;
+      //         console.log(' fetching Airtickettypes:');
+      //           if (callback) callback();
       
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
-        }
-        }
+      //       },
+      //       (error) => {
+      //         console.error('Error fetching Companies:', error);
+      //       }
+      //     );
+      //   }
+      //   }
     
       mapLoanTypeNameToId() {
     
@@ -277,7 +277,7 @@ export class AirticketApprovalLevelComponent {
           console.log('schemastore',selectedSchema )
           // Check if selectedSchema is available
           if (selectedSchema) {
-            this.employeeService.getAssetApprovalLevels(selectedSchema).subscribe(
+            this.employeeService.getAirTicketApprovalLevels(selectedSchema).subscribe(
               (result: any) => {
                 this.approvalLevels = result;
                 console.log(' fetching Loantypes:');

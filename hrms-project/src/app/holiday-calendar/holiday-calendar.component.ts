@@ -7,6 +7,11 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import { environment } from '../../environments/environment';
+
+
+
+
 
 @Component({
   selector: 'app-holiday-calendar',
@@ -14,6 +19,8 @@ import { SessionService } from '../login/session.service';
   styleUrl: './holiday-calendar.component.css'
 })
 export class HolidayCalendarComponent {
+
+  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
   @ViewChild('select') select: MatSelect | undefined;
 
@@ -28,10 +35,9 @@ export class HolidayCalendarComponent {
 
 
   HolidaysCalendar:any []=[];
+  isEditModalOpen = false;
+  editDateDetails: any = {};
 
-
-
-  
   restricted: boolean = false;
 
 
@@ -223,11 +229,155 @@ if (this.userId !== null) {
       }
       
 
-    selectCalendar(event: any): void {
-      const selectedId = event.target.value;
-      this.selectedCalendar = this.calendars.find(calendar => calendar.id == selectedId);
-      console.log('cal',this.selectedCalendar)
+selectCalendar(event: any): void {
+  const selectedId = event.target.value;
+
+  const calendar = this.calendars.find(c => c.id == selectedId);
+  if (!calendar) return;
+
+  const details: any[] = [];
+
+  // 🔁 Convert holiday ranges into daily entries
+  (calendar.holiday_list || []).forEach((holiday: any) => {
+    const start = new Date(holiday.start_date);
+    const end = new Date(holiday.end_date);
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      details.push({
+        date: new Date(d),
+        day_type: 'leave',          // Holiday = Off
+        description: holiday.description,
+        holiday_id: holiday.id
+      });
     }
+  });
+
+  // ✅ Match WEEK CALENDAR STRUCTURE
+  this.selectedCalendar = {
+    description: calendar.calendar_title,
+    year: calendar.year,
+    calendar_code: calendar.id,
+    details
+  };
+
+  console.log('Holiday calendar mapped like week calendar', this.selectedCalendar);
+}
+
+
+openEditModal(detail: any): void {
+  this.isEditModalOpen = true;
+
+  // ✅ Clone object so cancel doesn't mutate table
+  this.editDateDetails = {
+    holiday_id: detail.holiday_id,
+    day_type: detail.day_type,
+    date: detail.date,
+    description: detail.description
+  };
+
+  console.log('Editing holiday detail:', this.editDateDetails);
+}
+
+
+  
+
+getMonthKeys(): string[] {
+  if (!this.selectedCalendar?.details) return [];
+
+  const months = new Set<string>();
+
+  this.selectedCalendar.details.forEach((d: any) => {
+    const month = new Date(d.date).toLocaleString('default', { month: 'long' });
+    months.add(month);
+  });
+
+  return Array.from(months);
+}
+
+
+  getMonthName(monthIndex: string): string {
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    
+    const index = parseInt(monthIndex, 10) - 1;
+    return monthNames[index] || "Unknown";
+  }
+
+
+
+groupDetailsByMonth(): any {
+  const grouped: any = {};
+  if (!this.selectedCalendar?.details) return grouped;
+
+  this.selectedCalendar.details.forEach((detail: any) => {
+    const month = new Date(detail.date).toLocaleString('default', { month: 'long' });
+    grouped[month] = grouped[month] || [];
+    grouped[month].push(detail);
+  });
+
+  return grouped;
+}
+
+
+
+formatDate(date: Date): string {
+  return new Date(date).toISOString().split('T')[0];
+}
+
+getDayName(date: Date): string {
+  return new Date(date).toLocaleDateString('en-US', { weekday: 'long' });
+}
+
+getDayTypeDisplayName(type: string): string {
+  if (type === 'leave') return 'Holiday';
+  if (type === 'halfday') return 'Half Day';
+  return 'Full Day';
+}
+
+
+  closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.editDateDetails = {};
+  }
+updateDate(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    console.log('Updating holiday:', this.editDateDetails);
+
+    return;
+  }
+
+  this.http
+    .put(
+      `${this.apiUrl}/calendars/api/assign-days/${this.editDateDetails.holiday_id}/?schema=${selectedSchema}`,
+      { day_type: this.editDateDetails.day_type }
+    )
+    .subscribe({
+      next: () => {
+        // ✅ Update UI immediately
+        const localDetail = this.selectedCalendar.details.find(
+          (d: any) => d.holiday_id === this.editDateDetails.holiday_id
+        );
+
+        if (localDetail) {
+          localDetail.day_type = this.editDateDetails.day_type;
+        }
+
+        this.closeEditModal();
+      },
+      error: (err) => {
+        console.error('Update failed', err);
+      }
+    });
+}
+
+
+
+
+
   
 
     toggleAllSelection(): void {

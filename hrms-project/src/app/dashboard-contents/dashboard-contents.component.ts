@@ -123,6 +123,14 @@ export class DashboardContentsComponent {
 }
 
 
+expandedTaskId: number | null = null;
+
+toggleTask(taskId: number): void {
+  this.expandedTaskId = this.expandedTaskId === taskId ? null : taskId;
+}
+
+
+
 isLoadingEss: boolean = false;
 
 

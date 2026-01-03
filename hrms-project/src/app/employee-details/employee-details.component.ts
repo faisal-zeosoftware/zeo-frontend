@@ -562,9 +562,9 @@ attendanceData: any = null; // Define this at the class level
     }
     
        // Load field names from localStorage
-       const savedLocationFieldName = localStorage.getItem('locationFieldName');
-       if (savedLocationFieldName) {
-           this.locationFieldName = savedLocationFieldName;
+       const savedlocationFieldName = localStorage.getItem('locationFieldName');
+       if (savedlocationFieldName) {
+           this.locationFieldName = savedlocationFieldName;
        }
     
          // Load field names from localStorage

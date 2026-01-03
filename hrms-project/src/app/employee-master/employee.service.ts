@@ -3554,6 +3554,16 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
     
   }
 
+
+  getAirTicketTypes(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-type/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
   
 
 
@@ -3597,6 +3607,16 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
     getAssetApprovalLevels(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+
+    getAirTicketApprovalLevels(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-levels/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);
@@ -4365,7 +4385,7 @@ updateEmpCustomFieldAsset(field: any): Observable<any> {
   }
 
 
-  const apiUrl = `${this.apiUrl}/organisation/api/asset-customfield-value/${field.id}/?schema=${selectedSchema}`; // Replace with your actual API URL
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-customfield/${field.id}/?schema=${selectedSchema}`; // Replace with your actual API URL
   return this.http.put(apiUrl, field);
 }
 
