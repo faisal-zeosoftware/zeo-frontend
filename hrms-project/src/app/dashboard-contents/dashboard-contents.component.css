@@ -1,3 +1,4 @@
+
 @import url(https://fonts.googleapis.com/css?family=Lobster);
 @import url(https://fonts.googleapis.com/css?family=Pacifico);
 @import url(https://fonts.googleapis.com/css?family=Dancing+Script);
@@ -712,7 +713,6 @@ input:focus-visible {
   background: #f9fafc;
   border-radius: 12px;
   padding: 20px;
-  width: 570px;
   border: 1px solid #eee;
   transition: all 0.3s ease;
 }
@@ -733,41 +733,6 @@ input:focus-visible {
   font-weight: 600;
 }
 
-.project-team {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-
-.task-header {
-  cursor: pointer;
-}
-
-.toggle-icon {
-  font-size: 20px;
-  color: #555;
-}
-
-.task-body {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed #ddd;
-  animation: slideDown 0.25s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
 .status-badge {
   padding: 5px 12px;
   border-radius: 30px;
@@ -781,6 +746,9 @@ input:focus-visible {
 .status-active {
   background-color: #007bff;
 }
+.status-in_progress {
+  background-color: #3b82f6;
+}
 .status-completed {
   background-color: #6c757d;
 }
@@ -792,51 +760,19 @@ input:focus-visible {
 
 .project-dates {
   display: flex;
-  gap: 228px;
-  background: #f1f1f1;
-  padding: 10px 14px;
-  border-radius: 10px;
+  justify-content: space-between;
   font-size: 13px;
-  color: #0e0d0d;
-}
-
-.date-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.date-item mat-icon {
-  font-size: 18px;
-  color: #000000;
-}
-
-/* Document link */
-.project-document {
-  display: flex;
+  color: #777;
 }
 
 .project-link {
+  color: #2a45bce0;
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid #4361ee;
-  color: #4361ee;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.2s ease;
 }
-
-.project-link:hover {
-  background: #4361ee;
-  color: #fff;
-}
-
 .project-link mat-icon {
-  font-size: 18px;
+  margin-right: 5px;
   color: black;
 }
 
@@ -926,16 +862,18 @@ input:focus-visible {
   color: #777;
 }
 
+.toggle-icon {
+  font-size: 20px;
+  color: #555;
+}
+
+
 
 .policy-card {
-  background: #ffffff;
-  border: 1px solid #eef0f4;
-  border-radius: 18px;
-  padding: 20px 22px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: all 0.25s ease;
+  background: #fff;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
 }
 
 .policy-card:hover {

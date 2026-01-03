@@ -1,5 +1,4 @@
 
-
 <div class="email_div"  >
   <mat-icon>chevron_left</mat-icon>
 
@@ -203,75 +202,42 @@
               <div class="row">
                 <div class="col-md-6 col-lg-6 mb-4" *ngFor="let project of selectedBranchProjects">
                   <div class="project-card">
-<div class="project-header">
-  <h4 class="project-title">{{ project.title }}</h4>
-
-  <span
-    class="status-badge"
-    [ngClass]="{
-      'status-new': project.status === 'new',
-      'status-active': project.status === 'active',
-      'status-completed': project.status === 'completed'
-    }"
-  >
-    {{ project.status | titlecase }}
-  </span>
-</div>
-
+                    <div class="project-header">
+                      <h4>{{ project.title }}</h4>
+                      <span class="status-badge" [ngClass]="{
+                        'status-new': project.status === 'new',
+                        'status-active': project.status === 'active',
+                        'status-in_progress': project.status === 'in_progress',
+                        'status-completed': project.status === 'completed'
+                      }">{{ project.status | titlecase }}</span>
+                    </div>
         
                     <div class="project-body">
                       <p>{{ project.description }}</p>
         
-<!-- 📅 Project Dates -->
-<div class="project-dates mb-3">
-  <div class="date-item">
-    <mat-icon>event</mat-icon>
-    <span><strong>Start:</strong> {{ project.start_date | date:'mediumDate' }}</span>
-  </div>
-
-  <div class="date-item">
-    <mat-icon>event_available</mat-icon>
-    <span><strong>End:</strong> {{ project.end_date | date:'mediumDate' }}</span>
-  </div>
-</div>
+                      <div class="project-dates mb-2">
+                        <span><strong>Start:</strong> {{ project.start_date | date:'mediumDate' }}</span>
+                        <span><strong>End:</strong> {{ project.end_date | date:'mediumDate' }}</span>
+                      </div>
         
-<!-- 📎 Document -->
-<div *ngIf="project.document" class="project-document mb-3">
-  <a [href]="project.document" target="_blank" class="project-link">
-    <mat-icon>insert_drive_file</mat-icon>
-    <span>View Document</span>
-  </a>
-</div>
+                      <div *ngIf="project.document" class="mt-2 mb-3">
+                        <a [href]="project.document" target="_blank" class="project-link">
+                          <mat-icon>insert_drive_file</mat-icon> View Document
+                        </a>
+                      </div>
         
-<!-- 🧑‍💼 Project Managers & Members -->
-<div class="project-team mt-3 d-flex gap-4 flex-wrap">
-
-  <!-- Managers -->
-  <div class="team-block">
-    <h6>
-      <mat-icon>manage_accounts</mat-icon> Managers
-    </h6>
-    <div class="avatar-group">
-      <span *ngFor="let manager of project.managers" class="avatar">
-        {{ manager }}
-      </span>
-    </div>
-  </div>
-
-  <!-- Members -->
-  <div class="team-block">
-    <h6>
-      <mat-icon>group</mat-icon> Members
-    </h6>
-    <div class="avatar-group">
-      <span *ngFor="let member of project.members" class="avatar member-avatar">
-        {{ member }}
-      </span>
-    </div>
-  </div>
-
-</div>
-
+                      <!-- 🧑‍💼 Project Managers & Members -->
+                      <div class="project-team mt-3">
+                        <h6><mat-icon>manage_accounts</mat-icon> Managers</h6>
+                        <div class="avatar-group">
+                          <span *ngFor="let manager of project.managers" class="avatar">{{ manager }}</span>
+                        </div>
+        
+                        <h6 class="mt-3"><mat-icon>group</mat-icon> Members</h6>
+                        <div class="avatar-group">
+                          <span *ngFor="let member of project.members" class="avatar member-avatar">{{ member }}</span>
+                        </div>
+                      </div>
         
                       <!-- ✅ Tasks -->
 <div *ngIf="project.tasks && project.tasks.length > 0" class="task-list mt-4">
@@ -361,8 +327,7 @@
                   class="col-md-12 col-lg-12"
                   *ngFor="let policy of selectedBranchPolicies"
                 >
-                 <div class="policy-card">
-
+                  <div class="policy-card p-4 shadow-sm rounded-4 h-100">
                     <!-- Header -->
                     <div class="d-flex justify-content-between align-items-start mb-2">
                       <h5 class="fw-semibold text-primary">{{ policy.title }}</h5>
@@ -462,3 +427,4 @@
      <div class="loader-container" [class.show]="isLoadingEss">
       <div class="loader"></div>
     </div>
+

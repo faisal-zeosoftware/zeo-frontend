@@ -409,12 +409,20 @@ SetLeaveApprovaLevel(): void {
   this.registerButtonClicked = true;
 
   const formData = new FormData();
-  formData.append('level', this.level);
-  formData.append('role', this.role);
+
+  // 🔹 Always send strings in FormData
+  formData.append('level', this.level.toString());
+  formData.append('role', this.role.toString());
   formData.append('is_compensatory', this.is_compensatory.toString());
-  formData.append('approver', this.approver);
-  formData.append('request_type', this.request_type);
-  formData.append('branch', this.branch);
+  formData.append('approver', this.approver.toString());
+  formData.append('request_type', this.request_type.toString());
+
+  // 🔹 Send branch IDs one by one (IMPORTANT)
+  if (Array.isArray(this.branch)) {
+    this.branch.forEach((id: number) => {
+      formData.append('branch', id.toString());
+    });
+  }
 
   this.leaveService.CreateLeaveapprovalLevel(formData).subscribe(
     (response) => {
@@ -427,7 +435,6 @@ SetLeaveApprovaLevel(): void {
 
       let errorMessage = 'Something went wrong.';
 
-      // ✅ Handle backend validation or field-level errors (e.g., from Django REST Framework)
       if (error.error && typeof error.error === 'object') {
         const messages: string[] = [];
 
@@ -445,7 +452,6 @@ SetLeaveApprovaLevel(): void {
           errorMessage = messages.join('\n');
         }
       } else if (error.error?.detail) {
-        // Handles backend responses like { "detail": "Invalid data" }
         errorMessage = error.error.detail;
       }
 
