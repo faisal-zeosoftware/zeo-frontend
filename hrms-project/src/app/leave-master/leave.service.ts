@@ -999,17 +999,6 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   
   
 
-  getAssetTransactionReport(): Observable<any[]> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError(() => new Error('No schema selected.'));
-    }
-  
-    const apiUrl = `${this.apiUrl}/organisation/api/asset-transaction-report/?schema=${selectedSchema}`;
-    return this.http.get<any[]>(apiUrl);
-  }
-  
   fetchLeavebalanceJsonData(url: string): Observable<any> {
     return this.http.get<any>(url);
   }
@@ -1317,6 +1306,40 @@ saveCustomReport(payload: any): Observable<any> {
   const apiUrl = `${this.apiUrl}/organisation/api/asset-Report/generate_employee_filter_table/?schema=${selectedSchema}`;
   return this.http.post(apiUrl, payload);
 }
+
+
+
+
+
+
+// assetTransaction 
+
+getAssetTransactionReport(): Observable<any[]> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-transaction-report/?schema=${selectedSchema}`;
+  return this.http.get<any[]>(apiUrl);
+}
+
+
+getAvailableFieldsAssetTransaction(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-transaction-report/select_asset_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+
+// saveCustomReportAssetTransaction(payload: any): Observable<any> {
+//   const selectedSchema = localStorage.getItem('selectedSchema');
+//   const apiUrl = `${this.apiUrl}/organisation/api/asset-Report/generate_employee_filter_table/?schema=${selectedSchema}`;
+//   return this.http.post(apiUrl, payload);
+// }
+
+
 
 
 

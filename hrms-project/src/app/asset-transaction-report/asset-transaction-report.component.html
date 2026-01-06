@@ -1,96 +1,266 @@
 
-<div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section" >
-
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-5">
-                    <h1>Asset Reports</h1>
-                </div>
-
-                <div class="col-md-2">
-                 
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
-
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-
-                      
-                   
-                   
-                          </div>
-                </div>
-                 
-            </div>
-           
-           
-
+<div class="container">
+  <div class="comapny_section" >
+    <div class="header_section">
+      <div class="row align-items-center px-4">
+        <div class="col-md-3">
+          <h1 class="page-title">Asset Reports</h1>
         </div>
-
-        <div class="tab_back mt-5">
-            <mat-tab-group> 
-                <mat-tab label="Standard Report">
-                    <div class="tab_boddy p-3">
-                      <button class="btn btn-primary mb-3" *ngIf="hasExportPermission" (click)="downloadExcel()">Download Excel</button>
-                  
-                      <table class="table table-bordered table-striped" *ngIf="approvalReportData.length > 0">
-                        <thead>
-                          <tr>
-                            <th>Employee Name</th>
-                            <th>Employee ID</th>
-                            <th>Asset</th>
-                            <th>Assigned Date</th>
-                            <th>Returned Date</th>
-                            <th>Return Condition</th>
-                            <th>Branch</th>
-                            <th>Department</th>
-                            <th>Designation</th>
-                            <th>Category</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let item of approvalReportData">
-                            <td data-label="Employee Name">{{ item.emp_first_name || '-' }}</td>
-                            <td data-label="Employee ID">{{ item.employee || '-' }}</td>
-                            <td data-label="Asset">{{ item.asset || '-' }}</td>
-                            <td data-label="Assigned Date">{{ item.assigned_date || '-' }}</td>
-                            <td data-label="Returned Date">{{ item.returned_date || '-' }}</td>
-                            <td data-label="Return Condition">{{ item.return_condition || '-' }}</td>
-                            <td data-label="Branch">{{ item.emp_branch_id || '-' }}</td>
-                            <td data-label="Department">{{ item.emp_dept_id || '-' }}</td>
-                            <td data-label="Designation">{{ item.emp_desgntn_id || '-' }}</td>
-                            <td data-label="Category">{{ item.emp_ctgry_id || '-' }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      
-                      
-                      <p *ngIf="approvalReportData.length === 0">No report data available.</p>
-                    </div>
-                  </mat-tab>
-                  
-                  <mat-tab label="Custom Report ">
-      
-                    <div class="tab_boddy">
-                    
-                    </div>
-                      </mat-tab>
-      
-                 
-                      </mat-tab-group> 
-      
+    
+        <div class="col-md-6">
+          <div class="input-group search_Sec">
+            <input type="text" class="form-control" placeholder="Search assets..." [(ngModel)]="searchText" (input)="applyFilters()">
+            
+            <div class="search_op" [matMenuTriggerFor]="filterMenu">
+              <mat-icon>filter_alt</mat-icon>
+            </div>
+            <mat-menu #filterMenu="matMenu" class="custom-filter-menu" backdropClass="glass-backdrop" hasBackdrop="true">
+              <div class="filter-dropdown-container" (click)="$event.stopPropagation()">
+                
+                <div class="filter-main-header d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="d-flex align-items-center">
+                      <div class="header-icon-badge me-3">
+                        <mat-icon class="text-primary">settings_input_component</mat-icon>
                       </div>
-       
-        
-           
-  
+                      <div>
+                        <span class="m-0 h6 font-weight-bold d-block">Report Designer</span>
+                        <small class="text-muted">Configure your view and save templates</small>
+                      </div>
+                    </div>
+                  </div>
+                  <button mat-icon-button (click)="$event.stopPropagation()" class="text-muted">
+                    <mat-icon>help_outline</mat-icon>
+                  </button>
+                </div>
+            
+                <div class="row m-0 p-3">
+                  <div class="col-md-3 filter-col border-right">
+                    <div class="section-wrapper h-100">
+                      
+                      <div class="col-header d-flex align-items-center mb-3">
+                        <mat-icon class="me-2 text-primary">filter_list</mat-icon> 
+                        <span class="fw-bold text-uppercase small">Data Controls</span>
+                      </div>
+                  
+                      <div class="filter-scroll-area main-scroll px-2">
+
+                        <div class="filter-section-card mb-4">
+                          <div class="category-header d-flex justify-content-between align-items-center" 
+                               (click)="toggleCategory('date_range')" 
+                               style="cursor: pointer;">
+                            <span>Date Range</span>
+                            <mat-icon class="expand-icon" [class.rotated]="expandedCategories['date_range']">expand_more</mat-icon>
+                          </div>
+                        
+                          <div class="filter-list p-2" *ngIf="expandedCategories['date_range']">
+                            <div class="date-input-group mb-2">
+                              <label class="extra-small text-muted">From</label>
+                              <input type="date" class="form-control form-control-sm" [(ngModel)]="startDate" (change)="applyFilters()">
+                            </div>
+                            
+                            <div class="date-input-group mb-2">
+                              <label class="extra-small text-muted">To</label>
+                              <input type="date" class="form-control form-control-sm" [(ngModel)]="endDate" (change)="applyFilters()">
+                            </div>
+                        
+                            <button mat-button color="warn" class="btn-xs w-100" *ngIf="startDate || endDate" (click)="clearDates()">
+                              Clear Dates
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div class="filter-section-card mb-4">
+                          <div class="section-title">Active Filters</div>
+                          
+                          <div *ngFor="let field of filterFields" class="category-block mb-2">
+                            <div class="category-header d-flex justify-content-between align-items-center" 
+                                 (click)="toggleCategory(field)" 
+                                 style="cursor: pointer;">
+                              <span>{{ field.replace('emp_', '').replace('_id', '').replace('_', ' ') | titlecase }}</span>
+                              <mat-icon class="expand-icon" [class.rotated]="expandedCategories[field]">
+                                expand_more
+                              </mat-icon>
+                            </div>
+                            
+                            <div class="filter-list" *ngIf="expandedCategories[field]">
+                              <div class="filter-item-row animate-slide-down" *ngFor="let val of getKeys(activeFilters[field])">
+                                <mat-checkbox color="primary" [(ngModel)]="activeFilters[field][val]" (change)="applyFilters()">
+                                  <span class="checkbox-text">{{ val | titlecase }}</span>
+                                </mat-checkbox>
+                              </div>
+                              
+                              <div *ngIf="getKeys(activeFilters[field]).length === 0" class="text-muted extra-small ps-3">
+                                No options available
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grouping-section-card">
+                          <div class="section-title">Organize By</div>
+                          <p class="text-muted extra-small mb-2">Click to set grouping hierarchy</p>
+                          
+                          <div class="group-pill-container d-flex flex-column gap-2">
+                            <button *ngFor="let field of fieldSettings | slice:0:6" 
+                                    class="group-pill-btn"
+                                    [class.is-active]="currentGroupBy.includes(field.key)"
+                                    (click)="setGroupBy(field.key)">
+                              
+                              <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                  <span *ngIf="currentGroupBy.includes(field.key)" class="group-rank">
+                                    {{ currentGroupBy.indexOf(field.key) + 1 }}
+                                  </span>
+                                  <span class="pill-label">{{ field.label }}</span>
+                                </div>
+                                <mat-icon *ngIf="currentGroupBy.includes(field.key)" class="check-icon">done</mat-icon>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+                  
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 filter-col border-left">
+                    <div class="section-wrapper">
+                      <div class="col-header d-flex justify-content-between">
+                        <span><mat-icon>view_column</mat-icon> COLUMN ORDER</span>
+                        <span class="badge-count">{{ fieldSettings.length }} Fields</span>
+                      </div>
+                  
+                      <div class="filter-scroll-area main-scroll" 
+                           cdkDropList 
+                           (cdkDropListDropped)="drop($event)">
+                        
+                        <div *ngFor="let field of fieldSettings" 
+                             class="field-item-card" 
+                             cdkDrag>
+                          
+                          <div class="d-flex align-items-center">
+                            <mat-icon cdkDragHandle class="drag-handle me-2">drag_indicator</mat-icon>
+                            
+                            <mat-checkbox color="primary" [(ngModel)]="field.visible">
+                              <span class="checkbox-label">{{ field.label }}</span>
+                            </mat-checkbox>
+                          </div>
+                  
+                          <div class="custom-placeholder" *cdkDragPlaceholder></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            
+                  <div class="col-md-5 filter-col border-left">
+                    <div class="section-wrapper">
+                      <div class="col-header"><mat-icon>history</mat-icon> SAVED TEMPLATES</div>
+                      <div class="saved-reports-container mb-3">
+                        <div *ngFor="let report of savedReports" class="saved-report-item" (click)="loadSavedReport(report)">
+                          <div class="report-info">
+                            <mat-icon class="file-icon">description</mat-icon>
+                            <div class="d-flex flex-column">
+                              <span class="report-name">{{ report.file_name }}</span>
+                              <small class="report-meta">Custom View</small>
+                            </div>
+                          </div>
+                          <button class="btn-load-report">
+                            <mat-icon>play_circle_outline</mat-icon>
+                          </button>
+                        </div>
+                        <div *ngIf="savedReports.length === 0" class="empty-state">
+                          <mat-icon>folder_off</mat-icon>
+                          <p>No templates saved yet</p>
+                        </div>
+                      </div>
+            
+                      <div class="save-card-modern">
+                        <div class="save-header">
+                          <mat-icon>add_box</mat-icon>
+                          <span>Save current view</span>
+                        </div>
+                        <div class="save-input-wrapper">
+                          <input type="text" class="clean-input" [(ngModel)]="customFileName" placeholder="Filename...">
+                          <button class="btn-save-confirm" (click)="saveCustomFile()">
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
     </div>
     
-
-
+    <div class="table-stats-bar px-4 d-flex justify-content-between align-items-center mt-4">
+      <div class="d-flex align-items-center gap-3">
+        <h3 class="m-0">Inventory List</h3>
+        <span class="badge badge-pill badge-light border">Records: {{ displayData.length }}</span>
+        <span class="badge badge-pill badge-info" *ngIf="currentGroupBy">Grouped by: {{ currentGroupBy }}</span>
+      </div>
+      <button class="btn btn-primary " 
+      *ngIf="currentGroupBy.length > 0 || searchText" 
+      (click)="resetToStandard()">
+<mat-icon>restart_alt</mat-icon> Reset View
+</button>
+      <button class="btn btn-success btn-sm" (click)="downloadExcel()">
+        <mat-icon>download</mat-icon> Export Excel
+      </button>
+    </div>
     
+    <div class="com_list px-4 mt-3">
+      <div class="table-responsive shadow-sm border rounded">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <ng-container *ngFor="let field of fieldSettings">
+                <th *ngIf="field.visible" class="text-uppercase small font-weight-bold">
+                  {{ field.label }}
+                </th>
+              </ng-container>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let group of groupedData">
+              
+              <tr class="group-header level-0" *ngIf="currentGroupBy.length > 0">
+                <td [attr.colspan]="visibleFieldsCount">
+                  <strong>{{ group.groupName }}</strong>
+                </td>
+              </tr>
+          
+              <ng-container *ngIf="currentGroupBy.length > 1">
+                <ng-container *ngFor="let sub of group.children">
+                  <tr class="group-header level-1">
+                    <td [attr.colspan]="visibleFieldsCount" style="padding-left: 30px;">
+                      <i>{{ sub.groupName }}</i>
+                    </td>
+                  </tr>
+                  <tr *ngFor="let item of sub.children">
+                    <td *ngFor="let f of fieldSettings" [hidden]="!f.visible">{{item[f.key] || '-'}}</td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+          
+              <ng-container *ngIf="currentGroupBy.length <= 1">
+                <tr *ngFor="let item of group.children">
+                  <td *ngFor="let f of fieldSettings" [hidden]="!f.visible">{{item[f.key] || '-'}}</td>
+                </tr>
+              </ng-container>
+          
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+
+
+  
 
 
 </div>
