@@ -1463,6 +1463,20 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   }
 
+  //   getAssetNotify(selectedSchema: string): Observable<any> {
+
+  //   // const url = `${this.baseUrl}/notification/`;
+  //   // return this.http.get(url);
+
+  //   const apiUrl = `${this.apiUrl}/calendars/api/leave-ApprovalNotify/?schema=${selectedSchema}`;
+
+  //   // Fetch employees from the API
+  //   return this.http.get(apiUrl);
+
+
+
+  // }
+
 
   getLeaveGeneralReqNot(selectedSchema: string): Observable<any> {
 
@@ -1520,14 +1534,24 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
   }
 
 
-  markAsRead(selectedSchema: number) {
-  return this.http.post(
-    `${this.baseUrl}/payroll/api/loan-notification/${selectedSchema}/mark-read/`,
-    {},
-    { params: { schema: this.selectedSchema } }
-  );
-}
+// markAsReadByType(type: string, id: number, schema: string): Observable<any> {
+//   const apiMap: { [key: string]: string } = {
+//     document: `${this.apiUrl}/employee/api/notification/${id}/mark-read/`,
+//     leave: `${this.apiUrl}/calendars/api/leave-ApprovalNotify/${id}/mark-read/`,
+//     general: `${this.apiUrl}/employee/api/request-notifications/${id}/mark-read/`,
+//     docrequest: `${this.apiUrl}/employee/api/Doc-request-noification/${id}/mark-read/`,
+//     loanrequest: `${this.apiUrl}/payroll/api/loan-notification/${id}/mark-read/`,
+//     advancesalaryrequest: `${this.apiUrl}/payroll/api/advance-salary-notification/${id}/mark-read/`
+//   };
 
+//   const url = apiMap[type];
+
+//   if (!url) {
+//     throw new Error(`Unknown notification type: ${type}`);
+//   }
+
+//   return this.http.post(url, {}, { params: { schema } });
+// }
 
 
 

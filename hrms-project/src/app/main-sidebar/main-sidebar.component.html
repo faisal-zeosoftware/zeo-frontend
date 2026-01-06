@@ -79,6 +79,10 @@
         </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/shift-options"> Shift Management</span></span>
       </a>
 
+      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple" *ngIf="!hideButton" routerLink="/main-sidebar/report-options/report-generate" (click)="onToolbarMenuToggle()">
+        <span><mat-icon>stacked_bar_chart</mat-icon> <span class="sidenav-opt" >Report Management</span></span>
+      </a>
+
       <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple" *ngIf="!hideButton" routerLink="/main-sidebar/settings/branch-master" (click)="onToolbarMenuToggle()">
         <span><mat-icon>settings</mat-icon> <span class="sidenav-opt" > Settings</span></span>
       </a>
@@ -180,6 +184,7 @@
               <strong *ngIf="noti.type === 'general'">📢 General Request</strong>
               <strong *ngIf="noti.type === 'docrequest'">🗂️ Document Request</strong>
               <strong *ngIf="noti.type === 'loanrequest'">💰 Loan Request</strong>
+              <strong *ngIf="noti.type === 'assetrequest'">🧰 Asset Request</strong>
               <strong *ngIf="noti.type === 'advancesalaryrequest'">💵 Advance Salary Request</strong>
               <div class="text-muted small">
                 {{ noti.created_at | date: 'medium' }}

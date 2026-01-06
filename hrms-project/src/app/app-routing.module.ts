@@ -43,11 +43,6 @@ import { AssignHolidayCalendarComponent } from './assign-holiday-calendar/assign
 import { LeaveOptionsComponent } from './leave-options/leave-options.component';
 import { LeaveTypeComponent } from './leave-type/leave-type.component';
 import { LeaveMasterComponent } from './leave-master/leave-master.component';
-import { ReportGenerateComponent } from './report-generate/report-generate.component';
-import { DocumentReportComponent } from './document-report/document-report.component';
-import { GeneralRequestReportComponent } from './general-request-report/general-request-report.component';
-import { DepartmentReportComponent } from './department-report/department-report.component';
-import { DesignationReportComponent } from './designation-report/designation-report.component';
 import { FromDesignerComponent } from './from-designer/from-designer.component';
 import { ApprovalLevelComponent } from './approval-level/approval-level.component';
 import { ApprovalsComponent } from './approvals/approvals.component';
@@ -59,7 +54,6 @@ import { LeaveApprovalsComponent } from './leave-approvals/leave-approvals.compo
 import { CompensatoryLeaveComponent } from './compensatory-leave/compensatory-leave.component';
 import { EmailTemplateComponent } from './email-template/email-template.component';
 import { CompanyPolicyComponent } from './company-policy/company-policy.component';
-import { LeaveReportComponent } from './leave-report/leave-report.component';
 import { EmployeeApprovalsComponent } from './employee-approvals/employee-approvals.component';
 import { EmployeeLeaveComponent } from './employee-leave/employee-leave.component';
 import { DashboardContentsComponent } from './dashboard-contents/dashboard-contents.component';
@@ -70,22 +64,18 @@ import { SalaryOptionsComponent } from './salary-options/salary-options.componen
 import { LeaveBalanceComponent } from './leave-balance/leave-balance.component';
 import { EmailConfigurationComponent } from './email-configuration/email-configuration.component';
 import { ImmediateRejectionComponent } from './immediate-rejection/immediate-rejection.component';
-import { LeaveApprovalsReportComponent } from './leave-approvals-report/leave-approvals-report.component';
 import { EmployeeLeaveRejoinComponent } from './employee-leave-rejoin/employee-leave-rejoin.component';
 import { DocExpEmailtemplateComponent } from './doc-exp-emailtemplate/doc-exp-emailtemplate.component';
 import { NotificationSettingsComponent } from './notification-settings/notification-settings.component';
 import { LeaveAccruvalComponent } from './leave-accruval/leave-accruval.component';
 import { EmployeeOvertimeComponent } from './employee-overtime/employee-overtime.component';
-import { EmployeeAttendanceComponent } from './employee-attendance/employee-attendance.component';
 import { LoanSidebarComponent } from './loan-sidebar/loan-sidebar.component';
 import { LoanTypeComponent } from './loan-type/loan-type.component';
 import { LoanApplicationComponent } from './loan-application/loan-application.component';
 import { LoanRepaymentComponent } from './loan-repayment/loan-repayment.component';
 import { LoanApprovelLevelComponent } from './loan-approvel-level/loan-approvel-level.component';
 import { LoanApprovalComponent } from './loan-approval/loan-approval.component';
-import { LeaveBalanceReportComponent } from './leave-balance-report/leave-balance-report.component';
 import { AnnouncementMasterComponent } from './announcement-master/announcement-master.component';
-
 import { AssetOptionsComponent } from './asset-options/asset-options.component';
 import { AssetTypesComponent } from './asset-types/asset-types.component';
 import { AssetMasterComponent } from './asset-master/asset-master.component';
@@ -93,12 +83,9 @@ import { AssetApprovelLevelComponent } from './asset-approvel-level/asset-approv
 import { AssetAllocationComponent } from './asset-allocation/asset-allocation.component';
 import { AssetRequestComponent } from './asset-request/asset-request.component';
 import { AssetUdfComponent } from './asset-udf/asset-udf.component';
-
 import { PayrollAppovalLevelComponent } from './payroll-appoval-level/payroll-appoval-level.component';
 import { PayslipApprovalComponent } from './payslip-approval/payslip-approval.component';
 import { WpsComponent } from './wps/wps.component';
-import { AssetReportComponent } from './asset-report/asset-report.component';
-import { AssetTransactionReportComponent } from './asset-transaction-report/asset-transaction-report.component';
 import { DocumentRequestLevelComponent } from './document-request-level/document-request-level.component';
 import { DocumentRequestComponent } from './document-request/document-request.component';
 import { DocumentRequestApprovalsComponent } from './document-request-approvals/document-request-approvals.component';
@@ -149,6 +136,19 @@ import { LoanEscalationComponent } from './loan-escalation/loan-escalation.compo
 import { AirticketEscalationComponent } from './airticket-escalation/airticket-escalation.component';
 import { AssetEscalationComponent } from './asset-escalation/asset-escalation.component';
 import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
+
+import { ReportOptionsComponent } from './report-options/report-options.component';
+import { ReportGenerateComponent } from './report-generate/report-generate.component';
+import { DocumentReportComponent } from './document-report/document-report.component';
+import { GeneralRequestReportComponent } from './general-request-report/general-request-report.component';
+import { DepartmentReportComponent } from './department-report/department-report.component';
+import { DesignationReportComponent } from './designation-report/designation-report.component';
+import { LeaveReportComponent } from './leave-report/leave-report.component';
+import { LeaveApprovalsReportComponent } from './leave-approvals-report/leave-approvals-report.component';
+import { LeaveBalanceReportComponent } from './leave-balance-report/leave-balance-report.component';
+import { AssetReportComponent } from './asset-report/asset-report.component';
+import { AssetTransactionReportComponent } from './asset-transaction-report/asset-transaction-report.component';
+import { EmployeeAttendanceComponent } from './employee-attendance/employee-attendance.component';
 
 
 const routes: Routes = [
@@ -347,46 +347,46 @@ const routes: Routes = [
             component:ShiftsComponent
           },
 
-          {
-            path:'report-generate',
-            component:ReportGenerateComponent,
-          },
-          {
-            path:'document-report',
-            component:DocumentReportComponent,
-          },
-          {
-            path:'general-request-report',
-            component:GeneralRequestReportComponent
-          },
-          {
-            path:'department-report',
-            component:DepartmentReportComponent
-          },
-          {
-            path:'designation-report',
-            component:DesignationReportComponent
-          },
-          {
-            path:'leave-approvals-report',
-            component:LeaveApprovalsReportComponent
-          },
-          {
-            path:'leave-balance-report',
-            component:LeaveBalanceReportComponent
-          },
-          {
-            path:'employee-attendance',
-            component:EmployeeAttendanceComponent
-          },
-          {
-            path:'asset-report',
-            component:AssetReportComponent
-          },
-          {
-            path:'asset-transaction-report',
-            component:AssetTransactionReportComponent
-          },
+          // {
+          //   path:'report-generate',
+          //   component:ReportGenerateComponent,
+          // },
+          // {
+          //   path:'document-report',
+          //   component:DocumentReportComponent,
+          // },
+          // {
+          //   path:'general-request-report',
+          //   component:GeneralRequestReportComponent
+          // },
+          // {
+          //   path:'department-report',
+          //   component:DepartmentReportComponent
+          // },
+          // {
+          //   path:'designation-report',
+          //   component:DesignationReportComponent
+          // },
+          // {
+          //   path:'leave-approvals-report',
+          //   component:LeaveApprovalsReportComponent
+          // },
+          // {
+          //   path:'leave-balance-report',
+          //   component:LeaveBalanceReportComponent
+          // },
+          // {
+          //   path:'employee-attendance',
+          //   component:EmployeeAttendanceComponent
+          // },
+          // {
+          //   path:'asset-report',
+          //   component:AssetReportComponent
+          // },
+          // {
+          //   path:'asset-transaction-report',
+          //   component:AssetTransactionReportComponent
+          // },
           {
             path:'from-designer',
             component:FromDesignerComponent
@@ -466,12 +466,6 @@ const routes: Routes = [
             path:'company-policy',
             component:CompanyPolicyComponent
           },
-          {
-            path:'leave-report',
-            component:LeaveReportComponent
-          },
-
-           
 
         ],
       },
@@ -775,6 +769,63 @@ const routes: Routes = [
   ]
 
 },
+
+{
+  path: 'report-options',
+  component: ReportOptionsComponent,
+  children:[
+   
+          {
+            path:'report-generate',
+            component:ReportGenerateComponent,
+          },
+          {
+            path:'document-report',
+            component:DocumentReportComponent,
+          },
+          {
+            path:'general-request-report',
+            component:GeneralRequestReportComponent,
+          },
+          {
+            path:'department-report',
+            component:DepartmentReportComponent,
+          },
+          {
+            path:'designation-report',
+            component:DesignationReportComponent,
+          },
+          {
+            path:'leave-report',
+            component:LeaveReportComponent
+          },
+          {
+            path:'leave-approvals-report',
+            component:LeaveApprovalsReportComponent,
+          },
+          {
+            path:'leave-balance-report',
+            component:LeaveBalanceReportComponent,
+          },
+          {
+            path:'employee-attendance',
+            component:EmployeeAttendanceComponent,
+          },
+          {
+            path:'asset-report',
+            component:AssetReportComponent,
+          },
+          {
+            path:'asset-transaction-report',
+            component:AssetTransactionReportComponent,
+          },
+    
+
+
+  ]
+
+},
+
 {
   path: 'document-folders',
   component: DocumentFoldersComponent,

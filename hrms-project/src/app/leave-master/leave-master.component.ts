@@ -595,6 +595,7 @@ updateLeavetype(): void {
         console.log('Registration successful', response);
         alert('Leave Entitlement has been added');
         this.loadLeaveEntitlements();
+        window.location.reload();
       },
       (error) => {
         console.error('Added failed', error);
@@ -632,7 +633,7 @@ updateLeavetype(): void {
       (response) => {
         console.log('Registration successful', response);
         alert('Leave Reset has been added');
-        // window.location.reload();
+        window.location.reload();
       },
       (error) => {
         console.error('Added failed', error);

@@ -1,0 +1,94 @@
+
+
+
+<div class="sub-sidebar clickOutside">
+
+
+    <mat-sidenav-container>
+      <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
+  
+        <div class="wrapper">
+
+           <div class="sidebar-top"> 
+           <!-- Toggle Button (placed OUTSIDE sidebar) -->
+    <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
+      <span *ngIf="!isMenuOpen">☰</span>
+      <span *ngIf="isMenuOpen">×</span>
+    </button>
+    
+        </div>
+              
+  
+
+
+
+          <div class="sidebar"  [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+              <ul>
+                
+                <li routerLink="/main-sidebar/report-options/report-generate" *ngIf="hasViewPermissionEmployeeReports"><a><mat-icon>receipt_long</mat-icon> Employees Report</a></li>
+               
+                <li routerLink="/main-sidebar/report-options/general-request-report" *ngIf="hasViewPermissionGeneralReport"><a><mat-icon>receipt_long</mat-icon> General Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/document-report" *ngIf="hasViewPermissionDocumentReports"><a><mat-icon>receipt_long</mat-icon> Document Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/department-report" *ngIf="hasViewPermissionDepartmentReport"><a><mat-icon>receipt_long</mat-icon> Department Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/designation-report" *ngIf="hasViewPermissionDesignationReport"><a><mat-icon>receipt_long</mat-icon> Designation Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/leave-report" *ngIf="hasViewPermissionLeaveReport"><a><mat-icon>receipt_long</mat-icon> Leave Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/leave-approvals-report" *ngIf="hasViewPermissionLeaveApprovalReport"><a><mat-icon>receipt_long</mat-icon> Leave Approvals Report</a></li>
+               
+                <li routerLink="/main-sidebar/report-options/leave-balance-report" *ngIf="hasViewPermissionLeaveBalanceReport"><a><mat-icon>receipt_long</mat-icon> Leave Balance Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/asset-report" *ngIf="hasViewPermissionAssetReport"><a><mat-icon>receipt_long</mat-icon> Asset Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/asset-transaction-report" *ngIf="hasViewPermissionAssetTransactionReport"><a><mat-icon>receipt_long</mat-icon> Asset Transaction Report</a></li>
+
+                <li routerLink="/main-sidebar/report-options/employee-attendance" *ngIf="hasViewPermissionEmployeeAttendance"><a><mat-icon>receipt_long</mat-icon> Employee Attendance</a></li>
+
+                  <mat-nav-list>
+     
+  
+  
+                    <div>
+            
+            
+                 
+                    </div>
+                    <style>
+                      .mat-expansion-panel-body {
+                        padding: 0 0px 16px !important;
+                      }
+                      .mat-expansion-panel{
+                background: transparent;
+               
+              }
+                    </style>
+            
+                  </mat-nav-list>
+                   
+              </ul> 
+  
+                   
+   
+          </div>
+    
+      </div>
+   
+  
+  
+  
+  
+  
+  
+      </mat-sidenav>
+  
+  
+      <router-outlet></router-outlet>
+  
+      <!-- <router-outlet></router-outlet> -->
+  
+    </mat-sidenav-container>
+  
+  </div>

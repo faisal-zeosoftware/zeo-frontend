@@ -227,6 +227,7 @@ import { LoanEscalationComponent } from './loan-escalation/loan-escalation.compo
 import { AirticketEscalationComponent } from './airticket-escalation/airticket-escalation.component';
 import { AssetEscalationComponent } from './asset-escalation/asset-escalation.component';
 import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
+import { ReportOptionsComponent } from './report-options/report-options.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -412,7 +413,8 @@ import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.co
      LoanEscalationComponent,
      AirticketEscalationComponent,
      AssetEscalationComponent,
-     LeaveEscalationComponent
+     LeaveEscalationComponent,
+     ReportOptionsComponent
      
      
 

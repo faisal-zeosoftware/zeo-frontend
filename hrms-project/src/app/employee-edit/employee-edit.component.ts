@@ -355,7 +355,7 @@ updateEmp(): void {
   safeAppend('emp_branch_id', this.Emp.emp_branch_id);
 
   safeAppend('emp_relegion', this.Emp.emp_relegion);
-    formData.append('emp_nationality', this.Emp.emp_nationality);
+  formData.append('emp_nationality', this.Emp.emp_nationality);
 
   safeAppend('emp_dept_id', this.Emp.emp_dept_id);
   safeAppend('emp_desgntn_id', this.Emp.emp_desgntn_id);
@@ -363,6 +363,9 @@ updateEmp(): void {
 
   safeAppend('emp_date_of_confirmation', formatDate(this.Emp.emp_date_of_confirmation));
   safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));
+  safeAppend('work_location', this.Emp.work_location);
+  safeAppend('visa_location', this.Emp.visa_location);
+  safeAppend('person_id', this.Emp.person_id);
 
   // ✅ Boolean values as 1/0
   safeAppend('is_ess', this.Emp.is_ess ? '1' : '0');
@@ -382,7 +385,7 @@ updateEmp(): void {
       //   width: '300px',
       //   data: { message: 'Employee updated successfully!' }
       // });
-      window.location.reload();
+      // window.location.reload();
     },
     (error) => {
       console.error('Error updating employee:', error);

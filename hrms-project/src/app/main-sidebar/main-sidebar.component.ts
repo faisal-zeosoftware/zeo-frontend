@@ -27,6 +27,7 @@ export class MainSidebarComponent {
 
   Documents: any[] = []; // store expired document notifications
   // 🔔 Notification Arrays
+  AssetNot: any[] = [];
   LeaveNot: any[] = [];
   GeneralReqNot: any[] = [];
   DocReqNot: any[] = [];
@@ -145,6 +146,7 @@ export class MainSidebarComponent {
   this.loadDocumentReqNotifications(selectedSchema);
   this.loadLoanReqNotifications(selectedSchema);
   this.loadAdvancesalaryReqNotifications(selectedSchema);
+  // this.loadAssetNotifications(selectedSchema);
 }
 
 
@@ -185,6 +187,28 @@ loadLeaveNotifications(selectedSchema: string): void {
     }
   });
 }
+
+
+
+// ✅ Asset Notifications
+// loadAssetNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getAssetNotify(selectedSchema).subscribe({
+//     next: (assets: any) => {
+//       this.AssetNot = Array.isArray(assets)
+//         ? assets
+//             .filter((item: any) => item.message?.toLowerCase().includes('asset'))
+//             .map((item) => ({ ...item, type: 'asset', highlighted: false }))
+//         : [];
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading Asset request notifications:', err);
+//       this.AssetNot = [];
+//       this.combineNotifications();
+//     },
+//   });
+// }
+
 
 // ✅ General Request Notifications
 loadGeneralReqNotifications(selectedSchema: string): void {
@@ -262,26 +286,42 @@ loadAdvancesalaryReqNotifications(selectedSchema: string): void {
   });
 }
 
-// ✅ Combine & Sort all notifications
 combineNotifications(): void {
-  this.AllNotifications = [
-    ...this.Documents,
-    ...this.LeaveNot,
-    ...this.GeneralReqNot,
-    ...this.DocReqNot,
-    ...this.LoanReqNot,
-    ...this.AdvancesalaryReqNot
-  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  // Load previously read notifications from localStorage
+  const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
+
+  const allItems = [
+    ...this.Documents.map(item => ({ ...item, type: 'document' as const, highlighted: false })),
+    ...this.LeaveNot.map(item => ({ ...item, type: 'leave' as const, highlighted: false })),
+    // ...this.AssetNot.map(item => ({ ...item, type: 'asset' as const, highlighted: false })),
+    ...this.GeneralReqNot.map(item => ({ ...item, type: 'general' as const, highlighted: false })),
+    ...this.DocReqNot.map(item => ({ ...item, type: 'docrequest' as const, highlighted: false })),
+    ...this.LoanReqNot.map(item => ({ ...item, type: 'loanrequest' as const, highlighted: false })),
+    ...this.AdvancesalaryReqNot.map(item => ({ ...item, type: 'advancesalaryrequest' as const, highlighted: false }))
+  ];
+
+  this.AllNotifications = allItems
+    .filter(noti => {
+      // Hide if already marked as read in localStorage
+      const notiKey = `${noti.type}-${noti.id}`;
+      if (readNotifications[notiKey]) {
+        return false;
+      }
+      // Also hide if backend says is_read: true
+      return noti.is_read === false || noti.is_read == null;
+    })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   this.notificationCount = this.AllNotifications.length;
 }
-
 // ✅ Handle click with flash + redirect
 
 onNotificationClick(noti: any): void {
+  // Flash effect
   noti.highlighted = true;
   setTimeout(() => (noti.highlighted = false), 1000);
 
+  // Navigate
   switch (noti.type) {
     case 'document':
       this.router.navigate(['/main-sidebar/sub-sidebar/document-expired']);
@@ -289,6 +329,9 @@ onNotificationClick(noti: any): void {
     case 'leave':
       this.router.navigate(['/main-sidebar/leave-options/leave-approvals']);
       break;
+    // case 'asset':
+    //   this.router.navigate(['/main-sidebar/asset-options/asset-approval']);
+    //   break;
     case 'general':
       this.router.navigate(['/main-sidebar/sub-sidebar/approvals']);
       break;
@@ -302,35 +345,31 @@ onNotificationClick(noti: any): void {
       this.router.navigate(['/main-sidebar/salary-options/advance-salary-approvals']);
       break;
     default:
-      console.warn('⚠️ Unknown notification type:', noti.type);
+      return;
   }
 
+  // Unique key for this notification (type + id) because IDs may overlap across types
+  const notiKey = `${noti.type}-${noti.id}`;
+
+  // Save to localStorage as "read"
+  const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
+  readNotifications[notiKey] = true;
+  localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+  // Remove from UI
+  this.AllNotifications = this.AllNotifications.filter(n => n !== noti);
+  this.notificationCount = this.AllNotifications.length;
+}
 
 
-  // Optimistic UI update
-  this.AllNotifications = this.AllNotifications.filter(n => n.id !== noti.id);
-  this.notificationCount--;
+// Optional: Clean up old entries (run once on app start)
+private cleanupOldReadNotifications(): void {
+  const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
+  const now = Date.now();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
-  this.EmployeeService.markAsRead(noti.id).subscribe();
-
-
-    // 1️⃣ Call API
-  this.EmployeeService.markAsRead(noti.id).subscribe(() => {
-
-    // 2️⃣ Remove from UI
-    this.AllNotifications = this.AllNotifications.filter(
-      n => n.id !== noti.id
-    );
-
-    // 3️⃣ Update badge count
-    this.notificationCount = this.AllNotifications.length;
-
-  });
-
-  // // 4️⃣ (Optional) Navigate based on type
-  // if (noti.type === 'loanrequest') {
-  //   this.router.navigate(['/employee/loan']);
-  // }
+  // You'd need to store timestamp too — or skip if not needed
+  // For now, just keep it simple
 }
 
 selectSchema(event: any) {
