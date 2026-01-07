@@ -3,17 +3,24 @@
   <div class="comapny_section" >
     <div class="header_section">
       <div class="row align-items-center px-4">
-        <div class="col-md-3">
-          <h1 class="page-title">Asset Reports</h1>
+        <div class="col-md-4">
+          <h1 class="page-title">Asset Transaction Reports</h1>
         </div>
     
         <div class="col-md-6">
-          <div class="input-group search_Sec">
-            <input type="text" class="form-control" placeholder="Search assets..." [(ngModel)]="searchText" (input)="applyFilters()">
-            
-            <div class="search_op" [matMenuTriggerFor]="filterMenu">
-              <mat-icon>filter_alt</mat-icon>
-            </div>
+          <div class="search-container-modern">
+            <mat-icon class="search-main-icon">search</mat-icon>
+        
+            <input type="text" 
+                   class="search-input-field" 
+                   placeholder="Search assets, branches, or conditions..." 
+                   [(ngModel)]="searchText" 
+                   (input)="applyFilters()">
+        
+            <button class="filter-trigger-btn" [matMenuTriggerFor]="filterMenu" matRipple>
+              <mat-icon>tune</mat-icon>
+              <span class="filter-text">Filters</span>
+            </button>
             <mat-menu #filterMenu="matMenu" class="custom-filter-menu" backdropClass="glass-backdrop" hasBackdrop="true">
               <div class="filter-dropdown-container" (click)="$event.stopPropagation()">
                 
@@ -214,16 +221,17 @@
       <div class="d-flex align-items-center gap-3">
         <h3 class="m-0">Inventory List</h3>
         <span class="badge badge-pill badge-light border">Records: {{ displayData.length }}</span>
-        <span class="badge badge-pill badge-info" *ngIf="currentGroupBy">Grouped by: {{ currentGroupBy }}</span>
+        <!-- <span class="badge badge-pill badge-info" *ngIf="currentGroupBy">Grouped by: {{ currentGroupBy }}</span> -->
       </div>
       <button class="btn btn-primary " 
       *ngIf="currentGroupBy.length > 0 || searchText" 
       (click)="resetToStandard()">
 <mat-icon>restart_alt</mat-icon> Reset View
 </button>
-      <button class="btn btn-success btn-sm" (click)="downloadExcel()">
-        <mat-icon>download</mat-icon> Export Excel
-      </button>
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadExcel()">
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
     </div>
     
     <div class="com_list px-4 mt-3">

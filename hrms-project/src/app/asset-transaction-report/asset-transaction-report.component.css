@@ -1289,3 +1289,113 @@ cursor: grabbing;
 .btn-delete-report:hover mat-icon {
   color: #dc3545; /* Deeper red on hover */
 }
+
+
+
+/* Container styling */
+.search-container-modern {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 4px 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.search-container-modern:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Main Search Icon (Left) */
+.search-main-icon {
+  color: #94a3b8;
+  margin-left: 8px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Input Field */
+.search-input-field {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #334155;
+  background: transparent;
+}
+
+.search-input-field::placeholder {
+  color: #94a3b8;
+}
+
+/* Filter Button (Right) */
+.filter-trigger-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.filter-trigger-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.filter-trigger-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+
+/* Active State when Menu is Open */
+.filter-trigger-btn:active, 
+.filter-trigger-btn.mat-menu-opened {
+  background: #eff6ff;
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* Glass Backdrop for Menu */
+.glass-backdrop {
+  background: rgba(15, 23, 42, 0.15);
+  backdrop-filter: blur(4px);
+}
+
+.btn-export-excel {
+  display: inline-flex;
+  align-items: center;  /* Vertical centering */
+  justify-content: center;
+  gap: 8px;            /* Precise spacing between icon and text */
+  padding: 6px 16px;   /* Standardized padding */
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+}
+
+.btn-export-excel mat-icon {
+  margin: 0;           /* Remove default margins */
+  font-size: 18px;     /* Match the small button scale */
+  width: 18px;         /* Match font-size to prevent layout shift */
+  height: 18px;
+  line-height: 18px;   /* Forces icon to sit exactly in the middle */
+}
+
+/* Optional: Slight hover lift for a modern feel */
+.btn-export-excel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+}
