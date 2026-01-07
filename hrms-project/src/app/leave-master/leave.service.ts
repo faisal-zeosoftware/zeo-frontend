@@ -1347,8 +1347,68 @@ deleteAssetReport(reportId: number): Observable<any> {
 // }
 
 
+// employee report
 
 
+getAvailableFieldsempreport(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/emp-report/select_employee_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+
+getEmpReportReport(): Observable<any[]> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/employee/api/emp-report/?schema=${selectedSchema}`;
+  return this.http.get<any[]>(apiUrl);
+}
+
+
+deleteEmpReport(reportId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  // Adjust the URL to match your Django/Backend URL pattern
+  const apiUrl = `${this.apiUrl}/employee/api/emp-report/${reportId}/?schema=${selectedSchema}`;
+  
+  return this.http.delete(apiUrl);
+}
+
+
+
+
+// general request report
+
+
+getAvailableFieldsGeneralRequest(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/report-general-request/select_generalreport_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+
+getGenRequestReport(): Observable<any[]> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/employee/api/report-general-request/?schema=${selectedSchema}`;
+  return this.http.get<any[]>(apiUrl);
+}
+
+
+deleteGenReqReport(reportId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  // Adjust the URL to match your Django/Backend URL pattern
+  const apiUrl = `${this.apiUrl}/employee/api/report-general-request/${reportId}/?schema=${selectedSchema}`;
+  
+  return this.http.delete(apiUrl);
+}
 
 
 }
