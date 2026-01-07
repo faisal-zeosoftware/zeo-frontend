@@ -412,4 +412,29 @@ clearDates() {
 }
 
 
+deleteReport(report: any, event: Event) {
+  event.stopPropagation(); // Stop from loading the report when clicking delete
+
+  // STRICT CONDITION: Block if ID is 1 or Name is std_report
+  if (report.id === 1 || report.file_name === 'assetTransaction_std_report') {
+    // You can use a snackbar or toast here instead of alert
+    alert("Permission Denied: The Standard Report is a system requirement and cannot be deleted.");
+    return;
+  }
+
+  // Proceed with deletion for all other IDs
+  if (confirm(`Are you sure you want to delete "${report.file_name}"?`)) {
+    this.isLoading = true;
+    this.leaveService.deleteAssetReport(report.id).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.fetchSavedReportsList(); // Refresh list
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error("Delete failed", err);
+      }
+    });
+  }
+}
 }

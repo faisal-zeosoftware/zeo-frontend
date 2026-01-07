@@ -97,7 +97,7 @@
                           </div>
                         </div>
                         <div class="grouping-section-card">
-                          <div class="section-title">Organize By</div>
+                          <div class="section-title">Grouped By</div>
                           <p class="text-muted extra-small mb-2">Click to set grouping hierarchy</p>
                           
                           <div class="group-pill-container d-flex flex-column gap-2">
@@ -155,17 +155,32 @@
                     <div class="section-wrapper">
                       <div class="col-header"><mat-icon>history</mat-icon> SAVED TEMPLATES</div>
                       <div class="saved-reports-container mb-3">
-                        <div *ngFor="let report of savedReports" class="saved-report-item" (click)="loadSavedReport(report)">
-                          <div class="report-info">
-                            <mat-icon class="file-icon">description</mat-icon>
+                        <div *ngFor="let report of savedReports" class="saved-report-item">
+                          <div class="report-info w-100" (click)="loadSavedReport(report)">
+                            <mat-icon class="file-icon" [class.text-primary]="report.id === 1">
+                              {{ report.id === 1 ? 'verified_user' : 'description' }}
+                            </mat-icon>
                             <div class="d-flex flex-column">
-                              <span class="report-name">{{ report.file_name }}</span>
-                              <small class="report-meta">Custom View</small>
+                              <span class="report-name" [class.font-weight-bold]="report.id === 1">
+                                {{ report.file_name }}
+                              </span>
+                              <small class="report-meta">
+                                {{ report.id === 1 ? 'System Default (Protected)' : 'Custom View' }}
+                              </small>
                             </div>
                           </div>
-                          <button class="btn-load-report">
-                            <mat-icon>play_circle_outline</mat-icon>
-                          </button>
+                        
+                          <div class="report-actions d-flex align-items-center">
+                            <button class="btn-load-report" (click)="loadSavedReport(report)">
+                              <mat-icon>play_circle_outline</mat-icon>
+                            </button>
+                        
+                            <button *ngIf="report.id !== 1 && report.file_name !== 'std_report'" 
+                                    class="btn-delete-report ms-2" 
+                                    (click)="deleteReport(report, $event)">
+                              <mat-icon color="warn">delete_outline</mat-icon>
+                            </button>
+                          </div>
                         </div>
                         <div *ngIf="savedReports.length === 0" class="empty-state">
                           <mat-icon>folder_off</mat-icon>

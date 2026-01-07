@@ -590,7 +590,7 @@ background: #f4eff3;
 color: #714b67;
 }
 
-.saved-report-item mat-icon { font-size: 16px; width: 16px; height: 16px; }
+.saved-report-item mat-icon { font-size: 16px; width: 17px; height: 17px; }
 
 /* Table Aesthetics */
 .page-title { font-weight: 800; color: #333; font-size: 1.5rem; }
@@ -1248,3 +1248,44 @@ cursor: grabbing;
 }
 
 
+.btn-delete-report {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: all 0.2s;
+  color: #ef4444; /* Red color */
+}
+
+.btn-delete-report:hover {
+  background: #fee2e2;
+  transform: scale(1.1);
+}
+
+/* Optional: Subtle indicator for System reports */
+.report-meta {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.saved-report-item:hover {
+  background-color: #f8fafc;
+}
+
+
+/* Style for the protected standard report */
+.saved-report-item:has(.text-primary) {
+  border-left: 3px solid #3b82f6;
+  background-color: #f0f7ff;
+}
+
+.btn-delete-report mat-icon {
+  font-size: 20px;
+}
+
+.btn-delete-report:hover mat-icon {
+  color: #dc3545; /* Deeper red on hover */
+}

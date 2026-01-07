@@ -1332,6 +1332,13 @@ getAvailableFieldsAssetTransaction(): Observable<any> {
   return this.http.get<any>(apiUrl);
 }
 
+deleteAssetReport(reportId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  // Adjust the URL to match your Django/Backend URL pattern
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-transaction-report/${reportId}/?schema=${selectedSchema}`;
+  
+  return this.http.delete(apiUrl);
+}
 
 // saveCustomReportAssetTransaction(payload: any): Observable<any> {
 //   const selectedSchema = localStorage.getItem('selectedSchema');
