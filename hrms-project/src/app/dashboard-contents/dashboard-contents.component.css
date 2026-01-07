@@ -691,6 +691,61 @@ input:focus-visible {
   padding: 20px 0;
 }
 
+
+.avatar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* Normal avatar */
+.avatar {
+  background: #e0e7ff;
+  color: #2d3a8c;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: default;
+}
+
+.avatar-member-avatar{
+
+background: #fbc17b;
+  color: #d97706;
+
+}
+
+/* Member avatar */
+.member-avatar {
+  background: #ffe8cc;
+  color: #d97706;
+}
+
+/* +N avatar */
+.more-avatar {
+  background: #5c1e81;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.more-avatar:hover {
+  transform: scale(1.1);
+}
+
+/* Optional separate color */
+.member-more {
+  background: #ef6c00;
+}
+
+
 @media (max-width: 768px) {
   .announcement-card {
     padding: 15px;

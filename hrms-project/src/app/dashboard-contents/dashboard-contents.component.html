@@ -226,18 +226,72 @@
                         </a>
                       </div>
         
-                      <!-- 🧑‍💼 Project Managers & Members -->
-                      <div class="project-team mt-3">
-                        <h6><mat-icon>manage_accounts</mat-icon> Managers</h6>
-                        <div class="avatar-group">
-                          <span *ngFor="let manager of project.managers" class="avatar">{{ manager }}</span>
-                        </div>
-        
-                        <h6 class="mt-3"><mat-icon>group</mat-icon> Members</h6>
-                        <div class="avatar-group">
-                          <span *ngFor="let member of project.members" class="avatar member-avatar">{{ member }}</span>
-                        </div>
-                      </div>
+<!-- 🧑‍💼 Project Managers & Members -->
+<div class="project-team mt-3">
+
+  <!-- Managers -->
+  <h6>
+    <mat-icon>manage_accounts</mat-icon> Managers
+  </h6>
+
+  <div class="avatar-group">
+
+    <!-- Managers list -->
+    <ng-container *ngFor="let manager of getVisibleManagers(project)">
+      <span class="avatar">{{ manager }}</span>
+    </ng-container>
+
+    <!-- +N (collapsed state only) -->
+    <span
+      *ngIf="!project.showAllManagers && project.managers.length > maxAvatars"
+      class="avatar more-avatar"
+      (click)="toggleManagers(project)">
+      +{{ project.managers.length - maxAvatars }}
+    </span>
+
+    <!-- -N (expanded state only, at END) -->
+    <span
+      *ngIf="project.showAllManagers && project.managers.length > maxAvatars"
+      class="avatar more-avatar collapse-avatar"
+      (click)="toggleManagers(project)">
+      −{{ project.managers.length - maxAvatars }}
+    </span>
+
+  </div>
+
+  <!-- Members -->
+  <h6 class="mt-3">
+    <mat-icon>group</mat-icon> Members
+  </h6>
+
+  <div class="avatar-group">
+
+    <!-- Members list -->
+    <ng-container *ngFor="let member of getVisibleMembers(project)">
+      <span class="avatar member-avatar">{{ member }}</span>
+    </ng-container>
+
+    <!-- +N (collapsed state only) -->
+    <span
+      *ngIf="!project.showAllMembers && project.members.length > maxAvatars"
+      class="avatar more-avatar member-more"
+      (click)="toggleMembers(project)">
+      +{{ project.members.length - maxAvatars }}
+    </span>
+
+    <!-- -N (expanded state only, at END) -->
+    <span
+      *ngIf="project.showAllMembers && project.members.length > maxAvatars"
+      class="avatar more-avatar collapse-avatar member-more"
+      (click)="toggleMembers(project)">
+      −{{ project.members.length - maxAvatars }}
+    </span>
+
+  </div>
+
+</div>
+
+
         
                       <!-- ✅ Tasks -->
 <div *ngIf="project.tasks && project.tasks.length > 0" class="task-list mt-4">

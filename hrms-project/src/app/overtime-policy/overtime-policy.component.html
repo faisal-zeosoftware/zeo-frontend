@@ -1,0 +1,483 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+       
+    <div class="header_section">
+
+      <div class="row">
+        <div class="col-md-4">
+          <h1>OverTime Policy</h1>
+        </div>
+        <div class="col-md-3">
+
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+            </mat-icon></span> Create</button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+              <span class="header-btn-icon">
+                <mat-icon>draw
+                </mat-icon></span> Edit</button>
+            <span *ngIf="hasEditPermission"></span>
+
+            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission">
+              <span class="header-btn-icon">
+                <mat-icon> delete
+                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+
+        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedPayrollAprlvl()">Delete
+          Selected </button>
+
+      </div>
+    </div>
+
+
+      
+
+        <div *ngIf="iscreateovertimepolicy" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2> Create OverTime Policy</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+          
+  <form *ngIf="hasAddPermission" >
+                  <div class="row">
+                    
+                  <div class="col-md-6" >
+                   
+                    <label>Name</label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter Name"
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
+                   
+                   <!-- <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div> -->
+              </div>
+
+
+    <div class="col-md-6">
+        <label>Ot type</label>
+        <div class="custom-sel">
+          <select class="form-control" [(ngModel)]="ot_type" [ngModelOptions]="{standalone: true}">
+            <option value="NORMAL">Normal OT</option>
+            <option value="WEEKEND">Weekend OT</option>
+            <option value="HOLIDAY">Holiday OT</option>
+          </select>
+        </div>
+      </div>
+
+        
+
+
+          <div class="col-md-6" >
+                   
+            <label>Rate multiplier</label>
+           <input type="number"  class="form-control" [(ngModel)]="rate_multiplier"  placeholder="Enter rate multiplier"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+      
+
+
+
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
+
+      <div class="col-md-6" >
+        <label>Branch</label>
+        <div class="custom-sel">
+          <div class="form-control-wrapper">
+          
+
+            <mat-form-field>
+              <!-- <mat-label>Favorite food</mat-label> -->
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+          </div>
+         
+        </div>
+
+      </div>
+
+      
+
+     
+
+
+      <div class="col-md-6" >
+        <label>Department</label>
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+              <mat-form-field>
+                <mat-select  placeholder="Select" [(ngModel)]="department" [ngModelOptions]="{standalone: true}" #selectDept  multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                      Select All
+                    </mat-checkbox>
+                  </div>
+                  <mat-option *ngFor="let depart of Departments" [value]="depart.id">{{ depart.dept_name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <!-- <div *ngIf="registerButtonClicked && (!department || department.length === 0)" class="error-message">
+              Please Select Your department
+            </div> -->
+          </div>
+    </div>
+
+    
+     
+
+      <div class="col-md-6" >
+        <label>Designation</label>
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+              <mat-form-field>
+                <mat-select  placeholder="Select" [(ngModel)]="designation" [ngModelOptions]="{standalone: true}" #selectDes multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelecteddes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDes()">
+                      Select All
+                    </mat-checkbox>
+                  </div>
+                 
+                  <mat-option *ngFor="let des of Designations" [value]="des.id">{{ des.desgntn_job_title }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+       
+          </div>
+    </div>
+
+
+     
+
+      <div class="col-md-6" >
+        <label>Category</label>
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+              <mat-form-field>
+                <mat-select  placeholder="Select" [(ngModel)]="category" [ngModelOptions]="{standalone: true}" #selectCat multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                      Select All
+                    </mat-checkbox>
+                  </div>
+                 
+                  <mat-option *ngFor="let cat of Categories" [value]="cat.id">{{ cat.ctgry_title }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+           
+          </div>
+    </div>
+         
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-10">
+                
+                    </div>
+                
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateOverTimePolicy()">Create</button>  
+                     </div>
+                </div>
+                </form>
+
+            
+            </div>
+          </div>
+
+
+              <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit OverTime Policy</h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+  <form *ngIf="hasAddPermission">
+                  <div class="row">
+                    
+                  <div class="col-md-6" >
+                   
+                    <label>Name</label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="editAsset.name"  placeholder="Enter Name"
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
+                   
+                   <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div>
+              </div>
+
+
+    <div class="col-md-6">
+        <label>Ot type</label>
+        <div class="custom-sel">
+          <select class="form-control" [(ngModel)]="editAsset.ot_type" [ngModelOptions]="{standalone: true}">
+            <option value="normal">Normal OT</option>
+            <option value="weekend">Weekend OT</option>
+            <option value="holiday">Holiday OT</option>
+          </select>
+        </div>
+      </div>
+
+        
+
+
+          <div class="col-md-6" >
+                   
+            <label>Rate multiplier</label>
+           <input type="text"  class="form-control" required  [(ngModel)]="editAsset.rate_multiplier"  placeholder="Enter rate multiplier"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+      
+
+
+
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
+
+      <div class="col-md-6" >
+        <label>Branch</label>
+        <div class="custom-sel">
+          <div class="form-control-wrapper">
+          
+
+            <mat-form-field>
+              <!-- <mat-label>Favorite food</mat-label> -->
+              <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+          </div>
+         
+        </div>
+
+      </div>
+
+      
+
+     
+
+
+      <div class="col-md-6" >
+        <label>Department</label>
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+              <mat-form-field>
+                <mat-select  placeholder="Select" [(ngModel)]="editAsset.department" [ngModelOptions]="{standalone: true}" #selectDept  multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                      Select All
+                    </mat-checkbox>
+                  </div>
+                  <mat-option *ngFor="let departments of Departments" [value]="departments.id">{{ departments.dept_name }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <!-- <div *ngIf="registerButtonClicked && (!department || department.length === 0)" class="error-message">
+              Please Select Your department
+            </div> -->
+          </div>
+    </div>
+
+    
+     
+
+      <div class="col-md-6" >
+        <label>Designation</label>
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+              <mat-form-field>
+                <mat-select  placeholder="Select" [(ngModel)]="editAsset.designation" [ngModelOptions]="{standalone: true}" #selectDes multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelecteddes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDes()">
+                      Select All
+                    </mat-checkbox>
+                  </div>
+                 
+                  <mat-option *ngFor="let des of Designations" [value]="des.id">{{ des.desgntn_job_title }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+       
+          </div>
+    </div>
+
+
+     
+
+      <div class="col-md-6" >
+        <label>Category</label>
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+              <mat-form-field>
+                <mat-select  placeholder="Select" [(ngModel)]="editAsset.category" [ngModelOptions]="{standalone: true}" #selectCat multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                      Select All
+                    </mat-checkbox>
+                  </div>
+                 
+                  <mat-option *ngFor="let role of Categories" [value]="role.id">{{ role.ctgry_title }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+           
+          </div>
+    </div>
+         
+                  </div>
+
+     <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
+
+            </div>
+            <div class="col-md-2">
+              <button type="button" (click)="updateOverTimePolicy()" class="btn btn-success btn-full mt-4">Update</button>
+            </div>
+          </div>
+
+                </form>
+
+       
+
+
+
+
+      </div>
+    </div>
+
+
+
+        <div class="com_list mt-4" *ngIf="hasViewPermission">
+
+
+           
+            <table class="table-container " width="100%">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Ot Type</th>
+                    <th>Rate multiplier</th>
+                    <th>Branch</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Category</th>
+
+                   <th>Action</th>
+      
+        
+                   
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                  <tr *ngFor="let pol of overtimepol;let i = index">
+                    <td data-label="Name">{{ pol.name }}</td> 
+                    <td data-label="Ot Type">{{ pol.ot_type }}</td>
+                    <td data-label="Rate multiplier">{{ pol.rate_multiplier }}</td> 
+                    <td data-label="Branch">{{ pol.branch }}</td> 
+                    <td data-label="Department">{{ pol.department }}</td>
+                    <td data-label="Designation">{{ pol.designation }}</td>
+                    <td data-label="Category">{{ pol.category }}</td>
+
+                   <td data-label="Action">
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+    
+                
+                (click)="openEditModal(pol)"
+              >
+                <mat-icon style="color: white;">draw</mat-icon>
+              </button>
+    
+              <mat-checkbox *ngIf="Delete" [(ngModel)]="pol.selected" ></mat-checkbox>
+    
+            </td>
+    
+                  </tr>
+              
+                </tbody>
+              </table>
+
+        </div>
+        </div>
+        </div>

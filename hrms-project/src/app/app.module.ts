@@ -228,6 +228,7 @@ import { AirticketEscalationComponent } from './airticket-escalation/airticket-e
 import { AssetEscalationComponent } from './asset-escalation/asset-escalation.component';
 import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
 import { ReportOptionsComponent } from './report-options/report-options.component';
+import { OvertimePolicyComponent } from './overtime-policy/overtime-policy.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -414,7 +415,8 @@ import { ReportOptionsComponent } from './report-options/report-options.componen
      AirticketEscalationComponent,
      AssetEscalationComponent,
      LeaveEscalationComponent,
-     ReportOptionsComponent
+     ReportOptionsComponent,
+     OvertimePolicyComponent
      
      
 

@@ -20,6 +20,8 @@ export class ShiftOptionsComponent {
   hasViewPermissionShiftPattern: boolean = false;
   hasViewPermissionEmployeeShift: boolean = false;
   hasViewPermissionShiftOverride: boolean = false;
+  hasViewPermissionOvertimepolicy:boolean = false;
+  hasViewPermissionEmpOvertime:boolean = false;
 
 
   userId: number | null | undefined;
@@ -79,7 +81,8 @@ export class ShiftOptionsComponent {
           this.hasViewPermissionShiftPattern = true;
           this.hasViewPermissionEmployeeShift = true;
           this.hasViewPermissionShiftOverride = true;
-
+          this.hasViewPermissionOvertimepolicy = true;
+          this.hasViewPermissionEmpOvertime = true;
        
   
   
@@ -108,6 +111,8 @@ export class ShiftOptionsComponent {
                    this.hasViewPermissionShiftPattern = true;
                    this.hasViewPermissionEmployeeShift = true;
                    this.hasViewPermissionShiftOverride = true;
+                   this.hasViewPermissionOvertimepolicy = true;
+                   this.hasViewPermissionEmpOvertime = true;
                  
   
   
@@ -129,6 +134,12 @@ export class ShiftOptionsComponent {
                       
                        this.hasViewPermissionShiftOverride = this.checkGroupPermission('view_shiftoverride', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionShiftOverride);
+
+                       this.hasViewPermissionEmpOvertime = this.checkGroupPermission('view_employeeovertime', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionEmpOvertime);
+
+                       this.hasViewPermissionOvertimepolicy = this.checkGroupPermission('view_overtimepolicy', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionOvertimepolicy);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);
@@ -197,6 +208,13 @@ export class ShiftOptionsComponent {
           console.error('Error fetching categories:', error);
         }
       );
+    }
+    
+
+       showAdvanceSalary = false;
+
+    toggleAdvanceSalary() {
+      this.showAdvanceSalary = !this.showAdvanceSalary;
     }
 
 
