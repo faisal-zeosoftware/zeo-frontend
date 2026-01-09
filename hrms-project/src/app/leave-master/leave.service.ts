@@ -1411,4 +1411,69 @@ deleteGenReqReport(reportId: number): Observable<any> {
 }
 
 
+
+
+// document request report
+
+getAvailableFieldsDocument(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/doc-report/select_document_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+
+getDocumentReport(): Observable<any[]> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/employee/api/doc-report/?schema=${selectedSchema}`;
+  return this.http.get<any[]>(apiUrl);
+}
+
+
+deleteDocumentReport(reportId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  // Adjust the URL to match your Django/Backend URL pattern
+  const apiUrl = `${this.apiUrl}/employee/api/doc-report/${reportId}/?schema=${selectedSchema}`;
+  
+  return this.http.delete(apiUrl);
+}
+
+
+
+// leave report
+
+
+getAvailableFieldsLeaveReport(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/leave-report/select_leavereport_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+
+getLeaveReport(): Observable<any[]> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/leave-report/?schema=${selectedSchema}`;
+  return this.http.get<any[]>(apiUrl);
+}
+
+
+deleteLeaveReport(reportId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  // Adjust the URL to match your Django/Backend URL pattern
+  const apiUrl = `${this.apiUrl}/calendars/api/leave-report/${reportId}/?schema=${selectedSchema}`;
+  
+  return this.http.delete(apiUrl);
+}
+
+
+
 }

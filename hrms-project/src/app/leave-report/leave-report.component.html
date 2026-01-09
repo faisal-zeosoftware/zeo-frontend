@@ -1,412 +1,289 @@
 
-    <div class="container" style="margin-top: 50px; margin-right: 0px;" *ngIf="hasViewPermission">
-      <div class="comapny_section inside_body">
-          <div class="header_section">
-            <div class="row">
-              <div class="col-md-7">
-                <h4 class="mr-3">Leave Report</h4><hr> 
-              </div>
+<div class="container">
+  <div class="comapny_section" >
+    <div class="header_section">
+      <div class="row align-items-center px-4">
+        <div class="col-md-4">
+          <h1 class="page-title">Leave Report Reports</h1>
+        </div>
+    
+        <div class="col-md-6">
+          <div class="search-container-modern">
+            <mat-icon class="search-main-icon">search</mat-icon>
         
-          </div>
-          <mat-tab-group>
-            <mat-tab label="Leave Standard Report ">
-  
-              <div class="report-section-main">
-  
-              <div class="row" >
-                <div class="col-md-4">
-                  <button type="button" (click)="toggleCard()" class="btn btn-success btn-full" >View Standard Report </button>
-                </div>
-              </div>
-  
-              
-            <div class="card">
-              <!-- <div class="card-header">
-                <h6>Standard Report</h6>
+            <input type="text" 
+                   class="search-input-field" 
+                   placeholder="Search assets, branches, or conditions..." 
+                   [(ngModel)]="searchText" 
+                   (input)="applyFilters()">
+        
+            <button class="filter-trigger-btn" [matMenuTriggerFor]="filterMenu" matRipple>
+              <mat-icon style="color: black;">tune</mat-icon>
+              <span class="filter-text">Filters</span>
+            </button>
+            <mat-menu #filterMenu="matMenu" class="custom-filter-menu" backdropClass="glass-backdrop" hasBackdrop="true">
+              <div class="filter-dropdown-container" (click)="$event.stopPropagation()">
                 
-              </div> -->
-              <div class="card-body" >
-                <div class="header-container">
-                  <h6 class="header-title">Standard Report Data</h6>
-                  <div class="row">
-                    <div class="col-md-12 text-center">
-                      <button mat-raised-button color="primary" class="btn btn-success me-2" *ngIf="hasExportPermission" (click)="StandardDownload()">Download</button>
+                <div class="filter-main-header d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="d-flex align-items-center">
+                      <div class="header-icon-badge me-3">
+                        <mat-icon class="text-primary">settings_input_component</mat-icon>
+                      </div>
+                      <div>
+                        <span class="m-0 h6 font-weight-bold d-block">Report Designer</span>
+                        <small class="text-muted">Configure your view and save templates</small>
+                      </div>
                     </div>
                   </div>
+                  <button mat-icon-button (click)="$event.stopPropagation()" class="text-muted">
+                    <mat-icon>help_outline</mat-icon>
+                  </button>
                 </div>
-                <hr>
-                <!-- HTML file: report-generate.component.html -->
+            
+                <div class="row m-0 p-3">
+                  <div class="col-md-3 filter-col border-right">
+                    <div class="section-wrapper h-100">
+                      
+                      <div class="col-header d-flex align-items-center mb-3">
+                        <mat-icon class="me-2 text-primary">filter_list</mat-icon> 
+                        <span class="fw-bold text-uppercase small">Data Controls</span>
+                      </div>
+                  
+                      <div class="filter-scroll-area main-scroll px-2">
 
-<div class="table-container">
-  <table mat-table [dataSource]="dataSource">
-  <!-- Define columns dynamically based on `display_names` -->
-  <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-    <th mat-header-cell *matHeaderCellDef> {{ display_names[column] || column }} </th>
-    <td mat-cell *matCellDef="let element"> {{ element[column] }} </td>
-      <td mat-cell *matCellDef="let element" [attr.data-label]="display_names[column] || column">
-    <span>{{ element[column] }}</span>
-    </td>
-  </ng-container>
-  
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-  </div>
-                
-                
-                
-                
-               
-              </div>
-              <div  class="padding" *ngIf="!cardOpen">
-                <p>View Standard List</p>
-              </div>
-              
-            
-            </div>
-            
-          </div>
-              
-              </mat-tab>
-            <mat-tab label="Leave Custom Report ">
-  
-  <div class="report-section-main">
-    <div class="row">
-      <div class="col-md-6">
-        <label>File Name</label>
-        <input type="text" class="form-control" [(ngModel)]="fileName" placeholder="Enter file name">
-      </div>
-    
-      <div class="col-md-6">
-        <label>Select Fields</label>
-        <div class="dropdown">
-          <mat-accordion>
-            <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
-              <mat-expansion-panel-header>
-                <mat-panel-title>Field Selection</mat-panel-title>
-              </mat-expansion-panel-header>
-          
-              <div class="field-list" cdkDropList (cdkDropListDropped)="drop($event)">
-                <div *ngFor="let empField of employeefields" cdkDrag class="field-item">
-                  <label class="field-label">
-                    <input type="checkbox" [checked]="empField.selected" (change)="onFieldSelectionChanges($event, empField)">
-                    {{ empField.displayName }}
-                  </label>
-                </div>
-              </div>
-            </mat-expansion-panel>
-          </mat-accordion>
-          
-        
-        </div>
-      </div>
-    
-      <div class="col-md-10"></div>
-      <div class="col-md-2">
-        <button class="btn btn-success btn-full mt-4" (click)="generateReport()"  *ngIf="hasAddPermission">Save</button>
-      </div>
-    </div>
-    
-  <br>
-  <br>
-  <!-- html code -->
-  <div class="container"  *ngIf="hasEditPermission">
-    <div class="text-center mb-3">
-      <h6>Default Filter Section</h6>
-      <hr class="divider">
-    </div>
-    <div>
-  
-    </div>
-    <div class="row">
-      <div class="col-md-4">
-        <button type="button" class="btn btn-primary btn-block mb-3 invisible-button" (click)="togglePreviouslySelectedFields()">Default Selected Fields</button>
-        <div *ngIf="showPreviouslySelectedFields">
-          <p>Default Fields</p>
-          <div *ngFor="let field of previouslySelectedFields">
-            <mat-checkbox [checked]="true" disabled>{{ field.displayName }}</mat-checkbox>
-          </div>
-        </div>
-      </div> 
-      <div class="col-md-4">
-        <button type="button" class="btn btn-primary btn-block mb-3 invisible-button" (click)="applyDefaultFilter()">Apply Default Filter</button>
-      </div>
-      <div class="col-md-4">
-  
-      </div>
-      <div class="col-md-4">
-        <button type="button" class="btn btn-primary btn-block"  (click)="openAddFieldsModal()">Default Add Fields</button>
-      </div>
-      <div class="col-md-4">
-        <button type="button" class="btn btn-primary btn-block mb-3 " (click)="generateReports()">Apply Default Filter</button>
-      </div>
-  
-    
-      
-    </div>
-  </div>
-  
-  <!-- Modal Popup for Adding More Fields -->
-  <div *ngIf="isAddFieldsModalOpen" class="modal show d-block" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Add More Fields</h5>
-          <button type="button" class="close" (click)="closeAddFieldsModal()" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <label>Select Additional Fields</label>
-          
-          <div class="d-flex justify-content-end mt-3">
-            <button class="btn btn-success" (click)="applyAdditionalFields()">Add Default Field</button>
-          </div>
-          <br>
-          <mat-accordion>
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title> Additional Fields </mat-panel-title>
-              </mat-expansion-panel-header>
-              <div class="field-list" cdkDropList (cdkDropListDropped)="drop($event)">
-                <div *ngFor="let empField of employeefields" cdkDrag class="field-item">
-                  <label class="field-label">
-                    <input type="checkbox" [checked]="empField.selected" (change)="onFieldSelectionChanges($event, empField)">
-                    {{ empField.displayName }}
-                  </label>
-                </div>
-              </div>
-            </mat-expansion-panel>
-          </mat-accordion>
-          
-        </div>
-      </div>
-    </div>
-  </div>
-  
-            <!-- end -->
-            
-            
-  
-          <div class=" mt-5" >
-            <div class="row">
-              <div class="col-md-3">
-                <h6>Custom Saved Files</h6><hr>
-                <div class="broder_side">
-               
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class=" mt-4">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div *ngFor="let report of savedReports" class="card mb-3" (click)="showReportTable(report)">
-                            <div class="card-body">
-                              <h5 class="card-title"
-                              [ngClass]="{'active-file': report === activeReport}">
-                            {{ report.file_name }}</h5>
-                           
+                        <div class="filter-section-card mb-4">
+                          <div class="category-header d-flex justify-content-between align-items-center" 
+                               (click)="toggleCategory('date_range')" 
+                               style="cursor: pointer;">
+                            <span>Date Range</span>
+                            <mat-icon class="expand-icon" [class.rotated]="expandedCategories['date_range']">expand_more</mat-icon>
+                          </div>
+                        
+                          <div class="filter-list p-2" *ngIf="expandedCategories['date_range']">
+                            <div class="date-input-group mb-2">
+                              <label class="extra-small text-muted">From</label>
+                              <input type="date" class="form-control form-control-sm" [(ngModel)]="startDate" (change)="applyFilters()">
                             </div>
+                            
+                            <div class="date-input-group mb-2">
+                              <label class="extra-small text-muted">To</label>
+                              <input type="date" class="form-control form-control-sm" [(ngModel)]="endDate" (change)="applyFilters()">
+                            </div>
+                        
+                            <button mat-button color="warn" class="btn-xs w-100" *ngIf="startDate || endDate" (click)="clearDates()">
+                              Clear Dates
+                            </button>
                           </div>
                         </div>
-                    
-                      
-                      </div>
-                     
-                    </div>
-                    
-                  </div>
-                  
-  
-                  <div class="col-md-4">
-  
-                  </div>
-  
-                  <div class="col-md-4">
-  
-                  </div>
-                </div>
-  
-                </div>
-              </div>
-            
-              
-              
-              
-              <div class="col-md-9" style="height: 100%;">
-                <h6>Custom Filter Section:</h6><hr>
-                <div class="col-md-12">
-                  <div class="container report_common_box table_new mt-4">
-                    <div class="row" (click)="toggleReportTable()">
-                      <div class="col-md-12">
-                        <div  class=" mb-3" >
-                          <div class="">
+                        
+                        <div class="filter-section-card mb-4">
+                          <div class="section-title">Active Filters</div>
                           
-                           <div class="row mt-4">
-                            <div class="col-md-9">
-                              <h5 class="card-titles">Custom Saved File:{{ selectedFileName }}</h5>
-  
+                          <div *ngFor="let field of filterFields" class="category-block mb-2">
+                            <div class="category-header d-flex justify-content-between align-items-center" 
+                                 (click)="toggleCategory(field)" 
+                                 style="cursor: pointer;">
+                              <span>{{ field.replace('emp_', '').replace('_id', '').replace('_', ' ') | titlecase }}</span>
+                              <mat-icon class="expand-icon" [class.rotated]="expandedCategories[field]">
+                                expand_more
+                              </mat-icon>
                             </div>
-                            <div class="col-md-3 text-center">
-                              <div class="button-group">
-                                <button mat-raised-button color="primary" class="btn btn-success me-2" (click)="togglePreview()">
-                                  {{ isPreviewVisible ? 'Close Preview' : 'Preview List' }}
-                                </button>                          </div>
-  <!-- Modal or side panel for preview -->
-  
-  
-  
-   
-  
                             
-                          </div>
-                          
-                          </div>
-  
-                          <div class="row   ">
-                            <div class="col-md-12">
-                              <div *ngIf="isPreviewVisible" class="row mt-5">
-                                <div class="col-md-12">
-                                <div class="header-container">
-                                  <h6 class="preview-heading">Selected File List</h6>
-                                  <hr class="divider">
-                                  <button mat-raised-button color="success" class="btn btn-success "  (click)="Filter()">  {{ isAdvancedFilter ? 'Cancel Advanced Filter' : 'Advanced Filter ' }}</button>
-  
-                                  <button mat-raised-button color="primary" class="btn btn-success " *ngIf="!showReportTablevalue" (click)="exportToExcels()">Download</button>
+                            <div class="filter-list" *ngIf="expandedCategories[field]">
+                              <div class="filter-item-row animate-slide-down" *ngFor="let val of getKeys(activeFilters[field])">
+                                <mat-checkbox color="primary" [(ngModel)]="activeFilters[field][val]" (change)="applyFilters()">
+                                  <span class="checkbox-text">{{ val | titlecase }}</span>
+                                </mat-checkbox>
+                              </div>
                               
-                                  <!-- <button  class="btn " (click)="openEditModal()">open</button> -->
-  
-                                </div>
-  
-  
-                                <div class="row">
-                                  <div class="col-md-12" *ngIf="showReportTablevalue">
-                                
-                                  
-                                
-                                    <label>Select Fields</label>
-                                    <mat-accordion>
-                                      <mat-expansion-panel>
-                                        <mat-expansion-panel-header>
-                                          <mat-panel-title> Field Selection for: </mat-panel-title>
-                                        </mat-expansion-panel-header>
-  
-                                        <div class="field-list" cdkDropList (cdkDropListDropped)="drop($event)">
-                                          <div *ngFor="let empField of employeefields" cdkDrag class="field-item" title="drag fields here">
-                                            <mat-checkbox [(ngModel)]="empField.selected" (change)="onFieldSelectionChanged($event, empField)">
-                                              {{ empField.displayName }}
-                                            </mat-checkbox>
-                                          </div>
-                                        </div>
-                                      </mat-expansion-panel> 
-                                    </mat-accordion>
-                                    
-                                    <br><br>
-                                    <button class="btn btn-success" (click)=" generateReportstest()">Apply Filter</button>
-                                    <br><br>
-                                  </div>
-                                </div>
-                                
-                                
-                                
-                              
-  
-                                  
-                               
-                                <div class="table-container" *ngIf="!showReportTablevalue" >
-                                  <table class="table table-bordered table-hover preview-table">
-                                    <thead>
-                                      <tr>
-                                      <th *ngFor="let key of getObjectKeys(previewData[0])">
-                                        {{ display_names[key] || key }}                                          </th>
-  
-                                        <!-- {{ display_names[key] || key }}                                          </th> -->
-                                    </thead>
-                                    <tbody>
-                                      <tr *ngFor="let item of previewData">
-                                        <td *ngFor="let key of getObjectKeys(item)">{{ item[key] }}</td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                                </div>
+                              <div *ngIf="getKeys(activeFilters[field]).length === 0" class="text-muted extra-small ps-3">
+                                No options available
                               </div>
                             </div>
                           </div>
-  
-  
-  
                         </div>
+                        <div class="grouping-section-card">
+                          <div class="section-title">Grouped By</div>
+                          <p class="text-muted extra-small mb-2">Click to set grouping hierarchy</p>
+                          
+                          <div class="group-pill-container d-flex flex-column gap-2">
+                            <button *ngFor="let field of fieldSettings | slice:0:6" 
+                                    class="group-pill-btn"
+                                    [class.is-active]="currentGroupBy.includes(field.key)"
+                                    (click)="setGroupBy(field.key)">
+                              
+                              <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                  <span *ngIf="currentGroupBy.includes(field.key)" class="group-rank">
+                                    {{ currentGroupBy.indexOf(field.key) + 1 }}
+                                  </span>
+                                  <span class="pill-label">{{ field.label }}</span>
+                                </div>
+                                <mat-icon *ngIf="currentGroupBy.includes(field.key)" class="check-icon">done</mat-icon>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+                  
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 filter-col border-left">
+                    <div class="section-wrapper">
+                      <div class="col-header d-flex justify-content-between">
+                        <span><mat-icon>view_column</mat-icon> COLUMN ORDER</span>
+                        <span class="badge-count">{{ fieldSettings.length }} Fields</span>
                       </div>
                   
-                    
-                    </div>
-                    
-                   
-                  </div>
+                      <div class="filter-scroll-area main-scroll" 
+                           cdkDropList 
+                           (cdkDropListDropped)="drop($event)">
+                        
+                        <div *ngFor="let field of fieldSettings" 
+                             class="field-item-card" 
+                             cdkDrag>
+                          
+                          <div class="d-flex align-items-center">
+                            <mat-icon cdkDragHandle class="drag-handle me-2">drag_indicator</mat-icon>
+                            
+                            <mat-checkbox color="primary" [(ngModel)]="field.visible">
+                              <span class="checkbox-label">{{ field.label }}</span>
+                            </mat-checkbox>
+                          </div>
                   
+                          <div class="custom-placeholder" *cdkDragPlaceholder></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            
+                  <div class="col-md-5 filter-col border-left">
+                    <div class="section-wrapper">
+                      <div class="col-header"><mat-icon>history</mat-icon> SAVED TEMPLATES</div>
+                      <div class="saved-reports-container mb-3">
+                        <div *ngFor="let report of savedReports" class="saved-report-item">
+                          <div class="report-info w-100" (click)="loadSavedReport(report)">
+                            <mat-icon class="file-icon" [class.text-primary]="report.id === 1">
+                              {{ report.id === 1 ? 'verified_user' : 'description' }}
+                            </mat-icon>
+                            <div class="d-flex flex-column">
+                              <span class="report-name" [class.font-weight-bold]="report.id === 1">
+                                {{ report.file_name }}
+                              </span>
+                              <small class="report-meta">
+                                {{ report.id === 1 ? 'System Default (Protected)' : 'Custom View' }}
+                              </small>
+                            </div>
+                          </div>
+                        
+                          <div class="report-actions d-flex align-items-center">
+                            <button class="btn-load-report" (click)="loadSavedReport(report)">
+                              <mat-icon>play_circle_outline</mat-icon>
+                            </button>
+                        
+                            <button *ngIf="report.id !== 1 && report.file_name !== 'std_report'" 
+                                    class="btn-delete-report ms-2" 
+                                    (click)="deleteReport(report, $event)">
+                              <mat-icon color="warn">delete_outline</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                        <div *ngIf="savedReports.length === 0" class="empty-state">
+                          <mat-icon>folder_off</mat-icon>
+                          <p>No templates saved yet</p>
+                        </div>
+                      </div>
+            
+                      <div class="save-card-modern">
+                        <div class="save-header">
+                          <mat-icon>add_box</mat-icon>
+                          <span>Save current view</span>
+                        </div>
+                        <div class="save-input-wrapper">
+                          <input type="text" class="clean-input" [(ngModel)]="customFileName" placeholder="Filename...">
+                          <button class="btn-save-confirm" (click)="saveCustomFile()">
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                
-            
-                <br>
-               
-  
-  <!-- report-generate.component.html -->
-  
-  
-   <!-- Display report data dynamically -->
-  
-  
-  </div>
-  
-  <!-- Optional: Loading spinner or message -->
-  <div *ngIf="generatingReport" class="mt-3">
-  <p>Loading...</p>
-  </div>
+              </div>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
     </div>
-  
-  
-  
+    
+    <div class="table-stats-bar px-4 d-flex justify-content-between align-items-center mt-4">
+      <div class="d-flex align-items-center gap-3">
+        <h3 class="m-0">Inventory List</h3>
+        <span class="badge badge-pill badge-light border">Records: {{ displayData.length }}</span>
+        <!-- <span class="badge badge-pill badge-info" *ngIf="currentGroupBy">Grouped by: {{ currentGroupBy }}</span> -->
+      </div>
+      <button class="btn btn-primary " 
+      *ngIf="currentGroupBy.length > 0 || searchText" 
+      (click)="resetToStandard()">
+<mat-icon>restart_alt</mat-icon> Reset View
+</button>
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadExcel()">
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+    </div>
+    
+    <div class="com_list px-4 mt-3">
+      <div class="table-responsive shadow-sm border rounded">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <ng-container *ngFor="let field of fieldSettings">
+                <th *ngIf="field.visible" class="text-uppercase small font-weight-bold">
+                  {{ field.label }}
+                </th>
+              </ng-container>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let group of groupedData">
+              
+              <tr class="group-header level-0" *ngIf="currentGroupBy.length > 0">
+                <td [attr.colspan]="visibleFieldsCount">
+                  <strong>{{ group.groupName }}</strong>
+                </td>
+              </tr>
+          
+              <ng-container *ngIf="currentGroupBy.length > 1">
+                <ng-container *ngFor="let sub of group.children">
+                  <tr class="group-header level-1">
+                    <td [attr.colspan]="visibleFieldsCount" style="padding-left: 30px;">
+                      <i>{{ sub.groupName }}</i>
+                    </td>
+                  </tr>
+                  <tr *ngFor="let item of sub.children">
+                    <td *ngFor="let f of fieldSettings" [hidden]="!f.visible">{{item[f.key] || '-'}}</td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+          
+              <ng-container *ngIf="currentGroupBy.length <= 1">
+                <tr *ngFor="let item of group.children">
+                  <td *ngFor="let f of fieldSettings" [hidden]="!f.visible">{{item[f.key] || '-'}}</td>
+                </tr>
+              </ng-container>
+          
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  </div>
   
-  </div>
+
+
   
-  
-  
-  
-              </mat-tab>
-          </mat-tab-group>
-  
-            </div>
-            
-  
-            
-             
-             
-  
-          </div>
-  
-          </div>
-          
-          <!-- report.component.html -->
-          
-        
-          
-          
-  
-  
-  
-  
-  
-  
-         
-         
-        
-       
-       
-          
-        
-       
-      
-  
-  
+
+
+</div>
