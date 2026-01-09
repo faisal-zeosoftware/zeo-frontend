@@ -33,6 +33,17 @@
 
                 <li routerLink="/main-sidebar/shift-options/shift-override" *ngIf="hasViewPermissionShiftOverride"><a><mat-icon>update</mat-icon>Shift Override</a></li>
 
+                <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
+                    <a>
+                      <mat-icon>update</mat-icon> OverTime 
+                      <mat-icon style="float: right;">{{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </a>
+                  </li>
+          <ul *ngIf="showAdvanceSalary" style="padding-left: 10px;">
+                <li routerLink="/main-sidebar/shift-options/employee-overtime" *ngIf="hasViewPermissionEmpOvertime"><a><mat-icon></mat-icon>Employee OverTime</a></li>
+
+                <li routerLink="/main-sidebar/shift-options/overtime-policy" *ngIf="hasViewPermissionOvertimepolicy"><a><mat-icon></mat-icon>OverTime Policy</a></li>
+         </ul>
                   <mat-nav-list>
      
   

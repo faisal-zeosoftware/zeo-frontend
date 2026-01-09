@@ -149,6 +149,7 @@ import { LeaveBalanceReportComponent } from './leave-balance-report/leave-balanc
 import { AssetReportComponent } from './asset-report/asset-report.component';
 import { AssetTransactionReportComponent } from './asset-transaction-report/asset-transaction-report.component';
 import { EmployeeAttendanceComponent } from './employee-attendance/employee-attendance.component';
+import { OvertimePolicyComponent } from './overtime-policy/overtime-policy.component';
 
 
 const routes: Routes = [
@@ -226,10 +227,10 @@ const routes: Routes = [
             path:'document-expired',
             component:DocumentExpiredComponent
           },
-          {
-            path:'employee-overtime',
-            component:EmployeeOvertimeComponent
-          },
+          // {
+          //   path:'employee-overtime',
+          //   component:EmployeeOvertimeComponent
+          // },
 
           {
             path:'resignation-approval-level',
@@ -762,6 +763,16 @@ const routes: Routes = [
     {
       path:'shift-override',
       component:ShiftOverrideComponent,
+    },
+
+    {
+      path:'employee-overtime',
+      component:EmployeeOvertimeComponent,
+    },
+
+    {
+      path:'overtime-policy',
+      component: OvertimePolicyComponent,
     },
     
 

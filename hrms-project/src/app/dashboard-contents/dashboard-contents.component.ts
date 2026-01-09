@@ -130,6 +130,30 @@ toggleTask(taskId: number): void {
 }
 
 
+maxAvatars = 4;
+
+toggleManagers(project: any) {
+  project.showAllManagers = !project.showAllManagers;
+}
+
+toggleMembers(project: any) {
+  project.showAllMembers = !project.showAllMembers;
+}
+
+getVisibleManagers(project: any) {
+  return project.showAllManagers
+    ? project.managers
+    : project.managers.slice(0, this.maxAvatars);
+}
+
+getVisibleMembers(project: any) {
+  return project.showAllMembers
+    ? project.members
+    : project.members.slice(0, this.maxAvatars);
+}
+
+
+
 
 isLoadingEss: boolean = false;
 
