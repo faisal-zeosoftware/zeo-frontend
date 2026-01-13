@@ -1493,19 +1493,34 @@ updatelovertimepolicy(id: number, data: any): Observable<any> {
 
   }
 
-  //   getAssetNotify(selectedSchema: string): Observable<any> {
+    getAssetNotify(selectedSchema: string): Observable<any> {
 
-  //   // const url = `${this.baseUrl}/notification/`;
-  //   // return this.http.get(url);
+    // const url = `${this.baseUrl}/notification/`;
+    // return this.http.get(url);
 
-  //   const apiUrl = `${this.apiUrl}/calendars/api/leave-ApprovalNotify/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/employee/api/request-notifications/?schema=${selectedSchema}`;
 
-  //   // Fetch employees from the API
-  //   return this.http.get(apiUrl);
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
 
 
 
-  // }
+  }
+
+  
+    getAirTicketNotify(selectedSchema: string): Observable<any> {
+
+    // const url = `${this.baseUrl}/notification/`;
+    // return this.http.get(url);
+
+    const apiUrl = `${this.apiUrl}/employee/api/request-notifications/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+
+
+  }
 
 
   getLeaveGeneralReqNot(selectedSchema: string): Observable<any> {
@@ -3641,7 +3656,7 @@ updatelovertimepolicy(id: number, data: any): Observable<any> {
 
 
   getLoanapprover(selectedSchema: string): Observable<any> {
-    const apiUrl = `${this.apiUrl}/users/api/user/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/users/tenant-non-ess-users/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);

@@ -193,7 +193,7 @@ export class AssetApprovelLevelComponent {
     this.employeeService.registerAssetApproverLevel(formData).subscribe(
       (response) => {
         console.log('Registration successful', response);
-        alert('Loan Approval Level has been added');
+        alert('Asset Approval Level has been added');
         window.location.reload();
       },
       (error) => {
@@ -248,20 +248,18 @@ export class AssetApprovelLevelComponent {
       }
       }
   
-    mapLoanTypeNameToId() {
-  
-    if (!this.LoanTypes || !this.editAsset?.asset_type) return;
-  
-    const lon = this.LoanTypes.find(
-      (l: any) => l.asset_type === this.editAsset.asset_type
-    );
-  
-    if (lon) {
-      this.editAsset.asset_type = lon.id;  // convert to ID for dropdown
-    }
-  
-    console.log("Mapped employee_id:", this.editAsset.asset_type);
+mapLoanTypeNameToId() {
+  if (!this.LoanTypes || !this.editAsset?.asset_type) return;
+
+  const loan = this.LoanTypes.find(
+    (l: any) => l.name === this.editAsset.asset_type
+  );
+
+  if (loan) {
+    this.editAsset.asset_type = loan.id; // 🔥 KEY LINE
   }
+}
+
   
   
   
@@ -469,7 +467,7 @@ export class AssetApprovelLevelComponent {
   
     this.employeeService.updateAssetApprovalLevel(this.editAsset.id, this.editAsset).subscribe(
       (response) => {
-        alert(' Loan Approval Level  updated successfully!');
+        alert(' Asset Approval Level  updated successfully!');
         this.closeEditModal();
         window.location.reload();
       },

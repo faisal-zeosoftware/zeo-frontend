@@ -28,7 +28,6 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsGenReqEsc: any[] = [];
   GrouppermissionsAtd: any[] = [];
   GrouppermissionsExpDocument: any[] = [];
-  GrouppermissionsEmpOver: any[] = [];
   GrouppermissionsEmpAprList: any[] = [];
   GrouppermissionsEmpRegAprList: any[] = [];
   GrouppermissionsEndofSer: any[] = [];
@@ -187,7 +186,9 @@ export class UserRoleGroupingCreateComponent implements OnInit {
    GrouppermissionsShifts:any[] =[];
    GrouppermissionsShiftPattern:any[] =[];
    GrouppermissionsShiftEmployee:any[] =[];
-  GrouppermissionsShiftOverRide:any[] =[];
+   GrouppermissionsShiftOverRide:any[] =[];
+   GrouppermissionsOverTimePolicy:any[] =[];
+   GrouppermissionsEmpOver: any[] = [];
 
 
 
@@ -217,7 +218,6 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GenReqEscMasterInderminate = false;
   AtdMasterInderminate = false;
   ExpDocumentInderminate = false;
-  EmpOverInderminate = false;
   EmpAprListInderminate = false;
   EmpRegAprListInderminate = false;
   EndofSerInderminate = false;
@@ -386,6 +386,8 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     ShiftPatternInderminate=false;
     ShiftEmployeeInderminate=false;
     ShiftOverRideInderminate=false;
+    OvertimePolicyInderminate=false;
+    EmpOverInderminate = false;
 
 
 
@@ -410,7 +412,6 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GenReqEscMasterChecked: boolean = false;
   AtdMasterChecked: boolean = false;
   ExpDocumentChecked: boolean = false;
-  EmpOverChecked: boolean = false;
   EmpAprListChecked: boolean = false;
   EmpRegAprListChecked: boolean = false;
   EndofSerChecked: boolean = false;
@@ -569,6 +570,8 @@ export class UserRoleGroupingCreateComponent implements OnInit {
      ShiftPatternChecked:boolean= false;
      ShiftEmployeeChecked:boolean= false;
      ShiftOverRideChecked:boolean= false;
+     OvertimePolicyChecked:boolean= false;
+     EmpOverChecked: boolean = false;
 
 
 
@@ -670,7 +673,6 @@ isEmployeeManagementMasterChecked(): boolean {
       this.GenReqEscMasterChecked &&
       this.AtdMasterChecked &&
       this.ExpDocumentChecked &&
-      this.EmpOverChecked &&
       this.EmpAprListChecked &&
       this.EmpRegAprListChecked &&
       this.EndofSerChecked &&
@@ -759,12 +761,6 @@ isEmployeeManagementMasterChecked(): boolean {
     return selectedExpDocPermissions.length > 0 && selectedExpDocPermissions.length < this.GrouppermissionsExpDocument.length;
   }
 
-  isEmpOverIndeterminate(): boolean {
-    const selectedEmpOverPermissions = this.selectedPermissions.filter(permission =>
-      this.GrouppermissionsEmpOver.map(p => p.id).includes(permission)
-    );
-    return selectedEmpOverPermissions.length > 0 && selectedEmpOverPermissions.length < this.GrouppermissionsEmpOver.length;
-  }
 
     isEmpAprListIndeterminate(): boolean {
     const selectedEmpAprListPermissions = this.selectedPermissions.filter(permission =>
@@ -1387,7 +1383,7 @@ isProjectManagementMasterChecked():boolean{
    return this.ProjectsChecked &&
    this.ProjectStagesChecked &&
    this.ProjectTaskChecked &&
-   this.ProjectTimeChecked
+   this.ProjectTimeChecked;
 }
 
 
@@ -1428,7 +1424,7 @@ isAirTicketManagementMasterChecked():boolean{
    this.AirTicketRuleChecked &&
    this.AirTicketAprChecked &&
    this.AirTicketAprlvlChecked &&
-   this.AirTicketEscChecked
+   this.AirTicketEscChecked;
    
 }
 
@@ -1588,7 +1584,9 @@ isAirTicketRuleIndeterminate(): boolean {
     return this.ShiftsChecked &&
      this.ShiftPatternChecked &&
      this.ShiftEmployeeChecked &&
-     this.ShiftOverRideChecked;
+     this.ShiftOverRideChecked &&
+     this.OvertimePolicyChecked &&
+     this.EmpOverChecked;
  
   }
 
@@ -1623,6 +1621,20 @@ isAirTicketRuleIndeterminate(): boolean {
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsShiftOverRide.length;
 }
+
+  isOvertimePolicyIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsOverTimePolicy.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsOverTimePolicy.length;
+}
+
+  isEmpOverIndeterminate(): boolean {
+    const selectedEmpOverPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsEmpOver.map(p => p.id).includes(permission)
+    );
+    return selectedEmpOverPermissions.length > 0 && selectedEmpOverPermissions.length < this.GrouppermissionsEmpOver.length;
+  }
 
 
 
@@ -1693,7 +1705,7 @@ isAirTicketRuleIndeterminate(): boolean {
     this.isGenReqEscMasterIndeterminate();
     this.isAtdMasterIndeterminate();
     this.isExpDocumentIndeterminate();
-    this.isEmpOverIndeterminate();
+
     this.isEmpAprListIndeterminate();
     this.isEmpRegAprListIndeterminate();
     this.isEndofSerIndeterminate();
@@ -1891,6 +1903,8 @@ updateInderminateShift():void{
   this.isShiftPatternIndeterminate();
   this.isShiftEmployeeIndeterminate();
   this.isShiftOverRideIndeterminate();
+  this.isOvertimePolicyIndeterminate();
+  this.isEmpOverIndeterminate();
 
 
 
@@ -1930,7 +1944,6 @@ updateInderminateShift():void{
     this.loadpermissionsGenReqEscMaster();
     this.loadpermissionsAtdMaster();
     this.loadpermissionsExpDocument();
-    this.loadpermissionsEmpOver();
     this.loadpermissionsEmpAprList();
     this.loadpermissionsEmpRegAprList();
     this.loadpermissionsEndofSer();
@@ -2137,6 +2150,8 @@ updateInderminateShift():void{
   this.loadpermissionsShiftPattern();
   this.loadpermissionsShiftEmployee();
   this.loadpermissionsShiftOverRide();
+  this.loadpermissionsOverTimepolicy();
+  this.loadpermissionsEmpOver();
 
 
   
@@ -2732,56 +2747,6 @@ updateInderminateShift():void{
             }
           }
         
-          
-          loadpermissionsEmpOver(): void {
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-        
-            console.log('schemastore', selectedSchema);
-          
-            if (selectedSchema) {
-              this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
-                (result: any[]) => {
-                  // Specify the codenames you want to filter
-                  const requiredCodenames = ['add_employeeovertime', 'change_employeeovertime', 'delete_employeeovertime', 'view_employeeovertime'];
-          
-                  // Filter and remove duplicates based on codename
-                  const uniquePermissionsMap = new Map();
-                  result.forEach(permission => {
-                    const codename = permission.codename.trim().toLowerCase();
-                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
-                      uniquePermissionsMap.set(codename, permission);
-                    }
-                  });
-          
-                  // Convert map values to an array
-                  this.GrouppermissionsEmpOver = Array.from(uniquePermissionsMap.values());
-          
-                  console.log('Filtered Unique Permissions:', this.GrouppermissionsEmpOver);
-                },
-                (error: any) => {
-                  console.error('Error fetching permissions:', error);
-                }
-              );
-            }
-          }
-        
-        
-           //Display Name  add view delte code for General request master-------
-        
-           getDisplayNameEmpOver(permissionCodename: string): string {
-            switch (permissionCodename.trim().toLowerCase()) {
-              case 'add_employeeovertime':
-                return 'Add';
-              case 'change_employeeovertime':
-                return 'Edit';
-              case 'delete_employeeovertime':
-                return 'Delete';
-              case 'view_employeeovertime':
-                return 'View';
-              default:
-                return permissionCodename;
-            }
-          }
 
 
 
@@ -7687,6 +7652,110 @@ getDisplayNameShiftOverRide(permissionCodename: string): string {
 
 
 
+loadpermissionsOverTimepolicy(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_overtimepolicy',
+          'change_overtimepolicy',
+          'delete_overtimepolicy',
+          'view_overtimepolicy',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsOverTimePolicy = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Shift OverRide permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Shifts permissions ===
+getDisplayNameOverTimepolicy(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_overtimepolicy':
+      return 'Add';
+    case 'change_overtimepolicy':
+      return 'Edit';
+    case 'delete_overtimepolicy':
+      return 'Delete';
+    case 'view_overtimepolicy':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
+ loadpermissionsEmpOver(): void {
+            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        
+            console.log('schemastore', selectedSchema);
+          
+            if (selectedSchema) {
+              this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+                (result: any[]) => {
+                  // Specify the codenames you want to filter
+                  const requiredCodenames = ['add_employeeovertime', 'change_employeeovertime', 'delete_employeeovertime', 'view_employeeovertime'];
+          
+                  // Filter and remove duplicates based on codename
+                  const uniquePermissionsMap = new Map();
+                  result.forEach(permission => {
+                    const codename = permission.codename.trim().toLowerCase();
+                    if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                      uniquePermissionsMap.set(codename, permission);
+                    }
+                  });
+          
+                  // Convert map values to an array
+                  this.GrouppermissionsEmpOver = Array.from(uniquePermissionsMap.values());
+          
+                  console.log('Filtered Unique Permissions:', this.GrouppermissionsEmpOver);
+                },
+                (error: any) => {
+                  console.error('Error fetching permissions:', error);
+                }
+              );
+            }
+          }
+        
+        
+           //Display Name  add view delte code for General request master-------
+        
+  getDisplayNameEmpOver(permissionCodename: string): string {
+            switch (permissionCodename.trim().toLowerCase()) {
+              case 'add_employeeovertime':
+                return 'Add';
+              case 'change_employeeovertime':
+                return 'Edit';
+              case 'delete_employeeovertime':
+                return 'Delete';
+              case 'view_employeeovertime':
+                return 'View';
+              default:
+                return permissionCodename;
+            }
+          }
+
+
+
+
+
+
+
 
 
 
@@ -7913,26 +7982,6 @@ getDisplayNameShiftOverRide(permissionCodename: string): string {
     );
     this.ExpDocumentChecked = allPermissionsSelected;
     this.ExpDocumentInderminate = this.isExpDocumentIndeterminate();
-
-  }
-
-
-  onCheckboxChangeEmpOver(permission: string): void {
-    if (this.selectedPermissions.includes(permission)) {
-      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
-    } else {
-      this.selectedPermissions.push(permission);
-    }
-    this.updateEmpOverCheckbox();
-    this.updateSelectAll();
-  }
-
-  updateEmpOverCheckbox(): void {
-    const allPermissionsSelected = this.GrouppermissionsEmpOver.every(permission => 
-      this.selectedPermissions.includes(permission.id)
-    );
-    this.EmpOverChecked = allPermissionsSelected;
-    this.EmpOverInderminate = this.isEmpOverIndeterminate();
 
   }
 
@@ -9919,6 +9968,46 @@ updateShiftOverRideCheckbox(): void {
 }
 
 
+onCheckboxChangesOverTimePolicy(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateOverTimePolicyCheckbox();
+  this.updateShift();
+}
+
+updateOverTimePolicyCheckbox(): void {
+  const allSelected = this.GrouppermissionsOverTimePolicy.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.OvertimePolicyChecked = allSelected;
+}
+
+  onCheckboxChangeEmpOver(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateEmpOverCheckbox();
+    this.updateShift();
+  }
+
+  updateEmpOverCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsEmpOver.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.EmpOverChecked = allPermissionsSelected;
+    this.EmpOverInderminate = this.isEmpOverIndeterminate();
+
+  }
+
+
+
+
 
 
 
@@ -9952,7 +10041,7 @@ updateShiftOverRideCheckbox(): void {
     this.updateGenReqEscMasterCheckbox();
     this.updateAtdMasterCheckbox();
     this.updateExpDocumentCheckbox();
-    this.updateEmpOverCheckbox();
+    // this.updateEmpOverCheckbox();
     this.updateEmpAprListCheckbox();
     this.updateEmpRegAprListCheckbox();
     this.updateEndofSerCheckbox();
@@ -10020,7 +10109,7 @@ updateShiftOverRideCheckbox(): void {
                             this.GenReqEscMasterChecked &&
                             this.AtdMasterChecked &&
                             this.ExpDocumentChecked &&
-                            this.EmpOverChecked &&
+                            // this.EmpOverChecked &&
                             this.EmpAprListChecked &&
                             this.EmpRegAprListChecked &&
                             this.EndofSerChecked &&
@@ -10034,7 +10123,7 @@ updateShiftOverRideCheckbox(): void {
 isEmpDeptDisCatPermission(permission: string): boolean {
   return [...this.GrouppermissionsEmp, ...this.GrouppermissionsDept, ...this.GrouppermissionsDis, 
     ...this.GrouppermissionsCat, ...this.GrouppermissionsGen,...this.GrouppermissionsReqtype,
-    ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,...this.GrouppermissionsGenReqEsc,...this.GrouppermissionsAtd,...this.GrouppermissionsExpDocument,...this.GrouppermissionsEmpOver,
+    ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,...this.GrouppermissionsGenReqEsc,...this.GrouppermissionsAtd,...this.GrouppermissionsExpDocument,
   ...this.GrouppermissionsEmpAprList,...this.GrouppermissionsEmpRegAprList,this.GrouppermissionsEndofSer,this.GrouppermissionsRegReq,
 ...this.GrouppermissionsRegAprlvl,...this.GrouppermissionsGratuity]
     .some(p => p.id === permission);
@@ -10055,7 +10144,7 @@ isIndeterminate(): boolean {
     ...this.GrouppermissionsGenReqEsc,
     ...this.GrouppermissionsAtd,
     ...this.GrouppermissionsExpDocument,
-    ...this.GrouppermissionsEmpOver,
+    // ...this.GrouppermissionsEmpOver,
     ...this.GrouppermissionsEmpAprList,
     ...this.GrouppermissionsEmpRegAprList,
     ...this.GrouppermissionsEndofSer,
@@ -10082,7 +10171,6 @@ isemployee(): boolean {
   const GenReqEscMasterInderminate = this.isGenReqEscMasterIndeterminate();
   const AtdMasterInderminate = this.isAtdMasterIndeterminate();
   const ExpDocumentInderminate = this.isExpDocumentIndeterminate();
-  const EmpOverInderminate = this.isEmpOverIndeterminate();
   const EmpAprListInderminate = this.isEmpAprListIndeterminate();
   const EmpRegAprListInderminate = this.isEmpRegAprListIndeterminate();
   const EndofSerInderminate = this.isEndofSerIndeterminate();
@@ -10098,7 +10186,7 @@ isemployee(): boolean {
     // Return true only if some but not all checkboxes are selected
     return employeeMasterIndeterminate || departmentMasterInderminate || designationMasterInderminate || categoryMasterInderminate|| 
     GenMasterInderminate|| ReqtypeMasterInderminate|| AprMasterInderminate|| AprlvlMasterInderminate || GenReqEscMasterInderminate || AtdMasterInderminate|| ExpDocumentInderminate ||
-     EmpOverInderminate || EmpAprListInderminate || EmpRegAprListInderminate || EndofSerInderminate || RegReqInderminate || RegAprlvlInderminate ||
+     EmpAprListInderminate || EmpRegAprListInderminate || EndofSerInderminate || RegReqInderminate || RegAprlvlInderminate ||
       GratuityInderminate || otherGroupIndeterminate;
 }
 
@@ -10318,13 +10406,16 @@ isShift(): boolean {
   const ShiftPatternInderminate = this.isShiftPatternIndeterminate();
   const ShiftEmployeeInderminate = this.isShiftEmployeeIndeterminate();
   const ShiftOverRideInderminate = this.isShiftOverRideIndeterminate();
+  const OvertimePolicyInderminate = this.isOvertimePolicyIndeterminate();
+  const EmpOverInderminate = this.isEmpOverIndeterminate();
 
 
 
 
   const otherGroupIndeterminate = false;
 
-  return ShiftsInderminate || ShiftOverRideInderminate || ShiftEmployeeInderminate || ShiftPatternInderminate || otherGroupIndeterminate;
+  return ShiftsInderminate || ShiftOverRideInderminate || ShiftEmployeeInderminate || ShiftPatternInderminate
+   ||  EmpOverInderminate || OvertimePolicyInderminate || otherGroupIndeterminate;
 } 
 
 
@@ -11698,6 +11789,18 @@ onLoanReqTempChange(): void {
   this.updateShiftCheckbox();
 }
 
+ onOverTimePolicyChange(): void {
+  if (this.OvertimePolicyChecked) {
+    const idsToAdd = this.GrouppermissionsOverTimePolicy.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsOverTimePolicy.some(p => p.id === id)
+    );
+  }
+  this.updateShiftCheckbox();
+}
+
 
 
 
@@ -11802,7 +11905,6 @@ updateShiftCheckbox(): void {
     ...this.GrouppermissionsGenReqEsc,
     ...this.GrouppermissionsAtd,
     ...this.GrouppermissionsExpDocument,
-    ...this.GrouppermissionsEmpOver,
     ...this.GrouppermissionsEmpAprList,
     ...this.GrouppermissionsEmpRegAprList,
     ...this.GrouppermissionsEndofSer,
@@ -11832,7 +11934,6 @@ updateShiftCheckbox(): void {
   this.updateGenReqEscMasterCheckbox();
   this.updateAtdMasterCheckbox();
   this.updateExpDocumentCheckbox();
-  this.updateEmpOverCheckbox();
   this.updateEmpAprListCheckbox();
   this.updateEmpRegAprListCheckbox();
   this.updateEndofSerCheckbox();
@@ -12258,7 +12359,10 @@ selectShift(): void {
     ...this.GrouppermissionsShifts,
     ...this.GrouppermissionsShiftPattern,
     ...this.GrouppermissionsShiftEmployee,
-    ...this.GrouppermissionsShiftOverRide
+    ...this.GrouppermissionsShiftOverRide,
+    ...this.GrouppermissionsOverTimePolicy,
+    ...this.GrouppermissionsEmpOver,
+    
 
    
 
@@ -12277,6 +12381,8 @@ selectShift(): void {
   this.updateShiftPatternCheckbox();
   this.updateShiftEmployeeCheckbox();
   this.updateShiftOverRideCheckbox();
+  this.updateOverTimePolicyCheckbox();
+  this.updateEmpOverCheckbox();
 
 
 
@@ -12304,7 +12410,6 @@ updateSelectAll(): void {
   this.updateGenReqEscMasterCheckbox();
   this.updateAtdMasterCheckbox();
   this.updateExpDocumentCheckbox();
-  this.updateEmpOverCheckbox();
   this.updateEmpAprListCheckbox();
   this.updateEmpRegAprListCheckbox();
   this.updateEndofSerCheckbox();
@@ -12488,6 +12593,8 @@ updateShift():void{
   this.updateShiftPatternCheckbox();
   this.updateShiftEmployeeCheckbox();
   this.updateShiftOverRideCheckbox();
+  this.updateOverTimePolicyCheckbox();
+  this.updateEmpOverCheckbox();
 
   
   
@@ -12732,7 +12839,9 @@ isShiftInderminate(): boolean {
     ...this.GrouppermissionsShifts,
     ...this.GrouppermissionsShiftPattern,
     ...this.GrouppermissionsShiftEmployee,
-    ...this.GrouppermissionsShiftOverRide
+    ...this.GrouppermissionsShiftOverRide,
+    ...this.GrouppermissionsOverTimePolicy,
+    ...this.GrouppermissionsEmpOver
 
   
     

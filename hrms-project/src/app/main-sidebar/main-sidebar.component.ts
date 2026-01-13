@@ -28,6 +28,7 @@ export class MainSidebarComponent {
   Documents: any[] = []; // store expired document notifications
   // 🔔 Notification Arrays
   AssetNot: any[] = [];
+  AirticketNot: any[] = [];
   LeaveNot: any[] = [];
   GeneralReqNot: any[] = [];
   DocReqNot: any[] = [];
@@ -146,7 +147,8 @@ export class MainSidebarComponent {
   this.loadDocumentReqNotifications(selectedSchema);
   this.loadLoanReqNotifications(selectedSchema);
   this.loadAdvancesalaryReqNotifications(selectedSchema);
-  // this.loadAssetNotifications(selectedSchema);
+  this.loadAssetNotifications(selectedSchema);
+  this.loadAirTicketNotifications(selectedSchema);
 }
 
 
@@ -191,23 +193,43 @@ loadLeaveNotifications(selectedSchema: string): void {
 
 
 // ✅ Asset Notifications
-// loadAssetNotifications(selectedSchema: string): void {
-//   this.EmployeeService.getAssetNotify(selectedSchema).subscribe({
-//     next: (assets: any) => {
-//       this.AssetNot = Array.isArray(assets)
-//         ? assets
-//             .filter((item: any) => item.message?.toLowerCase().includes('asset'))
-//             .map((item) => ({ ...item, type: 'asset', highlighted: false }))
-//         : [];
-//       this.combineNotifications();
-//     },
-//     error: (err) => {
-//       console.error('❌ Error loading Asset request notifications:', err);
-//       this.AssetNot = [];
-//       this.combineNotifications();
-//     },
-//   });
-// }
+loadAssetNotifications(selectedSchema: string): void {
+  this.EmployeeService.getAssetNotify(selectedSchema).subscribe({
+    next: (assets: any) => {
+      this.AssetNot = Array.isArray(assets)
+        ? assets
+            .filter((item: any) => item.message?.toLowerCase().includes('asset'))
+            .map((item) => ({ ...item, type: 'asset', highlighted: false }))
+        : [];
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading Asset request notifications:', err);
+      this.AssetNot = [];
+      this.combineNotifications();
+    },
+  });
+}
+
+
+// ✅ AirTicket Notifications
+loadAirTicketNotifications(selectedSchema: string): void {
+  this.EmployeeService.getAirTicketNotify(selectedSchema).subscribe({
+    next: (airtickets: any) => {
+      this.AirticketNot = Array.isArray(airtickets)
+        ? airtickets
+            .filter((item: any) => item.message?.toLowerCase().includes('airticket'))
+            .map((item) => ({ ...item, type: 'airticket', highlighted: false }))
+        : [];
+      this.combineNotifications();
+    },
+    error: (err) => {
+      console.error('❌ Error loading Airticket request notifications:', err);
+      this.AirticketNot = [];
+      this.combineNotifications();
+    },
+  });
+}
 
 
 // ✅ General Request Notifications
@@ -293,7 +315,8 @@ combineNotifications(): void {
   const allItems = [
     ...this.Documents.map(item => ({ ...item, type: 'document' as const, highlighted: false })),
     ...this.LeaveNot.map(item => ({ ...item, type: 'leave' as const, highlighted: false })),
-    // ...this.AssetNot.map(item => ({ ...item, type: 'asset' as const, highlighted: false })),
+    ...this.AssetNot.map(item => ({ ...item, type: 'asset' as const, highlighted: false })),
+    ...this.AirticketNot.map(item => ({ ...item, type: 'airticket' as const, highlighted: false })),
     ...this.GeneralReqNot.map(item => ({ ...item, type: 'general' as const, highlighted: false })),
     ...this.DocReqNot.map(item => ({ ...item, type: 'docrequest' as const, highlighted: false })),
     ...this.LoanReqNot.map(item => ({ ...item, type: 'loanrequest' as const, highlighted: false })),
@@ -329,9 +352,12 @@ onNotificationClick(noti: any): void {
     case 'leave':
       this.router.navigate(['/main-sidebar/leave-options/leave-approvals']);
       break;
-    // case 'asset':
-    //   this.router.navigate(['/main-sidebar/asset-options/asset-approval']);
-    //   break;
+    case 'asset':
+      this.router.navigate(['/main-sidebar/asset-options/asset-approval']);
+      break;
+    case 'airticket':
+      this.router.navigate(['/main-sidebar/asset-options/airticket-approvals']);
+      break;
     case 'general':
       this.router.navigate(['/main-sidebar/sub-sidebar/approvals']);
       break;

@@ -545,7 +545,7 @@ updateAssetType(): void {
 
   this.employeeService.updateLoanApplication(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
-      alert(' Loan Approval Level  updated successfully!');
+      alert(' Loan Application updated successfully!');
       this.closeEditModal();
       window.location.reload();
     },

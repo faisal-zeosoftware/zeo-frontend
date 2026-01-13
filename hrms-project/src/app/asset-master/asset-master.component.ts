@@ -427,7 +427,8 @@ updateAssetType(): void {
     (response) => {
       alert('Asset  updated successfully!');
       this.closeEditModal();
-      this.loadLAssetType(); // reload updated list
+      // this.loadLAsset(); 
+      window.location.reload();
     },
 (error) => {
   console.error('Error updating asset:', error);

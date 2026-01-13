@@ -185,6 +185,7 @@
               <strong *ngIf="noti.type === 'docrequest'">🗂️ Document Request</strong>
               <strong *ngIf="noti.type === 'loanrequest'">💰 Loan Request</strong>
               <strong *ngIf="noti.type === 'assetrequest'">🧰 Asset Request</strong>
+              <strong *ngIf="noti.type === 'airticket'">✈️ AirTicket Request</strong>
               <strong *ngIf="noti.type === 'advancesalaryrequest'">💵 Advance Salary Request</strong>
               <div class="text-muted small">
                 {{ noti.created_at | date: 'medium' }}

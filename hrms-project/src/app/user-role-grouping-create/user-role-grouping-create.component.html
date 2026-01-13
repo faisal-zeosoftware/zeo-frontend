@@ -359,40 +359,6 @@
                     </div>
                   </div>
                 </div>
-
-
-                <div class="row">
-                  <div class="col-md-3">
-                    <mat-checkbox [(ngModel)]="EmpOverChecked" 
-                              [indeterminate]="isEmpOverIndeterminate()" 
-
-                                  (change)="onEmpOverChange()" 
-                                  [ngModelOptions]="{standalone: true}">
-                    Employee Overtime
-                    </mat-checkbox>
-                  </div>
-                  <div class="col-md-9">
-
-
-                    
-                    <div class="selection_checkmark_sec">
-                      <div class="all_selection_Sec">
-                        <div class="row">
-                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsEmpOver">
-                            <mat-checkbox [value]="permission.id" 
-                                          (change)="onCheckboxChangeEmpOver(permission.id)" 
-                                          [checked]="selectedPermissions.includes(permission.id)">
-                              {{ getDisplayNameEmpOver(permission.codename) }}
-                            </mat-checkbox>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-
-
                 
                 <div class="row">
                   <div class="col-md-3">
@@ -3801,6 +3767,70 @@
                                         (change)="onCheckboxChangesShiftOverRide(permission.id)"
                                          [checked]="selectedPermissions.includes(permission.id)">
                                             {{ getDisplayNameShiftOverRide(permission.codename) }}
+                                        </mat-checkbox> 
+                                    </span> 
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+              
+                  <div class="col-md-3">
+                      <span class="">
+                    <mat-checkbox [(ngModel)]="EmpOverChecked" 
+                        [indeterminate]="isEmpOverIndeterminate()" 
+                        (change)="onEmpOverChange()" 
+                        [ngModelOptions]="{standalone: true}">
+                    Employee Overtime
+                    </mat-checkbox>
+                    </span><br>
+                  </div>
+                  <div class="col-md-9">
+
+                    <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                        <div class="row">
+                          <div class="col-md-2" *ngFor="let permission of GrouppermissionsEmpOver">
+                            <mat-checkbox [value]="permission.id" 
+                                          (change)="onCheckboxChangeEmpOver(permission.id)" 
+                                          [checked]="selectedPermissions.includes(permission.id)">
+                              {{ getDisplayNameEmpOver(permission.codename) }}
+                            </mat-checkbox>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
+
+
+            
+              <div class="col-md-3">
+                <span class="">
+                    <mat-checkbox [(ngModel)]="OvertimePolicyChecked" 
+                    [indeterminate]="isOvertimePolicyIndeterminate()" 
+                    (change)="onOverTimePolicyChange()" 
+                    [ngModelOptions]="{standalone: true}">
+                    OverTime Policy 
+                    </mat-checkbox>
+                </span><br>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="selection_checkmark_sec">
+                    <div class="all_selection_Sec">
+                        <div class="row">
+                      
+                            <div class="col-md-2" *ngFor="let permission of GrouppermissionsOverTimePolicy">
+                                <h2>
+                                    <span>
+                                        <mat-checkbox [value]="permission.id"
+                                        (change)="onCheckboxChangesOverTimePolicy(permission.id)"
+                                         [checked]="selectedPermissions.includes(permission.id)">
+                                            {{ getDisplayNameOverTimepolicy(permission.codename) }}
                                         </mat-checkbox> 
                                     </span> 
                                 </h2>
