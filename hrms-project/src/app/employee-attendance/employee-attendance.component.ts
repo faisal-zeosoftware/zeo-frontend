@@ -365,11 +365,11 @@ export class EmployeeAttendanceComponent {
   attendanceData: any = null; // Define this at the class level
 
 
-generateAttendanceReport(): void {
-    if (!this.year || !this.month || !this.employee_id) {
-      alert('Please enter Year, Month, and Employee');
-      return;
-    }
+  generateAttendanceReport(): void {
+    // if (!this.year || !this.month || !this.employee_id) {
+    //   alert('Please enter Year, Month, and Employee');
+    //   return;
+    // }
 
     const formData = new FormData();
     formData.append('year', this.year.toString());
@@ -387,6 +387,29 @@ generateAttendanceReport(): void {
       }
     );
   }
+
+// generateAttendanceReport(): void {
+//     if (!this.year || !this.month || !this.employee_id) {
+//       alert('Please enter Year, Month, and Employee');
+//       return;
+//     }
+
+//     const formData = new FormData();
+//     formData.append('year', this.year.toString());
+//     formData.append('month', this.month.toString());
+//     formData.append('employee_id', this.employee_id.toString());
+
+//     this.leaveService.CreateEmployeeattendance(formData).subscribe(
+//       (response) => {
+//         console.log('Report data received', response);
+//         this.attendanceData = response[0]; // Assuming response is an array as shown in your backend example
+//       },
+//       (error) => {
+//         console.error('Error generating report', error);
+//         alert('Failed to generate report. Please try again.');
+//       }
+//     );
+//   }
 
 
 
