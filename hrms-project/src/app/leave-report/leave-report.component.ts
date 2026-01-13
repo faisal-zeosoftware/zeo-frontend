@@ -436,7 +436,7 @@ deleteReport(report: any, event: Event) {
   // Proceed with deletion for all other IDs
   if (confirm(`Are you sure you want to delete "${report.file_name}"?`)) {
     this.isLoading = true;
-    this.leaveService.deleteDocumentReport(report.id).subscribe({
+    this.leaveService.deleteLeaveReport(report.id).subscribe({
       next: (res) => {
         this.isLoading = false;
         this.fetchSavedReportsList(); // Refresh list

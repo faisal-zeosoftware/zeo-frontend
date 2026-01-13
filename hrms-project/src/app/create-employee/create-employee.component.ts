@@ -643,7 +643,10 @@ export class CreateEmployeeComponent implements OnInit {
           // Success modal
           const dialogRef = this.dialog.open(SuccesModalComponent, {
             width: '300px',
-            data: { message: 'Employee created successfully!', emp_id: createdEmployeeId },
+            data: {
+              message: 'Employee created successfully!',
+              emp_id: createdEmployeeId   // ✅ PASS IT
+            }
           });
 
           

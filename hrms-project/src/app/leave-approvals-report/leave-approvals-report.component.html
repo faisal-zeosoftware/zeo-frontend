@@ -1,109 +1,293 @@
-<div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section" >
 
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-5">
-                    <h1>Leave Approval Reports</h1>
-                </div>
-
-                <div class="col-md-2">
-                 
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
-
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-
-                      
-                   
-                   
-                          </div>
-                </div>
-                 
-            </div>
-           
-           
-
+<div class="container">
+  <div class="comapny_section" >
+    <div class="header_section">
+      <div class="row align-items-center px-4">
+        <div class="col-md-4">
+          <h1 class="page-title">Leave Approval  Reports</h1>
         </div>
-
-        <div class="tab_back mt-5">
-            <mat-tab-group> 
-                <mat-tab label="Standard Report">
-                    <div class="tab_boddy p-3">
-                      <button class="btn btn-primary mb-3" *ngIf="hasExportPermission" (click)="downloadExcel()">Download Excel</button>
-                      <table class="table table-bordered table-striped">
-                        <thead>
-                          <tr>
-                            <th>Employee</th>
-                            <th>Branch</th>
-                            <th>Department</th>
-                            <th>Designation</th>
-                            <th>Category</th>
-                            <th>Leave Request</th>
-                            <th>Compensatory Request</th>
-                            <th>Level</th>
-
-                            <th>Approver</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Rejection Reason</th>
-                            <th>Note</th>
-                            <th>Updated At</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <ng-container *ngFor="let request of groupedApprovalData">
-                            <ng-container *ngFor="let approval of request.approvals; let i = index">
-                              <tr>
-                                <td data-label="Employee" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_first_name || 'N/A' }}</td>
-                                <td data-label="Branch" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_branch_id || '-' }}</td>
-                                <td data-label="Department" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_dept_id || '-' }}</td>
-                                <td data-label="Designation" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_desgntn_id || '-' }}</td>
-                                <td data-label="Category" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.emp_ctgry_id || '-' }}</td>
-                                <td data-label="Leave Request" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.leave_request || '-' }}</td>
-                                <td data-label="Compensatory Request" *ngIf="i === 0" [attr.rowspan]="request.approvals.length">{{ approval.compensatory_request || '-' }}</td>
-
-                                <!-- Per-approval data -->
-                                <td data-label="Level">{{ approval.level || '-' }}</td>
-
-                                <td data-label="Approver">{{ approval.approver || '-' }}</td>
-                                <td data-label="Role">{{ approval.role || '-' }}</td>
-                                <td data-label="Status">{{ approval.status || '-' }}</td>
-                                <td data-label="Rejection Reason">{{ approval.rejection_reason || '-' }}</td>
-                                <td data-label="Note">{{ approval.note || '-' }}</td>
-                                <td data-label="Updated At">{{ approval.updated_at | date: 'short' }}</td>
-                              </tr>
-                            </ng-container>
-                          </ng-container>
-                        </tbody>
-                      </table>
-                      
-                      <p *ngIf="approvalReportData.length === 0">No report data available.</p>
-                    </div>
-                  </mat-tab>
-                  
-                  <mat-tab label="Custom Report ">
-      
-                    <div class="tab_boddy">
-                    
-                    </div>
-                      </mat-tab>
-      
-                 
-                      </mat-tab-group> 
-      
-                      </div>
-       
+    
+        <div class="col-md-6">
+          <div class="search-container-modern">
+            <mat-icon class="search-main-icon">search</mat-icon>
         
-           
-  
+            <input type="text" 
+                   class="search-input-field" 
+                   placeholder="Search assets, branches, or conditions..." 
+                   [(ngModel)]="searchText" 
+                   (input)="applyFilters()">
+        
+            <button class="filter-trigger-btn" [matMenuTriggerFor]="filterMenu" matRipple>
+              <mat-icon style="color: black;">tune</mat-icon>
+              <span class="filter-text">Filters</span>
+            </button>
+            <mat-menu #filterMenu="matMenu" class="custom-filter-menu" backdropClass="glass-backdrop" hasBackdrop="true">
+              <div class="filter-dropdown-container" (click)="$event.stopPropagation()">
+                
+                <div class="filter-main-header d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="d-flex align-items-center">
+                      <div class="header-icon-badge me-3">
+                        <mat-icon class="text-primary">settings_input_component</mat-icon>
+                      </div>
+                      <div>
+                        <span class="m-0 h6 font-weight-bold d-block">Report Designer</span>
+                        <small class="text-muted">Configure your view and save templates</small>
+                      </div>
+                    </div>
+                  </div>
+                  <button mat-icon-button (click)="$event.stopPropagation()" class="text-muted">
+                    <mat-icon>help_outline</mat-icon>
+                  </button>
+                </div>
+            
+                <div class="row m-0 p-3">
+                  <div class="col-md-3 filter-col border-right">
+                    <div class="section-wrapper h-100">
+                      
+                      <div class="col-header d-flex align-items-center mb-3">
+                        <mat-icon class="me-2 text-primary">filter_list</mat-icon> 
+                        <span class="fw-bold text-uppercase small">Data Controls</span>
+                      </div>
+                  
+                      <div class="filter-scroll-area main-scroll px-2">
+
+                      
+                        
+                        <div class="filter-section-card mb-4">
+                          <div class="section-title">Active Filters</div>
+                          
+                          <div *ngFor="let field of filterFields" class="category-block mb-2">
+                            <div class="category-header d-flex justify-content-between align-items-center" 
+                                 (click)="toggleCategory(field)" 
+                                 style="cursor: pointer;">
+                              <span>{{ field.replace('emp_', '').replace('_id', '').replace('_', ' ') | titlecase }}</span>
+                              <mat-icon class="expand-icon" [class.rotated]="expandedCategories[field]">
+                                expand_more
+                              </mat-icon>
+                            </div>
+                            
+                            <div class="filter-list" *ngIf="expandedCategories[field]">
+                              <div class="filter-item-row animate-slide-down" *ngFor="let val of getKeys(activeFilters[field])">
+                                <mat-checkbox color="primary" [(ngModel)]="activeFilters[field][val]" (change)="applyFilters()">
+                                  <span class="checkbox-text">{{ val | titlecase }}</span>
+                                </mat-checkbox>
+                              </div>
+                              
+                              <div *ngIf="getKeys(activeFilters[field]).length === 0" class="text-muted extra-small ps-3">
+                                No options available
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grouping-section-card">
+                          <div class="section-title">Grouped By</div>
+                          <p class="text-muted extra-small mb-2">Click to set grouping hierarchy</p>
+                          
+                          <div class="group-pill-container d-flex flex-column gap-2">
+                            <button *ngFor="let field of fieldSettings | slice:0:6" 
+                                    class="group-pill-btn"
+                                    [class.is-active]="currentGroupBy.includes(field.key)"
+                                    (click)="setGroupBy(field.key)">
+                              
+                              <div class="d-flex align-items-center justify-content-between w-100">
+                                <div class="d-flex align-items-center">
+                                  <span *ngIf="currentGroupBy.includes(field.key)" class="group-rank">
+                                    {{ currentGroupBy.indexOf(field.key) + 1 }}
+                                  </span>
+                                  <span class="pill-label">{{ field.label }}</span>
+                                </div>
+                                <mat-icon *ngIf="currentGroupBy.includes(field.key)" class="check-icon">done</mat-icon>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+                  
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 filter-col border-left">
+                    <div class="section-wrapper">
+                      <div class="col-header d-flex justify-content-between">
+                        <span><mat-icon>view_column</mat-icon> COLUMN ORDER</span>
+                        <span class="badge-count">{{ fieldSettings.length }} Fields</span>
+                      </div>
+                  
+                      <div class="filter-scroll-area main-scroll" 
+                           cdkDropList 
+                           (cdkDropListDropped)="drop($event)">
+                        
+                        <div *ngFor="let field of fieldSettings" 
+                             class="field-item-card" 
+                             cdkDrag>
+                          
+                          <div class="d-flex align-items-center">
+                            <mat-icon cdkDragHandle class="drag-handle me-2">drag_indicator</mat-icon>
+                            
+                            <mat-checkbox color="primary" [(ngModel)]="field.visible">
+                              <span class="checkbox-label">{{ field.label }}</span>
+                            </mat-checkbox>
+                          </div>
+                  
+                          <div class="custom-placeholder" *cdkDragPlaceholder></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            
+                  <div class="col-md-5 filter-col border-left">
+                    <div class="section-wrapper">
+                      <div class="col-header"><mat-icon>history</mat-icon> SAVED TEMPLATES</div>
+                      <div class="saved-reports-container mb-3">
+                        <div *ngFor="let report of savedReports" class="saved-report-item">
+                          <div class="report-info w-100" (click)="loadSavedReport(report)">
+                            <mat-icon class="file-icon" [class.text-primary]="report.id === 1">
+                              {{ report.id === 1 ? 'verified_user' : 'description' }}
+                            </mat-icon>
+                            <div class="d-flex flex-column">
+                              <span class="report-name" [class.font-weight-bold]="report.id === 1">
+                                {{ report.file_name }}
+                              </span>
+                              <small class="report-meta">
+                                {{ report.id === 1 ? 'System Default (Protected)' : 'Custom View' }}
+                              </small>
+                            </div>
+                          </div>
+                        
+                          <div class="report-actions d-flex align-items-center">
+                            <button class="btn-load-report" (click)="loadSavedReport(report)">
+                              <mat-icon>play_circle_outline</mat-icon>
+                            </button>
+                        
+                            <button *ngIf="report.id !== 1 && report.file_name !== 'std_report'" 
+                                    class="btn-delete-report ms-2" 
+                                    (click)="deleteReport(report, $event)">
+                              <mat-icon color="warn">delete_outline</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                        <div *ngIf="savedReports.length === 0" class="empty-state">
+                          <mat-icon>folder_off</mat-icon>
+                          <p>No templates saved yet</p>
+                        </div>
+                      </div>
+            
+                      <div class="save-card-modern">
+                        <div class="save-header">
+                          <mat-icon>add_box</mat-icon>
+                          <span>Save current view</span>
+                        </div>
+                        <div class="save-input-wrapper">
+                          <input type="text" class="clean-input" [(ngModel)]="customFileName" placeholder="Filename...">
+                          <button class="btn-save-confirm" (click)="saveCustomFile()">
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-menu>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="table-stats-bar px-4 d-flex justify-content-between align-items-center mt-4">
+      <div class="d-flex align-items-center gap-3">
+        <h3 class="m-0">Leave Approval Report</h3>
+        <span class="badge badge-pill badge-light border">Total Records: {{ displayData.length }}</span>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary" *ngIf="currentGroupBy.length > 0 || searchText" (click)="resetToStandard()">
+          <mat-icon>restart_alt</mat-icon> Reset View
+        </button>
+        <button class="btn btn-success btn-export-excel" (click)="downloadExcel()">
+          <mat-icon>download</mat-icon> Export Excel
+        </button>
+      </div>
     </div>
     
-
-
+    <div class="com_list px-4 mt-3">
+      <div class="table-responsive shadow-sm border rounded">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light text-secondary">
+            <tr>
+              <ng-container *ngFor="let field of fieldSettings">
+                <th *ngIf="field.visible" class="text-uppercase small font-weight-bold p-3">
+                  {{ field.label }}
+                </th>
+              </ng-container>
+            </tr>
+          </thead>
     
+          <tbody>
+            <ng-container *ngFor="let group of groupedData">
+              
+              <tr class="group-header bg-light" *ngIf="currentGroupBy.length > 0">
+                <td [attr.colspan]="visibleFieldsCount" class="py-2">
+                  <mat-icon class="align-middle text-primary" style="font-size: 18px;">folder</mat-icon>
+                  <strong class="ms-2">{{ group.groupName }}</strong>
+                  <span class="text-muted small ml-2">({{ group.children.length }} items)</span>
+                </td>
+              </tr>
+    
+              <ng-container *ngIf="currentGroupBy.length > 1">
+                <ng-container *ngFor="let sub of group.children">
+                  <tr class="group-header bg-white">
+                    <td [attr.colspan]="visibleFieldsCount" style="padding-left: 40px;" class="py-2">
+                      <mat-icon class="align-middle text-secondary" style="font-size: 18px;">subdirectory_arrow_right</mat-icon>
+                      <span class="ms-2 text-dark font-italic">{{ sub.groupName }}</span>
+                    </td>
+                  </tr>
+                  <ng-container *ngTemplateOutlet="rowTemplate; context: { $implicit: sub.children }"></ng-container>
+                </ng-container>
+              </ng-container>
+    
+              <ng-container *ngIf="currentGroupBy.length <= 1">
+                <ng-container *ngTemplateOutlet="rowTemplate; context: { $implicit: group.children }"></ng-container>
+              </ng-container>
+    
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <ng-template #rowTemplate let-items>
+      <tr *ngFor="let item of items" class="data-row">
+        <td *ngFor="let f of fieldSettings" [hidden]="!f.visible" class="align-middle py-3">
+          
+          <ng-container *ngIf="f.key === 'status'; else dateCheck">
+            <span class="badge px-3 py-2 rounded-pill" 
+                  [ngClass]="{
+                    'bg-success-light text-success': item[f.key] === 'Approved',
+                    'bg-danger-light text-danger': item[f.key] === 'Rejected',
+                    'bg-warning-light text-warning': item[f.key] === 'Pending'
+                  }">
+              {{ item[f.key] }}
+            </span>
+          </ng-container>
+    
+          <ng-template #dateCheck>
+            <ng-container *ngIf="f.key === 'updated_at'; else defaultCell">
+              <span class="text-nowrap">{{ item[f.key] | date:'mediumDate' }}</span>
+            </ng-container>
+          </ng-template>
+    
+          <ng-template #defaultCell>
+            <span [class.text-muted]="!item[f.key]">
+              {{ item[f.key] || 'Unassigned' }}
+            </span>
+          </ng-template>
+        </td>
+      </tr>
+    </ng-template>
+  </div>
+  
+
+
+  
 
 
 </div>

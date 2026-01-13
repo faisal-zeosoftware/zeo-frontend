@@ -1476,4 +1476,68 @@ deleteLeaveReport(reportId: number): Observable<any> {
 
 
 
+// leave approval report
+
+
+
+getAvailableFieldsLeaveApprovalReport(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/Lv_Approval_Report/select_approve_report_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+
+
+getLeaveApprovalReport(): Observable<any[]> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/Lv_Approval_Report/?schema=${selectedSchema}`;
+  return this.http.get<any[]>(apiUrl);
+}
+
+
+deleteLeaveApprovalReport(reportId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  // Adjust the URL to match your Django/Backend URL pattern
+  const apiUrl = `${this.apiUrl}/calendars/api/Lv_Approval_Report/${reportId}/?schema=${selectedSchema}`;
+  
+  return this.http.delete(apiUrl);
+}
+
+
+// leave balance report 
+
+getAvailableFieldsLeaveBalaceReport(): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/lvBalanceReport/select_attendancereport_fields/?schema=${selectedSchema}`;
+  return this.http.get<any>(apiUrl);
+}
+
+
+getLeaveBalanceReport(): Observable<any[]> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/lvBalanceReport/?schema=${selectedSchema}`;
+  return this.http.get<any[]>(apiUrl);
+}
+
+
+deleteLeaveBalanceReport(reportId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  // Adjust the URL to match your Django/Backend URL pattern
+  const apiUrl = `${this.apiUrl}/calendars/api/lvBalanceReport/${reportId}/?schema=${selectedSchema}`;
+  
+  return this.http.delete(apiUrl);
+}
+
+
+
 }

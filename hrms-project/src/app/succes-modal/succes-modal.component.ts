@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EmployeeFamilyComponent } from '../employee-family/employee-family.component';
 
 
@@ -14,6 +14,7 @@ export class SuccesModalComponent {
   constructor( private dialog: MatDialog,
     
    private ref:MatDialogRef<EmployeeFamilyComponent>,
+   @Inject(MAT_DIALOG_DATA) public data: any,
    private dialogRef: MatDialogRef<SuccesModalComponent>
    ) {}
 
@@ -24,7 +25,10 @@ export class SuccesModalComponent {
     const dialogRef = this.dialog.open(EmployeeFamilyComponent, {
     width:'80%',
         height:'500px',// Adjust width as needed
-      data: { message: 'Employee created successfully!' } // Pass any data you want to display in the modal
+      data: { message: 'Employee created successfully!',
+        emp_id: this.data.emp_id // ✅ PASS FORWARD
+
+       } // Pass any data you want to display in the modal
     });
 
     dialogRef.afterClosed().subscribe(() => {
