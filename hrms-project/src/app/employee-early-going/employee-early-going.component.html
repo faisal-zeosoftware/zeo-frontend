@@ -1,0 +1,126 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+
+        <div class="com_list mt-4">
+            <div class="cpm-sec shadow-sm p-4 bg-white rounded">
+              <h2>Employee Early Going</h2>
+              <hr>
+              <div class="row align-items-end">
+                <div class="col-md-3">
+                  <label>Year</label>
+                  <input type="number" [(ngModel)]="selectedYear" class="form-control">
+                </div>
+                <div class="col-md-3">
+                  <label>Month</label>
+                  <select [(ngModel)]="selectedMonth" class="form-control">
+                    <option value="1">January</option>
+                      <option value="2">February</option>
+                      <option value="3">March</option>
+                      <option value="4">April</option>
+                      <option value="5">May</option>
+                      <option value="6">June</option>
+                      <option value="7">July</option>
+                      <option value="8">August</option>
+                      <option value="9">September</option>
+                      <option value="10">October</option>
+                      <option value="11">November</option>
+                      <option value="12">December</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center" 
+                    (click)="generateEmployeeEarlyGoing()" 
+                    [disabled]="isLoading"> 
+              
+              <ng-container *ngIf="!isLoading">
+                  Generate
+              </ng-container>
+    
+              <ng-container *ngIf="isLoading">
+                <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+                Loading...
+              </ng-container>
+            </button>
+                </div>
+              </div>
+            </div>
+          
+            <div class="mt-4" *ngIf="originalData.length > 0">
+              
+              <div class="row mb-3 p-3 bg-light border rounded mx-0">
+                <div class="col-md-4">
+                  <label class="small font-weight-bold">Search Employee</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text bg-white"><i class="fa fa-search" aria-hidden="true"></i></span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Type name..." 
+                           [(ngModel)]="searchName" (input)="applyLocalFilters()">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="small font-weight-bold">Filter by Date</label>
+                  <input type="date" class="form-control" 
+                         [(ngModel)]="searchDate" (change)="applyLocalFilters()">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                  <button class="btn btn-sm btn-outline-secondary" (click)="searchName=''; searchDate=''; applyLocalFilters()">
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+          
+              <div class="table-responsive shadow-sm border rounded mt-3" *ngIf="displayData.length > 0">
+                <table class="table table-hover mb-0 text-center">
+                  <thead class="bg-dark text-white">
+                    <tr>
+                      <th>Date</th>
+                      <th>Employee Name</th>
+                      <th>Check-In</th>
+                      <th>Check-Out</th>
+                      <th>Actual Work</th>
+                      <th>Attendance Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of displayData">
+                      <td class="align-middle">{{ item.date | date:'dd/MM/yyyy' }}</td>
+                      <td class="text-left align-middle">
+                        <strong>{{ item.employee_name }}</strong>
+                      </td>
+                      <td class="align-middle">
+                        {{ item.check_in_time | slice:0:5 }}
+                        <small class="d-block text-muted">Shift: {{item.shift_start_time | slice:0:5}}</small>
+                      </td>
+                      <td class="align-middle">
+                        {{ item.check_out_time | slice:0:5 }}
+                        <small class="d-block text-muted">Shift: {{item.shift_end_time | slice:0:5}}</small>
+                      </td>
+                      <td class="align-middle">{{ item.actual_work_duration | slice:0:8 }}</td>
+                      
+                      <td class="align-middle">
+                        <span *ngIf="item.late_check_in" 
+                              class="badge badge-warning text-dark mr-1 p-2">
+                          <mat-icon style="font-size: 14px; height: 14px; width: 14px;">schedule</mat-icon> Late
+                        </span>
+              
+                        <span *ngIf="item.early_check_out" 
+                              class="badge badge-danger mr-1 p-2">
+                          <mat-icon style="font-size: 14px; height: 14px; width: 14px;">logout</mat-icon> Early
+                        </span>
+              
+                        <span *ngIf="!item.late_check_in && !item.early_check_out" class="badge badge-success">
+                          On Time
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+
+    </div>
+</div>

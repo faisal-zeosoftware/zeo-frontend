@@ -150,6 +150,8 @@ import { AssetReportComponent } from './asset-report/asset-report.component';
 import { AssetTransactionReportComponent } from './asset-transaction-report/asset-transaction-report.component';
 import { EmployeeAttendanceComponent } from './employee-attendance/employee-attendance.component';
 import { OvertimePolicyComponent } from './overtime-policy/overtime-policy.component';
+import { AttendanceSidebarComponent } from './attendance-sidebar/attendance-sidebar.component';
+import { EmployeeEarlyGoingComponent } from './employee-early-going/employee-early-going.component';
 
 
 const routes: Routes = [
@@ -657,6 +659,27 @@ const routes: Routes = [
       component:AssetEscalationComponent,
     },
 
+
+  ]
+
+},
+
+{
+  path: 'attendance-sidebar',
+  component: AttendanceSidebarComponent,
+  children:[
+   
+    {
+      path: 'attendace-marking',
+      component: AttendaceMarkingComponent,
+    },
+
+      {
+      path: 'employee-early-going',
+      component: EmployeeEarlyGoingComponent,
+    },
+    
+   
 
   ]
 

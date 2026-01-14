@@ -229,6 +229,8 @@ import { AssetEscalationComponent } from './asset-escalation/asset-escalation.co
 import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
 import { ReportOptionsComponent } from './report-options/report-options.component';
 import { OvertimePolicyComponent } from './overtime-policy/overtime-policy.component';
+import { AttendanceSidebarComponent } from './attendance-sidebar/attendance-sidebar.component';
+import { EmployeeEarlyGoingComponent } from './employee-early-going/employee-early-going.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -416,7 +418,9 @@ import { OvertimePolicyComponent } from './overtime-policy/overtime-policy.compo
      AssetEscalationComponent,
      LeaveEscalationComponent,
      ReportOptionsComponent,
-     OvertimePolicyComponent
+     OvertimePolicyComponent,
+     AttendanceSidebarComponent,
+     EmployeeEarlyGoingComponent
      
      
 

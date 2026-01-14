@@ -1,0 +1,70 @@
+<div class="sub-sidebar clickOutside">
+    <mat-sidenav-container>
+      <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
+        <div class="wrapper">
+  
+          <div class="sidebar-top"> 
+             <!-- Toggle Button (placed OUTSIDE sidebar) -->
+      <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
+        <span *ngIf="!isMenuOpen">☰</span>
+        <span *ngIf="isMenuOpen">×</span>
+      </button>
+                
+    
+          </div>
+          <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+            <ul>
+                  <li routerLink="/main-sidebar/attendance-sidebar/attendace-marking" ><a><mat-icon>peoples</mat-icon> Attendance Marking</a></li>
+               
+                
+                  <li routerLink="/main-sidebar/attendance-sidebar/employee-early-going" ><a><mat-icon>peoples</mat-icon> Employees Early going</a></li>
+                 
+                
+  
+                    <mat-nav-list>
+       
+    
+     
+  
+                      
+                      <div>
+              
+              
+                   
+                      </div>
+                      <style>
+                        .mat-expansion-panel-body {
+                          padding: 0 0px 16px !important;
+                        }
+                        .mat-expansion-panel{
+                  background: transparent;
+                 
+                }
+                      </style>
+              
+                    </mat-nav-list>
+                     
+                </ul> 
+    
+                     
+     
+            </div>
+      
+        </div>
+     
+    
+    
+    
+    
+    
+    
+        </mat-sidenav>
+    
+    
+        <router-outlet></router-outlet>
+    
+        <!-- <router-outlet></router-outlet> -->
+    
+      </mat-sidenav-container>
+    
+    </div>
