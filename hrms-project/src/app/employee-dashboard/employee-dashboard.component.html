@@ -77,6 +77,48 @@
             </ul>
           </li>
 
+
+
+             <li class="nav-item" >
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="javascript:void(0)"
+               (click)="togglePunchingDropdown()">
+              <div>
+                <i class="bi bi-book me-2"></i>
+                <span> Daily Punching</span>
+              </div>
+              <i [class]="isPunchingDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+            </a>
+          
+            <!-- Dropdown Items -->
+            <ul *ngIf="isPunchingDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'punching'" (click)="selectTabNav('punching')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Attendance Marking
+                </a>
+              </li>
+          
+              <li class="nav-item" [class.active]="activeTabNav === 'recheckemp'" (click)="selectTabNav('recheckemp')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Recheck-In
+                </a>
+              </li>
+
+          
+
+             
+
+
+            </ul>
+          </li>
+
+
+
+
+
+
+          
+
           <li class="nav-item">
             <a class="nav-link" href="#" data-tab="extracurricular">
               <i class="bi bi-trophy me-2"></i>
@@ -89,12 +131,7 @@
               <span>Payslip</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-tab="career">
-              <i class="bi bi-briefcase me-2"></i>
-              <span>Career</span>
-            </a>
-          </li>
+         
           <li class="nav-item">
             <a class="nav-link" href="#" data-tab="health">
               <i class="bi bi-heart-pulse me-2"></i>
@@ -2308,6 +2345,105 @@
 
 
       </section>
+
+
+
+<!-- Employee Punching section -->
+
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="punching"
+      *ngIf="activeTabNav === 'punching'">
+
+        <!-- Financial content here -->
+
+
+         
+           <div class="white-outer-sec">
+
+            <div class="row">
+              <div class="col-md-6">
+                <form (ngSubmit)="EmployeePunching()">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <button type="submit" class="btn btn-success btn-full mt-4" [disabled]="isLoading">
+                        <span *ngIf="!isLoading">Check-In</span>
+                        <span *ngIf="isLoading">
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                          Finding Location...
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+      
+              </div>
+
+
+              <div class="col-md-6">
+
+                <form (ngSubmit)="EmployeePunchingOut()">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <button type="submit" class="btn btn-danger btn-full mt-4" [disabled]="isLoadingout">
+                        <span *ngIf="!isLoadingout">Check-Out</span>
+                        <span *ngIf="isLoadingout">
+                          <span class="spinner-border spinner-border-sm mr-1"></span>
+                          loading...
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+      
+                
+              </div>
+            </div>
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="recheckemp"
+      *ngIf="activeTabNav === 'recheckemp'">
+
+        <!-- Financial content here -->
+
+
+         
+           <div class="white-outer-sec">
+            <form (ngSubmit)="recheckEmployee()" enctype="multipart/form-data">
+              
+            
+              <div class="row" >
+              
+                <div class="col-md-3">
+                  <button type="submit" class="btn btn-success btn-full mt-4">Re Check-In</button>
+                </div>
+              </div>
+            </form>
+  
+        </div>
+
+
+       
+
+
+      </section>
+
+
+
+      
+
+
+
+
+
     </main>
   </div>
 </div>

@@ -695,6 +695,13 @@ toggleRequestsDropdown() {
 
 
 
+  isPunchingDropdownOpen = false;
+
+togglePunchingDropdown() {
+  this.isPunchingDropdownOpen = !this.isPunchingDropdownOpen;
+}
+
+
 
   start_date:any='';
   end_date:any='';
@@ -770,6 +777,205 @@ toggleRequestsDropdown() {
         }
       }
     );
+  }
+
+
+  getLocation(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject("Geolocation not supported by this browser.");
+        return;
+      }
+  
+      const options: PositionOptions = {
+        enableHighAccuracy: true, // Use GPS if available
+        timeout: 15000,           // Increased to 15s to allow GPS to wake up
+        maximumAge: 0             // Strictly force a fresh location fetch
+      };
+  
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            accuracy: position.coords.accuracy // Useful for debugging
+          });
+        },
+        (error) => {
+          let errorMsg = "";
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMsg = "User denied the request for Geolocation.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMsg = "Location information is unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMsg = "The request to get user location timed out.";
+              break;
+            default:
+              errorMsg = "An unknown error occurred.";
+              break;
+          }
+          reject(errorMsg);
+        },
+        options
+      );
+    });
+  }
+
+
+getAddress(lat: number, lng: number): Promise<string> {
+  // Adding zoom=18 helps get more precise building-level addresses
+  // accept-language=en ensures the address is in English for consistency
+  return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=en`)
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.display_name) {
+        return data.display_name;
+      }
+      return "Address not found";
+    })
+    .catch(() => "Unable to retrieve address");
+}
+
+
+
+ isLoading: boolean = false;
+
+ async EmployeePunching(): Promise<void> {
+  if (!this.selectedEmployeeId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+  this.isLoading = true;
+
+  try {
+    const position = await this.getLocation();
+    console.log(`Accuracy: ${position.accuracy} meters`); // Log this to see how precise it is
+    
+    const address = await this.getAddress(position.lat, position.lng);
+
+    const data = {
+      employee: this.selectedEmployeeId,
+      check_in_lat: position.lat,
+      check_in_lng: position.lng,
+      check_in_location: address
+    };
+
+    this.EmployeeService.registerEmployeeAttendenceCheckIn(data).subscribe({
+      next: (res) => {
+        alert('✅ Check-In successful!');
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.handleError(err);
+        this.isLoading = false;
+      }
+    });
+  } catch (error) {
+    this.isLoading = false;
+    alert('⚠️ Location Error: ' + error);
+  }
+}
+
+isLoadingout: boolean = false;
+
+async EmployeePunchingOut(): Promise<void> {
+  if (!this.selectedEmployeeId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
+  this.isLoadingout = true; // Start loading
+
+  try {
+    const position = await this.getLocation();
+    const address = await this.getAddress(position.lat, position.lng);
+
+    const data = {
+      employee: this.selectedEmployeeId,
+      check_in_lat: position.lat,
+      check_in_lng: position.lng,
+      check_in_location: address
+    };
+
+    this.EmployeeService.registerEmployeeAttendenceCheckOut(data).subscribe({
+      next: (response) => {
+        alert('✅ Employee Check-Out successful!');
+        this.isLoadingout = false;
+      },
+      error: (error) => {
+        this.handleError(error);
+        this.isLoadingout = false;
+      }
+    });
+
+  } catch (error) {
+    this.isLoadingout = false;
+    alert('⚠️ Error: ' + error);
+  }
+}
+  
+
+
+
+
+
+  async recheckEmployee(): Promise<void> {
+    // 1. Validation: Ensure employee is loaded
+    if (!this.selectedEmployeeId) {
+      alert('Please ensure Employee is loaded.');
+      return;
+    }
+  
+  
+    try {
+      // 2. Fetch Geolocation
+      const position = await this.getLocation();
+      
+      // 3. Fetch Readable Address
+      const address = await this.getAddress(position.lat, position.lng);
+  
+      // 4. Construct Payload (matching your registerCheckIn model)
+      const data = {
+        employee: this.selectedEmployeeId,
+        check_in_lat: position.lat,
+        check_in_lng: position.lng,
+        check_in_location: address
+      };
+  
+      // 5. Send to Service
+      this.leaveService.EmployeeRechecIn(data).subscribe({
+        next: (response) => {
+          console.log('Re Check-In successful:', response);
+          alert('✅ Re Check-In successful!');
+        
+        },
+        error: (error) => {
+      
+          this.handleError(error); // Using a helper for cleaner code
+        }
+      });
+  
+    } catch (error) {
+      
+      console.error('Location Error:', error);
+      alert('⚠️ Error: ' + error + '. Please allow location access to proceed.');
+    }
+  }
+  
+  // Helper to handle backend errors
+  private handleError(error: any) {
+    if (error.error && typeof error.error === 'object') {
+      let errorMsg = '';
+      for (const key in error.error) {
+        errorMsg += `${key}: ${error.error[key]}\n`;
+      }
+      alert(`⚠️ Validation Errors:\n\n${errorMsg}`);
+    } else {
+      alert('⚠️ Server error. Please try again later.');
+    }
   }
   
   // ✅ Utility to force YYYY-MM-DD format

@@ -1,0 +1,46 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+
+        <div class="com_list mt-4">
+            <div class="cpm-sec shadow-sm p-4 bg-white rounded">
+                <h2>Employee Recheck</h2>
+                <p class="text-muted small">Send an attendance recheck email to the selected employee.</p>
+                <hr>
+                
+                <div class="row align-items-end">
+                  <div class="col-md-10">
+                    <label class="font-weight-bold">Select Employee</label>
+                    <div class="custom-sel">
+                      <select class="form-control" [(ngModel)]="selectedEmployeeCode" [disabled]="isLoading">
+                        <option [ngValue]="null">-- Select Employee Code --</option>
+                        <option *ngFor="let employee of Employees" [value]="employee.emp_code">
+                          {{ employee.emp_code }} - {{ employee.first_name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+              
+                  <div class="col-md-2">
+                    <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center" 
+                            (click)="SendEmployeeRecheck()" 
+                            [disabled]="isLoading || !selectedEmployeeCode">
+                      
+                      <ng-container *ngIf="!isLoading">
+                        <mat-icon class="mr-1">send</mat-icon> Send
+                      </ng-container>
+              
+                      <ng-container *ngIf="isLoading">
+                        <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+                        Sending...
+                      </ng-container>
+                    </button>
+                  </div>
+                </div>
+              </div>
+           
+          </div>
+
+
+
+    </div>
+</div>

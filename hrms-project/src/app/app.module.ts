@@ -231,6 +231,7 @@ import { ReportOptionsComponent } from './report-options/report-options.componen
 import { OvertimePolicyComponent } from './overtime-policy/overtime-policy.component';
 import { AttendanceSidebarComponent } from './attendance-sidebar/attendance-sidebar.component';
 import { EmployeeEarlyGoingComponent } from './employee-early-going/employee-early-going.component';
+import { EmployeeRecheckComponent } from './employee-recheck/employee-recheck.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -420,7 +421,8 @@ import { EmployeeEarlyGoingComponent } from './employee-early-going/employee-ear
      ReportOptionsComponent,
      OvertimePolicyComponent,
      AttendanceSidebarComponent,
-     EmployeeEarlyGoingComponent
+     EmployeeEarlyGoingComponent,
+     EmployeeRecheckComponent
      
      
 

@@ -117,6 +117,17 @@ export class LeaveService {
     );
   }
 
+
+
+  EmployeeRechecIn(data: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${selectedSchema}`;
+    
+    // Sending as a standard JSON POST
+    return this.http.post(apiUrl, data);
+  }
+
+
   requestCompLeaveAdmin(formData: FormData): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -153,6 +164,9 @@ export class LeaveService {
     );
   }
 
+
+
+  
 
 
 
@@ -1538,6 +1552,20 @@ deleteLeaveBalanceReport(reportId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+
+// reckeck employee checkin
+
+
+postEmployeeRecheck(empCode: string, selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/calendars/api/attendance-Recheck/email/?schema=${selectedSchema}`;
+  
+  // Create the payload exactly as the backend expects (emp_code)
+  const payload = {
+    emp_code: empCode
+  };
+
+  return this.http.post(apiUrl, payload);
+}
 
 
 }

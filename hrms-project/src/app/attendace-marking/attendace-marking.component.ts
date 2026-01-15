@@ -256,11 +256,38 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   
 
 
-  getLocation(): Promise<any> {
+//   getLocation(): Promise<any> {
+//   return new Promise((resolve, reject) => {
+//     if (!navigator.geolocation) {
+//       reject("Geolocation not supported");
+//     }
+
+//     navigator.geolocation.getCurrentPosition(
+//       (position) => {
+//         resolve({
+//           lat: position.coords.latitude,
+//           lng: position.coords.longitude
+//         });
+//       },
+//       (error) => {
+//         reject("Location access denied");
+//       }
+//     );
+//   });
+// }
+
+
+getLocation(): Promise<any> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject("Geolocation not supported");
     }
+
+    const options = {
+      enableHighAccuracy: true, // Forces the browser to get the most precise location
+      timeout: 10000,           // Wait up to 10 seconds
+      maximumAge: 0             // Do not use cached location data
+    };
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -270,11 +297,15 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
         });
       },
       (error) => {
-        reject("Location access denied");
-      }
+        let errorMsg = "Location access denied";
+        if (error.code === error.TIMEOUT) errorMsg = "Location request timed out";
+        reject(errorMsg);
+      },
+      options
     );
   });
 }
+
 
 
 getAddress(lat: number, lng: number): Promise<string> {
