@@ -492,11 +492,11 @@ ngOnInit(): void {
       this.Delete = !this.Delete;
     }
   
-    toggleSelectAllEmployees() {
-        this.allSelected = !this.allSelected;
-    this.LoanTypes.forEach(employee => employee.selected = this.allSelected);
-
+   toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+    this.Timesheets.forEach(ts => ts.selected = this.allSelected);
     }
+
   
     onCheckboxChange(employee:number) {
       // No need to implement any logic here if you just want to change the style.
@@ -553,42 +553,40 @@ updateProjecttimesheet(): void {
 }
 
 
-deleteSelectedProjectTimesheet() { 
-  const selectedEmployeeIds = this.LoanTypes
-    .filter(employee => employee.selected)
-    .map(employee => employee.id);
+deleteSelectedProjectTimesheet() {
+  const selectedIds = this.Timesheets
+    .filter(ts => ts.selected)
+    .map(ts => ts.id);
 
-  if (selectedEmployeeIds.length === 0) {
-    alert('No projectTimesheet selected for deletion.');
+  if (selectedIds.length === 0) {
+    alert('No project timesheet selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected projectTimesheet ?')) {
+  if (!confirm('Are you sure you want to delete the selected project timesheet?')) {
+    return;
+  }
 
-        let total = selectedEmployeeIds.length;
-        let completed = 0;
+  let total = selectedIds.length;
+  let completed = 0;
 
-    selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteProjectTimsesheet(categoryId).subscribe(
-        () => {
-          console.log('projectTimesheet  deleted successfully:', categoryId);
-          // Remove the deleted employee from the local list
-          this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-           completed++;
+  selectedIds.forEach(id => {
+    this.employeeService.deleteProjectTimsesheet(id).subscribe(
+      () => {
+        // remove locally
+        this.Timesheets = this.Timesheets.filter(ts => ts.id !== id);
+        completed++;
 
         if (completed === total) {
-          alert(' projectTimesheet  deleted successfully');
-          window.location.reload();
-           }
-
-        },
-        (error) => {
-          console.error('Error deleting ProjectTimesheet:', error);
-          alert('Error deleting projectTimesheet: ' + error.statusText);
+          alert('Project timesheets deleted successfully');
         }
-      );
-    });
-  }
+      },
+      (error) => {
+        console.error('Error deleting ProjectTimesheet:', error);
+        alert('Error deleting project timesheet');
+      }
+    );
+  });
 }
 
 loadStages(): void {

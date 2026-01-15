@@ -84,7 +84,7 @@ export class AirTicketPolicyComponent {
 
 
   @ViewChild('selectDept') selectDept: MatSelect | undefined;
-    @ViewChild('selectdes') selectDes: MatSelect | undefined;
+    @ViewChild('selectDes') selectDes: MatSelect | undefined;
 
       @ViewChild('selectCat') selectCat: MatSelect | undefined;
 

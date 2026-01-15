@@ -33,10 +33,11 @@ export class HolidayCalendarComponent {
 
   calendar:any='';
 
+editHoliday: any = null;
 
   HolidaysCalendar:any []=[];
   isEditModalOpen = false;
-  editDateDetails: any = {};
+  // editDateDetails: any = {};
 
   restricted: boolean = false;
 
@@ -264,23 +265,6 @@ selectCalendar(event: any): void {
 }
 
 
-openEditModal(detail: any): void {
-  this.isEditModalOpen = true;
-
-  // ✅ Clone object so cancel doesn't mutate table
-  this.editDateDetails = {
-    holiday_id: detail.holiday_id,
-    day_type: detail.day_type,
-    date: detail.date,
-    description: detail.description
-  };
-
-  console.log('Editing holiday detail:', this.editDateDetails);
-}
-
-
-  
-
 getMonthKeys(): string[] {
   if (!this.selectedCalendar?.details) return [];
 
@@ -337,42 +321,65 @@ getDayTypeDisplayName(type: string): string {
 }
 
 
-  closeEditModal(): void {
-    this.isEditModalOpen = false;
-    this.editDateDetails = {};
-  }
-updateDate(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-  if (!selectedSchema) {
-    console.error('No schema selected.');
-    console.log('Updating holiday:', this.editDateDetails);
-
-    return;
-  }
-
-  this.http
-    .put(
-      `${this.apiUrl}/calendars/api/assign-days/${this.editDateDetails.holiday_id}/?schema=${selectedSchema}`,
-      { day_type: this.editDateDetails.day_type }
-    )
-    .subscribe({
-      next: () => {
-        // ✅ Update UI immediately
-        const localDetail = this.selectedCalendar.details.find(
-          (d: any) => d.holiday_id === this.editDateDetails.holiday_id
-        );
-
-        if (localDetail) {
-          localDetail.day_type = this.editDateDetails.day_type;
-        }
-
-        this.closeEditModal();
-      },
-      error: (err) => {
-        console.error('Update failed', err);
-      }
-    });
+closeEditModal(): void {
+  this.isEditModalOpen = false;
+  this.editHoliday = null;
 }
+
+
+
+
+openEditModal(detail: any): void {
+  this.isEditModalOpen = true;
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  if (!selectedSchema) return;
+
+  this.http.get<any>(
+    `${this.apiUrl}/calendars/api/holiday/${detail.holiday_id}/?schema=${selectedSchema}`
+  ).subscribe(data => {
+    this.editHoliday = { ...data }; // clone to avoid mutation
+  });
+}
+
+
+
+
+
+
+updateHoliday(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  if (!selectedSchema || !this.editHoliday?.id) return;
+
+  const payload = {
+    description: this.editHoliday.description,
+    start_date: this.editHoliday.start_date,
+    end_date: this.editHoliday.start_date, // single-day holiday
+    calendar: this.editHoliday.calendar
+  };
+
+  this.http.put(
+    `${this.apiUrl}/calendars/api/holiday/${this.editHoliday.id}/?schema=${selectedSchema}`,
+    payload
+  ).subscribe({
+    next: () => {
+      // 🔥 Update UI immediately
+      const localDetails = this.selectedCalendar.details.filter(
+        (d: any) => d.holiday_id === this.editHoliday.id
+      );
+
+      localDetails.forEach((d: any) => {
+        d.description = this.editHoliday.description;
+        d.date = new Date(this.editHoliday.start_date); // ✅ FIX
+      });
+
+      this.closeEditModal();
+    },
+    error: err => console.error('Holiday update failed', err)
+  });
+}
+
+
 
 
 

@@ -4758,16 +4758,11 @@ deleteProjectStages(categoryId: number): Observable<any> {
 
 
 
-updateProjectTask(id: number, data: any): Observable<any> {
+updateProjectTask(id: number, data: FormData): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/project/api/tasks/${id}/?schema=${selectedSchema}`;
 
-  return this.http.put(apiUrl, data).pipe(
-    catchError((error) => {
-      console.error('Error updating Project Task:', error);
-      return throwError(error);
-    })
-  );
+  return this.http.patch(apiUrl, data);
 }
 
 

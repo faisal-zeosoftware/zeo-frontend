@@ -320,7 +320,7 @@ export class EmployeeOvertimeComponent {
 
 
 
-    formData.append('rate_multiplier', this.rate_multiplier);
+    // formData.append('rate_multiplier', this.rate_multiplier);
     formData.append('employee', this.employee);
     formData.append('approved_by', this.approved_by);
 

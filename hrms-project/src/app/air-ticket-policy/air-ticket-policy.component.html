@@ -333,7 +333,7 @@
           <mat-form-field>
             <mat-select  placeholder="Select" [(ngModel)]="editAsset.eligible_departments" [ngModelOptions]="{standalone: true}" #selectDept  multiple>
               <div class="select-all">
-                <mat-checkbox [(ngModel)]="editAsset.allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
                   Select All
                 </mat-checkbox>
               </div>
@@ -354,7 +354,7 @@
           <mat-form-field>
             <mat-select  placeholder="Select" [(ngModel)]="editAsset.eligible_categories" [ngModelOptions]="{standalone: true}" #selectCat multiple>
               <div class="select-all">
-                <mat-checkbox [(ngModel)]="editAsset.allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
                   Select All
                 </mat-checkbox>
               </div>
@@ -376,7 +376,7 @@
         <mat-form-field>
           <mat-select  placeholder="Select" [(ngModel)]="editAsset.eligible_designations" [ngModelOptions]="{standalone: true}" #selectDes multiple>
             <div class="select-all">
-              <mat-checkbox [(ngModel)]="editAsset.allSelectedDes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDes()">
+              <mat-checkbox [(ngModel)]="allSelectedDes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionDes()">
                 Select All
               </mat-checkbox>
             </div>

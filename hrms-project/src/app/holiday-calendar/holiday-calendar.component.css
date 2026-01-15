@@ -216,6 +216,30 @@ outline: none-webkit-focus-ring-color auto 0px;
 
 }
 
+/* =========================
+   CUSTOM MODAL (FIX)
+   ========================= */
+
+.custom-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-modal .modal-content {
+  background: #ffffff;
+  width: 520px;
+  max-width: 95%;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+
 
 .calendar_view_sec h4{
   font-size: 14px;

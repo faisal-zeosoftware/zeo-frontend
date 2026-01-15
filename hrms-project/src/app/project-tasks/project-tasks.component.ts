@@ -10,6 +10,8 @@ import {  HttpErrorResponse } from '@angular/common/http';
 import { CountryService } from '../country.service';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
+import { forkJoin } from 'rxjs';
+
 @Component({
   selector: 'app-project-tasks',
   templateUrl: './project-tasks.component.html',
@@ -501,12 +503,15 @@ loadLAssetType(): void {
     toggleCheckboxes() {
       this.Delete = !this.Delete;
     }
-  
-    toggleSelectAllEmployees() {
-        this.allSelected = !this.allSelected;
-    this.LoanTypes.forEach(employee => employee.selected = this.allSelected);
+    
+toggleSelectAllEmployees(): void {
+  const allSelected = this.Tasks.every(task => task.selected);
 
-    }
+  this.Tasks.forEach(task => {
+    task.selected = !allSelected;
+  });
+}
+
   
     onCheckboxChange(employee:number) {
       // No need to implement any logic here if you just want to change the style.
@@ -538,80 +543,82 @@ updateProjectTask(): void {
 
   const formData = new FormData();
 
-  // Append normal fields
   Object.keys(this.editProjecttask).forEach(key => {
-    if (key !== 'document') {
-      formData.append(key, this.editProjecttask[key] ?? '');
+    const value = this.editProjecttask[key];
+
+    // ✅ Handle ManyToMany properly
+    if (key === 'task_managers' || key === 'task_members') {
+      if (Array.isArray(value)) {
+        value.forEach((id: number) =>
+          formData.append(key, id.toString())
+        );
+      }
+      return;
+    }
+
+    // ❌ Skip document here
+    if (key === 'document') return;
+
+    if (value !== null && value !== undefined) {
+      formData.append(key, value);
     }
   });
 
-  // Append uploaded file
+  // ✅ Append file only if user selected new one
   if (this.selectedFile) {
     formData.append('document', this.selectedFile);
   }
 
-  this.employeeService.updateProjectTask(this.editProjecttask.id, formData).subscribe(
-    (response) => {
+  this.employeeService.updateProjectTask(
+    this.editProjecttask.id,
+    formData
+  ).subscribe(
+    () => {
       alert('Project Task updated successfully!');
-      window.location.reload();
       this.closeEditModal();
-      this.loadLAssetType();
+      this.loadProjectsTask(); // refresh list
     },
     (error) => {
-      console.error('Error updating Project Task:', error);
-
-      let errorMsg = 'Update failed';
-      const backendError = error?.error;
-
-      if (backendError && typeof backendError === 'object') {
-        errorMsg = Object.keys(backendError)
-          .map(key => `${key}: ${backendError[key].join(', ')}`)
-          .join('\n');
-      }
-
-      alert(errorMsg);
+      console.error(error);
+      alert('Update failed');
     }
   );
 }
 
 
-deleteSelectedProjectTasks() { 
-  const selectedEmployeeIds = this.LoanTypes
-    .filter(employee => employee.selected)
-    .map(employee => employee.id);
+deleteSelectedProjectTasks(): void {
+  const selectedTaskIds = this.Tasks
+    .filter(task => task.selected)
+    .map(task => task.id);
 
-  if (selectedEmployeeIds.length === 0) {
-    alert('No Project task selected for deletion.');
+  if (selectedTaskIds.length === 0) {
+    alert('No Project Task selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Project Task ?')) {
-    
-    let total = selectedEmployeeIds.length;
-    let completed = 0;
-
-    selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteProjectTask(categoryId).subscribe(
-        () => {
-          console.log('Project Task deleted successfully:', categoryId);
-          // Remove the deleted employee from the local list
-          this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
-           completed++;
-
-          if (completed === total) {
-          alert('Project Task deleted successfully');
-          window.location.reload();
-          }
-
-        },
-        (error) => {
-          console.error('Error deleting Project Task:', error);
-          alert('Error deleting Project Task: ' + error.statusText);
-        }
-      );
-    });
+  if (!confirm('Are you sure you want to delete the selected Project Tasks?')) {
+    return;
   }
+
+  // ✅ Call delete APIs in parallel
+  const deleteRequests = selectedTaskIds.map(id =>
+    this.employeeService.deleteProjectTask(id)
+  );
+
+  forkJoin(deleteRequests).subscribe(
+    () => {
+      // ✅ Remove deleted tasks from UI
+      this.Tasks = this.Tasks.filter(task => !task.selected);
+
+      alert('Project Tasks deleted successfully');
+    },
+    (error) => {
+      console.error('Delete failed:', error);
+      alert('Error deleting Project Tasks');
+    }
+  );
 }
+
 
 loadStages(): void {
     
