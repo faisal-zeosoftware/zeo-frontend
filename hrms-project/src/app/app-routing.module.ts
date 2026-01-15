@@ -153,6 +153,7 @@ import { OvertimePolicyComponent } from './overtime-policy/overtime-policy.compo
 import { AttendanceSidebarComponent } from './attendance-sidebar/attendance-sidebar.component';
 import { EmployeeEarlyGoingComponent } from './employee-early-going/employee-early-going.component';
 import { EmployeeRecheckComponent } from './employee-recheck/employee-recheck.component';
+import { EmployeePunchingListComponent } from './employee-punching-list/employee-punching-list.component';
 
 
 const routes: Routes = [
@@ -684,6 +685,11 @@ const routes: Routes = [
       component: EmployeeRecheckComponent,
     },
    
+
+    {
+      path: 'employee-punching-list',
+      component: EmployeePunchingListComponent,
+    },
 
   ]
 
