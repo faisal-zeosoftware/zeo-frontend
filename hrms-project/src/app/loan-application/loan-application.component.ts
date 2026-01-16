@@ -280,31 +280,27 @@ this.Delete = !this.Delete;
     }
     }
 
-mapEmployeeNameToId() {
-  if (!this.Employees || !this.editAsset?.employee) return;
-
-  const currentValue = this.editAsset.employee;
-
-  // Case 1 — Already an ID (number)
-  if (typeof currentValue === 'number') {
-    return; // Nothing to map
-  }
-
-  // Case 2 — Find match by emp_code string
-  const emp = this.Employees.find(
-    (e: any) => e.emp_code?.trim() === String(currentValue).trim()
-  );
-
-  if (emp) {
-    this.editAsset.employee = emp.id;
-    console.log("Mapped employee_id:", this.editAsset.employee);
-    return;
-  }
-
-  console.warn("No matching employee found for:", currentValue);
-}
-
-  
+    mapEmployeeNameToId() {
+      if (!this.Employees || !this.editAsset?.employee) return;
+    
+      const currentValue = this.editAsset.employee;
+    
+      // If it's already a valid ID (number), just ensure it's a Number type
+      if (!isNaN(currentValue) && typeof currentValue !== 'string') {
+        this.editAsset.employee = Number(currentValue);
+        return;
+      }
+    
+      // Find the employee object where the code or name matches the string in your JSON
+      const matchedEmp = this.Employees.find((e: any) => 
+        e.emp_code?.trim() === String(currentValue).trim() || 
+        e.emp_first_name?.trim() === String(currentValue).trim()
+      );
+    
+      if (matchedEmp) {
+        this.editAsset.employee = matchedEmp.id; // Convert string "asmsa" to number 16
+      }
+    }
 
 
       
@@ -387,16 +383,18 @@ editAsset: any = {}; // holds the asset being edited
 
       }
 
-openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
-  this.isEditModalOpen = true;
-
-  this.LoadEmployees(() => {
-    this.mapEmployeeNameToId();
-    this.mapLoanNameToId();
-  });
-}
-
+      openEditModal(asset: any): void {
+        // 1. Clone the data so we don't edit the table row directly
+        this.editAsset = { ...asset };
+        this.isEditModalOpen = true;
+      
+        // 2. Load the lists first
+        this.LoadEmployees(() => {
+          // 3. These will now find matches because this.Employees is full
+          this.mapEmployeeNameToId();
+          this.mapLoanNameToId();
+        });
+      }
 
      closeEditModal(): void {
       this.isEditModalOpen = false;

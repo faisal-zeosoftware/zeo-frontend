@@ -278,15 +278,10 @@
                   <div class="col-md-6" >
                     <label>Employee</label>
                     <div class="custom-sel">
-                      <select
-                        class="form-control"
-                        id="employee"
-                        name="employee"
-                        [(ngModel)]="editAsset.employee"
-                        [ngModelOptions]="{ standalone: true }"
-                      >
-                        <option *ngFor="let employeess of Employees" [value]="employeess.id">
-                          {{ employeess.emp_code }}
+                      <select class="form-control" [(ngModel)]="editAsset.employee" [ngModelOptions]="{ standalone: true }">
+                        <option [value]="null" disabled>-- Select Employee --</option>
+                        <option *ngFor="let emp of Employees" [value]="emp.id">
+                          {{ emp.emp_code }} - {{ emp.emp_first_name }}
                         </option>
                       </select>
                     </div>
