@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../environments/environment';
@@ -230,5 +230,34 @@ downloadDocumnetExcel(selectedSchema: string): Observable<Blob> {
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
 
+
+
+
+// company-registration.service.ts
+getFilteredAttendance(filters: any, selectedSchema: string): Observable<any> {
+  // Initialize params with the dynamic schema
+  let params = new HttpParams().set('schema', selectedSchema);
+
+  // Add filters to params if they have values
+  if (filters.year) params = params.set('year', filters.year.toString());
+  if (filters.month) params = params.set('month', filters.month.toString());
+
+  // Handle Employee IDs (If your API supports multiple, use append; if single, use set)
+  if (filters.employee_ids && filters.employee_ids.length > 0) {
+    filters.employee_ids.forEach((id: any) => {
+      params = params.append('employee_id', id.toString());
+    });
+  }
+
+  // Handle other optional filters similarly
+  if (filters.branch_ids) {
+    filters.branch_ids.forEach((id: any) => params = params.append('branch_id', id.toString()));
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/attendance/employee_attendance/`;
+  
+  // The final URL will look like: .../employee_attendance/?schema=zeo2&employee_id=1&month=1&year=2025
+  return this.http.get(apiUrl, { params });
+}
 
   }

@@ -1,1 +1,152 @@
-<p>employee-punching-list works!</p>
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+        <div class="com_list mt-4">
+            <div class="container-fluid mt-4">
+  
+                <div >
+                  <div >
+                    <h5 >
+                     Attendance List
+                    </h5>
+                  </div>
+                  <div >
+                    <div class="row">
+                      
+                      <div class="col-md-3">
+                   
+                          <label >Year</label>
+                          <input type="number" class="form-control" [(ngModel)]="year" placeholder="2025">
+                     
+                      </div>
+              
+                      <div class="col-md-3">
+                     
+                          <label >Month</label>
+                          <select class="form-control" [(ngModel)]="month">
+                            <option value="">-- All --</option>
+                            <option *ngFor="let m of ['January','February','March','April','May','June','July','August','September','October','November','December']" [value]="m">
+                              {{ m }}
+                            </option>
+                          </select>
+                     
+                      </div>
+           
+              
+                      <div class="col-md-3">
+                       
+                          <label >Employees</label>
+                             <div class="custom-sel">
+                      <div class="form-control-wrapper">
+                          <mat-form-field >
+                            <mat-select [(ngModel)]="employee_ids" multiple placeholder="Select Employees">
+                              <mat-option *ngFor="let emp of Employees" [value]="emp.id">
+                                {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          </div>
+                        </div>
+                      </div>
+              
+                      <div class="col-md-2 mt-4">
+                      
+                          <button class="btn btn-primary btn-block  mt-4" (click)="generateReport()" [disabled]="isLoading">
+                            <span *ngIf="!isLoading"><i class="fas fa-search mr-1"></i> Search</span>
+                            <span *ngIf="isLoading">
+                              <span class="spinner-border spinner-border-sm" role="status"></span>
+                            </span>
+                          </button>
+                    
+                      </div>
+              
+                    </div>
+                  </div>
+                </div>
+              
+                <div *ngIf="attendanceData; else noData">
+                  
+                  <div *ngFor="let employeeKey of objectKeys(attendanceData)" class="card mb-4 border-0 shadow-sm">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2">
+                      <span class="h6 mb-0"><i class="fas fa-user-circle mr-2"></i> {{ employeeKey }}</span>
+                      <span class="badge badge-pill badge-primary">
+                        {{ attendanceData[employeeKey].length }} Days Found
+                      </span>
+                    </div>
+                    
+                    <div class="table-responsive">
+                      <table class="table table-hover table-striped mb-0">
+                        <thead class="bg-secondary text-white small">
+                          <tr>
+                            <th class="pl-3">Date / Day</th>
+                            <th>Shift</th>
+                            <th class="text-center">Check-In</th>
+                            <th class="text-center">Check-Out</th>
+                            <th class="text-center">Total Hours</th>
+                            <th style="width: 30%;">Location Details</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let record of attendanceData[employeeKey]">
+                            <td class="align-middle pl-3">
+                              <div class="font-weight-bold">{{ record.date | date:'dd MMM yyyy' }}</div>
+                              <small class="text-muted text-uppercase">{{ record.day }}</small>
+                            </td>
+                            <td class="align-middle">{{ record.shift || '---' }}</td>
+                            
+                            <td class="align-middle text-center">
+                              <span class="badge badge-success px-2 py-1" *ngIf="record.check_in">
+                                {{ record.check_in | slice:0:5 }}
+                              </span>
+                              <span class="text-muted" *ngIf="!record.check_in">---</span>
+                            </td>
+              
+                            <td class="align-middle text-center">
+                              <span class="badge badge-danger px-2 py-1" *ngIf="record.check_out">
+                                {{ record.check_out | slice:0:5 }}
+                              </span>
+                              <span class="text-muted font-italic" *ngIf="!record.check_out">Pending</span>
+                            </td>
+              
+                            <td class="align-middle text-center font-weight-bold">
+                              {{ record.total_hours | slice:0:5 }}
+                            </td>
+              
+                            <td class="align-middle small text-muted">
+                              <div *ngIf="record.check_in_location" class="mb-1">
+                                <i class="fas fa-map-marker-alt text-success mr-1"></i>
+                                <strong>In:</strong> {{ record.check_in_location }}
+                              </div>
+                              <div *ngIf="record.check_out_location">
+                                <i class="fas fa-map-marker-alt text-danger mr-1"></i>
+                                <strong>Out:</strong> {{ record.check_out_location }}
+                              </div>
+                              <span *ngIf="!record.check_in_location && !record.check_out_location" class="font-italic">
+                                No GPS logs available
+                              </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+              
+                </div>
+              
+                <ng-template #noData>
+                  <div class="text-center py-5" *ngIf="!isLoading">
+                    <div class="mb-3">
+                      <i class="fas fa-calendar-check fa-4x text-light"></i>
+                    </div>
+                    <h5 class="text-muted">Select filters and click Search to view records.</h5>
+                  </div>
+                </ng-template>
+              
+              </div>
+          </div>
+
+
+
+
+
+    </div>
+</div>
