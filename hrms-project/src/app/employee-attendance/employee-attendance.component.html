@@ -2,270 +2,101 @@
     <div class="comapny_section">
     
         <div class="com_list mt-4 " >
-            <div class="cpm-sec">
-
-                <h2>Attendance report employee</h2>
-                <hr>
-                
-            
-                   
-<div class="row">
-    
-
-
-    <div class="col-md-3">
-        <label >Year</label>
-        <input
-          type="number"
-          class="form-control"
-          [(ngModel)]="year"
-          [ngModelOptions]="{standalone: true}"
-        />
-    </div>
-    <div class="col-md-3">
-        <label >Month</label>
-        <input
-          type="text"
-          class="form-control"
-          [(ngModel)]="month"
-          [ngModelOptions]="{standalone: true}"
-        />
-    </div>
-
-
-    <div class="col-md-3">
-        <label>Select Employee</label>
-        <div class="custom-sel">
-          <select class="form-control" id="employee" name="employee"
-          
-          [(ngModel)]="employee_id"
-
-                  [ngModelOptions]="{standalone: true}">
-            <option [ngValue]="null">-- Select --</option>
-            <option *ngFor="let employee of Employees" [ngValue]="employee.id">
-              {{ employee.emp_code }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-
-
-         
-              <!-- <div class="col-md-6" >
-                  <label>Select Branches</label>
-                  <div class="custom-sel">
-                    <div class="form-control-wrapper">
-                  
-
-                      <mat-form-field>
-                        <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #select multiple>
-                          <div class="select-all">
-                            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
-                              Select All
-                            </mat-checkbox>
-                          </div>
-                          <input type="text" placeholder="serach" class="form-control">
-
-                          <mat-option *ngFor="let food of branches" [value]="food.id">
-                            {{ food.branch_name }}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                      
-                    </div>
-                   
-                  </div>
-                </div>
-                
-                  
-               
-                <div class="col-md-6" >
-                  <label>Department</label>
-                  <div class="custom-sel">
-                      <div class="form-control-wrapper">
-                        <mat-form-field>
-                          <mat-select  placeholder="Select" [(ngModel)]="department" [ngModelOptions]="{standalone: true}" #select  multiple>
-                            <div class="select-all">
-                              <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
-                                Select All
-                              </mat-checkbox>
-                            </div>
-                            <mat-option *ngFor="let deparmentsec of departments" [value]="deparmentsec.id">
-                              {{ deparmentsec.dept_name }}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                   
-                    </div>
-              </div>
-
-              <div class="col-md-6" >
-                  <label>Category</label>
-                  <div class="custom-sel">
-                      <div class="form-control-wrapper">
-                        <mat-form-field>
-                          <mat-select  placeholder="Select" [(ngModel)]="category" [ngModelOptions]="{standalone: true}" #select multiple>
-                            <div class="select-all">
-                              <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
-                                Select All
-                              </mat-checkbox>
-                            </div>
-                           
-                            <mat-option *ngFor="let deparmentsec of Categoried" [value]="deparmentsec.id">
-                              {{ deparmentsec.ctgry_title }}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                     
-                    </div>
-              </div>
-              
-              <div class="col-md-6" >
-                <label>Designation </label>
-                <div class="custom-sel">
-                    <div class="form-control-wrapper">
-                      <mat-form-field>
-                        <mat-select  placeholder="Select" [(ngModel)]="designation" [ngModelOptions]="{standalone: true}" #selectdes multiple>
-                          <div class="select-all">
-                            <mat-checkbox [(ngModel)]="allSelecteddes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondes()">
-                              Select All
-                            </mat-checkbox>
-                          </div>
-                         
-                          <mat-option *ngFor="let deparmentsec of Designations" [value]="deparmentsec.id">
-                            {{ deparmentsec.desgntn_job_title }}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-                   
-                  </div>
-            </div> -->
-
-              <!-- <div class="col-md-6" >
-                <label>Employee</label>
-                <div class="custom-sel">
-                    <div class="form-control-wrapper">
-                      <mat-form-field>
-                        <mat-select  placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #select multiple>
-                          <div class="select-all">
-                            <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
-                              Select All
-                            </mat-checkbox>
-                          </div>
-                          <input type="text" placeholder="serach" class="form-control"
-                          [(ngModel)]="SearchEmployee" (input)="FilterEmployee">
-
-                          <mat-option *ngFor="let emp of FilteredEmployees" [value]="emp.id">
-                            {{ emp.emp_first_name }}   {{ emp.emp_last_name }}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                    </div>
-                  
-                  </div>
-            </div> -->
-
-
-      
-      
-</div>
-
-
-<div class="row">
-    <div class="col-md-10">
-
-    </div>
-    <div class="col-md-2 mt-3">
-        <button class="btn btn-primary" *ngIf="hasAddPermission" (click)="generateAttendanceReport()">Generate Report</button>
-      </div>
-</div>
-
-
-
-                           
-                  
-
-
+          <div class="cpm-sec p-3 shadow-sm bg-white rounded border">
+            <div class="d-flex justify-content-between align-items-center">
+              <h2 class="h4">Attendance Report Employee</h2>
+              <button class="btn btn-success" *ngIf="filteredRecords.length > 0" (click) ="exportToExcel()">
+                <i class="fas fa-file-excel mr-2"></i> Export to Excel
+              </button>
             </div>
-
-
-        <!-- Show selected employee report if available -->
-
-<div *ngIf="attendanceData">
-    <div class="row">
-        <div class="col-md-8">
-            <h2>Attendance Sheet for {{ attendanceData.employee_name }} - {{ attendanceData.month }}/{{ attendanceData.year }}</h2>
-
-        </div>
-
-        <div class="col-md-2">
-            <button type="button" class="btn btn-success pull-right" *ngIf="hasExportPermission" (click)="exportToExcel()">Export</button>
-        </div>
-    </div>
-    <div class="table-container table-scroll">
-      <table class="table table-bordered table-hover mt-3 text-center">
-        <thead>
-          <tr>
-            <th>Employee Name</th>
-            <th *ngFor="let day of daysArray">{{ day }}</th>
-            <!-- <th>Total Days</th> -->
-            <th>Present Days</th>
-            <th>Absent Days</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td data-label="Employee Name">{{ attendanceData.employee_name }}</td>
-            <td *ngFor="let day of daysArray" [attr.data-label]="day">
-              {{ getStatusForDay(day, attendanceData.summary_data) }}
-            </td>
-            <!-- <td>{{ attendanceData.total_days }}</td> -->
-            <td data-label="Present Days">{{ attendanceData.total_present }}</td>
-            <td data-label="Absent Days">{{ attendanceData.total_absent }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  
-  <!-- Show all employee attendance initially -->
-  <div *ngIf="!attendanceData && allAttendanceData.length > 0">
-    <h2>All Employees Attendance Records</h2>
-    <div class="table-container table-scroll">
-      <table class="table table-bordered table-hover mt-3 text-center">
-<thead>
-  <tr>
-    <th>Employee Name</th>
-    <th *ngFor="let day of daysArray">{{ day }}</th>
-    <th>Total Days</th>
-    <th>Present Days</th>
-    <th>Absent Days</th>
-  </tr>
-</thead>
-
-<tbody>
-  <tr *ngFor="let record of allAttendanceData">
-    <td data-label="Employee Name">{{ record.employee_name }}</td>
-
-    <td *ngFor="let day of daysArray" [attr.data-label]="day">
-      {{ getStatusForDay(day, record.summary_data) }}
-    </td>
-
-    <td data-label="Total Days">{{ record.total_days }}</td>
-    <td data-label="Present Days">{{ record.total_present }}</td>
-    <td data-label="Absent Days">{{ record.total_absent }}</td>
-  </tr>
-</tbody>
-
-      </table>
-    </div>
-  </div>
-        
-
+            <hr>
+          
+            <div class="row mb-3 bg-light p-3 mx-0 rounded">
+              <div class="col-md-4">
+                <label class="small font-weight-bold">Start Date</label>
+                <input type="date" class="form-control" [(ngModel)]="start_date" />
+              </div>
+              <div class="col-md-4">
+                <label class="small font-weight-bold">End Date</label>
+                <input type="date" class="form-control" [(ngModel)]="end_date" />
+              </div>
+              <div class="col-md-4 mt-4">
+                <button 
+                  class="btn btn-primary w-100 mt-1 shadow-sm mt-4" 
+                  (click)="generateAttendanceReport()" 
+                  [disabled]="isLoading">
+                  
+                  <span *ngIf="isLoading">
+                    <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+                    Generating...
+                  </span>
+              
+                  <span *ngIf="!isLoading">
+                    <i class="fas fa-sync-alt mr-2"></i> Generate Report
+                  </span>
+                  
+                </button>
+              </div>
+            </div>
+          
+            <div class="row mb-4" *ngIf="allAttendanceRecords.length > 0">
+             
+              <div class="col-md-3">
+                <label class="small font-weight-bold">Branch</label>
+                <select class="form-control" [(ngModel)]="selectedBranch" (change)="applyLocalFilters()">
+                  <option value="">All Branches</option>
+                  <option *ngFor="let b of uniqueBranches" [value]="b">{{b}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="small font-weight-bold">Dept</label>
+                <select class="form-control" [(ngModel)]="selectedDept" (change)="applyLocalFilters()">
+                  <option value="">All Depts</option>
+                  <option *ngFor="let d of uniqueDepts" [value]="d">{{d}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="small font-weight-bold">Desg</label>
+                <select class="form-control" [(ngModel)]="selectedDesg" (change)="applyLocalFilters()">
+                  <option value="">All Desg</option>
+                  <option *ngFor="let ds of uniqueDesgs" [value]="ds">{{ds}}</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="small font-weight-bold">Search Employee</label>
+                <input type="text" class="form-control" placeholder="Search by name..." 
+                       [(ngModel)]="searchText" (input)="applyLocalFilters()">
+              </div>
+            </div>
+          
+            <div class="table-responsive" *ngIf="filteredRecords.length > 0">
+              <table class="table table-sm table-bordered">
+                <thead class="bg-dark text-white">
+                  <tr>
+                    <th>Employee</th>
+                    <th>Branch/Dept</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngFor="let emp of filteredRecords">
+                    <tr *ngFor="let day of emp.attendance.summary_data">
+                      <td><strong>{{ emp.employee_name }}</strong></td>
+                      <td><small>{{ emp.branch }} / {{ emp.department || 'N/A' }}</small></td>
+                      <td>{{ day.date | date:'dd-MM-yyyy' }}</td>
+                      <td>
+                        <span [class.text-success]="day.status === 'Present'" 
+                              [class.text-danger]="day.status === 'Absent'">
+                          {{ day.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
 

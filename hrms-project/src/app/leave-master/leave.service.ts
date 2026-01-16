@@ -290,22 +290,31 @@ updateLeavetype(id: number, data: any): Observable<any> {
   }
 
 
-  CreateEmployeeattendance(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError(() => new Error('No schema selected.'));
-    }
+  // CreateEmployeeattendance(formData: FormData): Observable<any> {
+  //   const selectedSchema = localStorage.getItem('selectedSchema');
+  //   if (!selectedSchema) {
+  //     console.error('No schema selected.');
+  //     return throwError(() => new Error('No schema selected.'));
+  //   }
 
-    const apiUrl = `${this.apiUrl}/calendars/api/monthly-attendance/generate/?schema=${selectedSchema}`;
+  //   const apiUrl = `${this.apiUrl}/calendars/api/monthly-attendance/generate/?schema=${selectedSchema}`;
     
-    return this.http.post(apiUrl, formData).pipe(
-      catchError((error) => {
-        console.error('Error during employee overtime creation:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  //   return this.http.post(apiUrl, formData).pipe(
+  //     catchError((error) => {
+  //       console.error('Error during employee overtime creation:', error);
+  //       return throwError(() => error);
+  //     })
+  //   );
+  // }
+
+  // leave.service.ts
+CreateEmployeeattendance(payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/monthly-attendance/generate/?schema=${selectedSchema}`;
+  
+  // Sending as a regular POST body or FormData based on your API requirement
+  return this.http.post(apiUrl, payload);
+}
 
   registerEmailTemplateLeave(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');

@@ -212,76 +212,30 @@ export class EmployeeAttendanceComponent {
 
 
   exportToExcel(): void {
-    const data: any[][] = [];
+    const dataToExport: any[] = [];
   
-    const reportTitle = `Attendance Report - ${this.attendanceData.month} /${this.attendanceData.year}`;
-    const headerRow = ['Employee Name', ...this.daysArray, 'Present Days', 'Absent Days'];
-    const titleRow = [reportTitle];
-  
-    data.push(titleRow);
-    data.push([]); // spacing row
-    data.push(headerRow);
-  
-    const employeeRow: any[] = [this.attendanceData.employee_name];
-    for (let day of this.daysArray) {
-      const status = this.getStatusForDay(day, this.attendanceData.summary_data);
-      employeeRow.push(status);
-    }
-    employeeRow.push(this.attendanceData.total_present);
-    employeeRow.push(this.attendanceData.total_absent);
-    data.push(employeeRow);
-  
-    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
-  
-    // Merge title row
-    const mergeRef = XLSX.utils.encode_range({
-      s: { r: 0, c: 0 },
-      e: { r: 0, c: headerRow.length - 1 }
-    });
-    if (!worksheet['!merges']) worksheet['!merges'] = [];
-    worksheet['!merges'].push(XLSX.utils.decode_range(mergeRef));
-  
-    // Apply center style to merged title
-    worksheet['A1'].s = {
-      alignment: { horizontal: 'center', vertical: 'center' },
-      font: { bold: true, sz: 14 }
-    };
-  
-    // Apply styles to "Absent" or "A" cells
-    const dataRowIndex = 3; // since it's the 4th row (0-indexed)
-    for (let col = 1; col <= this.daysArray.length; col++) {
-      const cellRef = XLSX.utils.encode_cell({ r: dataRowIndex, c: col });
-      const cell = worksheet[cellRef];
-      if (cell && (cell.v === 'Absent' || cell.v === 'A')) {
-        cell.s = {
-          font: { color: { rgb: "FF0000" }, bold: true },
-          alignment: { horizontal: "center" }
-        };
-      }
-    }
-  
-    // Create workbook and save
-    const workbook: XLSX.WorkBook = {
-      Sheets: { 'Attendance Report': worksheet },
-      SheetNames: ['Attendance Report']
-    };
-  
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-      cellStyles: true // Important for styles to apply
+    // Flatten the nested data for Excel rows
+    this.filteredRecords.forEach(emp => {
+      emp.attendance.summary_data.forEach((day: any) => {
+        dataToExport.push({
+          'Employee Name': emp.employee_name,
+          'Code': emp.employee_code,
+          'Branch': emp.branch,
+          'Department': emp.department || 'N/A',
+          'Date': day.date,
+          'Status': day.status,
+          'Leave Type': day.leave_type || 'N/A'
+        });
+      });
     });
   
-    const fileData: Blob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-    });
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataToExport);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Attendance_Report');
   
-    FileSaver.saveAs(
-      fileData,
-      `Attendance_Report_${this.attendanceData.employee_name}_${this.attendanceData.month}_${this.attendanceData.year}.xlsx`
-    );
+    /* save to file */
+    XLSX.writeFile(wb, `Attendance_Report_${this.start_date}_to_${this.end_date}.xlsx`);
   }
-  
 
   getStatusForDay(day: number, summary_data: any[]): string {
     const entry = summary_data.find((d: { date: string }) => {
@@ -364,29 +318,70 @@ export class EmployeeAttendanceComponent {
 
   attendanceData: any = null; // Define this at the class level
 
+  isLoading: boolean = false;
+// Filter variables
+start_date: string = '';
+end_date: string = '';
+selectedBranch: string = '';
+selectedDept: string = '';
+selectedDesg: string = '';
+searchText: string = '';
 
-  generateAttendanceReport(): void {
-    // if (!this.year || !this.month || !this.employee_id) {
-    //   alert('Please enter Year, Month, and Employee');
-    //   return;
-    // }
+allAttendanceRecords: any[] = []; // Raw JSON
+filteredRecords: any[] = [];    // Table data
 
-    const formData = new FormData();
-    formData.append('year', this.year.toString());
-    formData.append('month', this.month.toString());
-    formData.append('employee_id', this.employee_id.toString());
+// Unique lists for dropdowns
+uniqueBranches: string[] = [];
+uniqueDepts: string[] = [];
+uniqueDesgs: string[] = [];
 
-    this.leaveService.CreateEmployeeattendance(formData).subscribe(
-      (response) => {
-        console.log('Report data received', response);
-        this.attendanceData = response[0]; // Assuming response is an array as shown in your backend example
-      },
-      (error) => {
-        console.error('Error generating report', error);
-        alert('Failed to generate report. Please try again.');
-      }
-    );
+
+generateAttendanceReport(): void {
+  if (!this.start_date || !this.end_date) {
+    alert("Please select both start and end dates.");
+    return;
   }
+
+  // Start Loading
+  this.isLoading = true;
+  this.allAttendanceRecords = []; // Clear old data while loading
+
+  const payload = {
+    start_date: this.start_date,
+    end_date: this.end_date
+  };
+
+  this.leaveService.CreateEmployeeattendance(payload).subscribe({
+    next: (response: any[]) => {
+      this.allAttendanceRecords = response;
+      
+      // Update unique filter lists
+      this.uniqueBranches = [...new Set(response.map(item => item.branch).filter(v => v))];
+      this.uniqueDepts = [...new Set(response.map(item => item.department).filter(v => v))];
+      this.uniqueDesgs = [...new Set(response.map(item => item.designation).filter(v => v))];
+
+      this.applyLocalFilters();
+      this.isLoading = false; // Stop Loading
+    },
+    error: (error) => {
+      console.error('Error generating report', error);
+      this.isLoading = false; // Stop Loading on error
+      alert('Failed to fetch data.');
+    }
+  });
+}
+applyLocalFilters(): void {
+  this.filteredRecords = this.allAttendanceRecords.filter(emp => {
+    const matchName = !this.searchText || emp.employee_name.toLowerCase().includes(this.searchText.toLowerCase());
+    const matchBranch = !this.selectedBranch || emp.branch === this.selectedBranch;
+    const matchDept = !this.selectedDept || emp.department === this.selectedDept;
+    const matchDesg = !this.selectedDesg || emp.designation === this.selectedDesg;
+    
+    return matchName && matchBranch && matchDept && matchDesg;
+  });
+}
+
+
 
 // generateAttendanceReport(): void {
 //     if (!this.year || !this.month || !this.employee_id) {
@@ -501,7 +496,7 @@ allSelecteddes = false;
 allSelectedEmp = false;
 
   @ViewChild('select') select: MatSelect | undefined;
-    @ViewChild('selectdept') selectdept: MatSelect | undefined;
+  @ViewChild('selectdept') selectdept: MatSelect | undefined;
 
   @ViewChild('selectdes') selectdes: MatSelect | undefined;
 
