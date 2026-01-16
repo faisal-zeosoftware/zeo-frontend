@@ -1,6 +1,6 @@
 
-<div class="container">
-  <div class="comapny_section" >
+<div class="container" *ngIf="hasViewPermission">
+  <div class="comapny_section">
     <div class="header_section">
       <div class="row align-items-center px-4">
         <div class="col-md-4">
@@ -17,7 +17,7 @@
                    [(ngModel)]="searchText" 
                    (input)="applyFilters()">
         
-            <button class="filter-trigger-btn" [matMenuTriggerFor]="filterMenu" matRipple>
+            <button *ngIf="hasEditPermission" class="filter-trigger-btn" [matMenuTriggerFor]="filterMenu" matRipple>
               <mat-icon style="color: black;">tune</mat-icon>
               <span class="filter-text">Filters</span>
             </button>
@@ -159,10 +159,10 @@
                               <mat-icon>play_circle_outline</mat-icon>
                             </button>
                         
-                            <button *ngIf="report.id !== 1 && report.file_name !== 'std_report'" 
+                            <button *ngIf="report.id !== 1 && report.file_name !== 'std_report'"
                                     class="btn-delete-report ms-2" 
                                     (click)="deleteReport(report, $event)">
-                              <mat-icon color="warn">delete_outline</mat-icon>
+                              <mat-icon *ngIf="hasDeletePermission" color="warn">delete_outline</mat-icon>
                             </button>
                           </div>
                         </div>
@@ -172,7 +172,7 @@
                         </div>
                       </div>
             
-                      <div class="save-card-modern">
+                      <div class="save-card-modern" *ngIf="hasAddPermission">
                         <div class="save-header">
                           <mat-icon>add_box</mat-icon>
                           <span>Save current view</span>
@@ -205,7 +205,7 @@
       (click)="resetToStandard()">
 <mat-icon>restart_alt</mat-icon> Reset View
 </button>
-<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadExcel()">
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadExcel()" *ngIf="hasExportPermission">
   <mat-icon>download</mat-icon>
   <span>Export Excel</span>
 </button>

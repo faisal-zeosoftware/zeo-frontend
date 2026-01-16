@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit  } from '@angular/core';
+import { Component, ElementRef, OnInit  } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -7,6 +7,9 @@ import { DesignationService } from '../designation-master/designation.service';
 import * as XLSX from 'xlsx';
 import { environment } from '../../environments/environment';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CountryService } from '../country.service';
+import { EmployeeService } from '../employee-master/employee.service';
+import { UserMasterService } from '../user-master/user-master.service';
 
 interface FieldSetting {
   key: string;
@@ -28,6 +31,8 @@ export class ReportGenerateComponent implements OnInit {
   
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
+  
+
 
   
   Users: any[] = [];
@@ -36,6 +41,7 @@ export class ReportGenerateComponent implements OnInit {
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
+  hasExportPermission: boolean = false;
   
   userId: number | null | undefined;
   userDetails: any;
@@ -69,15 +75,146 @@ getKeys(obj: any): string[] {
 
 constructor(private leaveService: LeaveService,
   private http: HttpClient,
+  private countryService: CountryService, 
+  private authService: AuthenticationService,
+  private employeeService: EmployeeService,
+  private userService: UserMasterService,
+  private el: ElementRef,
+  private sessionService: SessionService,
+  private DesignationService: DesignationService,
 ) {}
 // FIX FOR NG5002: Use a getter for the count
 get visibleFieldsCount(): number {
   return this.fieldSettings.filter(f => f.visible).length;
 }
 
+
 ngOnInit(): void {
   this.initialLoad();
+
+    this.userId = this.sessionService.getUserId();
+  
+  if (this.userId !== null) {
+    this.authService.getUserData(this.userId).subscribe(
+      async (userData: any) => {
+        this.userDetails = userData; // Store user details in userDetails property
+        // this.created_by = this.userId; // Automatically set the owner to logged-in user ID
+  
+        console.log('User ID:', this.userId); // Log user ID
+        console.log('User Details:', this.userDetails); // Log user details
+  
+        // Check if user is_superuser is true or false
+        let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
+        const selectedSchema = this.authService.getSelectedSchema();
+        if (!selectedSchema) {
+          console.error('No schema selected.');
+          return;
+        }
+      
+      
+        if (isSuperuser) {
+          console.log('User is superuser or ESS user');
+          
+          // Grant all permissions
+          this.hasViewPermission = true;
+          this.hasAddPermission = true;
+          this.hasDeletePermission = true;
+          this.hasEditPermission = true;
+          this.hasExportPermission = true;
+      
+          // Fetch designations without checking permissions
+          // this.fetchDesignations(selectedSchema);
+        } else {
+          console.log('User is not superuser');
+  
+          const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+           
+            
+            
+            try {
+              const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
+              console.log('Permissions data:', permissionsData);
+  
+              if (Array.isArray(permissionsData) && permissionsData.length > 0) {
+                const firstItem = permissionsData[0];
+  
+                if (firstItem.is_superuser) {
+                  console.log('User is superuser according to permissions API');
+                  // Grant all permissions
+                  this.hasViewPermission = true;
+                  this.hasAddPermission = true;
+                  this.hasDeletePermission = true;
+                  this.hasEditPermission = true;
+                  this.hasExportPermission = true;
+
+                } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
+                  const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
+                  console.log('Group Permissions:', groupPermissions);
+  
+                 
+                 this.hasAddPermission = this.checkGroupPermission('add_report', groupPermissions);
+                 console.log('Has add permission:', this.hasAddPermission);
+                  
+                 this.hasEditPermission = this.checkGroupPermission('change_report', groupPermissions);
+                 console.log('Has edit permission:', this.hasEditPermission);
+    
+                 this.hasDeletePermission = this.checkGroupPermission('delete_report', groupPermissions);
+                 console.log('Has delete permission:', this.hasDeletePermission);
+    
+  
+                 this.hasViewPermission = this.checkGroupPermission('view_report', groupPermissions);
+                 console.log('Has view permission:', this.hasViewPermission);
+
+                 this.hasExportPermission = this.checkGroupPermission('export_report', groupPermissions);
+                 console.log('Has view permission:', this.hasExportPermission);
+
+                } else {
+                  console.error('No groups found in data or groups array is empty.', firstItem);
+                }
+              } else {
+                console.error('Permissions data is not an array or is empty.', permissionsData);
+              }
+  
+              // Fetching designations after checking permissions
+              // this.fetchDesignations(selectedSchema);
+            }
+            
+            catch (error) {
+              console.error('Error fetching permissions:', error);
+            }
+          } else {
+            console.error('No schema selected.');
+          }
+            
+        }
+      },
+      (error) => {
+        console.error('Failed to fetch user details:', error);
+      }
+    );
+
+
+  
+
+    this.authService.getUserSchema(this.userId).subscribe(
+      (userData: any) => {
+        this.userDetailss = userData; // Store user schemas in userDetailss
+
+        this.schemas = userData.map((schema: any) => schema.schema_name);
+      },
+      (error) => {
+        console.error('Failed to fetch user schemas:', error);
+      }
+    );
+  } else {
+    console.error('User ID is null.');
+  }
 }
+
+ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+  return groupPermissions.some(permission => permission.codename === codeName);
+  }
 
 async initialLoad() {
   this.isLoading = true;

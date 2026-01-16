@@ -130,6 +130,7 @@ schemas: string[] = []; // Array to store schema names
                  
                  this.hasExportPermission = this.checkGroupPermission('export_dept_report', groupPermissions);
                  console.log('Has export permission:', this.hasExportPermission);
+                 
                   } else {
                     console.error('No groups found in data or groups array is empty.', firstItem);
                   }
