@@ -174,9 +174,10 @@ export class EmployeeMasterComponent {
  if (selectedSchema) {
    // Construct the API URL with the selected schema
   //  const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/`;
+  const selectedBranchId = localStorage.getItem('selectedBranchId');
 
    // Fetch employees from the API
-   this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
+   this.EmployeeService.getemployeesMasterNew(selectedSchema,selectedBranchId).subscribe(
      (data: any) => {
        this.employees = data;
        console.log('All Employees:' ,this.employees)
@@ -361,26 +362,28 @@ if (this.userId !== null) {
 
   fetchDesignations(selectedSchema: string) {
     this.isLoading = true;
-
-  this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
-    (data: any) => {
-      // Filtering employees where is_active is null or true
-      this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-      this.filteredEmployees = this.employees;
-      this.isLoading = false;
-
-
-      console.log('Filtered Employees:', this.filteredEmployees);
-    },
-    (error: any) => {
-      this.isLoading = false;
-
-      console.error('Error fetching employees:', error);
-    }
-  );
-}
-
-
+  
+    // Retrieve the branch ID stored in localStorage
+    const selectedBranchId = localStorage.getItem('selectedBranchId');
+  
+    // Pass both the schema and the branch ID to the service
+    this.EmployeeService.getemployeesMasterNew(selectedSchema, selectedBranchId).subscribe(
+      (data: any) => {
+        // Filtering employees where is_active is null or true
+        this.employees = data.filter((employee: any) => 
+          employee.is_active === null || employee.is_active === true
+        );
+        this.filteredEmployees = this.employees;
+        this.isLoading = false;
+  
+        console.log('Filtered Employees for Branch:', selectedBranchId, this.filteredEmployees);
+      },
+      (error: any) => {
+        this.isLoading = false;
+        console.error('Error fetching employees:', error);
+      }
+    );
+  }
 
 isTableView = false; // default grid view
 

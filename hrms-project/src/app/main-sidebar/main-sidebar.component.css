@@ -282,7 +282,7 @@ width: 35px;
 
 
 .cmp_drop{
-    position: absolute;
+    /* position: absolute; */
     display: inline-flex;
     margin-top: -45px;
     z-index: -10000000;
@@ -699,3 +699,99 @@ table thead th {
       background-color: transparent;
     }
   }
+
+
+
+  /* Outer Dropdown Box */
+.sketch-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 300px;
+  background: white;
+  border: 2px solid #333; /* Bold outer border like your drawing */
+  padding: 10px;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.sketch-dropdown-menu.show { display: block; }
+
+/* Schema Wrapper */
+.schema-block {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+/* Schema Label Row */
+.schema-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #fdfdfd;
+}
+
+/* Nested Branch Container */
+.branch-container {
+  padding: 10px;
+  border-top: 1px solid #eee;
+  background: #f9f9f9;
+}
+
+/* Individual Branch Boxes (The "Branch 1" boxes in your sketch) */
+.branch-card {
+  border: 1px solid #444;
+  margin-bottom: 8px;
+  padding: 10px;
+  background: white;
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: center;
+  font-size: 13px;
+}
+
+.branch-card:hover {
+  background: #eef6ff;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.branch-card:last-child { margin-bottom: 0; }
+
+/* Styling for the Branch "Boxes" inside the Schema container */
+.branch-card {
+  border: 1px solid #444; /* Clean borders as per sketch */
+  margin-bottom: 8px;
+  padding: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.branch-card:hover {
+  background: #f0f7ff;
+  border-color: #007bff;
+  color: #007bff;
+  transform: translateX(5px); /* Slight movement on hover */
+}
+
+.branch-icon {
+  font-size: 18px;
+  margin-right: 10px;
+  color: #888;
+}
+
+/* Container for branches */
+.branch-container {
+  padding: 10px;
+  background: #f9f9f9;
+  border-top: 1px solid #eee;
+}

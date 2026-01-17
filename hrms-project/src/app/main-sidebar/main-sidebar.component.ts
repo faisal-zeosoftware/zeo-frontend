@@ -398,47 +398,38 @@ private cleanupOldReadNotifications(): void {
   // For now, just keep it simple
 }
 
-selectSchema(event: any) {
-  const selectedSchemaName = event.target.value;
-  console.log("Selected schema name:", selectedSchemaName);
+isCompanyDropdownOpen = false;
+expandedSchemaIndex: number = -1;
 
-  if (!selectedSchemaName) {
-      console.error("No schema selected.");
-      return;
-  }
-
-  const selectedSchema = this.userDetailss.find((schema: any) => schema.schema_name === selectedSchemaName);
-  if (!selectedSchema) {
-      console.error("Schema not found.");
-      return;
-  }
-
-  const selectedSchemaId = selectedSchema.id;
-  console.log("Selected schema ID:", selectedSchemaId);
-  this.isLoading = true;
-
-  // Store the selected schema name and ID in localStorage
-  localStorage.setItem('selectedSchema', selectedSchemaName);
-  localStorage.setItem('selectedSchemaId', selectedSchemaId.toString());
-
-  // Update the component state
-  this.selectedSchema = selectedSchemaName;
-
-  // Delay the URL redirection to ensure state is updated
-  setTimeout(() => {
-    this.isLoading = false; // Hide the loader
-    this.isMenuOpen = true;
-
-     this.router.navigate(['/main-sidebar/dashboard-contents']);
-      window.location.reload();
-    // this.router.navigate(['/main-sidebar/sub-sidebar/dashboard-contents']);
-    // const url =` /main-sidebar/dashboard-contents`;
-    //   window.location.href = url;
-  }, 500); // Delay of 100ms to ensure localStorage is updated
+toggleSchema(index: number, event: Event): void {
+  event.stopPropagation();
+  // Toggle logic: click same to close, click new to open
+  this.expandedSchemaIndex = this.expandedSchemaIndex === index ? -1 : index;
 }
 
+// Updated function to accept both schema name and branch object
+selectBranch(schemaName: string, branch: any, event: Event): void {
+  event.stopPropagation();
+  
+  const selectedSchema = this.userDetailss.find((s: any) => s.schema_name === schemaName);
+  
+  if (selectedSchema && branch) {
+    this.isLoading = true;
 
+    // Store Schema Details
+    localStorage.setItem('selectedSchema', selectedSchema.schema_name);
+    localStorage.setItem('selectedSchemaId', selectedSchema.id.toString());
 
+    // Store Branch Details (Based on your JSON structure)
+    localStorage.setItem('selectedBranchId', branch.id.toString());
+    localStorage.setItem('selectedBranchName', branch.branch_name);
+
+    // Provide feedback and refresh to apply changes
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
+}
 
 showsidebar: boolean = true;
 
