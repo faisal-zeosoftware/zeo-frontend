@@ -81,6 +81,19 @@ export class EmployeeService {
   }
 
 
+  getemployeesMasterNew(selectedSchema: string, branchId: string | null): Observable<any> {
+    // Construct URL with both schema and branch_id
+    let url = `${this.apiUrl}/employee/api/emplist/?schema=${selectedSchema}`;
+    
+    if (branchId) {
+      url += `&branch_id=${branchId}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+    
+
   
   getPunchings(selectedSchema: string): Observable<any> {
     const url = `${this.apiUrl}/calendars/api/attendance/?schema=${selectedSchema}`;
