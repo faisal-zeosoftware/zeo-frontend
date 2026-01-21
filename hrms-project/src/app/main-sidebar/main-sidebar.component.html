@@ -222,28 +222,31 @@
             <mat-icon [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">expand_more</mat-icon>
           </div>
       
-          <div class="sketch-dropdown-menu" [class.show]="isCompanyDropdownOpen" (click)="$event.stopPropagation()">
-  
-            <div class="menu-header">Select Branch</div>
+          <div class="standard-dropdown" [class.show]="isCompanyDropdownOpen" (click)="$event.stopPropagation()">
+            <div class="menu-header">
+              <mat-icon>domain</mat-icon>
+              <span>Switch Organization</span>
+            </div>
             
-            <div class="schema-block" *ngFor="let data of userDetailss; let i = index">
-              
-              <div class="schema-header" (click)="toggleSchema(i, $event)">
-                <span class="company-name">{{ data.name }}</span>
-                <mat-icon>{{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
-              </div>
-          
-              <div class="branch-container" *ngIf="expandedSchemaIndex === i">
+            <div class="scrollable-content">
+              <div class="schema-item" *ngFor="let data of userDetailss; let i = index" [class.is-expanded]="expandedSchemaIndex === i">
                 
-                <div class="branch-card" 
-                     *ngFor="let branch of data.branches" 
-                     (click)="selectBranch(data.schema_name, branch, $event)">
-                  <mat-icon class="branch-icon">location_on</mat-icon>
-                  {{ branch.branch_name }}
+                <div class="schema-row" (click)="toggleSchema(i, $event)">
+                  <div class="schema-info">
+                    <div class="avatar">{{ data.name | slice:0:1 }}</div>
+                    <span class="company-name">{{ data.name }}</span>
+                  </div>
+                  <mat-icon class="chevron-icon">{{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
                 </div>
           
-                <div class="no-branch-msg" *ngIf="data.branches.length === 0">
-                  No branches available for this company.
+                <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
+                  <div class="branch-option" 
+                       *ngFor="let branch of data.branches" 
+                       (click)="selectBranch(data.schema_name, branch, $event)">
+                    <div class="branch-dot"></div>
+                    <span class="branch-name">{{ branch.branch_name }}</span>
+                    <mat-icon class="go-icon">chevron_right</mat-icon>
+                  </div>
                 </div>
                 
               </div>

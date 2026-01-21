@@ -763,35 +763,191 @@ table thead th {
 
 .branch-card:last-child { margin-bottom: 0; }
 
-/* Styling for the Branch "Boxes" inside the Schema container */
-.branch-card {
-  border: 1px solid #444; /* Clean borders as per sketch */
-  margin-bottom: 8px;
-  padding: 12px;
+
+/* Container: Soft shadows and refined border */
+.standard-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 320px;
   background: #ffffff;
-  cursor: pointer;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid #eef0f2;
+  z-index: 1050;
+  overflow: hidden;
+}
+
+.standard-dropdown.show { display: block; animation: slideDown 0.2s ease-out; }
+
+/* Header: Muted professional label */
+.menu-header {
+  padding: 16px 20px;
+  background: #fcfdfe;
+  border-bottom: 1px solid #f1f3f5;
   display: flex;
   align-items: center;
+  gap: 10px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.menu-header mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+/* Organization Row */
+.schema-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.schema-row:hover { background: #f8fafc; }
+
+.schema-info { display: flex; align-items: center; gap: 12px; }
+
+/* Letter Avatar for a modern feel */
+.avatar {
+  width: 32px;
+  height: 32px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.company-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.chevron-icon { color: #94a3b8; font-size: 20px; }
+
+/* Branch Wrapper: Subtle indentation */
+.branch-wrapper {
+  background: #f1f5f9;
+  padding: 8px 12px;
+}
+
+.branch-option {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 4px;
+  background: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid transparent;
+}
+
+.branch-option:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  transform: translateX(4px);
+}
+
+.branch-dot {
+  width: 6px;
+  height: 6px;
+  background: #cbd5e1;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.branch-option:hover .branch-dot { background: #3b82f6; }
+
+.branch-name {
+  flex: 1;
+  font-size: 13px;
+  color: #475569;
   font-weight: 500;
-  transition: all 0.2s ease;
 }
 
-.branch-card:hover {
-  background: #f0f7ff;
-  border-color: #007bff;
-  color: #007bff;
-  transform: translateX(5px); /* Slight movement on hover */
+.go-icon { font-size: 16px; color: #94a3b8; opacity: 0; transition: 0.2s; }
+.branch-option:hover .go-icon { opacity: 1; }
+
+.empty-state {
+  padding: 12px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.branch-icon {
-  font-size: 18px;
-  margin-right: 10px;
-  color: #888;
+/* Animation */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Container for branches */
-.branch-container {
-  padding: 10px;
-  background: #f9f9f9;
-  border-top: 1px solid #eee;
+
+/* Container remains fixed */
+.standard-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 320px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid #eef0f2;
+  z-index: 1050;
+  overflow: hidden; /* Clips the inner scroll content to the border radius */
+}
+
+/* Scrollable Container */
+.scrollable-content {
+  max-height: 400px; /* Adjust this height as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom Modern Scrollbar Styling */
+.scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Ensure the header stays at the top */
+.menu-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 16px 20px;
+  background: #fcfdfe;
+  border-bottom: 1px solid #f1f3f5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }

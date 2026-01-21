@@ -177,15 +177,15 @@ export class EmployeeMasterComponent {
   const selectedBranchId = localStorage.getItem('selectedBranchId');
 
    // Fetch employees from the API
-   this.EmployeeService.getemployeesMasterNew(selectedSchema,selectedBranchId).subscribe(
-     (data: any) => {
-       this.employees = data;
-       console.log('All Employees:' ,this.employees)
-     },
-     (error: any) => {
-       console.error('Error fetching employees:', error);
-     }
-   );
+  //  this.EmployeeService.getemployeesMasterNew(selectedSchema,selectedBranchId).subscribe(
+  //    (data: any) => {
+  //      this.employees = data;
+  //      console.log('All Employees:' ,this.employees)
+  //    },
+  //    (error: any) => {
+  //      console.error('Error fetching employees:', error);
+  //    }
+  //  );
  } else {
    console.error('No schema selected.');
  }
@@ -367,7 +367,7 @@ if (this.userId !== null) {
     const selectedBranchId = localStorage.getItem('selectedBranchId');
   
     // Pass both the schema and the branch ID to the service
-    this.EmployeeService.getemployeesMasterNew(selectedSchema, selectedBranchId).subscribe(
+    this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
       (data: any) => {
         // Filtering employees where is_active is null or true
         this.employees = data.filter((employee: any) => 
