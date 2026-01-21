@@ -16,13 +16,12 @@ export class AttendanceSidebarComponent {
    
 
 
-  hasViewPermissionAirticketPolicy:boolean = false;
-  hasViewPermissionAirticketAllocation:boolean = false;
-  hasViewPermissionAirticketRequest:boolean = false;
-  hasViewPermissionAirticketRule:boolean = false;
-  hasViewPermissionAirticketAprlvl:boolean = false;
-  hasViewPermissionAirticketApprovals:boolean = false;
-  hasViewPermissionAirticketEsc:boolean = false;
+  hasViewPermissionAttendanceMarking:boolean = false;
+  hasViewPermissionEmpEarlygoing:boolean = false;
+  hasViewPermissionEmpRecheck:boolean = false;
+  hasViewPermissionPunchingList:boolean = false;
+  hasViewPermissionGeoFence:boolean = false;
+
 
 
   
@@ -84,14 +83,11 @@ export class AttendanceSidebarComponent {
           // Grant all permissions
 
 
-          this.hasViewPermissionAirticketPolicy = true;
-          this.hasViewPermissionAirticketAllocation = true;
-          this.hasViewPermissionAirticketRequest = true;
-          this.hasViewPermissionAirticketRule = true;
-          this.hasViewPermissionAirticketAprlvl = true;
-          this.hasViewPermissionAirticketApprovals = true;
-          this.hasViewPermissionAirticketEsc = true;
-       
+          this.hasViewPermissionAttendanceMarking = true;
+          this.hasViewPermissionEmpEarlygoing = true;
+          this.hasViewPermissionEmpRecheck = true;
+          this.hasViewPermissionPunchingList = true;
+          this.hasViewPermissionGeoFence = true;
   
   
   
@@ -116,13 +112,12 @@ export class AttendanceSidebarComponent {
                   console.log('User is superuser according to permissions API');
                   // Grant all permissions
 
-          this.hasViewPermissionAirticketPolicy = true;
-          this.hasViewPermissionAirticketAllocation = true;
-          this.hasViewPermissionAirticketRequest = true;
-          this.hasViewPermissionAirticketRule = true;
-          this.hasViewPermissionAirticketAprlvl = true;
-          this.hasViewPermissionAirticketApprovals = true;
-          this.hasViewPermissionAirticketEsc = true;
+          this.hasViewPermissionAttendanceMarking = true;
+          this.hasViewPermissionEmpEarlygoing = true;
+          this.hasViewPermissionEmpRecheck = true;
+          this.hasViewPermissionPunchingList = true;
+          this.hasViewPermissionGeoFence = true;
+
                  
   
   
@@ -133,26 +128,20 @@ export class AttendanceSidebarComponent {
   
               
                        
-                       this.hasViewPermissionAirticketPolicy = this.checkGroupPermission('view_airticketpolicy', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAirticketPolicy);
+                       this.hasViewPermissionAttendanceMarking = this.checkGroupPermission('view_attendance', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAttendanceMarking);
                       
-                       this.hasViewPermissionAirticketAllocation = this.checkGroupPermission('view_airticketallocation', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAirticketAllocation);
+                       this.hasViewPermissionEmpEarlygoing = this.checkGroupPermission('view_early_going', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionEmpEarlygoing);
 
-                       this.hasViewPermissionAirticketApprovals = this.checkGroupPermission('view_airticketapproval', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAirticketApprovals);
+                       this.hasViewPermissionEmpRecheck = this.checkGroupPermission('view_attendancerecheck', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionEmpRecheck);
 
-                       this.hasViewPermissionAirticketAprlvl = this.checkGroupPermission('view_airticketworkflow', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAirticketAprlvl);
+                       this.hasViewPermissionPunchingList = this.checkGroupPermission('view_attendance_list', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionPunchingList);
 
-                      this.hasViewPermissionAirticketEsc = this.checkGroupPermission('view_airticket_escalation', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAirticketEsc);
-
-                        this.hasViewPermissionAirticketRequest = this.checkGroupPermission('view_airticketrequest', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAirticketRequest);
-                      
-                       this.hasViewPermissionAirticketRule = this.checkGroupPermission('view_airticketrule', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAirticketRule);
+                      this.hasViewPermissionGeoFence = this.checkGroupPermission('view_branchgeofence', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionGeoFence);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

@@ -137,17 +137,17 @@ export class AssetEmailTemplateComponent {
                   console.log('Group Permissions:', groupPermissions);
   
                  
-                  this.hasAddPermission = this.checkGroupPermission('add_loanemailtemplate', groupPermissions);
+                  this.hasAddPermission = this.checkGroupPermission('add_assetemailtemplate', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_loanemailtemplate', groupPermissions);
+                  this.hasEditPermission = this.checkGroupPermission('change_assetemailtemplate', groupPermissions);
                   console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_loanemailtemplate', groupPermissions);
+                 this.hasDeletePermission = this.checkGroupPermission('delete_assetemailtemplate', groupPermissions);
                  console.log('Has delete permission:', this.hasDeletePermission);
     
   
-                  this.hasViewPermission = this.checkGroupPermission('view_loanemailtemplate', groupPermissions);
+                  this.hasViewPermission = this.checkGroupPermission('view_assetemailtemplate', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
   
   

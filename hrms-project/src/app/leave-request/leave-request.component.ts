@@ -596,6 +596,25 @@ this.employeeService.updateLeaveRequest(this.editAsset.id, this.editAsset).subsc
 );
 }
 
+editTotalDays = 0;
+
+
+
+calculateEditTotalDays() {
+  if (this.editAsset.start_date && this.editAsset.end_date) {
+    const start = new Date(this.editAsset.start_date);
+    const end = new Date(this.editAsset.end_date);
+
+    const diff =
+      Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+    this.editTotalDays = diff > 0 ? diff : 0;
+  } else {
+    this.editTotalDays = 0;
+  }
+}
+
+
 
 
 }

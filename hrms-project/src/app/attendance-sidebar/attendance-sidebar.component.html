@@ -14,14 +14,16 @@
           </div>
           <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
             <ul>
-                  <li routerLink="/main-sidebar/attendance-sidebar/attendace-marking" ><a><mat-icon>peoples</mat-icon> Attendance Marking</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/attendace-marking" *ngIf="hasViewPermissionAttendanceMarking"><a><mat-icon>view_timeline</mat-icon> Attendance Marking</a></li>
                
                 
-                  <li routerLink="/main-sidebar/attendance-sidebar/employee-early-going" ><a><mat-icon>peoples</mat-icon> Employees Early going</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/employee-early-going" *ngIf="hasViewPermissionEmpEarlygoing"><a><mat-icon>view_timeline</mat-icon> Employees Early going</a></li>
                  
-                  <li routerLink="/main-sidebar/attendance-sidebar/employee-recheck" ><a><mat-icon>peoples</mat-icon> Employees Recheck</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/employee-recheck" *ngIf="hasViewPermissionEmpRecheck"><a><mat-icon>view_timeline</mat-icon> Employees Recheck</a></li>
 
-                  <li routerLink="/main-sidebar/attendance-sidebar/employee-punching-list" ><a><mat-icon>peoples</mat-icon> Punching List</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/employee-punching-list" *ngIf="hasViewPermissionPunchingList"><a><mat-icon>view_timeline</mat-icon> Punching List</a></li>
+
+                  <li routerLink="/main-sidebar/attendance-sidebar/geofence" *ngIf="hasViewPermissionGeoFence"><a><mat-icon>view_timeline</mat-icon> Geo Fence</a></li>
 
                     <mat-nav-list>
        

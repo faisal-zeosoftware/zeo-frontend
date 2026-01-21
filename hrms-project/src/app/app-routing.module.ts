@@ -154,6 +154,8 @@ import { AttendanceSidebarComponent } from './attendance-sidebar/attendance-side
 import { EmployeeEarlyGoingComponent } from './employee-early-going/employee-early-going.component';
 import { EmployeeRecheckComponent } from './employee-recheck/employee-recheck.component';
 import { EmployeePunchingListComponent } from './employee-punching-list/employee-punching-list.component';
+import { GeofenceComponent } from './geofence/geofence.component';
+import { ResignationEmailTemplateComponent } from './resignation-email-template/resignation-email-template.component';
 
 
 const routes: Routes = [
@@ -457,6 +459,11 @@ const routes: Routes = [
             component:AirticketEmailTemplateComponent
           },
 
+          {
+            path:'resignation-email-template',
+            component:ResignationEmailTemplateComponent
+          },
+
 
 
             {
@@ -685,10 +692,14 @@ const routes: Routes = [
       component: EmployeeRecheckComponent,
     },
    
-
     {
       path: 'employee-punching-list',
       component: EmployeePunchingListComponent,
+    },
+
+     {
+      path: 'geofence',
+      component: GeofenceComponent,
     },
 
   ]

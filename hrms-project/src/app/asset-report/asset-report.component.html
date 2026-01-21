@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section" >
       <div class="header_section">
         <div class="row align-items-center px-4">
@@ -10,7 +10,7 @@
             <div class="input-group search_Sec">
               <input type="text" class="form-control" placeholder="Search assets..." [(ngModel)]="searchText" (input)="applyFilters()">
               
-              <div class="search_op" [matMenuTriggerFor]="filterMenu">
+              <div *ngIf="hasEditPermission" class="search_op" [matMenuTriggerFor]="filterMenu">
                 <mat-icon>filter_alt</mat-icon>
               </div>
               <mat-menu #filterMenu="matMenu" class="custom-filter-menu" backdropClass="glass-backdrop" hasBackdrop="true">
@@ -117,7 +117,7 @@
                           </div>
                         </div>
               
-                        <div class="save-card-modern">
+                        <div class="save-card-modern" *ngIf="hasAddPermission">
                           <div class="save-header">
                             <mat-icon>add_box</mat-icon>
                             <span>Save current view</span>
@@ -150,7 +150,7 @@
         (click)="resetToStandard()">
   <mat-icon>restart_alt</mat-icon> Reset View
 </button>
-        <button class="btn btn-success btn-sm" (click)="downloadExcel()">
+        <button *ngIf="hasExportPermission" class="btn btn-success btn-sm" (click)="downloadExcel()">
           <mat-icon>download</mat-icon> Export Excel
         </button>
       </div>

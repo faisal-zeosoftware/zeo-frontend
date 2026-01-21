@@ -1174,6 +1174,21 @@ deleteOvertimepolicy(categoryId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+deleteGeofence(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
 
 updatepayrollApprovallevel(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
@@ -1298,6 +1313,19 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 updatelovertimepolicy(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/calendars/api/overtime_policy/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateGeofence(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(
@@ -4482,6 +4510,16 @@ getovertimepolicy(selectedSchema: string): Observable<any> {
 }
 
 
+getGeofence(selectedSchema: string): Observable<any> {
+  const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/?schema=${selectedSchema}`;
+
+  // Fetch employees from the API
+  return this.http.get(apiUrl);
+
+  
+}
+
+
 registerPayrollApproverLevel(formData: FormData): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   if (!selectedSchema) {
@@ -4508,6 +4546,23 @@ registerOverTimePolicy(formData: FormData): Observable<any> {
   }
 
   const apiUrl = `${this.apiUrl}/calendars/api/overtime_policy/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, formData).pipe(
+    catchError((error) => {
+      console.error('Error during leave type registration:', error);
+      return throwError(error);
+    })
+  );
+}
+
+registerGeofence(formData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/?schema=${selectedSchema}`;
 
   return this.http.post(apiUrl, formData).pipe(
     catchError((error) => {

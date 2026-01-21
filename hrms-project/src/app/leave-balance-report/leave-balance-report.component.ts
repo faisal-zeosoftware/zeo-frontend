@@ -163,7 +163,7 @@ ngOnInit(): void {
                  console.log('Has view permission:', this.hasViewPermission);
 
                  this.hasExportPermission = this.checkGroupPermission('lv_balance_export_report', groupPermissions);
-                 console.log('Has view permission:', this.hasExportPermission);
+                 console.log('Has export permission:', this.hasExportPermission);
 
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

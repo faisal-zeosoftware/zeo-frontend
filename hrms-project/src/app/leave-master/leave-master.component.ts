@@ -795,10 +795,22 @@ loadLeaveEntitlements(): void {
 
 
   registerleaveApplicable(): void {
-    this.registerButtonClicked = true;
+      this.registerButtonClicked = true;
+
+  // ✅ STEP 1: Frontend validation (REQUIRED)
+  const hasSelection =
+    (this.branch && this.branch.length > 0) ||
+    (this.department && this.department.length > 0) ||
+    (this.designation && this.designation.length > 0) ||
+    (this.role && this.role.length > 0);
+
+  if (!hasSelection) {
+    alert('Please select at least one: Branch, Department, Designation, or Role');
+    return; // ⛔ STOP API CALL
+  }
   
     const formData: any = {
-      gender: this.gender,
+      gender: this.gender === 'B' ? null : this.gender,
       leave_type: this.selectedLeaveTypeForModal.id,
       branch: this.branch && this.branch.length > 0 ? this.branch.map((b: any) => Number(b)) : [], // Send [] if empty
       department: this.department && this.department.length > 0 ? this.department.map((d: any) => Number(d)) : [],

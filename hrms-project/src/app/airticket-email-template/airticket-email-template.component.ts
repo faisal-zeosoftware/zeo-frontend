@@ -135,17 +135,17 @@ export class AirticketEmailTemplateComponent {
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_loanemailtemplate', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_airticketemailtemplate', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_loanemailtemplate', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_airticketemailtemplate', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_loanemailtemplate', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_airticketemailtemplate', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_loanemailtemplate', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_airticketemailtemplate', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
     
     

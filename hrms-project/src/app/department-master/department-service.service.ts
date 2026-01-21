@@ -369,6 +369,12 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     return this.http.put(apiUrl, data);
   }
 
+   updateResignationEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/resignation-email-template/${templateId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, data);
+  }
+
+
     updateDocExpEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/${templateId}/?schema=${selectedSchema}`;
     return this.http.put(apiUrl, data);
@@ -431,6 +437,15 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
 
    getEmailTemplatesAirticket(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/airticket-email-template/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+   getEmailTemplatesResignation(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/resignation-email-template/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);

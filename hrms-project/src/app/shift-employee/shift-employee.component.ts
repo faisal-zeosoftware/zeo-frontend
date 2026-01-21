@@ -307,6 +307,7 @@ ngOnInit(): void {
           
 
   start_date:any='';
+  end_date:any='';
   schedule_name:any='';
   shift_type:any='';
   rotation_cycle_weeks :any='';
@@ -334,6 +335,7 @@ ngOnInit(): void {
     // Build the payload, converting values as necessary:
     const payload = {
       start_date: this.start_date || null,
+      end_date: this.end_date || null,
       schedule_name: this.schedule_name || null,
       shift_type: this.shift_type || null,
 

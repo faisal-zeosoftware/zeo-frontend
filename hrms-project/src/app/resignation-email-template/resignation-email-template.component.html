@@ -1,0 +1,194 @@
+<div class="container" *ngIf="hasViewPermission" >
+
+    <div class="comapny_section">
+
+
+        <div class="header_section">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <h1>Resignation Email Template</h1>
+                </div>
+
+                <div class="col-md-3">
+                    
+                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+                </div>
+                <div class="col-md-5">
+                    <div class="button-group pull-right">
+                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                        </mat-icon></span> Create</button>
+                      <span *ngIf="!hasAddPermission"></span>
+
+                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
+                            <span class="header-btn-icon">
+                             <mat-icon>draw
+                        </mat-icon></span> Edit</button>
+                        <span *ngIf="hasEditPermission"></span>
+                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                            <span class="header-btn-icon">
+                                <mat-icon> delete
+                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+                           <span *ngIf="!hasDeletePermission"></span>
+                    </div>
+                </div>
+            </div>
+           
+           
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                
+                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+
+            </div>
+            <div class="col-md-3">
+                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+
+            </div>
+        </div>
+
+        <div *ngIf="iscreateLoanApp" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2>Resignation Email Template</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+              <form>
+
+                <div class="row">
+    
+                  
+    
+       <div class="col-md-12">
+    
+    
+                        <div class="custom-sel">
+                            <label>Template Type</label>
+                            <select class="form-control" id="template_type" required [(ngModel)]="template_type"  [ngModelOptions]="{standalone: true}">
+                                <option value="" >Select</option>
+                                <option value="resignation_created">Resignation Created</option>
+                                <option value="resignation_approved">Resignation Approved</option>
+                                <option value="resignation_rejected">Resignation Rejected</option>
+    
+    
+                            </select>
+                        </div>
+                                    
+                
+                    </div>
+    
+                    <div class="col-md-12">
+                        <label>Subject</label>
+                        <input type=" text" class="form-control" [(ngModel)]="subject"  [ngModelOptions]="{standalone: true}" placeholder="enter subject">
+                    </div>
+    
+                    <div class="col-md-8">
+                        <label>Body</label>
+                        <div #summernote id="summernote"></div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label>Select Field names</label>
+                        <div class="email_placeholdername">
+                          <div class="on_by_placeholders" *ngFor="let placeholder of EmailPlaceHolders" (click)="selectPlaceholder(placeholder)">
+                            <h4>{{ placeholder }}</h4> <!-- Display the placeholder value -->
+                          </div>
+                        </div>
+                      </div>
+                    
+    
+                      
+                    
+                    
+                </div>
+        
+                <div class="row">
+                    <div  class="col-md-10"></div>
+                    <div class="col-md-2">
+    
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="onclickEmailTemplate()">Save</button>  
+    
+                    </div>
+                </div>
+    
+            </form>
+    
+            
+      
+    
+
+            
+            </div>
+          </div>
+
+
+   
+
+        
+        <div class="com_list mt-4 " *ngIf="hasViewPermission">
+            <div class="cpm-sec">
+        
+                <h2>Resignation Email Templates</h2><hr>
+
+                <div class="row" *ngFor="let deparmentsec of tempEmails">
+                    <div class="col-md-12">
+                        <div class="emailtep_det_">
+                        <div class="row"> 
+                            <div class="col-md-5 col-6">
+                                <h6>{{deparmentsec.template_type}}</h6>
+
+                            </div>
+
+                            <div class="col-md-5 col-6">
+                                <h6>{{deparmentsec.subject}}</h6>
+
+                            </div>
+                            <div class="col-md-2 col-6">
+                                <button
+                                mat-fab
+                                color="primary"
+                                aria-label="Edit icon"
+                                *ngIf="showEditBtn"
+      
+                                
+                                (click)="openEditPopuss(deparmentsec)"
+                              >
+                                <mat-icon style="color: white;">draw</mat-icon>
+                              </button>
+                              <mat-checkbox *ngIf="Delete" class="pull-right" [(ngModel)]="deparmentsec.selected" ></mat-checkbox>
+
+                            </div> 
+                        </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+
+
+
+
+
+
+  
+
+        </div>
+        
+
+       
+</div>
+
+

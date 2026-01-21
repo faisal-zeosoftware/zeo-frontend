@@ -233,6 +233,9 @@ import { AttendanceSidebarComponent } from './attendance-sidebar/attendance-side
 import { EmployeeEarlyGoingComponent } from './employee-early-going/employee-early-going.component';
 import { EmployeeRecheckComponent } from './employee-recheck/employee-recheck.component';
 import { EmployeePunchingListComponent } from './employee-punching-list/employee-punching-list.component';
+import { GeofenceComponent } from './geofence/geofence.component';
+import { ResignationEmailTemplateComponent } from './resignation-email-template/resignation-email-template.component';
+import { ResignationEmailTemplateEditComponent } from './resignation-email-template-edit/resignation-email-template-edit.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -424,7 +427,10 @@ import { EmployeePunchingListComponent } from './employee-punching-list/employee
      AttendanceSidebarComponent,
      EmployeeEarlyGoingComponent,
      EmployeeRecheckComponent,
-     EmployeePunchingListComponent
+     EmployeePunchingListComponent,
+     GeofenceComponent,
+     ResignationEmailTemplateComponent,
+     ResignationEmailTemplateEditComponent
      
      
 

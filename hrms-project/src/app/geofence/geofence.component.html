@@ -1,0 +1,343 @@
+
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+       
+    <div class="header_section">
+
+      <div class="row">
+        <div class="col-md-4">
+          <h1>Geo Fence</h1>
+        </div>
+        <div class="col-md-3">
+
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+            </mat-icon></span> Create</button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+              <span class="header-btn-icon">
+                <mat-icon>draw
+                </mat-icon></span> Edit</button>
+            <span *ngIf="hasEditPermission"></span>
+
+            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission">
+              <span class="header-btn-icon">
+                <mat-icon> delete
+                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+
+        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedGeoFence()">Delete
+          Selected </button>
+
+      </div>
+    </div>
+
+
+      
+
+        <div *ngIf="iscreateovertimepolicy" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2> Create Geo Fence</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+          
+  <form *ngIf="hasAddPermission" >
+                  <div class="row">
+                    
+                  <div class="col-md-6" >
+                   
+                    <label>Location name</label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="location_name"  placeholder="Enter Location Name"
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location_name}">
+                   
+                   <!-- <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div> -->
+              </div>
+
+
+          <div class="col-md-6" >
+                   
+            <label>Latitude</label>
+           <input type="number"  class="form-control" [(ngModel)]="latitude"  placeholder="Enter Latitude"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+        
+
+
+          <div class="col-md-6" >
+                   
+            <label>Longitude</label>
+           <input type="number"  class="form-control" [(ngModel)]="longitude"  placeholder="Enter Longitude"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+                <div class="col-md-6" >
+                   
+            <label>Radius</label>
+           <input type="number"  class="form-control" [(ngModel)]="radius"  placeholder="Enter Radius"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+      
+
+
+
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
+
+      <div class="col-md-6" >
+        <label>Branch</label>
+        <div class="custom-sel">
+          <div class="form-control-wrapper">
+          
+
+            <mat-form-field>
+              <!-- <mat-label>Favorite food</mat-label> -->
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+          </div>
+         
+        </div>
+
+      </div>
+
+         
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-10">
+                
+                    </div>
+                
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateGeofence()">Create</button>  
+                     </div>
+                </div>
+                </form>
+
+            
+            </div>
+          </div>
+
+
+              <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit Geo Fence</h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+  <form *ngIf="hasAddPermission">
+                  <div class="row">
+                    
+                  <div class="col-md-6" >
+                   
+                    <label>Location name</label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="editAsset.location_name"  placeholder="Enter Name"
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location_name}">
+                   
+                   <!-- <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div> -->
+              </div>
+
+
+          <div class="col-md-6" >
+                   
+            <label>Latitude</label>
+           <input type="number"  class="form-control" [(ngModel)]="editAsset.latitude"  placeholder="Enter Latitude"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+        
+
+
+          <div class="col-md-6" >
+                   
+            <label>Longitude</label>
+           <input type="number"  class="form-control" [(ngModel)]="editAsset.longitude"  placeholder="Enter Longitude"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+    <div class="col-md-6" >
+                   
+            <label>Radius</label>
+           <input type="number"  class="form-control" [(ngModel)]="editAsset.radius"  placeholder="Enter Radius"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+      
+
+
+
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
+
+      <div class="col-md-6" >
+        <label>Branch</label>
+        <div class="custom-sel">
+          <div class="form-control-wrapper">
+          
+
+            <mat-form-field>
+
+              <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+          </div>
+         
+        </div>
+
+      </div>
+
+      
+
+    
+
+         
+                  </div>
+
+     <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
+
+            </div>
+            <div class="col-md-2">
+              <button type="button" (click)="updateGeoFenceing()" class="btn btn-success btn-full mt-4">Update</button>
+            </div>
+          </div>
+
+                </form>
+
+       
+
+
+
+
+      </div>
+    </div>
+
+
+
+        <div class="com_list mt-4" *ngIf="hasViewPermission">
+
+
+           
+            <table class="table-container " width="100%">
+                <thead>
+                  <tr>
+                    <th>Location Name</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Branch</th>
+                    <th>Radius</th>
+
+                   <th>Action</th>
+      
+        
+                   
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                  <tr *ngFor="let pol of geofencepol;let i = index">
+                    <td data-label="Location name">{{ pol.location_name }}</td> 
+                    <td data-label="Latitude">{{ pol.latitude }}</td>
+                    <td data-label="Longitude">{{ pol.longitude }}</td> 
+                    <td data-label="Branch">{{ pol.branch }}</td> 
+                    <td data-label="Radius">{{ pol.radius }}</td>
+
+
+                   <td data-label="Action">
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+    
+                
+                (click)="openEditModal(pol)"
+              >
+                <mat-icon style="color: white;">draw</mat-icon>
+              </button>
+    
+              <mat-checkbox *ngIf="Delete" [(ngModel)]="pol.selected" ></mat-checkbox>
+    
+            </td>
+    
+                  </tr>
+              
+                </tbody>
+              </table>
+
+        </div>
+        </div>
+        </div>

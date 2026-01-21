@@ -51,6 +51,7 @@ export class SettingsComponent {
   hasViewPermissionLoanReqEmtemp : boolean = false;
   hasViewPermissionAssetEmptemp: boolean = false;
   hasViewPermissionAirticketEmptemp: boolean = false;
+  hasViewPermissionResignationEmptemp: boolean = false;
 
 
   hasViewPermissionDocReqType: boolean = false;
@@ -167,6 +168,7 @@ if (this.userId !== null) {
         this.hasViewPermissionLoanReqEmtemp = true;
         this.hasViewPermissionAssetEmptemp = true;
         this.hasViewPermissionAirticketEmptemp = true;
+        this.hasViewPermissionResignationEmptemp = true;
 
 
 
@@ -249,6 +251,7 @@ if (this.userId !== null) {
                 this.hasViewPermissionLoanReqEmtemp = true;
                 this.hasViewPermissionAssetEmptemp = true;
                 this.hasViewPermissionAirticketEmptemp = true;
+                this.hasViewPermissionResignationEmptemp = true;
 
 
 
@@ -348,6 +351,12 @@ if (this.userId !== null) {
 
                     this.hasViewPermissionAssetEmptemp = this.checkGroupPermission('view_assetemailtemplate', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermissionAssetEmptemp);
+
+                    this.hasViewPermissionAirticketEmptemp = this.checkGroupPermission('view_airticketemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionAirticketEmptemp);
+
+                    this.hasViewPermissionResignationEmptemp = this.checkGroupPermission('view_resignationemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionResignationEmptemp);
 
 
                   //  Company Policy Permissions

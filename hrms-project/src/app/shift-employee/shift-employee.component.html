@@ -80,6 +80,16 @@
                    <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
               </div>
 
+
+              <div class="col-md-6" >
+                   
+                    <label>End Date</label>
+                   <input type="date"  class="form-control" required  [(ngModel)]="end_date"  placeholder="Enter end date "
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+                   
+                   <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
+              </div>
+
         
 
 
