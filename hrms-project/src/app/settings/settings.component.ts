@@ -33,6 +33,7 @@ export class SettingsComponent {
   hasViewCompanyMaster: boolean = false;
   hasViewAnnounceMaster:boolean = false;
   hasViewDocNotifySettings:boolean = false;
+  hasViewPermissionBranchPermission: boolean = false;
 
 
   hasViewNotification: boolean = false;
@@ -158,6 +159,8 @@ if (this.userId !== null) {
         this.hasViewDocNotifySettings = true;
         this.hasViewPermissionFormdes = true;
 
+        this.hasViewPermissionBranchPermission = true;
+
         this.hasViewPermissionCmpnyPol = true;
 
         this.hasViewPermissionEmtemp = true;
@@ -240,6 +243,8 @@ if (this.userId !== null) {
                 this.hasViewAnnounceMaster = true;
                 this.hasViewDocNotifySettings = true;
                 this.hasViewPermissionFormdes = true;
+
+                this.hasViewPermissionBranchPermission = true;
 
                 this.hasViewPermissionCmpnyPol = true;
 
@@ -325,6 +330,9 @@ if (this.userId !== null) {
 
                     this.hasViewDocNotifySettings = this.checkGroupPermission('view_notificationsettings', groupPermissions);
                     console.log('Has view permission:', this.hasViewDocNotifySettings);
+
+                    this.hasViewPermissionBranchPermission = this.checkGroupPermission('view_userbranchaccess', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionBranchPermission);
                     
                     // this.hasViewPermissionFormdes = this.checkGroupPermission('view_emp_customfield', groupPermissions);
                     // console.log('Has view permission:', this.hasViewPermissionFormdes);

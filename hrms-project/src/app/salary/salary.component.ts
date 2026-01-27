@@ -43,6 +43,9 @@ export class SalaryComponent {
   component:any='';
   is_active: boolean = false;
 
+  showAmountField: boolean = false;
+
+
   registerButtonClicked: boolean = false;
 
 
@@ -588,17 +591,33 @@ if (this.userId !== null) {
     // selectedComponentId: number | null = null;
 
 
-    onComponentChange() {
-      // Find the selected component details from the Salarycomponent list
-      this.selectedComponent = this.Salarycomponent.find(
-        comp => comp.id === Number(this.component)
-      );
-    
-      // If is_fixed is false, clear the amount field
-      if (this.selectedComponent && !this.selectedComponent.is_fixed) {
-        this.amount = '';
-      }
-    }
+onComponentChange() {
+  this.selectedComponent = this.Salarycomponent.find(
+    comp => comp.id === Number(this.component)
+  );
+
+  if (!this.selectedComponent) {
+    this.showAmountField = false;
+    return;
+  }
+
+  // ✅ Show amount if:
+  // 1. Fixed component
+  // 2. Petty Cash component
+  const componentName = (this.selectedComponent.name || '').toLowerCase();
+  const componentCode = (this.selectedComponent.code || '').toLowerCase();
+
+  this.showAmountField =
+    this.selectedComponent.is_fixed === true ||
+    componentName.includes('petty') ||
+    componentCode.includes('petty');
+
+  // Clear amount only if field should not show
+  if (!this.showAmountField) {
+    this.amount = '';
+  }
+}
+
 
 
 

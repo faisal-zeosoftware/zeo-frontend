@@ -371,6 +371,49 @@ font-family: math;
 }
 
 
+.vn-wisteria a{
+background-color:#8e44ad;
+  display:inline-block;
+  position:relative;
+  margin:30px 5px;
+  padding:15px 10px 12px 50px;
+  color:#fff;
+  transition:all 0.4s ease;
+  border-radius:3px;
+  font-size: 12px;
+  width: 100%;
+  white-space: nowrap;
+}
+.vn-wisteria a:before{
+  content:"\f019";
+  font-family:fontAwesome;
+  position:absolute;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  font-size:14px;
+  border-radius:0 20px 0 0;
+  color:#000;
+  background-color:#fff;
+  opacity:0.3;
+  padding:15px;
+  top:0;
+  left:0;
+}
+.vn-wisteria a:hover{
+  background:#7f8c8d
+}
+
+.vn-green a{
+    background-color: #27ae60;
+}
+
+.vn-blue a{
+    background-color:#2980b9;
+}
+
+
+
 
 .dropdown-container {
 position: relative;

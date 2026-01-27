@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { ResignationEmailTemplateEditComponent } from '../resignation-email-template-edit/resignation-email-template-edit.component';
+import { CompanyRegistrationService } from '../company-registration.service';
 
 @Component({
   selector: 'app-resignation-email-template',
@@ -62,8 +63,8 @@ export class ResignationEmailTemplateComponent {
           private dialog:MatDialog,
           private DesignationService: DesignationService,
           private sessionService: SessionService,
-      
-      
+          private companyservice: CompanyRegistrationService,
+
       
       
       ) {}
@@ -235,7 +236,7 @@ export class ResignationEmailTemplateComponent {
             console.log('schemastore', selectedSchema);
             // Check if selectedSchema is available
             if (selectedSchema) {
-              this.employeeService.getEmailPlaceholderAirticket(selectedSchema).subscribe(
+              this.companyservice.getEmailPlaceholderResignation(selectedSchema).subscribe(
                 (result: any) => {
                   this.EmailPlaceHolders = result.employee; // Assuming the response structure
                   console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
@@ -326,7 +327,7 @@ export class ResignationEmailTemplateComponent {
             };
           
         
-            this.employeeService.registerEmailTemplateAirticket(companyData).subscribe(
+            this.companyservice.registerEmailTemplateResignation(companyData).subscribe(
               (response) => {
                 console.log('Registration successful', response);
               
@@ -464,7 +465,7 @@ export class ResignationEmailTemplateComponent {
                   let total = selectedEmployeeIds.length;
                   let completed = 0;
               selectedEmployeeIds.forEach(categoryId => {
-                this.employeeService.deleteEmailTemplateAirticket(categoryId).subscribe(
+                this.companyservice.deleteEmailTemplateResignation(categoryId).subscribe(
                   () => {
                     console.log(' Email Template deleted successfully:', categoryId);
                     // Remove the deleted employee from the local list

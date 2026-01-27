@@ -15,12 +15,17 @@
           </div>
           <div class="col-md-5" *ngIf="hasAddPermission">
             <div class="button-group pull-right">
-              <button type="button" class="btn-Create btn pull-right btn-danger" (click)="toggleBulkUpload()">
+
+            <button type="button" class="btn-Edit btn-secondary  btn"  (click)="OpenBulkuploadModal()" *ngIf="hasEditPermission">
+                            <span class="header-btn-icon">
+                             <mat-icon>system_update_alt
+                        </mat-icon></span> Import</button>
+              <!-- <button type="button" class="btn-Create btn pull-right btn-danger" (click)="toggleBulkUpload()">
                 <span class="header-btn-icon">
                   <mat-icon>{{ showBulkUpload ? 'cancel' : 'add_circle' }}</mat-icon>
                 </span>
                 {{ showBulkUpload ? 'Cancel Bulk Upload' : 'Bulk Upload Attendance' }}
-              </button>
+              </button> -->
                            
   
   
@@ -35,7 +40,7 @@
       </div>
   
         <div class="com_list mt-4">
-    <div class="cpm-sec" *ngIf="hasViewPermission"    >
+    <div class="cpm-sec" *ngIf="hasViewPermission">
 
     
 
@@ -76,7 +81,7 @@
 </div>
   
 
-    <div class="bulk_upload_section"  *ngIf="showBulkUpload">
+    <!-- <div class="bulk_upload_section"  *ngIf="showBulkUpload">
       <label class="mt-4">Upload Excel File for Attendance</label>
     
       <input
@@ -93,7 +98,81 @@
       >
         Submit Bulk Upload
       </button>
+    </div> -->
+
+    <div *ngIf="isBulkuploadDepartmentModalOpen" class="modal">
+
+    <div class="modal-content">
+
+       
+
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Attendance Bulk Upload & Download Details</h2> 
+            </div>
+            <div class="col-md-4">
+                <span class="close pull-right" (click)="closeBulkuploadModal()">&times;</span>
+
+            </div>
+        </div><hr>
+
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="vn-wisteria" >
+                    <a  class="btn-wrap" (click)="downloadAttendanceExcel()">DOWNLOAD EXCEL FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="vn-wisteria vn-green" >
+                        <a  class="btn-wrap"  (click)="downloadAttendanceCsv()">DOWNLOAD CSV FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="vn-wisteria  vn-blue" >
+                            <a class="btn-wrap" (click)="toggleUploadForm()">
+                                ATTENDANCE BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
+                              </a>                            </div>
+                        </div>
+            </div>
+
+
+            <div *ngIf="showUploadForm">
+    <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
+      <div class="row">
+        <div class="col-md-12">
+          <label for="emp_profile_pic">Upload department Details:</label>
+          <input type="file" name="files" id="file" class="form-control" (change)="onFileSelected($event);">
+        </div>
+      </div>
+  
+      <div class="row mt-3">
+        <div class="col-md-8"></div>
+        <div class="col-md-2 col-6">
+            <button type="button" mat-raised-button color="warn"   class="pull-right btn-danger btn-full"  (click)="closeUploadForm()">
+              close
+            </button>
+          </div>
+        
+        <div class="col-md-2 col-6">
+          <button type="submit" mat-raised-button color="primary" class="pull-right btn-full">
+            Save
+          </button>
+        </div>
+
+        
+      </div>
+    </form>
+  </div>
+
+
+  
+    
+
     </div>
+  </div>
   
 
 

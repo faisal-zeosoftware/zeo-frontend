@@ -1,0 +1,201 @@
+<div class="container">
+    <div class="comapny_section" *ngIf="hasViewPermission">
+        <div class="com_list ">
+            <div class="cpm-sec">
+
+                <h2>Branch Permission For User</h2>
+                <hr>
+
+                <form>
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="custom-sel">
+                                <label>Select User</label>
+<select
+  class="form-control"
+  required
+  [(ngModel)]="user"
+  name="user"
+  [ngClass]="{'error-field': registerButtonClicked && !user}"
+>
+  <option [ngValue]="null">-- Select User --</option>
+  <option *ngFor="let u of users" [ngValue]="u.id">
+    {{ u.username }}
+  </option>
+</select>
+  <div *ngIf="registerButtonClicked && !user" class="error-message">Please Select User</div>
+            </div>
+      </div>
+                        
+
+      <div class="col-md-6" >
+        <label>Branch</label>
+        <div class="custom-sel">
+          <div class="form-control-wrapper">
+          
+
+<mat-form-field appearance="outline" class="w-100">
+  <mat-select
+    placeholder="Select Branch"
+    [(ngModel)]="branch"
+    name="branch"
+    multiple
+    #selectBrach
+  >
+
+    <mat-checkbox
+      class="px-2"
+      [(ngModel)]="allSelectedBrach"
+      [ngModelOptions]="{ standalone: true }"
+      (change)="toggleAllSelectionBrach()"
+    >
+      Select All
+    </mat-checkbox>
+
+    <mat-option
+      *ngFor="let b of Branches"
+      [value]="b.id"
+    >
+      {{ b.branch_name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
+            
+          </div>
+         
+        </div>
+
+      </div>
+
+
+                    </div>
+
+                    <div class="row" *ngIf="hasAddPermission">
+                        <div class="col-md-10">
+            
+                        </div>
+            
+                        <div class="col-md-2">
+                            <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerUserAssignedPermission()">Save</button>  
+                         </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+<table class="table table-striped custom-table">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>User</th>
+      <th>Branch Name</th>
+      <th *ngIf="hasEditPermission || hasDeletePermission">Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let per of UserPermissions; let i = index">
+      <td data-label="No">{{ i + 1 }}</td>
+
+      <td data-label="User">
+        {{ per.user }}
+      </td>
+
+      <td data-label="Branch Name">
+        <ng-container *ngIf="per.branch?.length; else noBranch">
+          <span *ngFor="let b of per.branch; let last = last">
+            {{ b.branch_name }}<span *ngIf="!last">, </span>
+          </span>
+        </ng-container>
+
+        <ng-template #noBranch>
+          <span class="text-muted">No Branch Assigned</span>
+        </ng-template>
+      </td>
+
+      <td data-label="Action">
+        <span class="table-btns">
+          <button
+            *ngIf="hasEditPermission"
+            type="button"
+            class="btn btn-sm btn-info"
+            (click)="openEditPerModal(per)"
+          >
+            <i class="fa-solid fa-edit"></i>
+          </button>
+
+          <button
+            *ngIf="hasDeletePermission"
+            type="button"
+            class="btn btn-sm btn-danger"
+            (click)="deleteAssignedPermission(per.id)"
+          >
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</div>
+
+
+ <!-- Edit Modal Popup -->
+<div *ngIf="isUserPereditModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closeEditPerModal()">&times;</span>
+      <h2>Edit User Permission</h2>
+      <form (ngSubmit)="updateUserPermission()">
+        <div class="row">
+                        <div class="col-md-6">
+                            <div class="custom-sel">
+                                <label>Select User</label>
+                                <select class="form-control" id="user" required [(ngModel)]="user"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !user}">
+                                    <option *ngFor="let deparmentsec of users" [value]="deparmentsec.id">{{ deparmentsec.username }}</option>
+                                </select>
+                                <div *ngIf="registerButtonClicked && !user" class="error-message">Please Select Your Company</div>
+                            </div>
+                        </div>
+            
+      <div class="col-md-6" >
+        <label>Branch</label>
+        <div class="custom-sel">
+          <div class="form-control-wrapper">
+          
+
+            <mat-form-field>
+              <!-- <mat-label>Favorite food</mat-label> -->
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+          </div>
+         
+        </div>
+
+      </div>
+            
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+    </div>
+</div>
+
+
+        
+    </div>
+</div>

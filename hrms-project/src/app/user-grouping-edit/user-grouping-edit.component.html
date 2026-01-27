@@ -685,6 +685,37 @@
                         </div>
         
                     </div>
+
+
+                     <div class="col-md-3">
+                        <span class=""><mat-checkbox [(ngModel)]="BranchpermissionMasterChecked" 
+                          [indeterminate]="isBranchPermissionsIndeterminate()" 
+                          (change)="onUserBranchChange()" 
+                          [ngModelOptions]="{standalone: true}" >
+                          Branch Permission For User
+                        </mat-checkbox> </span><br>
+        
+                    </div>
+        
+                    <div class="col-md-9">
+                        <div class="selection_checkmark_sec">
+                            <div class="all_selection_Sec">
+                                <div class="row">
+                                    <div class="col-md-3" *ngFor="let permission of GrouppermissionsBranchUser">
+                                        <h2> <span> <mat-checkbox [value]="permission.id" 
+                                          (change)="onCheckboxChangesBranch(permission.id)" 
+                                          [checked]="selectedPermissions.includes(permission.id)" > 
+                                          {{ getDisplayNameBranchUserPermission(permission.codename) }} 
+                                        </mat-checkbox>
+                                     </span>
+                                     </h2>
+                                      </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+        
+                    </div>
         
         
                   

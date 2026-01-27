@@ -73,6 +73,7 @@ export class UserGroupingEditComponent {
   GrouppermissionsConfigMaster: any[] = [];
   GrouppermissionsAnnounceMaster: any[] = [];
   GrouppermissionsNotify: any[] = [];
+  GrouppermissionsBranchUser: any[] = [];
 
 
 
@@ -260,6 +261,7 @@ export class UserGroupingEditComponent {
   ConfigMasterInderminate= false;
   AnnounceInderminate= false;
   NotifyInderminate= false;
+  BranchMasterInderminate= false;
 
 
 
@@ -454,6 +456,7 @@ export class UserGroupingEditComponent {
   ConfigMasterChecked:boolean = false;
   AnnounceMasterChecked:boolean = false;
   NotefyChecked:boolean = false;
+  BranchpermissionMasterChecked: boolean =false;
 
 
 
@@ -829,7 +832,8 @@ isSettingsMasterChecked(): boolean {
       this.CpMasterChecked &&
       this.ConfigMasterChecked &&
       this.AnnounceMasterChecked &&
-      this.NotefyChecked;
+      this.NotefyChecked &&
+      this.BranchpermissionMasterChecked;
 }
 
 
@@ -859,6 +863,13 @@ isSettingsMasterChecked(): boolean {
       this.GrouppermissionsassigneddUser.map(p => p.id).includes(permission)
     );
     return selectedAssignPermissions.length > 0 && selectedAssignPermissions.length < this.GrouppermissionsassigneddUser.length;
+  }
+
+  isBranchPermissionsIndeterminate(): boolean {
+    const selectedBranchPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsBranchUser.map(p => p.id).includes(permission)
+    );
+    return selectedBranchPermissions.length > 0 && selectedBranchPermissions.length < this.GrouppermissionsBranchUser.length;
   }
 
   isStateMasterIndeterminate(): boolean {
@@ -1926,6 +1937,7 @@ isGeoFenceIndeterminate(): boolean {
     this.isConfigmasterIndeterminate();
     this.isAnnounceIndeterminate();
     this.isNotifyIndeterminate();
+    this.isBranchPermissionsIndeterminate();
 
 
   
@@ -2167,6 +2179,7 @@ updateInderminateAttendance():void{
     this.loadpermissionConfig();
     this.loadpermissionAnnouncement();
     this.loadpermissionNotification();
+     this.loadpermissionsBranchuser();
 
 
   }
@@ -3540,6 +3553,56 @@ getDisplayNameGratuity(permissionCodename: string): string {
         return permissionCodename;
     }
   }
+
+      loadpermissionsBranchuser(): void {
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+      console.log('schemastore', selectedSchema);
+    
+      if (selectedSchema) {
+        this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+          (result: any[]) => {
+            // Specify the codenames you want to filter
+            const requiredCodenames = ['add_userbranchaccess', 'change_userbranchaccess', 'delete_userbranchaccess', 'view_userbranchaccess'];
+    
+            // Filter and remove duplicates based on codename
+            const uniquePermissionsMap = new Map();
+            result.forEach(permission => {
+              const codename = permission.codename.trim().toLowerCase();
+              if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                uniquePermissionsMap.set(codename, permission);
+              }
+            });
+    
+            // Convert map values to an array
+            this.GrouppermissionsBranchUser = Array.from(uniquePermissionsMap.values());
+    
+            console.log('Filtered Unique Permissions:', this.GrouppermissionsBranchUser);
+          },
+          (error: any) => {
+            console.error('Error fetching permissions:', error);
+          }
+        );
+      }
+    }
+  
+  
+     //Display Name  add view delte code for User assigned permission master-------
+  
+     getDisplayNameBranchUserPermission(permissionCodename: string): string {
+      switch (permissionCodename.trim().toLowerCase()) {
+        case 'add_userbranchaccess':
+          return 'Add';
+        case 'change_userbranchaccess':
+          return 'Edit';
+        case 'delete_userbranchaccess':
+          return 'Delete';
+        case 'view_userbranchaccess':
+          return 'View';
+        default:
+          return permissionCodename;
+      }
+    }
 
 
   //load permission for state master----------------
@@ -8720,6 +8783,29 @@ getDisplayNameOverTimepolicy(permissionCodename: string): string {
     this.assignMasterInderminate = this.isAssignPermissionsIndeterminate();
   }
 
+
+      onCheckboxChangesBranch(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateBranchMasterCheckbox();
+    this.updateSelectAlls();
+
+  }
+
+  updateBranchMasterCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsBranchUser.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.BranchpermissionMasterChecked = allPermissionsSelected;
+    this.BranchMasterInderminate = this.isBranchPermissionsIndeterminate();
+  }
+
   onCheckboxChangesstate(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
@@ -10718,6 +10804,7 @@ updateGeoFenceCheckbox(): void {
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
+    this.updateBranchMasterCheckbox();
 
 
 
@@ -11058,6 +11145,18 @@ updateGeoFenceCheckbox(): void {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsassigneddUser.map(permission => permission.id));
     } else {
       this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsassigneddUser.map(p => p.id).includes(permission));
+    }
+    this.updateSettingsCheckbox();
+    // this.updateSelectedPermissions(this.assignpermissionMasterChecked, this.GrouppermissionsassigneddUser);
+    // this.settingsChecked = this.assignpermissionMasterChecked;
+
+  }
+
+      onUserBranchChange(): void {
+    if (this.BranchpermissionMasterChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsBranchUser.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsBranchUser.map(p => p.id).includes(permission));
     }
     this.updateSettingsCheckbox();
     // this.updateSelectedPermissions(this.assignpermissionMasterChecked, this.GrouppermissionsassigneddUser);
@@ -12415,13 +12514,14 @@ issettings(): boolean {
   const ConfigMasterInderminate = this.isConfigmasterIndeterminate();
   const AnnounceInderminate = this.isAnnounceIndeterminate();
   const NotifyInderminate = this.isNotifyIndeterminate();
+  const BranchMasterInderminate = this.isBranchMasterIndeterminate();
 
 
     const otherGroupIndeterminate = false; // Add indeterminate checks for other groups like Dept, Dis, Cat
 
     // Return true only if some but not all checkboxes are selected
     return branchMasterInderminate || userMasterInderminate || userGroupMasterInderminate || assignMasterInderminate||stateMasterInderminate || documentMasterInderminate || userGroupMasterInderminate ||locationMasterInderminate||
-    DnMasterInderminate || CpMasterInderminate || ConfigMasterInderminate || AnnounceInderminate || NotifyInderminate || otherGroupIndeterminate;
+    DnMasterInderminate || BranchMasterInderminate || CpMasterInderminate || ConfigMasterInderminate || AnnounceInderminate || NotifyInderminate || otherGroupIndeterminate;
 }
 
 isreports(): boolean {
@@ -12738,6 +12838,7 @@ isAttend(): boolean {
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
+      ...this.GrouppermissionsBranchUser
 
 
       
@@ -12760,6 +12861,7 @@ isAttend(): boolean {
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
+    this.updateBranchMasterCheckbox();
 
     this.updateSettingsCheckbox();
   }
@@ -13255,6 +13357,7 @@ updateSelectAlls():void{
     this.updateConfigMasterCheckbox();
     this.updateAnnounceMasterCheckbox();
     this.updateNotifyCheckbox();
+    this.updateBranchMasterCheckbox();
 
 
 
@@ -13452,6 +13555,7 @@ updateAttendance():void{
       ...this.GrouppermissionsConfigMaster,
       ...this.GrouppermissionsAnnounceMaster,
       ...this.GrouppermissionsNotify,
+      ...this.GrouppermissionsBranchUser
 
 
     ].some(permission => this.selectedPermissions.includes(permission.id));

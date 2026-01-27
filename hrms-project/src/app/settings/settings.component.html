@@ -37,19 +37,19 @@
               </div>
               <div *ngIf="!hasViewPermissionUsers"></div>
 
-              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/user-grouping-master" *ngIf="hasViewPermissionGroups">
+              <!-- <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/user-grouping-master" *ngIf="hasViewPermissionGroups">
                 <a class="set_siding" mat-list-item>
                   <span class="side_option">Permission Grouping</span>
                 </a>
               </div>
-              <div *ngIf="!hasViewPermissionGroups"></div>
+              <div *ngIf="!hasViewPermissionGroups"></div> -->
 
-              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/permission-assigned" *ngIf="hasViewPermissionAssignPermission">
+              <!-- <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/permission-assigned" *ngIf="hasViewPermissionAssignPermission">
                 <a class="set_siding" mat-list-item>
                   <span class="side_option">Assign Permission for user</span>
                 </a>
               </div>
-              <div *ngIf="!hasViewPermissionAssignPermission"></div>
+              <div *ngIf="!hasViewPermissionAssignPermission"></div> -->
 
               <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/state-master" *ngIf="hasViewStateMaster">
                 <a class="set_siding" mat-list-item>
@@ -92,6 +92,44 @@
                 </a>
               </div>
               <div *ngIf="!hasViewDocNotifySettings"></div>
+            </mat-expansion-panel>
+             
+            <!-- User Permissions -->
+              <mat-expansion-panel>
+              <mat-expansion-panel-header class="mar-expantion-span">
+                <a mat-list-item>
+                  <mat-icon>security</mat-icon>
+                  <span class="con_clr"> User Permissions</span>
+                </a>
+              </mat-expansion-panel-header>
+
+              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/user-grouping-master" *ngIf="hasViewPermissionGroups">
+                <a class="set_siding" mat-list-item>
+                  <span class="side_option">Permission Grouping</span>
+                </a>
+              </div>
+              <div *ngIf="!hasViewPermissionGroups"></div>
+
+              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/permission-assigned" *ngIf="hasViewPermissionAssignPermission">
+                <a class="set_siding" mat-list-item>
+                  <span class="side_option">Assign Permission for user</span>
+                </a>
+              </div>
+              <div *ngIf="!hasViewPermissionAssignPermission"></div>
+
+              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/branch-permissions" *ngIf="hasViewPermissionBranchPermission">
+                <a class="set_siding" mat-list-item>
+                  <span class="side_option">Branch Permissions</span>
+                </a>
+              </div>
+              <div *ngIf="!hasViewPermissionBranchPermission"></div>
+
+
+              <!-- <div class="mat-expansion-panel-body" *ngIf="hasViewShift">
+                <a class="set_siding" mat-list-item routerLink="/main-sidebar/settings/shifts">
+                  <span class="side_option">Shift Allocations</span>
+                </a>
+              </div> -->
             </mat-expansion-panel>
 
             <!-- Calenders -->

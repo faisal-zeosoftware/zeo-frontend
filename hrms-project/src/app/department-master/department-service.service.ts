@@ -194,14 +194,31 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     return this.http.get(apiUrl);
   }
 
+    getBranchPermissionsForUser(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/user-branch-access/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+  }
+
 
   deleteAssignedPermission(permissionId: number,selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/permissions/${permissionId}/?schema=${selectedSchema}`;
     return this.http.delete(apiUrl);
   }
 
+  deleteBranchPermission(permissionId: number,selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/user-branch-access/${permissionId}/?schema=${selectedSchema}`;
+    return this.http.delete(apiUrl);
+  }
+
   updateUserPermission(selectedSchema: string, permissionId: number, updatedData: any): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/permissions/${permissionId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, updatedData);
+  }
+
+  updateBranchPermission(selectedSchema: string, permissionId: number, updatedData: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/user-branch-access/${permissionId}/?schema=${selectedSchema}`;
     return this.http.put(apiUrl, updatedData);
   }
   
@@ -290,6 +307,32 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
   
       
       const apiUrl = `${this.apiUrl}/organisation/api/permissions/?schema=${selectedSchema}`;
+  
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+      return this.http.post(apiUrl, companyData, { headers }).pipe(
+        catchError((error) => {
+          // Handle errors here (you can log, show a user-friendly message, etc.)
+          console.error('Error during company registration:', error);
+          return throwError(error);
+  
+        })
+      );
+      }
+
+
+     registerUserBranchPer(companyData: any): Observable<any> {
+      // const url = `${this.baseUrl}/Department/`; // Adjust the URL if needed
+  
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema) {
+        console.error('No schema selected.');
+        return throwError('No schema selected.'); // Return an error observable if no schema is selected
+      }
+     
+  
+      
+      const apiUrl = `${this.apiUrl}/organisation/api/user-branch-access/?schema=${selectedSchema}`;
   
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   

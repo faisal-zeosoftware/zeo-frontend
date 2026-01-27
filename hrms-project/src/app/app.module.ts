@@ -236,6 +236,7 @@ import { EmployeePunchingListComponent } from './employee-punching-list/employee
 import { GeofenceComponent } from './geofence/geofence.component';
 import { ResignationEmailTemplateComponent } from './resignation-email-template/resignation-email-template.component';
 import { ResignationEmailTemplateEditComponent } from './resignation-email-template-edit/resignation-email-template-edit.component';
+import { BranchPermissionsComponent } from './branch-permissions/branch-permissions.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -430,7 +431,8 @@ import { ResignationEmailTemplateEditComponent } from './resignation-email-templ
      EmployeePunchingListComponent,
      GeofenceComponent,
      ResignationEmailTemplateComponent,
-     ResignationEmailTemplateEditComponent
+     ResignationEmailTemplateEditComponent,
+     BranchPermissionsComponent
      
      
 

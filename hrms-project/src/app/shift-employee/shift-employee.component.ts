@@ -35,6 +35,9 @@ export class ShiftEmployeeComponent {
   name: any = '';
   Patern_name:any='';
   description: any = '';
+  created_by: any = '';
+
+  
 
  
   
@@ -138,7 +141,7 @@ ngOnInit(): void {
   this.loadShiftsEmployee();
 
 
-      this.loadBranch();
+    this.loadBranch();
     this.loadCAtegory();
     this.loadDEpartments();
     this.loadEmployee();
@@ -151,7 +154,7 @@ ngOnInit(): void {
     this.authService.getUserData(this.userId).subscribe(
       async (userData: any) => {
         this.userDetails = userData; // Store user details in userDetails property
-        // this.created_by = this.userId; // Automatically set the owner to logged-in user ID
+        this.created_by = this.userId; // Automatically set the owner to logged-in user ID
   
         console.log('User ID:', this.userId); // Log user ID
         console.log('User Details:', this.userDetails); // Log user details
@@ -338,6 +341,7 @@ ngOnInit(): void {
       end_date: this.end_date || null,
       schedule_name: this.schedule_name || null,
       shift_type: this.shift_type || null,
+      created_by: this.created_by ,
 
       // Convert to number if provided; otherwise, send null.
       rotation_cycle_weeks: this.rotation_cycle_weeks ? Number(this.rotation_cycle_weeks) : null,
@@ -347,13 +351,16 @@ ngOnInit(): void {
       week3_pattern: this.week3_pattern || null,
       week4_pattern: this.week4_pattern || null,
 
-      employee: this.employee || null,
+      // employee: this.employee || null,
       branches: this.branches || null,
      
-      designations: this.designations || null,
-      categories: this.categories || null,
+      // designations: this.designations || null,
+      // categories: this.categories || null,
+     employee: (this.employee && Array.isArray(this.employee)) ? this.employee : [],
+     designations: (this.designations && Array.isArray(this.designations)) ? this.designations : [],
+     categories: (this.categories && Array.isArray(this.categories)) ? this.categories : [],
       // For a multi-select field, ensure we send an array.
-      departments: (this.departments && Array.isArray(this.departments)) ? this.departments : [],
+     departments: (this.departments && Array.isArray(this.departments)) ? this.departments : [],
 
       // If nothing is selected for single shift pattern, send null.
       single_shift_pattern: this.single_shift_pattern || null,

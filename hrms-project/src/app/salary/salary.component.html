@@ -414,12 +414,17 @@
                 </div>
 
                 <!-- Amount Field (Only Visible if is_fixed === true) -->
-                <div class="col-md-6" *ngIf="selectedComponent?.is_fixed">
-                  <label>Amount</label>
-                  <input type="text" class="form-control" required [(ngModel)]="amount" placeholder="Enter amount"
-                    [ngModelOptions]="{standalone: true}">
+<div class="col-md-6" *ngIf="showAmountField">
+  <label>Amount</label>
+  <input
+    type="text"
+    class="form-control"
+    [(ngModel)]="amount"
+    placeholder="Enter amount"
+    [ngModelOptions]="{standalone: true}"
+  />
+</div>
 
-                </div>
 
 
                 <div class="col-md-6">

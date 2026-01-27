@@ -6,6 +6,8 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import { CompanyRegistrationService } from '../company-registration.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-attendace-marking',
@@ -13,6 +15,8 @@ import { SessionService } from '../login/session.service';
   styleUrl: './attendace-marking.component.css'
 })
 export class AttendaceMarkingComponent {
+
+    private apiUrl = `${environment.apiBaseUrl}`;
 
   registerButtonClicked = false;
 
@@ -23,6 +27,16 @@ export class AttendaceMarkingComponent {
   employee: any = '';
 
   shift: any = '';
+
+
+  selectedFile!: File;
+  file:any ='';
+
+  dept_name: string = '';
+  dept_description:string = '';
+  branch_id:any = '';
+
+  isLoading: boolean = false;
 
 Employees: any[] = [];
 Punching: any[] = [];
@@ -48,6 +62,7 @@ schemas: string[] = []; // Array to store schema names
     private employeeService: EmployeeService,
     private userService: UserMasterService,
     private DepartmentServiceService: DepartmentServiceService,
+    private companyRegistrationService: CompanyRegistrationService, 
     
 private DesignationService: DesignationService,
 private sessionService: SessionService,
@@ -183,52 +198,124 @@ ngOnInit(): void {
 
 
 
+     bulkuploaddocument(): void {
+      
+     const formData = new FormData();
+     formData.append('file', this.selectedFile);
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      // return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+      /** 🔥 START LOADER */
+  this.isLoading = true;
+   
+   
+    // return this.http.put(apiUrl, formData);
+
+  
+    this.http.post(`${this.apiUrl}/calendars/api/import-attendance/bulk_upload/?schema=${selectedSchema}`, formData)
+      .subscribe((response) => {
+        // Handle successful upload
+        console.log('bulkupload upload successful', response);
+        alert('bulkupload upload successful');
+        window.location.reload();
+
+      }, (error) => {
+        // Handle upload error
+             /** ❌ STOP LOADER EVEN ON ERROR */
+        this.isLoading = false;
+        console.error('Attendance upload failed', error);
+        alert('Attendance upload failed!');
+      });
+      }
+
+
+
+
+
+ isBulkuploadDepartmentModalOpen :boolean=false;
+
+
+OpenBulkuploadModal():void{
+  this.isBulkuploadDepartmentModalOpen = true;
+}
+
+
+
+
+closeBulkuploadModal():void{
+  this.isBulkuploadDepartmentModalOpen = false;
+
+}
+
 showBulkUpload: boolean = false;
-  selectedFile: File | null = null;
+
+
 
 
 toggleBulkUpload() {
   this.showBulkUpload = !this.showBulkUpload;
 }
 
+    showUploadForm: boolean = false;
 
-    // File selection
-    onFileSelected(event: any) {
-      this.selectedFile = event.target.files[0];
-      console.log('Selected file:', this.selectedFile);
-    }
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+
+
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+
+   onFileChange(event: any){
+    this.file = event.target.files[0];
+    console.log(this.file);
     
+  }
+   onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+
+
     // Submit file to backend
-    submitBulkUpload() {
-      if (!this.selectedFile) {
-        alert('Please select a file first.');
-        return;
-      }
+    // submitBulkUpload() {
+    //   if (!this.selectedFile) {
+    //     alert('Please select a file first.');
+    //     return;
+    //   }
     
-      const selectedSchema = localStorage.getItem('selectedSchema');
-      if (!selectedSchema) {
-        alert('No schema selected.');
-        return;
-      }
+    //   const selectedSchema = localStorage.getItem('selectedSchema');
+    //   if (!selectedSchema) {
+    //     alert('No schema selected.');
+    //     return;
+    //   }
     
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
+    //   const formData = new FormData();
+    //   formData.append('file', this.selectedFile);
     
-      const uploadUrl = `http://localhost:8000/calendars/api/import-attendance/bulk_upload/?schema=${selectedSchema}`;
+    //   const uploadUrl = `http://localhost:8000/calendars/api/import-attendance/bulk_upload/?schema=${selectedSchema}`;
     
-      this.http.post(uploadUrl, formData).subscribe(
-        (response: any) => {
-          console.log('Bulk upload successful', response);
-          alert('Bulk upload successful!');
-          this.selectedFile = null;
-          this.showBulkUpload = false;
-        },
-        (error: any) => {
-          console.error('Bulk upload failed', error);
-          alert('Bulk upload failed. Please check the file and try again.');
-        }
-      );
-    }
+    //   this.http.post(uploadUrl, formData).subscribe(
+    //     (response: any) => {
+    //       console.log('Bulk upload successful', response);
+    //       alert('Bulk upload successful!');
+    //       this.selectedFile = null;
+    //       this.showBulkUpload = false;
+    //     },
+    //     (error: any) => {
+    //       console.error('Bulk upload failed', error);
+    //       alert('Bulk upload failed. Please check the file and try again.');
+    //     }
+    //   );
+    // }
         
 
 
@@ -256,38 +343,11 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   
 
 
-//   getLocation(): Promise<any> {
-//   return new Promise((resolve, reject) => {
-//     if (!navigator.geolocation) {
-//       reject("Geolocation not supported");
-//     }
-
-//     navigator.geolocation.getCurrentPosition(
-//       (position) => {
-//         resolve({
-//           lat: position.coords.latitude,
-//           lng: position.coords.longitude
-//         });
-//       },
-//       (error) => {
-//         reject("Location access denied");
-//       }
-//     );
-//   });
-// }
-
-
-getLocation(): Promise<any> {
+  getLocation(): Promise<any> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject("Geolocation not supported");
     }
-
-    const options = {
-      enableHighAccuracy: true, // Forces the browser to get the most precise location
-      timeout: 10000,           // Wait up to 10 seconds
-      maximumAge: 0             // Do not use cached location data
-    };
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -297,15 +357,11 @@ getLocation(): Promise<any> {
         });
       },
       (error) => {
-        let errorMsg = "Location access denied";
-        if (error.code === error.TIMEOUT) errorMsg = "Location request timed out";
-        reject(errorMsg);
-      },
-      options
+        reject("Location access denied");
+      }
     );
   });
 }
-
 
 
 getAddress(lat: number, lng: number): Promise<string> {
@@ -437,6 +493,38 @@ async registerCheckOut(): Promise<void> {
     }
 
   }
+
+
+
+   downloadAttendanceCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadattendanceCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Attendance_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+      downloadAttendanceExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadattendanceExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Attendance_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+    
 
 
 
