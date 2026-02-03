@@ -333,7 +333,7 @@ mapLoanTypeNameToId() {
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
     if (selectedSchema) {
-      this.userService.getApprover(selectedSchema).subscribe(
+      this.userService.getessApprover(selectedSchema).subscribe(
         (result: any) => {
           this.Users = result;
           console.log(' fetching Companies:');

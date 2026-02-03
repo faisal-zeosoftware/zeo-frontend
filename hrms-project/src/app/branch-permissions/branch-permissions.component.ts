@@ -71,8 +71,11 @@ private sessionService: SessionService,
     
   this.loadDeparmentBranch();
   this.loadUserPermissions();
-  // this.loadAssignedPermissionsForUser();
   this.loadBranch();
+
+setTimeout(() => {
+  this.loadAssignedPermissionsForUser();
+}, 300);
 
 
   this.userId = this.sessionService.getUserId();
@@ -276,6 +279,7 @@ registerUserAssignedPermission(): void {
         this.user = null;
         this.branch = [];
         this.allSelectedBrach = false;
+        this.loadAssignedPermissionsForUser(); 
       },
       (error) => {
         console.error(error);
@@ -288,22 +292,30 @@ registerUserAssignedPermission(): void {
   
 
 
-  // loadAssignedPermissionsForUser(): void {
-  //   const selectedSchema = this.authService.getSelectedSchema();
-  //       if (selectedSchema) {
-  //         this.DepartmentServiceService.getBranchPermissionsForUser(selectedSchema).subscribe(
-  //           (result: any) => {
-  //             this.UserPermissions = result;
-  //             console.log(' fetching User Permissions:');
-      
-  //           },
-  //           (error) => {
-  //             console.error('Error User Permissions:', error);
-  //           }
-  //         );
-  //       }
-   
-  // }
+loadAssignedPermissionsForUser(): void {
+  const schema = this.authService.getSelectedSchema();
+  if (!schema) return;
+
+  this.DepartmentServiceService
+    .getBranchPermissionsForUser(schema)
+    .subscribe((result: any[]) => {
+
+      this.UserPermissions = result.map(per => ({
+        ...per,
+        branch: (per.branch || []).map((id: number) => {
+          const branch = this.branchMap.get(Number(id));
+          return {
+            id,
+            branch_name: branch?.branch_name ?? 'Unknown'
+          };
+        })
+      }));
+
+    });
+}
+
+
+
 
   
   deleteAssignedPermission(permissionId: number): void {
@@ -314,7 +326,7 @@ registerUserAssignedPermission(): void {
         (response) => {
           console.log('Permission deleted successfully', response);
           alert('Permission deleted successfully');
-          // this.loadAssignedPermissionsForUser();
+          this.loadAssignedPermissionsForUser();
         },
         (error) => {
           console.error('Error deleting permission:', error);
@@ -337,7 +349,8 @@ openEditPerModal(permission: any): void {
 
   // SET EDIT VALUES
   this.user = permission.user_id;
-  this.branch = permission.groups.map((g: any) => g.id);
+ this.branch = permission.branch.map((b: any) => b.id);
+
 }
 
 // Close modal
@@ -366,7 +379,7 @@ updateUserPermission(): void {
       () => {
         alert('Permission Updated Successfully');
         this.closeEditPerModal();
-        // this.loadAssignedPermissionsForUser();
+        this.loadAssignedPermissionsForUser();
       },
       (err) => {
         console.error(err);
@@ -403,25 +416,26 @@ toggleAllSelectionEdit(): void {
 }
 
 
-               loadBranch(): void {
-              
-                const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-              
-                console.log('schemastore',selectedSchema )
-                // Check if selectedSchema is available
-                if (selectedSchema) {
-                  this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-                    (result: any) => {
-                      this.Branches = result;
-                      console.log(' fetching Companies:');
-              
-                    },
-                    (error) => {
-                      console.error('Error fetching Companies:', error);
-                    }
-                  );
-                }
-                }
+branchMap = new Map<number, any>();
+
+loadBranch(): void {
+  const schema = this.authService.getSelectedSchema();
+  if (!schema) return;
+
+  this.DepartmentServiceService.getDeptBranchList(schema).subscribe(
+    (result: any[]) => {
+      this.Branches = result;
+
+      // 🔥 create fast lookup
+      this.branchMap.clear();
+      result.forEach(b => this.branchMap.set(Number(b.id), b));
+
+      // 🔥 NOW load permissions (guaranteed order)
+      this.loadAssignedPermissionsForUser();
+    }
+  );
+}
+
 
 
 

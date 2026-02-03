@@ -61,6 +61,15 @@ export class UserMasterService {
     return this.http.get(Url);
   }
 
+  getessApprover(selectedSchema: string): Observable<any> {
+    // Construct the API URL with the selected schema
+    const Url = `${this.apiUrl}/users/tenant-non-ess-users/?schema=${selectedSchema}`;
+  
+
+    // Fetch employees from the API
+    return this.http.get(Url);
+  }
+
   getUsersForAssigning(selectedSchema: string): Observable<any> {
     // Construct the API URL with the selected schema
     const Url = `${this.apiUrl}/users/group-perm-tenant-users/?schema=${selectedSchema}`;

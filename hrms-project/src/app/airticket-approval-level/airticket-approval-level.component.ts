@@ -339,7 +339,7 @@ export class AirticketApprovalLevelComponent {
       console.log('schemastore',selectedSchema )
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.userService.getApprover(selectedSchema).subscribe(
+        this.userService.getessApprover(selectedSchema).subscribe(
           (result: any) => {
             this.Users = result;
             console.log(' fetching Companies:');
@@ -429,11 +429,11 @@ export class AirticketApprovalLevelComponent {
         .map(employee => employee.id);
     
       if (selectedEmployeeIds.length === 0) {
-        alert('No Loan Approval Level selected for deletion.');
+        alert('No Airticket Approval Level selected for deletion.');
         return;
       }
     
-      if (confirm('Are you sure you want to delete the selected Loan Approval Level ?')) {
+      if (confirm('Are you sure you want to delete the selected Airticket Approval Level ?')) {
     
         let total = selectedEmployeeIds.length;
         let completed = 0;
@@ -442,21 +442,21 @@ export class AirticketApprovalLevelComponent {
         selectedEmployeeIds.forEach(categoryId => {
           this.employeeService.deleteAirticketApprovalLevel(categoryId).subscribe(
             () => {
-              console.log(' Loan Approval Level deleted successfully:', categoryId);
+              console.log(' Airticket Approval Level deleted successfully:', categoryId);
               // Remove the deleted employee from the local list
               this.approvalLevels = this.approvalLevels.filter(employee => employee.id !== categoryId);
     
                completed++;
     
              if (completed === total) { 
-              alert(' Loan Approval Level  deleted successfully');
+              alert(' Airticket Approval Level  deleted successfully');
               window.location.reload();
              }
     
             },
             (error) => {
-              console.error('Error deleting Loan Approval Level:', error);
-                alert('Error deleting Loan Approval Level: ' + error.statusText);
+              console.error('Error deleting Airticket Approval Level:', error);
+                alert('Error deleting Airticket Approval Level: ' + error.statusText);
             }
           );
         });

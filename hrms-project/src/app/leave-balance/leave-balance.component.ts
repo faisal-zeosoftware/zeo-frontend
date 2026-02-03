@@ -5,6 +5,8 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { environment } from '../../environments/environment';
+import { CompanyRegistrationService } from '../company-registration.service';
 
 @Component({
   selector: 'app-leave-balance',
@@ -12,6 +14,8 @@ import { EmployeeService } from '../employee-master/employee.service';
   styleUrl: './leave-balance.component.css'
 })
 export class LeaveBalanceComponent {
+
+     private apiUrl = `${environment.apiBaseUrl}`;
 
 
 
@@ -47,7 +51,7 @@ export class LeaveBalanceComponent {
   schemas: string[] = []; // Array to store schema names
 
 
-  selectedFile: File | null = null;
+
 
 
   constructor(
@@ -57,6 +61,7 @@ export class LeaveBalanceComponent {
     private leaveService:LeaveService,
     private DesignationService: DesignationService,
     private employeeService: EmployeeService,
+    private companyRegistrationService: CompanyRegistrationService, 
 
   
     ) {}
@@ -359,49 +364,6 @@ if (this.userId !== null) {
   
 
 
-    // File selection
-onFileSelected(event: any) {
-  this.selectedFile = event.target.files[0];
-  console.log('Selected file:', this.selectedFile);
-}
-
-// Submit file to backend
-submitBulkUpload() {
-  if (!this.selectedFile) {
-    alert('Please select a file first.');
-    return;
-  }
-
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema) {
-    alert('No schema selected.');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('file', this.selectedFile);
-
-  const uploadUrl = `http://localhost:8000/calendars/api/Emp-bulkupld-openings/bulk_upload/?schema=${selectedSchema}`;
-
-  this.http.post(uploadUrl, formData).subscribe(
-    (response: any) => {
-      console.log('Bulk upload successful', response);
-      alert('Bulk upload successful!');
-      this.selectedFile = null;
-      this.showBulkUpload = false;
-    },
-    (error: any) => {
-      console.error('Bulk upload failed', error);
-      alert('Bulk upload failed. Please check the file and try again.');
-    }
-  );
-}
-    
-
-
-
-
-
 
 iscreateLoanApp: boolean = false;
 
@@ -538,6 +500,93 @@ window.location.reload();
 }
 );
 }
+
+
+
+isBulkuploadDepartmentModalOpen = false;
+showUploadForm = false;
+selectedFile!: File;
+
+/* Open / Close Modal */
+OpenBulkuploadModal(): void {
+  this.isBulkuploadDepartmentModalOpen = true;
+}
+
+closeBulkuploadModal(): void {
+  this.isBulkuploadDepartmentModalOpen = false;
+  this.showUploadForm = false;
+}
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+/* File Select */
+onFileSelected(event: any): void {
+  this.selectedFile = event.target.files[0];
+}
+
+bulkUploadLeaveBalance(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  if (!selectedSchema || !this.selectedFile) return;
+
+  const formData = new FormData();
+  formData.append('file', this.selectedFile);
+
+  this.http.post(
+    `${this.apiUrl}/calendars/api/Emp-bulkupld-openings/bulk_upload/?schema=${selectedSchema}`,
+    formData
+  ).subscribe({
+    next: () => {
+      alert('Leave Balance uploaded successfully');
+      window.location.reload();
+    },
+    error: () => {
+      alert('Upload failed');
+    }
+  });
+}
+
+downloadLeaveBalanceCsv(): void {
+  const schema = this.authService.getSelectedSchema();
+  if (!schema) return;
+
+  this.companyRegistrationService
+    .downloadLeaveCsv(schema)
+    .subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Leave_Balance_Template.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+}
+
+
+downloadLeaveBalanceExcel(): void {
+  const schema = this.authService.getSelectedSchema();
+  if (!schema) return;
+
+  this.companyRegistrationService
+    .downloadLeaveExcel(schema)
+    .subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Leave_Balance_Template.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+}
+
+
+
+
 
 
 }

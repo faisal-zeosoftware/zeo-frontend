@@ -7,12 +7,16 @@ import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
 declare var $: any;
 import 'summernote'; // Ensure you have summernote imported
+import { CompanyRegistrationService } from '../company-registration.service';
+import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-salary',
   templateUrl: './salary.component.html',
   styleUrl: './salary.component.css'
 })
 export class SalaryComponent {
+
+   private apiUrl = `${environment.apiBaseUrl}`;
 
 
   name:any='';
@@ -92,6 +96,7 @@ updateIdEmp: number | null = null;
     private DesignationService: DesignationService,
     private EmployeeService:EmployeeService,
     private el:ElementRef,
+    private companyRegistrationService: CompanyRegistrationService, 
 
 
     
@@ -750,6 +755,92 @@ deletePayroll(payrollId: number): void {
     );
   }
 }
+
+
+isBulkuploadDepartmentModalOpen = false;
+showUploadForm = false;
+selectedFile!: File;
+
+/* Open / Close Modal */
+OpenBulkuploadModal(): void {
+  this.isBulkuploadDepartmentModalOpen = true;
+}
+
+closeBulkuploadModal(): void {
+  this.isBulkuploadDepartmentModalOpen = false;
+  this.showUploadForm = false;
+}
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+/* File Select */
+onFileSelected(event: any): void {
+  this.selectedFile = event.target.files[0];
+}
+
+bulkUploadEmployeeSalary(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  if (!selectedSchema || !this.selectedFile) return;
+
+  const formData = new FormData();
+  formData.append('file', this.selectedFile);
+
+  this.http.post(
+    `${this.apiUrl}/payroll/api/bulk-upload-salary/bulk_upload/?schema=${selectedSchema}`,
+    formData
+  ).subscribe({
+    next: () => {
+      alert('Employee Salary uploaded successfully');
+      window.location.reload();
+    },
+    error: () => {
+      alert('Upload failed');
+    }
+  });
+}
+
+downloadEmployeeSalaryCsv(): void {
+  const schema = this.authService.getSelectedSchema();
+  if (!schema) return;
+
+  this.companyRegistrationService
+    .downloadSalaryCsv(schema)
+    .subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Employee_Salary_Template.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+}
+
+
+downloadEmployeeSalaryExcel(): void {
+  const schema = this.authService.getSelectedSchema();
+  if (!schema) return;
+
+  this.companyRegistrationService
+    .downloadSalaryExcel(schema)
+    .subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Employee_Salary_Template.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+}
+
+
+
+
 
 
 

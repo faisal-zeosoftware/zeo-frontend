@@ -25,6 +25,8 @@ export class EmployeeOvertimeComponent {
   rate_multiplier: any = '';
   employee: any = '';
 
+    ot_type:any='';
+
   approved_by: any = '';
 
   created_by: any = '';
@@ -315,6 +317,7 @@ export class EmployeeOvertimeComponent {
 
     const formData = new FormData();
     formData.append('date', this.date);
+    formData.append('ot_type', this.ot_type);
     formData.append('hours', this.hours);
 
 

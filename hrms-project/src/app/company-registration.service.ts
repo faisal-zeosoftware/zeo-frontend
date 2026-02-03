@@ -175,6 +175,27 @@ downloadEmployeeExcel(selectedSchema: string): Observable<Blob> {
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
 
+downloadSalaryCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/payroll/api/bulk-upload-salary/download_default_csv_file/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+downloadSalaryExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/payroll/api/bulk-upload-salary/download_default_excel_file/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+downloadLeaveCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/calendars/api/Emp-bulkupld-openings/download_default_csv_file/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+downloadLeaveExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/calendars/api/Emp-bulkupld-openings/download_default_excel_file/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
 
 downloadDepartmentCsv(selectedSchema: string): Observable<Blob> {
   const apiUrl = `${this.apiUrl}/organisation/api/Dept-bulkupload/download_demo_csv/?schema=${selectedSchema}`;

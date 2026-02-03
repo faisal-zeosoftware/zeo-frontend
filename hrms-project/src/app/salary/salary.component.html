@@ -13,12 +13,23 @@
           <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
 
         </div>
-        <div class="col-md-5">
-          <div class="button-group pull-right">
+<div class="col-md-5">
+  <div class="button-group pull-right">
 
+    <button
+      type="button"
+      class="btn-Edit btn-secondary btn"
+      *ngIf="hasEditPermission"
+      (click)="OpenBulkuploadModal()">
 
-          </div>
-        </div>
+      <span class="header-btn-icon">
+        <mat-icon>system_update_alt</mat-icon>
+      </span>
+      Import
+    </button>
+
+  </div>
+</div>
 
       </div>
 
@@ -395,6 +406,83 @@
         </mat-tab>
 
         <mat-tab label="Employee Salary ">
+
+          <div *ngIf="isBulkuploadDepartmentModalOpen" class="modal">
+  <div class="modal-content">
+
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Employee Salary Bulk Upload</h2>
+      </div>
+      <div class="col-md-4">
+        <span class="close pull-right" (click)="closeBulkuploadModal()">&times;</span>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <div class="vn-wisteria">
+          <a class="btn-wrap" (click)="downloadEmployeeSalaryExcel()">
+            DOWNLOAD EXCEL FILE <i class="fa fa-rocket fa-lg fa-spin"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="vn-wisteria vn-green">
+          <a class="btn-wrap" (click)="downloadEmployeeSalaryCsv()">
+            DOWNLOAD CSV FILE <i class="fa fa-rocket fa-lg fa-spin"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="vn-wisteria vn-blue">
+          <a class="btn-wrap" (click)="toggleUploadForm()">
+            SALARY BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="showUploadForm">
+      <form (ngSubmit)="bulkUploadEmployeeSalary()">
+        <div class="row">
+          <div class="col-md-12">
+            <label>Upload Salary File:</label>
+            <input
+              type="file"
+              class="form-control"
+              (change)="onFileSelected($event)">
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-8"></div>
+
+          <div class="col-md-2">
+            <button
+              type="button"
+              class="btn btn-danger btn-full"
+              (click)="closeUploadForm()">
+              Close
+            </button>
+          </div>
+
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success btn-full">
+              Save
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
 
           <div class="tab_boddy">
             <form (ngSubmit)="saveOrUpdateSalaryComponentEmp()" enctype="multipart/form-data">

@@ -139,17 +139,32 @@
      
                 <div class="col-md-6">
 
-
-                    <div class="custom-sel">
-                        <label>Select Company</label>
-                        <select class="form-control" id="tenants" multiple required [(ngModel)]="tenants"  [ngModelOptions]="{standalone: true}" 
-                        name="companys"   [ngClass]="{'error-field': registerButtonClicked && !tenants}" >
-                            <option value="" >Select</option>
-                            <option *ngFor="let country of companys" [value]="country.id">{{ country.schema_name }}</option>
-                        </select>
-                       
-                        <div *ngIf="registerButtonClicked && !tenants" class="error-message">Please Select Your Company</div>
-                    </div>
+                                 <div class="custom-sel">
+                                         <label>Select Company</label>
+                                <div class="form-control-wrapper">
+                               
+          
+                                  <mat-form-field>
+                                    <!-- <mat-label>Favorite food</mat-label> -->
+                                    <mat-select placeholder="Select" id="tenants" multiple required [(ngModel)]="tenants"  [ngModelOptions]="{standalone: true}" #select multiple>
+                                      <div class="select-all">
+                                        <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                                          Select All
+                                        </mat-checkbox>
+                                      </div>
+                                      <input type="text" placeholder="serach" class="form-control">
+          
+                                      <mat-option *ngFor="let country of companys" [value]="country.id">
+                                       {{ country.schema_name }}
+                                      </mat-option>
+                                    </mat-select>
+                                  </mat-form-field>
+                                  
+                                </div>
+                                <div *ngIf="registerButtonClicked && (!tenants || tenants.length === 0)" class="error-message">
+                                 Please Select Your Company
+                                </div>
+                              </div>
                
                                 
             

@@ -1,4 +1,4 @@
-import { Component , OnInit} from '@angular/core';
+import { Component , OnInit, ViewChild} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CountryService } from '../country.service';
@@ -13,6 +13,8 @@ import { Observable } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { CreateEmployeeComponent } from '../create-employee/create-employee.component';
 import { UesrEmployeeComponent } from '../uesr-employee/uesr-employee.component';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 
 
 
@@ -22,6 +24,8 @@ import { UesrEmployeeComponent } from '../uesr-employee/uesr-employee.component'
   styleUrl: './user-creation.component.css'
 })
 export class UserCreationComponent {
+
+    @ViewChild('select') select: MatSelect | undefined;
 
   Branches: any[] = [];
   companys:any[] = [];
@@ -198,6 +202,21 @@ export class UserCreationComponent {
       height: '500px',
       data: { userId: userId } // Pass the created user ID to the component
     });
+  }
+
+  allSelected=false;
+
+  
+  
+  toggleAllSelection(): void {
+    if (this.select) {
+      if (this.allSelected) {
+        
+        this.select.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.select.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
   }
 
 }
