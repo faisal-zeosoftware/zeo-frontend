@@ -668,6 +668,8 @@ updateLeavetype(): void {
   }
   
   
+  // Add this variable to your component
+filteredEntitlements: any[] = [];
 
 
   // Call this method to load all leave entitlement records (e.g., after registration or on init)
@@ -984,11 +986,29 @@ loadLeaveEntitlements(): void {
 
   isLeavetypeCreationModalOpen:boolean=false;
 
+  filteredLeaveRests: any[] = [];
+
 // This method is called when the "Configure leave type" button is clicked
 openLeaveConfigurationModal(leavetype: any): void {
-  this.selectedLeaveTypeForModal = { ...leavetype }; // copy the leave type data
+  // 1. Set the selected leave type
+  this.selectedLeaveTypeForModal = { ...leavetype }; 
   this.isLeavetypeCreationModalOpen = true;
+
+  // 2. Filter Entitlements (previous step)
+  this.filteredEntitlements = this.leaveEntitlements.filter(ent => 
+    ent.leave_type === leavetype.name
+  );
+
+  // 3. Filter Reset Values (new step)
+  // We match ent.leave_type from the Reset JSON to the clicked card's name
+  this.filteredLeaveRests = this.leaveRests.filter(res => 
+    res.leave_type === leavetype.name
+  );
+
+  console.log('Filtered Reset Values for:', leavetype.name, this.filteredLeaveRests);
 }
+
+
   ClosePopup(){
     this.isLeavetypeCreationModalOpen=false;
   }

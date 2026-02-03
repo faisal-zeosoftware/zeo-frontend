@@ -957,7 +957,7 @@ table thead th {
   gap: 12px;
 }
 
-.check-box {
+.standard-dropdown .check-box {
   font-size: 20px;
   color: #3b82f6; /* Modern blue */
 }
