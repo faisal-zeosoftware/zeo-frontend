@@ -15,6 +15,7 @@ import { EmployeeEditComponent } from '../employee-edit/employee-edit.component'
 import { SessionService } from '../login/session.service';
 import { IdleService } from '../idle.service';
 import { environment } from '../../environments/environment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-employee-master',
@@ -66,6 +67,7 @@ export class EmployeeMasterComponent {
   searchPlaceholder: string = 'Search Employees'; // Default placeholder
   file: any;
 
+  private branchSub: Subscription | undefined;
 
   constructor(private EmployeeService:EmployeeService,
     private companyRegistrationService: CompanyRegistrationService, 
@@ -159,6 +161,9 @@ export class EmployeeMasterComponent {
     }
   }
 
+
+  selectedBranchIds: number[] = [];
+
     ngOnInit(): void {
 
    
@@ -170,14 +175,30 @@ export class EmployeeMasterComponent {
  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
  console.log('schemastore',selectedSchema )
+
+
+
+  
+  if (selectedSchema) {
+    // LISTEN for changes from the Sidebar
+    this.branchSub = this.EmployeeService.selectedBranches$.subscribe((ids) => {
+      console.log('Sidebar selection changed! Fetching new data for branches:', ids);
+      this.fetchDesignations(selectedSchema);
+    });
+  }
+
+ 
  // Check if selectedSchema is available
  if (selectedSchema) {
    // Construct the API URL with the selected schema
   //  const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/`;
   const selectedBranchId = localStorage.getItem('selectedBranchId');
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
+
+  this.selectedBranchIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
    // Fetch employees from the API
-   this.EmployeeService.getemployeesMasterNew(selectedSchema,selectedBranchId).subscribe(
+   this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
      (data: any) => {
        this.employees = data;
        console.log('All Employees:' ,this.employees)
@@ -337,6 +358,13 @@ if (this.userId !== null) {
     }
 
 
+    // ALWAYS unsubscribe to prevent memory leaks
+ngOnDestroy(): void {
+  if (this.branchSub) {
+    this.branchSub.unsubscribe();
+  }
+}
+
 
     
 
@@ -362,28 +390,19 @@ if (this.userId !== null) {
 
   fetchDesignations(selectedSchema: string) {
     this.isLoading = true;
-  
-    // Retrieve the branch ID stored in localStorage
-    const selectedBranchId = localStorage.getItem('selectedBranchId');
-  
-    // Pass both the schema and the branch ID to the service
-    this.EmployeeService.getemployeesMasterNew(selectedSchema, selectedBranchId).subscribe(
+    // It pulls the freshest IDs you just saved
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+    this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
       (data: any) => {
-        // Filtering employees where is_active is null or true
-        this.employees = data.filter((employee: any) => 
-          employee.is_active === null || employee.is_active === true
-        );
+        this.employees = data.filter((e: any) => e.is_active !== false);
         this.filteredEmployees = this.employees;
         this.isLoading = false;
-  
-        console.log('Filtered Employees for Branch:', selectedBranchId, this.filteredEmployees);
       },
-      (error: any) => {
-        this.isLoading = false;
-        console.error('Error fetching employees:', error);
-      }
+      (error: any) => { this.isLoading = false; }
     );
   }
+
 
 isTableView = false; // default grid view
 

@@ -951,3 +951,42 @@ table thead th {
   font-weight: 700;
   text-transform: uppercase;
 }
+
+.multi-select {
+  justify-content: flex-start !important;
+  gap: 12px;
+}
+
+.check-box {
+  font-size: 20px;
+  color: #3b82f6; /* Modern blue */
+}
+
+.selected-text {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.dropdown-footer {
+  padding: 12px;
+  border-top: 1px solid #f1f3f5;
+  background: #fff;
+  text-align: center;
+}
+
+.btn-apply {
+  width: 100%;
+  padding: 10px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-apply:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}

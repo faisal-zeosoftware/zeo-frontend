@@ -221,35 +221,39 @@
             <h1>{{ selectedSchema || 'Select Company' }}</h1>
             <mat-icon [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">expand_more</mat-icon>
           </div>
-      
           <div class="standard-dropdown" [class.show]="isCompanyDropdownOpen" (click)="$event.stopPropagation()">
             <div class="menu-header">
-              <mat-icon>domain</mat-icon>
-              <span>Switch Organization</span>
+              <mat-icon>checklist</mat-icon>
+              <span>Select Branches</span>
             </div>
             
             <div class="scrollable-content">
-              <div class="schema-item" *ngFor="let data of userDetailss; let i = index" [class.is-expanded]="expandedSchemaIndex === i">
-                
+              <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
                 <div class="schema-row" (click)="toggleSchema(i, $event)">
                   <div class="schema-info">
                     <div class="avatar">{{ data.name | slice:0:1 }}</div>
                     <span class="company-name">{{ data.name }}</span>
                   </div>
-                  <mat-icon class="chevron-icon">{{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
+                  <mat-icon>{{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
                 </div>
           
                 <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
-                  <div class="branch-option" 
+                  <div class="branch-option multi-select" 
                        *ngFor="let branch of data.branches" 
-                       (click)="selectBranch(data.schema_name, branch, $event)">
-                    <div class="branch-dot"></div>
-                    <span class="branch-name">{{ branch.branch_name }}</span>
-                    <mat-icon class="go-icon">chevron_right</mat-icon>
+                       (click)="toggleBranchSelection(branch, $event)">
+                    <mat-icon class="check-box">
+                      {{ selectedBranchIds.includes(branch.id) ? 'check_box' : 'check_box_outline_blank' }}
+                    </mat-icon>
+                    <span class="branch-name" [class.selected-text]="selectedBranchIds.includes(branch.id)">
+                      {{ branch.branch_name }}
+                    </span>
                   </div>
                 </div>
-                
               </div>
+            </div>
+          
+            <div class="dropdown-footer">
+              <button class="btn-apply" (click)="applySelection()">Apply Selection</button>
             </div>
           </div>
         </div>

@@ -10,7 +10,20 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class EmployeeService {
+  
 
+  // Initialize with what's currently in storage
+  private selectedBranchesSource = new BehaviorSubject<number[]>(
+    JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+  );
+
+  // Components subscribe to this
+  selectedBranches$ = this.selectedBranchesSource.asObservable();
+
+  updateBranches(ids: number[]) {
+    localStorage.setItem('selectedBranchIds', JSON.stringify(ids));
+    this.selectedBranchesSource.next(ids); // Notify all listeners
+  }
 
   CreateEmployeeWithPicture(formData: FormData, companyData: {
     emp_first_name: string; emp_last_name: string; emp_gender: any; emp_date_of_birth: any; emp_personal_email: any; emp_mobile_number_1: any; emp_mobile_number_2: any; emp_city: any; emp_permenent_address: any; emp_present_address: any; emp_relegion: any; emp_blood_group: any; emp_nationality: any; emp_marital_status: any; emp_father_name: any; // Handle errors here (you can log, show a user-friendly message, etc.)
@@ -81,17 +94,17 @@ export class EmployeeService {
   }
 
 
-  getemployeesMasterNew(selectedSchema: string, branchId: string | null): Observable<any> {
-    // Construct URL with both schema and branch_id
-    let url = `${this.apiUrl}/employee/api/emplist/?schema=${selectedSchema}`;
+  getemployeesMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
     
-    if (branchId) {
-      url += `&branch_id=${branchId}`;
+    let url = `${this.apiUrl}/employee/api/emplist/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
     }
     
     return this.http.get(url);
   }
-  
     
 
   

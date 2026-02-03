@@ -78,7 +78,7 @@ export class MainSidebarComponent {
   ngOnInit(): void {
 
     // this.loadAllNotifications();
-
+    this.selectedBranchIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
@@ -407,6 +407,8 @@ toggleSchema(index: number, event: Event): void {
   this.expandedSchemaIndex = this.expandedSchemaIndex === index ? -1 : index;
 }
 
+selectedBranchIds: number[] = [];
+
 // Updated function to accept both schema name and branch object
 selectBranch(schemaName: string, branch: any, event: Event): void {
   event.stopPropagation();
@@ -431,6 +433,37 @@ selectBranch(schemaName: string, branch: any, event: Event): void {
   }
 }
 
+
+toggleBranchSelection(branch: any, event: Event): void {
+  event.stopPropagation(); // Keep the dropdown open during multi-select
+  
+  const index = this.selectedBranchIds.indexOf(branch.id);
+  if (index > -1) {
+    // Unselect if already in the list
+    this.selectedBranchIds.splice(index, 1);
+  } else {
+    // Add to list
+    this.selectedBranchIds.push(branch.id);
+  }
+  
+  // Save as a JSON string array
+  localStorage.setItem('selectedBranchIds', JSON.stringify(this.selectedBranchIds));
+  this.applySelection();
+}
+
+applySelection(): void {
+  const currentSchema = localStorage.getItem('selectedSchema');
+  if (!currentSchema) return;
+
+  // 1. Broadcast the change instead of reloading
+  this.EmployeeService.updateBranches(this.selectedBranchIds);
+
+  // 2. Close the dropdown
+  this.isCompanyDropdownOpen = false;
+  
+  // Optional: If you aren't on the Employee Master page, navigate there
+  // this.router.navigate(['/employee-master']); 
+}
 showsidebar: boolean = true;
 
 showsidebarclick() {
