@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit  } from '@angular/core';
+import { Component, OnInit, ViewChild  } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CountryService } from '../country.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 interface FieldSetting {
   key: string;
@@ -26,6 +27,8 @@ export class AssetTransactionReportComponent {
 
   
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
+
+   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
 
   
@@ -566,4 +569,9 @@ deleteReport(report: any, event: Event) {
     });
   }
 }
+
+ClosePopup(): void {
+  this.menuTrigger.closeMenu();
+}
+
 }

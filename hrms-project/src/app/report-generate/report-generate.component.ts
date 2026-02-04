@@ -11,6 +11,10 @@ import { CountryService } from '../country.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 
+import { MatMenuTrigger } from '@angular/material/menu';
+import { ViewChild } from '@angular/core';
+
+
 interface FieldSetting {
   key: string;
   label: string;
@@ -27,6 +31,9 @@ interface FieldSetting {
 
 
 export class ReportGenerateComponent implements OnInit {
+
+
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
 
   
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
@@ -580,5 +587,10 @@ deleteReport(report: any, event: Event) {
     });
   }
 }
-  
+
+
+
+ClosePopup(): void {
+  this.menuTrigger.closeMenu();
+}
 }

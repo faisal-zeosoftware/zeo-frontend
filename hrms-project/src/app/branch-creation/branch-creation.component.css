@@ -19,7 +19,20 @@ body{
 
 
 
+.close:hover,
+.close:focus {
+  color: red;
+  text-decoration: none;
+  cursor: pointer;
+}
 
+.close {
+  color: #000000;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: right;
+}
 
 .cpm-sec{
     padding: 30px;

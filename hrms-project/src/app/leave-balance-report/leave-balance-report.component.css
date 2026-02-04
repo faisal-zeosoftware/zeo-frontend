@@ -64,6 +64,40 @@ table tr td {
 }
 
 
+.close {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  color: #000000;            /* muted gray */
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  user-select: none;
+}
+
+/* Hover effect */
+.close:hover {
+  color: #dc3545;            /* danger red */
+  background-color: rgba(220, 53, 69, 0.12);
+  transform: rotate(90deg);
+}
+
+/* Active click feedback */
+.close:active {
+  transform: scale(0.9);
+  background-color: rgba(220, 53, 69, 0.18);
+}
+
+/* Optional focus (keyboard accessibility) */
+.close:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+}
 
 
 

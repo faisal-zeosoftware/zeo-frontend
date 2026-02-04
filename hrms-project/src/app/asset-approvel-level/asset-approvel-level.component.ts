@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { HttpClient } from '@angular/common/http';
@@ -7,6 +7,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-asset-approvel-level',
@@ -15,6 +16,8 @@ import {UserMasterService} from '../user-master/user-master.service';
 })
 export class AssetApprovelLevelComponent {
 
+    @ViewChild('select') select: MatSelect | undefined;
+
   
     level:any='';
     role:any='';
@@ -22,12 +25,16 @@ export class AssetApprovelLevelComponent {
   
   
     asset_type:any='';
+
+    branch: any = '';
+
+    allSelected=false;
   
   
   
   
     
-  
+    Branches: any[] = [];
   
     LoanTypes:any []=[];
     approvalLevels:any []=[];
@@ -60,6 +67,7 @@ export class AssetApprovelLevelComponent {
       private DesignationService: DesignationService,
   private sessionService: SessionService,
   private employeeService: EmployeeService,
+      private leaveService:LeaveService,
   
     ) {}
   
@@ -68,6 +76,8 @@ export class AssetApprovelLevelComponent {
       this.loadAssetTypes();
       this.loadAssetApprovalLevels();
       this.loadAssetapprover();
+      this.LoadBranch();
+
   
        this.loadUsers();
   
@@ -189,6 +199,7 @@ export class AssetApprovelLevelComponent {
     formData.append('role', this.role);
     formData.append('approver', this.approver);
     formData.append('asset_type', this.asset_type);
+    formData.append('branch',this.branch)
   
     this.employeeService.registerAssetApproverLevel(formData).subscribe(
       (response) => {
@@ -221,6 +232,59 @@ export class AssetApprovelLevelComponent {
   
   
   
+      toggleAllSelection(): void {
+        if (this.select) {
+          if (this.allSelected) {
+            
+            this.select.options.forEach((item: MatOption) => item.select());
+          } else {
+            this.select.options.forEach((item: MatOption) => item.deselect());
+          }
+        }
+      }
+
+  LoadBranch(callback?: Function) {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.leaveService.getBranches(selectedSchema).subscribe(
+      (data: any) => {
+        this.Branches = data;
+
+        if (callback) callback();
+      },
+      (error: any) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
+  }
+}
+
+mapBranchesNameToId() {
+  if (!this.Branches || !this.editAsset?.branch) return;
+
+  // Case A: backend returns single ID
+  if (typeof this.editAsset.branch === 'number') {
+    this.editAsset.branch = [this.editAsset.branch];
+    return;
+  }
+
+  // Case B: backend returns single NAME
+  if (typeof this.editAsset.branch === 'string') {
+    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
+    this.editAsset.branch = found ? [found.id] : [];
+    return;
+  }
+
+  // Case C: backend returns an array of names
+  if (Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = this.Branches
+      .filter(b => this.editAsset.branch.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log("Mapped branch IDs:", this.editAsset.branch);
+}
   
   
     
@@ -405,6 +469,10 @@ mapLoanTypeNameToId() {
   openEditModal(asset: any): void {
   this.editAsset = { ...asset }; // copy asset data
   this.isEditModalOpen = true;
+
+    this.LoadBranch(() => {
+    this.mapBranchesNameToId();
+  });
   
   this.mapLoanAprNameToId();
   this.mapLoanTypeNameToId();
