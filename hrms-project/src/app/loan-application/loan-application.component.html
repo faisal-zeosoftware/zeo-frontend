@@ -61,6 +61,7 @@
                     <thead>
                       <tr>
                         <th>No</th>
+                        <th>Document Number</th>
                         <th>Employee</th>
                         <th>Amount requested </th>
                         <th>Repayment period</th>
@@ -82,6 +83,7 @@
                         
                       <tr *ngFor="let docs of LoanApplications;let i = index">
                         <td>{{ i + 1 }}</td> 
+                        <td data-label="Document Number">{{ docs.document_number }}</td>
                         <td>{{ docs.employee }}</td>
                         <td>{{ docs.amount_requested }}</td>
                         <td>{{ docs.repayment_period }}</td> 
@@ -146,6 +148,13 @@
           
               <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
                 <div class="row">
+
+              <div class="col-md-6">
+                <label>Document Number</label>
+                <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+                    [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
+              </div>
+
                   <div class="col-md-4">
                     <label>Amount requested</label>
                     <input type="text" class="form-control" required [(ngModel)]="amount_requested" placeholder="Enter Amount requested"

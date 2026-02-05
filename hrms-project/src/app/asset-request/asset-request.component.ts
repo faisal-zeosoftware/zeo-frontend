@@ -5,6 +5,8 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { environment } from '../../environments/environment';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 @Component({
   selector: 'app-asset-request',
   templateUrl: './asset-request.component.html',
@@ -13,7 +15,7 @@ import { DesignationService } from '../designation-master/designation.service';
 export class AssetRequestComponent {
 
 
-  
+    private apiUrl = `${environment.apiBaseUrl}`; 
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -42,7 +44,14 @@ export class AssetRequestComponent {
   Employees:any []=[];
   AssetsRequest:any []=[];
 
+  document_number: number | string | null = null;
 
+
+  automaticNumbering: boolean = false;
+
+    branch: any = '';
+
+    branches:any []=[];
 
 
   userId: number | null | undefined;
@@ -67,6 +76,7 @@ export class AssetRequestComponent {
     private el: ElementRef,
     private sessionService: SessionService,
     private DesignationService: DesignationService,
+    private DepartmentServiceService: DepartmentServiceService 
 
 
     
@@ -76,11 +86,11 @@ export class AssetRequestComponent {
 
 ngOnInit(): void {
  
-  this.loadUsers();
-  this.loadLAssetType();
+this.loadUsers();
+this.loadLAssetType();
 this.loadLAsset();
 this.loadEmployees();
-
+this.loadDeparmentBranch();
 this.loadLAssetRequest();
 
   this.userId = this.sessionService.getUserId();
@@ -245,6 +255,7 @@ this.loadLAssetRequest();
 
           CreateAssetType(): void {
             this.registerButtonClicked = true;
+
             const companyData = {
               reason: this.reason,
             
@@ -252,6 +263,10 @@ this.loadLAssetRequest();
               employee:this.employee,
               asset_type:this.asset_type,
               requested_asset:this.requested_asset,
+              document_number:this.document_number,
+              branch:this.branch
+  
+       
 
               // Add other form field values to the companyData object
             };
@@ -290,6 +305,45 @@ this.loadLAssetRequest();
           }
 
 
+
+onBranchChange(event: any): void {
+  const selectedBranchId = event.target.value;
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedBranchId || !selectedSchema) {
+    console.warn('Missing branch or schema');
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'asset_request';  // fixed for this form
+
+  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+
+  this.http.get<any>(apiUrl).subscribe({
+    next: (response) => {
+      // Handle both object and array responses (your example shows array[0])
+      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+
+      if (this.automaticNumbering) {
+        this.document_number = null;     // or '' — null is cleaner
+        console.log('Auto-numbering enabled → document number cleared');
+      } else {
+        this.document_number = '';       // ready for manual input
+        console.log('Manual numbering → enter document number');
+      }
+    },
+    error: (error) => {
+      console.error('Failed to load numbering settings:', error);
+      this.automaticNumbering = false;   // safe fallback
+      this.document_number = '';
+      // Optional: alert('Could not load document numbering settings');
+    }
+  });
+}
 
 
       
@@ -363,6 +417,9 @@ this.loadLAssetRequest();
 
       openPopus():void{
         this.iscreateLoanApp = true;
+        this.document_number = null;
+        this.automaticNumbering = false;
+        this.branch = ''; 
 
       }
     
@@ -602,6 +659,42 @@ loadLAsset(): void {
       alert('Error rejecting asset request');
     }
   );
+}
+
+  loadDeparmentBranch(callback?: Function): void {
+    
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any) => {
+          this.branches = result;
+          console.log(' fetching Companies:');
+            if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
+
+    
+  mapBranchesNameToId() {
+  if (!this.branches || !this.editAsset?.branch) return;
+
+  const Bran = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (Bran) {
+    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
 }
 
 }

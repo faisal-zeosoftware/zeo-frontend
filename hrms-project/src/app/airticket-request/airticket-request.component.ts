@@ -70,6 +70,10 @@ export class AirticketRequestComponent {
   custom_fieldsFam :any[] = [];
 
 
+    document_number: number | string | null = null;
+
+      automaticNumbering: boolean = false;
+
 
   constructor(
     private http: HttpClient,
@@ -270,6 +274,7 @@ ngOnInit(): void {
               notes:this.notes,
               approved_by:this.approved_by,
               employee:this.employee,
+              document_number:this.document_number
 
 
 
@@ -309,7 +314,25 @@ ngOnInit(): void {
           }
 
 
-
+    onBranchChange(event: any): void {
+      const selectedBranchId = event.target.value;
+      const selectedSchema = localStorage.getItem('selectedSchema'); // Retrieve the selected schema from local storage or any other storage method
+  
+      if (selectedBranchId && selectedSchema) {
+        const apiUrl = `${this.apiUrl}/employee/api/general-request/document_numbering_by_branch/?branch_id=${selectedBranchId}&schema=${selectedSchema}`;
+        this.http.get(apiUrl).subscribe(
+          (response: any) => {
+            this.automaticNumbering = response.automatic_numbering;
+            if (this.automaticNumbering) {
+              this.document_number = null; // Clear the document number field if automatic numbering is enabled
+            }
+          },
+          (error) => {
+            console.error('Error fetching branch details:', error);
+          }
+        );
+      }
+    }
 
       
           loadLAssetType(): void {
@@ -474,27 +497,6 @@ deleteSelectedAirTicketReq() {
     });
   }
 }
-
-// loadLAsset(): void {
-    
-//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-//   console.log('schemastore',selectedSchema )
-//   // Check if selectedSchema is available
-//   if (selectedSchema) {
-//     this.employeeService.getAsset(selectedSchema).subscribe(
-//       (result: any) => {
-//         this.Assets = result;
-//         console.log(' fetching Loantypes:');
-
-//       },
-//       (error) => {
-//         console.error('Error fetching Companies:', error);
-//       }
-//     );
-//   }
-//   }
-
 
 
 Allocations:any[]=[];

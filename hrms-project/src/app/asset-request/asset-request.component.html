@@ -68,24 +68,39 @@
         <form >
 
             <div class="row">
-               
 
-              <div class="col-md-12" >
-               
-                <label>Reason</label>
-                
-               <textarea  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter reason"
-                [ngModelOptions]="{standalone: true}" > </textarea>
-               
-          </div>
 
-          
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
 
-  
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
 
-        
+             <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
 
-          <div class="col-md-6" >
+
+             <div class="col-md-6" >
             <label>Select Asset Type</label>
             <div class="custom-sel">
               <select
@@ -101,11 +116,9 @@
               </select>
             </div>
           </div>
-        
 
 
-
-  <div class="col-md-6" >
+            <div class="col-md-6" >
     <label>Select Requested Asset </label>
     <div class="custom-sel">
       <select
@@ -122,8 +135,7 @@
     </div>
   </div>
 
-     
-  <div class="col-md-6" >
+    <div class="col-md-6" >
     <label>Select Employee </label>
     <div class="custom-sel">
       <select
@@ -139,12 +151,16 @@
       </select>
     </div>
   </div>
-          
-      
-      
-   
+               
 
-
+              <div class="col-md-12" >
+               
+                <label>Reason</label>
+                
+               <textarea  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter reason"
+                [ngModelOptions]="{standalone: true}" > </textarea>
+               
+          </div>
 
     
             </div>
@@ -184,17 +200,12 @@
         <div class="row">
                
 
-            <div class="col-md-12" >
-             
-              <label>Reason</label>
-              
-             <textarea  class="form-control" required  [(ngModel)]="editAsset.reason"  placeholder="Enter reason"
-              [ngModelOptions]="{standalone: true}" > </textarea>
-             
-        </div>
-
         
-
+            <div class="col-md-6">
+                <label>Document Number</label>
+                <input type="text" class="form-control" required [(ngModel)]="editAsset.document_number" placeholder="Enter document number"
+                    [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
+            </div>
 
 
      
@@ -253,13 +264,15 @@
     </select>
   </div>
 </div>
-        
-    
-    
- 
 
-
-
+            <div class="col-md-12" >
+             
+              <label>Reason</label>
+              
+             <textarea  class="form-control" required  [(ngModel)]="editAsset.reason"  placeholder="Enter reason"
+              [ngModelOptions]="{standalone: true}" > </textarea>
+             
+        </div>
   
           </div>
   
@@ -287,10 +300,11 @@
                 <thead>
                   <tr>
                     <th>No</th>
-                    <th>Reason</th>
+                    <th>Document Number</th>
                     <th>Employee</th>
                     <th>Asset type</th>
                     <th>Requested asset</th>
+                    <th>Reason</th>
                     <th>Status</th>
                     <th>Action</th>
                   </tr>
@@ -301,10 +315,11 @@
                       <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
                       {{ i + 1 }}
                     </td>
-                    <td data-label="Reason">{{ docs.reason }}</td>
+                    <td data-label="Document Number">{{ docs.document_number }}</td>
                     <td data-label="Employee">{{ docs.employee }}</td>
                     <td data-label="Asset type">{{ docs.asset_type }}</td>
                     <td data-label="Requested asset">{{ docs.requested_asset }}</td>
+                    <td data-label="Reason">{{ docs.reason }}</td>
                     <td data-label="Status">{{ docs.status }}</td>
                     
                     <td data-label="Action" *ngIf="hasAddPermission">

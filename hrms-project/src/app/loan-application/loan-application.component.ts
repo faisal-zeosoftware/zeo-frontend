@@ -6,6 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-loan-application',
@@ -13,6 +14,8 @@ import { EmployeeService } from '../employee-master/employee.service';
   styleUrl: './loan-application.component.css'
 })
 export class LoanApplicationComponent {
+
+    private apiUrl = `${environment.apiBaseUrl}`; 
 
 
   amount_requested:any='';
@@ -35,7 +38,9 @@ export class LoanApplicationComponent {
 
 
 
+    document_number: number | string | null = null;
 
+     automaticNumbering: boolean = false;
   
 
 
@@ -219,7 +224,9 @@ this.Delete = !this.Delete;
  
 
 
-    
+  
+    formData.append('document_number', this.document_number?.toString() || '');
+
     formData.append('pause_start_date', this.pause_start_date);
     formData.append('resume_date', this.resume_date );
     formData.append('pause_reason', this.pause_reason);
@@ -565,6 +572,26 @@ updateAssetType(): void {
 }
   );
 }
+
+    onBranchChange(event: any): void {
+      const selectedBranchId = event.target.value;
+      const selectedSchema = localStorage.getItem('selectedSchema'); // Retrieve the selected schema from local storage or any other storage method
+  
+      if (selectedBranchId && selectedSchema) {
+        const apiUrl = `${this.apiUrl}/employee/api/general-request/document_numbering_by_branch/?branch_id=${selectedBranchId}&schema=${selectedSchema}`;
+        this.http.get(apiUrl).subscribe(
+          (response: any) => {
+            this.automaticNumbering = response.automatic_numbering;
+            if (this.automaticNumbering) {
+              this.document_number = null; // Clear the document number field if automatic numbering is enabled
+            }
+          },
+          (error) => {
+            console.error('Error fetching branch details:', error);
+          }
+        );
+      }
+    }
 
 
 }
