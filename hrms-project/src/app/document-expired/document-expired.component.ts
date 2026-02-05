@@ -7,6 +7,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AuthenticationService } from '../login/authentication.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-document-expired',
@@ -44,11 +46,23 @@ schemas: string[] = []; // Array to store schema names
      
     }
 
+    private dataSubscription?: Subscription;
+
     ngOnInit(): void {
 
+
+         // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.EmployeeService.selectedSchema$,
+      this.EmployeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
+      }
+    });
       
       
-      this.loadExpiredDoc();
+      // this.loadExpiredDoc();
 
       this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
@@ -234,28 +248,47 @@ if (this.userId !== null) {
   // }
   //   }
 
-    loadExpiredDoc(): void {
+  //   loadExpiredDoc(): void {
 
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
-  if (selectedSchema) {
+  //     const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  // console.log('schemastore',selectedSchema )
+  // // Check if selectedSchema is available
+  // if (selectedSchema) {
       
-      this.EmployeeService.getExpiredDocumentsMasterNew(selectedSchema , savedIds).subscribe(
-        (result: any) => {
-          this.Documents = result;
-          console.log(' fetching Expired Documents:');
+  //     this.EmployeeService.getExpiredDocumentsMasterNew(selectedSchema , savedIds).subscribe(
+  //       (result: any) => {
+  //         this.Documents = result;
+  //         console.log(' fetching Expired Documents:');
   
-        },
-        (error) => {
-          console.error('Error fetching Expired Documents:', error);
-        }
-      );
-  }
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Expired Documents:', error);
+  //       }
+  //     );
+  // }
+  //   }
 
+    isLoading: boolean = false;
+
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.EmployeeService.getExpiredDocumentsMasterNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+          this.Documents = data.filter((emp: any) => emp.is_active !== false);
+         
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
+  
 
 
     openEditPopuss(departmentId: number):void{

@@ -7,6 +7,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-resignation-request',
@@ -18,6 +20,7 @@ export class ResignationRequestComponent {
 
   
       
+  private dataSubscription?: Subscription;
 
   allSelected=false;
 
@@ -72,6 +75,19 @@ schemas: string[] = []; // Array to store schema names
     ) {}
 
     ngOnInit(): void {
+
+        // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);
+            this.fetchResignation(schema, branchIds);
+
+          }
+        });
+
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
@@ -80,8 +96,8 @@ schemas: string[] = []; // Array to store schema names
       this.LoadLeaveApprovalLevel(selectedSchema);
 
       this.LoadDocType(selectedSchema);
-      this.LoadEmployee(selectedSchema);
-      this.LoadDocRequest(selectedSchema);
+      // this.LoadEmployee(selectedSchema);
+      // this.LoadDocRequest(selectedSchema);
 
       
       }
@@ -247,18 +263,37 @@ if (this.userId !== null) {
     }
 
     
-    LoadEmployee(selectedSchema: string) {
-      this.leaveService.getemployeesMaster(selectedSchema).subscribe(
-        (data: any) => {
-          this.Employee = data;
+    // LoadEmployee(selectedSchema: string) {
+    //   this.leaveService.getemployeesMaster(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.Employee = data;
         
-          console.log('employee:', this.Employee);
+    //       console.log('employee:', this.Employee);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching Employee:', error);
+    //     }
+    //   );
+    // }
+
+    isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.employeeService.getemployeesMasterNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+               this.Employee = data;
+
+          this.isLoading = false;
         },
-        (error: any) => {
-          console.error('Error fetching Employee:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
+      });
     }
+  
   
   
 
@@ -278,20 +313,36 @@ if (this.userId !== null) {
 
 
     
-    LoadDocRequest(selectedSchema: string) {
-      this.leaveService.getEmpResignationRequest(selectedSchema).subscribe(
-        (data: any) => {
-          this.DocRequest = data;
+    // LoadDocRequest(selectedSchema: string) {
+    //   this.leaveService.getEmpResignationRequest(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.DocRequest = data;
         
-          console.log('DocRequest:', this.DocRequest);
-        },
-        (error: any) => {
-          console.error('Error fetching DocType:', error);
-        }
-      );
-    }
+    //       console.log('DocRequest:', this.DocRequest);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching DocType:', error);
+    //     }
+    //   );
+    // }
   
 
+    fetchResignation(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.employeeService.getEmpResignationMasterNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+               this.DocRequest = data;
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
+  
 
 
     SetLeaveApprovaLevel(): void {

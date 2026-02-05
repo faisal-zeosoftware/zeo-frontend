@@ -7,6 +7,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-resignation-approval-level',
@@ -16,6 +18,8 @@ import {UserMasterService} from '../user-master/user-master.service';
 export class ResignationApprovalLevelComponent {
 
   
+
+  private dataSubscription?: Subscription;
 
   
   level:any='';
@@ -56,8 +60,21 @@ private employeeService: EmployeeService,
 
   ngOnInit(): void {
 
+
+
+     // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);
+
+          }
+        });
+
     // this.loadLoanTypes();
-    this.loadLoanApprovalLevels();
+    // this.loadLoanApprovalLevels();
     this.loadLoanapprover();
 
       this.loadUsers();
@@ -200,25 +217,45 @@ private employeeService: EmployeeService,
 
 
 
-  loadLoanApprovalLevels(): void {
+  // loadLoanApprovalLevels(): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getResigantionApprovalLevels(selectedSchema).subscribe(
-        (result: any) => {
-          this.approvalLevels = result;
-          console.log(' fetching Loantypes:');
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getResigantionApprovalLevels(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.approvalLevels = result;
+  //         console.log(' fetching Loantypes:');
   
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
+
+
+    isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.employeeService.getemployeesResignationApprovalLevel(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+               this.approvalLevels = data;
+
+          this.isLoading = false;
         },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
+      });
     }
-    }
+  
 
 // employee service code
 

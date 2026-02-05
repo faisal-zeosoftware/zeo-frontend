@@ -5,6 +5,8 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-approvals',
@@ -13,6 +15,8 @@ import { DesignationService } from '../designation-master/designation.service';
 })
 export class ApprovalsComponent {
 
+
+  private dataSubscription?: Subscription;
 
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
@@ -47,7 +51,17 @@ hasEditPermission: boolean = false;
 
    ngOnInit(): void {
 
-    this.fetchingApprovals();
+             // combineLatest waits for both Schema and Branches to have a value
+             this.dataSubscription = combineLatest([
+              this.EmployeeService.selectedSchema$,
+              this.EmployeeService.selectedBranches$
+            ]).subscribe(([schema, branchIds]) => {
+              if (schema) {
+                this.fetchEmployees(schema, branchIds);
+              }
+            });
+
+    // this.fetchingApprovals();
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
     // this.hideButton = this.EmployeeService.getHideButton();
@@ -169,7 +183,7 @@ hasEditPermission: boolean = false;
         }
       );
     
-        this.fetchingApprovals();
+        // this.fetchingApprovals();
 
 
         this.authService.getUserSchema(this.userId).subscribe(
@@ -214,23 +228,23 @@ hasEditPermission: boolean = false;
 
 // Modified fetchingApprovals to accept userId
 
-fetchingApprovals(): void {
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+// fetchingApprovals(): void {
+//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-  console.log('schemastore', selectedSchema);
+//   console.log('schemastore', selectedSchema);
   
-  // Check if selectedSchema and userId are available
-  if (selectedSchema && this.userId) {
-      this.EmployeeService.getApprovalslist(selectedSchema, this.userId).subscribe(
-          (result: any) => {
-              this.Approvals = result;
-              console.log('approvals', this.Approvals)
-          },
-          (error) => {
-              console.error('Error fetching approvals:', error);
-          }
-      );
-  }
+//   // Check if selectedSchema and userId are available
+//   if (selectedSchema && this.userId) {
+//       this.EmployeeService.getApprovalslist(selectedSchema, this.userId).subscribe(
+//           (result: any) => {
+//               this.Approvals = result;
+//               console.log('approvals', this.Approvals)
+//           },
+//           (error) => {
+//               console.error('Error fetching approvals:', error);
+//           }
+//       );
+//   }
 
 
 
@@ -238,7 +252,27 @@ fetchingApprovals(): void {
 
 
   
-}
+// }
+
+
+
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.EmployeeService.getGeneralRequestApprovalsMasterNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+               this.Approvals = data;
+
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
+  
 
 
 

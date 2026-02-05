@@ -7,6 +7,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-end-of-service',
   templateUrl: './end-of-service.component.html',
@@ -14,6 +16,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 })
 export class EndOfServiceComponent {
 
+  private dataSubscription?: Subscription;
 
   
   allSelected=false;
@@ -57,10 +60,21 @@ schemas: string[] = []; // Array to store schema names
     ) {}
 
     ngOnInit(): void {
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);
+  }
+});
+
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
-        this.LoadEmployeeResignationApproved(selectedSchema);
+        // this.LoadEmployeeResignationApproved(selectedSchema);
 
 
       
@@ -220,20 +234,54 @@ if (this.userId !== null) {
 
     
   
-    LoadEmployeeResignationApproved(selectedSchema: string) {
-      this.leaveService.getEmployeeEos(selectedSchema).subscribe(
-        (data: any) => {
-          this.EmployeeResignation = data;
+    // LoadEmployeeResignationApproved(selectedSchema: string) {
+    //   this.leaveService.getEmployeeEos(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.EmployeeResignation = data;
         
-          console.log('employee:', this.EmployeeResignation);
-        },
-        (error: any) => {
-          console.error('Error fetching Employee:', error);
-        }
-      );
-    }
+    //       console.log('employee:', this.EmployeeResignation);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching Employee:', error);
+    //     }
+    //   );
+    // }
 
- 
+  //   LoadEmployeeResignationApproved(callback?: Function) {
+  //     const selectedSchema = this.authService.getSelectedSchema();
+  // const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  // if (selectedSchema) {
+  //   this.employeeService.getemployeesResignationMasterNew(selectedSchema, savedIds).subscribe(
+  //     (result: any) => {
+  //       this.EmployeeResignation = result;
+        
+  //       if (callback) callback();
+  //     },
+  //     (error) => {
+  //       console.error('Error fetching Companies:', error);
+  //     }
+  //   );
+  // }
+  //   }
+
+    isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.employeeService.getemployeesResignationMasterNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+          this.EmployeeResignation = data;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
+  
   
     // GetEndOfService(): void {
     //   if (!this.selectedEmployeeId) {

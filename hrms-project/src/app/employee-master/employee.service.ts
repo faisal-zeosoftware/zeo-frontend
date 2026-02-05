@@ -119,6 +119,58 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
   }
     
 
+  getemployeesResignationMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/employee-resignation/employees_with_eos/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
+   getEmpResignationMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/employee-resignation/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
+  getemployeesResignationApprovalLevel(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/resign-approval-level/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
+  getemployeesgratuityMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/gratuity/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
   
   getPunchings(selectedSchema: string): Observable<any> {
     const url = `${this.apiUrl}/calendars/api/attendance/?schema=${selectedSchema}`;
@@ -1551,6 +1603,30 @@ updateGeofence(id: number, data: any): Observable<any> {
     const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
     
     let url = `${this.apiUrl}/employee/api/notification/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+  getGeneralRequestApprovalsMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/request-approvals/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+  getGeneralResignApprovalsMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/resign-approval/?schema=${selectedSchema}`;
     if (branchParam) {
       url += `&branch_id=${branchParam}`;
     }
@@ -3237,6 +3313,8 @@ updateGeofence(id: number, data: any): Observable<any> {
     // Fetch approvals for the user from the API
     return this.http.get(apiUrl);
   }
+
+  
 
   getSChemadatas(selectedSchema: string): Observable<any> {
     const url = `${this.apiUrl}/organisation/api/schema-data/?schema=${selectedSchema}`;
