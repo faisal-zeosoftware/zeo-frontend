@@ -234,7 +234,10 @@ if (this.userId !== null) {
   }
 
   fetchDesignations(selectedSchema: string) {
-    this.DepartmentServiceService.getDepartments(selectedSchema).subscribe(
+
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema ,savedIds).subscribe(
       (data: any) => {
         this.Departments = data;
         this.filteredDepartment = this.Departments;

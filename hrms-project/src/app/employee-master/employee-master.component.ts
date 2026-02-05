@@ -15,7 +15,7 @@ import { EmployeeEditComponent } from '../employee-edit/employee-edit.component'
 import { SessionService } from '../login/session.service';
 import { IdleService } from '../idle.service';
 import { environment } from '../../environments/environment';
-import { Subscription } from 'rxjs';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-employee-master',
@@ -160,12 +160,22 @@ export class EmployeeMasterComponent {
       });
     }
   }
-
+  private dataSubscription?: Subscription;
 
   selectedBranchIds: number[] = [];
 
     ngOnInit(): void {
 
+
+      // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.EmployeeService.selectedSchema$,
+      this.EmployeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
+      }
+    });
    
       this.loadbranches();
       this.loadDepartments();
@@ -183,7 +193,7 @@ export class EmployeeMasterComponent {
     // LISTEN for changes from the Sidebar
     this.branchSub = this.EmployeeService.selectedBranches$.subscribe((ids) => {
       console.log('Sidebar selection changed! Fetching new data for branches:', ids);
-      this.fetchDesignations(selectedSchema);
+      // this.fetchDesignations(selectedSchema);
     });
   }
 
@@ -257,7 +267,7 @@ if (this.userId !== null) {
         this.hasEditPermission = true;
     
         // Fetch designations without checking permissions
-        this.fetchDesignations(selectedSchema);
+        // this.fetchDesignations(selectedSchema);
 
       } else {
         console.log('User is not superuser');
@@ -303,7 +313,7 @@ if (this.userId !== null) {
             }
 
             // Fetching designations after checking permissions
-            this.fetchDesignations(selectedSchema);
+            // this.fetchDesignations(selectedSchema);
           }
           
           catch (error) {
@@ -388,19 +398,35 @@ ngOnDestroy(): void {
 
   isLoading: boolean = false;
 
-  fetchDesignations(selectedSchema: string) {
-    this.isLoading = true;
-    // It pulls the freshest IDs you just saved
-    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  // fetchDesignations(selectedSchema: string) {
+  //   this.isLoading = true;
+  //   // It pulls the freshest IDs you just saved
+  //   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
     
-    this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-      (data: any) => {
-        this.employees = data.filter((e: any) => e.is_active !== false);
-        this.filteredEmployees = this.employees;
+  //   this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+  //     (data: any) => {
+  //       this.employees = data.filter((e: any) => e.is_active !== false);
+  //       this.filteredEmployees = this.employees;
+  //       this.isLoading = false;
+  //     },
+  //     (error: any) => { this.isLoading = false; }
+  //   );
+  // }
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.EmployeeService.getemployeesMasterNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.employees = data.filter((emp: any) => emp.is_active !== false);
+        this.filteredEmployees = [...this.employees];
         this.isLoading = false;
       },
-      (error: any) => { this.isLoading = false; }
-    );
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
 
@@ -507,7 +533,7 @@ toggleView() {
                     console.error('No schema selected.');
                     return;
                   }
-                  this.fetchDesignations(selectedSchema);
+                  // this.fetchDesignations(selectedSchema);
                   window.location.reload();
               },
               (error) => {

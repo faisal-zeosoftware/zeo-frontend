@@ -31,6 +31,19 @@ export class DesignationService {
   
   }
 
+    getDesigantionMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/Designation/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
   getPermissionByRoleGrouping(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/permissions/`;
     // return this.http.get(url);

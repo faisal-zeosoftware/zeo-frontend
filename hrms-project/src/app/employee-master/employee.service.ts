@@ -25,6 +25,18 @@ export class EmployeeService {
     this.selectedBranchesSource.next(ids); // Notify all listeners
   }
 
+
+
+  // Add a Subject for the Schema
+private selectedSchemaSource = new BehaviorSubject<string>(localStorage.getItem('selectedSchema') || '');
+selectedSchema$ = this.selectedSchemaSource.asObservable();
+
+updateSchemaAndBranches(schema: string, branchIds: number[]) {
+  // Update the BehaviorSubjects so components listen for the change
+  this.selectedSchemaSource.next(schema);
+  this.selectedBranchesSource.next(branchIds);
+}
+
   CreateEmployeeWithPicture(formData: FormData, companyData: {
     emp_first_name: string; emp_last_name: string; emp_gender: any; emp_date_of_birth: any; emp_personal_email: any; emp_mobile_number_1: any; emp_mobile_number_2: any; emp_city: any; emp_permenent_address: any; emp_present_address: any; emp_relegion: any; emp_blood_group: any; emp_nationality: any; emp_marital_status: any; emp_father_name: any; // Handle errors here (you can log, show a user-friendly message, etc.)
     // Handle errors here (you can log, show a user-friendly message, etc.)
@@ -1532,6 +1544,20 @@ updateGeofence(id: number, data: any): Observable<any> {
 
 
   }
+
+
+  getExpiredDocumentsMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/notification/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
 
   getLeaveNotify(selectedSchema: string): Observable<any> {
 

@@ -75,7 +75,12 @@ ngOnInit(): void {
   this.loadUsers();
   this.loadRequestType();
   this.loadApprovalLevelGen();
-  this.LoadBranch();
+  // this.LoadBranch();
+
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadDeparmentBranch(); 
+    });
 
   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
@@ -364,22 +369,56 @@ registerApproveLevel(): void {
 
 
     
-LoadBranch(callback?: Function) {
+// LoadBranch(callback?: Function) {
+//   const selectedSchema = this.authService.getSelectedSchema();
+
+//   if (selectedSchema) {
+//     this.leaveService.getBranches(selectedSchema).subscribe(
+//       (data: any) => {
+//         this.Branches = data;
+
+//         if (callback) callback();
+//       },
+//       (error: any) => {
+//         console.error('Error fetching branches:', error);
+//       }
+//     );
+//   }
+// }
+
+
+loadDeparmentBranch(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
-
+  
   if (selectedSchema) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
-      (data: any) => {
-        this.Branches = data;
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+        }
+        // Inside the subscribe block of loadDeparmentBranch
+        if (this.Branches.length === 1) {
+          this.branch = this.Branches[0].id;
+        }
+
+        console.log('Filtered branches for selection:', this.Branches);
         if (callback) callback();
       },
-      (error: any) => {
+      (error) => {
         console.error('Error fetching branches:', error);
       }
     );
   }
 }
+
 
 mapBranchesNameToId() {
   if (!this.Branches || !this.editAsset?.branch) return;
@@ -465,7 +504,7 @@ openEditModal(asset: any): void {
   this.isEditModalOpen = true;
 
   // Load branches first, then convert names → ids
-  this.LoadBranch(() => {
+  this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
   });
 

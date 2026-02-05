@@ -7,7 +7,9 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
+
 
 @Component({
   selector: 'app-asset-approvel-level',

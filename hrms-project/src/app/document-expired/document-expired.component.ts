@@ -213,15 +213,37 @@ if (this.userId !== null) {
 
 
 
+  //   loadExpiredDoc(): void {
+
+  //     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  // console.log('schemastore',selectedSchema )
+  // // Check if selectedSchema is available
+  // if (selectedSchema) {
+      
+  //     this.EmployeeService.getExpiredDocuments(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.Documents = result;
+  //         console.log(' fetching Expired Documents:');
+  
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Expired Documents:', error);
+  //       }
+  //     );
+  // }
+  //   }
+
     loadExpiredDoc(): void {
 
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
   console.log('schemastore',selectedSchema )
   // Check if selectedSchema is available
   if (selectedSchema) {
       
-      this.EmployeeService.getExpiredDocuments(selectedSchema).subscribe(
+      this.EmployeeService.getExpiredDocumentsMasterNew(selectedSchema , savedIds).subscribe(
         (result: any) => {
           this.Documents = result;
           console.log(' fetching Expired Documents:');
@@ -233,6 +255,7 @@ if (this.userId !== null) {
       );
   }
     }
+
 
 
     openEditPopuss(departmentId: number):void{

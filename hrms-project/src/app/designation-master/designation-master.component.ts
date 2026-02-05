@@ -196,7 +196,9 @@ if (this.userId !== null) {
     }
   
     fetchDesignations(selectedSchema: string) {
-      this.DesignationService.getDesignations(selectedSchema).subscribe(
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+      this.DesignationService.getDesigantionMasterNew(selectedSchema , savedIds).subscribe(
         (data: any) => {
           this.Designations = data;
           this.filteredEmployees = this.Designations;

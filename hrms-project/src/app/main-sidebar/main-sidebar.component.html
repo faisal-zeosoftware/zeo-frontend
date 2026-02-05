@@ -240,7 +240,7 @@
                 <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
                   <div class="branch-option multi-select" 
                        *ngFor="let branch of data.branches" 
-                       (click)="toggleBranchSelection(branch, $event)">
+                       (click)="toggleBranchSelection(data, branch, $event)">
                     <mat-icon class="check-box">
                       {{ selectedBranchIds.includes(branch.id) ? 'check_box' : 'check_box_outline_blank' }}
                     </mat-icon>

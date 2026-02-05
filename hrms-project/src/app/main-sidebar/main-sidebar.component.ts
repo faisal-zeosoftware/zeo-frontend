@@ -434,36 +434,46 @@ selectBranch(schemaName: string, branch: any, event: Event): void {
 }
 
 
-toggleBranchSelection(branch: any, event: Event): void {
-  event.stopPropagation(); // Keep the dropdown open during multi-select
+// Add selectedSchema variable if not already present
+toggleBranchSelection(data: any, branch: any, event: Event): void {
+  event.stopPropagation();
   
+  const newSchema = data.schema_name;
+  
+  // If user clicks a branch in a different company, switch schema and clear old branches
+  if (this.selectedSchema !== newSchema) {
+    this.selectedSchema = newSchema;
+    this.selectedBranchIds = []; 
+    localStorage.setItem('selectedSchema', this.selectedSchema!);
+  }
+
   const index = this.selectedBranchIds.indexOf(branch.id);
   if (index > -1) {
-    // Unselect if already in the list
     this.selectedBranchIds.splice(index, 1);
+
+    
   } else {
-    // Add to list
     this.selectedBranchIds.push(branch.id);
   }
-  
-  // Save as a JSON string array
+
   localStorage.setItem('selectedBranchIds', JSON.stringify(this.selectedBranchIds));
   this.applySelection();
 }
 
+
 applySelection(): void {
-  const currentSchema = localStorage.getItem('selectedSchema');
-  if (!currentSchema) return;
+  if (!this.selectedSchema) return;
 
-  // 1. Broadcast the change instead of reloading
-  this.EmployeeService.updateBranches(this.selectedBranchIds);
+  // Broadcast both Schema and Branches to the service
+  // We add a new method in the service to handle the schema change too
+  this.EmployeeService.updateSchemaAndBranches(this.selectedSchema, this.selectedBranchIds);
 
-  // 2. Close the dropdown
   this.isCompanyDropdownOpen = false;
-  
-  // Optional: If you aren't on the Employee Master page, navigate there
-  // this.router.navigate(['/employee-master']); 
 }
+
+
+
+
 showsidebar: boolean = true;
 
 showsidebarclick() {
