@@ -438,29 +438,32 @@ selectBranch(schemaName: string, branch: any, event: Event): void {
 toggleBranchSelection(data: any, branch: any, event: Event): void {
   event.stopPropagation();
   
+  const clickedSchema = data.schema_name;
+  
+  // 1. If clicking a branch from a different schema, 
+  // clear ALL old selections first
   const newSchema = data.schema_name;
   
-  // If user clicks a branch in a different company, switch schema and clear old branches
   if (this.selectedSchema !== newSchema) {
-    this.selectedSchema = newSchema;
     this.selectedBranchIds = []; 
-    localStorage.setItem('selectedSchema', this.selectedSchema!);
+    this.selectedSchema = newSchema;
+    
+    // --- FIX APPLIED HERE ---
+    localStorage.setItem('selectedSchema', this.selectedSchema ?? '');
   }
 
+  // 2. Toggle the branch ID for the now-active schema
   const index = this.selectedBranchIds.indexOf(branch.id);
   if (index > -1) {
     this.selectedBranchIds.splice(index, 1);
-
-    
   } else {
     this.selectedBranchIds.push(branch.id);
   }
 
+  // 3. Persist and apply
   localStorage.setItem('selectedBranchIds', JSON.stringify(this.selectedBranchIds));
   this.applySelection();
 }
-
-
 applySelection(): void {
   if (!this.selectedSchema) return;
 

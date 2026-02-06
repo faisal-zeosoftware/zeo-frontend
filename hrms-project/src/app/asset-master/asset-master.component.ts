@@ -7,6 +7,7 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
 import {  HttpErrorResponse } from '@angular/common/http';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-asset-master',
@@ -14,6 +15,8 @@ import {  HttpErrorResponse } from '@angular/common/http';
   styleUrl: './asset-master.component.css'
 })
 export class AssetMasterComponent {
+
+  private dataSubscription?: Subscription;
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -84,10 +87,28 @@ export class AssetMasterComponent {
 ) {}
 
 ngOnInit(): void {
+
+     // combineLatest waits for both Schema and Branches to have a value
+     this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
+
+      }
+    });
  
+
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      
+      this.loadLAssetType();
+
+    });
+
   this.loadUsers();
-  this.loadLAssetType();
-this.loadLAsset();
+  // this.loadLAssetType();
+// this.loadLAsset();
 this.loadFormFieldsFam();
 
   this.userId = this.sessionService.getUserId();
@@ -209,22 +230,6 @@ this.loadFormFieldsFam();
 }
 
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
   
   
   
@@ -310,26 +315,47 @@ this.loadFormFieldsFam();
 
 
       
-          loadLAssetType(callback?: Function): void {
+          // loadLAssetType(callback?: Function): void {
     
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getAssetType(selectedSchema).subscribe(
-                (result: any) => {
-                  this.LoanTypes = result;
-                  console.log(' fetching Loantypes:');
-                  if (callback) callback();
+          //   console.log('schemastore',selectedSchema )
+          //   // Check if selectedSchema is available
+          //   if (selectedSchema) {
+          //     this.employeeService.getAssetType(selectedSchema).subscribe(
+          //       (result: any) => {
+          //         this.LoanTypes = result;
+          //         console.log(' fetching Loantypes:');
+          //         if (callback) callback();
           
-                },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
-                }
-              );
-            }
-            }
+          //       },
+          //       (error) => {
+          //         console.error('Error fetching Companies:', error);
+          //       }
+          //     );
+          //   }
+          //   }
+
+            loadLAssetType(callback?: Function): void {
+    
+              const selectedSchema = this.authService.getSelectedSchema();
+              const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+            
+            
+              if (selectedSchema) {
+                this.employeeService.getAssetTypeNew(selectedSchema, savedIds).subscribe(
+                  (result: any) => {
+                    this.LoanTypes = result;
+                    
+                    if (callback) callback();
+                  },
+                  (error) => {
+                    console.error('Error fetching Companies:', error);
+                  }
+                );
+              }
+              }
+          
 
    mapLAssetNameToId() {
 
@@ -510,18 +536,53 @@ deleteSelectedAssetMaster() {
 //   }
 
 
-loadLAsset(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-  if (selectedSchema) {
-    this.employeeService.getAsset(selectedSchema).subscribe(
-      (result: any[]) => {
-        this.Assets = result;
+// loadLAsset(): void {
+//   const selectedSchema = this.authService.getSelectedSchema();
+//   if (selectedSchema) {
+//     this.employeeService.getAsset(selectedSchema).subscribe(
+//       (result: any[]) => {
+//         this.Assets = result;
 
-        // Step: Extract unique custom_field IDs and map to readable names
-        const allCustomFields = result.flatMap(asset => asset.asset_custom_fields || []);
+//         // Step: Extract unique custom_field IDs and map to readable names
+//         const allCustomFields = result.flatMap(asset => asset.asset_custom_fields || []);
+//         const uniqueFieldIds = [...new Set(allCustomFields.map(field => field.custom_field))];
+
+//         // Map IDs to names using your existing custom field definitions
+//         this.customFieldHeaders = uniqueFieldIds.map(fieldId => {
+//           const fieldDef = this.custom_fieldsFam.find(f => f.id === fieldId);
+//           return {
+//             custom_field_id: fieldId,
+//             custom_field_name: fieldDef ? fieldDef.custom_field : `${fieldId}`
+//           };
+//         });
+
+//       },
+//       (error) => {
+//         console.error('Error fetching assets:', error);
+//       }
+//     );
+//   }
+// }
+
+
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+  
+    // Use your new filtered API call
+    this.employeeService.getAssetNew(schema, branchIds).subscribe({
+      next: (data: any[]) => {
+        // 1. Set the main data
+        this.Assets = data;
+  
+        // 2. --- IMPLEMENTED LOGIC TO EXTRACT CUSTOM FIELDS ---
+        // Step: Extract unique custom_field IDs from the filtered data
+        const allCustomFields = data.flatMap(asset => asset.asset_custom_fields || []);
         const uniqueFieldIds = [...new Set(allCustomFields.map(field => field.custom_field))];
-
-        // Map IDs to names using your existing custom field definitions
+  
+        // Map IDs to names using your existing custom field definitions (custom_fieldsFam)
         this.customFieldHeaders = uniqueFieldIds.map(fieldId => {
           const fieldDef = this.custom_fieldsFam.find(f => f.id === fieldId);
           return {
@@ -529,14 +590,16 @@ loadLAsset(): void {
             custom_field_name: fieldDef ? fieldDef.custom_field : `${fieldId}`
           };
         });
-
+        // ---------------------------------------------------
+  
+        this.isLoading = false;
       },
-      (error) => {
-        console.error('Error fetching assets:', error);
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
-}
 
 getCustomFieldValue(asset: any, fieldId: number): string {
   const field = asset.asset_custom_fields?.find((f: any) => f.custom_field === fieldId);

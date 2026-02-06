@@ -10,6 +10,8 @@ import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 
+import {combineLatest, Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-loan-escalation',
   templateUrl: './loan-escalation.component.html',
@@ -17,6 +19,8 @@ import { DesignationService } from '../designation-master/designation.service';
 })
 
 export class LoanEscalationComponent {
+
+  private dataSubscription?: Subscription;
 
     // doc_number: any = '';
     document_number: number | null = null;
@@ -96,11 +100,23 @@ export class LoanEscalationComponent {
   
   ngOnInit(): void {
 
+    
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+
+    }
+  });
+
     this.loadDeparmentBranch();
     this.loadRequestType();
     this.loadEmp();
     this.loadUsers();
-    this.loadgeneralReq();
+    // this.loadgeneralReq();
   
     this.userId = this.sessionService.getUserId();
   
@@ -400,7 +416,8 @@ export class LoanEscalationComponent {
       (response) => {
         alert('Loan Escalation updated successfully!');
         this.closeEditModal();
-        this.loadgeneralReq(); // reload updated list
+        // this.loadgeneralReq(); // reload updated list
+        window.location.reload();
       },
   (error) => {
     console.error('Error updating General Request Escalation:', error);
@@ -654,26 +671,45 @@ export class LoanEscalationComponent {
   
   
   
-            loadgeneralReq(): void {
+            // loadgeneralReq(): void {
       
-              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
             
-              console.log('schemastore',selectedSchema )
-              // Check if selectedSchema is available
-              if (selectedSchema) {
-                this.employeeService.getAllgeneralRequestEscalationsLoan(selectedSchema).subscribe(
-                  (result: any) => {
-                    this.GeneralReq = result;
-                    console.log(' fetching  general Request: ', result);
+            //   console.log('schemastore',selectedSchema )
+            //   // Check if selectedSchema is available
+            //   if (selectedSchema) {
+            //     this.employeeService.getAllgeneralRequestEscalationsLoan(selectedSchema).subscribe(
+            //       (result: any) => {
+            //         this.GeneralReq = result;
+            //         console.log(' fetching  general Request: ', result);
             
-                  },
-                  (error) => {
-                    console.error('Error fetching general Request:', error);
-                  }
-                );
-              }
-              }
+            //       },
+            //       (error) => {
+            //         console.error('Error fetching general Request:', error);
+            //       }
+            //     );
+            //   }
+            //   }
       
+
+              isLoading: boolean = false;
+
+              fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getEscalationsLoanNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      // Filter active employees
+           this.GeneralReq = data;
+
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+} 
+
      
               
               onFileChange(event: any) {

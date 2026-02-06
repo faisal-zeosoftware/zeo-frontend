@@ -236,15 +236,17 @@
                   </div>
                   <mat-icon>{{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
                 </div>
-          
                 <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
                   <div class="branch-option multi-select" 
                        *ngFor="let branch of data.branches" 
                        (click)="toggleBranchSelection(data, branch, $event)">
+                    
                     <mat-icon class="check-box">
-                      {{ selectedBranchIds.includes(branch.id) ? 'check_box' : 'check_box_outline_blank' }}
+                      {{ (selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)) ? 'check_box' : 'check_box_outline_blank' }}
                     </mat-icon>
-                    <span class="branch-name" [class.selected-text]="selectedBranchIds.includes(branch.id)">
+                    
+                    <span class="branch-name" 
+                          [class.selected-text]="(selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id))">
                       {{ branch.branch_name }}
                     </span>
                   </div>

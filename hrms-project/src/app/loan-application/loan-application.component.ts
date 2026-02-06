@@ -9,12 +9,18 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 
+import {combineLatest, Subscription } from 'rxjs';
+
+
 @Component({
   selector: 'app-loan-application',
   templateUrl: './loan-application.component.html',
   styleUrl: './loan-application.component.css'
 })
 export class LoanApplicationComponent {
+
+  
+  private dataSubscription?: Subscription;
 
     private apiUrl = `${environment.apiBaseUrl}`; 
 
@@ -83,10 +89,27 @@ private DepartmentServiceService: DepartmentServiceService
 
   ngOnInit(): void {
 
-    this.loadLoanTypes();
-    this.LoadEmployees();
-    this.loadLoanApplications();
-    this.loadDeparmentBranch();
+       // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);
+
+        }
+      });
+
+      this.employeeService.selectedBranches$.subscribe(ids => {
+        this.loadDeparmentBranch(); 
+        this.LoadEmployees();    
+        this.loadLoanTypes();
+
+      });
+
+    // this.LoadEmployees();
+    // this.loadLoanApplications();
+    // this.loadDeparmentBranch();
 
     this.userId = this.sessionService.getUserId();
     if (this.userId !== null) {
@@ -277,17 +300,16 @@ this.Delete = !this.Delete;
 
 
   LoadEmployees(callback?: Function) {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
+  
     if (selectedSchema) {
-      this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
         (result: any) => {
           this.Employees = result;
-          console.log(' fetching Employees:');
+          
           if (callback) callback();
-  
         },
         (error) => {
           console.error('Error fetching Companies:', error);
@@ -322,17 +344,16 @@ this.Delete = !this.Delete;
       
   loadLoanTypes(callback?: Function): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
+  
     if (selectedSchema) {
-      this.employeeService.getLoanTypes(selectedSchema).subscribe(
+      this.employeeService.getLoanTypesNew(selectedSchema, savedIds).subscribe(
         (result: any) => {
           this.LoanTypes = result;
-          console.log(' fetching Loantypes:');
-                if (callback) callback();
-  
+          
+          if (callback) callback();
         },
         (error) => {
           console.error('Error fetching Companies:', error);
@@ -361,26 +382,46 @@ this.Delete = !this.Delete;
 
 
      
-    loadLoanApplications(): void {
+    // loadLoanApplications(): void {
     
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.employeeService.getLoanApplications(selectedSchema).subscribe(
-          (result: any) => {
-            this.LoanApplications = result;
-            console.log(' fetching Loantypes:');
+    //   console.log('schemastore',selectedSchema )
+    //   // Check if selectedSchema is available
+    //   if (selectedSchema) {
+    //     this.employeeService.getLoanApplications(selectedSchema).subscribe(
+    //       (result: any) => {
+    //         this.LoanApplications = result;
+    //         console.log(' fetching Loantypes:');
     
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
-      }
-      }
+    //       },
+    //       (error) => {
+    //         console.error('Error fetching Companies:', error);
+    //       }
+    //     );
+    //   }
+    //   }
   
+
+      
+  isLoading: boolean = false;
+
+      fetchEmployees(schema: string, branchIds: number[]): void {
+        this.isLoading = true;
+        this.employeeService.getLoanApplicationsNew(schema, branchIds).subscribe({
+          next: (data: any) => {
+            // Filter active employees
+                 this.LoanApplications = data;
+      
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Fetch error:', err);
+            this.isLoading = false;
+          }
+        });
+      } 
+      
 
 
       isPauseModalOpen: boolean = false;
@@ -474,7 +515,7 @@ submitPauseLoan(): void {
     (response) => {
       alert('Loan application paused successfully!');
       this.closePauseModal();
-      this.loadLoanApplications();
+      // this.loadLoanApplications();
       window.location.reload();
     },
     (error) => {
@@ -502,7 +543,7 @@ submitResumeLoan(): void {
     (response) => {
       alert('Loan application resumed successfully!');
       this.closeResumeModal();
-      this.loadLoanApplications();
+      // this.loadLoanApplications();
       window.location.reload();
 
     },
@@ -626,26 +667,37 @@ updateAssetType(): void {
   });
 }
 
-      loadDeparmentBranch(callback?: Function): void {
-    
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-          console.log(' fetching Companies:');
-            if (callback) callback();
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.branches = result; // Fallback: show all if nothing is selected in sidebar
         }
-      );
-    }
-    }
+        // Inside the subscribe block of loadDeparmentBranch
+        if (this.branches.length === 1) {
+          this.branch = this.branches[0].id;
+        }
+
+        console.log('Filtered branches for selection:', this.branches);
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
+  }
+}
 
     
   mapBranchesNameToId() {

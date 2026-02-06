@@ -261,6 +261,19 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
 
   }
 
+  getEscalationsLoanNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-approval-escalation/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
     getAllgeneralRequestEscalationsAirticket(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-escalation/?schema=${selectedSchema}`;
 
@@ -3828,6 +3841,19 @@ updateGeofence(id: number, data: any): Observable<any> {
     
   }
 
+    getLoanApplicationsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-application/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   getLoanRepayments(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-repayment/?schema=${selectedSchema}`;
   
@@ -3836,6 +3862,20 @@ updateGeofence(id: number, data: any): Observable<any> {
 
     
   }
+
+
+  getLoanRepaymentsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-repayment?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
   getLoanapprover(selectedSchema: string): Observable<any> {
@@ -3854,6 +3894,18 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
 
     
+  }
+
+    getLoanApprovalLevelsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-approval-levels/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
   }
 
 
@@ -3895,6 +3947,18 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
   }
 
+
+  getApprovalslistLoanNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-approval/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
   
   getApprovalslistAsset(selectedSchema: string, userId: number): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals/?schema=${selectedSchema}`;
@@ -4050,6 +4114,19 @@ registerAssetType(companyData: any): Observable<any> {
 
     
   }
+
+  getAssetTypeNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/asset-type/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
   updateAssetType(id: number, data: any): Observable<any> {
@@ -4382,6 +4459,19 @@ registerAsset(companyData: any): Observable<any> {
     
   }
 
+
+  getAssetNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/assets/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
   updateAsset(id: number, data: any): Observable<any> {

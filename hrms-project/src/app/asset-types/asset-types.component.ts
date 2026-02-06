@@ -5,6 +5,8 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
+
+import {combineLatest, Subscription } from 'rxjs';
 declare var $: any;
 @Component({
   selector: 'app-asset-types',
@@ -14,6 +16,7 @@ declare var $: any;
 export class AssetTypesComponent {
 
    
+  private dataSubscription?: Subscription;
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -67,8 +70,19 @@ export class AssetTypesComponent {
 
 ngOnInit(): void {
  
+
+     // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);
+
+          }
+        });
   this.loadUsers();
-  this.loadLAssetType();
+  // this.loadLAssetType();
 
 
 
@@ -188,21 +202,6 @@ ngOnInit(): void {
 }
 
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
   
   
   
@@ -269,27 +268,46 @@ ngOnInit(): void {
 
 
       
-          loadLAssetType(): void {
+          // loadLAssetType(): void {
     
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getAssetType(selectedSchema).subscribe(
-                (result: any) => {
-                  this.LoanTypes = result;
-                  console.log(' fetching Loantypes:');
+          //   console.log('schemastore',selectedSchema )
+          //   // Check if selectedSchema is available
+          //   if (selectedSchema) {
+          //     this.employeeService.getAssetType(selectedSchema).subscribe(
+          //       (result: any) => {
+          //         this.LoanTypes = result;
+          //         console.log(' fetching Loantypes:');
           
-                },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
-                }
-              );
-            }
-            }
+          //       },
+          //       (error) => {
+          //         console.error('Error fetching Companies:', error);
+          //       }
+          //     );
+          //   }
+          //   }
         
 
+            isLoading: boolean = false;
+
+            fetchEmployees(schema: string, branchIds: number[]): void {
+              this.isLoading = true;
+              this.employeeService.getAssetTypeNew(schema, branchIds).subscribe({
+                next: (data: any) => {
+                  // Filter active employees
+                       this.LoanTypes = data;
+            
+                  this.isLoading = false;
+                },
+                error: (err) => {
+                  console.error('Fetch error:', err);
+                  this.isLoading = false;
+                }
+              });
+            } 
+            
+            
 
 
                iscreateLoanApp: boolean = false;
@@ -367,7 +385,8 @@ updateAssetType(): void {
     (response) => {
       alert('Asset Type updated successfully!');
       this.closeEditModal();
-      this.loadLAssetType(); // reload updated list
+      // this.loadLAssetType(); // reload updated list
+      window.location.reload();
     },
 (error) => {
   console.error('Error updating Asset type:', error);

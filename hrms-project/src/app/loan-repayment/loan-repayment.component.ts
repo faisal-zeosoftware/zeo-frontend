@@ -7,6 +7,9 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 
+import {combineLatest, Subscription } from 'rxjs';
+
+
 @Component({
   selector: 'app-loan-repayment',
   templateUrl: './loan-repayment.component.html',
@@ -15,6 +18,9 @@ import { EmployeeService } from '../employee-master/employee.service';
 export class LoanRepaymentComponent {
 
   
+  
+
+  private dataSubscription?: Subscription;
 
   repayment_date:any='';
   amount_paid:any='';
@@ -59,8 +65,19 @@ private employeeService: EmployeeService,
 
   ngOnInit(): void {
 
+     // combineLatest waits for both Schema and Branches to have a value
+     this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
+
+      }
+    });
+
     this.loadLoanTypes();
-    this.loadLoanrepayment();
+    // this.loadLoanrepayment();
 
     this.userId = this.sessionService.getUserId();
     if (this.userId !== null) {
@@ -260,26 +277,46 @@ CreateLoanrepayment(): void {
 
 
      
-    loadLoanrepayment(): void {
+    // loadLoanrepayment(): void {
     
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.employeeService.getLoanRepayments(selectedSchema).subscribe(
-          (result: any) => {
-            this.LoanRepayements = result;
-            console.log(' fetching Loantypes:');
+    //   console.log('schemastore',selectedSchema )
+    //   // Check if selectedSchema is available
+    //   if (selectedSchema) {
+    //     this.employeeService.getLoanRepayments(selectedSchema).subscribe(
+    //       (result: any) => {
+    //         this.LoanRepayements = result;
+    //         console.log(' fetching Loantypes:');
     
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
-      }
-      }
+    //       },
+    //       (error) => {
+    //         console.error('Error fetching Companies:', error);
+    //       }
+    //     );
+    //   }
+    //   }
   
+
+        isLoading: boolean = false;
+
+
+      fetchEmployees(schema: string, branchIds: number[]): void {
+        this.isLoading = true;
+        this.employeeService.getLoanRepaymentsNew(schema, branchIds).subscribe({
+          next: (data: any) => {
+            // Filter active employees
+                 this.LoanRepayements = data;
+      
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Fetch error:', err);
+            this.isLoading = false;
+          }
+        });
+      } 
+      
 
 
 
