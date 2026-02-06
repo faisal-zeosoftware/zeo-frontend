@@ -1478,6 +1478,20 @@ getEmpReportReport(): Observable<any[]> {
 }
 
 
+getEmpReportReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/employee/api/emp-report/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
+
 deleteEmpReport(reportId: number): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   // Adjust the URL to match your Django/Backend URL pattern

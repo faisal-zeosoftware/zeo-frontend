@@ -7,6 +7,9 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+
+import {combineLatest, Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-asset-request',
   templateUrl: './asset-request.component.html',
@@ -45,6 +48,7 @@ export class AssetRequestComponent {
   AssetsRequest:any []=[];
 
   document_number: number | string | null = null;
+  private dataSubscription?: Subscription;
 
 
   automaticNumbering: boolean = false;
@@ -85,13 +89,36 @@ export class AssetRequestComponent {
 ) {}
 
 ngOnInit(): void {
+
+  
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+
+    }
+  });
+
+  
+  // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadDeparmentBranch(); 
+    this.loadEmployees();
+    this.loadLAsset();
+    this.loadLAssetType();
+
+
+  });
+  
+
  
 this.loadUsers();
-this.loadLAssetType();
-this.loadLAsset();
-this.loadEmployees();
-this.loadDeparmentBranch();
-this.loadLAssetRequest();
+// this.loadEmployees();
+// this.loadDeparmentBranch();
+// this.loadLAssetRequest();
 
   this.userId = this.sessionService.getUserId();
   
@@ -207,24 +234,25 @@ this.loadLAssetRequest();
 }
 
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
-  
+
+ isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.employeeService.getAssetRequestNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+               this.AssetsRequest = data;
+    
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    } 
+    
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
@@ -337,18 +365,16 @@ onBranchChange(event: any): void {
 
       
           loadLAssetType(callback?: Function): void {
-    
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            const selectedSchema = this.authService.getSelectedSchema();
+            const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
           
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
+          
             if (selectedSchema) {
-              this.employeeService.getAssetType(selectedSchema).subscribe(
+              this.employeeService.getAssetTypeNew(selectedSchema, savedIds).subscribe(
                 (result: any) => {
                   this.AssetTypes = result;
-                  console.log(' fetching Loantypes:');
-                   if (callback) callback();
-          
+                  
+                  if (callback) callback();
                 },
                 (error) => {
                   console.error('Error fetching Companies:', error);
@@ -374,18 +400,17 @@ onBranchChange(event: any): void {
 }
 
         
-            loadEmployees(): void {
-    
-              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            loadEmployees(callback?: Function): void {
+              const selectedSchema = this.authService.getSelectedSchema();
+              const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
             
-              console.log('schemastore',selectedSchema )
-              // Check if selectedSchema is available
+            
               if (selectedSchema) {
-                this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+                this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
                   (result: any) => {
                     this.Employees = result;
-                    console.log(' fetching Loantypes:');
-            
+                    
+                    if (callback) callback();
                   },
                   (error) => {
                     console.error('Error fetching Companies:', error);
@@ -541,18 +566,18 @@ deleteSelectedAssetReq() {
   }
 }
 
-loadLAsset(): void {
+loadLAsset(callback?: Function): void {
     
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
+
   if (selectedSchema) {
-    this.employeeService.getAsset(selectedSchema).subscribe(
+    this.employeeService.getAssetNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
         this.Assets = result;
-        console.log(' fetching Loantypes:');
-
+        
+        if (callback) callback();
       },
       (error) => {
         console.error('Error fetching Companies:', error);
@@ -561,26 +586,26 @@ loadLAsset(): void {
   }
   }
 
-  loadLAssetRequest(callback?: Function): void {
+  // loadLAssetRequest(callback?: Function): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getAssetRequest(selectedSchema).subscribe(
-        (result: any) => {
-          this.AssetsRequest = result;
-          console.log(' fetching Loantypes:');
-          if (callback) callback();
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getAssetRequest(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.AssetsRequest = result;
+  //         console.log(' fetching Loantypes:');
+  //         if (callback) callback();
   
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
 
   mapAssetreqNameToId() {
 
@@ -614,7 +639,8 @@ loadLAsset(): void {
       this.employeeService.approveAssetRequest(id, selectedSchema).subscribe(
         (response) => {
           alert('Asset request approved successfully!');
-          this.loadLAssetRequest(); // Refresh list
+          // this.loadLAssetRequest(); // Refresh list
+          window.location.reload();
         },
         (error) => {
           console.error('Approval failed', error);
@@ -641,7 +667,7 @@ loadLAsset(): void {
   this.employeeService.rejectAssetRequest(id, selectedSchema).subscribe(
     (response) => {
       alert('Asset request rejected successfully!');
-      this.loadLAssetRequest(); // Refresh list
+      // this.loadLAssetRequest(); // Refresh list
     },
     (error) => {
       console.error('Approval failed', error);
@@ -650,26 +676,37 @@ loadLAsset(): void {
   );
 }
 
-  loadDeparmentBranch(callback?: Function): void {
-    
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-          console.log(' fetching Companies:');
-            if (callback) callback();
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.branches = result; // Fallback: show all if nothing is selected in sidebar
         }
-      );
-    }
-    }
+        // Inside the subscribe block of loadDeparmentBranch
+        if (this.branches.length === 1) {
+          this.branch = this.branches[0].id;
+        }
+
+        console.log('Filtered branches for selection:', this.branches);
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
+  }
+}
 
     
   mapBranchesNameToId() {

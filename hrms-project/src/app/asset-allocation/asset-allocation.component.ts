@@ -5,6 +5,9 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
+
+import {combineLatest, Subscription } from 'rxjs'
+
 @Component({
   selector: 'app-asset-allocation',
   templateUrl: './asset-allocation.component.html',
@@ -13,6 +16,8 @@ import { DesignationService } from '../designation-master/designation.service';
 export class AssetAllocationComponent {
 
   
+  private dataSubscription?: Subscription;
+
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -74,10 +79,31 @@ export class AssetAllocationComponent {
 ) {}
 
 ngOnInit(): void {
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+
+    }
+  });
+
+  
+  this.employeeService.selectedBranches$.subscribe(ids => {
+ 
+    this.loadEmployees();    
+    this.loadLAsset();    
+
+ 
+
+  });
  
   this.loadUsers();
-  this.loadLAssetType();
-this.loadLAsset();
+
+
 this.loadEmployees();
 
 
@@ -195,23 +221,6 @@ this.loadEmployees();
 }
 
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
   
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -290,40 +299,64 @@ this.loadEmployees();
 
 
       
-          loadLAssetType(callback?: Function): void {
+          // loadLAssetType(callback?: Function): void {
     
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getAssetAllocation(selectedSchema).subscribe(
-                (result: any) => {
-                  this.AssetAllocations = result;
-                  console.log(' fetching Loantypes:');
-                     if (callback) callback();
+          //   console.log('schemastore',selectedSchema )
+          //   // Check if selectedSchema is available
+          //   if (selectedSchema) {
+          //     this.employeeService.getAssetAllocation(selectedSchema).subscribe(
+          //       (result: any) => {
+          //         this.AssetAllocations = result;
+          //         console.log(' fetching Loantypes:');
+          //            if (callback) callback();
           
+          //       },
+          //       (error) => {
+          //         console.error('Error fetching Companies:', error);
+          //       }
+          //     );
+          //   }
+          //   }
+
+            
+
+  isLoading: boolean = false;
+
+            fetchEmployees(schema: string, branchIds: number[]): void {
+              this.isLoading = true;
+              this.employeeService.getAssetAllocationNew(schema, branchIds).subscribe({
+                next: (data: any) => {
+                  // Filter active employees
+                       this.AssetAllocations = data;
+            
+                  this.isLoading = false;
                 },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
+                error: (err) => {
+                  console.error('Fetch error:', err);
+                  this.isLoading = false;
                 }
-              );
-            }
-            }
+              });
+            } 
+            
+
+
+
+
         
             loadEmployees(callback?: Function): void {
     
-              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+              const selectedSchema = this.authService.getSelectedSchema();
+              const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
             
-              console.log('schemastore',selectedSchema )
-              // Check if selectedSchema is available
+            
               if (selectedSchema) {
-                this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+                this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
                   (result: any) => {
                     this.Employees = result;
-                    console.log(' fetching Loantypes:');
-                         if (callback) callback();
-            
+                    
+                    if (callback) callback();
                   },
                   (error) => {
                     console.error('Error fetching Companies:', error);
@@ -427,7 +460,18 @@ updateAssetType(): void {
     (response) => {
       alert('Asset  updated successfully!');
       this.closeEditModal();
-      this.loadLAssetType(); 
+      // this.loadLAssetType(); 
+        // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);
+
+          }
+        });
+
     },
 (error) => {
   console.error('Error updating Asset Allocation:', error);
@@ -488,18 +532,16 @@ deleteSelectedAssetAllocation() {
 }
 
 loadLAsset(callback?: Function): void {
-    
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
+
   if (selectedSchema) {
-    this.employeeService.getAsset(selectedSchema).subscribe(
+    this.employeeService.getAssetNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
         this.Assets = result;
-        console.log(' fetching Loantypes:');
-          if (callback) callback();
-
+        
+        if (callback) callback();
       },
       (error) => {
         console.error('Error fetching Companies:', error);
@@ -570,7 +612,16 @@ updateretruened(): void {
   this.employeeService.returnAsset(this.selectedAllocationId, selectedSchema, returnData).subscribe(
     (response) => {
       alert('✅ Asset returned successfully!');
-      this.loadLAssetType(); // Refresh the list
+      // combineLatest waits for both Schema and Branches to have a value
+      this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);
+
+        }
+      });
       this.closeretrunassetModal(); // Close modal
     },
     (error) => {

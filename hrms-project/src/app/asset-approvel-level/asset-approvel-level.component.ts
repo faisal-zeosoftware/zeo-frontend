@@ -9,6 +9,8 @@ import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
+import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 @Component({
@@ -19,6 +21,7 @@ import { MatOption } from '@angular/material/core';
 export class AssetApprovelLevelComponent {
 
     @ViewChild('select') select: MatSelect | undefined;
+    private dataSubscription?: Subscription;
 
   
     level:any='';
@@ -70,13 +73,35 @@ export class AssetApprovelLevelComponent {
   private sessionService: SessionService,
   private employeeService: EmployeeService,
       private leaveService:LeaveService,
+      private DepartmentServiceService: DepartmentServiceService
   
     ) {}
   
     ngOnInit(): void {
   
-      this.loadAssetTypes();
-      this.loadAssetApprovalLevels();
+
+         // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);
+
+          }
+        });
+
+         
+  this.employeeService.selectedBranches$.subscribe(ids => {
+ 
+    this.loadAssetTypes();    
+
+    this.LoadBranch();    
+
+
+  });
+      // this.loadAssetTypes();
+      // this.loadAssetApprovalLevels();
       this.loadAssetapprover();
       this.LoadBranch();
 
@@ -246,20 +271,35 @@ export class AssetApprovelLevelComponent {
       }
 
   LoadBranch(callback?: Function) {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (selectedSchema) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
-      (data: any) => {
-        this.Branches = data;
-
-        if (callback) callback();
-      },
-      (error: any) => {
-        console.error('Error fetching branches:', error);
-      }
-    );
-  }
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.Branches.length === 1) {
+            this.branch = this.Branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.Branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
 }
 
 mapBranchesNameToId() {
@@ -295,23 +335,22 @@ mapBranchesNameToId() {
         
     loadAssetTypes(callback?: Function): void {
       
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.employeeService.getAssetTypes(selectedSchema).subscribe(
-          (result: any) => {
-            this.LoanTypes = result;
-            console.log(' fetching Loantypes:');
-              if (callback) callback();
-    
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
-      }
+      const selectedSchema = this.authService.getSelectedSchema();
+              const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+            
+            
+              if (selectedSchema) {
+                this.employeeService.getAssetTypeNew(selectedSchema, savedIds).subscribe(
+                  (result: any) => {
+                    this.LoanTypes = result;
+                    
+                    if (callback) callback();
+                  },
+                  (error) => {
+                    console.error('Error fetching Companies:', error);
+                  }
+                );
+              }
       }
   
 mapLoanTypeNameToId() {
@@ -330,26 +369,47 @@ mapLoanTypeNameToId() {
   
   
        
-      loadAssetApprovalLevels(): void {
+      // loadAssetApprovalLevels(): void {
       
-        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
-        console.log('schemastore',selectedSchema )
-        // Check if selectedSchema is available
-        if (selectedSchema) {
-          this.employeeService.getAssetApprovalLevels(selectedSchema).subscribe(
-            (result: any) => {
-              this.approvalLevels = result;
-              console.log(' fetching Loantypes:');
+      //   console.log('schemastore',selectedSchema )
+      //   // Check if selectedSchema is available
+      //   if (selectedSchema) {
+      //     this.employeeService.getAssetApprovalLevels(selectedSchema).subscribe(
+      //       (result: any) => {
+      //         this.approvalLevels = result;
+      //         console.log(' fetching Loantypes:');
       
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
-        }
-        }
+      //       },
+      //       (error) => {
+      //         console.error('Error fetching Companies:', error);
+      //       }
+      //     );
+      //   }
+      //   }
     
+        
+  isLoading: boolean = false;
+
+
+        fetchEmployees(schema: string, branchIds: number[]): void {
+          this.isLoading = true;
+          this.employeeService.getAssetApprovalLevelsNew(schema, branchIds).subscribe({
+            next: (data: any) => {
+              // Filter active employees
+                   this.approvalLevels = data;
+        
+              this.isLoading = false;
+            },
+            error: (err) => {
+              console.error('Fetch error:', err);
+              this.isLoading = false;
+            }
+          });
+        } 
+        
+        
   
   
         loadAssetapprover(callback?: Function): void {

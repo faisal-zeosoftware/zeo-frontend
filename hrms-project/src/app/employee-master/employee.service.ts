@@ -290,6 +290,19 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
 
   }
 
+  getEscalationsAssetNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/asset-escalation-rules/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   getAllgeneralRequestEscalationsLeave(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/calendars/api/escalation-rules/?schema=${selectedSchema}`;
 
@@ -3919,6 +3932,20 @@ updateGeofence(id: number, data: any): Observable<any> {
   }
 
 
+  
+  getAssetApprovalLevelsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
     getAirTicketApprovalLevels(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-levels/?schema=${selectedSchema}`;
   
@@ -3968,6 +3995,19 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
   }
 
+
+  getApprovalslistAssetNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/asset-request-approvals/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
     
   getApprovalslistAirticket(selectedSchema: string, userId: number): Observable<any> {
@@ -4549,6 +4589,20 @@ registerAssetAllocation(companyData: any): Observable<any> {
     
   }
 
+  
+  getAssetAllocationNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/asset-allocations/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 
 
   updateAssetAllocation(id: number, data: any): Observable<any> {
@@ -4630,6 +4684,19 @@ registerAssetRequest(companyData: any): Observable<any> {
 
     
   }
+
+  getAssetRequestNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/asset-Request/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
 
