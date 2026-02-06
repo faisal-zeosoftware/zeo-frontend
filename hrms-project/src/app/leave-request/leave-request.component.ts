@@ -6,6 +6,8 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 @Component({
@@ -17,6 +19,7 @@ export class LeaveRequestComponent {
 
 
   private dataSubscription?: Subscription;
+  private apiUrl = `${environment.apiBaseUrl}`;
 
 
 
@@ -34,7 +37,7 @@ export class LeaveRequestComponent {
   approved_on: any = '';
   half_day_period: any = '';
   leave_type: string = ''; // or number = 0, based on your API
-  document_number: any = '';
+
 
 
   employee: any = '';
@@ -44,6 +47,11 @@ export class LeaveRequestComponent {
 
   registerButtonClicked: boolean = false;
 
+
+    branch: any = '';
+    branches:any []=[];
+    automaticNumbering: boolean = false;
+    document_number: number | string | null = null;
 
 
   LeaveTypes: any[] = [];
@@ -76,12 +84,13 @@ export class LeaveRequestComponent {
     private leaveService: LeaveService,
     private DesignationService: DesignationService,
     private employeeService: EmployeeService,
+    private DepartmentServiceService: DepartmentServiceService,
 
 
   ) { }
 
   ngOnInit(): void {
-
+this.loadDeparmentBranch();
      // Listen for sidebar changes so the dropdown updates instantly
   this.employeeService.selectedBranches$.subscribe(ids => {
     this.loadEmp();
@@ -263,7 +272,8 @@ requestLeave(): void {
   formData.append('status', this.status);
   formData.append('dis_half_day', this.dis_half_day.toString());
   formData.append('half_day_period', this.half_day_period);
-  formData.append('document_number', this.document_number);
+  formData.append('document_number', this.document_number?.toString() || '');
+  formData.append('branch', this.branch || '');
   formData.append('leave_type', this.leave_type.toString());
   formData.append('employee', this.selectedEmployee?.toString() || '');
 
@@ -649,7 +659,92 @@ calculateEditTotalDays() {
   }
 }
 
+  loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
 
+    
+  mapBranchesNameToId() {
+  if (!this.branches || !this.editAsset?.branch) return;
+
+  const Bran = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (Bran) {
+    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
+}
+
+
+onBranchChange(event: any): void {
+  const selectedBranchId = event.target.value;
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedBranchId || !selectedSchema) {
+    console.warn('Missing branch or schema');
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'general_request';  // fixed for this form
+
+  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+
+  this.http.get<any>(apiUrl).subscribe({
+    next: (response) => {
+      // Handle both object and array responses (your example shows array[0])
+      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+
+      if (this.automaticNumbering) {
+        this.document_number = null;     // or '' — null is cleaner
+        console.log('Auto-numbering enabled → document number cleared');
+      } else {
+        this.document_number = '';       // ready for manual input
+        console.log('Manual numbering → enter document number');
+      }
+    },
+    error: (error) => {
+      console.error('Failed to load numbering settings:', error);
+      this.automaticNumbering = false;   // safe fallback
+      this.document_number = '';
+      // Optional: alert('Could not load document numbering settings');
+    }
+  });
+}
 
 
 }

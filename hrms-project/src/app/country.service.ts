@@ -551,6 +551,37 @@ export class CountryService {
     return this.http.get(apiUrl);
   }
 
+  deleteAirRule(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-rule/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+deleteAirReq(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-request/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
 
 
 

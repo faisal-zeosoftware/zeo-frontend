@@ -430,7 +430,7 @@ ngOnInit(): void {
   
     toggleSelectAllEmployees() {
         this.allSelected = !this.allSelected;
-    this.LoanTypes.forEach(employee => employee.selected = this.allSelected);
+    this.Requests.forEach(employee => employee.selected = this.allSelected);
 
     }
   
@@ -495,7 +495,7 @@ updateAssetType(): void {
 
 
 deleteSelectedAirTicketReq() { 
-  const selectedEmployeeIds = this.LoanTypes
+  const selectedEmployeeIds = this.Requests
     .filter(employee => employee.selected)
     .map(employee => employee.id);
 
@@ -510,11 +510,11 @@ deleteSelectedAirTicketReq() {
     let completed = 0;
 
     selectedEmployeeIds.forEach(categoryId => {
-      this.employeeService.deleteAirPolicy(categoryId).subscribe(
+      this.countryService.deleteAirReq(categoryId).subscribe(
         () => {
           console.log('AirTicket Request deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
-          this.LoanTypes = this.LoanTypes.filter(employee => employee.id !== categoryId);
+          this.Requests = this.Requests.filter(employee => employee.id !== categoryId);
             completed++;
          if (completed === total) {   
           alert(' AirTicket Request deleted successfully');

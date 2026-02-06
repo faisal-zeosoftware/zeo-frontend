@@ -437,7 +437,7 @@ this.Delete = !this.Delete;
 
 toggleSelectAllEmployees() {
   this.allSelecteds = !this.allSelecteds;
-this.DocType.forEach(employee => employee.selected = this.allSelecteds);
+this.DocRequest.forEach(employee => employee.selected = this.allSelecteds);
 
 }
 

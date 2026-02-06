@@ -126,7 +126,7 @@ export class EmployeeMasterComponent {
 
   toggleSelectAllEmployees() {
     this.allSelected = !this.allSelected;
-    this.employees.forEach(employee => employee.selected = this.allSelected);
+    this.filteredEmployees.forEach(employee => employee.selected = this.allSelected);
   }
 
   onCheckboxChange(employee:number) {
