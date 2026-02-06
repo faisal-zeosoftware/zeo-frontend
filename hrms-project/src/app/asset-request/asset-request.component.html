@@ -201,11 +201,35 @@
                
 
         
-            <div class="col-md-6">
-                <label>Document Number</label>
-                <input type="text" class="form-control" required [(ngModel)]="editAsset.document_number" placeholder="Enter document number"
-                    [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="editAsset.document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
+
+             <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
             </div>
+
 
 
      
@@ -301,6 +325,7 @@
                   <tr>
                     <th>No</th>
                     <th>Document Number</th>
+                    <th>Branch</th>
                     <th>Employee</th>
                     <th>Asset type</th>
                     <th>Requested asset</th>
@@ -316,6 +341,7 @@
                       {{ i + 1 }}
                     </td>
                     <td data-label="Document Number">{{ docs.document_number }}</td>
+                    <td data-label="branch">{{ docs.branch }}</td>
                     <td data-label="Employee">{{ docs.employee }}</td>
                     <td data-label="Asset type">{{ docs.asset_type }}</td>
                     <td data-label="Requested asset">{{ docs.requested_asset }}</td>

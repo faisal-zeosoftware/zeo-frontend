@@ -252,41 +252,30 @@ this.loadLAssetRequest();
           }
 
 
+CreateAssetType(): void {
+  this.registerButtonClicked = true;
 
-          CreateAssetType(): void {
-            this.registerButtonClicked = true;
+  const companyData = {
+    reason: this.reason || '',
+    employee: this.employee?.toString() || '',
+    asset_type: this.asset_type?.toString() || '',
+    requested_asset: this.requested_asset || '',
+    // Convert document_number safely to string
+    document_number: this.document_number?.toString() || '',
+    branch: this.branch?.toString() || ''
+  };
 
-            const companyData = {
-              reason: this.reason,
-            
-              // status:this.status,
-              employee:this.employee,
-              asset_type:this.asset_type,
-              requested_asset:this.requested_asset,
-              document_number:this.document_number,
-              branch:this.branch
-  
-       
+  this.employeeService.registerAssetRequest(companyData).subscribe({
+    next: (response) => {
+      console.log('Registration successful', response);
+      alert('Asset request has been added!');
+      window.location.reload();
+    },
+    error: (error) => {
+      // same error handling as above...
+      console.error('Added failed', error);
+      let errorMessage = 'Enter all required fields!';
 
-              // Add other form field values to the companyData object
-            };
-          
-        
-            this.employeeService.registerAssetRequest(companyData).subscribe(
-              (response) => {
-                console.log('Registration successful', response);
-              
-                    alert('Asset request has been added ');
-                    window.location.reload();
-                    // window.location.reload();
-               
-        
-              },
-              (error) => {
-                console.error('Added failed', error);
-            let errorMessage = 'Enter all required fields!';
-
-      // ✅ Handle backend validation or field-specific errors
       if (error.error && typeof error.error === 'object') {
         const messages: string[] = [];
         for (const [key, value] of Object.entries(error.error)) {
@@ -301,8 +290,8 @@ this.loadLAssetRequest();
 
       alert(errorMessage);
     }
-            );
-          }
+  });
+}
 
 
 

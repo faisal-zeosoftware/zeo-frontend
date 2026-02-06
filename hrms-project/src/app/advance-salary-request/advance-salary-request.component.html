@@ -71,12 +71,34 @@
             
                 <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
                   <div class="row">
-                    <div class="col-md-6">
-                      <label>Document Number</label>
-                      <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
-                             [ngModelOptions]="{standalone: true}" >
-                    </div>
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
 
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
+
+             <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
                     <div class="col-md-6">
                       <label>Requested amount</label>
                       <input type="number" class="form-control" required [(ngModel)]="requested_amount" placeholder="Enter requested amount"
@@ -158,11 +180,36 @@
   
           <form>
             <div class="row">
-              <div class="col-md-6">
-                <label>Document Number</label>
-                <input type="number" class="form-control" required [(ngModel)]="editAsset.document_number" 
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="editAsset.document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
+
+
+             <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
 
               <div class="col-md-6">
                 <label>Requested amount</label>
@@ -239,6 +286,7 @@
               <th>Actions</th>
 
               <th> Document number  </th>
+              <th> Branch </th>
               <th> Reason</th>
               <th>Requested amount</th>
               <th>Remarks</th>
@@ -268,6 +316,7 @@
                 </ng-container>
               </td>
               <td data-label="Document number">{{ docs.document_number }}</td>
+              <td data-label="branch">{{ docs.branch }}</td>
               <td data-label="Reason">{{ docs.reason }}</td>
               <td data-label="Requested amount">{{ docs.requested_amount }}</td> 
               <td data-label="Remarks">{{ docs.remarks }}</td>

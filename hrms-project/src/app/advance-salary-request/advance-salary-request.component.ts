@@ -7,6 +7,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
+import { environment } from '../../environments/environment';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 @Component({
   selector: 'app-advance-salary-request',
   templateUrl: './advance-salary-request.component.html',
@@ -15,13 +17,20 @@ import { EmployeeService } from '../employee-master/employee.service';
 export class AdvanceSalaryRequestComponent {
 
   
-      
+        private apiUrl = `${environment.apiBaseUrl}`;
 
   allSelected=false;
 
+     branch: any = '';
+
+     branches:any []=[];
+
+   automaticNumbering: boolean = false;
 
 
-  document_number:any='';
+
+
+   document_number: number | string | null = null;
   reason:any='' ;
   total:any='' ;
 
@@ -72,6 +81,7 @@ schemas: string[] = []; // Array to store schema names
     private leaveService:LeaveService,
     private DesignationService: DesignationService,
     private employeeService: EmployeeService,
+    private DepartmentServiceService: DepartmentServiceService 
 
     ) {}
 
@@ -86,6 +96,7 @@ schemas: string[] = []; // Array to store schema names
       this.LoadDocType(selectedSchema);
       this.LoadEmployee(selectedSchema);
       this.LoadDocRequest(selectedSchema);
+      this.loadDeparmentBranch();
 
       
       }
@@ -233,6 +244,46 @@ if (this.userId !== null) {
   }
 
 
+  onBranchChange(event: any): void {
+  const selectedBranchId = event.target.value;
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedBranchId || !selectedSchema) {
+    console.warn('Missing branch or schema');
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'advance_salary_request';  // fixed for this form
+
+  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+
+  this.http.get<any>(apiUrl).subscribe({
+    next: (response) => {
+      // Handle both object and array responses (your example shows array[0])
+      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+
+      if (this.automaticNumbering) {
+        this.document_number = null;     // or '' — null is cleaner
+        console.log('Auto-numbering enabled → document number cleared');
+      } else {
+        this.document_number = '';       // ready for manual input
+        console.log('Manual numbering → enter document number');
+      }
+    },
+    error: (error) => {
+      console.error('Failed to load numbering settings:', error);
+      this.automaticNumbering = false;   // safe fallback
+      this.document_number = '';
+      // Optional: alert('Could not load document numbering settings');
+    }
+  });
+}
+
+
 
 
 
@@ -324,8 +375,9 @@ if (this.userId !== null) {
       // }
     
       const formData = new FormData();
-      formData.append('document_number', this.document_number);
+     formData.append('document_number', this.document_number?.toString() || '');
       formData.append('reason', this.reason);
+      formData.append('branch', this.branch);
 
 
   
@@ -374,6 +426,9 @@ if (this.userId !== null) {
 
     openPopus():void{
       this.iscreateLoanApp = true;
+      this.document_number = null;
+      this.automaticNumbering = false;
+      this.branch = ''; 
 
     }
   
@@ -586,6 +641,43 @@ this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).s
   alert(errorMsg);
 }
 );
+}
+
+
+  loadDeparmentBranch(callback?: Function): void {
+    
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any) => {
+          this.branches = result;
+          console.log(' fetching Companies:');
+            if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
+
+    
+  mapBranchesNameToId() {
+  if (!this.branches || !this.editAsset?.branch) return;
+
+  const Bran = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (Bran) {
+    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
 }
 
 

@@ -265,6 +265,10 @@ iscreateLoanApp: boolean = false;
 openPopus():void{
   this.iscreateLoanApp = true;
 
+  this.document_number = null;
+  this.automaticNumbering = false;
+  this.branch = '';  
+
 }
 
 closeapplicationModal():void{
@@ -485,25 +489,46 @@ updateAssetType(): void {
 }
 
 
-    onBranchChange(event: any): void {
-      const selectedBranchId = event.target.value;
-      const selectedSchema = localStorage.getItem('selectedSchema'); // Retrieve the selected schema from local storage or any other storage method
-  
-      if (selectedBranchId && selectedSchema) {
-        const apiUrl = `${this.apiUrl}/employee/api/general-request/document_numbering_by_branch/?branch_id=${selectedBranchId}&schema=${selectedSchema}`;
-        this.http.get(apiUrl).subscribe(
-          (response: any) => {
-            this.automaticNumbering = response.automatic_numbering;
-            if (this.automaticNumbering) {
-              this.document_number = null; // Clear the document number field if automatic numbering is enabled
-            }
-          },
-          (error) => {
-            console.error('Error fetching branch details:', error);
-          }
-        );
+
+onBranchChange(event: any): void {
+  const selectedBranchId = event.target.value;
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedBranchId || !selectedSchema) {
+    console.warn('Missing branch or schema');
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'general_request';  // fixed for this form
+
+  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+
+  this.http.get<any>(apiUrl).subscribe({
+    next: (response) => {
+      // Handle both object and array responses (your example shows array[0])
+      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+
+      if (this.automaticNumbering) {
+        this.document_number = null;     // or '' — null is cleaner
+        console.log('Auto-numbering enabled → document number cleared');
+      } else {
+        this.document_number = '';       // ready for manual input
+        console.log('Manual numbering → enter document number');
       }
+    },
+    error: (error) => {
+      console.error('Failed to load numbering settings:', error);
+      this.automaticNumbering = false;   // safe fallback
+      this.document_number = '';
+      // Optional: alert('Could not load document numbering settings');
     }
+  });
+}
+
   
 
 

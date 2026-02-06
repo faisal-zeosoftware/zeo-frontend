@@ -7,6 +7,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-loan-application',
@@ -35,6 +36,11 @@ export class LoanApplicationComponent {
 
   employee:any='';
   loan_type:any='';
+
+
+     branch: any = '';
+
+     branches:any []=[];
 
 
 
@@ -71,6 +77,7 @@ schemas: string[] = []; // Array to store schema names
     private DesignationService: DesignationService,
 private sessionService: SessionService,
 private employeeService: EmployeeService,
+private DepartmentServiceService: DepartmentServiceService 
 
   ) {}
 
@@ -79,6 +86,7 @@ private employeeService: EmployeeService,
     this.loadLoanTypes();
     this.LoadEmployees();
     this.loadLoanApplications();
+    this.loadDeparmentBranch();
 
     this.userId = this.sessionService.getUserId();
     if (this.userId !== null) {
@@ -221,6 +229,7 @@ this.Delete = !this.Delete;
     formData.append('emi_amount', this.emi_amount);
 
     formData.append('remaining_balance', this.remaining_balance);
+    formData.append('branch', this.branch);
  
 
 
@@ -388,6 +397,10 @@ editAsset: any = {}; // holds the asset being edited
       openPopus():void{
         this.iscreateLoanApp = true;
 
+          this.document_number = null;
+          this.automaticNumbering = false;
+          this.branch = '';  
+
       }
 
       openEditModal(asset: any): void {
@@ -400,6 +413,7 @@ editAsset: any = {}; // holds the asset being edited
           // 3. These will now find matches because this.Employees is full
           this.mapEmployeeNameToId();
           this.mapLoanNameToId();
+          this.mapBranchesNameToId();
         });
       }
 
@@ -573,25 +587,80 @@ updateAssetType(): void {
   );
 }
 
-    onBranchChange(event: any): void {
-      const selectedBranchId = event.target.value;
-      const selectedSchema = localStorage.getItem('selectedSchema'); // Retrieve the selected schema from local storage or any other storage method
-  
-      if (selectedBranchId && selectedSchema) {
-        const apiUrl = `${this.apiUrl}/employee/api/general-request/document_numbering_by_branch/?branch_id=${selectedBranchId}&schema=${selectedSchema}`;
-        this.http.get(apiUrl).subscribe(
-          (response: any) => {
-            this.automaticNumbering = response.automatic_numbering;
-            if (this.automaticNumbering) {
-              this.document_number = null; // Clear the document number field if automatic numbering is enabled
-            }
-          },
-          (error) => {
-            console.error('Error fetching branch details:', error);
-          }
-        );
+  onBranchChange(event: any): void {
+  const selectedBranchId = event.target.value;
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedBranchId || !selectedSchema) {
+    console.warn('Missing branch or schema');
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'loan_request';  // fixed for this form
+
+  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+
+  this.http.get<any>(apiUrl).subscribe({
+    next: (response) => {
+      // Handle both object and array responses (your example shows array[0])
+      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+
+      if (this.automaticNumbering) {
+        this.document_number = null;     // or '' — null is cleaner
+        console.log('Auto-numbering enabled → document number cleared');
+      } else {
+        this.document_number = '';       // ready for manual input
+        console.log('Manual numbering → enter document number');
       }
+    },
+    error: (error) => {
+      console.error('Failed to load numbering settings:', error);
+      this.automaticNumbering = false;   // safe fallback
+      this.document_number = '';
+      // Optional: alert('Could not load document numbering settings');
     }
+  });
+}
+
+      loadDeparmentBranch(callback?: Function): void {
+    
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any) => {
+          this.branches = result;
+          console.log(' fetching Companies:');
+            if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
+
+    
+  mapBranchesNameToId() {
+  if (!this.branches || !this.editAsset?.branch) return;
+
+  const Bran = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (Bran) {
+    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
+}
 
 
 }

@@ -101,11 +101,23 @@
             </div>
     
 
-                    <div class="col-md-6">
-                        <label>Document Number</label>
-                        <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
-                            [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
-                    </div>
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
                     
     
                   <div class="col-md-6" >
@@ -258,11 +270,23 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <label>Document Number</label>
-                <input type="text" class="form-control" required [(ngModel)]="editAsset.document_number" placeholder="Enter document number"
-                    [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
-            </div>
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="editAsset.document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
             
 
           <div class="col-md-6" >
@@ -399,6 +423,7 @@
         <th>No</th>
         <th>Employee</th>
         <th>Document Number</th>
+        <th>Branch</th>
         <th>Request Type</th>
         <th>Reason</th>
         <th>Total</th>
@@ -411,6 +436,7 @@
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Employee">{{ docs.employee }}</td>
         <td data-label="Document Number">{{ docs.document_number }}</td>
+        <td data-label="Employee">{{ docs.branch }}</td>
         <td data-label="Request Type">{{ docs.request_type }}</td>
         <td data-label="Reason">{{ docs.reason }}</td>
         <td data-label="Total">{{ docs.total }}</td>

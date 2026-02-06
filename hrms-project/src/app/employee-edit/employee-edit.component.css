@@ -68,6 +68,21 @@
   .toggle:checked + .label .ball {
     animation: slideOn 0.3s linear forwards;
   }
+
+.close:hover,
+.close:focus {
+  color: red;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.close {
+  color: #000000;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: right;
+}
   
   @keyframes slideOn {
     0% {
