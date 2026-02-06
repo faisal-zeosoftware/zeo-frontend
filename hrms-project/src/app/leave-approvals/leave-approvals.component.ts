@@ -6,6 +6,8 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-leave-approvals',
@@ -13,6 +15,9 @@ import { DesignationService } from '../designation-master/designation.service';
   styleUrl: './leave-approvals.component.css'
 })
 export class LeaveApprovalsComponent {
+
+  private dataSubscription?: Subscription;
+
 
   @ViewChild('bottomOfPage') bottomOfPage!: ElementRef;
 
@@ -55,8 +60,19 @@ export class LeaveApprovalsComponent {
    ngOnInit(): void {
 
    
+        // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.EmployeeService.selectedSchema$,
+          this.EmployeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);
+            this.fetchEmployeesLeaveHistory(schema, branchIds);
 
-    this.fetchingApprovals();
+          }
+        });
+
+    // this.fetchingApprovals();
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
     // this.hideButton = this.EmployeeService.getHideButton();
@@ -76,7 +92,7 @@ export class LeaveApprovalsComponent {
       this.LoadLeaveRejectionReasons(selectedSchema);
 
 
-      this.LoadEmployee(selectedSchema);
+      // this.LoadEmployee(selectedSchema);
 
 
 
@@ -190,8 +206,7 @@ export class LeaveApprovalsComponent {
           console.error('Failed to fetch user details:', error);
         }
       );
-        this.fetchingApprovals();
-
+        // this.fetchingApprovals();
 
         this.authService.getUserSchema(this.userId).subscribe(
             (userData: any) => {
@@ -224,47 +239,81 @@ scrollToBottom(): void {
   
 // Modified fetchingApprovals to accept userId
 
-fetchingApprovals(): void {
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+// fetchingApprovals(): void {
+//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-  console.log('schemastore', selectedSchema);
+//   console.log('schemastore', selectedSchema);
   
-  // Check if selectedSchema and userId are available
-  if (selectedSchema && this.userId) {
-      this.leaveService.getApprovalslistLeave(selectedSchema, this.userId).subscribe(
-          (result: any) => {
-              this.Approvals = result;
-              console.log('approvals', this.Approvals)
-          },
-          (error) => {
-              console.error('Error fetching approvals:', error);
-          }
-      );
-  }
-
-
-
+//   // Check if selectedSchema and userId are available
+//   if (selectedSchema && this.userId) {
+//       this.leaveService.getApprovalslistLeave(selectedSchema, this.userId).subscribe(
+//           (result: any) => {
+//               this.Approvals = result;
+//               console.log('approvals', this.Approvals)
+//           },
+//           (error) => {
+//               console.error('Error fetching approvals:', error);
+//           }
+//       );
+//   }
 
 
 
   
-}
+// }
 
 
-LoadEmployee(selectedSchema: string) {
-  this.leaveService.getemployeesMaster(selectedSchema).subscribe(
-    (data: any) => {
-      this.Employees = data;
 
-      console.log('employee:', this.Employees);
+
+
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.leaveService.getApprovalslistLeaveNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      // Filter active employees
+           this.Approvals = data;
+
+      this.isLoading = false;
     },
-    (error: any) => {
-      console.error('Error fetching categories:', error);
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
     }
-  );
+  });
+} 
+
+
+
+// LoadEmployee(selectedSchema: string) {
+//   this.leaveService.getemployeesMaster(selectedSchema).subscribe(
+//     (data: any) => {
+//       this.Employees = data;
+
+//       console.log('employee:', this.Employees);
+//     },
+//     (error: any) => {
+//       console.error('Error fetching categories:', error);
+//     }
+//   );
+// }
+
+
+
+fetchEmployeesLeaveHistory(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.EmployeeService.getemployeesMasterNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      // Filter active employees
+           this.Employees = data;
+
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
 }
-
-
 
 selectedApproval: any = null;
 isAddFieldsModalOpen: boolean = false;

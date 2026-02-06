@@ -5,6 +5,8 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-leave-request',
@@ -12,6 +14,9 @@ import { EmployeeService } from '../employee-master/employee.service';
   styleUrl: './leave-request.component.css'
 })
 export class LeaveRequestComponent {
+
+
+  private dataSubscription?: Subscription;
 
 
 
@@ -76,6 +81,26 @@ export class LeaveRequestComponent {
   ) { }
 
   ngOnInit(): void {
+
+     // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadEmp();
+  });
+
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployeesLeaveApprovalLevel(schema, branchIds);
+  
+      }
+    });
+  
+
+
+  
     const selectedSchema = this.authService.getSelectedSchema();
     if (selectedSchema) {
 
@@ -86,7 +111,7 @@ export class LeaveRequestComponent {
 
 
     }
-      this.LoadEmployee();
+      // this.LoadEmployee();
       this.LoadUsers();
       this.LoadLeaveRequest();
 
@@ -220,23 +245,6 @@ export class LeaveRequestComponent {
     }
   }
 
-  // checkViewPermission(permissions: any[]): boolean {
-  //   const requiredPermission = 'add_employee_leave_request' ||'change_employee_leave_request' ||
-  //   'delete_employee_leave_request' ||'view_employee_leave_request';
-
-
-  //   // Check user permissions
-  //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-  //     return true;
-  //   }
-
-  //   // Check group permissions (if applicable)
-  //   // Replace `// TODO: Implement group permission check`
-  //   // with your logic to retrieve and check group permissions
-  //   // (consider using a separate service or approach)
-  //   return false; // Replace with actual group permission check
-  //   }
-
 
 
 
@@ -303,19 +311,6 @@ requestLeave(): void {
 
 
 
-  // LoadLeavetype(selectedSchema: string) {
-  //   this.leaveService.getLeaveType(selectedSchema).subscribe(
-  //     (data: any) => {
-  //       this.LeaveTypes = data;
-
-  //       console.log('employee:', this.LeaveTypes);
-  //     },
-  //     (error: any) => {
-  //       console.error('Error fetching categories:', error);
-  //     }
-  //   );
-  // }
-
   selectedEmployee: number | null = null;
 
   onEmployeeChange() {
@@ -363,21 +358,40 @@ requestLeave(): void {
   }
 
 
-  LoadEmployee(callback?: Function) {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+//   LoadEmployee(callback?: Function) {
+//     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-    this.leaveService.getemployeesMaster(selectedSchema).subscribe(
-      (data: any) => {
-        this.Employees = data;
+//     console.log('schemastore',selectedSchema )
+//     // Check if selectedSchema is available
+//     if (selectedSchema) {
+//     this.leaveService.getemployeesMaster(selectedSchema).subscribe(
+//       (data: any) => {
+//         this.Employees = data;
 
-        console.log('employee:', this.Employees);
-         if (callback) callback();
+//         console.log('employee:', this.Employees);
+//          if (callback) callback();
+//       },
+//       (error: any) => {
+//         console.error('Error fetching categories:', error);
+//       }
+//     );
+//   }
+// }
+
+loadEmp(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+      (result: any) => {
+        this.Employees = result;
+        
+        if (callback) callback();
       },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
+      (error) => {
+        console.error('Error fetching Companies:', error);
       }
     );
   }
@@ -456,6 +470,27 @@ requestLeave(): void {
     );
   }
 }
+
+isLoading: boolean = false;
+
+
+fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.leaveService.getLeaveRequestNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      // Filter active employees
+           this.LeaveRequests = data;
+
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
+
+
 
 
 

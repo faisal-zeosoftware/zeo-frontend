@@ -425,6 +425,36 @@ getApprovalslistLeave(selectedSchema: string, userId: number): Observable<any> {
 }
 
 
+
+getApprovalslistLeaveNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/leave-approvals/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
+getLeaveTypeNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/leave-type/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
+
+
+
 getApprovalDetailsLeave(apiUrl: string): Observable<any> {
   return this.http.get(apiUrl);
 }
@@ -454,6 +484,8 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
   
   }
 
+ 
+
   getEmailTemplatesLeave(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/calendars/api/leave-template/?schema=${selectedSchema}`;
   
@@ -469,6 +501,18 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
     // Fetch employees from the API
     return this.http.get(apiUrl);
   
+  }
+
+   getAllLeaveBalanceAllNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/Leave_balance/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
   }
 
 
@@ -489,6 +533,20 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
   }
 
 
+  getLeaveApprovalLevelNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/leave-approval-levels/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
+
   getLeaveBalance(employeeId: number) {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -507,6 +565,21 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
     return this.http.get(apiUrl);
   
   }
+
+ 
+
+  getLeaveRequestNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/emp-leave-request/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
 
   rejectLeaveRequest(payload: any, schema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/calendars/api/immediate-reject/?schema=${schema}`;
@@ -875,6 +948,19 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.get(apiUrl);
   
   }
+
+  getLeaveRejoinsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/employee-leave-rejoins/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
 
 
 

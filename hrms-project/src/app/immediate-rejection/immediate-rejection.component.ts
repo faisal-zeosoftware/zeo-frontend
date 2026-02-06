@@ -4,6 +4,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
   selector: 'app-immediate-rejection',
@@ -36,15 +37,25 @@ export class ImmediateRejectionComponent {
     private sessionService: SessionService,
     private leaveService: LeaveService,
     private DesignationService: DesignationService,
+    private employeeService: EmployeeService,
+
 
   ) { }
 
   ngOnInit(): void {
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.LoadLeavetype();
+    });
+  
+  
+
+
     const selectedSchema = this.authService.getSelectedSchema();
     if (selectedSchema) {
 
 
-      this.LoadLeaveRequest(selectedSchema);
+      // this.LoadLeaveRequest(selectedSchema);
 
 
 
@@ -172,19 +183,43 @@ export class ImmediateRejectionComponent {
 
 
   
-  LoadLeaveRequest(selectedSchema: string): void {
-    this.leaveService.getLeaveRequest(selectedSchema).subscribe(
-      (data: any) => {
-        // Filter only approved leave requests
-        this.LeaveRequests = data.filter((request: any) => request.status === 'approved');
+  // LoadLeaveRequest(selectedSchema: string): void {
+  //   this.leaveService.getLeaveRequest(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       // Filter only approved leave requests
+  //       this.LeaveRequests = data.filter((request: any) => request.status === 'approved');
   
-        console.log('Approved leave requests:', this.LeaveRequests);
-      },
-      (error: any) => {
-        console.error('Error fetching leave requests:', error);
-      }
-    );
-  }
+  //       console.log('Approved leave requests:', this.LeaveRequests);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching leave requests:', error);
+  //     }
+  //   );
+  // }
+
+
+
+
+  LoadLeavetype(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+  
+    if (selectedSchema) {
+      this.leaveService.getLeaveRequestNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.LeaveRequests = result.filter((request: any) => request.status === 'approved');
+          
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+}
+
+
   
 
   immediateReject(): void {
@@ -200,7 +235,8 @@ export class ImmediateRejectionComponent {
         console.log('Rejection successful:', response);
         alert('Leave request rejected successfully.');
         // Optionally refresh the list
-        this.LoadLeaveRequest(selectedSchema);
+        // this.LoadLeaveRequest(selectedSchema);
+        window.location.reload();
         this.rejection_reason = '';
         this.document_number = '';
       },

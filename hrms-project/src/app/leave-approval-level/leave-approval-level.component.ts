@@ -8,6 +8,8 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-leave-approval-level',
@@ -16,7 +18,7 @@ import {UserMasterService} from '../user-master/user-master.service';
 })
 export class LeaveApprovalLevelComponent {
 
-    
+  private dataSubscription?: Subscription;
   @ViewChild('select') select: MatSelect | undefined;
 
   allSelected=false;
@@ -67,6 +69,27 @@ schemas: string[] = []; // Array to store schema names
     ) {}
 
     ngOnInit(): void {
+
+        // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.LoadBranch(); 
+  });
+
+
+  // combineLatest waits for both Schema and Branches to have a value
+  this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployeesLeaveApprovalLevel(schema, branchIds);
+
+    }
+  });
+
+
+
+
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
@@ -77,7 +100,7 @@ schemas: string[] = []; // Array to store schema names
 
          this.loadUsers();
       
-      this.LoadLeaveApprovalLevel(selectedSchema);
+      // this.LoadLeaveApprovalLevel(selectedSchema);
 
 
       
@@ -204,23 +227,6 @@ if (this.userId !== null) {
 
 
     
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leaveapprovallevels' ||'change_leaveapprovallevels' 
-//   ||'delete_leaveapprovallevels' ||'view_leaveapprovallevels';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
   
   
   
@@ -243,27 +249,59 @@ if (this.userId !== null) {
 
 
   
-  LoadBranch(callback?: Function) {
+//   LoadBranch(callback?: Function) {
 
-       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+//        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
-      (data: any) => {
-        this.Branches = data;
+//       console.log('schemastore',selectedSchema )
+//       // Check if selectedSchema is available
+//       if (selectedSchema) {
+//     this.leaveService.getBranches(selectedSchema).subscribe(
+//       (data: any) => {
+//         this.Branches = data;
       
-        console.log('employee:', this.Branches);
+//         console.log('employee:', this.Branches);
+//         if (callback) callback();
+//       },
+//       (error: any) => {
+//         console.error('Error fetching categories:', error);
+//       }
+//     );
+//   }
+// }
+
+
+LoadBranch(callback?: Function) {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
+  if (selectedSchema) {
+    this.leaveService.getBranches(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+        }
+        // Inside the subscribe block of loadDeparmentBranch
+        if (this.Branches.length === 1) {
+          this.branch = this.Branches[0].id;
+        }
+
+        console.log('Filtered branches for selection:', this.Branches);
         if (callback) callback();
       },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
+      (error) => {
+        console.error('Error fetching branches:', error);
       }
     );
   }
 }
-
  
 mapBranchesNameToId() {
   if (!this.Branches || !this.editAsset?.branch) return;
@@ -333,18 +371,39 @@ mapBranchesNameToId() {
   
   
 
-    LoadLeaveApprovalLevel(selectedSchema: string) {
-      this.leaveService.getLeaveApprovalLevel(selectedSchema).subscribe(
-        (data: any) => {
-          this.LeaveapprovalLevels = data;
+    // LoadLeaveApprovalLevel(selectedSchema: string) {
+    //   this.leaveService.getLeaveApprovalLevel(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.LeaveapprovalLevels = data;
         
-          console.log('employee:', this.LeaveTypes);
+    //       console.log('employee:', this.LeaveTypes);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
+
+
+    isLoading: boolean = false;
+
+
+    fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.leaveService.getLeaveApprovalLevelNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+               this.LeaveapprovalLevels = data;
+    
+          this.isLoading = false;
         },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
+      });
     }
+    
   
  
   

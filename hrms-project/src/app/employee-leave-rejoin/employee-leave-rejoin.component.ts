@@ -4,6 +4,9 @@ import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { EmployeeService } from '../employee-master/employee.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-employee-leave-rejoin',
@@ -47,6 +50,8 @@ export class EmployeeLeaveRejoinComponent {
 
   selectedFile: File | null = null;
 
+  private dataSubscription?: Subscription;
+
 
   constructor(
     private http: HttpClient,
@@ -54,19 +59,41 @@ export class EmployeeLeaveRejoinComponent {
     private sessionService: SessionService,
     private leaveService:LeaveService,
     private DesignationService: DesignationService,
+    private employeeService:EmployeeService,
+
   
     ) {}
 
     ngOnInit(): void {
+
+  // combineLatest waits for both Schema and Branches to have a value
+  this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployeesLeaveApprovalLevel(schema, branchIds);
+
+    }
+  });
+
+
+       // Listen for sidebar changes so the dropdown updates instantly
+       this.employeeService.selectedBranches$.subscribe(ids => {
+        this.LoadLeavetype();
+      });
+    
+
+
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
 
-        this.LoadLeaveRejoin(selectedSchema);
+        // this.LoadLeaveRejoin(selectedSchema);
       // this.LoadUsers(selectedSchema);
       this.LoadEmployees(selectedSchema);
       // this.LoadLeavebalance(selectedSchema);
-      this.LoadLeavetype(selectedSchema);
+      // this.LoadLeavetype(selectedSchema);
 
 this.LoadLeaveResuest(selectedSchema)  ;    
       }
@@ -194,18 +221,38 @@ if (this.userId !== null) {
 
 
 
-      LoadLeaveRejoin(selectedSchema: string) {
-        this.leaveService.getLeaveRejoins(selectedSchema).subscribe(
-          (data: any) => {
-            this.Rejoings = data;
+      // LoadLeaveRejoin(selectedSchema: string) {
+      //   this.leaveService.getLeaveRejoins(selectedSchema).subscribe(
+      //     (data: any) => {
+      //       this.Rejoings = data;
           
-            console.log('employee:', this.Rejoings);
+      //       console.log('employee:', this.Rejoings);
+      //     },
+      //     (error: any) => {
+      //       console.error('Error fetching categories:', error);
+      //     }
+      //   );
+      // }
+
+      isLoading: boolean = false;
+
+
+      fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
+        this.isLoading = true;
+        this.leaveService.getLeaveRejoinsNew(schema, branchIds).subscribe({
+          next: (data: any) => {
+            // Filter active employees
+                 this.Rejoings = data;
+      
+            this.isLoading = false;
           },
-          (error: any) => {
-            console.error('Error fetching categories:', error);
+          error: (err) => {
+            console.error('Fetch error:', err);
+            this.isLoading = false;
           }
-        );
+        });
       }
+         
   
       
       isLeaveRejoinModalOpen:boolean=false;
@@ -261,18 +308,40 @@ LoadLeaveResuest(selectedSchema: string) {
 
 
 
-LoadLeavetype(selectedSchema: string) {
-  this.leaveService.getLeaveType(selectedSchema).subscribe(
-    (data: any) => {
-      this.LeaveTypes = data;
+// LoadLeavetype(selectedSchema: string) {
+//   this.leaveService.getLeaveType(selectedSchema).subscribe(
+//     (data: any) => {
+//       this.LeaveTypes = data;
     
-      console.log('employee:', this.LeaveTypes);
-    },
-    (error: any) => {
-      console.error('Error fetching categories:', error);
-    }
-  );
+//       console.log('employee:', this.LeaveTypes);
+//     },
+//     (error: any) => {
+//       console.error('Error fetching categories:', error);
+//     }
+//   );
+// }
+
+
+
+LoadLeavetype(callback?: Function) {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.leaveService.getLeaveTypeNew(selectedSchema, savedIds).subscribe(
+      (result: any) => {
+        this.LeaveTypes = result;
+        
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
 }
+
 
 
 
@@ -294,7 +363,8 @@ LeaveRejoiningsubmit(): void {
     (response) => {
       console.log('Leave rejoin updated successfully', response);
       this.ClosePopup(); // Optional: Close modal
-      this.LoadLeaveRejoin(localStorage.getItem('selectedSchema') || ''); // Optional: Refresh list
+      window.location.reload();
+      // this.LoadLeaveRejoin(localStorage.getItem('selectedSchema') || ''); // Optional: Refresh list
     },
     (error) => {
       console.error('Error updating leave rejoin:', error);

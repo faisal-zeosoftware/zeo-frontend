@@ -11,6 +11,9 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { formatDate } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateLeavetypeComponent } from '../create-leavetype/create-leavetype.component';
+import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
+
 
 
 
@@ -37,6 +40,8 @@ export class LeaveMasterComponent {
     { short: 'Dec', full: 'December' }
   ];
 
+  
+  private dataSubscription?: Subscription;
 
   firstFormGroup!: FormGroup;
   secondFormGroup!: FormGroup;
@@ -198,6 +203,7 @@ export class LeaveMasterComponent {
     private DesignationService: DesignationService,
     private employeeService: EmployeeService,
     private dialog:MatDialog,
+    private DepartmentServiceService: DepartmentServiceService
 
 
 
@@ -205,6 +211,25 @@ export class LeaveMasterComponent {
   ) { }
 
   ngOnInit(): void {
+    this.LoadBranch();
+
+  // combineLatest waits for both Schema and Branches to have a value
+  this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchLeaveType(schema, branchIds);
+
+    }
+  });
+
+   // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.LoadBranch(); 
+  });
+
+
     const selectedSchema = this.authService.getSelectedSchema();
     if (selectedSchema) {
 
@@ -212,10 +237,9 @@ export class LeaveMasterComponent {
       this.loadLeaveRestValues();
 
 
-      this.LoadLeavetype(selectedSchema);
       this.LoadEmployee(selectedSchema);
 
-      this.LoadBranch(selectedSchema);
+      // this.LoadBranch();
       this.LoadDepartment(selectedSchema);
       this.LoadDesignation(selectedSchema);
       this.LoadCategory(selectedSchema);
@@ -714,17 +738,35 @@ loadLeaveEntitlements(): void {
     );
   }
 
-  LoadLeavetype(selectedSchema: string) {
-    this.leaveService.getLeaveType(selectedSchema).subscribe(
-      (data: any) => {
-        this.LeaveTypes = data;
+  // LoadLeavetype(selectedSchema: string) {
+  //   this.leaveService.getLeaveType(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.LeaveTypes = data;
 
-        console.log('employee:', this.LeaveTypes);
+  //       console.log('employee:', this.LeaveTypes);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+
+
+  isLoading: boolean = false;
+  fetchLeaveType(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.leaveService.getLeaveTypeNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.LeaveTypes = data;
+  
+        this.isLoading = false;
       },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
 
   LoadEmployee(selectedSchema: string) {
@@ -743,17 +785,36 @@ loadLeaveEntitlements(): void {
   
 
 
-  LoadBranch(selectedSchema: string) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
-      (data: any) => {
-        this.Branches = data;
-
-        console.log('employee:', this.LeaveTypes);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
+  LoadBranch(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
   }
 
   LoadDepartment(selectedSchema: string) {

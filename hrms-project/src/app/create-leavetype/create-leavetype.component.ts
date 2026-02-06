@@ -5,6 +5,9 @@ import { HttpClient } from '@angular/common/http';
 import { LeaveService } from '../leave-master/leave.service';
 import { SessionService } from '../login/session.service';
 import { formatDate } from '@angular/common';
+import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
+import { EmployeeService } from '../employee-master/employee.service';
 
 
 @Component({
@@ -13,6 +16,8 @@ import { formatDate } from '@angular/common';
   styleUrl: './create-leavetype.component.css'
 })
 export class CreateLeavetypeComponent {
+
+  private dataSubscription?: Subscription;
 
 
   name: any = '';
@@ -50,19 +55,27 @@ export class CreateLeavetypeComponent {
     private leaveService: LeaveService,
     private sessionService: SessionService,
 
+    private employeeService: EmployeeService,
 
     private authService: AuthenticationService,
+    private DepartmentServiceService: DepartmentServiceService,
+
    private ref:MatDialogRef<CreateLeavetypeComponent>) {}
 
 
 
 
    ngOnInit(): void {
+
+       // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.LoadBranch(); 
+  });
     const selectedSchema = this.authService.getSelectedSchema();
     if (selectedSchema) {
 
     
-      this.LoadBranch(selectedSchema);
+      // this.LoadBranch(selectedSchema);
   
 
 
@@ -156,18 +169,52 @@ export class CreateLeavetypeComponent {
 
 
 
-  LoadBranch(selectedSchema: string) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
-      (data: any) => {
-        this.Branches = data;
+  // LoadBranch(selectedSchema: string) {
+  //   this.leaveService.getBranches(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.Branches = data;
 
-        console.log('employee:', this.Branches);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
+  //       console.log('employee:', this.Branches);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+
+
+  LoadBranch(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.Branches.length === 1) {
+            this.branch = this.Branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.Branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
   }
+
 
     ClosePopup(){
     this.ref.close('Closed using function')

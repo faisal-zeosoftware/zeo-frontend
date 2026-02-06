@@ -285,6 +285,19 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
 
   }
 
+   getAllgeneralRequestEscalationsLeaveNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/escalation-rules/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
 
 
   
@@ -3770,6 +3783,18 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
 
     
+  }
+
+  getLoanTypesNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-type/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
   }
 
     getAssetTypes(selectedSchema: string): Observable<any> {

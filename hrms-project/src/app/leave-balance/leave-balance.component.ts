@@ -7,6 +7,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
 import { CompanyRegistrationService } from '../company-registration.service';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-leave-balance',
@@ -16,7 +18,7 @@ import { CompanyRegistrationService } from '../company-registration.service';
 export class LeaveBalanceComponent {
 
      private apiUrl = `${environment.apiBaseUrl}`;
-
+     private dataSubscription?: Subscription;
 
 
   registerButtonClicked: boolean = false;
@@ -67,14 +69,35 @@ export class LeaveBalanceComponent {
     ) {}
 
     ngOnInit(): void {
+
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployeesLeaveApprovalLevel(schema, branchIds);
+  
+      }
+    });
+
+
+      // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.LoadEmployees();
+    this.LoadLeavetype();
+  });
+
+
+
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
 
-        this.LoadLeavetype();
+        // this.LoadLeavetype();
       this.LoadUsers(selectedSchema);
       this.LoadEmployees();
-      this.LoadLeavebalance(selectedSchema);
+      // this.LoadLeavebalance(selectedSchema);
 
 
       
@@ -212,27 +235,51 @@ if (this.userId !== null) {
 
 
 
-      LoadLeavetype(callback?: Function) {
+    //   LoadLeavetype(callback?: Function) {
 
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-       console.log('schemastore',selectedSchema )
-       // Check if selectedSchema is available
-       if (selectedSchema) {
+    //    console.log('schemastore',selectedSchema )
+    //    // Check if selectedSchema is available
+    //    if (selectedSchema) {
 
-        this.leaveService.getLeaveType(selectedSchema).subscribe(
-          (data: any) => {
-            this.LeaveTypes = data;
+    //     this.leaveService.getLeaveType(selectedSchema).subscribe(
+    //       (data: any) => {
+    //         this.LeaveTypes = data;
           
-            console.log('employee:', this.LeaveTypes);
-              if (callback) callback();
+    //         console.log('employee:', this.LeaveTypes);
+    //           if (callback) callback();
+    //       },
+    //       (error: any) => {
+    //         console.error('Error fetching categories:', error);
+    //       }
+    //     );
+    //   }
+    // }
+
+
+    LoadLeavetype(callback?: Function) {
+      const selectedSchema = this.authService.getSelectedSchema();
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+    
+      if (selectedSchema) {
+        this.leaveService.getLeaveTypeNew(selectedSchema, savedIds).subscribe(
+          (result: any) => {
+            this.LeaveTypes = result;
+            
+            if (callback) callback();
           },
-          (error: any) => {
-            console.error('Error fetching categories:', error);
+          (error) => {
+            console.error('Error fetching Companies:', error);
           }
         );
       }
-    }
+  }
+
+
+
+
 
     mapLeaveTypeNameToId() {
 
@@ -253,25 +300,22 @@ if (this.userId !== null) {
 
       
       LoadEmployees(callback?: Function) {
-
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-       console.log('schemastore',selectedSchema )
-       // Check if selectedSchema is available
-       if (selectedSchema) {
-
-        this.leaveService.getemployeesMaster(selectedSchema).subscribe(
-          (data: any) => {
-            this.Employees = data;
-          
-            console.log('employee:', this.Employees);
-             if (callback) callback();
-          },
-          (error: any) => {
-            console.error('Error fetching Employees:', error);
-          }
-        );
-      }
+        const selectedSchema = this.authService.getSelectedSchema();
+        const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+      
+      
+        if (selectedSchema) {
+          this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+            (result: any) => {
+              this.Employees = result;
+              
+              if (callback) callback();
+            },
+            (error) => {
+              console.error('Error fetching Companies:', error);
+            }
+          );
+        }
     }
 
    mapLoadEmployeeNameToId() {
@@ -349,19 +393,39 @@ if (this.userId !== null) {
     }
 
 
-    LoadLeavebalance(selectedSchema: string) {
-      this.leaveService.getLeaveBalanceAll(selectedSchema).subscribe(
-        (data: any) => {
-          this.LeaveBalances = data;
+    // LoadLeavebalance(selectedSchema: string) {
+    //   this.leaveService.getLeaveBalanceAll(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.LeaveBalances = data;
         
-          console.log('employee:', this.LeaveTypes);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
+    //       console.log('employee:', this.LeaveTypes);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
   
+
+    isLoading: boolean = false;
+
+
+    fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.leaveService.getAllLeaveBalanceAllNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+               this.LeaveBalances = data;
+    
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
+       
 
 
 
