@@ -5449,6 +5449,19 @@ getProjects(selectedSchema: string): Observable<any> {
   
 }
 
+  getProjectNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/project/api/projects/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 getBrs(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/organisation/api/Branch/?schema=${selectedSchema}`;
 
