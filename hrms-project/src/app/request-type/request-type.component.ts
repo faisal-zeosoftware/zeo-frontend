@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { LeaveService } from '../leave-master/leave.service';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 declare var $: any;
 
@@ -16,6 +18,7 @@ declare var $: any;
 })
 export class RequestTypeComponent    {
 
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
 
   hasAddPermission: boolean = false;
@@ -34,6 +37,12 @@ export class RequestTypeComponent    {
   level: any = '';
   role: any = '';
   approver: any = '';
+
+
+  branch: number[] = [];
+
+  branches:any []=[];
+  allSelectedBrach=false;
 
 
 
@@ -66,6 +75,7 @@ export class RequestTypeComponent    {
     private el: ElementRef,
     private sessionService: SessionService,
     private DesignationService: DesignationService,
+    private DepartmentServiceService: DepartmentServiceService, 
 
     private leaveService: LeaveService,
 
@@ -78,6 +88,7 @@ ngOnInit(): void {
  
   this.loadUsers();
   this.loadReqTypes();
+  this.loadDeparmentBranch();
 
   const selectedSchema = this.authService.getSelectedSchema();
   if (selectedSchema) {
@@ -250,6 +261,7 @@ registerGeneralreq(): void {
   const companyData = {
     name: this.name,
     description: this.description,
+    branch: this.branch,
     salary_component: this.salary_component,
     created_by: this.created_by,
     // use_common_workflow: this.use_common_workflow,
@@ -528,6 +540,60 @@ updateAssetType(): void {
 }
   );
 }
+
+
+ loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+    
+mapBranchesNameToId() {
+  if (!this.branches || !Array.isArray(this.editAsset?.branch)) return;
+
+  this.editAsset.branch = this.branches
+    .filter((b: any) => this.editAsset.branch.includes(b.branch_name))
+    .map((b: any) => b.id);
+
+  console.log('Mapped branch IDs:', this.editAsset.branch);
+}
+
+              toggleAllSelectionBrach(): void {
+                if (this.selectBrach) {
+                  if (this.allSelectedBrach) {
+                    this.selectBrach.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
 
 
       

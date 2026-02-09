@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CountryService } from '../country.service';
 import { DocumentEditComponent } from '../document-edit/document-edit.component';
@@ -7,6 +7,8 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-document-request-type',
@@ -15,7 +17,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 })
 export class DocumentRequestTypeComponent {
 
-  
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
   
 
   selectedDeparmentsecId:any | undefined;
@@ -24,6 +26,12 @@ export class DocumentRequestTypeComponent {
   Countries: any[] = [];
 
   Documents:any[] = [];
+
+
+  branch: number[] = [];
+
+  branches:any []=[];
+  allSelectedBrach=false;
 
 
   type_name: string = '';
@@ -49,8 +57,8 @@ export class DocumentRequestTypeComponent {
     private UserMasterService: UserMasterService ,
     private authService: AuthenticationService,
     private sessionService: SessionService,
-   
     private employeeService: EmployeeService,
+    private DepartmentServiceService: DepartmentServiceService 
 
     
   ) {}
@@ -58,7 +66,7 @@ export class DocumentRequestTypeComponent {
 
   ngOnInit(): void {
   
-    
+     this.loadDeparmentBranch();
 // Retrieve user ID
 this.userId = this.sessionService.getUserId();
 
@@ -466,6 +474,61 @@ this.employeeService.updateDocumentReqType(this.editDocReqtype.id, this.editDocR
 }
 );
 }
+
+
+ loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+    
+mapBranchesNameToId() {
+  if (!this.branches || !Array.isArray(this.editDocReqtype?.branch)) return;
+
+  this.editDocReqtype.branch = this.branches
+    .filter((b: any) => this.editDocReqtype.branch.includes(b.branch_name))
+    .map((b: any) => b.id);
+
+  console.log('Mapped branch IDs:', this.editDocReqtype.branch);
+}
+
+              toggleAllSelectionBrach(): void {
+                if (this.selectBrach) {
+                  if (this.allSelectedBrach) {
+                    this.selectBrach.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
+
 
 
 }

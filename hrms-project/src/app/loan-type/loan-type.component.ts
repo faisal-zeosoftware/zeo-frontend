@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -8,6 +8,8 @@ import { DesignationService } from '../designation-master/designation.service';
 declare var $: any;
 
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 @Component({
@@ -16,6 +18,8 @@ import {combineLatest, Subscription } from 'rxjs';
   styleUrl: './loan-type.component.css'
 })
 export class LoanTypeComponent {
+
+  @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
   private dataSubscription?: Subscription;
 
@@ -32,7 +36,10 @@ export class LoanTypeComponent {
   created_by: any = '';
  
   
+    branch: number[] = [];
 
+    branches:any []=[];
+    allSelectedBrach=false;
 
 
 
@@ -64,6 +71,7 @@ export class LoanTypeComponent {
     private el: ElementRef,
     private sessionService: SessionService,
     private DesignationService: DesignationService,
+    private DepartmentServiceService: DepartmentServiceService 
 
 
     
@@ -74,6 +82,7 @@ export class LoanTypeComponent {
 ngOnInit(): void {
  
   this.loadUsers();
+  this.loadDeparmentBranch();
   // this.loadLoanTypes();
 
       // combineLatest waits for both Schema and Branches to have a value
@@ -236,7 +245,7 @@ ngOnInit(): void {
             this.registerButtonClicked = true;
             const companyData = {
               loan_type: this.loan_type,
-            
+              branch: this.branch,
               max_amount:this.max_amount,
               repayment_period:this.repayment_period,
 
@@ -449,8 +458,58 @@ updateAssetType(): void {
 }
 
 
+ loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
 
+    
+mapBranchesNameToId() {
+  if (!this.branches || !Array.isArray(this.editAsset?.branch)) return;
 
+  this.editAsset.branch = this.branches
+    .filter((b: any) => this.editAsset.branch.includes(b.branch_name))
+    .map((b: any) => b.id);
+
+  console.log('Mapped branch IDs:', this.editAsset.branch);
+}
+
+              toggleAllSelectionBrach(): void {
+                if (this.selectBrach) {
+                  if (this.allSelectedBrach) {
+                    this.selectBrach.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
         
 
 }

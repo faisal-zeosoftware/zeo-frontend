@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -7,6 +7,8 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 declare var $: any;
 @Component({
   selector: 'app-asset-types',
@@ -15,7 +17,7 @@ declare var $: any;
 })
 export class AssetTypesComponent {
 
-   
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
   private dataSubscription?: Subscription;
 
   hasAddPermission: boolean = false;
@@ -28,7 +30,11 @@ export class AssetTypesComponent {
   description: any = '';
 
  
-  
+  branch: number[] = [];
+
+  branches:any []=[];
+  allSelectedBrach=false;
+
 
 
 
@@ -61,6 +67,7 @@ export class AssetTypesComponent {
     private el: ElementRef,
     private sessionService: SessionService,
     private DesignationService: DesignationService,
+    private DepartmentServiceService: DepartmentServiceService
 
 
     
@@ -82,6 +89,7 @@ ngOnInit(): void {
           }
         });
   this.loadUsers();
+  this.loadDeparmentBranch();
   // this.loadLAssetType();
 
 
@@ -237,6 +245,8 @@ ngOnInit(): void {
             this.registerButtonClicked = true;
             const companyData = {
               name: this.name,
+                branch: this.branch,
+
             
               description:this.description,
       
@@ -445,6 +455,61 @@ deleteSelectedAssetType() {
     });
   }
 }
+
+
+ loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+    
+mapBranchesNameToId() {
+  if (!this.branches || !Array.isArray(this.editAsset?.branch)) return;
+
+  this.editAsset.branch = this.branches
+    .filter((b: any) => this.editAsset.branch.includes(b.branch_name))
+    .map((b: any) => b.id);
+
+  console.log('Mapped branch IDs:', this.editAsset.branch);
+}
+
+   toggleAllSelectionBrach(): void {
+                if (this.selectBrach) {
+                  if (this.allSelectedBrach) {
+                    this.selectBrach.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
+
 
 
 

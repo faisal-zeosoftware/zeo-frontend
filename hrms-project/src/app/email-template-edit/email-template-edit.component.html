@@ -13,6 +13,29 @@
                 <option value="request_rejected">Request Rejected</option>
               </select>
             </div>
+
+          <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="templateData.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                </div>
+            </div>
           
             <div class="form-group">
               <label>Subject</label>

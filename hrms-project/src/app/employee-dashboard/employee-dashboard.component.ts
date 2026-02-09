@@ -77,6 +77,7 @@ export class EmployeeDashboardComponent {
   constructor(private authService: AuthenticationService,
      private router: Router,
     private EmployeeService: EmployeeService,
+    private employeeService: EmployeeService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private leaveService: LeaveService,
@@ -114,6 +115,7 @@ notificationCount: number = 0; // number to show in the red badge
     this.loadLAsset();
     this.loadLAssetType();
     this.loadLoanTypes();
+    this.loadDeparmentBranch();
 
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -1423,6 +1425,120 @@ loadRequestType(): void {
   toggleExpand(announcement: any): void {
     announcement.expanded = !announcement.expanded;
   }
+
+
+  // Airticket Requset
+    allocation: any = '';
+  request_date: any = '';
+  departure_date: any = '';
+  return_date: any = '';
+  origin: any = '';
+  destination: any = '';
+  notes: any = '';
+
+
+  allowed_in_probation:  boolean = false;
+
+
+
+  Users:any []=[];
+
+
+
+
+
+
+  customFieldHeaders: { custom_field_id: number, custom_field_name: string }[] = [];
+
+
+  use_common_workflow:  boolean = false;
+
+
+
+  registerButtonClicked = false;
+
+
+  custom_fieldsFam :any[] = [];
+
+
+     branches:any []=[];
+
+  loadDeparmentBranch(callback?: Function): void {
+    
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any) => {
+          this.branches = result;
+          console.log(' fetching Companies:');
+            if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
+ 
+
+              SentRequest(): void {
+            this.registerButtonClicked = true;
+            const companyData = {
+              allocation: this.allocation,
+            
+              request_type:this.request_type,
+              request_date:this.request_date,
+              departure_date:this.departure_date,
+              return_date:this.return_date,
+              origin:this.origin,
+              destination:this.destination,
+              notes:this.notes,
+              approved_by:this.approved_by,
+              employee:this.employee,
+              document_number:this.document_number,
+              branch:this.branch
+
+
+
+              // Add other form field values to the companyData object
+            };
+          
+
+        
+            this.employeeService.registerAirTicketRequest(companyData).subscribe(
+              (response) => {
+                console.log('Registration successful', response);
+                    alert('Request sent successfuly completed');
+                    window.location.reload();
+               
+        
+              },
+              (error) => {
+                console.error('Added failed', error);
+  let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
+      alert(errorMessage);
+    }
+            );
+          }
+
   
 
 }

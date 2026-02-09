@@ -75,6 +75,31 @@
          
          <div *ngIf="registerButtonClicked && !type_name" class="error-message">Type Name is required.</div>
     </div>
+
+
+               <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
     
     
     
@@ -143,6 +168,30 @@
 <div *ngIf="registerButtonClicked && !type_name" class="error-message">Type Name is required.</div>
 </div>
 
+               <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="editDocReqtype.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
 
 
 <div class="col-md-6" >
@@ -199,6 +248,7 @@
       <tr>
         <th>No</th>
         <th>Employee Document Type</th>
+        <th>Branch</th>
         <th>Description</th>
         <th>Action</th>
       </tr>
@@ -207,6 +257,7 @@
       <tr *ngFor="let state of filteredDocuments; let i = index">
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Employee Document Type">{{ state.type_name }}</td>
+        <td data-label="Branch">{{ state.branch }}</td>
         <td data-label="Description">{{ state.description }}</td>
         <td data-label="Action">
           <button
@@ -234,7 +285,7 @@
 
 
              <!-- Edit Modal Popup -->
-<div *ngIf="isDocumentnumbereditModalOpen" class="modal">
+<!-- <div *ngIf="isDocumentnumbereditModalOpen" class="modal">
   <div class="modal-content">
     <span class="close pull-right" (click)="closeEditDocModal()">&times;</span>
     <h2>Edit Document Number</h2>
@@ -286,7 +337,7 @@
       </div>
     </form>
   </div>
-</div>
+</div> -->
 </div>
 </div>
 

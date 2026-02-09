@@ -74,6 +74,31 @@
                    
                    <div *ngIf="registerButtonClicked && !loan_type" class="error-message">loan type is required.</div>
               </div>
+
+              
+           <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
               
 
               <div class="col-md-6" >
@@ -166,6 +191,30 @@
            
            <div *ngIf="registerButtonClicked && !loan_type" class="error-message">loan type is required.</div>
       </div>
+
+                 <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
       
 
       <div class="col-md-6" >
@@ -244,6 +293,7 @@
                   <tr>
                     <th>No</th>
                     <th> Loan type  </th>
+                    <th> Branch  </th>
                     <th>Maximum amount</th>
                     <th>Repayment period</th>
                     <th>Action</th>
@@ -256,6 +306,7 @@
                   <tr *ngFor="let docs of LoanTypes;let i = index">
                     <td data-label="No">{{ i + 1 }}</td> 
                     <td data-label="Loan type">{{ docs.loan_type }}</td>
+                    <td data-label="Branch">{{ docs.branch }}</td>
                     <td data-label="Maximum amount">{{ docs.max_amount }}</td> 
                     <td data-label="Repayment period">{{ docs.repayment_period }}</td>
                     <td data-label="Action">

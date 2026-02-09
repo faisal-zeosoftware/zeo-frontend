@@ -89,6 +89,30 @@
              <div *ngIf="registerButtonClicked && !description" class="error-message">description is required.</div>
         </div>
 
+            <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
 <!--         
         <div class="col-md-6 mt-4">
           <div class="check-box-selection-sec form-control">
@@ -181,6 +205,30 @@
      
 </div>
 
+            <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
 
 
 <div class="col-md-6">
@@ -244,6 +292,7 @@
                 <th>No</th>
                 <th>Request Name</th>
                 <th>Description</th>
+                <th>Branch</th>
                 <th>Salary Component</th>
                 <th>Action</th>
               </tr>
@@ -253,6 +302,7 @@
                 <td data-label="No">{{ i + 1 }}</td>
                 <td data-label="Request Name">{{ docs.name }}</td>
                 <td data-label="Description">{{ docs.description }}</td>
+                <td data-label="Description">{{ docs.branch }}</td>
                 <td data-label="Salary Component">{{ docs.salary_component }}</td>
                 <td data-label="Action">
                   <button
