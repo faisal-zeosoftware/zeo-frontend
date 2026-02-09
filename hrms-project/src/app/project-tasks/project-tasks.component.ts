@@ -11,6 +11,7 @@ import { CountryService } from '../country.service';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { forkJoin } from 'rxjs';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-project-tasks',
@@ -18,6 +19,9 @@ import { forkJoin } from 'rxjs';
   styleUrl: './project-tasks.component.css'
 })
 export class ProjectTasksComponent {
+
+  private dataSubscription?: Subscription;
+
 
   @ViewChild('projectTaskFileInput') projectTaskFileInput: any;
 
@@ -124,12 +128,31 @@ getFileName(path: string): string {
 ) {}
 
 ngOnInit(): void {
- 
+
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);  
+      
+
+    }
+  });
+
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadProject();
+      this.loadStages();
+
+  
+  
+    });
+    
   this.loadUsers();
   this.loadLAssetType();
-  this.loadProjects();
-  this.loadStages();
-  this.loadProjectsTask();
 
   this.loadCountries();
 
@@ -246,23 +269,6 @@ ngOnInit(): void {
  
 }
 
-
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
   
   
   
@@ -378,25 +384,45 @@ ngOnInit(): void {
           }
           
 
-          loadLTasks(): void {
+          // loadLTasks(): void {
     
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getProjectsTask(selectedSchema).subscribe(
-                (result: any) => {
-                  this.Tasks = result;
-                  console.log(' fetching Loantypes:');
+          //   console.log('schemastore',selectedSchema )
+          //   // Check if selectedSchema is available
+          //   if (selectedSchema) {
+          //     this.employeeService.getProjectsTask(selectedSchema).subscribe(
+          //       (result: any) => {
+          //         this.Tasks = result;
+          //         console.log(' fetching Loantypes:');
           
+          //       },
+          //       (error) => {
+          //         console.error('Error fetching Companies:', error);
+          //       }
+          //     );
+          //   }
+          //   }
+
+
+            isLoading: boolean = false;
+
+            fetchEmployees(schema: string, branchIds: number[]): void {
+              this.isLoading = true;
+              this.employeeService.getProjectTaskNew(schema, branchIds).subscribe({
+                next: (data: any) => {
+                  // Filter active employees
+                  this.Tasks = data;
+          
+                  this.isLoading = false;
                 },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
+                error: (err) => {
+                  console.error('Fetch error:', err);
+                  this.isLoading = false;
                 }
-              );
+              });
             }
-            }
+          
         
       
   
@@ -426,39 +452,19 @@ loadLAssetType(): void {
         
 
 
-            loadProjects(): void {
-    
-              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-            
-              console.log('schemastore',selectedSchema )
-              // Check if selectedSchema is available
-              if (selectedSchema) {
-                this.employeeService.getProjects(selectedSchema).subscribe(
-                  (result: any) => {
-                    this.Projects = result;
-                    console.log(' fetching Loantypes:');
-            
-                  },
-                  (error) => {
-                    console.error('Error fetching Companies:', error);
-                  }
-                );
-              }
-              }
-          
+         
 
-              loadProjectsTask(): void {
-    
-                const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+              loadProject(callback?: Function): void {
+                const selectedSchema = this.authService.getSelectedSchema();
+                const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
               
-                console.log('schemastore',selectedSchema )
-                // Check if selectedSchema is available
+              
                 if (selectedSchema) {
-                  this.employeeService.getProjectsTask(selectedSchema).subscribe(
+                  this.employeeService.getProjectNew(selectedSchema, savedIds).subscribe(
                     (result: any) => {
-                      this.Tasks = result;
-                      console.log(' fetching Loantypes:');
-              
+                      this.Projects = result;
+                      
+                      if (callback) callback();
                     },
                     (error) => {
                       console.error('Error fetching Companies:', error);
@@ -466,6 +472,30 @@ loadLAssetType(): void {
                   );
                 }
                 }
+          
+
+
+          
+
+              // loadProjectsTask(): void {
+    
+              //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+              
+              //   console.log('schemastore',selectedSchema )
+              //   // Check if selectedSchema is available
+              //   if (selectedSchema) {
+              //     this.employeeService.getProjectsTask(selectedSchema).subscribe(
+              //       (result: any) => {
+              //         this.Tasks = result;
+              //         console.log(' fetching Loantypes:');
+              
+              //       },
+              //       (error) => {
+              //         console.error('Error fetching Companies:', error);
+              //       }
+              //     );
+              //   }
+              //   }
 
                iscreateLoanApp: boolean = false;
 
@@ -576,8 +606,17 @@ updateProjectTask(): void {
     () => {
       alert('Project Task updated successfully!');
       this.closeEditModal();
-      this.loadProjectsTask(); // refresh list
-    },
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});    },
     (error) => {
       console.error(error);
       alert('Update failed');
@@ -620,26 +659,45 @@ deleteSelectedProjectTasks(): void {
 }
 
 
-loadStages(): void {
+// loadStages(): void {
     
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
-  if (selectedSchema) {
-    this.employeeService.getProjectsStages(selectedSchema).subscribe(
-      (result: any) => {
-        this.Stages = result;
-        console.log(' fetching Stages:');
+//   console.log('schemastore',selectedSchema )
+//   // Check if selectedSchema is available
+//   if (selectedSchema) {
+//     this.employeeService.getProjectsStages(selectedSchema).subscribe(
+//       (result: any) => {
+//         this.Stages = result;
+//         console.log(' fetching Stages:');
 
-      },
-      (error) => {
-        console.error('Error fetching Companies:', error);
-      }
-    );
-  }
-  }
+//       },
+//       (error) => {
+//         console.error('Error fetching Companies:', error);
+//       }
+//     );
+//   }
+//   }
 
+
+  loadStages(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+  
+    if (selectedSchema) {
+      this.employeeService.getProjectStagesNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Stages = result;
+          
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
 
 
 countries:any[]=[];
