@@ -11,6 +11,7 @@ import { MatOption } from '@angular/material/core';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-assign-holiday-calendar',
   templateUrl: './assign-holiday-calendar.component.html',
@@ -19,6 +20,8 @@ import { SessionService } from '../login/session.service';
 export class AssignHolidayCalendarComponent {
 
   
+  private dataSubscription?: Subscription;
+
   related_to: any = '';
   // branch: any = '';
 
@@ -97,12 +100,36 @@ private sessionService: SessionService,
 
 
 ngOnInit(): void {
-  this.loadBranch();
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+     // Listen for sidebar changes so the dropdown updates instantly
+     this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadBranch();
+      this.loadEmp();
+      // this.loadDEpartments();
+      this.loadWeekendCalendar();
+      this.loadDEpartments();
+  
+  
+    });
+
+  // this.loadBranch();
   this.loadCAtegory();
-  this.loadDEpartments();
-  this.loadWeekendCalendar();
-  this.loadEmployee();
-  this.loadAssignedHolCalendar();
+  // this.loadDEpartments();
+  // this.loadWeekendCalendar();
+  // this.loadEmployee();
+  // this.loadAssignedHolCalendar();
 
 
   this.userId = this.sessionService.getUserId();
@@ -249,48 +276,78 @@ ngOnInit(): void {
   }
   
 
-  loadBranch(): void {
+  loadBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
     if (selectedSchema) {
       this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-          console.log(' fetching Companies:');
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
   
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
         },
         (error) => {
-          console.error('Error fetching Companies:', error);
+          console.error('Error fetching branches:', error);
         }
       );
     }
-    }
+  }
 
     
-    loadEmployee(): void {
+    // loadEmployee(): void {
     
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.employeeService.getemployees(selectedSchema).subscribe(
-          (result: any) => {
-            this.Employee = result;
-            console.log(' fetching Employees:');
+    //   console.log('schemastore',selectedSchema )
+    //   // Check if selectedSchema is available
+    //   if (selectedSchema) {
+    //     this.employeeService.getemployees(selectedSchema).subscribe(
+    //       (result: any) => {
+    //         this.Employee = result;
+    //         console.log(' fetching Employees:');
     
-          },
-          (error) => {
-            console.error('Error fetching Employees:', error);
-          }
-        );
+    //       },
+    //       (error) => {
+    //         console.error('Error fetching Employees:', error);
+    //       }
+    //     );
+    //   }
+    //   }
+
+
+      loadEmp(callback?: Function): void {
+        const selectedSchema = this.authService.getSelectedSchema();
+        const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+      
+      
+        if (selectedSchema) {
+          this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+            (result: any) => {
+              this.Employee = result;
+               
+              if (callback) callback();
+            },
+            (error) => {
+              console.error('Error fetching Companies:', error);
+            }
+          );
+        }
       }
-      }
-
-
 
 
 
@@ -337,26 +394,27 @@ ngOnInit(): void {
 
      
 
-        loadDEpartments(): void {
-    
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-        
-          console.log('schemastore',selectedSchema )
-          // Check if selectedSchema is available
-          if (selectedSchema) {
-            this.DepartmentServiceService.getDepartments(selectedSchema).subscribe(
-              (result: any) => {
-                this.Departments = result;
-                console.log(' fetching Companies:');
-        
-              },
-              (error) => {
-                console.error('Error fetching Companies:', error);
-              }
-            );
-          }
-          }
+    loadDEpartments(callback?: Function): void {
 
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+      console.log('schemastore', selectedSchema)
+      // Check if selectedSchema is available
+      if (selectedSchema) {
+        this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
+          (result: any) => {
+            this.Departments = result;
+            console.log(' fetching Companies:');
+            if (callback) callback();
+  
+          },
+          (error) => {
+            console.error('Error fetching Companies:', error);
+          }
+        );
+      }
+    }
           loadCAtegory(): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -377,46 +435,82 @@ ngOnInit(): void {
             }
             }
 
-            loadWeekendCalendar(): void {
+            // loadWeekendCalendar(): void {
     
-              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
             
-              console.log('schemastore',selectedSchema )
-              // Check if selectedSchema is available
-              if (selectedSchema) {
-                this.categoryService.getHolidayCalendar(selectedSchema).subscribe(
-                  (result: any) => {
-                    this.WeekCalendar = result;
-                    console.log(' fetching Companies:');
+            //   console.log('schemastore',selectedSchema )
+            //   // Check if selectedSchema is available
+            //   if (selectedSchema) {
+            //     this.categoryService.getHolidayCalendar(selectedSchema).subscribe(
+            //       (result: any) => {
+            //         this.WeekCalendar = result;
+            //         console.log(' fetching Companies:');
             
-                  },
-                  (error) => {
-                    console.error('Error fetching Companies:', error);
-                  }
-                );
-              }
-              }
-
-  
-
-   loadAssignedHolCalendar(): void {
-    
-                const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            //       },
+            //       (error) => {
+            //         console.error('Error fetching Companies:', error);
+            //       }
+            //     );
+            //   }
+            //   }
+              loadWeekendCalendar(callback?: Function): void {
+                const selectedSchema = this.authService.getSelectedSchema();
+                const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
               
-                console.log('schemastore',selectedSchema )
-                // Check if selectedSchema is available
+              
                 if (selectedSchema) {
-                  this.employeeService.getAssignHolcalendar(selectedSchema).subscribe(
+                  this.categoryService.getHolidayCalendarNew(selectedSchema, savedIds).subscribe(
                     (result: any) => {
-                      this.AssignHolCalendar = result;
-                      console.log(' fetching Companies:');
-              
+                      this.WeekCalendar = result;
+       
+                      if (callback) callback();
                     },
                     (error) => {
                       console.error('Error fetching Companies:', error);
                     }
                   );
                 }
+              }
+            
+  
+
+  //  loadAssignedHolCalendar(): void {
+    
+  //               const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+              
+  //               console.log('schemastore',selectedSchema )
+  //               // Check if selectedSchema is available
+  //               if (selectedSchema) {
+  //                 this.employeeService.getAssignHolcalendar(selectedSchema).subscribe(
+  //                   (result: any) => {
+  //                     this.AssignHolCalendar = result;
+  //                     console.log(' fetching Companies:');
+              
+  //                   },
+  //                   (error) => {
+  //                     console.error('Error fetching Companies:', error);
+  //                   }
+  //                 );
+  //               }
+  //               }
+
+                isLoading: boolean = false;
+
+                fetchEmployees(schema: string, branchIds: number[]): void {
+                  this.isLoading = true;
+                  this.employeeService.getAssignHolcalendarNew(schema, branchIds).subscribe({
+                    next: (data: any) => {
+                      // Filter active employees
+                      this.AssignHolCalendar = data;
+              
+                      this.isLoading = false;
+                    },
+                    error: (err) => {
+                      console.error('Fetch error:', err);
+                      this.isLoading = false;
+                    }
+                  });
                 }
 
 

@@ -43,6 +43,19 @@ export class CountryService {
 
   }
 
+
+  getWeekendCalendarsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/weekend/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
   getWeekendCalendarList(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/permissions/`;
     // return this.http.get(url);
@@ -190,6 +203,19 @@ export class CountryService {
     // Fetch employees from the API
     return this.http.get(Url);
   }
+
+  getholidayCalendarsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/holiday-calendar/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
   getDocumentTypes(): Observable<any> {
@@ -484,6 +510,19 @@ export class CountryService {
 
   }
 
+  getDocumentNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
     getDocumentReqType(selectedSchema:string): Observable<any> {
     // const url = `${this.baseUrl}/Group/`;
     // return this.http.get(url);
@@ -508,6 +547,21 @@ export class CountryService {
   }
 
 
+  
+  getShiftsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/shifts/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
+
   getEmployeeShifts(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/Branch/`;
     // return this.http.get(url);
@@ -518,6 +572,20 @@ export class CountryService {
     return this.http.get(apiUrl);
   }
 
+
+  getEmployeeShiftsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/employee-shift/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   getShiftsPattern(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/Branch/`;
     // return this.http.get(url);
@@ -527,6 +595,19 @@ export class CountryService {
     // Fetch employees from the API
     return this.http.get(apiUrl);
   }
+
+  getShiftsPatternNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/shiftpattern/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   
 
     getShiftsEmployee(selectedSchema: string): Observable<any> {
@@ -540,6 +621,19 @@ export class CountryService {
   }
 
 
+  getShiftsEmployeeNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/shiftemployee/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   
   getShiftOverride(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/Branch/`;
@@ -550,6 +644,20 @@ export class CountryService {
     // Fetch employees from the API
     return this.http.get(apiUrl);
   }
+
+  
+  getShiftOverrideNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/shift-overrides/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
   deleteAirRule(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;

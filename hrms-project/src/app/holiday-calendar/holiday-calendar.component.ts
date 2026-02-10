@@ -9,6 +9,9 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
 
+import {combineLatest, Subscription } from 'rxjs';
+import { EmployeeService } from '../employee-master/employee.service';
+
 
 
 
@@ -19,6 +22,9 @@ import { environment } from '../../environments/environment';
   styleUrl: './holiday-calendar.component.css'
 })
 export class HolidayCalendarComponent {
+
+  
+  private dataSubscription?: Subscription;
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -68,6 +74,8 @@ schemas: string[] = []; // Array to store schema names
     private http: HttpClient,
     private DesignationService: DesignationService,
 private sessionService: SessionService,
+private employeeService: EmployeeService,
+
   
     
   ) {}
@@ -75,16 +83,33 @@ private sessionService: SessionService,
 
 
   ngOnInit(): void {
-    this.loadholidayCalendar();
+
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+
+
+    // this.loadholidayCalendar();
 
 
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
     if (selectedSchema) {
 
-    this.countryService.getholidayCalendars(selectedSchema).subscribe(data => {
+    this.countryService.getholidayCalendarsNew(selectedSchema, savedIds).subscribe(data => {
       this.calendars = data;
     });
 
@@ -470,24 +495,42 @@ updateHoliday(): void {
     );
   }
 
-  loadholidayCalendar(): void {
+  // loadholidayCalendar(): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.countryService.getholidayCalendars(selectedSchema).subscribe(
-        (result: any) => {
-          this.HolidaysCalendar = result;
-          console.log(' fetching Companies:');
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.countryService.getholidayCalendars(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.HolidaysCalendar = result;
+  //         console.log(' fetching Companies:');
   
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
+
+    isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.countryService.getholidayCalendarsNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+          this.HolidaysCalendar = data;
+  
+          this.isLoading = false;
         },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
-    }
+      });
     }
 
 

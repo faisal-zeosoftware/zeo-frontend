@@ -7,12 +7,18 @@ import { DesignationService } from '../designation-master/designation.service';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 
+import {combineLatest, Subscription } from 'rxjs';
+import { EmployeeService } from '../employee-master/employee.service';
+
+
 @Component({
   selector: 'app-permission-assigned',
   templateUrl: './permission-assigned.component.html',
   styleUrl: './permission-assigned.component.css'
 })
 export class PermissionAssignedComponent {
+
+  private dataSubscription?: Subscription;
 
   @ViewChild('select') select: MatSelect | undefined;
 
@@ -50,14 +56,36 @@ selectedUserPermission: any = { profile: '', groups: [] };
     private authService: AuthenticationService,
     private DesignationService: DesignationService,
 private sessionService: SessionService,
+private employeeService: EmployeeService,
+
  ) {}
 
 
  ngOnInit(): void {
+
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);  
+      
+
+    }
+  });
+
+
+  // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadUserPermissions();
+
+  });
+  
     
   this.loadDeparmentBranch();
-  this.loadUserPermissions();
-  this.loadAssignedPermissionsForUser();
+  // this.loadAssignedPermissionsForUser();
 
 
   this.userId = this.sessionService.getUserId();
@@ -220,23 +248,42 @@ if (this.userId !== null) {
   }
 
 
-  loadUserPermissions(): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-        if (selectedSchema) {
-          this.DepartmentServiceService.getUserforPermissionGroupSelection(selectedSchema).subscribe(
-            (result: any) => {
-              this.Groups = result;
-              console.log(' fetching Companies:');
+  // loadUserPermissions(): void {
+  //   const selectedSchema = this.authService.getSelectedSchema();
+  //       if (selectedSchema) {
+  //         this.DepartmentServiceService.getUserforPermissionGroupSelection(selectedSchema).subscribe(
+  //           (result: any) => {
+  //             this.Groups = result;
+  //             console.log(' fetching Companies:');
       
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
-        }
+  //           },
+  //           (error) => {
+  //             console.error('Error fetching Companies:', error);
+  //           }
+  //         );
+  //       }
    
-  }
+  // }
 
+
+  loadUserPermissions(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+  
+    if (selectedSchema) {
+      this.DepartmentServiceService.getUserforPermissionGroupSelectionNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Groups = result;
+          
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
 
 
  
@@ -284,22 +331,41 @@ if (this.userId !== null) {
   
 
 
-  loadAssignedPermissionsForUser(): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-        if (selectedSchema) {
-          this.DepartmentServiceService.getassignedPermissionsForUser(selectedSchema).subscribe(
-            (result: any) => {
-              this.UserPermissions = result;
-              console.log(' fetching User Permissions:');
+  // loadAssignedPermissionsForUser(): void {
+  //   const selectedSchema = this.authService.getSelectedSchema();
+  //       if (selectedSchema) {
+  //         this.DepartmentServiceService.getassignedPermissionsForUser(selectedSchema).subscribe(
+  //           (result: any) => {
+  //             this.UserPermissions = result;
+  //             console.log(' fetching User Permissions:');
       
-            },
-            (error) => {
-              console.error('Error User Permissions:', error);
-            }
-          );
-        }
+  //           },
+  //           (error) => {
+  //             console.error('Error User Permissions:', error);
+  //           }
+  //         );
+  //       }
    
+  // }
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.DepartmentServiceService.getassignedPermissionsForUserNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.UserPermissions = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
   }
+
 
   
   deleteAssignedPermission(permissionId: number): void {
@@ -310,8 +376,18 @@ if (this.userId !== null) {
         (response) => {
           console.log('Permission deleted successfully', response);
           alert('Permission deleted successfully');
-          this.loadAssignedPermissionsForUser(); // Refresh the list after deletion
-        },
+// combineLatest waits for both Schema and Branches to have a value
+this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+  },
         (error) => {
           console.error('Error deleting permission:', error);
           alert('Failed to delete permission');
@@ -358,8 +434,18 @@ updateUserPermission(): void {
       (response) => {
         console.log('Permission updated successfully', response);
         alert('Permission updated successfully');
-        this.loadAssignedPermissionsForUser(); // Refresh the table
-        this.closeEditPerModal();
+// combineLatest waits for both Schema and Branches to have a value
+this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+  this.closeEditPerModal();
       },
 (error) => {
   console.error('Error updating Permissions:', error);

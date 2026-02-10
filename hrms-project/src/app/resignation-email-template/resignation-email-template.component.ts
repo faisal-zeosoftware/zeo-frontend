@@ -14,6 +14,7 @@ import { SessionService } from '../login/session.service';
 import { ResignationEmailTemplateEditComponent } from '../resignation-email-template-edit/resignation-email-template-edit.component';
 import { CompanyRegistrationService } from '../company-registration.service';
 
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-resignation-email-template',
   templateUrl: './resignation-email-template.component.html',
@@ -21,7 +22,8 @@ import { CompanyRegistrationService } from '../company-registration.service';
 })
 export class ResignationEmailTemplateComponent {
 
-      
+  private dataSubscription?: Subscription;
+
         @ViewChild('summernoteEditor') summernoteEditor!: ElementRef;
       
       
@@ -74,7 +76,20 @@ export class ResignationEmailTemplateComponent {
         this.loadRequestType();
         this.loadEmailPlaceholders(); // Call the method on component init
       
-        this.loadtemp();
+        // this.loadtemp();
+
+         // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
       
       // this.ngAfterViewInit();
       
@@ -360,24 +375,42 @@ export class ResignationEmailTemplateComponent {
         
       
       
-          loadtemp(): void {
+          // loadtemp(): void {
           
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.DepartmentServiceService.getEmailTemplatesResignation(selectedSchema).subscribe(
-                (result: any) => {
-                  this.tempEmails = result;
-                  console.log(' fetching Companies:');
+          //   console.log('schemastore',selectedSchema )
+          //   // Check if selectedSchema is available
+          //   if (selectedSchema) {
+          //     this.DepartmentServiceService.getEmailTemplatesResignation(selectedSchema).subscribe(
+          //       (result: any) => {
+          //         this.tempEmails = result;
+          //         console.log(' fetching Companies:');
           
+          //       },
+          //       (error) => {
+          //         console.error('Error fetching Companies:', error);
+          //       }
+          //     );
+          //   }
+          //   }
+
+            isLoading: boolean = false;
+
+            fetchEmployees(schema: string, branchIds: number[]): void {
+              this.isLoading = true;
+              this.DepartmentServiceService.getEmailTemplatesResignationNew(schema, branchIds).subscribe({
+                next: (data: any) => {
+                  // Filter active employees
+                  this.tempEmails = data;
+          
+                  this.isLoading = false;
                 },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
+                error: (err) => {
+                  console.error('Fetch error:', err);
+                  this.isLoading = false;
                 }
-              );
-            }
+              });
             }
         
       

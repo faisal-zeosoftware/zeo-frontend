@@ -7,8 +7,10 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 
 import {combineLatest, Subscription } from 'rxjs';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { MatOption } from '@angular/material/core';
+
 declare var $: any;
 @Component({
   selector: 'app-asset-types',

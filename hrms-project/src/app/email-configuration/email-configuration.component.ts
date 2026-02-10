@@ -6,6 +6,7 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-email-configuration',
@@ -14,6 +15,8 @@ import { SessionService } from '../login/session.service';
 })
 export class EmailConfigurationComponent {
 
+
+  private dataSubscription?: Subscription;
 
   email_host: any = '';
   email_port: any = '';
@@ -61,8 +64,22 @@ schemas: string[] = []; // Array to store schema names
 
 ngOnInit(): void {
  
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);  
+      
+
+    }
+  });
+
+
   this.loadUsers();
-  this.loadEmailConfg();
+  // this.loadEmailConfg();
 
   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
@@ -209,26 +226,44 @@ loadUsers(): void {
   }
   }
 
-  loadEmailConfg(): void {
+  // loadEmailConfg(): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getemailCong(selectedSchema).subscribe(
-        (result: any) => {
-          this.EmailConfg = result;
-          console.log(' fetching Companies:');
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getemailCong(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.EmailConfg = result;
+  //         console.log(' fetching Companies:');
   
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
 
+
+    isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.employeeService.getemailCongNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+          this.EmailConfg = data;
+  
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
 
 
 
@@ -348,8 +383,18 @@ closeEditModal(): void {
         (response) => {
           alert('Email Configuration updated successfully!');
           this.closeEditModal();
-          this.loadEmailConfg(); // reload updated list
-        },
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+  },
 (error) => {
   console.error('Error updating Email Configuration:', error);
 

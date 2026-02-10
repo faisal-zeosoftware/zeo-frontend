@@ -16,7 +16,8 @@ import { UserRoleGroupingCreateComponent } from '../user-role-grouping-create/us
 import { SessionService } from '../login/session.service';
 import { UserGroupingEditComponent } from '../user-grouping-edit/user-grouping-edit.component';
 
-
+import {combineLatest, Subscription } from 'rxjs';
+import { EmployeeService } from '../employee-master/employee.service';
 
 
 
@@ -28,6 +29,8 @@ import { UserGroupingEditComponent } from '../user-grouping-edit/user-grouping-e
 
 
 export class UserGroupingMasterComponent {
+
+  private dataSubscription?: Subscription;
 
   companies:any[] = [];
   Groups:any[] = [];
@@ -56,16 +59,32 @@ export class UserGroupingMasterComponent {
     private authService: AuthenticationService,
     private sessionService: SessionService,
     private dialog:MatDialog,
+    private employeeService: EmployeeService,
+
    ) {}
 
 
 
 
    ngOnInit(): void {
+
+
+     // combineLatest waits for both Schema and Branches to have a value
+     this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
+    });
+
   
     this.loadpermissions();
     // this.loadStates();
-    this.loadRoleGrouping();
+    // this.loadRoleGrouping();
 
     
 // Retrieve user ID
@@ -262,27 +281,45 @@ if (this.userId !== null) {
   }
   
 
-  loadRoleGrouping(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  // loadRoleGrouping(): void {
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-    console.log('schemastore',selectedSchema );
+  //   console.log('schemastore',selectedSchema );
 
-    if (selectedSchema) {
+  //   if (selectedSchema) {
 
-    this.UserMasterService.getRoleGrouping(selectedSchema).subscribe(
-      (result: any) => {
-        this.Groups = result;
-      },
-      (error: any) => {
-        console.error('Error fetching countries:', error);
-      }
-    );
-    }
-    else {
-      console.error('No schema selected.');
-    }
-  }
+  //   this.UserMasterService.getRoleGrouping(selectedSchema).subscribe(
+  //     (result: any) => {
+  //       this.Groups = result;
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching countries:', error);
+  //     }
+  //   );
+  //   }
+  //   else {
+  //     console.error('No schema selected.');
+  //   }
+  // }
   
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.UserMasterService.getRoleGroupingNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Groups = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
 
   openPopus(){
     this.dialog.open(UserRoleGroupingCreateComponent,{

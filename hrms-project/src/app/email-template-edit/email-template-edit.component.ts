@@ -9,7 +9,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 declare var $: any;
 import 'summernote'; // Ensure you have summernote imported
-import { MatOption, MatSelect } from '@angular/material/select';
+import {  MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 
 @Component({
   selector: 'app-email-template-edit',

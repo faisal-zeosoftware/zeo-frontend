@@ -11,6 +11,7 @@ import { MatOption } from '@angular/material/core';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import {combineLatest, Subscription } from 'rxjs';  
 
 @Component({
   selector: 'app-shifts',
@@ -18,6 +19,10 @@ import { SessionService } from '../login/session.service';
   styleUrl: './shifts.component.css'
 })
 export class ShiftsComponent {
+
+  
+
+  private dataSubscription?: Subscription;
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -148,14 +153,28 @@ export class ShiftsComponent {
 
 
   ngOnInit(): void {
-    this.loadShifts();
-    this.loadBranch();
-    this.loadCAtegory();
-    this.loadDEpartments();
-    this.loadEmployee();
-    this.loadDesignations();
-this.loadEmployeeshift();
-this.loadShiftsPattern();
+
+    
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+    // this.loadShifts();
+//     this.loadBranch();
+//     this.loadCAtegory();
+//     this.loadDEpartments();
+//     this.loadEmployee();
+//     this.loadDesignations();
+// this.loadEmployeeshift();
+// this.loadShiftsPattern();
 
 
 
@@ -471,26 +490,44 @@ this.loadShiftsPattern();
   
 
   
-  loadShifts(): void {
+  // loadShifts(): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.countryService.getShifts(selectedSchema).subscribe(
-        (result: any) => {
-          this.Shifts = result;
-          console.log(' fetching Companies:');
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.countryService.getShifts(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.Shifts = result;
+  //         console.log(' fetching Companies:');
   
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
 
+
+    isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.countryService.getShiftsNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+          this.Shifts = data;
+  
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
 
   
     loadEmployeeshift(): void {

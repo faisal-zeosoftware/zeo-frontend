@@ -13,6 +13,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { AirticketEmailTemplateEditComponent } from '../airticket-email-template-edit/airticket-email-template-edit.component';
 
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-airticket-email-template',
   templateUrl: './airticket-email-template.component.html',
@@ -20,7 +21,7 @@ import { AirticketEmailTemplateEditComponent } from '../airticket-email-template
 })
 export class AirticketEmailTemplateComponent {
 
-      
+  private dataSubscription?: Subscription;
       @ViewChild('summernoteEditor') summernoteEditor!: ElementRef;
     
     
@@ -73,8 +74,19 @@ export class AirticketEmailTemplateComponent {
       this.loadRequestType();
       this.loadEmailPlaceholders(); // Call the method on component init
     
-      this.loadtemp();
+      // this.loadtemp();
     
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
     // this.ngAfterViewInit();
     
     
@@ -359,24 +371,41 @@ export class AirticketEmailTemplateComponent {
       
     
     
-        loadtemp(): void {
+        // loadtemp(): void {
         
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
         
-          console.log('schemastore',selectedSchema )
-          // Check if selectedSchema is available
-          if (selectedSchema) {
-            this.DepartmentServiceService.getEmailTemplatesAirticket(selectedSchema).subscribe(
-              (result: any) => {
-                this.tempEmails = result;
-                console.log(' fetching Companies:');
+        //   console.log('schemastore',selectedSchema )
+        //   // Check if selectedSchema is available
+        //   if (selectedSchema) {
+        //     this.DepartmentServiceService.getEmailTemplatesAirticket(selectedSchema).subscribe(
+        //       (result: any) => {
+        //         this.tempEmails = result;
+        //         console.log(' fetching Companies:');
         
+        //       },
+        //       (error) => {
+        //         console.error('Error fetching Companies:', error);
+        //       }
+        //     );
+        //   }
+        //   }
+          isLoading: boolean = false;
+
+          fetchEmployees(schema: string, branchIds: number[]): void {
+            this.isLoading = true;
+            this.DepartmentServiceService.getEmailTemplatesAirticketNew(schema, branchIds).subscribe({
+              next: (data: any) => {
+                // Filter active employees
+                this.tempEmails = data;
+        
+                this.isLoading = false;
               },
-              (error) => {
-                console.error('Error fetching Companies:', error);
+              error: (err) => {
+                console.error('Fetch error:', err);
+                this.isLoading = false;
               }
-            );
-          }
+            });
           }
       
     

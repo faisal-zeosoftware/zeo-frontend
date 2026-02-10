@@ -371,6 +371,20 @@ CreateEmployeeattendance(payload: any): Observable<any> {
         
       }
 
+
+      getNotificationSettingsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+        // Converts [1,3,4] into the string "[1,3,4]" for the URL
+        const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+        
+        let url = `${this.apiUrl}/employee/api/notification-settings/?schema=${selectedSchema}`;
+        if (branchParam) {
+          url += `&branch_id=${branchParam}`;
+        }
+        
+        return this.http.get(url);
+      }
+      
+
       
       updateNot(docId: number, payload: any): Observable<any> {
         const selectedSchema = localStorage.getItem('selectedSchema');
@@ -494,6 +508,19 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
   
   }
 
+  getEmailTemplatesLeaveNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/leave-template/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 
   getLeaveBalanceAll(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/calendars/api/Leave_balance/?schema=${selectedSchema}`;
@@ -523,6 +550,19 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
     return this.http.get(apiUrl);
   
   }
+
+  getEmployeeOvertimeNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/Emp-overtime/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
   getLeaveApprovalLevel(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/calendars/api/leave-approval-levels/?schema=${selectedSchema}`;

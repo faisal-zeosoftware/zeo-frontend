@@ -13,7 +13,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { LeaveTemplateEditComponent } from '../leave-template-edit/leave-template-edit.component';
-
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-leave-template',
   templateUrl: './leave-template.component.html',
@@ -22,6 +22,8 @@ import { LeaveTemplateEditComponent } from '../leave-template-edit/leave-templat
 export class  LeaveTemplateComponent {
 
   
+  private dataSubscription?: Subscription;
+
   template_type: any = '';
   subject: any = '';
   body: string = '';
@@ -69,11 +71,31 @@ private sessionService: SessionService,
 ) {}
 
 ngOnInit(): void {
+
+  
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+  // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadEmailPlaceholders(); 
+    // this.loadDeparmentBranch();
+
+  });
  
   this.loadRequestType();
-  this.loadEmailPlaceholders(); // Call the method on component init
+  // this.loadEmailPlaceholders(); // Call the method on component init
 
-  this.loadtemp();
+  // this.loadtemp();
 
   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
@@ -222,12 +244,14 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
 
    
   
-    loadEmailPlaceholders(): void {
+    loadEmailPlaceholders(callback?: Function): void {
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
       console.log('schemastore', selectedSchema);
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.employeeService.getEmailPlaceholderLeave(selectedSchema).subscribe(
+        this.employeeService.getEmailPlaceholderLeaveNew(selectedSchema,savedIds).subscribe(
           (result: any) => {
             this.EmailPlaceHolders = result.employee; // Assuming the response structure
             console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
@@ -345,25 +369,44 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   
 
 
-    loadtemp(): void {
+    // loadtemp(): void {
     
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.leaveService.getEmailTemplatesLeave(selectedSchema).subscribe(
-          (result: any) => {
-            this.tempEmails = result;
-            console.log(' fetching Companies:');
+    //   console.log('schemastore',selectedSchema )
+    //   // Check if selectedSchema is available
+    //   if (selectedSchema) {
+    //     this.leaveService.getEmailTemplatesLeave(selectedSchema).subscribe(
+    //       (result: any) => {
+    //         this.tempEmails = result;
+    //         console.log(' fetching Companies:');
     
+    //       },
+    //       (error) => {
+    //         console.error('Error fetching Companies:', error);
+    //       }
+    //     );
+    //   }
+    //   }
+
+      isLoading: boolean = false;
+
+      fetchEmployees(schema: string, branchIds: number[]): void {
+        this.isLoading = true;
+        this.leaveService.getEmailTemplatesLeaveNew(schema, branchIds).subscribe({
+          next: (data: any) => {
+            // Filter active employees
+            this.tempEmails = data;
+    
+            this.isLoading = false;
           },
-          (error) => {
-            console.error('Error fetching Companies:', error);
+          error: (err) => {
+            console.error('Fetch error:', err);
+            this.isLoading = false;
           }
-        );
+        });
       }
-      }
+    
   
 
       selectedTemplate: any = null; // Object to hold the selected template details
@@ -398,8 +441,17 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       (response) => {
         console.log('Template updated successfully', response);
         alert('Email Template has been updated');
-        this.loadtemp(); // Refresh the list of templates
-      },
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});      },
       (error) => {
         console.error('Error updating template:', error);
         alert('Update failed');

@@ -8,6 +8,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
 import {  HttpErrorResponse } from '@angular/common/http';
 import { CountryService } from '../country.service';
+
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-airticket-allocation',
   templateUrl: './airticket-allocation.component.html',
@@ -18,6 +20,8 @@ export class AirticketAllocationComponent {
 
   
    
+
+  private dataSubscription?: Subscription;
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -81,12 +85,32 @@ export class AirticketAllocationComponent {
 ) {}
 
 ngOnInit(): void {
+
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+
+  // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadLAssetType();
+
+    this.loadEmployee();
+
+
+  });
  
   this.loadUsers();
-  this.loadLAssetType();
-  this.loadAllocations();
 
-  this.loadEmployee();
 
   this.userId = this.sessionService.getUserId();
   
@@ -304,11 +328,11 @@ ngOnInit(): void {
           loadLAssetType(callback?: Function): void {
     
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-          
+            const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
             console.log('schemastore',selectedSchema )
             // Check if selectedSchema is available
             if (selectedSchema) {
-              this.employeeService.getairticketpolicy(selectedSchema).subscribe(
+              this.employeeService.getairticketpolicyNew(selectedSchema,savedIds).subscribe(
                 (result: any) => {
                   this.Policies = result;
                   console.log(' fetching Loantypes:');
@@ -340,25 +364,46 @@ ngOnInit(): void {
         
 
 
-            loadAllocations(): void {
+            // loadAllocations(): void {
     
-              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
             
-              console.log('schemastore',selectedSchema )
-              // Check if selectedSchema is available
-              if (selectedSchema) {
-                this.employeeService.getairticketAllocations(selectedSchema).subscribe(
-                  (result: any) => {
-                    this.Allocations = result;
-                    console.log(' fetching Loantypes:');
+            //   console.log('schemastore',selectedSchema )
+            //   // Check if selectedSchema is available
+            //   if (selectedSchema) {
+            //     this.employeeService.getairticketAllocations(selectedSchema).subscribe(
+            //       (result: any) => {
+            //         this.Allocations = result;
+            //         console.log(' fetching Loantypes:');
             
+            //       },
+            //       (error) => {
+            //         console.error('Error fetching Companies:', error);
+            //       }
+            //     );
+            //   }
+            //   }
+
+
+              isLoading: boolean = false;
+
+              fetchEmployees(schema: string, branchIds: number[]): void {
+                this.isLoading = true;
+                this.employeeService.getairticketAllocationsNew(schema, branchIds).subscribe({
+                  next: (data: any) => {
+                    // Filter active employees
+                    this.Allocations = data;
+            
+                    this.isLoading = false;
                   },
-                  (error) => {
-                    console.error('Error fetching Companies:', error);
+                  error: (err) => {
+                    console.error('Fetch error:', err);
+                    this.isLoading = false;
                   }
-                );
+                });
               }
-              }
+            
+
 
 
               Employee:any[]=[];
@@ -366,12 +411,15 @@ ngOnInit(): void {
 
               loadEmployee(callback?: Function): void {
     
+
+                const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
                 const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
               
                 console.log('schemastore',selectedSchema )
                 // Check if selectedSchema is available
                 if (selectedSchema) {
-                  this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+                  this.employeeService.getemployeesMasterNew(selectedSchema ,savedIds).subscribe(
                     (result: any) => {
                       this.Employee = result;
                       console.log(' fetching Loantypes:');

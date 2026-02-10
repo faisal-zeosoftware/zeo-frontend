@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import {  HttpErrorResponse } from '@angular/common/http';
 import { CountryService } from '../country.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-airticket-request',
@@ -17,6 +18,8 @@ import { DepartmentServiceService } from '../department-master/department-servic
 })
 export class AirticketRequestComponent {
 
+
+  private dataSubscription?: Subscription;
   
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -99,13 +102,34 @@ export class AirticketRequestComponent {
 ) {}
 
 ngOnInit(): void {
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);  
+      
+
+    }
+  });
+
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loademployee();
+      this.loadDeparmentBranch();
+      this.loadAllocations();
+  
+    });
+    
  
   this.loadUsers();
   this.loadLAssetType();
-  this.loadAllocations();
-  this.loadAirticketRequest();
-  this.loademployee();
-  this.loadDeparmentBranch();
+
+  // this.loadAirticketRequest();
+
+
 
   this.userId = this.sessionService.getUserId();
   
@@ -540,11 +564,12 @@ Employees:any[]=[];
 loadAllocations(callback?: Function): void {
 
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
   console.log('schemastore',selectedSchema )
   // Check if selectedSchema is available
   if (selectedSchema) {
-    this.employeeService.getairticketAllocations(selectedSchema).subscribe(
+    this.employeeService.getairticketAllocationsNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
         this.Allocations = result;
         console.log(' fetching Loantypes:');
@@ -596,33 +621,54 @@ mapAllocationNameToId() {
 
 
 
-  loadAirticketRequest(): void {
+  // loadAirticketRequest(): void {
 
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getairticketrequest(selectedSchema).subscribe(
-        (result: any) => {
-          this.Requests = result;
-          console.log(' fetching Loantypes:');
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getairticketrequest(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.Requests = result;
+  //         console.log(' fetching Loantypes:');
   
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
+
+ isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.employeeService.getairticketrequestNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Requests = data;
+
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+
+
     loademployee(callback?: Function): void {
 
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
       console.log('schemastore',selectedSchema )
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.employeeService.getemployees(selectedSchema).subscribe(
+        this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
           (result: any) => {
            
            // ✅ Filter employees: show only those who are active or not marked inactive
@@ -656,21 +702,32 @@ mapAllocationNameToId() {
 }
 
   loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
     if (selectedSchema) {
       this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-          console.log(' fetching Companies:');
-            if (callback) callback();
-
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
         },
         (error) => {
-          console.error('Error fetching Companies:', error);
+          console.error('Error fetching branches:', error);
         }
       );
     }

@@ -8,8 +8,9 @@ import { DesignationService } from '../designation-master/designation.service';
 declare var $: any;
 
 import {combineLatest, Subscription } from 'rxjs';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { MatOption } from '@angular/material/core';
 
 
 @Component({

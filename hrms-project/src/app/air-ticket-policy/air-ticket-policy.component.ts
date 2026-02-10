@@ -12,6 +12,8 @@ import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import { MatOption } from '@angular/material/core';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-air-ticket-policy',
@@ -24,6 +26,7 @@ export class AirTicketPolicyComponent {
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
    
+  private dataSubscription?: Subscription;
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -116,13 +119,33 @@ export class AirTicketPolicyComponent {
 ) {}
 
 ngOnInit(): void {
+
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);  
+      
+
+    }
+  });
+
+
+   // Listen for sidebar changes so the dropdown updates instantly
+   this.employeeService.selectedBranches$.subscribe(ids => {
+ 
+    this.loadDEpartments();
+
+
+  });
  
   this.loadUsers();
-  this.loadLAssetType();
 
   this.loadCountries();
   this.loadCAtegory();
-  this.loadDEpartments();
   this.loadDesignation();
 
   this.userId = this.sessionService.getUserId();
@@ -251,23 +274,6 @@ ngOnInit(): void {
 
       
 
-
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
   
 
 toggleAllSelectiondept(): void {
@@ -305,11 +311,12 @@ toggleAllSelectionDes(): void {
     loadDEpartments(callback?: Function): void {
 
       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
       console.log('schemastore',selectedSchema )
       // Check if selectedSchema is available
       if (selectedSchema) {
-        this.DepartmentServiceService.getDepartments(selectedSchema).subscribe(
+        this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
           (result: any) => {
             this.Departments = result;
             console.log(' fetching Companies:');
@@ -557,26 +564,45 @@ mapDesigNameToId() {
 
 
       
-          loadLAssetType(): void {
+          // loadLAssetType(): void {
     
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
           
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getairticketpolicy(selectedSchema).subscribe(
-                (result: any) => {
-                  this.LoanTypes = result;
-                  console.log(' fetching Loantypes:');
+          //   console.log('schemastore',selectedSchema )
+          //   // Check if selectedSchema is available
+          //   if (selectedSchema) {
+          //     this.employeeService.getairticketpolicy(selectedSchema).subscribe(
+          //       (result: any) => {
+          //         this.LoanTypes = result;
+          //         console.log(' fetching Loantypes:');
           
-                },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
-                }
-              );
-            }
-            }
+          //       },
+          //       (error) => {
+          //         console.error('Error fetching Companies:', error);
+          //       }
+          //     );
+          //   }
+          //   }
         
+
+            isLoading: boolean = false;
+
+            fetchEmployees(schema: string, branchIds: number[]): void {
+              this.isLoading = true;
+              this.employeeService.getairticketpolicyNew(schema, branchIds).subscribe({
+                next: (data: any) => {
+                  // Filter active employees
+                  this.LoanTypes = data;
+          
+                  this.isLoading = false;
+                },
+                error: (err) => {
+                  console.error('Fetch error:', err);
+                  this.isLoading = false;
+                }
+              });
+            }
+          
 
 
 
@@ -663,7 +689,20 @@ updateAssetType(): void {
     (response) => {
       alert('Airticket updated successfully!');
       this.closeEditModal();
-      this.loadLAssetType(); // reload updated list
+  
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
       window.location.reload();
     },
 (error) => {

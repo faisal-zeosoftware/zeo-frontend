@@ -62,6 +62,20 @@ export class CatogaryService {
   }
 
 
+  getWeekendcalendarNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/weekend/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
+
   getHolidayCalendar(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/calendars/api/holiday-calendar/?schema=${selectedSchema}`;
   
@@ -70,6 +84,18 @@ export class CatogaryService {
   
   }
 
+
+  getHolidayCalendarNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/holiday-calendar/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
 
   
 

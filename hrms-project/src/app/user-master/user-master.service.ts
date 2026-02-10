@@ -214,6 +214,20 @@ export class UserMasterService {
 
   }
 
+
+  getRoleGroupingNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/Group/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   getDesignationsPermission(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/permissions/?schema=${selectedSchema}`;
   

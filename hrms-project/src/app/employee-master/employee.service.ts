@@ -282,6 +282,19 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
 
   }
 
+  getEscalationsAirticketNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/airticket-approval-escalation/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
       getAllgeneralRequestEscalationsAsset(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/asset-escalation-rules/?schema=${selectedSchema}`;
 
@@ -1426,6 +1439,20 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 
   }
 
+  getAllDocnumbersNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/document-numbering/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
+
 
   updateDocNum(docId: number, payload: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
@@ -1968,6 +1995,19 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
 
   }
+
+  getemailCongNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/email-config/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
   getFamilyDetails(employeeId: number): Observable<any> {
     // return this.http.get<any>(`http://localhost:8000/api/Employee/${employeeId}/emp_family/`);
@@ -3386,6 +3426,19 @@ updateGeofence(id: number, data: any): Observable<any> {
 
   }
 
+  getEmailPlaceholderNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/email-template/placeholders/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   getEmailPlaceholderDocReq(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/placeholders/?schema=${selectedSchema}`;
 
@@ -3447,7 +3500,22 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
 
 
+
   }
+
+  getEmailPlaceholderLeaveNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/leave-template/placeholders/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 
 
 
@@ -3659,6 +3727,20 @@ updateGeofence(id: number, data: any): Observable<any> {
   }
   
 
+  getAssignWeekendcalendarNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/assign-weekend/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
+
   getAssignHolcalendar(selectedSchema: string): Observable<any> {
     const Url = `${this.apiUrl}/calendars/api/assign-holiday/?schema=${selectedSchema}`;
 
@@ -3669,6 +3751,19 @@ updateGeofence(id: number, data: any): Observable<any> {
 
 
 
+
+  getAssignHolcalendarNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/assign-holiday/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   saveLeaveOpening(payload: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -3956,6 +4051,19 @@ updateGeofence(id: number, data: any): Observable<any> {
   }
 
 
+  getAirTicketApprovalLevelsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/airticket-approval-levels/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 
 
 
@@ -4016,6 +4124,19 @@ updateGeofence(id: number, data: any): Observable<any> {
     // Fetch approvals for the user from the API
     
     return this.http.get(apiUrl);
+  }
+  
+
+  getApprovalslistAirticketNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/airticket-approval/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
   }
   
 
@@ -4109,6 +4230,19 @@ getAnnouncement(selectedSchema: string): Observable<any> {
 
   
 }
+
+getAnnouncementNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/organisation/api/announcements/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 
 
 
@@ -4821,6 +4955,19 @@ getovertimepolicy(selectedSchema: string): Observable<any> {
   
 }
 
+getovertimepolicyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/overtime_policy/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
 
 getGeofence(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/?schema=${selectedSchema}`;
@@ -4990,6 +5137,19 @@ getairticketpolicy(selectedSchema: string): Observable<any> {
 
   
 }
+
+ getairticketpolicyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/airticket-policy/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
 updateAirpolicy(id: number, data: any): Observable<any> {
@@ -5303,6 +5463,17 @@ getairticketAllocations(selectedSchema: string): Observable<any> {
   
 }
 
+getairticketAllocationsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/payroll/api/airticket-allocation/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
 
 getairticketRule(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/payroll/api/airticket-rule/?schema=${selectedSchema}`;
@@ -5313,6 +5484,19 @@ getairticketRule(selectedSchema: string): Observable<any> {
   
 }
 
+getairticketRuleNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/payroll/api/airticket-rule/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
 getairticketrequest(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/payroll/api/airticket-request/?schema=${selectedSchema}`;
 
@@ -5321,6 +5505,20 @@ getairticketrequest(selectedSchema: string): Observable<any> {
 
   
 }
+
+
+getairticketrequestNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/payroll/api/airticket-request/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 
 
 

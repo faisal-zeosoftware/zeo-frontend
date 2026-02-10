@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { DocExpEmailtemplateEditComponent } from '../doc-exp-emailtemplate-edit/doc-exp-emailtemplate-edit.component';
-
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-doc-exp-emailtemplate',
   templateUrl: './doc-exp-emailtemplate.component.html',
@@ -20,7 +20,7 @@ import { DocExpEmailtemplateEditComponent } from '../doc-exp-emailtemplate-edit/
 })
 export class DocExpEmailtemplateComponent {
 
-
+  private dataSubscription?: Subscription;
 
 
   template_name: any = '';
@@ -68,11 +68,24 @@ private sessionService: SessionService,
 ) {}
 
 ngOnInit(): void {
+
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);  
+      
+
+    }
+  });
  
   this.loadRequestType();
   this.loadEmailPlaceholders(); // Call the method on component init
 
-  this.loadtemp();
+  // this.loadtemp();
 
 this.ngAfterViewInit();
 
@@ -359,24 +372,42 @@ if (this.userId !== null) {
   
 
 
-    loadtemp(): void {
+    // loadtemp(): void {
     
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.DepartmentServiceService.getEmailTemplatesDoc(selectedSchema).subscribe(
-          (result: any) => {
-            this.tempEmails = result;
-            console.log(' fetching Companies:');
+    //   console.log('schemastore',selectedSchema )
+    //   // Check if selectedSchema is available
+    //   if (selectedSchema) {
+    //     this.DepartmentServiceService.getEmailTemplatesDoc(selectedSchema).subscribe(
+    //       (result: any) => {
+    //         this.tempEmails = result;
+    //         console.log(' fetching Companies:');
     
+    //       },
+    //       (error) => {
+    //         console.error('Error fetching Companies:', error);
+    //       }
+    //     );
+    //   }
+    //   }
+
+      isLoading: boolean = false;
+
+      fetchEmployees(schema: string, branchIds: number[]): void {
+        this.isLoading = true;
+        this.DepartmentServiceService.getEmailTemplatesDocNew(schema, branchIds).subscribe({
+          next: (data: any) => {
+            // Filter active employees
+            this.tempEmails = data;
+    
+            this.isLoading = false;
           },
-          (error) => {
-            console.error('Error fetching Companies:', error);
+          error: (err) => {
+            console.error('Fetch error:', err);
+            this.isLoading = false;
           }
-        );
-      }
+        });
       }
   
 

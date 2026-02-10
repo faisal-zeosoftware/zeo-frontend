@@ -10,12 +10,18 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { LeaveService } from '../leave-master/leave.service';
 
+import {combineLatest, Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-document-numbering',
   templateUrl: './document-numbering.component.html',
   styleUrl: './document-numbering.component.css'
 })
 export class DocumentNumberingComponent {
+
+  
+  private dataSubscription?: Subscription;
+
 
   prefix: any = '';
   suffix: any = '';
@@ -84,10 +90,32 @@ isDocumentnumbereditModalOpen: boolean = false;
 ) {}
 
 ngOnInit(): void {
-  this.loadDeparmentBranch();
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+
+ // Listen for sidebar changes so the dropdown updates instantly
+ this.employeeService.selectedBranches$.subscribe(ids => {
+  this.loadDeparmentBranch(); 
+
+});
+
+
+
+  // this.loadDeparmentBranch();
   this.loadCAtegory();
   this.loadUsers();
-  this.loaddocNumers();
+  // this.loaddocNumers();
   this.loadLeaveTypes();
 
 
@@ -210,21 +238,6 @@ ngOnInit(): void {
  
 }
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_document_numbering' ||'change_document_numbering' ||'delete_document_numbering' ||'view_document_numbering';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
   
   
   
@@ -234,25 +247,57 @@ ngOnInit(): void {
   }
   
 
-  loadDeparmentBranch(callback?: Function): void {
+  // loadDeparmentBranch(callback?: Function): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-          console.log(' fetching Companies:');
-             if (callback) callback();
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.branches = result;
+  //         console.log(' fetching Companies:');
+  //            if (callback) callback();
   
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
+
+    loadDeparmentBranch(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      
+      if (selectedSchema) {
+        this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+          (result: any[]) => {
+            // 1. Get the sidebar selected IDs from localStorage
+            const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+            // 2. Filter the API result to only include branches selected in the sidebar
+            // If sidebar is empty, you might want to show all, or show none. 
+            // Usually, we show only the selected ones:
+            if (sidebarSelectedIds.length > 0) {
+              this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+            } else {
+              this.branches = result; // Fallback: show all if nothing is selected in sidebar
+            }
+            // Inside the subscribe block of loadDeparmentBranch
+            if (this.branches.length === 1) {
+              this.branches = this.branches[0].id;
+            }
+    
+            console.log('Filtered branches for selection:', this.branches);
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching branches:', error);
+          }
+        );
+      }
     }
 
   mapBranchNameToId() {
@@ -360,22 +405,40 @@ ngOnInit(): void {
 
 
 
-          loaddocNumers(): void { 
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+          // loaddocNumers(): void { 
+          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
         
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-            this.employeeService.getAllDocnumbers(selectedSchema).subscribe(
-              (result: any) => {
-                console.log(result); // Log the API response
-                this.docsNumbers = result; // Assuming the data is directly in the result without a 'data' property
+          //   console.log('schemastore',selectedSchema )
+          //   // Check if selectedSchema is available
+          //   if (selectedSchema) {
+          //   this.employeeService.getAllDocnumbers(selectedSchema).subscribe(
+          //     (result: any) => {
+          //       console.log(result); // Log the API response
+          //       this.docsNumbers = result; // Assuming the data is directly in the result without a 'data' property
+          //     },
+          //     (error) => {
+          //       console.error('Error fetching states:', error);
+          //     }
+          //   );
+          //   }
+          // }
+
+          isLoading: boolean = false;
+
+          fetchEmployees(schema: string, branchIds: number[]): void {
+            this.isLoading = true;
+            this.employeeService.getAllDocnumbersNew(schema, branchIds).subscribe({
+              next: (data: any) => {
+                // Filter active employees
+                this.docsNumbers = data;
+        
+                this.isLoading = false;
               },
-              (error) => {
-                console.error('Error fetching states:', error);
+              error: (err) => {
+                console.error('Fetch error:', err);
+                this.isLoading = false;
               }
-            );
-            }
+            });
           }
         
 
@@ -422,7 +485,19 @@ ngOnInit(): void {
                   alert('Document number updated successfully.');
                   // Optionally, refresh your list or reload the page
                   this.closeEditDocModal();
-                  this.loaddocNumers(); // re-fetch the list if needed
+                   // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
+                  // this.loaddocNumers(); // re-fetch the list if needed
                   
                 },
                 (error) => {

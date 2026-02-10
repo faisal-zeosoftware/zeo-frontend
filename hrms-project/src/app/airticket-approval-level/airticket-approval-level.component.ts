@@ -8,6 +8,8 @@ import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
 
+import {combineLatest, Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-airticket-approval-level',
   templateUrl: './airticket-approval-level.component.html',
@@ -17,6 +19,7 @@ export class AirticketApprovalLevelComponent {
 
 
   
+  private dataSubscription?: Subscription;
     
       level:any='';
       role:any='';
@@ -67,9 +70,25 @@ export class AirticketApprovalLevelComponent {
       ) {}
     
       ngOnInit(): void {
+
+
+        
+
+ // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
     
         // this.loadAssetTypes();
-        this.loadAssetApprovalLevels();
+        // this.loadAssetApprovalLevels();
         this.loadAssetapprover();
     
          this.loadUsers();
@@ -270,26 +289,45 @@ export class AirticketApprovalLevelComponent {
     
     
          
-        loadAssetApprovalLevels(): void {
+        // loadAssetApprovalLevels(): void {
         
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+        //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
         
-          console.log('schemastore',selectedSchema )
-          // Check if selectedSchema is available
-          if (selectedSchema) {
-            this.employeeService.getAirTicketApprovalLevels(selectedSchema).subscribe(
-              (result: any) => {
-                this.approvalLevels = result;
-                console.log(' fetching Loantypes:');
+        //   console.log('schemastore',selectedSchema )
+        //   // Check if selectedSchema is available
+        //   if (selectedSchema) {
+        //     this.employeeService.getAirTicketApprovalLevels(selectedSchema).subscribe(
+        //       (result: any) => {
+        //         this.approvalLevels = result;
+        //         console.log(' fetching Loantypes:');
         
-              },
-              (error) => {
-                console.error('Error fetching Companies:', error);
-              }
-            );
-          }
-          }
+        //       },
+        //       (error) => {
+        //         console.error('Error fetching Companies:', error);
+        //       }
+        //     );
+        //   }
+        //   }
       
+
+          isLoading: boolean = false;
+
+          fetchEmployees(schema: string, branchIds: number[]): void {
+            this.isLoading = true;
+            this.employeeService.getAirTicketApprovalLevelsNew(schema, branchIds).subscribe({
+              next: (data: any) => {
+                // Filter active employees
+                this.approvalLevels = data;
+        
+                this.isLoading = false;
+              },
+              error: (err) => {
+                console.error('Fetch error:', err);
+                this.isLoading = false;
+              }
+            });
+          }
+        
     
     
           loadAssetapprover(callback?: Function): void {

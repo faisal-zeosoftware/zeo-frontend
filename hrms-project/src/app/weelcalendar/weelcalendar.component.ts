@@ -6,6 +6,9 @@ import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { FormsModule } from '@angular/forms';
+import {combineLatest, Subscription } from 'rxjs';
+import { EmployeeService } from '../employee-master/employee.service';
+
 
 @Component({
   selector: 'app-weelcalendar',
@@ -14,6 +17,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class WeelcalendarComponent {
 
+  
+  private dataSubscription?: Subscription;
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -97,15 +102,33 @@ schemas: string[] = []; // Array to store schema names
     private http: HttpClient,
     private DesignationService: DesignationService,
 private sessionService: SessionService,
+private employeeService: EmployeeService,
+
     
   ) {}
 
 
   ngOnInit(): void {
-    
-    this.countryService.getWeekendCalendars().subscribe(data => {
-      this.calendars = data;
+
+     // combineLatest waits for both Schema and Branches to have a value
+     this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
     });
+
+    
+    // this.countryService.getWeekendCalendars().subscribe(data => {
+    //   this.calendars = data;
+    // });
+
+
+
     this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
   this.authService.getUserData(this.userId).subscribe(
@@ -220,6 +243,26 @@ if (this.userId !== null) {
 }
 
 
+  }
+
+
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.countryService.getWeekendCalendarsNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.calendars = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
   onWeekOffChange(event: any) {

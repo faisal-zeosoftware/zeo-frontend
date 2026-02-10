@@ -6,8 +6,9 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { LeaveService } from '../leave-master/leave.service';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { MatOption } from '@angular/material/core';
 
 declare var $: any;
 

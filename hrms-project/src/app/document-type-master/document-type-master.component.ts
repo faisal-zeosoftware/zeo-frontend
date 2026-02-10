@@ -7,6 +7,7 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import {combineLatest, Subscription } from 'rxjs';
 
 
 @Component({
@@ -18,6 +19,7 @@ export class DocumentTypeMasterComponent {
 
 
 
+  private dataSubscription?: Subscription;
   
 
   selectedDeparmentsecId:any | undefined;
@@ -59,6 +61,20 @@ export class DocumentTypeMasterComponent {
 
 
   ngOnInit(): void {
+
+
+     // combineLatest waits for both Schema and Branches to have a value
+     this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
+    });
+
   
     
 // Retrieve user ID
@@ -90,7 +106,17 @@ if (this.userId !== null) {
         this.hasEditPermission = true;
     
         // Fetch designations without checking permissions
-        this.fetchDesignations(selectedSchema);
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
+    });
       } else {
         console.log('User is not superuser');
 
@@ -163,7 +189,17 @@ if (this.userId !== null) {
             }
 
             // Fetching designations after checking permissions
-            this.fetchDesignations(selectedSchema);
+          // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
 
           }
           
@@ -211,18 +247,37 @@ if (this.userId !== null) {
 
 
   
-  fetchDesignations(selectedSchema: string) {
-    this.countryService.getDocument(selectedSchema).subscribe(
-      (data: any) => {
+  // fetchDesignations(selectedSchema: string) {
+  //   this.countryService.getDocument(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.Documents = data;
+  //       this.filteredDocuments = data;  // Initialize filtered data
+
+  //       console.log('employee:', this.Documents);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.countryService.getDocumentNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
         this.Documents = data;
         this.filteredDocuments = data;  // Initialize filtered data
-
-        console.log('employee:', this.Documents);
+        this.isLoading = false;
       },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
 
     // Filter documents based on searchQuery
@@ -360,8 +415,17 @@ updateDocumentNumber(): void {
         console.error('No schema selected.');
         return;
       }
-          this.fetchDesignations(selectedSchema); // Refresh the list after deletion
-        },
+// combineLatest waits for both Schema and Branches to have a value
+this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});        },
         (error) => {
           console.error('Error deleting Document type:', error);
           alert('Failed to delete permission');

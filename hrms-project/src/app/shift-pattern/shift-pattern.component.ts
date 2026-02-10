@@ -8,6 +8,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { CountryService } from '../country.service';
 declare var $: any;
 
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-shift-pattern',
@@ -17,6 +19,7 @@ declare var $: any;
 export class ShiftPatternComponent {
 
   
+  private dataSubscription?: Subscription;
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -89,11 +92,32 @@ ShiftsPattern: any[] = [];
 ) {}
 
 ngOnInit(): void {
+
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);  
+      
+
+    }
+  });
+
+
+   // Listen for sidebar changes so the dropdown updates instantly
+   this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadShifts();
+
+  });
+  
  
   this.loadUsers();
   // this.loadLAssetType();
-  this.loadShifts();
-  this.loadShiftsPattern();
+  // this.loadShifts();
+  // this.loadShiftsPattern();
 
 
 
@@ -316,18 +340,20 @@ ngOnInit(): void {
   }
 
 
-    loadShifts(): void {
+    loadShifts(callback?: Function): void {
     
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
     if (selectedSchema) {
-      this.countryService.getShifts(selectedSchema).subscribe(
+      this.countryService.getShiftsNew(selectedSchema,savedIds).subscribe(
         (result: any) => {
           this.Shifts = result;
           console.log(' fetching Companies:');
   
+          if (callback) callback();
         },
         (error) => {
           console.error('Error fetching Companies:', error);
@@ -337,26 +363,47 @@ ngOnInit(): void {
     }
 
 
-    loadShiftsPattern(callback?: Function): void {
+    // loadShiftsPattern(callback?: Function): void {
     
-        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
-        console.log('schemastore',selectedSchema )
-        // Check if selectedSchema is available
-        if (selectedSchema) {
-          this.countryService.getShiftsPattern(selectedSchema).subscribe(
-            (result: any) => {
-              this.ShiftsPattern = result;
-              console.log(' fetching Companies:');
-                if (callback) callback();
+    //     console.log('schemastore',selectedSchema )
+    //     // Check if selectedSchema is available
+    //     if (selectedSchema) {
+    //       this.countryService.getShiftsPattern(selectedSchema).subscribe(
+    //         (result: any) => {
+    //           this.ShiftsPattern = result;
+    //           console.log(' fetching Companies:');
+    //             if (callback) callback();
       
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
-        }
-        }
+    //         },
+    //         (error) => {
+    //           console.error('Error fetching Companies:', error);
+    //         }
+    //       );
+    //     }
+    //     }
+
+        isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.countryService.getShiftsPatternNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.ShiftsPattern = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+
 
   mapShiftPatternNameToId() {
   if (!this.Shifts || !this.editAsset?.monday_shift) return;
@@ -574,7 +621,18 @@ updateAssetType(): void {
     (response) => {
       alert('Shift Pattern  updated successfully!');
       this.closeEditModal();
-      this.loadShiftsPattern(); // reload updated list
+      // combineLatest waits for both Schema and Branches to have a value
+      this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
     },
 (error) => {
   console.error('Error updating asset:', error);

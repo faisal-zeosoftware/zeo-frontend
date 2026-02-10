@@ -200,6 +200,19 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     return this.http.get(apiUrl);
   }
 
+  getUserforPermissionGroupSelectionNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/Group/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
   getassignedPermissionsForUser(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/permissions/?schema=${selectedSchema}`;
   
@@ -207,6 +220,18 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     return this.http.get(apiUrl);
   }
 
+  getassignedPermissionsForUserNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/permissions/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
     getBranchPermissionsForUser(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/user-branch-access/?schema=${selectedSchema}`;
   
@@ -398,6 +423,19 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     
   }
 
+  getEmailTemplatesNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/email-template/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   
   updateEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/email-template/${templateId}/?schema=${selectedSchema}`;
@@ -455,6 +493,19 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     
   }
 
+  getEmailTemplatesDocNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/doc-exp-emailtemplate/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
   getEmailTemplatesDocReq(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/?schema=${selectedSchema}`;
   
@@ -464,6 +515,18 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     
   }
 
+  getEmailTemplatesDocReqNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/Doc-request-emailtemplate/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   getEmailTemplatesAdvanceSalary(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-email-template/?schema=${selectedSchema}`;
   
@@ -472,6 +535,18 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
 
     
   }
+  getEmailTemplatesAdvanceSalaryNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/advance-salary-email-template/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
     getEmailTemplatesLoan(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-email-template/?schema=${selectedSchema}`;
@@ -480,6 +555,17 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     return this.http.get(apiUrl);
 
     
+  }
+  getEmailTemplatesLoanNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-email-template/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
   }
 
    getEmailTemplatesAsset(selectedSchema: string): Observable<any> {
@@ -491,6 +577,19 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     
   }
 
+  getEmailTemplatesAssetNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/asset-email-template/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
    getEmailTemplatesAirticket(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/airticket-email-template/?schema=${selectedSchema}`;
   
@@ -499,6 +598,19 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
 
     
   }
+
+  getEmailTemplatesAirticketNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/airticket-email-template/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
    getEmailTemplatesResignation(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/employee/api/resignation-email-template/?schema=${selectedSchema}`;
@@ -509,6 +621,19 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
     
   }
 
+
+  getEmailTemplatesResignationNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/resignation-email-template/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
   

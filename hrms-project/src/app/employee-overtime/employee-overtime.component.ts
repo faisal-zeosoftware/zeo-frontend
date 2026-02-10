@@ -5,7 +5,7 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
-
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-employee-overtime',
   templateUrl: './employee-overtime.component.html',
@@ -14,6 +14,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 export class EmployeeOvertimeComponent {
 
 
+  private dataSubscription?: Subscription;
 
 
 
@@ -67,7 +68,26 @@ export class EmployeeOvertimeComponent {
   ) { }
 
   ngOnInit(): void {
-    this.LoadEmployee();
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+ // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+ 
+      this.LoadEmployee();
+    });
+
+
     this.LoadUsers();
     const selectedSchema = this.authService.getSelectedSchema();
     if (selectedSchema) {
@@ -75,8 +95,7 @@ export class EmployeeOvertimeComponent {
 
       this.LoadLeavetype(selectedSchema);
       this.LoadUsers();
-
-      this.LoadLeavebalance(selectedSchema);
+      // this.LoadLeavebalance(selectedSchema);
 
 
 
@@ -232,11 +251,12 @@ export class EmployeeOvertimeComponent {
 
   LoadEmployee(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
     console.log('schemastore', selectedSchema)
     // Check if selectedSchema is available
     if (selectedSchema) {
-      this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
         (result: any) => {
           this.Employees = result;
           console.log(' fetching Employees:');
@@ -353,17 +373,36 @@ export class EmployeeOvertimeComponent {
   }
 
 
-  LoadLeavebalance(selectedSchema: string) {
-    this.leaveService.getEmployeeOvertime(selectedSchema).subscribe(
-      (data: any) => {
+  // LoadLeavebalance(selectedSchema: string) {
+  //   this.leaveService.getEmployeeOvertime(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.LeaveBalances = data;
+
+  //       console.log('employee:', this.LeaveTypes);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.leaveService.getEmployeeOvertimeNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
         this.LeaveBalances = data;
 
-        console.log('employee:', this.LeaveTypes);
+        this.isLoading = false;
       },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
 
 

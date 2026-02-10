@@ -106,7 +106,7 @@ document_number: number | string | null = null;
 ngOnInit(): void {
   this.loadDeparmentBranch();
   this.loadRequestType();
-  this.loadEmp();
+  // this.loadEmp();
   this.loadUsers();
   this.loadgeneralReq();
 

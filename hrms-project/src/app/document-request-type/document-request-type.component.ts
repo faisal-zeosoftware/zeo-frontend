@@ -7,8 +7,9 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { MatOption } from '@angular/material/core';
 
 @Component({
   selector: 'app-document-request-type',

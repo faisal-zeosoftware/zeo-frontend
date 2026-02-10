@@ -8,6 +8,9 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 
+import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentService } from '../department-report/department.service';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-notification-settings',
@@ -17,6 +20,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 export class NotificationSettingsComponent {
 
 
+  private dataSubscription?: Subscription;
   @ViewChild('select') select: MatSelect | undefined;
 
   allSelected=false;
@@ -65,18 +69,41 @@ export class NotificationSettingsComponent {
     private employeeService:EmployeeService,
 
     private DesignationService: DesignationService,
+    private DepartmentServiceService: DepartmentServiceService,
+
   
     ) {}
 
     ngOnInit(): void {
 
-      this.loadLoanTypes();
+
+       // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
+
+  // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadDeparmentBranch(); 
+    // this.loadEmp();
+  });
+  
+
+      // this.loadLoanTypes();
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
 
       this.LoadUsers();
-      this.LoadBeanch();
+      // this.LoadBeanch();
 
 
       
@@ -222,25 +249,45 @@ if (this.userId !== null) {
 
 
  
-      loadLoanTypes(): void {
+      // loadLoanTypes(): void {
     
-        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
-        console.log('schemastore',selectedSchema )
-        // Check if selectedSchema is available
-        if (selectedSchema) {
-          this.leaveService.getNotificationSettings(selectedSchema).subscribe(
-            (result: any) => {
-              this.NotSettings = result;
-              console.log(' fetching Loantypes:');
+      //   console.log('schemastore',selectedSchema )
+      //   // Check if selectedSchema is available
+      //   if (selectedSchema) {
+      //     this.leaveService.getNotificationSettings(selectedSchema).subscribe(
+      //       (result: any) => {
+      //         this.NotSettings = result;
+      //         console.log(' fetching Loantypes:');
       
+      //       },
+      //       (error) => {
+      //         console.error('Error fetching Companies:', error);
+      //       }
+      //     );
+      //   }
+      //   }
+
+
+        isLoading: boolean = false;
+
+        fetchEmployees(schema: string, branchIds: number[]): void {
+          this.isLoading = true;
+          this.leaveService.getNotificationSettingsNew(schema, branchIds).subscribe({
+            next: (data: any) => {
+              // Filter active employees
+              this.NotSettings = data;
+      
+              this.isLoading = false;
             },
-            (error) => {
-              console.error('Error fetching Companies:', error);
+            error: (err) => {
+              console.error('Fetch error:', err);
+              this.isLoading = false;
             }
-          );
+          });
         }
-        }
+      
     
     
     
@@ -303,26 +350,60 @@ mapUsersNameToId() {
  
 
 
-      LoadBeanch(callback?: Function) {
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   LoadBeanch(callback?: Function) {
+    //       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
-        console.log('schemastore',selectedSchema )
-        // Check if selectedSchema is available
-        if (selectedSchema) {
-        this.leaveService.getBranches(selectedSchema).subscribe(
-          (data: any) => {
-            this.Branches = data;
+    //     console.log('schemastore',selectedSchema )
+    //     // Check if selectedSchema is available
+    //     if (selectedSchema) {
+    //     this.leaveService.getBranches(selectedSchema).subscribe(
+    //       (data: any) => {
+    //         this.Branches = data;
           
-            console.log('employee:', this.Branches);
-              if (callback) callback();
+    //         console.log('employee:', this.Branches);
+    //           if (callback) callback();
   
+    //       },
+    //       (error: any) => {
+    //         console.error('Error fetching categories:', error);
+    //       }
+    //     );
+    //   }
+    // }
+
+
+    loadDeparmentBranch(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      
+      if (selectedSchema) {
+        this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+          (result: any[]) => {
+            // 1. Get the sidebar selected IDs from localStorage
+            const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+            // 2. Filter the API result to only include branches selected in the sidebar
+            // If sidebar is empty, you might want to show all, or show none. 
+            // Usually, we show only the selected ones:
+            if (sidebarSelectedIds.length > 0) {
+              this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+            } else {
+              this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+            }
+            // Inside the subscribe block of loadDeparmentBranch
+            if (this.Branches.length === 1) {
+              this.Branches = this.Branches[0].id;
+            }
+    
+            console.log('Filtered branches for selection:', this.Branches);
+            if (callback) callback();
           },
-          (error: any) => {
-            console.error('Error fetching categories:', error);
+          (error) => {
+            console.error('Error fetching branches:', error);
           }
         );
       }
     }
+  
 
        mapBranchNameToId() {
 
