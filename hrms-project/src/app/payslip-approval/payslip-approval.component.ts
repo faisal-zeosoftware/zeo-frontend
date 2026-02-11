@@ -6,6 +6,7 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-payslip-approval',
@@ -16,6 +17,7 @@ export class PayslipApprovalComponent {
 
 
   
+  private dataSubscription?: Subscription;
   @ViewChild('bottomOfPage') bottomOfPage!: ElementRef;
 
 
@@ -56,9 +58,19 @@ export class PayslipApprovalComponent {
 
    ngOnInit(): void {
 
-   
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.EmployeeService.selectedSchema$,
+      this.EmployeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
 
-    this.fetchingApprovals();
+      }
+    });
+
+    // this.fetchingApprovals();
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
     // this.hideButton = this.EmployeeService.getHideButton();
@@ -192,7 +204,18 @@ export class PayslipApprovalComponent {
           console.error('Failed to fetch user details:', error);
         }
       );
-        this.fetchingApprovals();
+        // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.EmployeeService.selectedSchema$,
+          this.EmployeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);  
+            
+  
+          }
+        });
+  
 
 
         this.authService.getUserSchema(this.userId).subscribe(
@@ -255,25 +278,49 @@ export class PayslipApprovalComponent {
 //   }
 // }
 
-fetchingApprovals(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-  if (selectedSchema && this.userId) {
-    this.EmployeeService.getApprovalslistPayslip(selectedSchema, this.userId).subscribe(
-      (result: any[]) => {
-        // Filter items where status is "pending" AND confirm_status is true
-        this.Approvals = result
-          .filter((item: any) =>
-            item.request?.status === 'pending' &&
-            item.request?.confirm_status === true
-          )
-          .map((item: any) => ({ ...item, selected: false }));
-      },
-      (error) => {
-        console.error('Error fetching approvals:', error);
-      }
-    );
-  }
+// fetchingApprovals(): void {
+//   const selectedSchema = this.authService.getSelectedSchema();
+//   if (selectedSchema && this.userId) {
+//     this.EmployeeService.getApprovalslistPayslip(selectedSchema, this.userId).subscribe(
+//       (result: any[]) => {
+//         // Filter items where status is "pending" AND confirm_status is true
+//         this.Approvals = result
+//           .filter((item: any) =>
+//             item.request?.status === 'pending' &&
+//             item.request?.confirm_status === true
+//           )
+//           .map((item: any) => ({ ...item, selected: false }));
+//       },
+//       (error) => {
+//         console.error('Error fetching approvals:', error);
+//       }
+//     );
+//   }
+// }
+
+
+
+// isLoading: boolean = false;
+
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.EmployeeService.getApprovalslistPayslipNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+     // Filter items where status is "pending" AND confirm_status is true
+     this.Approvals = data
+     .filter((item: any) =>
+       item.request?.status === 'pending' &&
+       item.request?.confirm_status === true
+     )
+     .map((item: any) => ({ ...item, selected: false }));
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
 }
+
 
 
 masterSelected = false;
@@ -307,8 +354,18 @@ approveSelectedPayslips(): void {
     (res) => {
       alert('Selected payslips approved.');
       window.location.reload();
-      this.fetchingApprovals(); // refresh list
-    },
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.EmployeeService.selectedSchema$,
+  this.EmployeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+},
     (err) => {
       console.error('Error approving:', err);
       alert('Approval failed.');

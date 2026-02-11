@@ -177,10 +177,34 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
     return this.http.get(url);
   }
 
+  getPunchingsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/attendance/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
   getAllEmployeeAtttendance(selectedSchema: string): Observable<any> {
     const url = `${this.apiUrl}/calendars/api/attendance/employee_attendance/?schema=${selectedSchema}`;
     return this.http.get(url);
   }
+
+  getAllEmployeeAtttendanceNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/attendance/employee_attendance/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
 
 
   getemployeescusValue(selectedSchema: string): Observable<any> {
@@ -252,6 +276,20 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
     return this.http.get(apiUrl);
 
   }
+
+  getEscalationsAdvNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/adv-salary-escalation/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 
   getAllgeneralRequestEscalationsLoan(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-escalation/?schema=${selectedSchema}`;
@@ -4946,6 +4984,20 @@ getpayrollApprovalLevels(selectedSchema: string): Observable<any> {
   
 }
 
+  
+getpayrollApprovalLevelsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/payslip-approval-levels/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 getovertimepolicy(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/calendars/api/overtime_policy/?schema=${selectedSchema}`;
 
@@ -4977,6 +5029,19 @@ getGeofence(selectedSchema: string): Observable<any> {
 
   
 }
+
+getGeofenceNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/branch-geofence/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
 registerPayrollApproverLevel(formData: FormData): Observable<any> {
@@ -5047,6 +5112,18 @@ getApprovalslistPayslip(selectedSchema: string, userId: number): Observable<any>
   return this.http.get(apiUrl);
 }
 
+
+getApprovalslistPayslipNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/payroll/api/approval-payroll/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
 
 bulkApprovePayslips(selectedSchema: string, approvalIds: number[], note: string): Observable<any> {
   const url = `${this.apiUrl}/payroll/api/approval-payroll/bulk_approve/?schema=${selectedSchema}`;
@@ -5374,6 +5451,18 @@ getadvSalaryApprovalLevels(selectedSchema: string): Observable<any> {
 
   
 }
+getadvSalaryApprovalLevelsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/payroll/api/advance-salary-approval-levels/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 
 
 
@@ -5385,6 +5474,21 @@ getApprovalslistadvSalary(selectedSchema: string, userId: number): Observable<an
   
   return this.http.get(apiUrl);
 }
+
+
+
+getApprovalslistadvSalaryNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/approval-salaryrequest/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
 
@@ -5660,6 +5764,8 @@ getProjects(selectedSchema: string): Observable<any> {
   }
   
 
+  
+
 getBrs(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/organisation/api/Branch/?schema=${selectedSchema}`;
 
@@ -5882,6 +5988,19 @@ getDocumentFolders(selectedSchema: string): Observable<any> {
 
   
 }
+
+getDocumentFoldersNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/organisation/api/folders/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 
 
 

@@ -9,6 +9,7 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-advance-salary-escalation',
@@ -17,6 +18,7 @@ import { DesignationService } from '../designation-master/designation.service';
 })
 export class AdvanceSalaryEscalationComponent {
 
+  private dataSubscription?: Subscription;
     // doc_number: any = '';
     document_number: number | null = null;
     reason: any = '';
@@ -94,11 +96,27 @@ export class AdvanceSalaryEscalationComponent {
   ) {}
   
   ngOnInit(): void {
+
+
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+
+
     this.loadDeparmentBranch();
     this.loadRequestType();
     this.loadEmp();
     this.loadUsers();
-    this.loadgeneralReq();
+    // this.loadgeneralReq();
   
     this.userId = this.sessionService.getUserId();
   
@@ -397,8 +415,17 @@ export class AdvanceSalaryEscalationComponent {
       (response) => {
         alert('Advance Salary Escalation updated successfully!');
         this.closeEditModal();
-        this.loadgeneralReq(); // reload updated list
-      },
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});      },
   (error) => {
     console.error('Error updating General Request Escalation:', error);
   
@@ -651,25 +678,44 @@ export class AdvanceSalaryEscalationComponent {
   
   
   
-            loadgeneralReq(): void {
+            // loadgeneralReq(): void {
       
-              const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+            //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
             
-              console.log('schemastore',selectedSchema )
-              // Check if selectedSchema is available
-              if (selectedSchema) {
-                this.employeeService.getAllgeneralRequestEscalationsAdv(selectedSchema).subscribe(
-                  (result: any) => {
-                    this.GeneralReq = result;
-                    console.log(' fetching  general Request: ', result);
+            //   console.log('schemastore',selectedSchema )
+            //   // Check if selectedSchema is available
+            //   if (selectedSchema) {
+            //     this.employeeService.getAllgeneralRequestEscalationsAdv(selectedSchema).subscribe(
+            //       (result: any) => {
+            //         this.GeneralReq = result;
+            //         console.log(' fetching  general Request: ', result);
             
+            //       },
+            //       (error) => {
+            //         console.error('Error fetching general Request:', error);
+            //       }
+            //     );
+            //   }
+            //   }
+
+              isLoading: boolean = false;
+
+              fetchEmployees(schema: string, branchIds: number[]): void {
+                this.isLoading = true;
+                this.employeeService.getEscalationsAdvNew(schema, branchIds).subscribe({
+                  next: (data: any) => {
+                    // Filter active employees
+                    this.GeneralReq = data;
+            
+                    this.isLoading = false;
                   },
-                  (error) => {
-                    console.error('Error fetching general Request:', error);
+                  error: (err) => {
+                    console.error('Fetch error:', err);
+                    this.isLoading = false;
                   }
-                );
+                });
               }
-              }
+            
       
      
               

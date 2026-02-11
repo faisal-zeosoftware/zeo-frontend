@@ -5,6 +5,8 @@ import { AuthenticationService } from '../login/authentication.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 
+import {combineLatest, Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-document-folders',
   templateUrl: './document-folders.component.html',
@@ -13,6 +15,7 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 export class DocumentFoldersComponent {
 
   
+  private dataSubscription?: Subscription;
 
   hasViewPermissionDocumentFolder: boolean = false;
   hasAddPermissionDocumentFolder: boolean = false;
@@ -51,8 +54,20 @@ export class DocumentFoldersComponent {
 
     ngOnInit(): void {
   
+      
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.loadDocumentfolders(schema, branchIds);  
+    
 
-      this.loadDocumentfolders();
+  }
+});
+
+      // this.loadDocumentfolders();
 
 
       // Retrieve user ID
@@ -231,22 +246,42 @@ export class DocumentFoldersComponent {
     Documentfolders:any []=[];
 
 // ✅ Fetch document folders from backend
-loadDocumentfolders(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
+// loadDocumentfolders(): void {
+//   const selectedSchema = this.authService.getSelectedSchema();
 
-  if (selectedSchema) {
-    this.employeeService.getDocumentFolders(selectedSchema).subscribe(
-      (result: any) => {
-        // Filter only top-level folders (no parent)
-        this.Documentfolders = result.filter((folder: any) => folder.parent === null);
-        console.log('Fetched Document Folders:', this.Documentfolders);
-      },
-      (error) => {
-        console.error('Error fetching document folders:', error);
-      }
-    );
-  }
+//   if (selectedSchema) {
+//     this.employeeService.getDocumentFolders(selectedSchema).subscribe(
+//       (result: any) => {
+//         // Filter only top-level folders (no parent)
+//         this.Documentfolders = result.filter((folder: any) => folder.parent === null);
+//         console.log('Fetched Document Folders:', this.Documentfolders);
+//       },
+//       (error) => {
+//         console.error('Error fetching document folders:', error);
+//       }
+//     );
+//   }
+// }
+
+
+isLoading: boolean = false;
+
+loadDocumentfolders(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getDocumentFoldersNew(schema, branchIds).subscribe({
+    next: (result: any) => {
+      // Filter active employees
+      // Filter only top-level folders (no parent)
+      this.Documentfolders = result.filter((folder: any) => folder.parent === null);
+      console.log('Fetched Document Folders:', this.Documentfolders);
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
 }
+
 
 
 expandedFolderIndex: number | null = null;
@@ -297,7 +332,17 @@ CreateFolderSubFolder(): void {
       alert('Subfolder has been added.');
 
       this.iscreatesubfolder = false;
-      this.loadDocumentfolders(); // reload list
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.loadDocumentfolders(schema, branchIds);  
+    
+
+  }
+});
     },
     (error) => {
       console.error('Error adding subfolder:', error);

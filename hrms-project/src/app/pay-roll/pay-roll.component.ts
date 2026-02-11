@@ -9,6 +9,9 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 import { Route, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
+
 
 @Component({
   selector: 'app-pay-roll',
@@ -16,6 +19,8 @@ import * as FileSaver from 'file-saver';
   styleUrl: './pay-roll.component.css'
 })
 export class PayRollComponent {
+
+  private dataSubscription?: Subscription;
 
 
 
@@ -104,29 +109,60 @@ Departments: any[] = [];
     private DesignationService: DesignationService,
     private EmployeeService:EmployeeService,
     private categoryService:CatogaryService,
-    private router: Router
+    private router: Router,
+    private DepartmentServiceService: DepartmentServiceService, 
+
 
     
     ) {}
 
     ngOnInit(): void {
+
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.EmployeeService.selectedSchema$,
+  this.EmployeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchPayrollRun(schema, branchIds);  
+    this.fetchLoadPaySlip(schema, branchIds);  
+    this.fetchLoadConfrimedPayslip(schema, branchIds);  
+
+
+  }
+});
+
+ // Listen for sidebar changes so the dropdown updates instantly
+ this.EmployeeService.selectedBranches$.subscribe(ids => {
+  this.LoadBranch();
+  this.loadEmp(); 
+  this.LoadSalaryCom();
+  this.LoadPayrollSettings();
+  this.LoadPaySlipComponent();
+  this.LoadDepartment();
+
+});
+
+
+
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
 
-      this.LoadEmployee(selectedSchema);
+      // this.LoadEmployee(selectedSchema);
       // this.LoadSalaryCom(selectedSchema);
 this.LoadCategory();
-this.LoadPayroll(selectedSchema);
-this.LoadPayrollSettings(selectedSchema);
-this.LoadPaySlip(selectedSchema)
-this.LoadConfrimedPayslip(selectedSchema)
+// this.LoadPayroll(selectedSchema);
+// this.LoadPayrollSettings(selectedSchema);
+// this.LoadPaySlip(selectedSchema)
+// this.LoadConfrimedPayslip(selectedSchema)
 
-this.LoadSalaryCom(selectedSchema)
-this.LoadPaySlipComponent(selectedSchema);
+// this.LoadSalaryCom(selectedSchema)
+// this.LoadPaySlipComponent(selectedSchema);
 
-this.LoadBranch(selectedSchema);
-this.LoadDepartment(selectedSchema);
+// this.LoadBranch(selectedSchema);
+// this.LoadDepartment(selectedSchema);
 
 
 
@@ -426,36 +462,65 @@ onFileSelected(event:any){
 }
 
 
-    LoadEmployee(selectedSchema: string) {
-      this.EmployeeService.getemployees(selectedSchema).subscribe(
-        (data: any) => {
-          // Filtering employees where is_active is null or true
-          this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-          this.filteredEmployees = this.employees;
+    // LoadEmployee(selectedSchema: string) {
+    //   this.EmployeeService.getemployees(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       // Filtering employees where is_active is null or true
+    //       this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
+    //       this.filteredEmployees = this.employees;
     
     
-          console.log('Filtered Employees:', this.filteredEmployees);
-        },
-        (error: any) => {
+    //       console.log('Filtered Employees:', this.filteredEmployees);
+    //     },
+    //     (error: any) => {
     
-          console.error('Error fetching employees:', error);
-        }
-      );
+    //       console.error('Error fetching employees:', error);
+    //     }
+    //   );
+    // }
+
+    
+    loadEmp(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+    
+      if (selectedSchema) {
+        this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+          (data: any) => {
+           // Filtering employees where is_active is null or true
+           this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
+           this.filteredEmployees = this.employees;
+            
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching Companies:', error);
+          }
+        );
+      }
     }
 
 
-    LoadSalaryCom(selectedSchema: string) {
-      this.leaveService.getSalaryCom(selectedSchema).subscribe(
+    LoadSalaryCom(callback?: Function) {
+
+      const selectedSchema = this.authService.getSelectedSchema();
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+      if (selectedSchema) {
+      this.leaveService.getSalaryComNew(selectedSchema,savedIds).subscribe(
         (data: any) => {
           this.Salarycomponent = data;
         
           console.log('employee:', this.Salarycomponent);
+          if (callback) callback();
         },
         (error: any) => {
           console.error('Error fetching categories:', error);
         }
       );
     }
+    }
+
 
 
     LoadCategory() {
@@ -472,18 +537,36 @@ onFileSelected(event:any){
     }
 
 
-    LoadPayroll(selectedSchema: string) {
-      this.leaveService.getPayroll(selectedSchema).subscribe(
-        (data: any) => {
-          this.Payrolls = data;
+    // LoadPayroll(selectedSchema: string) {
+    //   this.leaveService.getPayroll(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.Payrolls = data;
 
         
-          console.log('Payrolls:', this.Payrolls);
+    //       console.log('Payrolls:', this.Payrolls);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching Payrolls:', error);
+    //     }
+    //   );
+    // }
+
+  
+
+    fetchPayrollRun(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.leaveService.getPayrollNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
+          this.Payrolls = data;
+  
+          this.isLoading = false;
         },
-        (error: any) => {
-          console.error('Error fetching Payrolls:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
+      });
     }
 
 
@@ -502,37 +585,79 @@ onFileSelected(event:any){
       }
     }
     
-    LoadPayrollSettings(selectedSchema: string) {
-      this.leaveService.getPayrollSettings(selectedSchema).subscribe(
-        (data: any) => {
-          this.PayrollSettings = data;
+    // LoadPayrollSettings(selectedSchema: string) {
+    //   this.leaveService.getPayrollSettings(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.PayrollSettings = data;
         
-          console.log('payrollsettings:', this.PayrollSettings);
-        },
-        (error: any) => {
-          console.error('Error fetching PayrollSettings:', error);
-        }
-      );
+    //       console.log('payrollsettings:', this.PayrollSettings);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching PayrollSettings:', error);
+    //     }
+    //   );
+    // }
+
+    LoadPayrollSettings(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+    
+      if (selectedSchema) {
+        this.leaveService.getPayrollSettingsNew(selectedSchema, savedIds).subscribe(
+          (data: any) => {
+           // Filtering employees where is_active is null or true
+           this.PayrollSettings = data;
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching Companies:', error);
+          }
+        );
+      }
     }
+    
 
     
     
 
-    LoadPaySlip(selectedSchema: string) {
-      this.leaveService.getPaySlip(selectedSchema).subscribe(
-        (data: any[]) => {
+    // LoadPaySlip(selectedSchema: string) {
+    //   this.leaveService.getPaySlip(selectedSchema).subscribe(
+    //     (data: any[]) => {
+    //       this.PaySlips = data
+    //         .filter((payslip: any) => payslip.confirm_status === false) // Only pending confirm status
+    //         .map((payslip: any) => ({
+    //           ...payslip,
+    //           payslip_pdf: payslip.payslip_pdf ? payslip.payslip_pdf : null
+    //         }));
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching Payslips:', error);
+    //     }
+    //   );
+    // }
+
+    fetchLoadPaySlip(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.EmployeeService.getProjectNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
           this.PaySlips = data
-            .filter((payslip: any) => payslip.confirm_status === false) // Only pending confirm status
-            .map((payslip: any) => ({
-              ...payslip,
-              payslip_pdf: payslip.payslip_pdf ? payslip.payslip_pdf : null
-            }));
+          .filter((payslip: any) => payslip.confirm_status === false) // Only pending confirm status
+          .map((payslip: any) => ({
+            ...payslip,
+            payslip_pdf: payslip.payslip_pdf ? payslip.payslip_pdf : null
+          }));
+  
+       
         },
-        (error: any) => {
-          console.error('Error fetching Payslips:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
+      });
     }
+
     
 
     getMonthName(month: number): string {
@@ -544,63 +669,157 @@ onFileSelected(event:any){
     }
     
 
-    LoadPaySlipComponent(selectedSchema: string) {
-      this.leaveService.getPayslipComponent(selectedSchema).subscribe(
-        (data: any) => {
-          // Ensure each payslip has a valid URL
-          this.PaySlipsComponent = data;
+    // LoadPaySlipComponent(selectedSchema: string) {
+    //   this.leaveService.getPayslipComponent(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       // Ensure each payslip has a valid URL
+    //       this.PaySlipsComponent = data;
     
-          console.log('Fetched Payslips:', this.PaySlips);
-        },
-        (error: any) => {
-          console.error('Error fetching Payslips:', error);
-        }
-      );
+    //       console.log('Fetched Payslips:', this.PaySlips);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching Payslips:', error);
+    //     }
+    //   );
+    // }
+    
+
+    LoadPaySlipComponent(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+    
+      if (selectedSchema) {
+        this.leaveService.getPayslipComponentNew(selectedSchema, savedIds).subscribe(
+          (data: any) => {
+           // Filtering employees where is_active is null or true
+           this.PaySlipsComponent = data;
+    
+            
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching Companies:', error);
+          }
+        );
+      }
     }
     
 
     
-  LoadBranch(selectedSchema: string) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
-      (data: any) => {
-        this.Branches = data;
+  // LoadBranch(selectedSchema: string) {
+  //   this.leaveService.getBranches(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.Branches = data;
 
-        console.log('employee:', this.Branches);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
+  //       console.log('employee:', this.Branches);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+
+  LoadBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.Branches.length === 1) {
+            this.Branches = this.Branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.Branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
   }
 
-  LoadDepartment(selectedSchema: string) {
-    this.leaveService.getDepartments(selectedSchema).subscribe(
-      (data: any) => {
-        this.Departments = data;
 
-        console.log('employee:', this.Departments);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
+  // LoadDepartment(selectedSchema: string) {
+  //   this.leaveService.getDepartments(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.Departments = data;
+
+  //       console.log('employee:', this.Departments);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+
+
+  LoadDepartment(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+  
+    if (selectedSchema) {
+      this.leaveService.getDepartmentsNew(selectedSchema, savedIds).subscribe(
+        (data: any) => {
+         // Filtering employees where is_active is null or true
+         this.Departments = data;
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
   }
+  
+
 
 
 
  
-  LoadConfrimedPayslip(selectedSchema: string) {
-    this.leaveService.getPaySlipApproved(selectedSchema).subscribe(
-      (data: any) => {
+  // LoadConfrimedPayslip(selectedSchema: string) {
+  //   this.leaveService.getPaySlipApproved(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.PaySlipsConfrimed = data;
+  //       this.filteredDocuments = this.PaySlipsConfrimed;  // Initialize filtered data
+  //       console.log('Confirmed Payslips:', this.PaySlipsConfrimed);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching Payrolls:', error);
+  //     }
+  //   );
+  // }
+
+
+  fetchLoadConfrimedPayslip(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.leaveService.getPaySlipApprovedNew(schema, branchIds).subscribe({
+      next: (data: any) => {
         this.PaySlipsConfrimed = data;
         this.filteredDocuments = this.PaySlipsConfrimed;  // Initialize filtered data
         console.log('Confirmed Payslips:', this.PaySlipsConfrimed);
       },
-      (error: any) => {
-        console.error('Error fetching Payrolls:', error);
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
+
   
 
   LoadPayslip(selectedSchema: string) {

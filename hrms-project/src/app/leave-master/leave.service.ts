@@ -694,6 +694,22 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.get(apiUrl);
   
   }
+
+  getDepartmentsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/organisation/api/Department/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
+
+
   getDesignation(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/organisation/api/Designation/?schema=${selectedSchema}`;
   
@@ -863,6 +879,19 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   
   }
 
+  getSalaryComNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/salarycomponent/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 
   getEmployeeSalaryCom(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/employeesalary/?schema=${selectedSchema}`;
@@ -872,6 +901,19 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   
   }
 
+
+  getEmployeeSalaryComNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/employeesalary/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   getPayroll(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/PayrollRun/?schema=${selectedSchema}`;
   
@@ -880,7 +922,21 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   
   }
 
+  
 
+
+  getPayrollNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/PayrollRun/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
   
@@ -892,6 +948,19 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   
   }
 
+  getPayrollSettingsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/PayrollFormula/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
+
   getPaySlip(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/payslip/?schema=${selectedSchema}`;
   
@@ -901,6 +970,19 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     
   }
 
+
+  getPaySlipNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/payslip/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   
   getPaySlipApproved(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/payslip/aproved_payslips/?schema=${selectedSchema}`;
@@ -909,6 +991,18 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.get(apiUrl);
   
     
+  }
+
+  getPaySlipApprovedNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/payslip/aproved_payslips/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
   }
 
   confirmPayslipstrial(payload: any[]): Observable<any> {
@@ -962,6 +1056,19 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.get(apiUrl);
   
   }
+
+  getPayslipComponentNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/PayslipComponent/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+    
 
 
   
@@ -1326,6 +1433,20 @@ getAdvSalaryRequest(selectedSchema: string): Observable<any> {
   return this.http.get(apiUrl);
 
 }
+
+
+getAdvSalaryRequestNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/advance-salary-request/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
 
 
 

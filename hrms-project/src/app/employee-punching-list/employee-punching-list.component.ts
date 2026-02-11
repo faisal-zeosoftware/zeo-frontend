@@ -9,6 +9,8 @@ import * as FileSaver from 'file-saver';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
+import { EmployeeService } from '../employee-master/employee.service';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-employee-punching-list',
@@ -56,11 +58,23 @@ export class EmployeePunchingListComponent {
     private leaveService: LeaveService,
     private DesignationService: DesignationService,
     private companyRegistrationService: CompanyRegistrationService, 
+    private employeeService: EmployeeService, 
+    private DepartmentServiceService: DepartmentServiceService
 
 
   ) { }
 
   ngOnInit(): void {
+
+
+       // Listen for sidebar changes so the dropdown updates instantly
+   this.employeeService.selectedBranches$.subscribe(ids => {
+ 
+    this.LoadEmployee(); 
+  
+
+  });
+ 
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
@@ -73,7 +87,7 @@ export class EmployeePunchingListComponent {
       this.loadCategoried();
 
 
-      this.LoadEmployee(selectedSchema);
+      // this.LoadEmployee(selectedSchema);
 
       this.loadAllAttendance(selectedSchema); // Load all on init
 
@@ -302,19 +316,41 @@ export class EmployeePunchingListComponent {
 
 
 
-  LoadEmployee(selectedSchema: string): void {
-    this.leaveService.getEmployee(selectedSchema).subscribe(
-      (data: any) => {
-        // Filter only approved leave requests
-        this.Employees = data;
+  // LoadEmployee(selectedSchema: string): void {
+  //   this.leaveService.getEmployee(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       // Filter only approved leave requests
+  //       this.Employees = data;
 
-        console.log('Approved leave requests:', this.Employees);
-      },
-      (error: any) => {
-        console.error('Error fetching leave requests:', error);
-      }
-    );
+  //       console.log('Approved leave requests:', this.Employees);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching leave requests:', error);
+  //     }
+  //   );
+  // }
+
+  LoadEmployee(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
+        (result: any) => {
+          this.Employees = result;
+          console.log(' fetching Employees:');
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Employees:', error);
+        }
+      );
+    }
+
   }
+
 
 
   loadAllAttendance(schema: string): void {
@@ -349,6 +385,38 @@ export class EmployeePunchingListComponent {
         },
         (error: any) => {
           console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
+
+  loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branches = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
         }
       );
     }

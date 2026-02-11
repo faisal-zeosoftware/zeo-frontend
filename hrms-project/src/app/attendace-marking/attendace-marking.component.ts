@@ -8,6 +8,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
+import {combineLatest, Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-attendace-marking',
@@ -15,6 +17,8 @@ import { environment } from '../../environments/environment';
   styleUrl: './attendace-marking.component.css'
 })
 export class AttendaceMarkingComponent {
+
+  private dataSubscription?: Subscription;
 
     private apiUrl = `${environment.apiBaseUrl}`;
 
@@ -73,10 +77,29 @@ private sessionService: SessionService,
 ) {}
 
 ngOnInit(): void {
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchLoadEmployeePunching(schema, branchIds);  
+      
+
+    }
+  });
+
+   // Listen for sidebar changes so the dropdown updates instantly
+   this.employeeService.selectedBranches$.subscribe(ids => {
  
-  this.LoadEmployee();
-  this.LoadEmployeePunching();
-  this.LoadEmployeeAttendance();
+    this.LoadEmployee(); 
+    this.LoadEmployeeAttendance();
+
+  });
+ 
+  // this.LoadEmployee();
+  // this.LoadEmployeePunching();
   
   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
@@ -432,17 +455,18 @@ async registerCheckOut(): Promise<void> {
 }
 
 
-  LoadEmployee() {
+  LoadEmployee(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
     console.log('schemastore',selectedSchema )
     // Check if selectedSchema is available
     if (selectedSchema) {
-      this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+      this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
         (result: any) => {
           this.Employees = result;
           console.log(' fetching Employees:');
-  
+          if (callback) callback();
         },
         (error) => {
           console.error('Error fetching Employees:', error);
@@ -453,46 +477,85 @@ async registerCheckOut(): Promise<void> {
   }
 
 
-  LoadEmployeePunching() {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  // LoadEmployeePunching() {
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getPunchings(selectedSchema).subscribe(
-        (result: any) => {
-          this.Punching = result;
-          console.log(' fetching Employees:');
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getPunchings(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.Punching = result;
+  //         console.log(' fetching Employees:');
   
-        },
-        (error) => {
-          console.error('Error fetching Employees:', error);
-        }
-      );
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Employees:', error);
+  //       }
+  //     );
+  //   }
 
+  // }
+
+ 
+
+  fetchLoadEmployeePunching(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.employeeService.getPunchingsNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Punching = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
 
-  LoadEmployeeAttendance() {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  // LoadEmployeeAttendance() {
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getAllEmployeeAtttendance(selectedSchema).subscribe(
-        (result: any) => {
-          this.EmployeeAllAttendance = result;
-          console.log(' fetching EmployeeAllAttendance:');
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getAllEmployeeAtttendance(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.EmployeeAllAttendance = result;
+  //         console.log(' fetching EmployeeAllAttendance:');
   
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching EmployeeAllAttendance:', error);
+  //       }
+  //     );
+  //   }
+
+  // }
+
+
+  LoadEmployeeAttendance(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+  
+    if (selectedSchema) {
+      this.employeeService.getAllEmployeeAtttendanceNew(selectedSchema, savedIds).subscribe(
+        (data: any) => {
+          this.EmployeeAllAttendance = data;
+          
+          if (callback) callback();
         },
         (error) => {
-          console.error('Error fetching EmployeeAllAttendance:', error);
+          console.error('Error fetching Companies:', error);
         }
       );
     }
-
   }
+
 
 
 

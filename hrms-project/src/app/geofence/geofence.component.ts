@@ -12,6 +12,7 @@ import { MatSelect } from '@angular/material/select';
 import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
+import {combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-geofence',
@@ -21,6 +22,8 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 export class GeofenceComponent {
 
 
+
+  private dataSubscription?: Subscription;
   
     level:any='';
     role:any='';
@@ -96,15 +99,35 @@ export class GeofenceComponent {
   
     ngOnInit(): void {
   
+
+       // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
+       // Listen for sidebar changes so the dropdown updates instantly
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadBranch(); 
+    
+  });
+
+
       // this.loadLoanTypes();
       // this.loadLoanApprovalLevels();
       // this.loadLoanapprover();
   
        this.loadUsers();
-       this.loadBranch();
+      //  this.loadBranch();
 
   
-       this.loadgeofence();
+      //  this.loadgeofence();
   
   
       this.userId = this.sessionService.getUserId();
@@ -265,24 +288,43 @@ export class GeofenceComponent {
   
   
   
-    loadgeofence(): void {
+    // loadgeofence(): void {
       
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
     
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.employeeService.getGeofence(selectedSchema).subscribe(
-          (result: any) => {
-            this.geofencepol = result;
-            console.log(' fetching Geo Fences:');
+    //   console.log('schemastore',selectedSchema )
+    //   // Check if selectedSchema is available
+    //   if (selectedSchema) {
+    //     this.employeeService.getGeofence(selectedSchema).subscribe(
+    //       (result: any) => {
+    //         this.geofencepol = result;
+    //         console.log(' fetching Geo Fences:');
     
+    //       },
+    //       (error) => {
+    //         console.error('Error fetching Companies:', error);
+    //       }
+    //     );
+    //   }
+    //   }
+
+
+      isLoading: boolean = false;
+
+      fetchEmployees(schema: string, branchIds: number[]): void {
+        this.isLoading = true;
+        this.employeeService.getGeofenceNew(schema, branchIds).subscribe({
+          next: (data: any) => {
+            // Filter active employees
+            this.geofencepol = data;
+    
+            this.isLoading = false;
           },
-          (error) => {
-            console.error('Error fetching Companies:', error);
+          error: (err) => {
+            console.error('Fetch error:', err);
+            this.isLoading = false;
           }
-        );
-      }
+        });
       }
   
   
@@ -478,7 +520,17 @@ updateGeoFenceing(): void {
     () => {
       alert('Geo Fence updated successfully!');
       this.closeEditModal();
-      this.loadgeofence(); // better than reload
+       // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
     },
     (error) => {
       console.error('Error updating Geo Fence:', error);
@@ -497,25 +549,58 @@ updateGeoFenceing(): void {
 
   
   
-               loadBranch(): void {
+              //  loadBranch(): void {
               
-                const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+              //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
               
-                console.log('schemastore',selectedSchema )
-                // Check if selectedSchema is available
-                if (selectedSchema) {
-                  this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-                    (result: any) => {
-                      this.Branches = result;
-                      console.log(' fetching Companies:');
+              //   console.log('schemastore',selectedSchema )
+              //   // Check if selectedSchema is available
+              //   if (selectedSchema) {
+              //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+              //       (result: any) => {
+              //         this.Branches = result;
+              //         console.log(' fetching Companies:');
               
-                    },
-                    (error) => {
-                      console.error('Error fetching Companies:', error);
-                    }
-                  );
-                }
-                }
+              //       },
+              //       (error) => {
+              //         console.error('Error fetching Companies:', error);
+              //       }
+              //     );
+              //   }
+              //   }
+
+
+                loadBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.Branches.length === 1) {
+            this.Branches = this.Branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.Branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
 
             
                   toggleAllSelectionBrach(): void {

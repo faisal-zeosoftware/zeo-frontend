@@ -12,6 +12,10 @@ import { MatOption } from '@angular/material/core';
 import { environment } from '../../environments/environment';
 
 
+import {combineLatest, Subscription } from 'rxjs';
+import { EmployeeService } from '../employee-master/employee.service';
+
+
 @Component({
   selector: 'app-employee-early-going',
   templateUrl: './employee-early-going.component.html',
@@ -22,6 +26,7 @@ export class EmployeeEarlyGoingComponent {
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
 
+  private dataSubscription?: Subscription;
   
 
 // Properties
@@ -52,6 +57,8 @@ originalData: any[] = []; // Store raw API response
 
   constructor(
     private http: HttpClient,
+    private employeeService: EmployeeService,
+
     private authService: AuthenticationService,
     private sessionService: SessionService,
     private leaveService: LeaveService,
@@ -62,6 +69,8 @@ originalData: any[] = []; // Store raw API response
   ) { }
 
   ngOnInit(): void {
+
+    
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
@@ -206,11 +215,23 @@ originalData: any[] = []; // Store raw API response
 
   generateEmployeeEarlyGoing() {
     const selectedSchema = localStorage.getItem('selectedSchema');
+    
+    // 1. Get branch IDs from localStorage
+    const savedBranchIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
     if (!selectedSchema) return;
   
     this.isLoading = true;
-    const url = `${this.apiUrl}/calendars/api/attendance/monthly_late_and_early_attendance/` + 
-                 `?month=${this.selectedMonth}&year=${this.selectedYear}&schema=${selectedSchema}`;
+  
+    // 2. Construct the base URL
+    let url = `${this.apiUrl}/calendars/api/attendance/monthly_late_and_early_attendance/` + 
+              `?month=${this.selectedMonth}&year=${this.selectedYear}&schema=${selectedSchema}`;
+  
+    // 3. Append branch_id parameter if branches are selected
+    if (savedBranchIds.length > 0) {
+      const branchParam = `[${savedBranchIds.join(',')}]`;
+      url += `&branch_id=${branchParam}`;
+    }
   
     this.http.get<any[]>(url).subscribe({
       next: (data) => {
@@ -225,7 +246,6 @@ originalData: any[] = []; // Store raw API response
       }
     });
   }
-  
   applyLocalFilters() {
     this.displayData = this.originalData.filter(item => {
       const matchesName = item.employee_name.toLowerCase().includes(this.searchName.toLowerCase());

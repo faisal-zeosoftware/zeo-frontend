@@ -10,6 +10,8 @@ import * as XLSX from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 
+import {combineLatest, Subscription } from 'rxjs';
+
 @Component({
   selector: 'app-wps',
   templateUrl: './wps.component.html',
@@ -17,6 +19,7 @@ import * as FileSaver from 'file-saver';
 })
 export class WpsComponent {
 
+  private dataSubscription?: Subscription;
   
   repayment_date:any='';
   amount_paid:any='';
@@ -61,9 +64,21 @@ private employeeService: EmployeeService,
 
   ngOnInit(): void {
 
+     // combineLatest waits for both Schema and Branches to have a value
+     this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
+    });
+
     const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
-        this.LoadPayroll(selectedSchema);
+        // this.LoadPayroll(selectedSchema);
 
       }
 
@@ -165,22 +180,6 @@ private employeeService: EmployeeService,
       );
   }
 }
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_leave_type' ||'change_leave_type' ||'delete_leave_type' ||'view_leave_type';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
   
   
   
@@ -196,18 +195,36 @@ private employeeService: EmployeeService,
   Payrolls: any[] = [];
 
 
-  LoadPayroll(selectedSchema: string) {
-    this.leaveervice.getPayroll(selectedSchema).subscribe(
-      (data: any) => {
-        this.Payrolls = data;
+  // LoadPayroll(selectedSchema: string) {
+  //   this.leaveervice.getPayroll(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.Payrolls = data;
 
       
-        console.log('Payrolls:', this.Payrolls);
+  //       console.log('Payrolls:', this.Payrolls);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching Payrolls:', error);
+  //     }
+  //   );
+  // }
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.leaveervice.getPayrollNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Payrolls = data;
+
+        this.isLoading = false;
       },
-      (error: any) => {
-        console.error('Error fetching Payrolls:', error);
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
 
   selectedPayrollId: number | null = null;

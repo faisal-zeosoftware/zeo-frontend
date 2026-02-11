@@ -9,12 +9,17 @@ declare var $: any;
 import 'summernote'; // Ensure you have summernote imported
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
+import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 @Component({
   selector: 'app-salary',
   templateUrl: './salary.component.html',
   styleUrl: './salary.component.css'
 })
 export class SalaryComponent {
+
+  
+  private dataSubscription?: Subscription;
 
    private apiUrl = `${environment.apiBaseUrl}`;
 
@@ -97,21 +102,46 @@ updateIdEmp: number | null = null;
     private EmployeeService:EmployeeService,
     private el:ElementRef,
     private companyRegistrationService: CompanyRegistrationService, 
-
+    private DepartmentServiceService: DepartmentServiceService, 
 
     
     ) {}
 
     ngOnInit(): void {
+
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.EmployeeService.selectedSchema$,
+  this.EmployeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+    this.fetchEmployeesSalaryCom(schema, branchIds);  
+
+  }
+});
+
+  // Listen for sidebar changes so the dropdown updates instantly
+  this.EmployeeService.selectedBranches$.subscribe(ids => {
+    this.loadDeparmentBranch();
+    this.loadEmp(); 
+ 
+  });
+  
+
+
+
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
 
-      this.LoadEmployee(selectedSchema);
-      this.LoadSalaryCom(selectedSchema);
-      this.LoadBranch(selectedSchema);
+      // this.LoadEmployee(selectedSchema);
+      // this.LoadSalaryCom(selectedSchema);
+      // this.LoadBranch(selectedSchema);
 
-      this.LoadEmployeeSalaryCom(selectedSchema);
+      // this.LoadEmployeeSalaryCom(selectedSchema);
 
       
       }
@@ -311,7 +341,17 @@ if (this.userId !== null) {
           (response) => {
             alert('Salary Component updated successfully');
             this.resetForm();
-            this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
+            this.dataSubscription = combineLatest([
+              this.EmployeeService.selectedSchema$,
+              this.EmployeeService.selectedBranches$
+            ]).subscribe(([schema, branchIds]) => {
+              if (schema) {
+                this.fetchEmployees(schema, branchIds);  
+                
+      
+              }
+            });
+            // this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
           },
           (error) => {
             console.error('Update failed', error);
@@ -323,7 +363,19 @@ if (this.userId !== null) {
           (response) => {
             alert('Salary Component has been added');
             this.resetForm();
-            this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
+             // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.EmployeeService.selectedSchema$,
+        this.EmployeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
+            // this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
           },
           (error) => {
             console.error('Add failed', error);
@@ -423,7 +475,18 @@ if (this.userId !== null) {
           (response) => {
             alert('Employee Salary updated successfully');
             this.resetFormEmp();
-            this.LoadEmployeeSalaryCom(localStorage.getItem('selectedSchema') || '');
+             // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.EmployeeService.selectedSchema$,
+        this.EmployeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+            // this.LoadEmployeeSalaryCom(localStorage.getItem('selectedSchema') || '');
           },
           (error) => {
             console.error('Update failed', error);
@@ -435,7 +498,20 @@ if (this.userId !== null) {
           (response) => {
             alert('Salary Component has been added');
             this.resetFormEmp();
-            this.LoadEmployeeSalaryCom(localStorage.getItem('selectedSchema') || '');
+            
+ // combineLatest waits for both Schema and Branches to have a value
+       this.dataSubscription = combineLatest([
+        this.EmployeeService.selectedSchema$,
+        this.EmployeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
+            // this.LoadEmployeeSalaryCom(localStorage.getItem('selectedSchema') || '');
             window.location.reload();
           },
           (error) => {
@@ -507,65 +583,159 @@ if (this.userId !== null) {
     }
     
 
-    LoadEmployee(selectedSchema: string) {
-      this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
-        (data: any) => {
-          // Filtering employees where is_active is null or true
-          this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-          this.filteredEmployees = this.employees;
+    // LoadEmployee(selectedSchema: string) {
+    //   this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       // Filtering employees where is_active is null or true
+    //       this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
+    //       this.filteredEmployees = this.employees;
     
     
-          console.log('Filtered Employees:', this.filteredEmployees);
-        },
-        (error: any) => {
+    //       console.log('Filtered Employees:', this.filteredEmployees);
+    //     },
+    //     (error: any) => {
     
-          console.error('Error fetching employees:', error);
-        }
-      );
+    //       console.error('Error fetching employees:', error);
+    //     }
+    //   );
+    // }
+
+    loadEmp(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+    
+      if (selectedSchema) {
+        this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+          (data: any) => {
+           // Filtering employees where is_active is null or true
+           this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
+           this.filteredEmployees = this.employees;
+            
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching Companies:', error);
+          }
+        );
+      }
     }
+    
 
 
-    LoadSalaryCom(selectedSchema: string) {
-      this.leaveService.getSalaryCom(selectedSchema).subscribe(
-        (data: any) => {
+    // LoadSalaryCom(selectedSchema: string) {
+    //   this.leaveService.getSalaryCom(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.Salarycomponent = data;
+        
+    //       console.log('employee:', this.Salarycomponent);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
+
+
+    isLoading: boolean = false;
+
+    fetchEmployees(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.leaveService.getSalaryComNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
           this.Salarycomponent = data;
-        
-          console.log('employee:', this.Salarycomponent);
+  
+          this.isLoading = false;
         },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
+      });
+    }
+  
+
+
+
+
+    // LoadBranch(selectedSchema: string) {
+    //   this.leaveService.getBranches(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.Branches = data;
+        
+    //       console.log('employee:', this.Salarycomponent);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
+
+    loadDeparmentBranch(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      
+      if (selectedSchema) {
+        this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+          (result: any[]) => {
+            // 1. Get the sidebar selected IDs from localStorage
+            const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+            // 2. Filter the API result to only include branches selected in the sidebar
+            // If sidebar is empty, you might want to show all, or show none. 
+            // Usually, we show only the selected ones:
+            if (sidebarSelectedIds.length > 0) {
+              this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+            } else {
+              this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+            }
+            // Inside the subscribe block of loadDeparmentBranch
+            if (this.Branches.length === 1) {
+              this.Branches = this.Branches[0].id;
+            }
+    
+            console.log('Filtered branches for selection:', this.Branches);
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching branches:', error);
+          }
+        );
+      }
     }
 
-    LoadBranch(selectedSchema: string) {
-      this.leaveService.getBranches(selectedSchema).subscribe(
-        (data: any) => {
-          this.Branches = data;
+
+    // LoadEmployeeSalaryCom(selectedSchema: string) {
+    //   this.leaveService.getEmployeeSalaryCom(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.EmployeeSalarycomponent = data;
         
-          console.log('employee:', this.Salarycomponent);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
+    //       console.log('employee:', this.Salarycomponent);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
 
 
+    
 
-    LoadEmployeeSalaryCom(selectedSchema: string) {
-      this.leaveService.getEmployeeSalaryCom(selectedSchema).subscribe(
-        (data: any) => {
+    fetchEmployeesSalaryCom(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.leaveService.getEmployeeSalaryComNew(schema, branchIds).subscribe({
+        next: (data: any) => {
+          // Filter active employees
           this.EmployeeSalarycomponent = data;
-        
-          console.log('employee:', this.Salarycomponent);
+  
+          this.isLoading = false;
         },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
         }
-      );
+      });
     }
-
 
 
     numbers: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];

@@ -10,6 +10,7 @@ import { CompanyRegistrationService } from '../company-registration.service';
 import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { environment } from '../../environments/environment';
+import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
   selector: 'app-employee-recheck',
@@ -55,19 +56,28 @@ export class EmployeeRecheckComponent {
     private sessionService: SessionService,
     private leaveService: LeaveService,
     private DesignationService: DesignationService,
-    private companyRegistrationService: CompanyRegistrationService,
+    private employeeService: EmployeeService,
 
 
   ) { }
 
   ngOnInit(): void {
 
+     // Listen for sidebar changes so the dropdown updates instantly
+   this.employeeService.selectedBranches$.subscribe(ids => {
+ 
+    this.LoadEmployee(); 
+  
+
+  });
+ 
+
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
     const selectedSchema = this.authService.getSelectedSchema();
     if (selectedSchema) {
 
-      this.LoadEmployee(selectedSchema);
+      // this.LoadEmployee(selectedSchema);
 
 
 
@@ -205,19 +215,42 @@ export class EmployeeRecheckComponent {
 
 
 
-  LoadEmployee(selectedSchema: string): void {
-    this.leaveService.getEmployee(selectedSchema).subscribe(
-      (data: any) => {
-        // Filter only approved leave requests
-        this.Employees = data;
+  // LoadEmployee(selectedSchema: string): void {
+  //   this.leaveService.getEmployee(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       // Filter only approved leave requests
+  //       this.Employees = data;
 
-        console.log('Approved leave requests:', this.Employees);
-      },
-      (error: any) => {
-        console.error('Error fetching leave requests:', error);
-      }
-    );
+  //       console.log('Approved leave requests:', this.Employees);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching leave requests:', error);
+  //     }
+  //   );
+  // }
+
+  LoadEmployee(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
+        (result: any) => {
+          this.Employees = result;
+          console.log(' fetching Employees:');
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Employees:', error);
+        }
+      );
+    }
+
   }
+
+
 
 
 
