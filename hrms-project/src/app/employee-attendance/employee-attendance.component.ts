@@ -336,40 +336,82 @@ uniqueDepts: string[] = [];
 uniqueDesgs: string[] = [];
 
 
+// generateAttendanceReport(): void {
+//   if (!this.start_date || !this.end_date) {
+//     alert("Please select both start and end dates.");
+//     return;
+//   }
+
+//   // Start Loading
+//   this.isLoading = true;
+//   this.allAttendanceRecords = []; // Clear old data while loading
+
+//   const payload = {
+//     start_date: this.start_date,
+//     end_date: this.end_date
+//   };
+
+//   this.leaveService.CreateEmployeeattendance(payload).subscribe({
+//     next: (response: any[]) => {
+//       this.allAttendanceRecords = response;
+      
+//       // Update unique filter lists
+//       this.uniqueBranches = [...new Set(response.map(item => item.branch).filter(v => v))];
+//       this.uniqueDepts = [...new Set(response.map(item => item.department).filter(v => v))];
+//       this.uniqueDesgs = [...new Set(response.map(item => item.designation).filter(v => v))];
+
+//       this.applyLocalFilters();
+//       this.isLoading = false; // Stop Loading
+//     },
+//     error: (error) => {
+//       console.error('Error generating report', error);
+//       this.isLoading = false; // Stop Loading on error
+//       alert('Failed to fetch data.');
+//     }
+//   });
+// }
+
+
 generateAttendanceReport(): void {
   if (!this.start_date || !this.end_date) {
     alert("Please select both start and end dates.");
     return;
   }
 
-  // Start Loading
+  // 1. Get branch IDs from localStorage
+  const savedBranchIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
   this.isLoading = true;
-  this.allAttendanceRecords = []; // Clear old data while loading
+  this.allAttendanceRecords = [];
 
   const payload = {
     start_date: this.start_date,
     end_date: this.end_date
   };
 
-  this.leaveService.CreateEmployeeattendance(payload).subscribe({
+  // 2. Pass branches to the service method
+  this.leaveService.CreateEmployeeattendanceNew(payload, savedBranchIds).subscribe({
     next: (response: any[]) => {
       this.allAttendanceRecords = response;
       
-      // Update unique filter lists
       this.uniqueBranches = [...new Set(response.map(item => item.branch).filter(v => v))];
       this.uniqueDepts = [...new Set(response.map(item => item.department).filter(v => v))];
       this.uniqueDesgs = [...new Set(response.map(item => item.designation).filter(v => v))];
 
       this.applyLocalFilters();
-      this.isLoading = false; // Stop Loading
+      this.isLoading = false;
     },
     error: (error) => {
       console.error('Error generating report', error);
-      this.isLoading = false; // Stop Loading on error
+      this.isLoading = false;
       alert('Failed to fetch data.');
     }
   });
 }
+
+
+
+
 applyLocalFilters(): void {
   this.filteredRecords = this.allAttendanceRecords.filter(emp => {
     const matchName = !this.searchText || emp.employee_name.toLowerCase().includes(this.searchText.toLowerCase());

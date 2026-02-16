@@ -308,7 +308,8 @@ updateLeavetype(id: number, data: any): Observable<any> {
   // }
 
   // leave.service.ts
-CreateEmployeeattendance(payload: any): Observable<any> {
+
+  CreateEmployeeattendance(payload: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/calendars/api/monthly-attendance/generate/?schema=${selectedSchema}`;
   
@@ -316,17 +317,26 @@ CreateEmployeeattendance(payload: any): Observable<any> {
   return this.http.post(apiUrl, payload);
 }
 
-
-CreateEmployeeattendanceNew(selectedSchema: string, branchIds: number[], payload: FormData): Observable<any> {
-  // 1. Convert branch IDs to the string format required by the backend "[1,2,3]"
+CreateEmployeeattendanceNew(payload: any, branchIds: number[]): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  
+  // 1. Convert [1,3,4] into the string "[1,3,4]" for the URL
   const branchParam = branchIds.length > 0 ? `&branch_id=[${branchIds.join(',')}]` : '';
   
-  // 2. Construct the URL with Schema and Branches
-  const apiUrl = `${this.apiUrl}/calendars/api/monthly-attendance/generate/?schema=${selectedSchema}${branchParam}`;
+  // 2. Construct the URL with Schema
+  let apiUrl = `${this.apiUrl}/calendars/api/monthly-attendance/generate/?schema=${selectedSchema}`;
   
-  // 3. Send POST request with parameters in URL and payload in body
+  // 3. Append branch filter if present
+  if (branchParam) {
+    apiUrl += branchParam;
+  }
+  
+  // Sending payload as POST body
   return this.http.post(apiUrl, payload);
 }
+
+
+
 
 
   registerEmailTemplateLeave(companyData: any): Observable<any> {
