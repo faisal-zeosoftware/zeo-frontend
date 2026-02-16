@@ -137,25 +137,7 @@
               <span>Approvals</span>
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-tab="financial">
-              <i class="bi bi-cash-coin me-2"></i>
-              <span>Payslip</span>
-            </a>
-          </li>
-         
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-tab="health">
-              <i class="bi bi-heart-pulse me-2"></i>
-              <span>Assets</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-tab="settings">
-              <i class="bi bi-gear me-2"></i>
-              <span>Settings</span>
-            </a>
-          </li>
+
         </ul>
 
         <div class="mt-5 mb-3 text-center">
@@ -309,51 +291,7 @@
                   </div>
                 </div>
               </div>
-              <!-- 
-              <div class="col-md-3 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
-                  <div class="card-body">
-                    <h5 class="card-title">Attendance</h5>
-                    <div class="d-flex align-items-center">
-                      <h2 class="mb-0 me-2">92%</h2>
-                      <span class="text-danger"><i class="bi bi-arrow-down-short"></i> 3%</span>
-                    </div>
-                    <div class="progress mt-3" style="height: 5px;">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: 92%;" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-    
-              <div class="col-md-3 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
-                  <div class="card-body">
-                    <h5 class="card-title">Credits Completed</h5>
-                    <div class="d-flex align-items-center">
-                      <h2 class="mb-0 me-2">64</h2>
-                      <span class="text-muted">/ 120</span>
-                    </div>
-                    <div class="progress mt-3" style="height: 5px;">
-                      <div class="progress-bar bg-info" role="progressbar" style="width: 53%;" aria-valuenow="53" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-    
-              <div class="col-md-3 mb-4">
-                <div class="card h-100 border-0 shadow-sm">
-                  <div class="card-body">
-                    <h5 class="card-title">Tuition Paid</h5>
-                    <div class="d-flex align-items-center">
-                      <h2 class="mb-0 me-2">75%</h2>
-                      <span class="text-muted">$3,750 left</span>
-                    </div>
-                    <div class="progress mt-3" style="height: 5px;">
-                      <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
+
             </div>
 
             <div class="row">
@@ -430,84 +368,11 @@
                           <small class="text-center">{{ employeesec.emp_branch_id }}</small>
                         </div>
                       </div>
-
-                    
-
-                      <!-- <div *ngFor="let doc of expiredDocuments">
-                          <p>Document Name: {{ doc.name }}</p>
-                          <p>Expiration Date: {{ doc.expiryDate }}</p>
-                        </div> -->
                     </div>
-                    <!-- <div class="table-responsive">
-                      <table class="table table-hover">
-                        <thead>
-                          <tr>
-                            <th>Course</th>
-                            <th>Instructor</th>
-                            <th>Schedule</th>
-                            <th>Grade</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td>CS301: Data Structures</td>
-                            <td>Dr. Smith</td>
-                            <td>MWF 10:00-11:15</td>
-                            <td><span class="badge bg-success">A</span></td>
-                          </tr>
-                          <tr>
-                            <td>MATH241: Linear Algebra</td>
-                            <td>Prof. Johnson</td>
-                            <td>TR 13:00-14:30</td>
-                            <td><span class="badge bg-primary">B+</span></td>
-                          </tr>
-                          <tr>
-                            <td>ENG210: Technical Writing</td>
-                            <td>Dr. Williams</td>
-                            <td>MWF 14:00-15:15</td>
-                            <td><span class="badge bg-warning text-dark">C</span></td>
-                          </tr>
-                          <tr>
-                            <td>PHYS201: Physics II</td>
-                            <td>Dr. Garcia</td>
-                            <td>TR 9:30-11:00</td>
-                            <td><span class="badge bg-success">A-</span></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div> -->
                   </div>
                 </div>
               </div>
-
-              <!-- Upcoming Events -->
-              <!-- <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm">
-                  <div class="card-header bg-white">
-                    <h5 class="mb-0">Upcoming Holidays</h5>
-                  </div>
-                  <div class="card-body p-0">
-                    <ul class="list-group list-group-flush"  *ngFor="let Empholiday of employeesec.holidays">
-                      <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                        <div>
-                          <div class="d-flex align-items-center">
-                            <i class="bi bi-calendar-event text-primary me-2"></i>
-                            <strong>{{Empholiday.description}}</strong>
-                          </div>
-                          <small class="text-muted">{{Empholiday.start_date}}</small>
-                        </div>
-                        <span class="badge bg-danger rounded-pill">{{ calculateDaysLeft(Empholiday.start_date) }}</span>
-                      </li>
-                    
-                    </ul>
-                  </div>
-                  <div class="card-footer bg-white text-center">
-                    <a href="#" class="btn btn-sm btn-outline-primary">View Full Calendar</a>
-                  </div>
-                </div>
-              </div> -->
-
-             
+            
             </div>
 
             <div class="row">
@@ -677,53 +542,6 @@
     <p class="no-data">No projects assigned</p>
   </ng-template>  
 
-
-              <!-- <div class="line-chart-block block">
-                <div class="line-chart">
-                  <div class='grafico'>
-                  <ul class='eje-y'>
-                    <li data-ejeY='30'></li>
-                    <li data-ejeY='20'></li>
-                    <li data-ejeY='10'></li>
-                    <li data-ejeY='0'></li>
-                  </ul>
-                  <ul class='eje-x'>
-                    <li>Apr</li>
-                    <li>May</li>
-                    <li>Jun</li>
-                  </ul>
-                    <span data-valor='25'>
-                      <span data-valor='8'>
-                        <span data-valor='13'>
-                          <span data-valor='5'>   
-                            <span data-valor='23'>   
-                            <span data-valor='12'>
-                                <span data-valor='15'>
-                                </span></span></span></span></span></span></span>
-                  </div>
-                  
-                </div>
-                               <ul class="time-lenght horizontal-list">
-                                   <li><a class="time-lenght-btn" href="#14">Week</a></li>
-                                   <li><a class="time-lenght-btn" href="#15">Month</a></li>
-                                   <li><a class="time-lenght-btn" href="#16">Year</a></li>
-                               </ul>
-                               <ul class="month-data clear">
-                                   <li>
-                                       <p>APR<span class="scnd-font-color"> 2013</span></p>
-                                       <p><span class="entypo-plus increment"> </span>21<sup>%</sup></p>
-                                   </li>
-                                   <li>
-                                       <p>MAY<span class="scnd-font-color"> 2013</span></p>
-                                       <p><span class="entypo-plus increment"> </span>48<sup>%</sup></p>
-                                   </li>
-                                   <li>
-                                       <p>JUN<span class="scnd-font-color"> 2013</span></p>
-                                       <p><span class="entypo-plus increment"> </span>35<sup>%</sup></p>
-                                   </li>
-                               </ul>
-                           </div> -->
-                           
 
           </div>
 
@@ -1027,8 +845,6 @@
             </div>
           </div>
 
-
-
           <div id="document" *ngIf="activeTab === 'document'">
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
@@ -1182,9 +998,6 @@
             </div>
           </div>
 
-
-
-
           <div id="asset" *ngIf="activeTab === 'asset'">
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
@@ -1227,9 +1040,6 @@
               </div>
             </div>
           </div>
-
-
-
 
           <div id="loan" *ngIf="activeTab === 'loan'">
             <!-- Your Run Employee Salary content -->
@@ -1303,9 +1113,6 @@
               </div>
             </div>
           </div>
-
-
-
 
           <div id="attendance" *ngIf="activeTab === 'attendance'">
             <!-- Your Run Employee Salary content -->
@@ -1473,10 +1280,6 @@
 
         </div>
 
-
-
-
-
       </section>
 
       <!-- Other tabs would go here, initially hidden -->
@@ -1488,30 +1291,78 @@
         <div class="white-outer-sec">
           <form (ngSubmit)="requestLeave()" enctype="multipart/form-data">
             <div class="row">
-              <div class="col-md-6">
+
+              
+              <div class="col-md-3">
+                <label>Leave Type</label>
+                <div class="custom-sel">
+<select class="form-control"
+        [(ngModel)]="leave_type"
+        required
+        [ngModelOptions]="{standalone: true}">
+  <option value="">-- Select Leave Type --</option>
+  <option *ngFor="let lt of LeaveTypes" [value]="lt.id">
+    {{ lt.leave_type }}
+  </option>
+</select>
+          
+                </div>
+              </div>
+
+
+ <div class="col-md-3">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
+              
+
+              <!-- <div class="col-md-3">
+                <label>Document Number</label>
+                <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter Document number"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !document_number}">
+                <div *ngIf="registerButtonClicked && !document_number" class="error-message">Document number is required.</div>
+              </div> -->
+          
+
+
+            
+             
+
+
+              <div class="col-md-3">
                 <label>Start Date</label>
-                <input
-                type="date"
-                class="form-control"
-                name="start_date"
-                [(ngModel)]="start_date"
-                placeholder="Enter Start Date"
-                [ngModelOptions]="{standalone: true}"
-              />
+                <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter Start Date" (change)="calculateTotalDays()"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
+                <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
               </div>
           
-              <div class="col-md-6">
+              <div class="col-md-3">
                 <label>End Date</label>
-                <input
-                type="date"
-                class="form-control"
-                name="end_date"
-                [(ngModel)]="end_date"
-                placeholder="Enter End Date"
-                [ngModelOptions]="{standalone: true}"
-              />
+                <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter End Date" (change)="calculateTotalDays()"
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+                <div *ngIf="registerButtonClicked && !end_date" class="error-message">End Date is required.</div>
               </div>
-          
+
+
+              <div class="col-m-3">
+                <label>total days</label>
+                <input type="text" class="form-control" [value]="totalDays" readonly>
+              </div>
+
+
               <div class="col-md-12">
                 <label>Reason</label>
                 <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}"></textarea>
@@ -1526,16 +1377,16 @@
                        [ngModelOptions]="{standalone: true}" >
               </div> -->
 
-              <div class="col-md-6">
+              <div class="col-md-3">
                 <label></label>
                 <div class="check-box-selection-sec form-control mt-3">
                   <div class="mat-set">
-                    <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Dis Half Day</mat-checkbox>
+                    <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Half Day</mat-checkbox>
                   </div>
                 </div>
               </div>
               
-              <div class="col-md-6">
+              <div class="col-md-3" *ngIf="dis_half_day">
                 <label>Half Day Period</label>
                 <div class="custom-sel">
                   <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="half_day_period" [ngModelOptions]="{standalone: true}">
@@ -1546,26 +1397,17 @@
               </div>
 
 
-              <div class="col-md-6">
-                <label>Leave Type</label>
+              <!-- <div class="col-md-6">
+                <label>Created By</label>
                 <div class="custom-sel">
-                  <select
-                    class="form-control"
-                    id="leave_type"
-                    name="leave_type"
-                    [(ngModel)]="leave_type"
-                    [ngModelOptions]="{standalone: true}"
-                  >
-                    <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">
-                      {{ leavetype.leave_type }} (Balance: {{ leavetype.balance }})
-                    </option>
+                  <select class="form-control" id="approved_by" name="approved_by" [(ngModel)]="approved_by" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.email }}</option>
                   </select>
                 </div>
-              </div>
-              
+              </div> -->
 
-
-             
+          
+         
           
          
             </div>
@@ -1573,7 +1415,7 @@
             <div class="row">
               <div class="col-md-9"></div>
               <div class="col-md-3">
-                <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Type</button>
+                <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Request</button>
               </div>
             </div>
           </form>
@@ -1594,11 +1436,13 @@
                   <tr>
                     <th class="text-table-header" style="width: 0;">No</th>
                     <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Document Number</th>
                     <th class="text-table-header">Start Date</th>
 
                     <th class="text-table-header">End Date</th>
                     <th class="text-table-header">Leave Type</th>
 
+                    <th class="text-table-header">Reason</th>
                     <th class="text-table-header">Status</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
@@ -1608,10 +1452,12 @@
                   
                   <tr class="tbodytext" *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
                     <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.document_number || '-' }}</td>
                     <td>{{ leavereq.start_date }}</td>
                     <td>{{ leavereq.end_date }}</td>
                     <td>{{ leavereq.leave_type }}</td>
-                    <td>{{ leavereq.approvals?.status }}</td>
+                    <td>{{ leavereq.reason }}</td>
+                    <td>{{ leavereq.approvals?.[0]?.status || '-' }}</td>
 
 
                   </tr>
@@ -1824,10 +1670,11 @@
                   <tr>
                     <th class="text-table-header" style="width: 0;">No</th>
                     <!-- <th class="text-table-header">Employee</th> -->
-                    <th class="text-table-header">Start Date</th>
+                    <th class="text-table-header">Document number</th>
 
-                    <th class="text-table-header">End Date</th>
-                    <th class="text-table-header">Leave Type</th>
+                    <th class="text-table-header">Reason</th>
+                    <th class="text-table-header">Request Type</th>
+                    <th class="text-table-header">Remarks</th>
 
                     <th class="text-table-header">Status</th>
 
@@ -1836,12 +1683,13 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
+                  <tr class="tbodytext" *ngFor="let genreq of employeesec.requests; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.start_date }}</td>
-                    <td>{{ leavereq.end_date }}</td>
-                    <td>{{ leavereq.leave_type }}</td>
-                    <td>{{ leavereq.approvals?.status }}</td>
+                    <td>{{ genreq.document_number || '-' }}</td>
+                    <td>{{ genreq.reason }}</td>
+                    <td>{{ genreq.request_type }}</td>
+                    <td>{{ genreq.remarks }}</td>
+                    <td>{{ genreq.status }}</td>
 
 
                   </tr>
@@ -1864,71 +1712,75 @@
                  
         <form >
 
-          <div class="row">
-             
-
-            <div class="col-md-12" >
-             
-              <label>Reason</label>
-              
-             <textarea  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter reason"
-              [ngModelOptions]="{standalone: true}" > </textarea>
-             
-        </div>
-
-        
+            <div class="row">
 
 
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
 
-      
-
-        <div class="col-md-6" >
-          <label>Select Asset Type</label>
-          <div class="custom-sel">
-            <select
-              class="form-control"
-              id="asset_type"
-              name="asset_type"
-              [(ngModel)]="asset_type"
-              [ngModelOptions]="{ standalone: true }"
-            >
-              <option *ngFor="let employees of AssetTypes" [value]="employees.id">
-                {{ employees.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-      
-
-
-
-<div class="col-md-6" >
-  <label>Select Requested Asset </label>
-  <div class="custom-sel">
-    <select
-      class="form-control"
-      id="requested_asset"
-      name="requested_asset"
-      [(ngModel)]="requested_asset"
-      [ngModelOptions]="{ standalone: true }"
-    >
-      <option *ngFor="let employees of Assets" [value]="employees.id">
-        {{ employees.name }}
-      </option>
-    </select>
-  </div>
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
 </div>
 
-   
-
-    
-    
- 
 
 
-
-  
+             <div class="col-md-6" >
+            <label>Select Asset Type</label>
+            <div class="custom-sel">
+              <select
+                class="form-control"
+                id="asset_type"
+                name="asset_type"
+                [(ngModel)]="asset_type"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <option *ngFor="let employees of AssetTypes" [value]="employees.id">
+                  {{ employees.name }}
+                </option>
+              </select>
+            </div>
           </div>
+
+
+  <div class="col-md-6" >
+    <label>Select Requested Asset </label>
+    <div class="custom-sel">
+<select
+  class="form-control"
+  [(ngModel)]="requested_asset"
+  [ngModelOptions]="{standalone: true}"
+>
+  <option value="">-- Select Asset --</option>
+  <option *ngFor="let asset of Assets" [value]="asset.id">
+    {{ asset.name }}
+  </option>
+</select>
+    </div>
+  </div>
+            
+              <div class="col-md-12" >
+               
+                <label>Reason</label>
+                
+               <textarea  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter reason"
+                [ngModelOptions]="{standalone: true}" > </textarea>
+               
+          </div>
+
+    
+            </div>
+
 
 
           <div class="row">
@@ -1961,6 +1813,7 @@
                   <tr>
                     <th class="text-table-header" style="width: 0;">No</th>
                     <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Document number</th>
                     <th class="text-table-header">Asset Type</th>
 
                     <th class="text-table-header">Reason</th>
@@ -1975,6 +1828,7 @@
                   
                   <tr class="tbodytext" *ngFor="let leavereq of employeesec.assets_requests; let i = index">
                     <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.document_number }}</td>
                     <td>{{ leavereq.asset_type }}</td>
                     <td>{{ leavereq.reason }}</td>
                     <td>{{ leavereq.requested_asset }}</td>
@@ -1992,7 +1846,7 @@
 
       </section>
 
-            <section class="content-tab  animate__animated animate__fadeIn" id="airticketRequest"
+      <section class="content-tab  animate__animated animate__fadeIn" id="airticketRequest"
       *ngIf="activeTabNav === 'airticketRequest'">
         <!-- Financial content here -->
 
@@ -2023,7 +1877,7 @@
   </small>
 </div>
 
-             <div class="col-md-3">
+ <!-- <div class="col-md-3">
                 <div class="custom-sel">
                     <label>Select Branches</label>
                     <select class="form-control" id="branch" required [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
@@ -2032,60 +1886,85 @@
                     </select>
                     <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
                 </div>
-            </div>
+</div> -->
 
-        
+ <div class="col-md-6">
 
+   <div class="custom-sel">
+       <label>Allocation</label>
+        <select class="form-control" id="allocation" required [(ngModel)]="allocation"  [ngModelOptions]="{standalone: true}"  >
+           <option value="" >Select</option>
+            <option *ngFor="let user of Allocations" [value]="user.id">{{ user.employee }} - {{ user.amount }}</option>
+               </select>
+         </div>
+       </div> 
 
-
-      
-
-        <div class="col-md-6" >
-          <label>Select Asset Type</label>
-          <div class="custom-sel">
-            <select
-              class="form-control"
-              id="asset_type"
-              name="asset_type"
-              [(ngModel)]="asset_type"
-              [ngModelOptions]="{ standalone: true }"
-            >
-              <option *ngFor="let employees of AssetTypes" [value]="employees.id">
-                {{ employees.name }}
-              </option>
-            </select>
+    <div class="col-md-6" >
+         <label>request type</label>
+             <div class="custom-sel">
+                <select
+                 class="form-control" [(ngModel)]="request_type" [ngModelOptions]="{ standalone: true }">
+                      
+               <option value="TICKET">Ticket </option>
+                
+              <option value="ENCASHMENT"> Encashment </option>
+            
+                
+             </select>
+             </div>
           </div>
-        </div>
-      
+
+    <div class="col-md-6" >
+               
+          <label> Request date</label>
+          <input type="date"  class="form-control" required  [(ngModel)]="request_date"  placeholder="Enter request date"
+          [ngModelOptions]="{standalone: true}" >
+               
+     </div>
 
 
+               <div class="col-md-6" >
+               
+            <label>Return date</label>
+           <input type="date"  class="form-control" required  [(ngModel)]="return_date"  placeholder="Enter Return date"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
 
-<div class="col-md-6" >
-  <label>Select Requested Asset </label>
-  <div class="custom-sel">
-    <select
-      class="form-control"
-      id="requested_asset"
-      name="requested_asset"
-      [(ngModel)]="requested_asset"
-      [ngModelOptions]="{ standalone: true }"
-    >
-      <option *ngFor="let employees of Assets" [value]="employees.id">
-        {{ employees.name }}
-      </option>
-    </select>
+
+          <div class="col-md-6" >
+               
+                <label>Departure date</label>
+               <input type="date"  class="form-control" required  [(ngModel)]="departure_date"  placeholder="Enter departure date"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
+
+
+      <div class="col-md-6" >
+               
+        <label>Origin</label>
+       <input type="text"  class="form-control" required  [(ngModel)]="origin"  placeholder="Enter origin "
+        [ngModelOptions]="{standalone: true}" >
+       
   </div>
+
+
+  <div class="col-md-6" >
+               
+    <label>Destination</label>
+   <input type="text"  class="form-control" required  [(ngModel)]="destination"  placeholder="Enter destination "
+    [ngModelOptions]="{standalone: true}" >
+   
+</div>
+      
+<div class="col-md-12">
+    <label>Notes</label>
+    <textarea class="form-control" [(ngModel)]="notes"  placeholder="Enter notes... "
+    [ngModelOptions]="{standalone: true}"></textarea>
 </div>
 
-   
-
     
-    
- 
-
-
-
-  
           </div>
 
 
@@ -2095,7 +1974,7 @@
               </div>
   
               <div class="col-md-2">
-                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateAssetType()">Save</button>  
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="SentRequest()">Save</button>  
                </div>
           </div>
           
@@ -2119,11 +1998,15 @@
                   <tr>
                     <th class="text-table-header" style="width: 0;">No</th>
                     <!-- <th class="text-table-header">Employee</th> -->
-                    <th class="text-table-header">Asset Type</th>
-
-                    <th class="text-table-header">Reason</th>
-                    <th class="text-table-header"> Requested Asset</th>
-
+                    <th class="text-table-header">Document Number</th>
+                    <th class="text-table-header">Allocation</th>
+                    <th class="text-table-header">Request type</th>
+                    <th class="text-table-header">Request date</th>
+                    <th class="text-table-header">Return date</th>
+                    <th class="text-table-header">Departure date</th>
+                    <th class="text-table-header">Origin</th>
+                    <th class="text-table-header">Destination</th>
+                    <th class="text-table-header">Notes</th>
                     <th class="text-table-header">Status</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
@@ -2131,13 +2014,144 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.assets_requests; let i = index">
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.airticket_request; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.asset_type }}</td>
-                    <td>{{ leavereq.reason }}</td>
-                    <td>{{ leavereq.requested_asset }}</td>
+                    <td>{{ leavereq.document_number }}</td>
+                    <td>{{ leavereq.allocation }}</td>
+                    <td>{{ leavereq.request_type }}</td>
+                    <td>{{ leavereq.request_date }}</td>
+                    <td>{{ leavereq.return_date }}</td>
+                    <td>{{ leavereq.departure_date }}</td>
+                    <td>{{ leavereq.origin }}</td>
+                    <td>{{ leavereq.destination }}</td>
+                    <td>{{ leavereq.notes }}</td>
                     <td>{{ leavereq.status }}</td>
 
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="documentRequest"
+      *ngIf="activeTabNav === 'documentRequest'">
+        <!-- Financial content here -->
+
+
+         
+           <div class="white-outer-sec">
+                 
+        <form >
+
+            <div class="row">
+
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
+
+        
+              <div class="col-md-6">
+                <label>reason</label>
+                <input type="text" class="form-control" required [(ngModel)]="reason" placeholder="Enter reason"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+
+              <div class="col-md-6">
+                <label>Total</label>
+                <input type="number" class="form-control" required [(ngModel)]="total" placeholder="Enter total "
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+          
+              <div class="col-md-6">
+                <label>Remark</label>
+                <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+            
+
+              <div class="col-md-6">
+                <label>Request Type</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
+                  </select>
+                </div>
+              </div> 
+         
+            </div>
+
+
+          <div class="row">
+              <div class="col-md-10">
+  
+              </div>
+  
+              <div class="col-md-2">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="SetDocApprovaLevel()">Save</button>  
+               </div>
+          </div>
+          
+     
+  </form>
+
+
+        </div>
+
+
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Document number</th>
+                    <th class="text-table-header">Reason</th>
+                    <th class="text-table-header">Total</th>
+                    <th class="text-table-header">Remarks</th>
+                    <th class="text-table-header">Request type</th>
+                    <th class="text-table-header">Status</th>
+
+                    <!-- <th class="text-table-header">Payslip Component</th> -->
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.document_requests; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.document_number }}</td>
+                    <td>{{ leavereq.reason }}</td>
+                    <td>{{ leavereq.total }}</td>
+                    <td>{{ leavereq.remarks }}</td>
+                    <td>{{ leavereq.request_type }}</td>
+                    <td>{{ leavereq.status }}</td>
 
                   </tr>
                 </tbody>
@@ -2233,7 +2247,7 @@
 
                     <th class="text-table-header">Requested Amount</th>
                     <th class="text-table-header"> Remark</th>
-                                        <th class="text-table-header"> Reason</th>
+                    <th class="text-table-header"> Reason</th>
 
 
                     <th class="text-table-header">Status</th>
@@ -2268,80 +2282,89 @@
 
         <!-- Financial content here -->
 
-
-         
            <div class="white-outer-sec">
             <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
-              <div class="row">
 
-                <div class="col-md-4">
-                  <label>Amount requested</label>
-                  <input type="text" class="form-control" required [(ngModel)]="amount_requested" placeholder="Enter Amount requested"
-                         [ngModelOptions]="{standalone: true}" >
-                </div>
-            
-                <div class="col-md-4">
-                  <label>Repayment period</label>
-                  <input type="number" class="form-control" required [(ngModel)]="repayment_period" placeholder="Enter Repayment period"
-                         [ngModelOptions]="{standalone: true}">
-                
-                </div>
+                <div class="row">
 
-                <div class="col-md-4">
-                  <label>Emi amount</label>
-                  <input type="text" class="form-control" required [(ngModel)]="emi_amount" placeholder="Enter Repayment period"
-                         [ngModelOptions]="{standalone: true}">
-                
-                </div>
-            
-             
+<div class="col-md-4">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
 
-             
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
 
-                <div class="col-md-4">
-                  <label>Remaining balance</label>
-                  <input type="text" class="form-control" required [(ngModel)]="remaining_balance" placeholder="Enter remaining balance"
-                         [ngModelOptions]="{standalone: true}">
-                
-                </div>
-            
-            
 
-          
 
-                <div class="col-md-6" >
-                  <label>Loan Type</label>
-                  <div class="custom-sel">
-                    <select
-                      class="form-control"
-                      id="loan_type"
-                      name="loan_type"
-                      [(ngModel)]="loan_type"
-                      [ngModelOptions]="{ standalone: true }"
-                    >
-                      <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-                        {{ employees.loan_type }}
-                      </option>
-                    </select>
+                  <div class="col-md-4">
+                    <label>Amount requested</label>
+                    <input type="text" class="form-control" required [(ngModel)]="amount_requested" placeholder="Enter Amount requested"
+                           [ngModelOptions]="{standalone: true}" >
                   </div>
+              
+                  <div class="col-md-4">
+                    <label>Repayment period</label>
+                    <input type="number" class="form-control" required [(ngModel)]="repayment_period" placeholder="Enter Repayment period"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+
+                  <div class="col-md-4">
+                    <label>Emi amount</label>
+                    <input type="text" class="form-control" required [(ngModel)]="emi_amount" placeholder="Enter Repayment period"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+              
+               
+
+               
+
+                  <div class="col-md-4">
+                    <label>Remaining balance</label>
+                    <input type="text" class="form-control" required [(ngModel)]="remaining_balance" placeholder="Enter remaining balance"
+                           [ngModelOptions]="{standalone: true}">
+                  
+                  </div>
+              
+
+                  <div class="col-md-4" >
+                    <label>Loan Type</label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="loan_type"
+                        name="loan_type"
+                        [(ngModel)]="loan_type"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+                          {{ employees.loan_type }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
+
                 </div>
 
-
-              </div>
-                  
-
-
-
-
-
-              
-              
               
 
               <div class="row">
                 <div class="col-md-8"></div>
                 <div class="col-md-4">
-                  <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Application</button>
+                  <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Request</button>
                 </div>
               </div>
             </form>
@@ -2362,20 +2385,14 @@
                   <tr>
                     <th class="text-table-header" style="width: 0;">No</th>
                     <!-- <th class="text-table-header">Employee</th> -->
-                    <th class="text-table-header">Amount Requested</th>
-
-                    <th class="text-table-header">disbursement date</th>
+         
                     <th class="text-table-header"> document number</th>
-                                        <th class="text-table-header"> emi amount</th>
-                                        <th class="text-table-header">  loan type</th>
-                                        <th class="text-table-header">  pause reason</th>
-                                        <th class="text-table-header">  pause start date</th>
-                                        <th class="text-table-header">  rejection reason</th>
-                                        <th class="text-table-header">  remaining balance</th>
-                                        <th class="text-table-header">  repayment period</th>
-                                        <th class="text-table-header">  resume date</th>
-                                        <th class="text-table-header">  applied on</th>
-                                        <th class="text-table-header">  approved on</th>
+                    <th class="text-table-header"> Amount Requested</th>
+                    <th class="text-table-header"> emi amount</th>
+                    <th class="text-table-header">  loan type</th>
+                    <th class="text-table-header">  remaining balance</th>
+                    <th class="text-table-header">  repayment period</th>
+
 
 
                     <th class="text-table-header">Status</th>
@@ -2387,31 +2404,13 @@
                   
                   <tr class="tbodytext" *ngFor="let leavereq of employeesec.loan_requests; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.amount_requested }}</td>
-                    <td>{{ leavereq.disbursement_date }}</td>
                     <td>{{ leavereq.document_number }}</td>
+                    <td>{{ leavereq.amount_requested }}</td>
                     <td>{{ leavereq.emi_amount }}</td>
                     <td>{{ leavereq.loan_type }}</td>
-                    <td>{{ leavereq.pause_reason }}</td>
-
-                    <td>{{ leavereq.pause_start_date }}</td>
-
-                    <td>{{ leavereq.rejection_reason }}</td>
                     <td>{{ leavereq.remaining_balance }}</td>
-
                     <td>{{ leavereq.repayment_period }}</td>
-                    <td>{{ leavereq.resume_date }}</td>
-
-                    <td>{{ leavereq.applied_on }}</td>
-
-                    <td>{{ leavereq.approved_on }}</td>
                     <td>{{ leavereq.status }}</td>
-
-
-
-
-
-
                   </tr>
                 </tbody>
               </table>
@@ -2422,6 +2421,7 @@
 
 
       </section>
+
       <section class="content-tab  animate__animated animate__fadeIn" id="resignationRequest"
       *ngIf="activeTabNav === 'resignationRequest'">
 
@@ -2515,6 +2515,57 @@
         </div>
 
 
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <!-- <th class="text-table-header">Employee</th> -->
+         
+                    <th class="text-table-header"> Document date</th>
+                    <th class="text-table-header"> Resigned on</th>
+                    <th class="text-table-header"> Notice period</th>
+                    <th class="text-table-header"> Last working date</th>
+                    <th class="text-table-header"> Location</th>
+                    <th class="text-table-header"> Type</th>
+                    <th class="text-table-header"> Reason</th>
+                    <th class="text-table-header">Status</th>
+
+                    <!-- <th class="text-table-header">Payslip Component</th> -->
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.resignation_requests; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ leavereq.document_date }}</td>
+                    <td>{{ leavereq.resigned_on }}</td>
+                    <td>{{ leavereq.notice_period }}</td>
+                    <td>{{ leavereq.last_working_date }}</td>
+                    <td>{{ leavereq.location }}</td>
+                    <td>{{ leavereq.termination_type }}</td>
+                    <td>{{ leavereq.reason_for_leaving }}</td>
+                    <td>{{ leavereq.status }}</td>
+
+
+
+
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
        
 
 

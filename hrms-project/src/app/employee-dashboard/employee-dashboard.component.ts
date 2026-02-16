@@ -21,6 +21,8 @@ export class EmployeeDashboardComponent {
 
 
   
+
+  selectedBranchId: number | null = null;
   
 
   expiredDocumentsCount: number = 0;
@@ -109,13 +111,14 @@ notificationCount: number = 0; // number to show in the red badge
   ngOnInit(): void {
 
     this.loadExpiredDoc(); // load notifications on page load
-
+    this.LoadDocType();
     this.loadRequestType();
-
+    this.loadAllocations();
     this.loadLAsset();
     this.loadLAssetType();
     this.loadLoanTypes();
-    this.loadDeparmentBranch();
+    // this.LoadLeaveRequest();
+    // this.loadDeparmentBranch();
 
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -359,33 +362,37 @@ loadExpiredDoc(): void {
     //    );
     //  }
    
-    fetchDesignations(selectedSchema: string) {
-      this.EmployeeService.getemployees(selectedSchema).subscribe(
-        (data: any) => {
-          this.employees = data;
-          console.log('employee:', this.employees);
-    
-          if (this.employees.length === 1) {
-            this.selectedEmployeeId = this.employees[0].id;
-            console.log('Fetched Employee ID:', this.selectedEmployeeId);
-    
-            if (selectedSchema && this.selectedEmployeeId !== null) {
-              this.loadEmpAssetsDetails(selectedSchema, this.selectedEmployeeId);
-              this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
-              this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
-              this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
-              this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
 
 
-            }
-          }
-        },
-        (error: any) => {
-          console.error('Error fetching employee:', error);
+fetchDesignations(selectedSchema: string) {
+  this.EmployeeService.getemployees(selectedSchema).subscribe(
+    (data: any) => {
+      this.employees = data;
+      console.log('employee:', this.employees);
+
+      if (this.employees.length === 1) {
+        this.selectedEmployeeId = this.employees[0].id;
+
+        // ✅ Store Branch ID here
+        this.selectedBranchId = this.employees[0]?.branch?.id || null;
+
+        console.log('Fetched Employee ID:', this.selectedEmployeeId);
+        console.log('Fetched Branch ID:', this.selectedBranchId);
+
+        if (selectedSchema && this.selectedEmployeeId !== null) {
+          this.loadEmpAssetsDetails(selectedSchema, this.selectedEmployeeId);
+          this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
+          this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
+          this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
+          this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
         }
-      );
+      }
+    },
+    (error: any) => {
+      console.error('Error fetching employee:', error);
     }
-  
+  );
+}
  
    
   
@@ -709,7 +716,6 @@ togglePunchingDropdown() {
   end_date:any='';
   note:any='';
   reason:any='';                  
-
   status:any='';
   applied_on:any='';
   approved_by:any='';
@@ -717,69 +723,86 @@ togglePunchingDropdown() {
   half_day_period:any='' ;
   leave_type:any='' ;
   dis_half_day: boolean = false;
+  LeaveRequests: any[] = [];
 
+  totalDays: number = 0;
 
-
-  requestLeave(): void {
+requestLeave(): void {
     if (!this.selectedEmployeeId) {
-      alert('Please ensure Employee is loaded.');
-      return;
-    }
-  
-    // ✅ Convert to proper YYYY-MM-DD format manually
-    const formattedStartDate = this.convertToDateString(this.start_date);
-    const formattedEndDate = this.convertToDateString(this.end_date);
-  
-    console.log('Formatted Start Date:', formattedStartDate);
-    console.log('Formatted End Date:', formattedEndDate);
-  
-    const formData = new FormData();
-    formData.append('start_date', formattedStartDate);
-    formData.append('end_date', formattedEndDate);
-    formData.append('reason', this.reason || '');
-    formData.append('status', this.status || '');
-    formData.append('approved_by', this.approved_by || '');
-    formData.append('dis_half_day', this.dis_half_day.toString());
-    formData.append('half_day_period', this.half_day_period || '');
-    formData.append('leave_type', this.leave_type.toString());
-    formData.append('employee', this.selectedEmployeeId.toString());
-  
-    console.log('FormData:');
-    formData.forEach((v, k) => console.log(k, v));
-  
-    this.leaveService.requestLeaveAdmin(formData).subscribe(
-      (response) => {
-        console.log('Leave request successful:', response);
-        alert('✅ Leave request has been sent successfully!');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('❌ Leave request failed:', error);
-  
-        // ✅ If backend sent validation errors, show them clearly
-        if (error.error) {
-          let errorMsg = '';
-  
-          // Handle field-specific errors
-          for (const key in error.error) {
-            if (Array.isArray(error.error[key])) {
-              errorMsg += `${key}: ${error.error[key].join(', ')}\n`;
-            } else if (typeof error.error[key] === 'string') {
-              errorMsg += `${key}: ${error.error[key]}\n`;
-            }
-          }
-  
-          if (errorMsg) {
-            alert(`⚠️ Please fix the following errors:\n\n${errorMsg}`);
-          } else {
-            alert('⚠️ Error submitting leave request. Please check all fields.');
-          }
-        } else {
-          alert('⚠️ Server error. Please try again later.');
-        }
-      }
-    );
+    alert('Please ensure Employee is loaded.');
+    return;
   }
+
+  const formData = new FormData();
+  formData.append('start_date', this.start_date);
+  formData.append('end_date', this.end_date);
+  formData.append('reason', this.reason);
+  formData.append('status', this.status);
+  formData.append('dis_half_day', this.dis_half_day.toString());
+  formData.append('half_day_period', this.half_day_period);
+  formData.append('document_number', this.document_number?.toString() || '');
+  // formData.append('branch', this.branch || '');
+  formData.append('leave_type', this.leave_type.toString());
+  formData.append('employee', this.selectedEmployeeId.toString());
+
+  this.leaveService.requestLeaveAdmin(formData).subscribe(
+    (response) => {
+      console.log('Leave request successful:', response);
+      alert('Leave Request has been sent successfully!');
+      // window.location.reload();
+    },
+    (error) => {
+      console.error('Leave request failed:', error);
+
+      let errorMessage = 'Something went wrong.';
+
+      // ✅ Handle backend validation or field-level errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+        }
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handles backend messages like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
+      }
+
+      alert(`Leave request failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
+//     LoadLeaveRequest() {
+//     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+//     console.log('schemastore',selectedSchema )
+//     // Check if selectedSchema is available
+//     if (selectedSchema) {
+
+//     this.leaveService.getLeaveRequest(selectedSchema).subscribe(
+//       (data: any) => {
+//         this.LeaveRequests = data;
+
+//         console.log('employee:', this.LeaveRequests);
+     
+//       },
+//       (error: any) => {
+//         console.error('Error fetching categories:', error);
+//       }
+//     );
+//   }
+// }
 
 
   getLocation(): Promise<any> {
@@ -995,6 +1018,18 @@ async EmployeePunchingOut(): Promise<void> {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
+    calculateTotalDays() {
+    if (this.start_date && this.end_date) {
+      const start = new Date(this.start_date);
+      const end = new Date(this.end_date);
+      const diff = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  
+      this.totalDays = diff > 0 ? diff : 0;
+    } else {
+      this.totalDays = 0;
+    }
+  }
   
 
 // doc_number: any = '';
@@ -1014,7 +1049,7 @@ request_document: File | null = null;
 
 
 registerGeneralreq(): void {
-  if (!this.selectedEmployeeId) {
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
     alert('Please ensure Employee is loaded.');
     return;
   }
@@ -1029,6 +1064,9 @@ registerGeneralreq(): void {
   // formData.append('created_by', this.created_by || '');
   formData.append('approved', this.approved ? 'true' : 'false');
   formData.append('remarks', this.remarks || '');
+  formData.append('branch', this.branch?.toString() || '');
+    // ✅ Automatically add branch
+  formData.append('branch', this.selectedBranchId.toString());
 
   if (this.request_document) {
     formData.append('request_document', this.request_document);
@@ -1124,36 +1162,47 @@ loadRequestType(): void {
   asset_type: any = '';
   requested_asset: any = '';
 
-  CreateAssetType(): void {
-    const companyData = {
-      reason: this.reason,
-    
-      // status:this.status,
-      employee:this.selectedEmployeeId,
-      asset_type:this.asset_type,
-      requested_asset:this.requested_asset,
+CreateAssetType(): void {
+  this.registerButtonClicked = true;
 
-      // Add other form field values to the companyData object
-    };
-  
+  const companyData = {
+    reason: this.reason || '',
 
-    this.EmployeeService.registerAssetRequest(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-      
-            alert('Asset request has been added ');
-            window.location.reload();
-            // window.location.reload();
-       
+    asset_type: this.asset_type?.toString() || '',
+    requested_asset: this.requested_asset || '',
+     employee: this.selectedEmployeeId,
+    // Convert document_number safely to string
+    document_number: this.document_number?.toString() || '',
+ 
+  };
 
-      },
-      (error) => {
-        console.error('Added failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
+  this.employeeService.registerAssetRequest(companyData).subscribe({
+    next: (response) => {
+      console.log('Registration successful', response);
+      alert('Asset request has been added!');
+      window.location.reload();
+    },
+    error: (error) => {
+      // same error handling as above...
+      console.error('Added failed', error);
+      let errorMessage = 'Enter all required fields!';
+
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
       }
-    );
-  }
+
+      alert(errorMessage);
+    }
+  });
+}
 
   Assets:any []=[];
 
@@ -1183,7 +1232,7 @@ loadRequestType(): void {
      
     loadLAssetType(): void {
     
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      const selectedSchema = this.authService.getSelectedSchema(); 
     
       console.log('schemastore',selectedSchema )
       // Check if selectedSchema is available
@@ -1277,32 +1326,34 @@ loadRequestType(): void {
   loan_type:any='';
 
   CreateLoanApplication(): void {
-  
-    if (!this.selectedEmployeeId) {
-      alert('Please ensure Employee is loaded.');
-      return;
-    }
+    this.registerButtonClicked = true;
+          if (!this.selectedEmployeeId) {
+          alert('Please ensure Employee is loaded.');
+          return;
+        }
   
     const formData = new FormData();
     formData.append('amount_requested', this.amount_requested);
     formData.append('repayment_period', this.repayment_period);
     formData.append('emi_amount', this.emi_amount);
-    // formData.append('disbursement_date', this.disbursement_date );
+
     formData.append('remaining_balance', this.remaining_balance);
-    // formData.append('approved_on', this.approved_on);
-    // formData.append('rejection_reason', this.rejection_reason);
+    // formData.append('branch', this.branch);
+ 
+    formData.append('employee', this.selectedEmployeeId.toString());
 
+  
+    formData.append('document_number', this.document_number?.toString() || '');
 
-    
     formData.append('pause_start_date', this.pause_start_date);
     formData.append('resume_date', this.resume_date );
     formData.append('pause_reason', this.pause_reason);
-    formData.append('employee', this.selectedEmployeeId.toString());
+    // formData.append('employee', this.employee);
     formData.append('loan_type', this.loan_type);
 
 
   
-    this.EmployeeService.registerLoanApplication(formData).subscribe(
+    this.employeeService.registerLoanApplication(formData).subscribe(
       (response) => {
         console.log('Registration successful', response);
         alert('Loan application has been added');
@@ -1310,8 +1361,25 @@ loadRequestType(): void {
       },
       (error) => {
         console.error('Added failed', error);
-        alert('Enter all required fields!');
+
+          let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
       }
+
+      alert(errorMessage);
+    }
+ 
     );
   }
 
@@ -1389,7 +1457,7 @@ loadRequestType(): void {
         console.log('Registration successful', response);
 
 
-        alert('Resignation Request  has been Sent');
+        alert('Resignation Request has been Send');
 
         window.location.reload();
       },  
@@ -1428,7 +1496,9 @@ loadRequestType(): void {
 
 
   // Airticket Requset
-    allocation: any = '';
+
+
+  allocation: any = '';
   request_date: any = '';
   departure_date: any = '';
   return_date: any = '';
@@ -1442,6 +1512,8 @@ loadRequestType(): void {
 
 
   Users:any []=[];
+
+  Allocations:any[]=[];
 
 
 
@@ -1461,28 +1533,28 @@ loadRequestType(): void {
   custom_fieldsFam :any[] = [];
 
 
-     branches:any []=[];
+    //  branches:any []=[];
 
-  loadDeparmentBranch(callback?: Function): void {
+  // loadDeparmentBranch(callback?: Function): void {
     
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
   
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-          console.log(' fetching Companies:');
-            if (callback) callback();
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.branches = result;
+  //         console.log(' fetching Companies:');
+  //           if (callback) callback();
 
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-    }
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
  
 
               SentRequest(): void {
@@ -1498,9 +1570,10 @@ loadRequestType(): void {
               destination:this.destination,
               notes:this.notes,
               approved_by:this.approved_by,
-              employee:this.employee,
+              employee:this.selectedEmployeeId,
+              // employee:this.employee,
               document_number:this.document_number,
-              branch:this.branch
+              // branch:this.branch
 
 
 
@@ -1539,6 +1612,111 @@ loadRequestType(): void {
             );
           }
 
+ loadAllocations(callback?: Function): void {
+
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.employeeService.getairticketAllocations(selectedSchema).subscribe(
+      (result: any) => {
+        this.Allocations = result;
+        console.log(' fetching Loantypes:');
+          if (callback) callback();
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
+
+  // Document Request 
+
+    DocType: any[] = [];
   
+   LoadDocType(callback?: Function) {
+     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.leaveService.getDocRequestType(selectedSchema).subscribe(
+        (data: any) => {
+          this.DocType = data;
+             if (callback) callback();
+          console.log('DocType:', this.DocType);
+        },
+        (error: any) => {
+          console.error('Error fetching DocType:', error);
+        }
+      );
+    }
+  }
+
+
+      SetDocApprovaLevel(): void {
+      this.registerButtonClicked = true;
+      // if (!this.name || !this.code || !this.valid_to) {
+      //   return;
+      // }
+
+       if (!this.selectedEmployeeId) {
+          alert('Please ensure Employee is loaded.');
+          return;
+        }
+    
+      const formData = new FormData();
+       formData.append('document_number', this.document_number?.toString() || '');
+      formData.append('reason', this.reason);
+      // formData.append('branch', this.branch);
+
+
+  
+  
+      formData.append('total', this.total);
+      formData.append('remarks', this.remarks);
+      formData.append('employee', this.selectedEmployeeId.toString());
+      formData.append('request_type', this.request_type);
+      formData.append('created_by', this.created_by);
+
+     
+  
+      
+    
+    
+      this.leaveService.CreateDocRequest(formData).subscribe(
+        (response) => {
+          console.log('Registration successful', response);
+  
+  
+          alert('Document Request  has been Sent');
+  
+          window.location.reload();
+        },  
+        (error) => {
+          console.error('Added failed', error);
+          
+         let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
+      alert(errorMessage);
+    }
+      );
+    }
 
 }
