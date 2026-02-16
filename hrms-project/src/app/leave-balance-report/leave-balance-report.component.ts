@@ -10,6 +10,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 import { CountryService } from '../country.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { MatMenuTrigger } from '@angular/material/menu';
+import {combineLatest, Subscription } from 'rxjs';
 
 interface FieldSetting {
   key: string;
@@ -26,6 +27,7 @@ interface FieldSetting {
 export class LeaveBalanceReportComponent {
 
 
+    private dataSubscription?: Subscription;
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
      @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
@@ -226,7 +228,16 @@ async initialLoad() {
     }));
 
     this.fetchSavedReportsList();
-    this.fetchStandardReport();
+     // combineLatest waits for both Schema and Branches to have a value
+  this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchStandardReport(schema, branchIds);
+
+    }
+  });
   } catch (error) {
     console.error("Init Error", error);
   } finally {
@@ -240,11 +251,29 @@ fetchSavedReportsList() {
   });
 }
 
-fetchStandardReport() {
-  this.leaveService.getLeaveBalanceReport().subscribe(res => {
+// fetchStandardReport() {
+//   this.leaveService.getLeaveBalanceReport().subscribe(res => {
+//     if (res && res.length > 0) {
+//       // 1. Find the report where file_name is 'std_report'
+//       const defaultReport = res.find(report => report.file_name === 'lvbalance_std_report');
+      
+//       // 2. If found, load its data. Otherwise, fallback to the first one available.
+//       if (defaultReport) {
+//         this.loadJsonData(defaultReport.report_data);
+//       } else {
+//         // Fallback logic if std_report doesn't exist
+//         this.loadJsonData(res[0].report_data);
+//       }
+//     }
+//   });
+// }
+
+fetchStandardReport(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.leaveService.getLeaveBalanceReportNew(schema, branchIds).subscribe(res => {
     if (res && res.length > 0) {
       // 1. Find the report where file_name is 'std_report'
-      const defaultReport = res.find(report => report.file_name === 'lvbalance_std_report');
+      const defaultReport = res.find((report: { file_name: string; }) => report.file_name === 'std_report');
       
       // 2. If found, load its data. Otherwise, fallback to the first one available.
       if (defaultReport) {
@@ -255,7 +284,8 @@ fetchStandardReport() {
       }
     }
   });
-}
+} 
+
 
 loadJsonData(url: string) {
   this.leaveService.fetchAssetJsonData(url).subscribe(data => {
@@ -490,7 +520,16 @@ resetToStandard() {
   this.currentGroupBy = [];
   // Reset all status checkboxes to false
   // Object.keys(this.activeFilters.status).forEach(key => this.activeFilters.status[key] = false);
-  this.fetchStandardReport(); 
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchStandardReport(schema, branchIds);
+
+  }
+});
 }
 
 

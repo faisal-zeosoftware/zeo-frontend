@@ -316,6 +316,19 @@ CreateEmployeeattendance(payload: any): Observable<any> {
   return this.http.post(apiUrl, payload);
 }
 
+
+CreateEmployeeattendanceNew(selectedSchema: string, branchIds: number[], payload: FormData): Observable<any> {
+  // 1. Convert branch IDs to the string format required by the backend "[1,2,3]"
+  const branchParam = branchIds.length > 0 ? `&branch_id=[${branchIds.join(',')}]` : '';
+  
+  // 2. Construct the URL with Schema and Branches
+  const apiUrl = `${this.apiUrl}/calendars/api/monthly-attendance/generate/?schema=${selectedSchema}${branchParam}`;
+  
+  // 3. Send POST request with parameters in URL and payload in body
+  return this.http.post(apiUrl, payload);
+}
+
+
   registerEmailTemplateLeave(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -921,7 +934,6 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.get(apiUrl);
   
   }
-
   
 
 
@@ -1253,6 +1265,19 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.get<any[]>(apiUrl);
   }
   
+
+  
+  getAssetReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/organisation/api/asset-Report/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
   
 
   fetchLeavebalanceJsonData(url: string): Observable<any> {
@@ -1596,6 +1621,20 @@ getAssetTransactionReport(): Observable<any[]> {
 }
 
 
+
+getAssetTransactionReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/organisation/api/asset-transaction-report/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
 getAvailableFieldsAssetTransaction(): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/organisation/api/asset-transaction-report/select_asset_fields/?schema=${selectedSchema}`;
@@ -1686,6 +1725,19 @@ getGenRequestReport(): Observable<any[]> {
 }
 
 
+getGenRequestReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/employee/api/report-general-request/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
 deleteGenReqReport(reportId: number): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   // Adjust the URL to match your Django/Backend URL pattern
@@ -1716,6 +1768,20 @@ getDocumentReport(): Observable<any[]> {
   const apiUrl = `${this.apiUrl}/employee/api/doc-report/?schema=${selectedSchema}`;
   return this.http.get<any[]>(apiUrl);
 }
+
+
+getDocumentReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/employee/api/doc-report/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 
 
 deleteDocumentReport(reportId: number): Observable<any> {
@@ -1749,6 +1815,18 @@ getLeaveReport(): Observable<any[]> {
   return this.http.get<any[]>(apiUrl);
 }
 
+
+getLeaveReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/leave-report/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
 
 deleteLeaveReport(reportId: number): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
@@ -1784,6 +1862,18 @@ getLeaveApprovalReport(): Observable<any[]> {
 }
 
 
+getLeaveApprovalReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/Lv_Approval_Report/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 deleteLeaveApprovalReport(reportId: number): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   // Adjust the URL to match your Django/Backend URL pattern
@@ -1812,6 +1902,19 @@ getLeaveBalanceReport(): Observable<any[]> {
   const apiUrl = `${this.apiUrl}/calendars/api/lvBalanceReport/?schema=${selectedSchema}`;
   return this.http.get<any[]>(apiUrl);
 }
+
+getLeaveBalanceReportNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/lvBalanceReport/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 
 
 deleteLeaveBalanceReport(reportId: number): Observable<any> {
