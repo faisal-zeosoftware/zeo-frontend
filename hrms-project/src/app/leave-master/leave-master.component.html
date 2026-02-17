@@ -227,7 +227,7 @@
                 <label>Branch</label>
                 <div class="custom-sel">
                   <select class="form-control" id="branch" name="branch" [(ngModel)]="editLeaveType.branch" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let designation of Branches" [value]="designation.id">{{ designation.branch_name }}</option>
+                    <option *ngFor="let designation of branches" [value]="designation.id">{{ designation.branch_name }}</option>
                  
                   </select>
                 </div>
@@ -389,7 +389,7 @@
                               </div>
                               <input type="text" placeholder="serach" class="form-control">
   
-                              <mat-option *ngFor="let branch of Branches" [value]="branch.id">{{ branch.branch_name }}
+                              <mat-option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branch_name }}
                               </mat-option>
                             </mat-select>
                           </mat-form-field>
@@ -931,7 +931,7 @@
                                 </div>
                                 <input type="text" placeholder="serach" class="form-control">
     
-                                <mat-option *ngFor="let branch of Branches" [value]="branch.id">{{ branch.branch_name }}
+                                <mat-option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branch_name }}
                                 </mat-option>
                               </mat-select>
                             </mat-form-field>

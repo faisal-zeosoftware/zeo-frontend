@@ -1018,5 +1018,10 @@ getDashOffset(balance: number): number {
   return this.fullCircle * (1 - percent);
 }
 
+get dashboardLeaveBalances() {
+  return this.employeeLeaves?.leave_balance
+    ?.filter((item: any) => item.include_dashboard === true);
+}
+
 
 }

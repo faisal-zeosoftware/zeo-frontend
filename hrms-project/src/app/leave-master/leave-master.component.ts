@@ -50,7 +50,7 @@ export class LeaveMasterComponent {
   isLinear = true;
 
   LeaveTypes: any[] = [];
-  Branches: any[] = [];
+  // Branches: any[] = [];
   Departments: any[] = [];
   Designation: any[] = [];
   Category: any[] = [];

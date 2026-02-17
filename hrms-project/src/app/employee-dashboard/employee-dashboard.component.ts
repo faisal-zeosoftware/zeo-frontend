@@ -1719,4 +1719,10 @@ CreateAssetType(): void {
       );
     }
 
+get dashboardLeaveBalances() {
+  return this.employeesec?.leave_balance
+    ?.filter((item: any) => item.include_dashboard === true);
+}
+
+
 }
