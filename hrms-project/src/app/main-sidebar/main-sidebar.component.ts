@@ -141,19 +141,19 @@ export class MainSidebarComponent {
 
  // ✅ Load all notification types
  loadAllNotifications(selectedSchema: string): void {
-  this.loadExpiredDocuments(selectedSchema);
-  this.loadLeaveNotifications(selectedSchema);
+  this.loadExpiredDocuments(selectedSchema);    
+  this.loadLeaveNotifications(selectedSchema); 
   this.loadGeneralReqNotifications(selectedSchema);
   this.loadDocumentReqNotifications(selectedSchema);
   this.loadLoanReqNotifications(selectedSchema);
   this.loadAdvancesalaryReqNotifications(selectedSchema);
   this.loadAssetNotifications(selectedSchema);
   this.loadAirTicketNotifications(selectedSchema);
-}
+} 
 
 
  // ✅ Expired Document Notifications
- loadExpiredDocuments(selectedSchema: string): void {
+  loadExpiredDocuments(selectedSchema: string): void {
   this.EmployeeService.getExpiredDocuments(selectedSchema).subscribe({
     next: (docs: any[]) => {
       this.Documents = (docs || []).map(item => ({
@@ -395,7 +395,6 @@ private cleanupOldReadNotifications(): void {
   const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
   // You'd need to store timestamp too — or skip if not needed
-  // For now, just keep it simple
 }
 
 isCompanyDropdownOpen = false;
@@ -446,7 +445,7 @@ toggleBranchSelection(data: any, branch: any, event: Event): void {
   
   if (this.selectedSchema !== newSchema) {
     this.selectedBranchIds = []; 
-    this.selectedSchema = newSchema;
+    this.selectedSchema = newSchema; 
     
     // --- FIX APPLIED HERE ---
     localStorage.setItem('selectedSchema', this.selectedSchema ?? '');
