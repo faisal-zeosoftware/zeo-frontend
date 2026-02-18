@@ -1467,13 +1467,11 @@
             </div>
           </div>
           </div>
-          <div class="tab_boddy mt-4">
+          <!-- <div class="tab_boddy mt-4">
           <div  class="row">
             <div class="col-md-12">
               <div class="">
-                <!-- Check if there are any leave requests -->
                 <div *ngIf="employeesec.leave_rqsts && employeesec.leave_rqsts.length > 0; else noLeaveRequests">
-                  <!-- Loop through leave requests -->
                   <div  class="">
                     <div class="row">
                       <div class="col-md-5">
@@ -1500,7 +1498,6 @@
                           <div *ngFor="let request of employeesec.leave_rqsts">
                           
                         <div class="leave_box"  *ngIf="selectedRequestId === request.id">
-                          <!-- Loop through approvals for the leave request -->
                           <div class="approval-steps" *ngIf="request.approvals && request.approvals.length > 0">
                             <h5>Leave Approval Status</h5><hr>
                             <div *ngFor="let approval of request.approvals" class="row">
@@ -1520,10 +1517,6 @@
                                 <label>Note</label>
                                 <h6>{{ approval.note || 'N/A' }}</h6>
                               </div>
-                              <!-- <div class="col-md-2">
-                                <label>Updated At</label>
-                                <h6>{{ approval.updated_at }}</h6>
-                              </div> -->
                             </div>
                           </div>
                         </div>
@@ -1532,14 +1525,14 @@
                     </div>  
                   </div>
                 </div>
-                <!-- Template to show if no leave requests are present -->
+
                 <ng-template #noLeaveRequests>
                   <p>No leave requests available for this employee.</p>
                 </ng-template>
               </div>
             </div>
           </div>
-</div>
+</div> -->
       </section>
 
       <section class="content-tab  animate__animated animate__fadeIn" id="generalRequest"
@@ -2551,7 +2544,7 @@
                     <td>{{ leavereq.last_working_date }}</td>
                     <td>{{ leavereq.location }}</td>
                     <td>{{ leavereq.termination_type }}</td>
-                    <td>{{ leavereq.reason_for_leaving }}</td>
+                    <td>{{ leavereq.reason }}</td>
                     <td>{{ leavereq.status }}</td>
 
 

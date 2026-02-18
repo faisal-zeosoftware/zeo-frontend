@@ -118,7 +118,7 @@ notificationCount: number = 0; // number to show in the red badge
     this.loadLAssetType();
     this.loadLoanTypes();
     // this.LoadLeaveRequest();
-    // this.loadDeparmentBranch();
+    this.loadDeparmentBranch();
 
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -728,7 +728,7 @@ togglePunchingDropdown() {
   totalDays: number = 0;
 
 requestLeave(): void {
-    if (!this.selectedEmployeeId) {
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
     alert('Please ensure Employee is loaded.');
     return;
   }
@@ -869,7 +869,7 @@ getAddress(lat: number, lng: number): Promise<string> {
  isLoading: boolean = false;
 
  async EmployeePunching(): Promise<void> {
-  if (!this.selectedEmployeeId) {
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
     alert('Please ensure Employee is loaded.');
     return;
   }
@@ -907,7 +907,7 @@ getAddress(lat: number, lng: number): Promise<string> {
 isLoadingout: boolean = false;
 
 async EmployeePunchingOut(): Promise<void> {
-  if (!this.selectedEmployeeId) {
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
     alert('Please ensure Employee is loaded.');
     return;
   }
@@ -949,10 +949,10 @@ async EmployeePunchingOut(): Promise<void> {
 
   async recheckEmployee(): Promise<void> {
     // 1. Validation: Ensure employee is loaded
-    if (!this.selectedEmployeeId) {
-      alert('Please ensure Employee is loaded.');
-      return;
-    }
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
   
   
     try {
@@ -1164,6 +1164,11 @@ loadRequestType(): void {
 
 CreateAssetType(): void {
   this.registerButtonClicked = true;
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
 
   const companyData = {
     reason: this.reason || '',
@@ -1270,11 +1275,11 @@ CreateAssetType(): void {
         // if (!this.name || !this.code || !this.valid_to) {
         //   return;
         // }
-        if (!this.selectedEmployeeId) {
-          alert('Please ensure Employee is loaded.');
-          return;
-        }
-    
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
         const formData = new FormData();
         formData.append('reason', this.reason);
     
@@ -1327,10 +1332,11 @@ CreateAssetType(): void {
 
   CreateLoanApplication(): void {
     this.registerButtonClicked = true;
-          if (!this.selectedEmployeeId) {
-          alert('Please ensure Employee is loaded.');
-          return;
-        }
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
   
     const formData = new FormData();
     formData.append('amount_requested', this.amount_requested);
@@ -1359,26 +1365,48 @@ CreateAssetType(): void {
         alert('Loan application has been added');
         window.location.reload();
       },
-      (error) => {
-        console.error('Added failed', error);
+(error) => {
+  console.error('Loan creation failed:', error);
 
-          let errorMessage = 'Enter all required fields!';
+  let errorMessage = 'Something went wrong. Please try again.';
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
+  if (error.error) {
+
+    // ✅ Case 1: non_field_errors
+    if (error.error.non_field_errors) {
+      errorMessage = error.error.non_field_errors.join('\n');
+    }
+
+    // ✅ Case 2: detail message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
+    }
+
+    // ✅ Case 3: field-specific errors (like request_type)
+    else if (typeof error.error === 'object') {
+      const messages: string[] = [];
+
+      for (const key in error.error) {
+        if (Array.isArray(error.error[key])) {
+          messages.push(error.error[key].join(', '));
+        } else {
+          messages.push(error.error[key]);
         }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
       }
 
-      alert(errorMessage);
+      if (messages.length) {
+        errorMessage = messages.join('\n');
+      }
     }
+
+    // ✅ Case 4: plain string error
+    else if (typeof error.error === 'string') {
+      errorMessage = error.error;
+    }
+  }
+
+  alert(errorMessage);
+}
  
     );
   }
@@ -1425,10 +1453,11 @@ CreateAssetType(): void {
     //   return;
     // }
   
-    if (!this.selectedEmployeeId) {
-      alert('Please ensure Employee is loaded.');
-      return;
-    }
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
   
     const formData = new FormData();
     formData.append('document_date', this.document_date);
@@ -1533,28 +1562,28 @@ CreateAssetType(): void {
   custom_fieldsFam :any[] = [];
 
 
-    //  branches:any []=[];
+     branches:any []=[];
 
-  // loadDeparmentBranch(callback?: Function): void {
+  loadDeparmentBranch(callback?: Function): void {
     
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const selectedSchema = this.authService.getSelectedSchema(); 
   
-  //   console.log('schemastore',selectedSchema )
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.branches = result;
-  //         console.log(' fetching Companies:');
-  //           if (callback) callback();
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any) => {
+          this.branches = result;
+          console.log(' fetching Companies:');
+            if (callback) callback();
 
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Companies:', error);
-  //       }
-  //     );
-  //   }
-  //   }
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
  
 
               SentRequest(): void {
@@ -1663,10 +1692,11 @@ CreateAssetType(): void {
       //   return;
       // }
 
-       if (!this.selectedEmployeeId) {
-          alert('Please ensure Employee is loaded.');
-          return;
-        }
+  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
     
       const formData = new FormData();
        formData.append('document_number', this.document_number?.toString() || '');
