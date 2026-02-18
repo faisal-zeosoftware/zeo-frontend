@@ -20,7 +20,8 @@ import { DepartmentServiceService } from '../department-master/department-servic
 export class EmployeeDashboardComponent {
 
 
-  
+  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
+
 
   selectedBranchId: number | null = null;
   
@@ -119,6 +120,8 @@ notificationCount: number = 0; // number to show in the red badge
     this.loadLoanTypes();
     // this.LoadLeaveRequest();
     this.loadDeparmentBranch();
+    // this.fetchingApprovals();
+    this.loadGeeralReqAprovals();
 
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -711,6 +714,13 @@ togglePunchingDropdown() {
 }
 
 
+isApprovalsDropdownOpen = false;
+
+toggleApprovalsDropdown() {
+  this.isApprovalsDropdownOpen = !this.isApprovalsDropdownOpen;
+}
+
+
 
   start_date:any='';
   end_date:any='';
@@ -1156,6 +1166,9 @@ loadRequestType(): void {
   }
   }
 
+
+
+ 
 
 
  
@@ -1753,6 +1766,187 @@ get dashboardLeaveBalances() {
   return this.employeesec?.leave_balance
     ?.filter((item: any) => item.include_dashboard === true);
 }
+
+
+
+
+
+// general request approvals ts code 
+
+Approvals: any[] = []; // Assuming this array holds the list of expired documents
+
+
+
+
+// fetchEmployees(schema: string, branchIds: number[]): void {
+//   this.isLoading = true;
+//   this.EmployeeService.getGeneralRequestApprovalsMasterNew(schema, branchIds).subscribe({
+//     next: (data: any) => {
+//       // Filter active employees
+//            this.Approvals = data;
+
+//       this.isLoading = false;
+//     },
+//     error: (err) => {
+//       console.error('Fetch error:', err);
+//       this.isLoading = false;
+//     }
+//   });
+// }
+
+// fetchingApprovals(callback?: Function): void {
+//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+//   console.log('schemastore', selectedSchema);
+  
+//   // Check if selectedSchema and userId are available
+//   if (selectedSchema && this.userId) {
+//       this.EmployeeService.getApprovalslist(selectedSchema, this.userId).subscribe(
+//           (result: any) => {
+//               this.Approvals = result;
+//               console.log('approvals', this.Approvals)
+//           },
+//           (error) => {
+//               console.error('Error fetching approvals:', error);
+//           }
+//       );
+//   }
+
+// }
+
+loadGeeralReqAprovals(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
+  if (!selectedSchema) {
+    console.error('No schema found in authService');
+    return;
+  }
+
+  this.employeeService.getGenReqApprovals(selectedSchema).subscribe({
+    next: (result: any) => {
+      // Logic check: many APIs return data inside a 'results' or 'data' property
+      this.Approvals = Array.isArray(result) ? result : (result.data || []);
+      console.log('Successfully loaded approvals:', this.Approvals);
+    },
+    error: (error) => {
+      console.error('API Error:', error);
+    }
+  });
+}
+
+selectedApproval: any = null;
+isAddFieldsModalOpen: boolean = false;
+// note: string = '';  // To hold the note entered by the user
+
+
+// Fetching approval details when an item is clicked
+selectedaprovaldetalis(approvalId: number): void {
+const selectedSchema = this.authService.getSelectedSchema();
+
+if (selectedSchema) {
+const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/?schema=${selectedSchema}`;
+
+this.EmployeeService.getApprovalDetails(apiUrl).subscribe(
+  (response: any) => {
+    this.selectedApproval = response;
+    this.isAddFieldsModalOpen = true; // Open the modal
+    console.log('detalis',this.selectedApproval)
+  },
+  (error) => {
+    console.error('Error fetching approval details:', error);
+  }
+);
+}
+}
+
+
+
+
+// Function for handling approval rejection
+rejectApproval(approvalId: number): void {
+const selectedSchema = this.authService.getSelectedSchema();
+
+
+   // Data to be sent in the request body (including the note)
+   const approvalData = {
+    note: this.note,          // The note entered by the user
+    status: 'Rejected',       // Setting status to "Approved"
+  };
+if (selectedSchema) {
+  const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/reject/?schema=${selectedSchema}`;
+
+  this.EmployeeService.rejectApprovalRequest(apiUrl, approvalData).subscribe(
+    (response: any) => {
+      console.log('Approval status changed to Rejected:', response);
+
+      // Update the selected approval status in the local UI
+      if (this.selectedApproval) {
+        this.selectedApproval.status = 'Rejected';
+      }
+
+      // Optionally, update the main approvals list if needed
+      const approvalIndex = this.Approvals.findIndex(approval => approval.id === approvalId);
+      if (approvalIndex !== -1) {
+        this.Approvals[approvalIndex].status = 'Rejected';
+      }
+
+      // Close the modal after successful approval
+      this.isAddFieldsModalOpen = false;
+    },
+    (error) => {
+      console.error('Error approving the approval request:', error);
+    }
+  );
+}
+
+}
+
+
+
+// Function for handling approval status change to "Approved"
+approveApproval(approvalId: number): void {
+const selectedSchema = this.authService.getSelectedSchema();
+
+if (selectedSchema) {
+const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/approve/?schema=${selectedSchema}`;
+
+
+   // Data to be sent in the request body (including the note)
+   const approvalData = {
+    note: this.note,          // The note entered by the user
+    status: 'Approved',       // Setting status to "Approved"
+  };
+
+  this.EmployeeService.approveApprovalRequest(apiUrl, approvalData).subscribe(
+    (response: any) => {
+    console.log('Approval status changed to Approved:', response);
+
+    // Update the selected approval status in the local UI
+    if (this.selectedApproval) {
+      this.selectedApproval.status = 'Approved';
+    }
+
+    // Optionally, update the main approvals list if needed
+    const approvalIndex = this.Approvals.findIndex(approval => approval.id === approvalId);
+    if (approvalIndex !== -1) {
+      this.Approvals[approvalIndex].status = 'Approved';
+    }
+
+    // Close the modal after successful approval
+    this.isAddFieldsModalOpen = false;
+  },
+  (error) => {
+    console.error('Error approving the approval request:', error);
+  }
+);
+}
+}
+
+
+closemarketModal(){
+this.isAddFieldsModalOpen=false;
+}
+
 
 
 }

@@ -3431,6 +3431,15 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
   }
 
+
+   getGenReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/request-approvals/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
   
 
   getSChemadatas(selectedSchema: string): Observable<any> {
