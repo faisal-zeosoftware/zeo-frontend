@@ -1354,6 +1354,22 @@ deleteOvertimepolicy(categoryId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+deleteOvertimeRule(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/overtime_rule/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
 deleteGeofence(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
   // return this.http.delete(url);
@@ -1507,6 +1523,20 @@ updatepayrolladvSalary(id: number, data: any): Observable<any> {
 updatelovertimepolicy(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/calendars/api/overtime_policy/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+updatelovertimeRule(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/overtime_rule/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(
@@ -5030,6 +5060,18 @@ getovertimepolicyNew(selectedSchema: string, branchIds: number[]): Observable<an
 
 
 
+getovertimeRuleNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/overtime_rule/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
 getGeofence(selectedSchema: string): Observable<any> {
   const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/?schema=${selectedSchema}`;
 
@@ -5087,6 +5129,25 @@ registerOverTimePolicy(formData: FormData): Observable<any> {
     })
   );
 }
+
+
+registerOverTimeRule(formData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/overtime_rule/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, formData).pipe(
+    catchError((error) => {
+      console.error('Error during leave type registration:', error);
+      return throwError(error);
+    })
+  );
+}
+
 
 registerGeofence(formData: FormData): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
@@ -5772,7 +5833,18 @@ getProjects(selectedSchema: string): Observable<any> {
     return this.http.get(url);
   }
   
-
+  getOvertimePolicy(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/overtime_policy/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   
 
 getBrs(selectedSchema: string): Observable<any> {

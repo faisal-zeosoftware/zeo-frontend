@@ -1,0 +1,342 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+       
+    <div class="header_section">
+
+      <div class="row">
+        <div class="col-md-4">
+          <h1>OverTime Rule</h1>
+        </div>
+        <div class="col-md-3">
+
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+            </mat-icon></span> Create</button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+              <span class="header-btn-icon">
+                <mat-icon>draw
+                </mat-icon></span> Edit</button>
+            <span *ngIf="hasEditPermission"></span>
+
+            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission">
+              <span class="header-btn-icon">
+                <mat-icon> delete
+                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+
+        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedPayrollAprlvl()">Delete
+          Selected </button>
+
+      </div>
+    </div>
+
+
+      
+
+        <div *ngIf="iscreateovertimepolicy" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2> Create OverTime Rule</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+          
+  <form *ngIf="hasAddPermission" >
+                  <div class="row">
+                    
+                
+
+    <div class="col-md-6">
+        <label>Rule type</label>
+        <div class="custom-sel">
+          <select class="form-control" [(ngModel)]="rule_type" [ngModelOptions]="{standalone: true}">
+            <option value="DAILY">Daily</option>
+            <option value="WEEKLY">Weekly</option>
+            <option value="MONTHLY">Monthly</option>
+          </select>
+        </div>
+      </div>
+
+        
+      <div class="col-md-6">
+        <label>Base type</label>
+        <div class="custom-sel">
+          <select class="form-control" [(ngModel)]="base_type" [ngModelOptions]="{standalone: true}">
+            <option value="FIXED">Fixed Hours</option>
+            <option value="SHIFT">Shift Hours</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6" >
+                   
+        <label>Threshold hours</label>
+       <input type="text"  class="form-control" [(ngModel)]="threshold_hours"  placeholder="Enter threshold hours"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
+  <div class="col-md-6">
+    <label></label>
+    <div class="check-box-selection-sec form-control mt-3">
+      <div class="mat-set">
+        <mat-checkbox [(ngModel)]="is_extended" [ngModelOptions]="{standalone: true}">Is Extended</mat-checkbox>
+      </div>
+    </div>
+  </div>
+
+
+          <div class="col-md-6" >
+                   
+            <label>Order </label>
+           <input type="number"  class="form-control" [(ngModel)]="order"  placeholder="Enter order "
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+      <div class="col-md-6">
+        <label></label>
+        <div class="check-box-selection-sec form-control mt-3">
+          <div class="mat-set">
+            <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+          </div>
+        </div>
+      </div>
+    
+      <div class="col-md-6" >
+        <label>Select Policy</label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="Policy"
+            name="Policy"
+            [(ngModel)]="policy"
+            [ngModelOptions]="{ standalone: true }"
+          >
+            <option *ngFor="let employees of Policyget" [value]="employees.id">
+              {{ employees.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+
+
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-10">
+                
+                    </div>
+                
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateOverTimeRule()">Create</button>  
+                     </div>
+                </div>
+                </form>
+
+            
+            </div>
+          </div>
+
+
+              <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit OverTime Rule</h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+        <form *ngIf="hasAddPermission" >
+            <div class="row">
+              
+          
+
+<div class="col-md-6">
+  <label>Rule type</label>
+  <div class="custom-sel">
+    <select class="form-control" [(ngModel)]="editAsset.rule_type" [ngModelOptions]="{standalone: true}">
+      <option value="DAILY">Daily</option>
+      <option value="WEEKLY">Weekly</option>
+      <option value="MONTHLY">Monthly</option>
+    </select>
+  </div>
+</div>
+
+  
+<div class="col-md-6">
+  <label>Base type</label>
+  <div class="custom-sel">
+    <select class="form-control" [(ngModel)]="editAsset.base_type" [ngModelOptions]="{standalone: true}">
+      <option value="FIXED">Fixed Hours</option>
+      <option value="SHIFT">Shift Hours</option>
+    </select>
+  </div>
+</div>
+
+<div class="col-md-6" >
+             
+  <label>Threshold hours</label>
+ <input type="text"  class="form-control" [(ngModel)]="editAsset.threshold_hours"  placeholder="Enter threshold hours"
+  [ngModelOptions]="{standalone: true}" >
+ 
+</div>
+<div class="col-md-6">
+<label></label>
+<div class="check-box-selection-sec form-control mt-3">
+<div class="mat-set">
+  <mat-checkbox [(ngModel)]="editAsset.is_extended" [ngModelOptions]="{standalone: true}">Is Extended</mat-checkbox>
+</div>
+</div>
+</div>
+
+
+    <div class="col-md-6" >
+             
+      <label>Order </label>
+     <input type="number"  class="form-control" [(ngModel)]="editAsset.order"  placeholder="Enter order "
+      [ngModelOptions]="{standalone: true}" >
+     
+</div>
+
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-6">
+    <label>Select Policy</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="Policy"
+        name="policy"
+        [(ngModel)]="editAsset.policy"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Policyget" [value]="employees.id">
+          {{ employees.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+
+
+
+            </div>
+
+            <div class="row">
+              <div class="col-md-10">
+          
+              </div>
+          
+              <div class="col-md-2">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateOverTimePolicy()">Update</button>  
+               </div>
+          </div>
+          </form>
+
+       
+
+
+
+
+      </div>
+    </div>
+
+
+
+        <div class="com_list mt-4" *ngIf="hasViewPermission">
+
+
+           
+            <table class="table-container " width="100%">
+                <thead>
+                  <tr>
+                    <th>Rule Type</th>
+                    <th>Base  Type</th>
+                    <th>Threshold hours</th>
+                    <th>Is extended</th>
+                    <th>Order</th>
+                    <th>Is active</th>
+                    <th>Policy</th>
+
+      <th>Action</th>
+        
+                   
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                  <tr *ngFor="let pol of overtimepol;let i = index">
+                    <td >{{ pol.rule_type }}</td> 
+                    <td >{{ pol.base_type }}</td>
+                    <td >{{ pol.threshold_hours }}</td> 
+                    <td >{{ pol.is_extended }}</td> 
+                    <td >{{ pol.order }}</td>
+                    <td >{{ pol.is_active }}</td>
+                    <td >{{ pol.policy }}</td>
+
+                   <td data-label="Action">
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+    
+                
+                (click)="openEditModal(pol)"
+              >
+                <mat-icon style="color: white;">draw</mat-icon>
+              </button>
+    
+              <mat-checkbox *ngIf="Delete" [(ngModel)]="pol.selected" ></mat-checkbox>
+    
+            </td>
+    
+                  </tr>
+              
+                </tbody>
+              </table>
+
+        </div>
+        </div>
+        </div>

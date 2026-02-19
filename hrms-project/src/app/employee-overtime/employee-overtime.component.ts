@@ -22,6 +22,8 @@ export class EmployeeOvertimeComponent {
 
 
   date: any = '';
+  slab: any = '';
+
   hours: any = '';
   rate_multiplier: any = '';
   employee: any = '';
@@ -347,6 +349,7 @@ export class EmployeeOvertimeComponent {
     formData.append('employee', this.employee);
     formData.append('approved_by', this.approved_by);
 
+    formData.append('slab', this.slab);
 
     formData.append('created_by', this.created_by);
 

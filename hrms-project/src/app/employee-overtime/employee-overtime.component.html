@@ -1,4 +1,4 @@
-<div class="container" *ngIf="hasViewPermission">
+<div class="container">
   <div class="comapny_section">
 
 
@@ -17,8 +17,9 @@
         </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
-            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-             </mat-icon></span> Create</button>
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "><span
+                class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+              </span> Create</button>
             <span *ngIf="!hasAddPermission"></span>
 
             <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
@@ -82,17 +83,6 @@
               <div *ngIf="registerButtonClicked && !date" class="error-message">date field is required.</div>
             </div>
 
-        <div class="col-md-6">
-             <label>Ot type</label>
-           <div class="custom-sel">
-          <select class="form-control" [(ngModel)]="ot_type" [ngModelOptions]="{standalone: true}">
-            <option value="NORMAL">Normal OT</option>
-            <option value="WEEKEND">Weekend OT</option>
-            <option value="HOLIDAY">Holiday OT</option>
-          </select>
-        </div>
-      </div>
-
             <div class="col-md-6">
               <label>Hours</label>
               <input type="text" class="form-control" required [(ngModel)]="hours"
@@ -102,11 +92,11 @@
             </div>
 
 
-            <!-- <div class="col-md-6">
+            <div class="col-md-6">
               <label>Rate multiplier</label>
               <input type="text" class="form-control" required [(ngModel)]="rate_multiplier"
                 placeholder="Multiplier for overtime rate" [ngModelOptions]="{standalone: true}">
-            </div> -->
+            </div>
 
 
 
@@ -121,7 +111,15 @@
 
 
 
-
+            <div class="col-md-6">
+              <label> Slab</label>
+              <div class="custom-sel">
+                <select class="form-control" [(ngModel)]="slab" [ngModelOptions]="{standalone: true}">
+                  <option value="OT">Overtime</option>
+                  <option value="EXT">Extended Overtime </option>
+                </select>
+              </div>
+            </div>
 
             <div class="col-md-6">
               <label>Employee</label>
@@ -157,7 +155,7 @@
           </div>
 
           <div class="row" *ngIf="hasAddPermission">
-            <div class="col-md-2"></div>
+            <div class="col-md-8"></div>
             <div class="col-md-2">
               <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
 
@@ -207,11 +205,11 @@
             </div>
 
 
-            <!-- <div class="col-md-6">
+            <div class="col-md-6">
               <label>Rate multiplier</label>
               <input type="text" class="form-control" required [(ngModel)]="editAsset.rate_multiplier"
                 placeholder="Multiplier for overtime rate" [ngModelOptions]="{standalone: true}">
-            </div> -->
+            </div>
 
 
 
@@ -225,7 +223,15 @@
             </div>
 
 
-
+            <div class="col-md-6">
+              <label> Slab</label>
+              <div class="custom-sel">
+                <select class="form-control" [(ngModel)]="editAsset.slab" [ngModelOptions]="{standalone: true}">
+                  <option value="OT">Overtime</option>
+                  <option value="EXT">Extended Overtime </option>
+                </select>
+              </div>
+            </div>
 
 
             <div class="col-md-6">
@@ -289,7 +295,7 @@
             <th>No</th>
             <th>Date</th>
             <th>Hours</th>
-            <!-- <th>Rate Multiplier</th> -->
+            <th>Rate Multiplier</th>
             <th>Approved</th>
             <th>Employee</th>
             <th>Approved By</th>
@@ -301,11 +307,11 @@
             <td data-label="No">{{ i + 1 }}</td>
             <td data-label="Date">{{ docs.date }}</td>
             <td data-label="Hours">{{ docs.hours }}</td>
-            <!-- <td data-label="Rate Multiplier">{{ docs.rate_multiplier }}</td> -->
+            <td data-label="Rate Multiplier">{{ docs.rate_multiplier }}</td>
             <td data-label="Approved">{{ docs.approved }}</td>
             <td data-label="Employee">{{ docs.employee }}</td>
             <td data-label="Approved By">{{ docs.approved_by }}</td>
-            <td data-label="Actions">
+            <td>
               <button
                 mat-fab
                 color="primary"
