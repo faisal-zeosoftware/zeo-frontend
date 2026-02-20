@@ -690,7 +690,66 @@ deleteAirReq(categoryId: number): Observable<any> {
 }
 
 
+   getResiReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/resign-approval/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+ 
+  }
 
+   getLeaveReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/leave-approvals/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+  
+  }
+
+    getAdvSalReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/approval-salaryrequest/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+    getLoanReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-approval/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+  getAssetReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+    getAirtickReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+  getDocReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Doc-request-approval/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
 
 
   

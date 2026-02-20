@@ -145,18 +145,67 @@
             <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
               <li class="nav-item" [class.active]="activeTabNav === 'Genapproval'" (click)="selectTabNav('Genapproval')">
                 <a class="nav-link" href="javascript:void(0)">
-                  <i class="fa fa-paper-plane me-2"></i> General Request 
+                  <i class="fa fa-paper-plane me-2"></i> General Approval
                 </a>
               </li>
-          
-           
-
-          
-
-             
-
-
             </ul>
+
+              <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Resignationapproval'" (click)="selectTabNav('Resignationapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Resignation Approval
+                </a>
+              </li>
+            </ul>
+
+            <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Leaveapproval'" (click)="selectTabNav('Leaveapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Leave Approval
+                </a>
+              </li>
+            </ul>
+
+            <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Advsalapproval'" (click)="selectTabNav('Advsalapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Advance Salary Approval
+                </a>
+              </li>
+            </ul>
+
+          <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Loanapproval'" (click)="selectTabNav('Loanapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Loan Approval
+                </a>
+              </li>
+            </ul>
+
+          <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Assetapproval'" (click)="selectTabNav('Assetapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Asset Approval
+                </a>
+              </li>
+            </ul>
+
+         <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Airticketapproval'" (click)="selectTabNav('Airticketapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Air Ticket Approval
+                </a>
+              </li>
+            </ul>
+
+           <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Docapproval'" (click)="selectTabNav('Docapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Document Approval
+                </a>
+              </li>
+            </ul>
+
           </li>
 
         
@@ -2688,7 +2737,7 @@
 
 
       
-      <section class="content-tab  animate__animated animate__fadeIn" id="punching"
+      <section class="content-tab  animate__animated animate__fadeIn" id="Genapproval"
       *ngIf="activeTabNav === 'Genapproval'">
 
         <!-- Financial content here -->
@@ -2762,6 +2811,883 @@
         </div>
       </div>
     </div>
+    
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="Resignationapproval"
+      *ngIf="activeTabNav === 'Resignationapproval'">
+
+  
+
+
+         
+           <div class="white-outer-sec">
+            <div class="row">
+              <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of ResApprovals" >
+                <h6>Employee Resignation Request Approvals</h6><hr>
+                <div class="row ">
+                    <div class="col-md-3">
+                      <h4>Resignation Request</h4>
+                      <h5>{{apr.resignation_request}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-2" *ngIf="hasAddPermission">
+                        <button type="button" class="btn pull-right" (click)="selectedResiaprovaldetalis(apr.id)">View</button>
+                    </div>
+                  </div>
+              
+
+        
+            
+        
+              </div>
+              </div>
+            </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+  
+      <div *ngIf="selectedApproval">
+        <h6>Resignation Request Approvals</h6>
+        <hr>
+        <h6>Resignation Request - {{ selectedApproval.general_request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  
+      </textarea>
+
+   
+  
+        <div class="row mt-2">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveResApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmResRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="Leaveapproval"
+      *ngIf="activeTabNav === 'Leaveapproval'">
+
+  
+
+
+         
+           <div class="white-outer-sec">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of LeaveApprovals" >
+                <h6>Leave Request Approvals</h6><hr>
+                <div class="row ">
+                    <div class="col-md-2">
+                      <h4>Leave Request</h4>
+                      <h5>{{apr.leave_request}}</h5>
+                    </div>
+                       <div class="col-md-2">
+                      <h4>Employee</h4>
+                      <h5>{{apr.employee_id}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn pull-right" (click)="selectedLeaveaprovaldetalis(apr.id)">View</button>
+                    </div>
+                  </div>
+              
+         
+                <!-- <h6> General Request - {{apr.general_request}}</h6>
+                <h6>Status - {{apr.status}}</h6>
+                <h6>Level - {{apr.level}}</h6> -->
+        
+            
+        
+              </div>
+            </div>
+          </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+  
+      <div *ngIf="selectedApproval">
+        <h6>Leave Request Approvals</h6>
+        <hr>
+        <h6>Leave Request - {{ selectedApproval.leave_request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+  
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  </textarea>
+  
+   
+  
+        <div class="row mt-2">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveLeaveApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             <!-- Additional input for rejection reason -->
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmLeaveRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+     <section class="content-tab  animate__animated animate__fadeIn" id="Advsalapproval"
+      *ngIf="activeTabNav === 'Advsalapproval'">
+
+  
+
+
+         
+           <div class="white-outer-sec">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of AdvSalApprovals" >
+                <h6>Advance Salary Request Approvals</h6><hr>
+                <div class="row ">
+                    <div class="col-md-2">
+                      <h4> Request</h4>
+                      <h5>{{apr.request}}</h5>
+                    </div>
+                       <div class="col-md-2">
+                      <h4>Employee</h4>
+                      <h5>{{apr.employee}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn pull-right" (click)="selectedAdvSalaprovaldetalis(apr.id)">View</button>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+  
+      <div *ngIf="selectedApproval">
+        <h6>Advance Salary Request Approvals</h6>
+        <hr>
+        <h6>Advance Salary Request - {{ selectedApproval.request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+  
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  </textarea>
+  
+   
+  
+        <div class="row mt-2">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveAdvsalApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             <!-- Additional input for rejection reason -->
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmAdvSalRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="Loanapproval"
+      *ngIf="activeTabNav === 'Loanapproval'">
+
+  
+
+
+         
+           <div class="white-outer-sec">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of LoanApprovals" >
+                <h6>Loan Request Approvals</h6><hr>
+                <div class="row ">
+                    <div class="col-md-2">
+                      <h4>Loan Request</h4>
+                      <h5>{{apr.loan_request}}</h5>
+                    </div>
+                       <div class="col-md-2">
+                      <h4>Employee</h4>
+                      <h5>{{apr.employee_id}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn pull-right" (click)="selectedloanaprovaldetalis(apr.id)">View</button>
+                    </div>
+                  </div>
+              
+         
+
+        
+            
+        
+              </div>
+            </div>
+          </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+  
+      <div *ngIf="selectedApproval">
+        <h6>Loan Request Approvals</h6>
+        <hr>
+        <h6>Loan Request - {{ selectedApproval.loan_request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+  
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  </textarea>
+  
+   
+  
+        <div class="row mt-2">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveLoanApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             <!-- Additional input for rejection reason -->
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+          <!-- <div class="col-md-12">
+            <label>Leave Type</label>
+            <div class="custom-sel">
+              <select class="form-control" id="rejection_reason" name="rejection_reason" [(ngModel)]="rejection_reason" [ngModelOptions]="{standalone: true}">
+                <option *ngFor="let rejectionReason of RejectionResons" [value]="rejectionReason.id">{{ rejectionReason.reason_text }}</option>
+              </select>
+            </div>
+          </div> -->
+
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmLoanRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="Assetapproval"
+      *ngIf="activeTabNav === 'Assetapproval'">
+
+  
+
+
+         
+           <div class="white-outer-sec">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of AssetApprovals" >
+                <h6>Asset Request Approvals</h6><hr>
+                <div class="row ">
+                    <div class="col-md-2">
+                      <h4>Asset Request</h4>
+                      <h5>{{apr.asset_request}}</h5>
+                    </div>
+                       <div class="col-md-2">
+                      <h4>Approver</h4>
+                      <h5>{{apr.approver}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn pull-right" (click)="selectedassetaprovaldetalis(apr.id)">View</button>
+                    </div>
+                  </div>
+              
+         
+        
+            
+        
+              </div>
+            </div>
+          </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+  
+      <div *ngIf="selectedApproval">
+        <h6>Asset Request Approvals</h6>
+        <hr>
+        <h6>Asset Request - {{ selectedApproval.asset_request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+  
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  </textarea>
+  
+   
+  
+        <div class="row mt-2" *ngIf="hasAddPermission">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveAssetApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             <!-- Additional input for rejection reason -->
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmAssetRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="Airticketapproval"
+      *ngIf="activeTabNav === 'Airticketapproval'">
+
+  
+
+
+         
+           <div class="white-outer-sec">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of AirticketApprovals" >
+                <h6>Airticket Request Approvals</h6><hr>
+                <div class="row ">
+                    <div class="col-md-2">
+                      <h4>Airticket Request</h4>
+                      <h5>{{apr.request}}</h5>
+                    </div>
+                       <div class="col-md-2">
+                      <h4>Approver</h4>
+                      <h5>{{apr.approver}}</h5>
+                    </div>
+                     <div class="col-md-2">
+                      <h4>Employee</h4>
+                      <h5>{{apr.employee}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-1">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn pull-right" (click)="selectedAiraprovaldetalis(apr.id)">View</button>
+                    </div>
+                  </div>
+              
+         
+        
+            
+        
+              </div>
+            </div>
+          </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+  
+      <div *ngIf="selectedApproval">
+        <h6>Airticket Request Approvals</h6>
+        <hr>
+        <h6>Airticket Request - {{ selectedApproval.request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+  
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  </textarea>
+  
+   
+  
+        <div class="row mt-2" *ngIf="hasAddPermission">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveAirticketApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             <!-- Additional input for rejection reason -->
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmAirtickRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+         
+        </div>
+
+
+       
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="Docapproval"
+      *ngIf="activeTabNav === 'Docapproval'">
+
+  
+
+
+         
+           <div class="white-outer-sec">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of DocApprovals" >
+                <h6>Document Request Approvals</h6><hr>
+                <div class="row ">
+                    <div class="col-md-2">
+                      <h4>General Request</h4>
+                      <h5>{{apr.general_request}}</h5>
+                    </div>
+                       <div class="col-md-2">
+                      <h4>Approver</h4>
+                      <h5>{{apr.approver}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn pull-right" (click)="selectedDocaprovaldetalis(apr.id)" *ngIf="hasAddPermission">View</button>
+                    </div>
+                  </div>
+              
+         
+                <!-- <h6> General Request - {{apr.general_request}}</h6>
+                <h6>Status - {{apr.status}}</h6>
+                <h6>Level - {{apr.level}}</h6> -->
+        
+            
+        
+              </div>
+            </div>
+          </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+  
+      <div *ngIf="selectedApproval">
+        <h6>Document Request Approvals</h6>
+        <hr>
+        <h6>Document Request - {{ selectedApproval.general_request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+        <h6>Reason - {{ selectedApproval.note }}</h6>
+  
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  </textarea>
+  
+   
+  
+        <div class="row mt-2">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveDocApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             <!-- Additional input for rejection reason -->
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+          <!-- <div class="col-md-12">
+            <label>Leave Type</label>
+            <div class="custom-sel">
+              <select class="form-control" id="rejection_reason" name="rejection_reason" [(ngModel)]="rejection_reason" [ngModelOptions]="{standalone: true}">
+                <option *ngFor="let rejectionReason of RejectionResons" [value]="rejectionReason.id">{{ rejectionReason.reason_text }}</option>
+              </select>
+            </div>
+          </div> -->
+
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmDocRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
     
          
         </div>
