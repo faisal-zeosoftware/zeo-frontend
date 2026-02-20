@@ -141,172 +141,394 @@ export class MainSidebarComponent {
 
  // ✅ Load all notification types
  loadAllNotifications(selectedSchema: string): void {
-  this.loadExpiredDocuments(selectedSchema);    
-  this.loadLeaveNotifications(selectedSchema); 
-  this.loadGeneralReqNotifications(selectedSchema);
-  this.loadDocumentReqNotifications(selectedSchema);
-  this.loadLoanReqNotifications(selectedSchema);
-  this.loadAdvancesalaryReqNotifications(selectedSchema);
-  this.loadAssetNotifications(selectedSchema);
-  this.loadAirTicketNotifications(selectedSchema);
+// Listen for sidebar changes so the dropdown updates instantly
+this.EmployeeService.selectedBranches$.subscribe(ids => {
+  this.loadExpiredDocuments();
+
+  this.loadLeaveNotifications();
+  this.loadAssetNotifications();
+  this.loadAirTicketNotifications();
+  this.loadGeneralReqNotifications();
+  this.loadDocumentReqNotifications();
+  this.loadLoanReqNotifications();
+  this.loadAdvancesalaryReqNotifications();
+});
+
+  // this.loadExpiredDocuments(selectedSchema);    
+  // this.loadLeaveNotifications(selectedSchema); 
+  // this.loadGeneralReqNotifications(selectedSchema);
+  // this.loadDocumentReqNotifications(selectedSchema);
+  // this.loadLoanReqNotifications(selectedSchema);
+  // this.loadAdvancesalaryReqNotifications(selectedSchema);
+  // this.loadAssetNotifications(selectedSchema);
+  // this.loadAirTicketNotifications(selectedSchema);
 } 
 
 
  // ✅ Expired Document Notifications
-  loadExpiredDocuments(selectedSchema: string): void {
-  this.EmployeeService.getExpiredDocuments(selectedSchema).subscribe({
-    next: (docs: any[]) => {
-      this.Documents = (docs || []).map(item => ({
-        ...item,
-        type: 'document',
-        highlighted: false
-      }));
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading document notifications:', err);
-      this.Documents = [];
-      this.combineNotifications();
-    }
-  });
-}
+//   loadExpiredDocuments(selectedSchema: string): void {
+//   this.EmployeeService.getExpiredDocuments(selectedSchema).subscribe({
+//     next: (docs: any[]) => {
+//       this.Documents = (docs || []).map(item => ({
+//         ...item,
+//         type: 'document',
+//         highlighted: false
+//       }));
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading document notifications:', err);
+//       this.Documents = [];
+//       this.combineNotifications();
+//     }
+//   });
+// }
+
+loadExpiredDocuments(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getExpiredDocumentsNew(selectedSchema, savedIds).subscribe({
+      next: (docs: any[]) => {
+        this.Documents = (docs || []).map(item => ({
+          ...item,
+          type: 'document',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading document notifications:', err);
+        this.Documents = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
+
 
 // ✅ Leave Notifications
-loadLeaveNotifications(selectedSchema: string): void {
-  this.EmployeeService.getLeaveNotify(selectedSchema).subscribe({
-    next: (leaves: any[]) => {
-      this.LeaveNot = (leaves || []).map(item => ({
-        ...item,
-        type: 'leave',
-        highlighted: false
-      }));
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading leave notifications:', err);
-      this.LeaveNot = [];
-      this.combineNotifications();
-    }
-  });
-}
+// loadLeaveNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getLeaveNotify(selectedSchema).subscribe({
+//     next: (leaves: any[]) => {
+//       this.LeaveNot = (leaves || []).map(item => ({
+//         ...item,
+//         type: 'leave',
+//         highlighted: false
+//       }));
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading leave notifications:', err);
+//       this.LeaveNot = [];
+//       this.combineNotifications();
+//     }
+//   });
+// }
+
+
+loadLeaveNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getLeaveNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (leaves: any[]) => {
+        this.LeaveNot = (leaves || []).map(item => ({
+          ...item,
+          type: 'leave',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading leave notifications:', err);
+        this.LeaveNot = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
 
 
 
 // ✅ Asset Notifications
-loadAssetNotifications(selectedSchema: string): void {
-  this.EmployeeService.getAssetNotify(selectedSchema).subscribe({
-    next: (assets: any) => {
-      this.AssetNot = Array.isArray(assets)
-        ? assets
-            .filter((item: any) => item.message?.toLowerCase().includes('asset'))
-            .map((item) => ({ ...item, type: 'asset', highlighted: false }))
-        : [];
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading Asset request notifications:', err);
-      this.AssetNot = [];
-      this.combineNotifications();
-    },
-  });
-}
+// loadAssetNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getAssetNotify(selectedSchema).subscribe({
+//     next: (assets: any) => {
+//       this.AssetNot = Array.isArray(assets)
+//         ? assets
+//             .filter((item: any) => item.message?.toLowerCase().includes('asset'))
+//             .map((item) => ({ ...item, type: 'asset', highlighted: false }))
+//         : [];
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading Asset request notifications:', err);
+//       this.AssetNot = [];
+//       this.combineNotifications();
+//     },
+//   });
+// }
 
+
+
+loadAssetNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getAssetNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (assets: any) => {
+        this.AssetNot = Array.isArray(assets)
+          ? assets
+              .filter((item: any) => item.message?.toLowerCase().includes('asset'))
+              .map((item) => ({ ...item, type: 'asset', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading Asset request notifications:', err);
+        this.AssetNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
 
 // ✅ AirTicket Notifications
-loadAirTicketNotifications(selectedSchema: string): void {
-  this.EmployeeService.getAirTicketNotify(selectedSchema).subscribe({
-    next: (airtickets: any) => {
-      this.AirticketNot = Array.isArray(airtickets)
-        ? airtickets
-            .filter((item: any) => item.message?.toLowerCase().includes('airticket'))
-            .map((item) => ({ ...item, type: 'airticket', highlighted: false }))
-        : [];
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading Airticket request notifications:', err);
-      this.AirticketNot = [];
-      this.combineNotifications();
-    },
-  });
-}
+// loadAirTicketNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getAirTicketNotify(selectedSchema).subscribe({
+//     next: (airtickets: any) => {
+//       this.AirticketNot = Array.isArray(airtickets)
+//         ? airtickets
+//             .filter((item: any) => item.message?.toLowerCase().includes('airticket'))
+//             .map((item) => ({ ...item, type: 'airticket', highlighted: false }))
+//         : [];
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading Airticket request notifications:', err);
+//       this.AirticketNot = [];
+//       this.combineNotifications();
+//     },
+//   });
+// }
 
+
+loadAirTicketNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getAirTicketNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (airtickets: any) => {
+        this.AirticketNot = Array.isArray(airtickets)
+          ? airtickets
+              .filter((item: any) => item.message?.toLowerCase().includes('airticket'))
+              .map((item) => ({ ...item, type: 'airticket', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading Airticket request notifications:', err);
+        this.AirticketNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
 
 // ✅ General Request Notifications
-loadGeneralReqNotifications(selectedSchema: string): void {
-  this.EmployeeService.getLeaveGeneralReqNot(selectedSchema).subscribe({
-    next: (leaves: any) => {
-      this.GeneralReqNot = Array.isArray(leaves)
-        ? leaves
-            .filter((item: any) => item.message?.toLowerCase().includes('generalrequest'))
-            .map((item) => ({ ...item, type: 'general', highlighted: false }))
-        : [];
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading general request notifications:', err);
-      this.GeneralReqNot = [];
-      this.combineNotifications();
-    },
-  });
-}
+// loadGeneralReqNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getLeaveGeneralReqNot(selectedSchema).subscribe({
+//     next: (leaves: any) => {
+//       this.GeneralReqNot = Array.isArray(leaves)
+//         ? leaves
+//             .filter((item: any) => item.message?.toLowerCase().includes('generalrequest'))
+//             .map((item) => ({ ...item, type: 'general', highlighted: false }))
+//         : [];
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading general request notifications:', err);
+//       this.GeneralReqNot = [];
+//       this.combineNotifications();
+//     },
+//   });
+// }
 
-// ✅ Document Request Notifications
-loadDocumentReqNotifications(selectedSchema: string): void {
-  this.EmployeeService.getDocumentReqNot(selectedSchema).subscribe({
-    next: (docs: any) => {
-      this.DocReqNot = Array.isArray(docs)
-        ? docs
-            .filter((item: any) => item.message?.toLowerCase().includes('docrequest'))
-            .map((item) => ({ ...item, type: 'docrequest', highlighted: false }))
-        : [];
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading document request notifications:', err);
-      this.DocReqNot = [];
-      this.combineNotifications();
-    },
-  });
-}
+
+loadGeneralReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getGeneralReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (leaves: any) => {
+        this.GeneralReqNot = Array.isArray(leaves)
+          ? leaves
+              .filter((item: any) => item.message?.toLowerCase().includes('generalrequest'))
+              .map((item) => ({ ...item, type: 'general', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading general request notifications:', err);
+        this.GeneralReqNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
+// // ✅ Document Request Notifications
+// loadDocumentReqNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getDocumentReqNot(selectedSchema).subscribe({
+//     next: (docs: any) => {
+//       this.DocReqNot = Array.isArray(docs)
+//         ? docs
+//             .filter((item: any) => item.message?.toLowerCase().includes('docrequest'))
+//             .map((item) => ({ ...item, type: 'docrequest', highlighted: false }))
+//         : [];
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading document request notifications:', err);
+//       this.DocReqNot = [];
+//       this.combineNotifications();
+//     },
+//   });
+// }
+
+loadDocumentReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getDocumentReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (docs: any) => {
+        this.DocReqNot = Array.isArray(docs)
+          ? docs
+              .filter((item: any) => item.message?.toLowerCase().includes('docrequest'))
+              .map((item) => ({ ...item, type: 'docrequest', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading document request notifications:', err);
+        this.DocReqNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
+
+
+
+
 
 // ✅ Loan Request Notifications
-loadLoanReqNotifications(selectedSchema: string): void {
-  this.EmployeeService.getLoanReqNot(selectedSchema).subscribe({
-    next: (loan: any[]) => {
-      this.LoanReqNot = (loan || []).map(item => ({
-        ...item,
-        type: 'loanrequest',
-        highlighted: false
-      }));
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading loan request notifications:', err);
-      this.LoanReqNot = [];
-      this.combineNotifications();
-    }
-  });
-}
+// loadLoanReqNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getLoanReqNot(selectedSchema).subscribe({
+//     next: (loan: any[]) => {
+//       this.LoanReqNot = (loan || []).map(item => ({
+//         ...item,
+//         type: 'loanrequest',
+//         highlighted: false
+//       }));
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading loan request notifications:', err);
+//       this.LoanReqNot = [];
+//       this.combineNotifications();
+//     }
+//   });
+// }
+
+
+loadLoanReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getLoanReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (loan: any[]) => {
+        this.LoanReqNot = (loan || []).map(item => ({
+          ...item,
+          type: 'loanrequest',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading loan request notifications:', err);
+        this.LoanReqNot = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
+
+
 
 // ✅ Advance Salary Request Notifications
-loadAdvancesalaryReqNotifications(selectedSchema: string): void {
-  this.EmployeeService.getAdvancesalaryReqNot(selectedSchema).subscribe({
-    next: (loan: any) => {
-      this.AdvancesalaryReqNot = Array.isArray(loan)
-        ? loan
-            .filter((item: any) => item.message?.toLowerCase().includes('advancesalaryrequest'))
-            .map((item) => ({ ...item, type: 'advancesalaryrequest', highlighted: false }))
-        : [];
-      this.combineNotifications();
-    },
-    error: (err) => {
-      console.error('❌ Error loading advance salary request notifications:', err);
-      this.AdvancesalaryReqNot = [];
-      this.combineNotifications();
-    },
-  });
-}
+// loadAdvancesalaryReqNotifications(selectedSchema: string): void {
+//   this.EmployeeService.getAdvancesalaryReqNot(selectedSchema).subscribe({
+//     next: (loan: any) => {
+//       this.AdvancesalaryReqNot = Array.isArray(loan)
+//         ? loan
+//             .filter((item: any) => item.message?.toLowerCase().includes('advancesalaryrequest'))
+//             .map((item) => ({ ...item, type: 'advancesalaryrequest', highlighted: false }))
+//         : [];
+//       this.combineNotifications();
+//     },
+//     error: (err) => {
+//       console.error('❌ Error loading advance salary request notifications:', err);
+//       this.AdvancesalaryReqNot = [];
+//       this.combineNotifications();
+//     },
+//   });
+// }
+
+loadAdvancesalaryReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getAdvancesalaryReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (loan: any) => {
+        this.AdvancesalaryReqNot = Array.isArray(loan)
+          ? loan
+              .filter((item: any) => item.message?.toLowerCase().includes('advancesalaryrequest'))
+              .map((item) => ({ ...item, type: 'advancesalaryrequest', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading advance salary request notifications:', err);
+        this.AdvancesalaryReqNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
+
 
 combineNotifications(): void {
   // Load previously read notifications from localStorage

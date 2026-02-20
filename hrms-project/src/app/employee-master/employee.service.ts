@@ -1731,6 +1731,19 @@ updateGeofence(id: number, data: any): Observable<any> {
 
   }
 
+  getExpiredDocumentsNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/notification/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
+
 
   getExpiredDocumentsMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
     // Converts [1,3,4] into the string "[1,3,4]" for the URL
@@ -1783,6 +1796,18 @@ updateGeofence(id: number, data: any): Observable<any> {
 
   }
 
+  getLeaveNotifyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/leave-ApprovalNotify/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
     getAssetNotify(selectedSchema: string): Observable<any> {
 
     // const url = `${this.baseUrl}/notification/`;
@@ -1796,6 +1821,19 @@ updateGeofence(id: number, data: any): Observable<any> {
 
 
   }
+
+  getAssetNotifyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/request-notifications/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
 
   
     getAirTicketNotify(selectedSchema: string): Observable<any> {
@@ -1812,6 +1850,19 @@ updateGeofence(id: number, data: any): Observable<any> {
 
   }
 
+  getAirTicketNotifyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/request-notifications/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+
 
   getLeaveGeneralReqNot(selectedSchema: string): Observable<any> {
 
@@ -1827,6 +1878,19 @@ updateGeofence(id: number, data: any): Observable<any> {
 
   }
 
+  getGeneralReqNotNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/request-notifications/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+
 
   getDocumentReqNot(selectedSchema: string): Observable<any> {
 
@@ -1841,6 +1905,24 @@ updateGeofence(id: number, data: any): Observable<any> {
 
 
   }
+  getDocumentReqNotNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/Doc-request-noification/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+
+
+
+
+
+
 
   getLoanReqNot(selectedSchema: string): Observable<any> {
 
@@ -1855,6 +1937,20 @@ updateGeofence(id: number, data: any): Observable<any> {
 
   }
 
+  getLoanReqNotNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/loan-notification/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+
+
   getAdvancesalaryReqNot(selectedSchema: string): Observable<any> {
 
   
@@ -1867,6 +1963,19 @@ updateGeofence(id: number, data: any): Observable<any> {
 
 
   }
+
+  getAdvancesalaryReqNotNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/advance-salary-notification/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
 
 
 // markAsReadByType(type: string, id: number, schema: string): Observable<any> {
