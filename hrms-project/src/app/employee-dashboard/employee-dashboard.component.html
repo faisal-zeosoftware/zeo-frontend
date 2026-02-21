@@ -26,6 +26,42 @@
               <span>Dashboard</span>
             </a>
           </li>
+
+                     <li class="nav-item" >
+            <a class="nav-link d-flex justify-content-between align-items-center"
+               href="javascript:void(0)"
+               (click)="togglePunchingDropdown()">
+              <div>
+                <i class="bi bi-book me-2"></i>
+                <span> Daily Punching</span>
+              </div>
+              <i [class]="isPunchingDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+            </a>
+          
+            <!-- Dropdown Items -->
+            <ul *ngIf="isPunchingDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+
+
+              <li class="nav-item" [class.active]="activeTabNav === 'attendance'" (click)="selectTab('attendance')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Attendance
+                </a>
+              </li>
+
+              <li class="nav-item" [class.active]="activeTabNav === 'punching'" (click)="selectTabNav('punching')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Attendance Marking
+                </a>
+              </li>
+          
+              <li class="nav-item" [class.active]="activeTabNav === 'recheckemp'" (click)="selectTabNav('recheckemp')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Recheck-In
+                </a>
+              </li>
+            </ul>
+          </li>
+
           <li class="nav-item" >
             <a class="nav-link d-flex justify-content-between align-items-center"
                href="javascript:void(0)"
@@ -91,45 +127,31 @@
 
 
 
-             <li class="nav-item" >
-            <a class="nav-link d-flex justify-content-between align-items-center"
-               href="javascript:void(0)"
-               (click)="togglePunchingDropdown()">
-              <div>
-                <i class="bi bi-book me-2"></i>
-                <span> Daily Punching</span>
-              </div>
-              <i [class]="isPunchingDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
-            </a>
+<li class="nav-item">
+  <a class="nav-link d-flex justify-content-between align-items-center"
+     href="javascript:void(0)">
+    <div (click)="selectTab('asset')">
+      <i class="bi bi-book me-2"></i>
+      <span>Assets</span>
+    </div>
+    <i [class]="isAssetDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+  </a>
           
-            <!-- Dropdown Items -->
-            <ul *ngIf="isPunchingDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
-              <li class="nav-item" [class.active]="activeTabNav === 'punching'" (click)="selectTabNav('punching')">
-                <a class="nav-link" href="javascript:void(0)">
-                  <i class="fa fa-paper-plane me-2"></i> Attendance Marking
-                </a>
-              </li>
+ </li>
+
+
+ <li class="nav-item">
+  <a class="nav-link d-flex justify-content-between align-items-center"
+     href="javascript:void(0)">
+    <div (click)="selectTab('airticket')">
+      <i class="bi bi-book me-2"></i>
+      <span>Airticket</span>
+    </div>
+    <i [class]="isAirtickDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+  </a>
           
-              <li class="nav-item" [class.active]="activeTabNav === 'recheckemp'" (click)="selectTabNav('recheckemp')">
-                <a class="nav-link" href="javascript:void(0)">
-                  <i class="fa fa-paper-plane me-2"></i> Recheck-In
-                </a>
-              </li>
+ </li>
 
-          
-
-             
-
-
-            </ul>
-          </li>
-
-
-
-
-
-
-          
           <li class="nav-item" >
             <a class="nav-link d-flex justify-content-between align-items-center"
                href="javascript:void(0)"
@@ -226,12 +248,14 @@
         class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Employee Dashboard</h1>
         <div class="d-flex">
+
           <div class="input-group me-3">
             <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
             <button class="btn btn-outline-secondary" type="button" id="search-btn">
               <i class="fa fa-search"></i>
             </button>
           </div>
+<div class="col-md-2">
           <div class="dropdown position-relative" *ngIf="Documents">
             <button
               class="btn btn-outline-secondary position-relative"
@@ -243,6 +267,7 @@
               <i class="fa fa-bell">
 
               </i>
+
           
               <!-- 🔴 Dynamic notification count -->
               <span
@@ -252,6 +277,8 @@
                 {{ notificationCount }}
               </span>
             </button>
+
+
           
             <ul
               class="dropdown-menu dropdown-menu-end shadow"
@@ -281,7 +308,7 @@
               <li *ngIf="Documents.length === 0">
                 <a class="dropdown-item text-center text-muted">No new notifications</a>
               </li>
-          
+     
               <!-- 🔗 View All -->
               <li>
                 <hr class="dropdown-divider" />
@@ -289,7 +316,16 @@
               <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
             </ul>
           </div>
-          
+          </div>
+
+
+   <button
+    class="btn btn-secondary"
+    (click)="logout()"
+  >
+    <i class="fa fa-sign-out-alt me-0"></i> Logout
+  </button>
+    
           
         </div>
       </header>
@@ -763,7 +799,6 @@
               </div>
             </div>
           </div>
-
 
           <div id="bankdetails" *ngIf="activeTab === 'bankdetails'">
             <!-- Your Run Employee Salary content -->
@@ -1704,12 +1739,12 @@
   
   
               <div class="row">
-                  <div class="col-md-10">
+                  <div class="col-md-9">
       
                   </div>
            
-                  <div class="col-md-2">
-                      <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Save</button>  
+                  <div class="col-md-3">
+                      <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Add General Request</button>  
                    </div>
   
                    
@@ -1849,12 +1884,12 @@
 
 
           <div class="row">
-              <div class="col-md-10">
+              <div class="col-md-9">
   
               </div>
   
-              <div class="col-md-2">
-                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateAssetType()">Save</button>  
+              <div class="col-md-3">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateAssetType()">Add Asset Request</button>  
                </div>
           </div>
           
@@ -2034,12 +2069,12 @@
 
 
           <div class="row">
-              <div class="col-md-10">
+              <div class="col-md-9">
   
               </div>
   
-              <div class="col-md-2">
-                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="SentRequest()">Save</button>  
+              <div class="col-md-3">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="SentRequest()">Add Airticket Request</button>  
                </div>
           </div>
           
@@ -2168,12 +2203,12 @@
 
 
           <div class="row">
-              <div class="col-md-10">
+              <div class="col-md-9">
   
               </div>
   
-              <div class="col-md-2">
-                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="SetDocApprovaLevel()">Save</button>  
+              <div class="col-md-3">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="SetDocApprovaLevel()">Add Document Request</button>  
                </div>
           </div>
           
@@ -2284,10 +2319,10 @@
                   </div>
                 
                   <div class="row" >
-                    <div class="col-md-10"></div>
+                    <div class="col-md-9"></div>
                  
-                  <div class="col-md-2">
-                    <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
+                 <div class="col-md-3">
+                    <button type="submit" class="btn btn-success btn-full mt-4">Add Advance Salary Request</button>
                   </div>
                   </div>
                 </form>
@@ -2572,7 +2607,7 @@
               <div class="row" >
                 <div class="col-md-9"></div>
                 <div class="col-md-3">
-                  <button type="submit" class="btn btn-success btn-full mt-4">Sent</button>
+                  <button type="submit" class="btn btn-success btn-full mt-4">Add Resignation Request</button>
                 </div>
               </div>
             </form>

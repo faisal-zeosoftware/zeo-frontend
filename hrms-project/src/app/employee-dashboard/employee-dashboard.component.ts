@@ -503,6 +503,14 @@ selectTabNav(tabNameNav: string): void {
   this.activeTabNav = tabNameNav;
 }
 
+activetTab: string = 'home'; 
+
+setActiveTab(tab: string) {
+  this.activetTab = tab;
+  // Optional: close dropdown after selection
+  this.isAssetDropdownOpen = false;
+}
+
 
 
 EmpAssets: any[] = [];
@@ -725,6 +733,21 @@ togglePunchingDropdown() {
   this.isPunchingDropdownOpen = !this.isPunchingDropdownOpen;
 }
 
+isAssetDropdownOpen = false;
+
+toggleAssetDropdown() {
+  this.isAssetDropdownOpen = !this.isAssetDropdownOpen;
+}
+
+isAirtickDropdownOpen = false;
+
+toggleAirtickDropdown() {
+  this.isAirtickDropdownOpen = !this.isAirtickDropdownOpen;
+}
+
+
+
+
 
 isApprovalsDropdownOpen = false;
 
@@ -773,35 +796,46 @@ requestLeave(): void {
       alert('Leave Request has been sent successfully!');
       // window.location.reload();
     },
-    (error) => {
-      console.error('Leave request failed:', error);
+(error) => {
+  console.error('Leave request failed:', error);
 
-      let errorMessage = 'Something went wrong.';
+  let errorMessage = 'Something went wrong.';
 
-      // ✅ Handle backend validation or field-level errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
+  if (error.error) {
 
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) {
-            messages.push(`${key}: ${value.join(', ')}`);
-          } else if (typeof value === 'string') {
-            messages.push(`${key}: ${value}`);
-          } else {
-            messages.push(`${key}: ${JSON.stringify(value)}`);
-          }
-        }
-
-        if (messages.length > 0) {
-          errorMessage = messages.join('\n');
-        }
-      } else if (error.error?.detail) {
-        // Handles backend messages like { "detail": "Invalid data" }
-        errorMessage = error.error.detail;
-      }
-
-      alert(`Leave request failed!\n\n${errorMessage}`);
+    // 🔹 Case 1: Plain string error
+    if (typeof error.error === 'string') {
+      errorMessage = error.error;
     }
+
+    // 🔹 Case 2: DRF validation errors (object)
+    else if (typeof error.error === 'object') {
+
+      const messages: string[] = [];
+
+      Object.keys(error.error).forEach((field) => {
+        const value = error.error[field];
+
+        if (Array.isArray(value)) {
+          messages.push(`${field}: ${value.join(', ')}`);
+        } else if (typeof value === 'string') {
+          messages.push(`${field}: ${value}`);
+        }
+      });
+
+      if (messages.length > 0) {
+        errorMessage = messages.join('\n');
+      }
+    }
+
+    // 🔹 Case 3: DRF "detail" message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
+    }
+  }
+
+  alert(`Leave request failed!\n\n${errorMessage}`);
+}
   );
 }
 
@@ -1099,34 +1133,46 @@ registerGeneralreq(): void {
       alert('✅ General request has been added successfully!');
       window.location.reload();
     },
-    (error) => {
-      console.error('General request failed:', error);
+(error) => {
+  console.error('Leave request failed:', error);
 
-      // ✅ Backend error handler
-      if (error.error) {
-        let errorMsg = '';
+  let errorMessage = 'Something went wrong.';
 
-        if (typeof error.error === 'string') {
-          // If backend sends plain text
-          errorMsg = error.error;
-        } 
-        else if (typeof error.error === 'object') {
-          // If backend sends JSON (like {"field": ["msg"]})
-          for (const key in error.error) {
-            if (error.error.hasOwnProperty(key)) {
-              const msg = Array.isArray(error.error[key])
-                ? error.error[key].join(', ')
-                : error.error[key];
-              errorMsg += `${key}: ${msg}\n`;
-            }
-          }
+  if (error.error) {
+
+    // 🔹 Case 1: Plain string error
+    if (typeof error.error === 'string') {
+      errorMessage = error.error;
+    }
+
+    // 🔹 Case 2: DRF validation errors (object)
+    else if (typeof error.error === 'object') {
+
+      const messages: string[] = [];
+
+      Object.keys(error.error).forEach((field) => {
+        const value = error.error[field];
+
+        if (Array.isArray(value)) {
+          messages.push(`${field}: ${value.join(', ')}`);
+        } else if (typeof value === 'string') {
+          messages.push(`${field}: ${value}`);
         }
+      });
 
-        alert(`❌ Error submitting request:\n${errorMsg || 'Unknown error occurred.'}`);
-      } else {
-        alert('❌ Failed to submit request. Please check all required fields.');
+      if (messages.length > 0) {
+        errorMessage = messages.join('\n');
       }
     }
+
+    // 🔹 Case 3: DRF "detail" message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
+    }
+  }
+
+  alert(`Leave request failed!\n\n${errorMessage}`);
+}
   );
 }
 
@@ -1332,10 +1378,46 @@ CreateAssetType(): void {
     
             window.location.reload();
           },
-          (error) => {
-            console.error('Added failed', error);
-            alert('Enter all required fields!');
-          }
+(error) => {
+  console.error('Leave request failed:', error);
+
+  let errorMessage = 'Something went wrong.';
+
+  if (error.error) {
+
+    // 🔹 Case 1: Plain string error
+    if (typeof error.error === 'string') {
+      errorMessage = error.error;
+    }
+
+    // 🔹 Case 2: DRF validation errors (object)
+    else if (typeof error.error === 'object') {
+
+      const messages: string[] = [];
+
+      Object.keys(error.error).forEach((field) => {
+        const value = error.error[field];
+
+        if (Array.isArray(value)) {
+          messages.push(`${field}: ${value.join(', ')}`);
+        } else if (typeof value === 'string') {
+          messages.push(`${field}: ${value}`);
+        }
+      });
+
+      if (messages.length > 0) {
+        errorMessage = messages.join('\n');
+      }
+    }
+
+    // 🔹 Case 3: DRF "detail" message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
+    }
+  }
+
+  alert(`Leave request failed!\n\n${errorMessage}`);
+}
         );
       }
 
@@ -1391,46 +1473,44 @@ CreateAssetType(): void {
         window.location.reload();
       },
 (error) => {
-  console.error('Loan creation failed:', error);
+  console.error('Leave request failed:', error);
 
-  let errorMessage = 'Something went wrong. Please try again.';
+  let errorMessage = 'Something went wrong.';
 
   if (error.error) {
 
-    // ✅ Case 1: non_field_errors
-    if (error.error.non_field_errors) {
-      errorMessage = error.error.non_field_errors.join('\n');
+    // 🔹 Case 1: Plain string error
+    if (typeof error.error === 'string') {
+      errorMessage = error.error;
     }
 
-    // ✅ Case 2: detail message
-    else if (error.error.detail) {
-      errorMessage = error.error.detail;
-    }
-
-    // ✅ Case 3: field-specific errors (like request_type)
+    // 🔹 Case 2: DRF validation errors (object)
     else if (typeof error.error === 'object') {
+
       const messages: string[] = [];
 
-      for (const key in error.error) {
-        if (Array.isArray(error.error[key])) {
-          messages.push(error.error[key].join(', '));
-        } else {
-          messages.push(error.error[key]);
-        }
-      }
+      Object.keys(error.error).forEach((field) => {
+        const value = error.error[field];
 
-      if (messages.length) {
+        if (Array.isArray(value)) {
+          messages.push(`${field}: ${value.join(', ')}`);
+        } else if (typeof value === 'string') {
+          messages.push(`${field}: ${value}`);
+        }
+      });
+
+      if (messages.length > 0) {
         errorMessage = messages.join('\n');
       }
     }
 
-    // ✅ Case 4: plain string error
-    else if (typeof error.error === 'string') {
-      errorMessage = error.error;
+    // 🔹 Case 3: DRF "detail" message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
     }
   }
 
-  alert(errorMessage);
+  alert(`Leave request failed!\n\n${errorMessage}`);
 }
  
     );
@@ -1515,10 +1595,46 @@ CreateAssetType(): void {
 
         window.location.reload();
       },  
-      (error) => {
-        console.error('Added failed', error);
-        alert('Enter all required fields!');
+(error) => {
+  console.error('Leave request failed:', error);
+
+  let errorMessage = 'Something went wrong.';
+
+  if (error.error) {
+
+    // 🔹 Case 1: Plain string error
+    if (typeof error.error === 'string') {
+      errorMessage = error.error;
+    }
+
+    // 🔹 Case 2: DRF validation errors (object)
+    else if (typeof error.error === 'object') {
+
+      const messages: string[] = [];
+
+      Object.keys(error.error).forEach((field) => {
+        const value = error.error[field];
+
+        if (Array.isArray(value)) {
+          messages.push(`${field}: ${value.join(', ')}`);
+        } else if (typeof value === 'string') {
+          messages.push(`${field}: ${value}`);
+        }
+      });
+
+      if (messages.length > 0) {
+        errorMessage = messages.join('\n');
       }
+    }
+
+    // 🔹 Case 3: DRF "detail" message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
+    }
+  }
+
+  alert(`Leave request failed!\n\n${errorMessage}`);
+}
     );
   }
 
@@ -1644,25 +1760,46 @@ CreateAssetType(): void {
                
         
               },
-              (error) => {
-                console.error('Added failed', error);
-  let errorMessage = 'Enter all required fields!';
+(error) => {
+  console.error('Leave request failed:', error);
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
-      }
+  let errorMessage = 'Something went wrong.';
 
-      alert(errorMessage);
+  if (error.error) {
+
+    // 🔹 Case 1: Plain string error
+    if (typeof error.error === 'string') {
+      errorMessage = error.error;
     }
+
+    // 🔹 Case 2: DRF validation errors (object)
+    else if (typeof error.error === 'object') {
+
+      const messages: string[] = [];
+
+      Object.keys(error.error).forEach((field) => {
+        const value = error.error[field];
+
+        if (Array.isArray(value)) {
+          messages.push(`${field}: ${value.join(', ')}`);
+        } else if (typeof value === 'string') {
+          messages.push(`${field}: ${value}`);
+        }
+      });
+
+      if (messages.length > 0) {
+        errorMessage = messages.join('\n');
+      }
+    }
+
+    // 🔹 Case 3: DRF "detail" message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
+    }
+  }
+
+  alert(`Leave request failed!\n\n${errorMessage}`);
+}
             );
           }
 
@@ -1751,26 +1888,46 @@ CreateAssetType(): void {
   
           window.location.reload();
         },  
-        (error) => {
-          console.error('Added failed', error);
-          
-         let errorMessage = 'Enter all required fields!';
+(error) => {
+  console.error('Leave request failed:', error);
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
-      }
+  let errorMessage = 'Something went wrong.';
 
-      alert(errorMessage);
+  if (error.error) {
+
+    // 🔹 Case 1: Plain string error
+    if (typeof error.error === 'string') {
+      errorMessage = error.error;
     }
+
+    // 🔹 Case 2: DRF validation errors (object)
+    else if (typeof error.error === 'object') {
+
+      const messages: string[] = [];
+
+      Object.keys(error.error).forEach((field) => {
+        const value = error.error[field];
+
+        if (Array.isArray(value)) {
+          messages.push(`${field}: ${value.join(', ')}`);
+        } else if (typeof value === 'string') {
+          messages.push(`${field}: ${value}`);
+        }
+      });
+
+      if (messages.length > 0) {
+        errorMessage = messages.join('\n');
+      }
+    }
+
+    // 🔹 Case 3: DRF "detail" message
+    else if (error.error.detail) {
+      errorMessage = error.error.detail;
+    }
+  }
+
+  alert(`Leave request failed!\n\n${errorMessage}`);
+}
       );
     }
 
