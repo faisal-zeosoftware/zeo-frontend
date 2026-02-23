@@ -373,32 +373,33 @@
                       </div>
                     </div>
 
-                    <div class="col-md-4" >
-                      <label>Select Branches</label>
-                      <div class="custom-sel">
-                        <div class="form-control-wrapper">
-                        
-  
-                          <mat-form-field>
-                            <!-- <mat-label>Favorite food</mat-label> -->
-                            <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #selectcon multiple>
-                              <div class="select-all">
-                                <mat-checkbox [(ngModel)]="allSelectedcon" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncon()">
-                                  Select All
-                                </mat-checkbox>
-                              </div>
-                              <input type="text" placeholder="serach" class="form-control">
-  
-                              <mat-option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branch_name }}
-                              </mat-option>
-                            </mat-select>
-                          </mat-form-field>
-                          
-                        </div>
-                       
-                      </div>
 
-                    </div>
+                      <div class="col-md-4" >
+                        <label>Select Branches</label>
+                        <div class="custom-sel">
+                          <div class="form-control-wrapper">
+                          
+    
+                            <mat-form-field>
+                              <!-- <mat-label>Favorite food</mat-label> -->
+                              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #select multiple>
+                                <div class="select-all">
+                                  <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                                    Select All
+                                  </mat-checkbox>
+                                </div>
+                                <input type="text" placeholder="serach" class="form-control">
+    
+                                <mat-option *ngFor="let branch of branches" [value]="branch.id">{{ branch.branch_name }}
+                                </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                            
+                          </div>
+                         
+                        </div>
+  
+                      </div>
 
                     
 

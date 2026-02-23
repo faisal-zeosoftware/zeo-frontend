@@ -61,7 +61,7 @@ schemas: string[] = []; // Array to store schema names
      private userService: UserMasterService,
 
     private http: HttpClient,
-    private DesignationService: DesignationService,
+     private DesignationService: DesignationService,
 private sessionService: SessionService,
 private employeeService: EmployeeService,
 
@@ -361,7 +361,7 @@ CreateLoanApproverLevel(): void {
         console.log('schemastore',selectedSchema )
         // Check if selectedSchema is available
         if (selectedSchema) {
-          this.employeeService.getLoanapprover(selectedSchema).subscribe(
+          this.userService.getApprover(selectedSchema).subscribe(
             (result: any) => {
               this.Approvers = result;
               console.log(' fetching Loantypes:');
@@ -394,14 +394,14 @@ CreateLoanApproverLevel(): void {
 
         // non-ess-users usermaster services
 
-      loadUsers(): void {
+ loadUsers(): void {
     
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
   console.log('schemastore',selectedSchema )
   // Check if selectedSchema is available
   if (selectedSchema) {
-    this.userService.getessApprover(selectedSchema).subscribe(
+    this.userService.getApprover(selectedSchema).subscribe(
       (result: any) => {
         this.Users = result;
         console.log(' fetching Companies:');
@@ -413,6 +413,21 @@ CreateLoanApproverLevel(): void {
     );
   }
   }
+
+    mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.approver) return;
+
+  const apr = this.Users.find(
+    (a: any) => a.username === this.editAsset.approver
+  );
+
+  if (apr) {
+    this.editAsset.approver = apr.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approver);
+}
+
 
 
 
@@ -474,8 +489,9 @@ openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
 
-this.mapLoanAprNameToId();
+// this.mapLoanAprNameToId();
 this.mapLoanTypeNameToId();
+this.mapApproverNameToId();
 
 }
 

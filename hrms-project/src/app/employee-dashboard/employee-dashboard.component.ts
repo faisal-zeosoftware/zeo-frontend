@@ -128,12 +128,13 @@ notificationCount: number = 0; // number to show in the red badge
     // this.fetchingApprovals();
     this.loadGeeralReqAprovals();
     this.loadResReqAprovals();
-    this.loadLeaveReqAprovals();
+    this.loadLeaveReqApprovals();
     this.loadAdvSalReqAprovals();
     this.loadLoanReqAprovals();
     this.loadAssetReqApprovals();
     this.loadAirticketReqApprovals();
     this.loadDocReqApprovals();
+    
 
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -1944,45 +1945,6 @@ get dashboardLeaveBalances() {
 
 Approvals: any[] = []; // Assuming this array holds the list of expired documents
 
-
-
-
-// fetchEmployees(schema: string, branchIds: number[]): void {
-//   this.isLoading = true;
-//   this.EmployeeService.getGeneralRequestApprovalsMasterNew(schema, branchIds).subscribe({
-//     next: (data: any) => {
-//       // Filter active employees
-//            this.Approvals = data;
-
-//       this.isLoading = false;
-//     },
-//     error: (err) => {
-//       console.error('Fetch error:', err);
-//       this.isLoading = false;
-//     }
-//   });
-// }
-
-// fetchingApprovals(callback?: Function): void {
-//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-//   console.log('schemastore', selectedSchema);
-  
-//   // Check if selectedSchema and userId are available
-//   if (selectedSchema && this.userId) {
-//       this.EmployeeService.getApprovalslist(selectedSchema, this.userId).subscribe(
-//           (result: any) => {
-//               this.Approvals = result;
-//               console.log('approvals', this.Approvals)
-//           },
-//           (error) => {
-//               console.error('Error fetching approvals:', error);
-//           }
-//       );
-//   }
-
-// }
-
 loadGeeralReqAprovals(): void {
   const selectedSchema = this.authService.getSelectedSchema();
   
@@ -2006,9 +1968,6 @@ loadGeeralReqAprovals(): void {
 selectedApproval: any = null;
 isAddFieldsModalOpen: boolean = false;
 
-
-
-
 selectedaprovaldetalis(approvalId: number): void {
 const selectedSchema = this.authService.getSelectedSchema();
 
@@ -2027,9 +1986,6 @@ this.EmployeeService.getApprovalDetails(apiUrl).subscribe(
 );
 }
 }
-
-
-
 
 // Function for handling approval rejection
 rejectApproval(approvalId: number): void {
@@ -2142,8 +2098,6 @@ loadResReqAprovals(): void {
     }
   });
 }
-
-
 
  approveResApproval(approvalId: number): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -2286,9 +2240,6 @@ LoadLeaveRejectionReasons(selectedSchema: string) {
 }
 
 
-
-
-
 // Function for handling approval rejection
 
 showRejectionReason: boolean = false; 
@@ -2337,7 +2288,7 @@ confirmRejection(approvalId: number): void {
 
 LeaveApprovals: any[] = [];
 
-loadLeaveReqAprovals(): void {
+loadLeaveReqApprovals(): void {
   const selectedSchema = this.authService.getSelectedSchema();
   
   if (!selectedSchema) {
@@ -2579,8 +2530,6 @@ LoadAdvsalRejectionReasons(selectedSchema: string) {
   );
 }
 
-
-
  selectedAdvSalaprovaldetalis(approvalId: number): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
@@ -2748,7 +2697,7 @@ loadAssetReqApprovals(): void {
 }
 
 
-   approveAssetApproval(approvalId: number): void {
+ approveAssetApproval(approvalId: number): void {
     const selectedSchema = this.authService.getSelectedSchema();
   
     if (selectedSchema) {
@@ -2795,7 +2744,7 @@ loadAssetReqApprovals(): void {
     }
   }
 
-    confirmAssetRejection(approvalId: number): void {
+ confirmAssetRejection(approvalId: number): void {
     const selectedSchema = this.authService.getSelectedSchema();
   
     // Data to be sent in the request body (including the note and rejection reason)
@@ -2835,7 +2784,7 @@ loadAssetReqApprovals(): void {
     }
   }
 
-   selectedassetaprovaldetalis(approvalId: number): void {
+ selectedassetaprovaldetalis(approvalId: number): void {
     const selectedSchema = this.authService.getSelectedSchema();
   
     if (selectedSchema) {

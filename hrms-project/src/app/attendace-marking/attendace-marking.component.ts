@@ -406,6 +406,10 @@ async registerCheckIn(): Promise<void> {
 
     const data = {
       employee: this.employee,
+      date: this.date,
+      check_in_time: this.check_in_time,
+      check_out_time: this.check_out_time,
+      total_hours: this.total_hours,
       check_in_lat: position.lat,
       check_in_lng: position.lng,
       check_in_location: address
@@ -435,6 +439,10 @@ async registerCheckOut(): Promise<void> {
 
     const data = {
       employee: this.employee,
+      date: this.date,
+      check_in_time: this.check_in_time,
+      check_out_time: this.check_out_time,
+      total_hours: this.total_hours,
       check_out_lat: position.lat,
       check_out_lng: position.lng,
       check_out_location: address

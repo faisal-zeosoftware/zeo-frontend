@@ -51,7 +51,7 @@
         <div class="row">
          
           
-          <div class="col-md-12">
+          <div class="col-md-4">
             <label>Employee</label>
             <div class="custom-sel">
               <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
@@ -59,6 +59,34 @@
                 <option *ngFor="let employee of Employees" [value]="employee.id">{{ employee.emp_code }}</option>
               </select>
             </div>
+          </div>
+
+          <div class="col-md-4">
+                <label>Date</label>
+                <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Payment  date"
+                [ngModelOptions]="{standalone: true}">
+          </div>
+
+
+          <div class="col-md-4" >  
+              <label>CheckIn time</label>
+              <input type="time"  class="form-control" required  [(ngModel)]="check_in_time"  placeholder="Enter start time "
+              [ngModelOptions]="{standalone: true}">
+         </div>
+
+          <div class="col-md-4" >  
+              <label>CheckOut time</label>
+              <input type="time"  class="form-control" required  [(ngModel)]="check_out_time"  placeholder="Enter start time "
+              [ngModelOptions]="{standalone: true}">
+         </div>
+
+        <div class="col-md-4" >
+                   
+                    <label>Total Hours</label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="total_hours"  placeholder="Enter Total Hours"
+                    [ngModelOptions]="{standalone: true}">
+                   
+                   <!-- <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div> -->
           </div>
 
 
@@ -190,7 +218,7 @@
             <th>Employee </th>
             <th>Shift</th>
             <th> Date</th>
-
+            <th>Total Hours</th>
             <th>Check In</th>
             <th>Check Out</th>
 
@@ -204,6 +232,7 @@
             <td>{{ docs.employee }}</td> 
             <td>{{ docs.shift }}</td> 
             <td >{{ docs.date }}</td>
+            <td >{{ docs.total_hours }}</td>
             <td >{{ docs.check_in_time }}</td>
             <td >{{ docs.check_out_time }}</td>
 

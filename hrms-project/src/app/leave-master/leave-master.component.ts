@@ -239,7 +239,7 @@ export class LeaveMasterComponent {
 
       this.LoadEmployee(selectedSchema);
 
-      // this.LoadBranch();
+      this.LoadBranch();
       this.LoadDepartment(selectedSchema);
       this.LoadDesignation(selectedSchema);
       this.LoadCategory(selectedSchema);
@@ -606,7 +606,7 @@ updateLeavetype(): void {
       created_by: this.created_by,
   
       // ⭐ MULTI SELECT FIELDS — now sent as JSON arrays
-      branches: this.branches?.length ? this.branches : [],
+      branches: this.branch?.length ? this.branch : [],
       categories: this.categories?.length ? this.categories : [],
       departments: this.departments?.length ? this.departments : [],
       designations: this.designations?.length ? this.designations : [],

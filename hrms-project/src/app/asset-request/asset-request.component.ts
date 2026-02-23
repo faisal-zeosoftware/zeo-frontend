@@ -505,7 +505,8 @@ updateAssetType(): void {
     (response) => {
       alert('Asset Request  updated successfully!');
       this.closeEditModal();
-      this.loadLAssetType(); // reload updated list
+      this.loadLAssetType(); 
+      window.location.reload();// reload updated list
     },
 (error) => {
   console.error('Error updating Asset Request:', error);
