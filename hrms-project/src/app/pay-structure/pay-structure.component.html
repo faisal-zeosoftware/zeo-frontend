@@ -1,1 +1,399 @@
-<p>pay-structure works!</p>
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+       
+    <div class="header_section">
+
+      <div class="row">
+        <div class="col-md-4">
+          <h1>Pay Structure</h1>
+        </div>
+        <div class="col-md-3">
+
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+            </mat-icon></span> Create</button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+              <span class="header-btn-icon">
+                <mat-icon>draw
+                </mat-icon></span> Edit</button>
+            <span *ngIf="hasEditPermission"></span>
+
+            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission">
+              <span class="header-btn-icon">
+                <mat-icon> delete
+                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+
+        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedPayrollAprlvl()">Delete
+          Selected </button>
+
+      </div>
+    </div>
+
+
+      
+
+        <div *ngIf="iscreateovertimepolicy" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2> Create Pay Structure</h2>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+                </div>
+              </div>
+              <hr />
+          
+  <form  > 
+                 
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <label class="form-label-custom">Select your work week<span class="text-danger">*</span></label>
+            <p class="text-muted small">The days worked in a calendar week</p>
+            
+            <div class="work-week-group">
+                <div 
+                    *ngFor="let day of availableDays" 
+                    class="day-segment" 
+                    [class.active]="isDaySelected(day.key)"
+                    (click)="toggleDay(day.key)">
+                    {{ day.label }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+                    
+                
+
+  
+
+        
+      <div class="col-md-6">
+        <label>Salary calculation type</label>
+        <div class="custom-sel">
+          <select class="form-control" [(ngModel)]="salary_calculation_type" [ngModelOptions]="{standalone: true}">
+            <option value="CALENDAR">Actual days in month</option>
+            <option value="FIXED">Organisation working days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6" >
+                   
+        <label>Fixed working days</label>
+       <input type="number"  class="form-control" [(ngModel)]="fixed_working_days"  placeholder="Enter threshold hours"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
+  <div class="col-md-6">
+    <label>Attendance cycle type</label>
+    <div class="custom-sel">
+      <select class="form-control" [(ngModel)]="attendance_cycle_type" [ngModelOptions]="{standalone: true}">
+        <option value="MONTH">Calendar Month</option>
+        <option value="CUSTOM">Custom Cycle</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-6" >
+                   
+    <label>Cycle start day</label>
+   <input type="number"  class="form-control" [(ngModel)]="cycle_start_day"  placeholder="Enter cycle start day "
+    [ngModelOptions]="{standalone: true}" >
+   
+</div>
+
+
+
+<div class="col-md-6" >
+                   
+    <label>Cycle end day</label>
+   <input type="number"  class="form-control" [(ngModel)]="cycle_end_day"  placeholder="Enter cycle end day"
+    [ngModelOptions]="{standalone: true}" >
+   
+</div>
+
+
+<div class="col-md-6">
+    <label>Payday type</label>
+    <div class="custom-sel">
+      <select class="form-control" [(ngModel)]="payday_type" [ngModelOptions]="{standalone: true}">
+        <option value="FIXED_DAY">Fixed day</option>
+        <option value="LAST_WORKING_DAY">Last working day</option>
+      </select>
+    </div>
+  </div>
+
+
+  <div class="col-md-6" >
+                   
+    <label>Payday</label>
+   <input type="number"  class="form-control" [(ngModel)]="payday"  placeholder="Enter payday"
+    [ngModelOptions]="{standalone: true}" >
+   
+</div>
+
+
+<!-- <div class="col-md-6" >
+                   
+    <label>Payroll start month</label>
+   <input type="date"  class="form-control" [(ngModel)]="payroll_start_month"  placeholder="Enter payroll start month"
+    [ngModelOptions]="{standalone: true}" >
+   
+</div> -->
+
+<div class="col-md-6 mb-3">
+    <label>Start your first payroll from<span class="text-danger">*</span></label>
+    <input type="month" class="form-control" [(ngModel)]="payroll_start_month" [ngModelOptions]="{standalone: true}">
+</div>
+
+<div class="col-md-12 mt-2" *ngIf="payroll_start_month && payday">
+    <label class="text-muted small d-block">Select a pay date for your first payroll*</label>
+    <p class="mb-1"><strong>Pay Period: {{ formattedPayPeriod }}</strong></p>
+    
+    <div class="fake-input-display">
+        {{ calculatedPayDate }}
+        <mat-icon class="pull-right text-muted" style="font-size: 18px;">calendar_today</mat-icon>
+    </div>
+</div>
+
+     
+
+   
+    
+      <div class="col-md-6" >
+        <label>Select Branch</label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="branch"
+            name="branch"
+            [(ngModel)]="branch"
+            [ngModelOptions]="{ standalone: true }"
+          >
+          <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+
+          </select>
+        </div>
+      </div>
+
+
+
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-10">
+                
+                    </div>
+                
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreatePayStructure()">Create</button>  
+                     </div>
+                </div>
+                </form>
+
+            
+            </div>
+          </div>
+
+
+              <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit OverTime Rule</h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+        <form *ngIf="hasAddPermission" >
+            <div class="row">
+              
+          
+
+<div class="col-md-6">
+  <label>Rule type</label>
+  <div class="custom-sel">
+    <select class="form-control" [(ngModel)]="editAsset.rule_type" [ngModelOptions]="{standalone: true}">
+      <option value="DAILY">Daily</option>
+      <option value="WEEKLY">Weekly</option>
+      <option value="MONTHLY">Monthly</option>
+    </select>
+  </div>
+</div>
+
+  
+<div class="col-md-6">
+  <label>Base type</label>
+  <div class="custom-sel">
+    <select class="form-control" [(ngModel)]="editAsset.base_type" [ngModelOptions]="{standalone: true}">
+      <option value="FIXED">Fixed Hours</option>
+      <option value="SHIFT">Shift Hours</option>
+    </select>
+  </div>
+</div>
+
+<div class="col-md-6" >
+             
+  <label>Threshold hours</label>
+ <input type="text"  class="form-control" [(ngModel)]="editAsset.threshold_hours"  placeholder="Enter threshold hours"
+  [ngModelOptions]="{standalone: true}" >
+ 
+</div>
+<div class="col-md-6">
+<label></label>
+<div class="check-box-selection-sec form-control mt-3">
+<div class="mat-set">
+  <mat-checkbox [(ngModel)]="editAsset.is_extended" [ngModelOptions]="{standalone: true}">Is Extended</mat-checkbox>
+</div>
+</div>
+</div>
+
+
+    <div class="col-md-6" >
+             
+      <label>Order </label>
+     <input type="number"  class="form-control" [(ngModel)]="editAsset.order"  placeholder="Enter order "
+      [ngModelOptions]="{standalone: true}" >
+     
+</div>
+
+<div class="col-md-6">
+  <label></label>
+  <div class="check-box-selection-sec form-control mt-3">
+    <div class="mat-set">
+      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-6">
+    <label>Select Policy</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="Policy"
+        name="policy"
+        [(ngModel)]="editAsset.policy"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Policyget" [value]="employees.id">
+          {{ employees.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+
+
+
+            </div>
+
+            <div class="row">
+              <div class="col-md-10">
+          
+              </div>
+          
+              <div class="col-md-2">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateOverTimePolicy()">Update</button>  
+               </div>
+          </div>
+          </form>
+
+       
+
+
+
+
+      </div>
+    </div>
+
+
+
+        <div class="com_list mt-4" *ngIf="hasViewPermission">
+
+
+           
+            <table class="table-container " width="100%">
+                <thead>
+                  <tr>
+                    <th>Rule Type</th>
+                    <th>Base  Type</th>
+                    <th>Threshold hours</th>
+                    <th>Is extended</th>
+                    <th>Order</th>
+                    <th>Is active</th>
+                    <th>Policy</th>
+
+      <th>Action</th>
+        
+                   
+                  </tr>
+                </thead>
+                <tbody>
+                    
+                  <tr *ngFor="let pol of overtimepol;let i = index">
+                    <td >{{ pol.rule_type }}</td> 
+                    <td >{{ pol.base_type }}</td>
+                    <td >{{ pol.threshold_hours }}</td> 
+                    <td >{{ pol.is_extended }}</td> 
+                    <td >{{ pol.order }}</td>
+                    <td >{{ pol.is_active }}</td>
+                    <td >{{ pol.policy }}</td>
+
+                   <td data-label="Action">
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+    
+                
+                (click)="openEditModal(pol)"
+              >
+                <mat-icon style="color: white;">draw</mat-icon>
+              </button>
+    
+              <mat-checkbox *ngIf="Delete" [(ngModel)]="pol.selected" ></mat-checkbox>
+    
+            </td>
+    
+                  </tr>
+                
+                </tbody>
+              </table>
+
+        </div>
+        </div>
+        </div>

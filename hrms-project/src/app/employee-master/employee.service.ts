@@ -5258,6 +5258,24 @@ registerOverTimeRule(formData: FormData): Observable<any> {
 }
 
 
+
+registerPayStructure(formData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/payroll/api/payroll-structure/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, formData).pipe(
+    catchError((error) => {
+      console.error('Error during leave type registration:', error);
+      return throwError(error);
+    })
+  );
+}
+
 registerGeofence(formData: FormData): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   if (!selectedSchema) {

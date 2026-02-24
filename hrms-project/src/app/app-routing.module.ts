@@ -158,6 +158,7 @@ import { GeofenceComponent } from './geofence/geofence.component';
 import { ResignationEmailTemplateComponent } from './resignation-email-template/resignation-email-template.component';
 import { BranchPermissionsComponent } from './branch-permissions/branch-permissions.component';
 import { OvertimeRuleComponent } from './overtime-rule/overtime-rule.component';
+import { PayStructureComponent } from './pay-structure/pay-structure.component';
 
 
 const routes: Routes = [
@@ -555,6 +556,11 @@ const routes: Routes = [
     {
       path:'pay-roll',
       component:PayRollComponent,
+    },
+    
+    {
+      path:'pay-structure',
+      component:PayStructureComponent,
     },
     {
       path: 'payroll-details/:id',
