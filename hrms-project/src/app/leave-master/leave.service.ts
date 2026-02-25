@@ -992,6 +992,9 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     
   }
 
+ 
+  
+
 
   getPaySlipNew(selectedSchema: string, branchIds: number[]): Observable<any> {
     // Converts [1,3,4] into the string "[1,3,4]" for the URL

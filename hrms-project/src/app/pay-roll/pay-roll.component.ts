@@ -639,7 +639,7 @@ onFileSelected(event:any){
 
     fetchLoadPaySlip(schema: string, branchIds: number[]): void {
       this.isLoading = true;
-      this.EmployeeService.getProjectNew(schema, branchIds).subscribe({
+      this.leaveService.getPaySlipNew(schema, branchIds).subscribe({
         next: (data: any) => {
           // Filter active employees
           this.PaySlips = data
@@ -822,18 +822,18 @@ onFileSelected(event:any){
 
   
 
-  LoadPayslip(selectedSchema: string) {
-    this.leaveService.getPaySlip(selectedSchema).subscribe(
-      (data: any[]) => {
-        this.PaySlips = data;
-        this.masterSelected = false;
-        console.log('Payrolls:', this.PaySlips);
-      },
-      (error: any) => {
-        console.error('Error fetching Payrolls:', error);
-      }
-    );
-  }
+  // LoadPayslip(selectedSchema: string) {
+  //   this.leaveService.getPaySlip(selectedSchema).subscribe(
+  //     (data: any[]) => {
+  //       this.PaySlips = data;
+  //       this.masterSelected = false;
+  //       console.log('Payrolls:', this.PaySlips);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching Payrolls:', error);
+  //     }
+  //   );
+  // }
   
 
   searchQuery = '';
