@@ -915,3 +915,76 @@ table th{
 
 
 
+/* Sidebar Styling */
+.options-sidebar {
+  background: #f8f9fa;
+  padding: 20px;
+  border-left: 1px solid #dee2e6;
+  height: 100%;
+  min-height: 500px;
+  border-radius: 0 8px 8px 0;
+}
+
+.preference-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.preference-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.preference-item label {
+  margin: 0;
+  cursor: pointer;
+  font-size: 14px;
+  color: #495057;
+}
+
+.payslip-container {
+  background: #fff;
+  padding: 30px;
+  border: 1px solid #eee;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Ensure branding looks professional */
+h3.m-0 {
+  font-weight: 700;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+/* Sidebar specific styling */
+.form-control-file {
+  font-size: 12px;
+}
+
+
+.text-right {
+  text-align: right;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.payslip-container h3 {
+  color: #333;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+.options-sidebar {
+  background: #fdfdfd;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}

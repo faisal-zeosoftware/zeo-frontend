@@ -35,6 +35,9 @@ export class PayrollDetailsComponent {
   selectedPayslipDesign = 'default';  // other value could be 'design2'
   send_email: boolean = false;
 
+  // Add to your variable declarations
+companyName: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private leaveService: LeaveService,
@@ -46,6 +49,11 @@ export class PayrollDetailsComponent {
 
 
   ngOnInit(): void {
+
+    // Get the schema name from localStorage
+  const savedSchema = localStorage.getItem('selectedSchema');
+  this.companyName = savedSchema ? savedSchema : 'Your Company';
+
     this.payslipId = this.route.snapshot.paramMap.get('id');
     if (this.payslipId) {
       this.leaveService.getSinglePayslip(this.payslipId).subscribe(
@@ -62,6 +70,31 @@ export class PayrollDetailsComponent {
       );
     }
   }
+
+
+
+// Update your preferences object
+payslipPreferences = {
+  showBranch: true,
+  showDepartment: true,
+  showCategory: true,
+  showLogo: true,        // New
+  showCompanyName: true // New flag for Company Name
+};
+
+logoUrl: string | ArrayBuffer | null = null; // Holds the uploaded image data
+
+// Method to handle image upload
+onLogoUpload(event: any): void {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.logoUrl = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
 
 
   downloadPayslip() {
