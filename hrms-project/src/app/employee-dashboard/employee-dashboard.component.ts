@@ -81,6 +81,20 @@ export class EmployeeDashboardComponent {
   selectedEmployeeId: number | null = null;
 
 
+  AllNotifications: any[] = [];  
+  Documents: any[] = []; // store expired document notifications
+  notificationCount: number = 0;
+
+  ResignationApr: any[] = [];
+  AssetAprNot: any[] = [];
+  AirticketAprNot: any[] = [];
+  LeaveAprNot: any[] = [];
+  GeneralAprNot: any[] = [];
+  DocAprNot: any[] = [];
+  LoanAprNot: any[] = [];
+  AdvancesalaryAprNot: any[] = [];
+
+
   constructor(private authService: AuthenticationService,
      private router: Router,
     private EmployeeService: EmployeeService,
@@ -107,8 +121,7 @@ export class EmployeeDashboardComponent {
   this.isMenuOpen = !this.isMenuOpen;
 }
 
-Documents: any[] = []; // store expired document notifications
-notificationCount: number = 0; // number to show in the red badge
+ // number to show in the red badge
 
 
   // private updateMarginLeft() {
@@ -134,6 +147,7 @@ notificationCount: number = 0; // number to show in the red badge
     this.loadAssetReqApprovals();
     this.loadAirticketReqApprovals();
     this.loadDocReqApprovals();
+  
     
 
 
@@ -172,6 +186,10 @@ notificationCount: number = 0; // number to show in the red badge
          
          
          // this.loadEmployee();
+
+    if (selectedSchema) {
+      this.loadAllNotifications(selectedSchema);
+    }
    
       
      // Retrieve user ID
@@ -300,24 +318,318 @@ notificationCount: number = 0; // number to show in the red badge
    } else {
      console.error('User ID is null.');
    }
-   
-   
 
  
-   
-   
-      
-     
-      
-   
-     
-     
-     
-       
-        
-       }
-   
-     
+        }
+
+
+loadAllNotifications(selectedSchema: string): void {
+// Listen for sidebar changes so the dropdown updates instantly
+this.EmployeeService.selectedBranches$.subscribe(ids => {
+  this.loadResignationApprovals();
+  this.loadLeaveNotifications();
+  this.loadAssetNotifications();
+  this.loadAirTicketNotifications();
+  this.loadGeneralReqNotifications();
+  this.loadDocumentReqNotifications();
+  this.loadLoanReqNotifications();
+  this.loadAdvancesalaryReqNotifications();
+});
+}
+
+
+loadResignationApprovals(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.CountryService.getResignationAprNoti(selectedSchema, savedIds).subscribe({
+      next: (docs: any[]) => {
+        this.ResignationApr = (docs || []).map(item => ({
+          ...item,
+          type: 'Resignationapproval',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading resignation approval notifications:', err);
+        this.ResignationApr = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
+
+
+
+
+
+loadLeaveNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getLeaveNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (leaves: any[]) => {
+        this.LeaveAprNot = (leaves || []).map(item => ({
+          ...item,
+          type: 'Leaveapproval',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading leave approval notifications:', err);
+        this.LeaveAprNot = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
+
+
+
+
+
+
+loadAssetNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getAssetNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (assets: any) => {
+        this.AssetAprNot = Array.isArray(assets)
+          ? assets
+              .filter((item: any) => item.message?.toLowerCase().includes('Assetapproval'))
+              .map((item) => ({ ...item, type: 'Assetapproval', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading Asset approval notifications:', err);
+        this.AssetAprNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
+
+
+loadAirTicketNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getAirTicketNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (airtickets: any) => {
+        this.AirticketAprNot = Array.isArray(airtickets)
+          ? airtickets
+              .filter((item: any) => item.message?.toLowerCase().includes('Airticketapproval'))
+              .map((item) => ({ ...item, type: 'Airticketapproval', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading Airticket approval notifications:', err);
+        this.AirticketAprNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
+
+loadGeneralReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getGeneralReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (leaves: any) => {
+        this.GeneralAprNot = Array.isArray(leaves)
+          ? leaves
+              .filter((item: any) => item.message?.toLowerCase().includes('Genapproval'))
+              .map((item) => ({ ...item, type: 'Genapproval', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading general approval notifications:', err);
+        this.GeneralAprNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
+
+
+loadDocumentReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getDocumentReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (docs: any) => {
+        this.DocAprNot = Array.isArray(docs)
+          ? docs
+              .filter((item: any) => item.message?.toLowerCase().includes('Docapproval'))
+              .map((item) => ({ ...item, type: 'Docapproval', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading document Approval notifications:', err);
+        this.DocAprNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
+
+
+
+
+
+loadLoanReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getLoanReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (loan: any[]) => {
+        this.LoanAprNot = (loan || []).map(item => ({
+          ...item,
+          type: 'Loanapproval',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading loan Approval notifications:', err);
+        this.LoanAprNot = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
+
+
+
+loadAdvancesalaryReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getAdvancesalaryReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (loan: any) => {
+        this.AdvancesalaryAprNot = Array.isArray(loan)
+          ? loan
+              .filter((item: any) => item.message?.toLowerCase().includes('Advsalapproval'))
+              .map((item) => ({ ...item, type: 'Advsalapproval', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading advance salary Approval notifications:', err);
+        this.AdvancesalaryAprNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+combineNotifications(): void {
+  // Load previously read notifications from localStorage
+  const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
+
+  const allItems = [
+    ...this.ResignationApr.map(item => ({ ...item, type: 'Resignationapproval' as const, highlighted: false })),
+    ...this.LeaveAprNot.map(item => ({ ...item, type: 'Leaveapproval' as const, highlighted: false })),
+    ...this.AssetAprNot.map(item => ({ ...item, type: 'Assetapproval' as const, highlighted: false })),
+    ...this.AirticketAprNot.map(item => ({ ...item, type: 'Airticketapproval' as const, highlighted: false })),
+    ...this.GeneralAprNot.map(item => ({ ...item, type: 'Genapproval' as const, highlighted: false })),
+    ...this.DocAprNot.map(item => ({ ...item, type: 'Docapproval' as const, highlighted: false })),
+    ...this.LoanAprNot.map(item => ({ ...item, type: 'Loanapproval' as const, highlighted: false })),
+    ...this.AdvancesalaryAprNot.map(item => ({ ...item, type: 'Advsalapproval' as const, highlighted: false }))
+  ];
+
+  this.AllNotifications = allItems
+    .filter(noti => {
+      // Hide if already marked as read in localStorage
+      const notiKey = `${noti.type}-${noti.id}`;
+      if (readNotifications[notiKey]) {
+        return false;
+      }
+      // Also hide if backend says is_read: true
+      return noti.is_read === false || noti.is_read == null;
+    })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  this.notificationCount = this.AllNotifications.length;
+}
+
+
+
+
+
+
+
+// 🔔 Control Dropdown
+isNotificationOpen = false;
+
+toggleNotification() {
+  this.isNotificationOpen = !this.isNotificationOpen;
+}
+
+// 📌 Click Single Notification
+onNotificationClick(noti: any): void {
+
+  // Highlight effect
+  noti.highlighted = true;
+  setTimeout(() => noti.highlighted = false, 1000);
+
+  // Open correct section
+  this.activeTabNav = noti.type;
+
+  // 🔐 Save as read in localStorage
+  const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
+  const notiKey = `${noti.type}-${noti.id}`;
+  readNotifications[notiKey] = true;
+  localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+
+  // Remove from dropdown (UI)
+  this.AllNotifications =
+    this.AllNotifications.filter(n => n.id !== noti.id || n.type !== noti.type);
+
+  // Update count
+  this.notificationCount = this.AllNotifications.length;
+
+  // Close dropdown
+  this.isNotificationOpen = false;
+}
+
+// 📂 View All Notifications
+openAllNotifications() {
+  this.activeTabNav = 'AllNotifications';
+  this.isNotificationOpen = false;
+}
        
 loadExpiredDoc(): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -398,6 +710,7 @@ fetchDesignations(selectedSchema: string) {
         if (selectedSchema && this.selectedEmployeeId !== null) {
           this.loadEmpAssetsDetails(selectedSchema, this.selectedEmployeeId);
           this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
+          this.loadEmpAirticketDetails(selectedSchema, this.selectedEmployeeId);
           this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
           this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
           this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
@@ -528,6 +841,62 @@ loadEmpAssetsDetails(selectedSchema: string, empId: number): void {
   );
 }
 
+downloadExcel() {
+
+  if (!this.EmpAssets || this.EmpAssets.length === 0) {
+    alert('No asset data available to export.');
+    return;
+  }
+
+  const exportData = this.EmpAssets.map(member => ({
+    'Asset Name': member.asset || '',
+    'Assigned Date': member.assigned_date || '',
+    'Return Condition': member.return_condition || '',
+    'Return Date': member.returned_date || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Employee Assets');
+
+  XLSX.writeFile(wb, 'Employee_Assets_Report.xlsx');
+}
+
+EmpAirticket: any[] = [];
+
+loadEmpAirticketDetails(selectedSchema: string, empId: number): void {
+  this.CountryService.getEmpAirticketDetails(selectedSchema, empId).subscribe(
+    (result: any) => {
+      this.EmpAirticket = result;
+      console.log('Employee Airticket:', this.EmpAirticket);
+    },
+    (error) => {
+      console.error('Error fetching Employee Airticket:', error);
+    }
+  );
+}
+
+downloadAirExcel() {
+
+  if (!this.EmpAirticket || this.EmpAirticket.length === 0) {
+    alert('No airticket data available to export.');
+    return;
+  }
+
+  const exportData = this.EmpAirticket.map(Air => ({
+    'Airticket Name': Air.policy || '',
+    'Allocated Date': Air.allocated_date || '',
+    'Amount': Air.amount || '',
+    'Expiry Date': Air.expiry_date || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Employee Airticket');
+
+  XLSX.writeFile(wb, 'Employee_Airticket_Report.xlsx');
+}
+
 EmpLoan: any[] = [];
 
 
@@ -541,6 +910,28 @@ loadEmpLoanDetails(selectedSchema: string, empId: number): void {
       console.error('Error fetching Employee EmpLoan:', error);
     }
   );
+}
+
+downloadLoanExcel() {
+
+  if (!this.EmpLoan || this.EmpLoan.length === 0) {
+    alert('No loan data available to export.');
+    return;
+  }
+
+  const exportData = this.EmpLoan.map(loan => ({
+    'Amount requested': loan.amount_requested || '',
+    'EMI Amount': loan.emi_amount || '',
+    'Remaining Balance': loan.remaining_balance || '',
+    'Loan Type': loan.loan_type || '',
+    'Repayment Period': loan.repayment_period || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Employee Loan');
+
+  XLSX.writeFile(wb, 'Employee_Loan_Report.xlsx');
 }
 
 AdvSalary: any[] = [];
@@ -557,8 +948,206 @@ loadEmpAdvSalaryDetails(selectedSchema: string, empId: number): void {
   );
 }
 
-LeaveTypes: any[] = [];
+downloadAdvSalExcel() {
 
+  if (!this.AdvSalary || this.AdvSalary.length === 0) {
+    alert('No advance salary data available to export.');
+    return;
+  }
+
+  const exportData = this.AdvSalary.map(advanceSalary => ({
+    'Amount requested': advanceSalary.document_number || '',
+    'EMI Amount': advanceSalary.branch || '',
+    'Remaining Balance': advanceSalary.requested_amount || '',
+    'Loan Type': advanceSalary.reason || '',
+    'Repayment Period': advanceSalary.remarks || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Employee Advance Salary');
+
+  XLSX.writeFile(wb, 'Employee_Advance_Salary_Report.xlsx');
+}
+
+downloadFamilyExcel(employee: any) {
+
+  console.log('Employee Section:', employee);
+  console.log('Family Data:', employee?.emp_family);
+
+  const familyList = employee?.emp_family;
+
+  if (!familyList || familyList.length === 0) {
+    alert('No family data available to export.');
+    return;
+  }
+
+  const exportData = familyList.map((familyMember: any, index: number) => ({
+    'No': index + 1,
+    'Member Name': familyMember.ef_member_name || '',
+    'Date Of Birth': familyMember.ef_date_of_birth || '',
+    'Employee Relation': familyMember.emp_relation || '',
+    'Family Company Expense': familyMember.ef_company_expence || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Family Details');
+
+  XLSX.writeFile(wb, 'Employee_Family_Details.xlsx');
+}
+downloadQualificationExcel(employee: any) {
+
+  const QualificationList = employee?.emp_qualification;
+
+  if (!QualificationList || QualificationList.length === 0) {
+    alert('No qualification data available to export.');
+    return;
+  }
+
+  const exportData = QualificationList.map((Qualification: any) => ({
+    'Employee Qualification': Qualification.emp_qualification || '',
+    'Year': Qualification.emp_qf_year || '',
+    'Subject': Qualification.emp_qf_subject || '',
+    'Institution': Qualification.emp_qf_instituition || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Qualification Details');
+
+  XLSX.writeFile(wb, 'Employee_Qualification_Details.xlsx');
+}
+
+downloadBankExcel(employee: any) {
+
+  const bankList = employee?.emp_bank;
+
+  if (!bankList || bankList.length === 0) {
+    alert('No Bank data available to export.');
+    return;
+  }
+
+  const exportData = bankList.map((Bnk: any) => ({
+    'Bank Name': Bnk.bank_name || '',
+    'Branch name': Bnk.branch_name || '',
+    'Account Number': Bnk.account_number || '',
+    'Bank Address': Bnk.bank_address || '',
+    'Route Code': Bnk.route_code || '',
+    'Iban Number': Bnk.iban_number || '',
+    'Active Status': Bnk.is_active || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Bank Details');
+
+  XLSX.writeFile(wb, 'Employee_Bank_Details.xlsx');
+}
+
+downloadJobHistoryExcel(employee: any) {
+
+  const jobHistoryList = employee?.emp_job_history;
+
+  if (!jobHistoryList || jobHistoryList.length === 0) {
+    alert('No Job History data available to export.');
+    return;
+  }
+
+  const exportData = jobHistoryList.map((Jobhistory: any) => ({
+    'Company Name': Jobhistory.emp_jh_company_name || '',
+    'Designation': Jobhistory.emp_jh_designation || '',
+    'From Date': Jobhistory.emp_jh_from_date || '',
+    'End Date': Jobhistory.emp_jh_end_date || '',
+    'Last Leaving Salary Per Month': Jobhistory.emp_jh_leaving_salary_permonth || '',
+    'Leaving Reason': Jobhistory.emp_jh_reason || '',
+    'Total Experiance': Jobhistory.emp_jh_years_experiance || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Job History Details');
+
+  XLSX.writeFile(wb, 'Employee_Job_History_Details.xlsx');
+}
+
+downloadDocumnetExcel(employee: any) {
+
+  const DocList = employee?.emp_documents;
+
+  if (!DocList || DocList.length === 0) {
+    alert('No Document data available to export.');
+    return;
+  }
+
+  const exportData = DocList.map((document: any) => ({
+    'Document number': document.emp_doc_number || '',
+    'issue Date': document.emp_doc_issued_date || '',
+    'expired date': document.emp_doc_expiry_date || '',
+    'Type': document.document_type || '',
+    'Status': document.is_active || '',
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Document Details');
+
+  XLSX.writeFile(wb, 'Employee_Document_Details.xlsx');
+}
+
+downloadSalaryExcel(employee: any) {
+
+  const payslips = employee?.payslip;
+
+  if (!payslips || payslips.length === 0) {
+    alert('No salary data available to export.');
+    return;
+  }
+
+  const exportData = payslips.map((pay: any, index: number) => ({
+
+    'No': index + 1,
+    'Name': pay.payroll_run?.name || '',
+    'Year': pay.payroll_run?.year || '',
+    'Month': pay.payroll_run?.month || '',
+    'Total Working Days': pay.total_working_days || '',
+    'Days Worked': pay.days_worked || '',
+    'Payment Date': pay.payroll_run?.payment_date 
+        ? new Date(pay.payroll_run.payment_date).toLocaleDateString()
+        : '',
+    'Components': this.formatComponents(pay.components),
+    'Gross Salary': pay.gross_salary || '',
+    'Net Salary': pay.net_salary || '',
+    'Status': pay.status || ''
+
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Salary Details');
+
+  XLSX.writeFile(wb, 'Employee_Salary_Report.xlsx');
+}
+
+formatComponents(components: any[]): string {
+
+  if (!components || components.length === 0) {
+    return '';
+  }
+
+  return components
+    .map(comp => 
+      `${comp.component_name} (${comp.component_type}): ${comp.payslip_amount}`
+    )
+    .join(' | ');
+}
+
+
+
+
+
+
+LeaveTypes: any[] = [];
 
 loadEmpLeaveBalance(selectedSchema: string, empId: number): void {
   this.EmployeeService.getEmpLeaveBalance(selectedSchema, empId).subscribe(
@@ -745,6 +1334,20 @@ isAirtickDropdownOpen = false;
 toggleAirtickDropdown() {
   this.isAirtickDropdownOpen = !this.isAirtickDropdownOpen;
 }
+
+isLoanDropdownOpen = false;
+
+toggleLoanDropdown() {
+  this.isLoanDropdownOpen = !this.isLoanDropdownOpen;
+}
+
+isAdvSalDropdownOpen = false;
+
+toggleAdvSalDropdown() {
+  this.isAdvSalDropdownOpen = !this.isAdvSalDropdownOpen;
+}
+
+
 
 
 

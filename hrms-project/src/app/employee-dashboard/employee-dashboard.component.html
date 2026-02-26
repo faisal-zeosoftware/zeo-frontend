@@ -27,7 +27,7 @@
             </a>
           </li>
 
-                     <li class="nav-item" >
+            <li class="nav-item" >
             <a class="nav-link d-flex justify-content-between align-items-center"
                href="javascript:void(0)"
                (click)="togglePunchingDropdown()">
@@ -125,33 +125,6 @@
             </ul>
           </li>
 
-
-
-<li class="nav-item">
-  <a class="nav-link d-flex justify-content-between align-items-center"
-     href="javascript:void(0)">
-    <div (click)="selectTab('asset')">
-      <i class="bi bi-book me-2"></i>
-      <span>Assets</span>
-    </div>
-    <i [class]="isAssetDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
-  </a>
-          
- </li>
-
-
- <li class="nav-item">
-  <a class="nav-link d-flex justify-content-between align-items-center"
-     href="javascript:void(0)">
-    <div (click)="selectTab('airticket')">
-      <i class="bi bi-book me-2"></i>
-      <span>Airticket</span>
-    </div>
-    <i [class]="isAirtickDropdownOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
-  </a>
-          
- </li>
-
           <li class="nav-item" >
             <a class="nav-link d-flex justify-content-between align-items-center"
                href="javascript:void(0)"
@@ -230,15 +203,49 @@
 
           </li>
 
+
+
+<li class="nav-item" (click)="selectTabNav('asset')">
+      <a class="nav-link " href="javascript:void(0)">
+      <i class="bi bi-speedometer2 me-2"></i>
+      <span>Assets</span>
+  </a>     
+ </li>
+
+ <li class="nav-item" (click)="selectTabNav('airticket')">
+      <a class="nav-link " href="javascript:void(0)">
+      <i class="bi bi-speedometer2 me-2"></i>
+      <span>Airticket</span>
+  </a>     
+ </li>
+
+  <li class="nav-item" (click)="selectTabNav('loan')">
+      <a class="nav-link " href="javascript:void(0)">
+      <i class="bi bi-speedometer2 me-2"></i>
+      <span>Loan</span>
+  </a>     
+ </li>
+
+   <li class="nav-item" (click)="selectTabNav('advanceSalary')">
+      <a class="nav-link " href="javascript:void(0)">
+      <i class="bi bi-speedometer2 me-2"></i>
+      <span>Advance Salary</span>
+  </a>     
+ </li>
+
+
+
+
+
         
 
         </ul>
 
-        <div class="mt-5 mb-3 text-center">
+        <!-- <div class="mt-5 mb-3 text-center">
           <button id="logout-btn" class="btn btn-outline-light btn-sm" (click)="logout()">
             <i class="fa fa-sign-out me-2"></i>Logout
           </button>
-        </div>
+        </div> -->
       </div>
     </nav>
 
@@ -256,67 +263,101 @@
             </button>
           </div>
 <div class="col-md-2">
-          <div class="dropdown position-relative" *ngIf="Documents">
-            <button
-              class="btn btn-outline-secondary position-relative"
-              type="button"
-              id="notification-btn"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <i class="fa fa-bell">
+  <div class="dropdown position-relative">
 
-              </i>
+    <!-- 🔔 Bell Button -->
+    <button
+      class="btn btn-outline-secondary position-relative"
+      type="button"
+      (click)="toggleNotification()"
+    >
+      <i class="fa fa-bell"></i>
 
-          
-              <!-- 🔴 Dynamic notification count -->
-              <span
-                *ngIf="notificationCount > 0"
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              >
-                {{ notificationCount }}
-              </span>
-            </button>
+      <!-- 🔴 Notification Count -->
+      <span
+        *ngIf="notificationCount > 0"
+        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+      >
+        {{ notificationCount }}
+      </span>
+    </button>
 
+    <!-- 📋 Dropdown -->
+    <ul
+      class="dropdown-menu dropdown-menu-end shadow"
+      [class.show]="isNotificationOpen"
+      style="min-width: 320px;
+             max-height: 400px;
+             overflow-y: auto;
+            margin-left: -300px;"
+    >
 
-          
-            <ul
-              class="dropdown-menu dropdown-menu-end shadow"
-              aria-labelledby="notification-btn"
-            >
-              <!-- ✅ List notifications dynamically -->
-              <li *ngFor="let doc of Documents; let i = index">
-                <a
-                  class="dropdown-item d-flex justify-content-between align-items-start"
-                  href="javascript:void(0)"
-                >
-                  <div>
-                    <strong>Document Alert</strong>
-                    <div class="text-muted small">
-                      {{ doc.created_at | date: 'medium' }}
-                    </div>
-                    <div class="small mt-1 text-wrap">{{ doc.message }}</div>
-                  </div>
-                  <span class="badge bg-primary rounded-pill">New</span>
-                </a>
-                <!-- <li *ngIf="i < Documents.length - 1">
-                  <hr class="dropdown-divider" />
-                </li> -->
-              </li>
-          
-              <!-- 🔘 When no notifications -->
-              <li *ngIf="Documents.length === 0">
-                <a class="dropdown-item text-center text-muted">No new notifications</a>
-              </li>
-     
-              <!-- 🔗 View All -->
-              <li>
-                <hr class="dropdown-divider" />
-              </li>
-              <li><a class="dropdown-item text-center" href="#">View all notifications</a></li>
-            </ul>
+      <!-- ✅ If Notifications Exist -->
+<ng-container *ngIf="AllNotifications && AllNotifications.length > 0; else noNotifications">
+
+  <li *ngFor="let noti of AllNotifications; let i = index">
+    <a
+      class="dropdown-item py-2 px-3"
+      href="javascript:void(0)"
+      (click)="onNotificationClick(noti)"
+      [ngClass]="{ 'flash-highlight': noti.highlighted }"
+    >
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+
+          <strong *ngIf="noti.type === 'Resignationapproval'">📄 Resignation Approval</strong>
+          <strong *ngIf="noti.type === 'Leaveapproval'">🏖️ Leave Approval</strong>
+          <strong *ngIf="noti.type === 'Genapproval'">📢 General Approval</strong>
+          <strong *ngIf="noti.type === 'Docapproval'">🗂️ Document Approval</strong>
+          <strong *ngIf="noti.type === 'Loanapproval'">💰 Loan Approval</strong>
+          <strong *ngIf="noti.type === 'Assetapproval'">🧰 Asset Approval</strong>
+          <strong *ngIf="noti.type === 'Airticketapproval'">✈️ AirTicket Approval</strong>
+          <strong *ngIf="noti.type === 'Advsalapproval'">💵 Advance Salary Approval</strong>
+
+          <div class="text-muted small">
+            {{ noti.created_at | date: 'medium' }}
           </div>
+
+          <div class="small mt-1 text-dark">
+            {{ noti.message }}
           </div>
+        </div>
+
+        <span class="badge bg-primary rounded-pill">New</span>
+      </div>
+    </a>
+
+    <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-1" />
+  </li>
+
+</ng-container>
+
+      <!-- ❌ No Notifications -->
+      <ng-template #noNotifications>
+        <li>
+          <div class="dropdown-item text-center text-muted py-3">
+            No new notifications
+          </div>
+        </li>
+      </ng-template>
+
+      <!-- 🔗 View All -->
+      <!-- <li>
+        <hr class="dropdown-divider" />
+      </li>
+      <li>
+        <a
+          class="dropdown-item text-center"
+          href="javascript:void(0)"
+          (click)="openAllNotifications()"
+        >
+          View all notifications
+        </a>
+      </li> -->
+
+    </ul>
+  </div>
+</div>
 
 
    <button
@@ -361,21 +402,22 @@
           <li class="tab" [class.active]="activeTab === 'salary'" (click)="selectTab('salary')">
             <a href="javascript:void(0)">Salary</a>
           </li>
-          <li class="tab" [class.active]="activeTab === 'asset'" (click)="selectTab('asset')">
-            <a href="javascript:void(0)">Asset</a>
-          </li>
-          <li class="tab" [class.active]="activeTab === 'airticket'" (click)="selectTab('airticket')">
-            <a href="javascript:void(0)">AirTicket</a>
-          </li>
-          <li class="tab" [class.active]="activeTab === 'loan'" (click)="selectTab('loan')">
-            <a href="javascript:void(0)">Loan</a>
-          </li>
           <li class="tab" [class.active]="activeTab === 'attendance'" (click)="selectTab('attendance')">
-      <a href="javascript:void(0)">Attendance</a>
-      </li>
-        <li class="tab" [class.active]="activeTab === 'advanceSalary'" (click)="selectTab('advanceSalary')">
+           <a href="javascript:void(0)">Attendance</a>
+          </li>
+          <!-- <li class="tab" [class.active]="activeTab === 'asset'" (click)="selectTab('asset')">
+            <a href="javascript:void(0)">Asset</a>
+          </li> -->
+          <!-- <li class="tab" [class.active]="activeTab === 'airticket'" (click)="selectTab('airticket')">
+            <a href="javascript:void(0)">AirTicket</a>
+          </li> -->
+          <!-- <li class="tab" [class.active]="activeTab === 'loan'" (click)="selectTab('loan')">
+            <a href="javascript:void(0)">Loan</a>
+          </li> -->
+
+        <!-- <li class="tab" [class.active]="activeTab === 'advanceSalary'" (click)="selectTab('advanceSalary')">
       <a href="javascript:void(0)">Advance Salary</a>
-      </li>
+      </li> -->
           
         </ul>
 
@@ -408,7 +450,7 @@
                 <div class="card border-0 shadow-sm">
                   <div class="card-header bg-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Details</h5>
-                    <div class="dropdown">
+                    <!-- <div class="dropdown">
                       <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="courseDropdown"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         2025
@@ -417,7 +459,7 @@
                         <li><a class="dropdown-item" href="#">Fall 2024</a></li>
                         <li><a class="dropdown-item" href="#">Summer 2024</a></li>
                       </ul>
-                    </div>
+                    </div> -->
                   </div>
                   <div class="card-body">
 
@@ -515,9 +557,9 @@
 
                     </ul>
                   </div>
-                  <div class="card-footer bg-white text-center">
+                  <!-- <div class="card-footer bg-white text-center">
                     <a href="#" class="btn btn-sm btn-outline-primary">View Full Calendar</a>
-                  </div>
+                  </div> -->
                 </div>
 
                 
@@ -659,6 +701,14 @@
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
 
+<button 
+  class="btn btn-success btn-sm btn-export-excel"
+  (click)="downloadFamilyExcel(employeesec)"
+>
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
               </div>
               <div class="card-body">
 
@@ -752,6 +802,14 @@
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
 
+<button 
+  class="btn btn-success btn-sm btn-export-excel"
+  (click)="downloadQualificationExcel(employeesec)"
+>
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
               </div>
               <div class="card-body">
 
@@ -806,24 +864,32 @@
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
 
+<button 
+  class="btn btn-success btn-sm btn-export-excel"
+  (click)="downloadBankExcel(employeesec)"
+>
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
               </div>
               <div class="card-body">
 
-                <div class="emp_additional_details  mt-3" *ngFor="let Qualification of employeesec.emp_bank">
+                <div class="emp_additional_details  mt-3" *ngFor="let Bnk of employeesec.emp_bank">
                   <div class="row">
                     <div class="col-md-3">
                       <div class="d-flex align-items-center">
 
                         <strong>Bank Name</strong>
                       </div>
-                      <small class="text-center">{{ Qualification.bank_name }} </small>
+                      <small class="text-center">{{ Bnk.bank_name }} </small>
                     </div>
                     <div class="col-md-3">
                       <div class="d-flex align-items-center">
 
                         <strong>Branch name</strong>
                       </div>
-                      <small class="text-center">{{ Qualification.branch_name }} </small>
+                      <small class="text-center">{{ Bnk.branch_name }} </small>
                     </div>
 
                     <div class="col-md-3">
@@ -832,14 +898,14 @@
                         <strong>Account Number</strong>
                       </div>
 
-                      <small class="text-center">{{ Qualification.account_number }} </small>
+                      <small class="text-center">{{ Bnk.account_number }} </small>
                     </div>
                     <div class="col-md-3">
                       <div class="d-flex align-items-center">
 
                         <strong>Bank Address</strong>
                       </div>
-                      <small class="text-center">{{ Qualification.bank_address }} </small>
+                      <small class="text-center">{{ Bnk.bank_address }} </small>
                     </div>
 
                     <div class="col-md-3">
@@ -847,21 +913,21 @@
 
                         <strong>Route Code</strong>
                       </div>
-                      <small class="text-center">{{ Qualification.route_code }} </small>
+                      <small class="text-center">{{ Bnk.route_code }} </small>
                     </div>
                     <div class="col-md-3">
                       <div class="d-flex align-items-center">
 
                         <strong>Iban Number</strong>
                       </div>
-                      <small class="text-center">{{ Qualification.iban_number }} </small>
+                      <small class="text-center">{{ Bnk.iban_number }} </small>
                     </div>
                     <div class="col-md-3">
                       <div class="d-flex align-items-center">
 
                         <strong>Active Status</strong>
                       </div>
-                      <small class="text-center">{{ Qualification.is_active }} </small>
+                      <small class="text-center">{{ Bnk.is_active }} </small>
                     </div>
 
 
@@ -880,6 +946,13 @@
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
+<button 
+  class="btn btn-success btn-sm btn-export-excel"
+  (click)="downloadJobHistoryExcel(employeesec)"
+>
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
 
               </div>
               <div class="card-body">
@@ -958,6 +1031,14 @@
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
 
+<button 
+  class="btn btn-success btn-sm btn-export-excel"
+  (click)="downloadDocumnetExcel(employeesec)"
+>
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
               </div>
               <div class="card-body">
 
@@ -1031,6 +1112,14 @@
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
 
+<button 
+  class="btn btn-success btn-sm btn-export-excel"
+  (click)="downloadSalaryExcel(employeesec)"
+>
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
               </div>
               <div class="card-body">
 
@@ -1060,153 +1149,37 @@
                         </tr>
                       </thead>
                       <tbody class="text-table-body">
-                        <tr class="tbodytext" *ngFor="let payslip of employeesec.payslip; let i = index">
+                        <tr class="tbodytext" *ngFor="let pay of employeesec.payslip; let i = index">
                           <td>{{ i + 1 }}</td>
                           <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
-                          <td>{{ payslip.payroll_run?.name }}</td>
-                          <td>{{ payslip.payroll_run?.year }}</td>
+                          <td>{{ pay.payroll_run?.name }}</td>
+                          <td>{{ pay.payroll_run?.year }}</td>
 
-                          <td>{{ payslip.payroll_run?.month }}</td>
+                          <td>{{ pay.payroll_run?.month }}</td>
 
-                          <td>{{ payslip.total_working_days }}</td>
+                          <td>{{ pay.total_working_days }}</td>
 
-                          <td>{{ payslip.days_worked }}</td>
-                          <td>{{ payslip.payroll_run?.payment_date }}</td>
+                          <td>{{ pay.days_worked }}</td>
+                          <td>{{ pay.payroll_run?.payment_date }}</td>
                           <td data-label="Components">
                             <ul>
-                              <li *ngFor="let comp of payslip.components">
+                              <li *ngFor="let comp of pay.components">
                                 <strong>{{ comp.component_name }}</strong>
                                 ({{ comp.component_type }}): {{ comp.payslip_amount }}
                               </li>
                             </ul>
                           </td>
-                          <td>{{ payslip.gross_salary }}</td>
-                          <td>{{ payslip.net_salary }}</td>
+                          <td>{{ pay.gross_salary }}</td>
+                          <td>{{ pay.net_salary }}</td>
                           <td>
                             <span class="pill" [ngClass]="{
-                            'pill green': payslip.status === 'approved',
-                            'pill blue': payslip.status === 'processed',
+                            'pill green': pay.status === 'approved',
+                            'pill blue': pay.status === 'processed',
 
-                            'pill yellow': payslip.status === 'pending',
-                            'pill red': payslip.status === 'rejected'
+                            'pill yellow': pay.status === 'pending',
+                            'pill red': pay.status === 'rejected'
                           }">
-                              {{ payslip.status }}
-                            </span>
-                          </td>
-                          <!-- <td>{{ payslip.end_date }}</td> -->
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-
-              </div>
-            </div>
-          </div>
-
-          <div id="asset" *ngIf="activeTab === 'asset'">
-            <!-- Your Run Employee Salary content -->
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
-
-              </div>
-              <div class="card-body">
-
-                <div class="tab_content mt-3" *ngFor="let member of EmpAssets">
-                  <div class="row">
-                    <div class="col-md-3">
-                      <h2>Asset Name</h2>
-                      <h3>{{ member.asset }}</h3>
-                    </div>
-                    <div class="col-md-3">
-                      <h2>Assigned Date</h2>
-                      <h3>{{ member.assigned_date }}</h3>
-                    </div>
-                    <div class="col-md-3">
-                      <h2>Return Condition</h2>
-                      <h3>{{ member.return_condition }}</h3>
-                    </div>
-                    <div class="col-md-3">
-                      <h2>Return Date</h2>
-                      <h3>{{ member.returned_date }}</h3>
-                    </div>
-
-                    <!-- Custom fields -->
-                    <!-- <ng-container *ngFor="let field of member.fam_custom_fields">
-                      <div class="col-md-3">
-                        <h2>{{ field.emp_custom_field }}</h2>
-                        <h3>{{ field.field_value }}</h3>
-                      </div>
-                    </ng-container> -->
-                  </div>
-                </div>
-
-
-              </div>
-            </div>
-          </div>
-
-          <div id="loan" *ngIf="activeTab === 'loan'">
-            <!-- Your Run Employee Salary content -->
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
-
-              </div>
-              <div class="card-body">
-
-                <div class="tab_content mt-3" >
-                  <div class="table-scroll">
-
-                    <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
-                      <thead>
-                        <tr>
-                          <th class="text-table-header" style="width: 0;">No</th>
-                          <!-- <th class="text-table-header">Employee</th> -->
-                          <th class="text-table-header">Amount requested</th>
-                          <th class="text-table-header">EMI Amount</th>
-
-                          <th class="text-table-header">Loan Type</th>
-                          <th class="text-table-header">Document Number</th>
-
-                          <th class="text-table-header">Repayment Period</th>
-
-                          <th class="text-table-header">Remaining Balance</th>
-                          <th class="text-table-header">applied on</th>
-                          <th class="text-table-header">applied on</th>
-                          <th class="text-table-header">Disbursement date</th>
-                          <th class="text-table-header">Status</th>
-                          <!-- <th class="text-table-header">Payslip Component</th> -->
-                        </tr>
-                      </thead>
-                      <tbody class="text-table-body">
-                        <tr class="tbodytext" *ngFor="let loan of EmpLoan; let i = index">
-                          <td>{{ i + 1 }}</td>
-                          <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
-                          <td>{{ loan.amount_requested }}</td>
-
-                          <td>{{ loan.emi_amount }}</td>
-
-                          <td>{{ loan.loan_type }}</td>
-                          <td>{{ loan.document_number }}</td>
-                          <td>{{ loan.repayment_period }}</td>
-
-                          <td>{{ loan.remaining_balance }}</td>
-                          <td>{{ loan.applied_on }}</td>
-                      
-                          <td>{{ loan.approved_on }}</td>
-                          <td>{{ loan.disbursement_date }}</td>
-                          <td>
-                            <span class="pill" [ngClass]="{
-                              'pill green': loan.status === 'approved',
-                              'pill blue': loan.status === 'processed',
-  
-                              'pill yellow': loan.status === 'pending',
-                              'pill red': loan.status === 'rejected'
-                            }">
-                              {{ loan.status }}
+                              {{ pay.status }}
                             </span>
                           </td>
                           <!-- <td>{{ payslip.end_date }}</td> -->
@@ -1309,9 +1282,44 @@
             </div>
           </div>
 
+          <!-- <div id="asset" *ngIf="activeTab === 'asset'">
 
-           <div id="advanceSalary" *ngIf="activeTab === 'advanceSalary'">
-            <!-- Your Run Employee Salary content -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+
+              </div>
+              <div class="card-body">
+
+                <div class="tab_content mt-3" *ngFor="let member of EmpAssets">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <h2>Asset Name</h2>
+                      <h3>{{ member.asset }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Assigned Date</h2>
+                      <h3>{{ member.assigned_date }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Return Condition</h2>
+                      <h3>{{ member.return_condition }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Return Date</h2>
+                      <h3>{{ member.returned_date }}</h3>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </div> -->
+
+          <!-- <div id="loan" *ngIf="activeTab === 'loan'">
+        
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Details</h5>
@@ -1326,7 +1334,7 @@
                       <thead>
                         <tr>
                           <th class="text-table-header" style="width: 0;">No</th>
-                          <!-- <th class="text-table-header">Employee</th> -->
+                          
                           <th class="text-table-header">Amount requested</th>
                           <th class="text-table-header">EMI Amount</th>
 
@@ -1340,13 +1348,87 @@
                           <th class="text-table-header">applied on</th>
                           <th class="text-table-header">Disbursement date</th>
                           <th class="text-table-header">Status</th>
-                          <!-- <th class="text-table-header">Payslip Component</th> -->
+                         
+                        </tr>
+                      </thead>
+                      <tbody class="text-table-body">
+                        <tr class="tbodytext" *ngFor="let loan of EmpLoan; let i = index">
+                          <td>{{ i + 1 }}</td>
+                          
+                          <td>{{ loan.amount_requested }}</td>
+
+                          <td>{{ loan.emi_amount }}</td>
+
+                          <td>{{ loan.loan_type }}</td>
+                          <td>{{ loan.document_number }}</td>
+                          <td>{{ loan.repayment_period }}</td>
+
+                          <td>{{ loan.remaining_balance }}</td>
+                          <td>{{ loan.applied_on }}</td>
+                      
+                          <td>{{ loan.approved_on }}</td>
+                          <td>{{ loan.disbursement_date }}</td>
+                          <td>
+                            <span class="pill" [ngClass]="{
+                              'pill green': loan.status === 'approved',
+                              'pill blue': loan.status === 'processed',
+  
+                              'pill yellow': loan.status === 'pending',
+                              'pill red': loan.status === 'rejected'
+                            }">
+                              {{ loan.status }}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </div> -->
+
+
+
+           <!-- <div id="advanceSalary" *ngIf="activeTab === 'advanceSalary'">
+           
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+
+              </div>
+              <div class="card-body">
+
+                <div class="tab_content mt-3" >
+                  <div class="table-scroll">
+
+                    <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                      <thead>
+                        <tr>
+                          <th class="text-table-header" style="width: 0;">No</th>
+                         
+                          <th class="text-table-header">Amount requested</th>
+                          <th class="text-table-header">EMI Amount</th>
+
+                          <th class="text-table-header">Loan Type</th>
+                          <th class="text-table-header">Document Number</th>
+
+                          <th class="text-table-header">Repayment Period</th>
+
+                          <th class="text-table-header">Remaining Balance</th>
+                          <th class="text-table-header">applied on</th>
+                          <th class="text-table-header">applied on</th>
+                          <th class="text-table-header">Disbursement date</th>
+                          <th class="text-table-header">Status</th>
+                     
                         </tr>
                       </thead>
                       <tbody class="text-table-body">
                         <tr class="tbodytext" *ngFor="let advanceSalary of AdvSalary; let i = index">
                           <td>{{ i + 1 }}</td>
-                          <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
+                        
                           <td>{{ advanceSalary.amount_requested }}</td>
 
                           <td>{{ advanceSalary.emi_amount }}</td>
@@ -1371,7 +1453,7 @@
                               {{ advanceSalary.status }}
                             </span>
                           </td>
-                          <!-- <td>{{ payslip.end_date }}</td> -->
+                         
                         </tr>
                       </tbody>
                     </table>
@@ -1381,7 +1463,7 @@
 
               </div>
             </div>
-          </div>
+          </div> -->
 
 
 
@@ -3732,6 +3814,212 @@
 
 
       </section>
+
+
+         <!-- Asset section here -->
+
+     <section class="content-tab  animate__animated animate__fadeIn" id="asset"
+      *ngIf="activeTabNav === 'asset'">
+      
+    <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">           
+                <h5 class="mb-0">Details</h5>
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadExcel()">
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
+              </div>
+              <div class="card-body">
+
+                <div class="tab_content mt-3" *ngFor="let member of EmpAssets">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <h2>Asset Name</h2>
+                      <h3>{{ member.asset }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Assigned Date</h2>
+                      <h3>{{ member.assigned_date }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Return Condition</h2>
+                      <h3>{{ member.return_condition }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Return Date</h2>
+                      <h3>{{ member.returned_date }}</h3>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+    </div>
+
+    </section>
+
+         <!-- Airticket section here -->
+
+    <section class="content-tab  animate__animated animate__fadeIn" id="airticket"
+      *ngIf="activeTabNav === 'airticket'">
+
+
+           
+    <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadAirExcel()">
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
+              </div>
+              <div class="card-body">
+
+                <div class="tab_content mt-3" *ngFor="let Air of EmpAirticket">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <h2>Airticket Name</h2>
+                      <h3>{{ Air.policy }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Allocated Date</h2>
+                      <h3>{{ Air.allocated_date }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Amount</h2>
+                      <h3>{{ Air.amount }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Expiry Date</h2>
+                      <h3>{{ Air.expiry_date }}</h3>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+    </div>
+
+
+    </section>
+
+
+         <!-- loan section here -->
+
+    <section class="content-tab  animate__animated animate__fadeIn" id="loan"
+      *ngIf="activeTabNav === 'loan'">
+
+
+           
+    <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadAirExcel()">
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
+              </div>
+              <div class="card-body">
+
+                <div class="tab_content mt-3" *ngFor="let loan of EmpLoan">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <h2>Amount requested</h2>
+                      <h3>{{ loan.amount_requested }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>EMI Amount</h2>
+                      <h3>{{ loan.emi_amount }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Remaining Balance</h2>
+                      <h3>{{ loan.remaining_balance }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Loan Type</h2>
+                      <h3>{{ loan.loan_type }}</h3>
+                    </div>
+                    <div class="col-md-3">
+                      <h2>Repayment Period</h2>
+                      <h3>{{ loan.repayment_period }}</h3>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+    </div>
+
+
+    </section>
+
+
+       <!-- Advance Salary section here -->
+
+
+   <section class="content-tab  animate__animated animate__fadeIn" id="advanceSalary"
+      *ngIf="activeTabNav === 'advanceSalary'">
+
+
+           
+    <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadAdvSalExcel()">
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
+              </div>
+              <div class="card-body">
+
+                <div class="tab_content mt-3" *ngFor="let advanceSalary of AdvSalary">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <h2>Document Number</h2>
+                      <h3>{{ advanceSalary.document_number}}</h3>
+                    </div>
+                    <div class="col-md-4">
+                      <h2>Branch </h2>
+                      <h3>{{ advanceSalary.branch }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                      <h2>Requested Amount</h2>
+                      <h3>{{ advanceSalary.requested_amount }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                      <h2>Reason</h2>
+                      <h3>{{ advanceSalary.reason }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                      <h2>Remarks</h2>
+                      <h3>{{ advanceSalary.remarks }}</h3>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+    </div>
+
+
+    </section>
+
+
+
+
+
+
 
       
 

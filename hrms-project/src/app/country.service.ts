@@ -752,5 +752,23 @@ deleteAirReq(categoryId: number): Observable<any> {
   }
 
 
+    getResignationAprNoti(selectedSchema: string, branchIds: number[]): Observable<any> {
+      // Converts [1,3,4] into the string "[1,3,4]" for the URL
+      const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+      
+      let url = `${this.apiUrl}/employee/api/resigntion-notification/?schema=${selectedSchema}`;
+      if (branchParam) {
+        url += `&branch_id=${branchParam}`;
+      }
+      
+      return this.http.get(url);
+    }
+
+ getEmpAirticketDetails(selectedSchema: string, empId: number): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/emp_airticket/?schema=${selectedSchema}`;
+    return this.http.get(apiUrl);
+  }
+
+
   
 }
