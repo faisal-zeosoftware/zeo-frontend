@@ -222,139 +222,129 @@
             
             </div>
           </div>
+ 
+
 
 
               <!-- Edit Modal -->
-    <div *ngIf="isEditModalOpen" class="modal">
-      <div class="modal-content">
-        <div class="row">
-          <div class="col-md-10">
-            <h2>Edit OverTime Rule</h2>
-          </div>
-          <div class="col-md-2">
-            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
-          </div>
-        </div>
-        <hr />
-
-        <form *ngIf="hasAddPermission" >
-            <div class="row">
+              <div *ngIf="isEditModalOpen" class="modal">
+                <div class="modal-content">
+                  <div class="row">
+                    <div class="col-md-10">
+                      <h2>Edit Pay Structure</h2>
+                    </div>
+                    <div class="col-md-2">
+                      <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+                    </div>
+                  </div>
+                  <hr />
               
-          
-
-<div class="col-md-6">
-  <label>Rule type</label>
-  <div class="custom-sel">
-    <select class="form-control" [(ngModel)]="editAsset.rule_type" [ngModelOptions]="{standalone: true}">
-      <option value="DAILY">Daily</option>
-      <option value="WEEKLY">Weekly</option>
-      <option value="MONTHLY">Monthly</option>
-    </select>
-  </div>
-</div>
-
-  
-<div class="col-md-6">
-  <label>Base type</label>
-  <div class="custom-sel">
-    <select class="form-control" [(ngModel)]="editAsset.base_type" [ngModelOptions]="{standalone: true}">
-      <option value="FIXED">Fixed Hours</option>
-      <option value="SHIFT">Shift Hours</option>
-    </select>
-  </div>
-</div>
-
-<div class="col-md-6" >
-             
-  <label>Threshold hours</label>
- <input type="text"  class="form-control" [(ngModel)]="editAsset.threshold_hours"  placeholder="Enter threshold hours"
-  [ngModelOptions]="{standalone: true}" >
- 
-</div>
-<div class="col-md-6">
-<label></label>
-<div class="check-box-selection-sec form-control mt-3">
-<div class="mat-set">
-  <mat-checkbox [(ngModel)]="editAsset.is_extended" [ngModelOptions]="{standalone: true}">Is Extended</mat-checkbox>
-</div>
-</div>
-</div>
-
-
-    <div class="col-md-6" >
-             
-      <label>Order </label>
-     <input type="number"  class="form-control" [(ngModel)]="editAsset.order"  placeholder="Enter order "
-      [ngModelOptions]="{standalone: true}" >
-     
-</div>
-
-<div class="col-md-6">
-  <label></label>
-  <div class="check-box-selection-sec form-control mt-3">
-    <div class="mat-set">
-      <mat-checkbox [(ngModel)]="editAsset.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
-    </div>
-  </div>
-</div>
-
-<div class="col-md-6">
-    <label>Select Policy</label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="Policy"
-        name="policy"
-        [(ngModel)]="editAsset.policy"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let employees of Policyget" [value]="employees.id">
-          {{ employees.name }}
-        </option>
-      </select>
-    </div>
-  </div>
-
-
-
-
-            </div>
-
-            <div class="row">
-              <div class="col-md-10">
-          
-              </div>
-          
-              <div class="col-md-2">
-                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateOverTimePolicy()">Update</button>  
-               </div>
-          </div>
-          </form>
-
-       
-
-
-
-
-      </div>
-    </div>
+                  <form>
+                    <div class="row mb-4">
+                      <div class="col-md-12">
+                        <label class="form-label-custom">Select your work week*</label>
+                        <div class="work-week-group">
+                          <div *ngFor="let day of availableDays" 
+                               class="day-segment" 
+                               [class.active]="editAsset.working_days?.includes(day.key)"
+                               (click)="toggleEditDay(day.key)">
+                            {{ day.label }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+              
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label>Salary calculation type</label>
+                        <select class="form-control" [(ngModel)]="editAsset.salary_calculation_type" name="calc_type">
+                          <option value="CALENDAR">Actual days in month</option>
+                          <option value="FIXED">Organisation working days</option>
+                        </select>
+                      </div>
+              
+                      <div class="col-md-6" *ngIf="editAsset.salary_calculation_type === 'FIXED'">
+                        <label>Fixed working days</label>
+                        <input type="number" class="form-control" [(ngModel)]="editAsset.fixed_working_days" name="fixed_days">
+                      </div>
+              
+                      <div class="col-md-6">
+                        <label>Attendance cycle type</label>
+                        <select class="form-control" [(ngModel)]="editAsset.attendance_cycle_type" name="cycle_type">
+                          <option value="MONTH">Calendar Month</option>
+                          <option value="CUSTOM">Custom Cycle</option>
+                        </select>
+                      </div>
+              
+                      <div class="col-md-3">
+                        <label>Cycle Start</label>
+                        <input type="number" class="form-control" [(ngModel)]="editAsset.cycle_start_day" name="c_start">
+                      </div>
+                      <div class="col-md-3">
+                        <label>Cycle End</label>
+                        <input type="number" class="form-control" [(ngModel)]="editAsset.cycle_end_day" name="c_end">
+                      </div>
+              
+                      <div class="col-md-6">
+                        <label>Payday type</label>
+                        <select class="form-control" [(ngModel)]="editAsset.payday_type" name="p_type">
+                          <option value="FIXED_DAY">Fixed day</option>
+                          <option value="LAST_WORKING_DAY">Last working day</option>
+                        </select>
+                      </div>
+              
+                      <div class="col-md-6" *ngIf="editAsset.payday_type === 'FIXED_DAY'">
+                        <label>Payday</label>
+                        <input type="number" class="form-control" [(ngModel)]="editAsset.payday" name="p_day">
+                      </div>
+              
+                      <div class="col-md-6">
+                          <label>Start Month</label>
+                          <input type="month" class="form-control" [(ngModel)]="editAsset.payroll_start_month" name="start_month">
+                      </div>
+              
+                      <div class="col-md-6">
+                          <label>Branch</label>
+                          <select class="form-control" [(ngModel)]="editAsset.branch" name="branch_edit">
+                            <option *ngFor="let b of branches" [value]="b.id">{{ b.branch_name }}</option>
+                          </select>
+                      </div>
+                    </div>
+              
+                    <div class="row">
+                      <div class="col-md-12 text-right">
+                        <button type="button" class="btn btn-success mt-4" (click)="updatePayStr()">
+                          Update Pay Structure
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>  
 
 
 
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
 
-           
+            <div style="overflow-x: auto; width: 100%;">
             <table class="table-container " width="100%">
                 <thead>
                   <tr>
-                    <th>Rule Type</th>
-                    <th>Base  Type</th>
-                    <th>Threshold hours</th>
-                    <th>Is extended</th>
-                    <th>Order</th>
-                    <th>Is active</th>
-                    <th>Policy</th>
+                    <th>No</th>
+
+                    <th>work week</th>
+                    <th>Salary calculation type</th>
+                    <th>Fixed working days</th>
+                    <th>Attendance cycle type</th>
+                    <th>Cycle start day</th>
+                     <th>Cycle End day</th>
+
+                    <th>Payday type</th>
+                    <th>Payday</th>
+                      <th>Payroll start month</th>
+                     <th>Branch</th>
+
 
       <th>Action</th>
         
@@ -364,13 +354,18 @@
                 <tbody>
                     
                   <tr *ngFor="let pol of overtimepol;let i = index">
-                    <td >{{ pol.rule_type }}</td> 
-                    <td >{{ pol.base_type }}</td>
-                    <td >{{ pol.threshold_hours }}</td> 
-                    <td >{{ pol.is_extended }}</td> 
-                    <td >{{ pol.order }}</td>
-                    <td >{{ pol.is_active }}</td>
-                    <td >{{ pol.policy }}</td>
+                    <td >{{ i + 1 }}</td>
+                    <td >{{ pol.working_days }}</td> 
+                    <td >{{ pol.salary_calculation_type }}</td>
+                    <td >{{ pol.fixed_working_days }}</td> 
+                    <td >{{ pol.attendance_cycle_type }}</td> 
+                    <td >{{ pol.cycle_start_day }}</td>
+                    <td >{{ pol.cycle_end_day }}</td>
+                    <td >{{ pol.payday_type }}</td>
+                    <td >{{ pol.payday }}</td>
+                     <td >{{ pol.payroll_start_month }}</td>
+                     <td >{{ pol.branch }}</td>
+
 
                    <td data-label="Action">
               <button
@@ -393,6 +388,7 @@
                 
                 </tbody>
               </table>
+              </div>
 
         </div>
         </div>

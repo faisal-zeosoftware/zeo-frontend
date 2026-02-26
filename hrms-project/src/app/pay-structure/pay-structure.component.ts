@@ -398,7 +398,7 @@ loadOvertimepolicy(callback?: Function): void {
 
     fetchEmployees(schema: string, branchIds: number[]): void {
       this.isLoading = true;
-      this.employeeService.getovertimeRuleNew(schema, branchIds).subscribe({
+      this.employeeService.getPayStrNew(schema, branchIds).subscribe({
         next: (data: any) => {
           // Filter active employees
           this.overtimepol = data;
@@ -473,11 +473,62 @@ loadOvertimepolicy(callback?: Function): void {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
+  // openEditModal(asset: any): void {
+  //   this.editAsset = { ...asset }; // copy asset data
+  //   this.isEditModalOpen = true;
 
+  // }
+
+
+  openEditModal(asset: any): void {
+    // 1. Copy the asset data
+    this.editAsset = { ...asset };
+    
+    // 2. Ensure working_days is an array (Backend might send it as a string or array)
+    if (typeof this.editAsset.working_days === 'string') {
+      try {
+        this.editAsset.working_days = JSON.parse(this.editAsset.working_days);
+      } catch {
+        this.editAsset.working_days = [];
+      }
+    }
+  
+    this.isEditModalOpen = true;
   }
+
+
+  // Toggle logic specifically for the editAsset object
+toggleEditDay(dayKey: string): void {
+  if (!this.editAsset.working_days) this.editAsset.working_days = [];
+  const index = this.editAsset.working_days.indexOf(dayKey);
+  if (index > -1) {
+    this.editAsset.working_days.splice(index, 1);
+  } else {
+    this.editAsset.working_days.push(dayKey);
+  }
+}
+
+updatePayStr(): void {
+  // Use simple JSON object if your backend supports it, 
+  // or FormData if you prefer consistency with your Create method
+  const payload = {
+    ...this.editAsset,
+    // Ensure working_days is stringified if backend expects JSONField via FormData
+    working_days: JSON.stringify(this.editAsset.working_days) 
+  };
+
+  this.employeeService.updatelPayStructure(this.editAsset.id, payload).subscribe(
+    (response) => {
+      alert('Pay Structure updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Update failed', error);
+      alert('Failed to update: ' + (error.error?.detail || 'Validation error'));
+    }
+  );
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;
@@ -501,9 +552,9 @@ loadOvertimepolicy(callback?: Function): void {
     let completed = 0;
 
       selectedEmployeeIds.forEach(categoryId => {
-        this.employeeService.deleteOvertimeRule(categoryId).subscribe(
+        this.employeeService.deletePayStr(categoryId).subscribe(
           () => {
-            console.log(' overtime policy deleted successfully:', categoryId);
+            console.log(' Pay structure deleted successfully:', categoryId);
             // Remove the deleted employee from the local list
             this.overtimepol = this.overtimepol.filter(employee => employee.id !== categoryId);
 

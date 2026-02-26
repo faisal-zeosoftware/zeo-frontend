@@ -1370,6 +1370,22 @@ deleteOvertimeRule(categoryId: number): Observable<any> {
 }
 
 
+deletePayStr(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/payroll/api/payroll-structure/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
 deleteGeofence(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
   // return this.http.delete(url);
@@ -1546,6 +1562,21 @@ updatelovertimeRule(id: number, data: any): Observable<any> {
     })
   );
 }
+
+
+updatelPayStructure(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/payroll/api/payroll-structure/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
 
 updateGeofence(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
@@ -5174,6 +5205,19 @@ getovertimeRuleNew(selectedSchema: string, branchIds: number[]): Observable<any>
   const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
   
   let url = `${this.apiUrl}/calendars/api/overtime_rule/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
+getPayStrNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/payroll/api/payroll-structure/?schema=${selectedSchema}`;
   if (branchParam) {
     url += `&branch_id=${branchParam}`;
   }

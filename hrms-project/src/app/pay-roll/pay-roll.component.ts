@@ -739,7 +739,7 @@ onFileSelected(event:any){
           }
           // Inside the subscribe block of loadDeparmentBranch
           if (this.Branches.length === 1) {
-            this.Branches = this.Branches[0].id;
+            this.branch = this.Branches[0].id;
           }
   
           console.log('Filtered branches for selection:', this.Branches);
