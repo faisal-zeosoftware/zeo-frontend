@@ -123,7 +123,7 @@
                         <label>Employee</label>
                         <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"  >
                             <option value="" >Select</option>
-                            <option *ngFor="let user of Employees" [value]="user.id">{{ user.emp_code }} </option>
+                            <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
                         </select>
                        
                     </div>

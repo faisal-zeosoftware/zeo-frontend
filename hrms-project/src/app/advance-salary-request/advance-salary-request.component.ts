@@ -68,6 +68,8 @@ export class AdvanceSalaryRequestComponent {
   Users: any[] = [];
   DocType: any[] = [];
 
+  filteredEmployees: any[] = [];
+
 
 hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
@@ -272,41 +274,58 @@ if (this.userId !== null) {
   }
 
 
-  onBranchChange(event: any): void {
+    selectedEmployee: number | null = null;
+
+
+onBranchChange(event: any): void {
   const selectedBranchId = event.target.value;
   const selectedSchema = localStorage.getItem('selectedSchema');
 
+  this.branch = selectedBranchId;
+
+  /* ------------------ FILTER EMPLOYEES ------------------ */
+  if (!selectedBranchId) {
+    this.filteredEmployees = this.Employee;
+    this.employee = '';
+  } else {
+    const selectedBranch = this.branches.find(
+      b => Number(b.id) === Number(selectedBranchId)
+    );
+
+    if (selectedBranch) {
+      this.filteredEmployees = this.Employee.filter(emp =>
+        emp.emp_branch_id == selectedBranch.id ||
+        emp.emp_branch_id == selectedBranch.branch_name
+      );
+    } else {
+      this.filteredEmployees = [];
+    }
+
+    this.employee = '';
+  }
+
+  /* ------------------ DOCUMENT NUMBERING ------------------ */
   if (!selectedBranchId || !selectedSchema) {
-    console.warn('Missing branch or schema');
     this.automaticNumbering = false;
     this.document_number = null;
     return;
   }
 
-  const type = 'advance_salary_request';  // fixed for this form
+  const type = 'advance_salary';
 
-  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+  const apiUrl =
+    `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
 
   this.http.get<any>(apiUrl).subscribe({
     next: (response) => {
-      // Handle both object and array responses (your example shows array[0])
       const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
 
       this.automaticNumbering = !!data?.automatic_numbering;
-
-      if (this.automaticNumbering) {
-        this.document_number = null;     // or '' — null is cleaner
-        console.log('Auto-numbering enabled → document number cleared');
-      } else {
-        this.document_number = '';       // ready for manual input
-        console.log('Manual numbering → enter document number');
-      }
+      this.document_number = this.automaticNumbering ? null : '';
     },
-    error: (error) => {
-      console.error('Failed to load numbering settings:', error);
-      this.automaticNumbering = false;   // safe fallback
+    error: () => {
+      this.automaticNumbering = false;
       this.document_number = '';
-      // Optional: alert('Could not load document numbering settings');
     }
   });
 }
@@ -361,24 +380,24 @@ if (this.userId !== null) {
     //     }
     //   );
     // }
-     loadEmp(callback?: Function): void {
-      const selectedSchema = this.authService.getSelectedSchema();
-      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-    
-    
-      if (selectedSchema) {
-        this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-          (data: any) => {
-            this.Employee = data;
-            
-            if (callback) callback();
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
+loadEmp(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+  if (selectedSchema) {
+    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+      (data: any) => {
+        this.Employee = data;
+        this.filteredEmployees = data; // ✅ IMPORTANT
+
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching Employees:', error);
       }
-    }
+    );
+  }
+}
     
   
   

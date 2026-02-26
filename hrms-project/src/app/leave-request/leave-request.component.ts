@@ -64,6 +64,8 @@ export class LeaveRequestComponent {
   LeaveRequests: any[] = [];
 
 
+  filteredEmployees: any[] = [];
+
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -392,16 +394,16 @@ loadEmp(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-
   if (selectedSchema) {
     this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
         this.Employees = result;
-        
+        this.filteredEmployees = result; // 👈 initialize
+
         if (callback) callback();
       },
       (error) => {
-        console.error('Error fetching Companies:', error);
+        console.error('Error fetching Employees:', error);
       }
     );
   }
@@ -711,37 +713,55 @@ onBranchChange(event: any): void {
   const selectedBranchId = event.target.value;
   const selectedSchema = localStorage.getItem('selectedSchema');
 
+  this.branch = selectedBranchId;
+
+  /* ---------------------------------------
+     1️⃣ FILTER EMPLOYEES BY BRANCH
+  ---------------------------------------*/
+  if (!selectedBranchId) {
+    this.filteredEmployees = this.Employees;
+    this.selectedEmployee = null;
+  } else {
+    const selectedBranch = this.branches.find(
+      b => Number(b.id) === Number(selectedBranchId)
+    );
+
+    if (selectedBranch) {
+      this.filteredEmployees = this.Employees.filter(emp =>
+        emp.emp_branch_id === selectedBranch.branch_name
+      );
+    } else {
+      this.filteredEmployees = [];
+    }
+
+    this.selectedEmployee = null;
+  }
+
+  /* ---------------------------------------
+     2️⃣ DOCUMENT NUMBERING LOGIC
+  ---------------------------------------*/
+
   if (!selectedBranchId || !selectedSchema) {
-    console.warn('Missing branch or schema');
     this.automaticNumbering = false;
     this.document_number = null;
     return;
   }
 
-  const type = 'general_request';  // fixed for this form
+  const type = 'leave_request'; // 🔥 IMPORTANT: change from general_request
 
   const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
 
   this.http.get<any>(apiUrl).subscribe({
     next: (response) => {
-      // Handle both object and array responses (your example shows array[0])
       const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
 
       this.automaticNumbering = !!data?.automatic_numbering;
 
-      if (this.automaticNumbering) {
-        this.document_number = null;     // or '' — null is cleaner
-        console.log('Auto-numbering enabled → document number cleared');
-      } else {
-        this.document_number = '';       // ready for manual input
-        console.log('Manual numbering → enter document number');
-      }
+      this.document_number = this.automaticNumbering ? null : '';
     },
-    error: (error) => {
-      console.error('Failed to load numbering settings:', error);
-      this.automaticNumbering = false;   // safe fallback
+    error: () => {
+      this.automaticNumbering = false;
       this.document_number = '';
-      // Optional: alert('Could not load document numbering settings');
     }
   });
 }

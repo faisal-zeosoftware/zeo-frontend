@@ -70,24 +70,6 @@
 
                 <div class="row">
     
-                    <div class="col-md-6">
-    
-    
-                        <div class="custom-sel">
-                            <label>Select Employee</label>
-                            <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"
-                             [ngClass]="{'error-field': registerButtonClicked && !employee}" (change)="onEmployeeChange($event)" >
-                                <option value="" >Select</option>
-                                <option *ngFor="let deparmentsec of employees"
-                                 [value]="deparmentsec.id">
-                                 {{ deparmentsec.emp_first_name }}
-                                 </option>
-                            </select>
-                            <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Your Employee</div>
-                        </div>
-                                    
-                
-                    </div>
 
              <div class="col-md-6">
                 <div class="custom-sel">
@@ -99,6 +81,24 @@
                     <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
                 </div>
             </div>
+
+               <div class="col-md-6">
+                        <div class="custom-sel">
+                            <label>Select Employee</label>
+                            <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"
+                             [ngClass]="{'error-field': registerButtonClicked && !employee}" (change)="onEmployeeChange($event)" >
+                                <option value="" >Select</option>
+                                <option *ngFor="let deparmentsec of filteredEmployees"
+                                 [value]="deparmentsec .id">
+                                 {{ deparmentsec.emp_first_name }}
+                                 </option>
+                            </select>
+                            <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Your Employee</div>
+                        </div>
+                                    
+                
+                    </div>
+
     
 
 <div class="col-md-6">

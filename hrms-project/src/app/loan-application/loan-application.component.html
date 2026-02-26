@@ -224,8 +224,8 @@
                         [(ngModel)]="employee"
                         [ngModelOptions]="{ standalone: true }"
                       >
-                        <option *ngFor="let employees of Employees" [value]="employees.id">
-                          {{ employees.emp_code }}
+                        <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
+                          {{ deparmentsec.emp_code }}
                         </option>
                       </select>
                     </div>
