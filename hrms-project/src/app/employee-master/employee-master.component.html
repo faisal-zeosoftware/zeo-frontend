@@ -113,44 +113,43 @@
 
         <div class="row mt-4" *ngIf="!isTableView">
          
-            <div class="col-md-4" *ngFor="let employeesec of filteredEmployees"    >
-                <div class="emp-list mt-2"  [ngClass]="{ 'selected-item': employeesec.selected }">
-                    <mat-checkbox *ngIf="Delete" [(ngModel)]="employeesec.selected" (change)="onCheckboxChange(employeesec.id)"></mat-checkbox>
-                    <div class="row" (click)="showEmployeeDetails(employeesec.id)">
-                        <div class="col-md-4" >
-                            <div class="emp_pic d-block mx-auto"  >
-                                <img [src]="employeesec.emp_profile_pic" alt="Employee Document"  style="width: 100%; height: 100%;">
-
-                            </div>
-                        </div>
-
-                        <div class="col-md-8">
-                            <div class="emp_det_list"   >
-                                <h2>{{ employeesec.emp_first_name  }} {{ employeesec.emp_last_name }}</h2>
-                                <h3>Emp Code:{{ employeesec.emp_code  }}  </h3>
-                                <!-- <h3> {{ employeesec.id  }} </h3> -->
-                                <h3></h3>
-                            </div>
-                        </div>
-                        
+          <div class="col-md-4" *ngFor="let employeesec of filteredEmployees">
+            <div class="emp-card-modern mt-3" [ngClass]="{ 'selected-card': employeesec.selected }">
+              
+              <mat-checkbox *ngIf="Delete" class="card-selection-check" 
+                            [(ngModel)]="employeesec.selected" 
+                            (change)="onCheckboxChange(employeesec.id)">
+              </mat-checkbox>
+          
+              <div class="card-content">
+                <div class="row align-items-center">
+                  
+                  <div class="col-4">
+                    <div class="profile-wrapper">
+                      <img [src]="employeesec.emp_profile_pic || 'assets/default-avatar.png'" 
+                           alt="Employee" class="emp-avatar">
+                      
+                      <button mat-mini-fab color="primary" class="edit-overlay-btn" 
+                              (click)="openEditEmpPopuss(employeesec.id)" *ngIf="showEditBtn">
+                        <mat-icon>edit</mat-icon>
+                      </button>
                     </div>
-                 
-                    <div class="row">
-                        <div class="col-md-9"></div>
-                        <div class="col-md-3">
-                            <button mat-fab class="" color="primary" aria-label="Example icon button with a delete icon" (click)="openEditEmpPopuss(employeesec.id)" *ngIf="showEditBtn"><mat-icon>draw</mat-icon></button>
-
-                        </div>
+                  </div>
+          
+                  <div class="col-8" (click)="showEmployeeDetails(employeesec.id)" style="cursor: pointer;">
+                    <div class="emp-info">
+                      <h2 class="emp-name">{{ employeesec.emp_first_name }} {{ employeesec.emp_last_name }}</h2>
+                      <div class="emp-badge">
+                         <span class="label">ID:</span>
+                         <span class="value">{{ employeesec.emp_code }}</span>
+                      </div>
                     </div>
-                        <!-- <button mat-fab class="" color="warn" aria-label="Example icon button with a delete icon" (click)="onDeleteEmployee(employeesec.id)">
-                          <mat-icon>delete</mat-icon>
-                        </button> -->
-                    <!-- <button type="button" class="btn btn-danger" >Delete Employee</button> -->
-<!-- <button type="button" class="btn" >      Edit</button> -->
-
+                  </div>
+          
                 </div>
+              </div>
             </div>
-
+          </div>
 
 
             

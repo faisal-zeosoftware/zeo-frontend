@@ -139,7 +139,8 @@ export class ProjectMasterComponent {
         this.employeeService.selectedBranches$
       ]).subscribe(([schema, branchIds]) => {
         if (schema) {
-          this.fetchEmployees(schema, branchIds);
+          this.fetchEmployees(schema, branchIds);  
+          
 
         }
       });
@@ -476,12 +477,12 @@ export class ProjectMasterComponent {
           // If sidebar is empty, you might want to show all, or show none. 
           // Usually, we show only the selected ones:
           if (sidebarSelectedIds.length > 0) {
-            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
           } else {
-            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
           }
           // Inside the subscribe block of loadDeparmentBranch
-          if (this.branches.length === 1) {
+          if (this.Branches.length === 1) {
             this.branches = this.branches[0].id;
           }
   

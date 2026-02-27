@@ -78,7 +78,7 @@ payslipPreferences = {
   showBranch: true,
   showDepartment: true,
   showCategory: true,
-  showLogo: true,        // New
+  showLogo: false,        // New
   showCompanyName: true // New flag for Company Name
 };
 

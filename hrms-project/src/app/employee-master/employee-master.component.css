@@ -439,4 +439,144 @@ background-color:#8e44ad;
 
 
 
+  /* Main Card Container */
+.emp-card-modern {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 15px;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid #edf2f7;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.emp-card-modern:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: #3f51b5; /* Primary color border on hover */
+}
+
+/* Selected State */
+.selected-card {
+  background: #f0f4ff;
+  border: 1px solid #3f51b5;
+}
+
+/* Profile Image Wrapper */
+.profile-wrapper {
+  position: relative;
+  width: 75px;
+  height: 75px;
+}
+
+.emp-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px; /* Smooth rounded corners */
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* The Pencil Button Overlay */
+.edit-overlay-btn {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  transform: scale(0.7); /* Make it smaller to fit the image corner */
+  z-index: 2;
+}
+
+/* Typography & Info */
+.emp-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emp-badge {
+  display: inline-flex;
+  background: #f7fafc;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.emp-badge .label {
+  color: #718096;
+  margin-right: 4px;
+}
+
+.emp-badge .value {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+/* Selection Checkbox position */
+.card-selection-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+}
+
+/* Main Card Container */
+.emp-card-modern {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 15px;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   
+  /* Colorful Border logic */
+  border: 2px solid transparent;
+  background-clip: padding-box; 
+  position: relative;
+}
+
+
+/* Glow effect on Hover */
+.emp-card-modern:hover::before {
+  opacity: 1; /* Full color on hover */
+}
+
+
+/* Profile Image Wrapper - Also adding a colorful ring */
+.profile-wrapper {
+  position: relative;
+  width: 75px;
+  height: 75px;
+  padding: 3px; /* Space for the ring */
+  background: linear-gradient(45deg, #00dbde, #fc00ff);
+  border-radius: 14px;
+}
+
+.emp-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 11px;
+  object-fit: cover;
+  background: white;
+  border: 2px solid white; /* Keeps the image clean */
+}
+
+/* Edit Button Overlay */
+.edit-overlay-btn {
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  transform: scale(0.75);
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+
+
+
+
+
+
