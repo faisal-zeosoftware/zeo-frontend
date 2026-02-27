@@ -27,7 +27,7 @@
             </a>
           </li>
 
-            <li class="nav-item" >
+         <li class="nav-item" >
             <a class="nav-link d-flex justify-content-between align-items-center"
                href="javascript:void(0)"
                (click)="togglePunchingDropdown()">
@@ -60,7 +60,14 @@
                 </a>
               </li>
             </ul>
-          </li>
+         </li>
+
+      <li class="nav-item" (click)="selectTabNav('TimeSheet')">
+      <a class="nav-link " href="javascript:void(0)">
+      <i class="bi bi-speedometer2 me-2"></i>
+      <span>TimeSheet</span>
+      </a>     
+      </li>
 
           <li class="nav-item" >
             <a class="nav-link d-flex justify-content-between align-items-center"
@@ -234,9 +241,6 @@
  </li>
 
 
-
-
-
         
 
         </ul>
@@ -405,19 +409,6 @@
           <li class="tab" [class.active]="activeTab === 'attendance'" (click)="selectTab('attendance')">
            <a href="javascript:void(0)">Attendance</a>
           </li>
-          <!-- <li class="tab" [class.active]="activeTab === 'asset'" (click)="selectTab('asset')">
-            <a href="javascript:void(0)">Asset</a>
-          </li> -->
-          <!-- <li class="tab" [class.active]="activeTab === 'airticket'" (click)="selectTab('airticket')">
-            <a href="javascript:void(0)">AirTicket</a>
-          </li> -->
-          <!-- <li class="tab" [class.active]="activeTab === 'loan'" (click)="selectTab('loan')">
-            <a href="javascript:void(0)">Loan</a>
-          </li> -->
-
-        <!-- <li class="tab" [class.active]="activeTab === 'advanceSalary'" (click)="selectTab('advanceSalary')">
-      <a href="javascript:void(0)">Advance Salary</a>
-      </li> -->
           
         </ul>
 
@@ -1656,72 +1647,7 @@
             </div>
           </div>
           </div>
-          <!-- <div class="tab_boddy mt-4">
-          <div  class="row">
-            <div class="col-md-12">
-              <div class="">
-                <div *ngIf="employeesec.leave_rqsts && employeesec.leave_rqsts.length > 0; else noLeaveRequests">
-                  <div  class="">
-                    <div class="row">
-                      <div class="col-md-5">
-                        <div class="leave_box" *ngFor="let request of employeesec.leave_rqsts" (click)="selectRequest(request.id)"
-                        [ngClass]="{'selected-request': selectedRequestId === request.id}">
-                          <div class="row">
-                            <div class="col-md-4">
-                              <label>Leave Type</label>
-                              <h6>{{ request.leave_type || 'N/A' }}</h6>
-                            </div>
-                            <div class="col-md-4">
-                              <label>Start Date</label>
-                              <h6>{{ request.start_date }}</h6>
-                            </div>
-                            <div class="col-md-4">
-                              <label>End Date</label>
-                              <h6>{{ request.end_date }}</h6>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-        
-                      <div class="col-md-7" >
-                          <div *ngFor="let request of employeesec.leave_rqsts">
-                          
-                        <div class="leave_box"  *ngIf="selectedRequestId === request.id">
-                          <div class="approval-steps" *ngIf="request.approvals && request.approvals.length > 0">
-                            <h5>Leave Approval Status</h5><hr>
-                            <div *ngFor="let approval of request.approvals" class="row">
-                              <div class="col-md-3">
-                                <label>Status</label>
-                                <h6>{{ approval.status }}</h6>
-                              </div>
-                              <div class="col-md-3">
-                                <label>Role</label>
-                                <h6>{{ approval.role }}</h6>
-                              </div>
-                              <div class="col-md-3">
-                                <label>Approver</label>
-                                <h6>{{ approval.approver || 'N/A' }}</h6>
-                              </div>
-                              <div class="col-md-3">
-                                <label>Note</label>
-                                <h6>{{ approval.note || 'N/A' }}</h6>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        </div>
-                      </div>
-                    </div>  
-                  </div>
-                </div>
 
-                <ng-template #noLeaveRequests>
-                  <p>No leave requests available for this employee.</p>
-                </ng-template>
-              </div>
-            </div>
-          </div>
-</div> -->
       </section>
 
       <section class="content-tab  animate__animated animate__fadeIn" id="generalRequest"
@@ -4014,6 +3940,145 @@
 
 
     </section>
+
+
+
+        <section class="content-tab  animate__animated animate__fadeIn" id="TimeSheet"
+        *ngIf="activeTabNav === 'TimeSheet'">
+        <!-- Academic content here -->
+
+
+        <div class="white-outer-sec">
+          <form (ngSubmit)="CreateProject()" enctype="multipart/form-data">
+            <div class="row">
+
+              
+              <div class="col-md-4" >
+               
+                <label>Date</label>
+               <input type="date"  class="form-control" required  [(ngModel)]="date"  placeholder="Enter date"
+                [ngModelOptions]="{standalone: true}" >
+               
+             </div>
+
+
+          <div class="col-md-4" >
+               
+            <label> Time Spend</label>
+           <input type="time"  class="form-control" required  [(ngModel)]="time_spent"  placeholder="Enter time spent"
+            [ngModelOptions]="{standalone: true}" >
+           
+         </div>
+              
+
+          <div class="col-md-4" >
+            <label>Status</label>
+            <div class="custom-sel">
+              <select
+                class="form-control" [(ngModel)]="status" [ngModelOptions]="{ standalone: true }">
+                <option value="in_progress">In Progress </option>
+                <option value="completed">Completed </option>
+              </select>
+            </div>
+          </div>
+
+    <div class="col-md-4" >
+    <label>Select Projects</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="project"
+        name="project"
+        [(ngModel)]="project"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Projects" [value]="employees.id">
+          {{ employees.title }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+
+  <div class="col-md-4" >
+    <label>Select Task</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="task"
+        name="task"
+        [(ngModel)]="task"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Tasks" [value]="employees.id">
+          {{ employees.title }}
+        </option>
+      </select>
+    </div>
+  </div>
+          
+  <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
+
+
+
+
+           </div>
+          
+            <div class="row">
+              <div class="col-md-9"></div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-success btn-full mt-4">Add Time Sheet</button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+
+
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <th class="text-table-header">Date</th>
+                    <th class="text-table-header">Time spent</th>
+                    <th class="text-table-header">Task</th>
+                    <th class="text-table-header">Description</th>
+                    <th class="text-table-header">project</th>
+                    <th class="text-table-header">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let docs of Timesheets; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ docs.date || '-' }}</td>
+                    <td>{{ docs.time_spent }}</td>
+                    <td>{{ docs.task }}</td>
+                    <td>{{ docs.description }}</td>
+                    <td>{{ docs.project }}</td>
+                    <td>{{ docs.status?.[0]?.status || '-' }}</td>
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
+
+      </section>
 
 
 

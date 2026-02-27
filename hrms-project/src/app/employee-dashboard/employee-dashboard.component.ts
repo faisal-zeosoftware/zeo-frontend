@@ -95,6 +95,9 @@ export class EmployeeDashboardComponent {
   AdvancesalaryAprNot: any[] = [];
 
 
+branchIds: number[] = [];
+
+
   constructor(private authService: AuthenticationService,
      private router: Router,
     private EmployeeService: EmployeeService,
@@ -129,6 +132,19 @@ export class EmployeeDashboardComponent {
   // 
   ngOnInit(): void {
 
+      // ✅ Get schema first
+  this.selectedSchema = this.authService.getSelectedSchema() || '';
+
+  // ✅ Get branch IDs from localStorage
+  this.branchIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+  // ✅ Now call API safely
+  if (this.selectedSchema && this.branchIds.length > 0) {
+    this.fetchTimeEmployees(this.selectedSchema, this.branchIds);
+  }
+
+  this.fetchTimeEmployees(this.selectedSchema, this.branchIds);
+
     this.loadExpiredDoc(); // load notifications on page load
     this.LoadDocType();
     this.loadRequestType();
@@ -147,6 +163,9 @@ export class EmployeeDashboardComponent {
     this.loadAssetReqApprovals();
     this.loadAirticketReqApprovals();
     this.loadDocReqApprovals();
+    this.loadLTasks();
+    this.loadProject();
+    this.loadStages();
   
     
 
@@ -662,12 +681,7 @@ loadExpiredDoc(): void {
         // console.error('Error loading image:', event);
       }
   
-  
-  
-      // isImage(src: string): boolean {
-      //   return src.toLowerCase().endsWith('.jpg') || src.toLowerCase().endsWith('.jpeg') || src.toLowerCase().endsWith('.png') || src.toLowerCase().endsWith('.gif');
-      // }
-       
+
    
       isPDF(url: string): boolean {
         return url.toLowerCase().endsWith('.pdf');
@@ -677,18 +691,7 @@ loadExpiredDoc(): void {
       checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
        return groupPermissions.some(permission => permission.codename === codeName);
      }
-   
-    //  fetchDesignations(selectedSchema: string) {
-    //    this.EmployeeService.getemployees(selectedSchema).subscribe(
-    //      (data: any) => {
-    //        this.employees = data;
-    //       console.log('employee:', this.employees);
-    //      },
-    //      (error: any) => {
-    //        console.error('Error fetching categories:', error);
-    //      }
-    //    );
-    //  }
+
    
 
 
@@ -722,20 +725,7 @@ fetchDesignations(selectedSchema: string) {
     }
   );
 }
- 
-   
-  
-  
-           
-   // checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-   //   return groupPermissions.some(permission => permission.codename === codeName);
-   // }
-    
-   
-     
 
-
-      
 
        calculateDaysLeft(startDate: string): string {
         const today = new Date();
@@ -1347,18 +1337,11 @@ toggleAdvSalDropdown() {
   this.isAdvSalDropdownOpen = !this.isAdvSalDropdownOpen;
 }
 
-
-
-
-
-
-
 isApprovalsDropdownOpen = false;
 
 toggleApprovalsDropdown() {
   this.isApprovalsDropdownOpen = !this.isApprovalsDropdownOpen;
 }
-
 
 
   start_date:any='';
@@ -1373,7 +1356,6 @@ toggleApprovalsDropdown() {
   leave_type:any='' ;
   dis_half_day: boolean = false;
   LeaveRequests: any[] = [];
-
   totalDays: number = 0;
 
 requestLeave(): void {
@@ -1390,7 +1372,6 @@ requestLeave(): void {
   formData.append('dis_half_day', this.dis_half_day.toString());
   formData.append('half_day_period', this.half_day_period);
   formData.append('document_number', this.document_number?.toString() || '');
-  // formData.append('branch', this.branch || '');
   formData.append('leave_type', this.leave_type.toString());
   formData.append('employee', this.selectedEmployeeId.toString());
 
@@ -1442,27 +1423,6 @@ requestLeave(): void {
 }
   );
 }
-
-//     LoadLeaveRequest() {
-//     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-//     console.log('schemastore',selectedSchema )
-//     // Check if selectedSchema is available
-//     if (selectedSchema) {
-
-//     this.leaveService.getLeaveRequest(selectedSchema).subscribe(
-//       (data: any) => {
-//         this.LeaveRequests = data;
-
-//         console.log('employee:', this.LeaveRequests);
-     
-//       },
-//       (error: any) => {
-//         console.error('Error fetching categories:', error);
-//       }
-//     );
-//   }
-// }
 
 
   getLocation(): Promise<any> {
@@ -3669,6 +3629,147 @@ confirmDocRejection(approvalId: number): void {
     );
   }
 }
+
+
+// Timesheet Type code 
+
+ date: any = '';
+ time_spent: any = '';
+ description: any = '';
+ project: any = '';
+ task: any = '';
+ Projects:any []=[];
+ Timesheets:any []=[];
+ Tasks:any []=[];
+ Stages:any []=[];
+
+
+   CreateProject(): void {
+       this.registerButtonClicked = true;
+
+ if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
+          
+          
+            const formData = new FormData();
+          
+            formData.append('date', this.date);
+            formData.append('status', this.status);
+            formData.append('time_spent', this.time_spent);
+            formData.append('description', this.description);
+            formData.append('project', this.project);
+            formData.append('task', this.task);
+            formData.append('employee', this.selectedEmployeeId.toString());
+
+        
+            // Add file
+          
+            this.employeeService.registerProjectTimesheet(formData).subscribe(
+              (response) => {
+                console.log('Registration successful', response);
+                alert('Project Timesheet has been Created.');
+                window.location.reload();
+              },
+              (error) => {
+                console.error('Add failed', error);
+               let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
+      alert(errorMessage);
+    }
+            );
+          }
+
+ loadProject(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+              
+  if (selectedSchema) {
+  this.employeeService.getProjectNew(selectedSchema, savedIds).subscribe(
+  (result: any) => {
+  this.Projects = result;               
+   if (callback) callback();
+ },
+  (error) => {
+ console.error('Error fetching Companies:', error);
+  }
+ );
+   }
+   }
+
+  loadStages(): void {
+    
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.employeeService.getProjectsStages(selectedSchema).subscribe(
+      (result: any) => {
+        this.Stages = result;
+        console.log(' fetching Stages:');
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
+
+  loadLTasks(callback?: Function): void {
+     const selectedSchema = this.authService.getSelectedSchema();
+     const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+            
+            
+      if (selectedSchema) {
+        this.employeeService.getProjectTaskNew(selectedSchema, savedIds).subscribe(
+         (result: any) => {
+          this.Tasks = result;
+                    
+          if (callback) callback();
+           },
+            (error) => {
+             console.error('Error fetching Companies:', error);
+         }
+          );
+          }
+        }
+
+
+
+
+
+            fetchTimeEmployees(schema: string, branchIds: number[]): void {
+              this.isLoading = true;
+              this.employeeService.getProjectTimesheetNew(schema, branchIds).subscribe({
+                next: (data: any) => {
+                  // Filter active employees
+                  this.Timesheets = data;
+          
+                  this.isLoading = false;
+                },
+                error: (err) => {
+                  console.error('Fetch error:', err);
+                  this.isLoading = false;
+                }
+              });
+            }
   
 
 }
