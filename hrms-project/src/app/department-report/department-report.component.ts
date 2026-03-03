@@ -8,6 +8,7 @@ import { SessionService } from '../login/session.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
+import {combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-department-report',
   templateUrl: './department-report.component.html',
@@ -15,6 +16,7 @@ import { environment } from '../../environments/environment';
 })
 export class DepartmentReportComponent  implements OnInit  {
 
+  private dataSubscription?: Subscription;
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -55,7 +57,19 @@ schemas: string[] = []; // Array to store schema names
   };
 
   ngOnInit(): void {
-    this.getDepartmentReport();
+    // this.getDepartmentReport();
+
+
+      // combineLatest waits for both Schema and Branches to have a value
+      this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchDepartmentReport(schema, branchIds);
+  
+        }
+      });
 
     this.userId = this.sessionService.getUserId();
 
@@ -186,16 +200,45 @@ schemas: string[] = []; // Array to store schema names
     this.cardOpen = !this.cardOpen;
   }
 
-  getDepartmentReport(): void {
-    this.departmentService.getDepartmentReport().subscribe(
-      data => {
+  // getDepartmentReport(): void {
+  //   this.departmentService.getDepartmentReport().subscribe(
+  //     data => {
+  //       this.departmentData = data;
+  //       console.log('Department Data:', this.departmentData);
+  //     },
+  //     error => {
+  //       console.error('Error fetching department report:', error);
+  //     }
+  //   );
+  // }
+
+  
+  isLoading: boolean = false;
+  fetchDepartmentReport(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    
+    this.departmentService.getDepartmentReport(schema, branchIds).subscribe({
+      next: (data) => {
         this.departmentData = data;
-        console.log('Department Data:', this.departmentData);
+        console.log('Filtered Department Data:', this.departmentData);
+        
+        // If your department report has custom fields like your assets code, 
+        // you can implement the extraction logic here.
+        
+        this.isLoading = false;
       },
-      error => {
-        console.error('Error fetching department report:', error);
+      error: (err) => {
+        console.error('Error fetching department report:', err);
+        this.isLoading = false;
       }
-    );
+    });
+  }
+  
+  // Clean up subscription to prevent memory leaks
+  ngOnDestroy(): void {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
   }
 
  StandardDownload(): void {

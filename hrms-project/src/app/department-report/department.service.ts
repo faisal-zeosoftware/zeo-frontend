@@ -15,9 +15,25 @@ export class DepartmentService {
     this.initializeApiUrl();
    }
 
-  getDepartmentReport(): Observable<any> {
-    return this.http.get<any>(this.apiUrl);
+  // getDepartmentReport(): Observable<any> {
+  //   return this.http.get<any>(this.apiUrl);
+  // }
+
+  // department.service.ts
+
+getDepartmentReport(schema: string, branchIds: number[]): Observable<any> {
+  // Convert [1,3,4] to "[1,3,4]" string format
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  // Base URL (Make sure this.apiUrl is defined as your base environment URL)
+  let url = `${this.apiUrl}/organisation/api/Department/department_report/?schema=${schema}`;
+  
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
   }
+  
+  return this.http.get<any>(url);
+}
 
   private initializeApiUrl(): void {
     const selectedSchema = localStorage.getItem('selectedSchema');
