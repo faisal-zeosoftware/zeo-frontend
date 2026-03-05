@@ -239,6 +239,7 @@ import { ResignationEmailTemplateEditComponent } from './resignation-email-templ
 import { BranchPermissionsComponent } from './branch-permissions/branch-permissions.component';
 import { OvertimeRuleComponent } from './overtime-rule/overtime-rule.component';
 import { PayStructureComponent } from './pay-structure/pay-structure.component';
+import { AttendancePunchingComponent } from './attendance-punching/attendance-punching.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -436,7 +437,8 @@ import { PayStructureComponent } from './pay-structure/pay-structure.component';
      ResignationEmailTemplateEditComponent,
      BranchPermissionsComponent,
      OvertimeRuleComponent,
-     PayStructureComponent
+     PayStructureComponent,
+     AttendancePunchingComponent
      
      
 

@@ -150,10 +150,11 @@ ngOnInit(): void {
     this.employeeService.selectedBranches$.subscribe(ids => {
       this.loadShifts();
       this.loadShiftsEmployee();
-      this.loadShiftsEmployee();
+      // this.loadShiftsEmployee();
       this.loadDeparmentBranch(); 
        this.loadEmployee();
        this.loadDEpartments();
+       this.loadShiftsPattern();
 
     });
     
@@ -667,27 +668,7 @@ ngOnInit(): void {
 
 
 
-      
-          // loadLAssetType(): void {
-    
-          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-          
-          //   console.log('schemastore',selectedSchema )
-          //   // Check if selectedSchema is available
-          //   if (selectedSchema) {
-          //     this.employeeService.getAssetType(selectedSchema).subscribe(
-          //       (result: any) => {
-          //         this.LoanTypes = result;
-          //         console.log(' fetching Loantypes:');
-          
-          //       },
-          //       (error) => {
-          //         console.error('Error fetching Companies:', error);
-          //       }
-          //     );
-          //   }
-          //   }
-        
+     
 
 
 
@@ -721,18 +702,18 @@ ngOnInit(): void {
       }
   
   
-      Delete: boolean = false;
-      allSelected: boolean = false;
+    //   Delete: boolean = false;
+    //   allSelected: boolean = false;
   
-    toggleCheckboxes() {
-      this.Delete = !this.Delete;
-    }
+    // toggleCheckboxes() {
+    //   this.Delete = !this.Delete;
+    // }
   
-    toggleSelectAllEmployees() {
-        this.allSelected = !this.allSelected;
-    this.ShiftsPattern.forEach(employee => employee.selected = this.allSelected);
+    // toggleSelectAllEmployees() {
+    //     this.allSelected = !this.allSelected;
+    // this.ShiftsPattern.forEach(employee => employee.selected = this.allSelected);
 
-    }
+    // }
   
     onCheckboxChange(employee:number) {
       // No need to implement any logic here if you just want to change the style.

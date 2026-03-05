@@ -14,6 +14,9 @@
           </div>
           <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
             <ul>
+             
+                 <li routerLink="/main-sidebar/attendance-sidebar/attendance-punching" *ngIf="hasViewPermissionGeoFence"><a><mat-icon>person_raised_hand</mat-icon> Punching</a></li>
+
                   <li routerLink="/main-sidebar/attendance-sidebar/attendace-marking" *ngIf="hasViewPermissionAttendanceMarking"><a><mat-icon>person_raised_hand</mat-icon> Attendance Marking</a></li>
                
                 
@@ -24,6 +27,9 @@
                   <li routerLink="/main-sidebar/attendance-sidebar/employee-punching-list" *ngIf="hasViewPermissionPunchingList"><a><mat-icon>person_raised_hand</mat-icon> Punching List</a></li>
 
                   <li routerLink="/main-sidebar/attendance-sidebar/geofence" *ngIf="hasViewPermissionGeoFence"><a><mat-icon>person_raised_hand</mat-icon> Geo Fence</a></li>
+                  
+
+
 
                     <mat-nav-list>
        

@@ -12,9 +12,9 @@ import { CountryService } from '../country.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { MatMenuTrigger } from '@angular/material/menu';
 import {combineLatest, Subscription } from 'rxjs';
-import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
-
+import { MatOption } from '@angular/material/core';
 
 
 interface FieldSetting {

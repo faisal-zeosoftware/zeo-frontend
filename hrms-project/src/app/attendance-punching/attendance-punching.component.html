@@ -1,0 +1,75 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+
+   
+  
+        <div class="com_list">
+    <div class="cpm-sec" *ngIf="hasViewPermission">
+
+        <div class="punching-card shadow-lg">
+      
+            <div class="punch-header text-center py-4">
+              <h1 class="font-weight-bold">Attendance Portal</h1>
+              <p class="text-muted">Please select your preferred punching method</p>
+            </div>
+        
+            <div class="row text-center p-4" *ngIf="!activeMode">
+              <div class="col-md-4">
+                <div class="method-card" (click)="setMode('face')">
+                  <mat-icon class="method-icon face-color">face_unlock</mat-icon>
+                  <h3>Face Recognition</h3>
+                  <p class="small text-muted">Scan your face to check-in</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="method-card" (click)="setMode('barcode')">
+                  <mat-icon class="method-icon barcode-color">qr_code_scanner</mat-icon>
+                  <h3>Barcode / ID</h3>
+                  <p class="small text-muted">Scan your employee card</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="method-card" (click)="setMode('manual')">
+                  <mat-icon class="method-icon pin-color">pin</mat-icon>
+                  <h3>Manual Entry</h3>
+                  <p class="small text-muted">Enter Code or PIN</p>
+                </div>
+              </div>
+            </div>
+        
+            <div class="camera-container text-center p-4" *ngIf="activeMode === 'face'">
+              <div class="video-wrapper">
+                <video #videoElement autoplay class="video-feed"></video>
+                <div class="face-overlay"></div> </div>
+              
+              <div class="mt-4">
+                <button mat-raised-button color="primary" class="px-5 py-2" (click)="captureAndPunch()">
+                  <mat-icon>camera_alt</mat-icon> PUNCH NOW
+                </button>
+                <button mat-button class="ml-2" (click)="setMode(null)">Cancel</button>
+              </div>
+            </div>
+        
+          </div>
+
+
+  
+
+   
+
+   
+
+
+        </div>
+
+        </div>
+
+       
+
+</div>
+
+</div>
+
+
+
+

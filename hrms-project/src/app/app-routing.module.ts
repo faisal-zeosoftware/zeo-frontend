@@ -159,6 +159,7 @@ import { ResignationEmailTemplateComponent } from './resignation-email-template/
 import { BranchPermissionsComponent } from './branch-permissions/branch-permissions.component';
 import { OvertimeRuleComponent } from './overtime-rule/overtime-rule.component';
 import { PayStructureComponent } from './pay-structure/pay-structure.component';
+import { AttendancePunchingComponent } from './attendance-punching/attendance-punching.component';
 
 
 const routes: Routes = [
@@ -712,6 +713,11 @@ const routes: Routes = [
      {
       path: 'geofence',
       component: GeofenceComponent,
+    },
+
+     {
+      path: 'attendance-punching',
+      component: AttendancePunchingComponent,
     },
 
   ]

@@ -18,7 +18,8 @@ import { ViewChild } from '@angular/core';
 
 import {combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
-import { MatOption, MatSelect } from '@angular/material/select';
+import {  MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 
 
 
