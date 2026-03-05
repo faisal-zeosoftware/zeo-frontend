@@ -801,7 +801,7 @@ selectTab(tabName: string): void {
 
 
 
- activeTabNav: string = 'dashboard';  // default tab
+activeTabNav: string = 'dashboard';
 
 selectTabNav(tabNameNav: string): void {
   this.activeTabNav = tabNameNav;

@@ -7,6 +7,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
+import { DepartmentService } from '../department-report/department.service';
+import { Subscription } from 'rxjs/internal/Subscription';
+import { combineLatest } from 'rxjs/internal/observable/combineLatest';
 
 @Component({
   selector: 'app-designation-report',
@@ -14,10 +17,17 @@ import { SessionService } from '../login/session.service';
   styleUrl: './designation-report.component.css'
 })
 export class DesignationReportComponent  implements OnInit  {
+
+  private dataSubscription?: Subscription;
+
+
+
   departmentData: any[] = []; // Initialize as an empty array
   displayedColumns: string[] = ['Designation', 'Designation Code', 'Description', 'Active'];
   cardOpen = false;
-  constructor(private designationService: DesignationService,
+  constructor(
+    private departmentService: DepartmentService,
+    private designationService: DesignationService,
     private snackBar: MatSnackBar,
     private sessionService: SessionService,
     private authService: AuthenticationService,
@@ -49,6 +59,15 @@ username: any;
   };
 
   ngOnInit(): void {
+
+this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]: [string, number[]]) => {
+  if (schema) {
+    this.fetchDepartmentReport(schema, branchIds);
+  }
+});
 
     this.getDepartmentReport();
 
@@ -268,6 +287,27 @@ username: any;
     console.error('Failed to download report:', error);
   }
 }
+
+  isLoading: boolean = false;
+  fetchDepartmentReport(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    
+    this.departmentService.getDesignationReport(schema, branchIds).subscribe({
+      next: (data) => {
+        this.departmentData = data;
+        console.log('Filtered Department Data:', this.departmentData);
+        
+        // If your department report has custom fields like your assets code, 
+        // you can implement the extraction logic here.
+        
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching department report:', err);
+        this.isLoading = false;
+      }
+    });
+  }
 
 saveAsExcelFile(buffer: any, fileName: string): void {
   const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
