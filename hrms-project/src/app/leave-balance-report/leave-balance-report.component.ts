@@ -11,6 +11,9 @@ import { CountryService } from '../country.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { MatMenuTrigger } from '@angular/material/menu';
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 interface FieldSetting {
   key: string;
@@ -31,6 +34,7 @@ export class LeaveBalanceReportComponent {
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
      @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+     @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
 
   
@@ -82,7 +86,8 @@ constructor(private leaveService: LeaveService,
   private authService: AuthenticationService,
   private employeeService: EmployeeService,
   private sessionService: SessionService,
-   private DesignationService: DesignationService,
+  private DesignationService: DesignationService,
+  private DepartmentServiceService: DepartmentServiceService 
 ) {}
 // FIX FOR NG5002: Use a getter for the count
 get visibleFieldsCount(): number {
@@ -91,6 +96,7 @@ get visibleFieldsCount(): number {
 
 ngOnInit(): void {
   this.initialLoad();
+  this.loadDeparmentBranch();
 
 
     this.userId = this.sessionService.getUserId();
@@ -398,44 +404,88 @@ applyFilters() {
 }
 
 
+// saveCustomFile(): void {
+
+//   const selectedSchema = localStorage.getItem('selectedSchema');
+//   if (!selectedSchema || !this.customFileName.trim()) return;
+
+//   const url = `${this.apiUrl}/calendars/api/lvBalanceReport/generate_leave_report/?schema=${selectedSchema}`;
+
+//   const formData = new FormData();
+//   formData.append('file_name', this.customFileName.trim());
+
+
+//   const allFieldsToSubmit = this.fieldSettings
+//     .filter(field => field.visible && field.key.trim() !== '')
+//     .map(field => field.key.trim());
+
+//   if (allFieldsToSubmit.length === 0) return;
+
+
+//   allFieldsToSubmit.forEach(fieldKey => {
+//     formData.append('fields', fieldKey);
+//   });
+
+
+//   this.isLoading = true;
+//   this.http.post<any>(url, formData).subscribe({
+//     next: (response) => {
+//       console.log('Report generated successfully:', response);
+      
+//       if (response.status === 'success') {
+//         this.customFileName = ''; 
+//         this.fetchSavedReportsList();
+        
+//       }
+//       this.isLoading = false;
+//     },
+//     error: (error) => {
+//       console.error('Error generating report:', error);
+//       this.isLoading = false;
+//     }
+//   });
+// }
+
 saveCustomFile(): void {
-  // 1. Get Schema from LocalStorage
+
   const selectedSchema = localStorage.getItem('selectedSchema');
   if (!selectedSchema || !this.customFileName.trim()) return;
 
-  // 2. Prepare the URL
   const url = `${this.apiUrl}/calendars/api/lvBalanceReport/generate_leave_report/?schema=${selectedSchema}`;
-  
-  // 3. Construct FormData (Following your model's logic)
+
   const formData = new FormData();
   formData.append('file_name', this.customFileName.trim());
 
-  // 4. Map and append selected field keys
-  // Only fields that are toggled 'visible' in your UI are added
+  // ✅ Append selected visible fields
   const allFieldsToSubmit = this.fieldSettings
     .filter(field => field.visible && field.key.trim() !== '')
     .map(field => field.key.trim());
 
   if (allFieldsToSubmit.length === 0) return;
 
-  // Append each field key to the 'fields' parameter
   allFieldsToSubmit.forEach(fieldKey => {
     formData.append('fields', fieldKey);
   });
 
-  // 5. POST Method
+  // ✅ NEW: Append Branch IDs
+  if (this.branch && this.branch.length > 0) {
+    this.branch.forEach((branchId: number) => {
+      formData.append('branch', branchId.toString());
+    });
+  }
+
   this.isLoading = true;
+
   this.http.post<any>(url, formData).subscribe({
     next: (response) => {
       console.log('Report generated successfully:', response);
-      
+
       if (response.status === 'success') {
-        this.customFileName = ''; // Reset input
-        this.fetchSavedReportsList(); // Refresh the list of saved files
-        
-        // Optional: reload if your backend requires a fresh state
-        // window.location.reload(); 
+        this.customFileName = '';
+        this.branch = [];              // optional reset
+        this.fetchSavedReportsList();
       }
+
       this.isLoading = false;
     },
     error: (error) => {
@@ -444,6 +494,50 @@ saveCustomFile(): void {
     }
   });
 }
+
+ branch: number[] = [];
+
+branches:any []=[];
+
+loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+          
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+if (this.branches.length === 1) {
+  this.branch = [this.branches[0].id];
+}
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+      allSelectedBrach=false;
+                toggleAllSelectionBrach(): void {
+                if (this.selectBrach) {
+                  if (this.allSelectedBrach) {
+                    this.selectBrach.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
 
 
 

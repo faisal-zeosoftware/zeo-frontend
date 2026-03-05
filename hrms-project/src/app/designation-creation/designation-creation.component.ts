@@ -9,6 +9,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 @Component({
   selector: 'app-designation-creation',
   templateUrl: './designation-creation.component.html',
@@ -35,6 +36,7 @@ export class DesignationCreationComponent {
   visibles:boolean=true;
   ReadMore:boolean=false;
   // dialog: any;
+  branch_id:any ='';
   error: any[]=[];
   errormessage:any;
   errors_Sheet1: any;
@@ -42,7 +44,8 @@ export class DesignationCreationComponent {
   errors_sheet1:any='';
 
 
-  constructor(private DesignationService: DesignationService ,
+  constructor(private DepartmentServiceService: DepartmentServiceService,
+    private DesignationService: DesignationService ,
     private companyRegistrationService: CompanyRegistrationService, 
     private http: HttpClient,
     private authService: AuthenticationService,
@@ -135,6 +138,8 @@ export class DesignationCreationComponent {
     formData.append('desgntn_job_title', this.desgntn_job_title);
   
     formData.append('desgntn_description', this.desgntn_description);
+    
+    formData.append('branch_id', this.branch_id);
   
     
   
@@ -168,18 +173,19 @@ registerDesignation(): void {
   this.registerButtonClicked = true;
 
   // Basic validation for required fields
-  if (!this.desgntn_job_title || !this.desgntn_description) {
+  if (!this.desgntn_job_title || !this.branch_id) {
     if (!this.desgntn_job_title) {
       alert('Job Title field is blank.');
     }
-    if (!this.desgntn_description) {
-      alert('Job Description field is blank.');
+    if (!this.branch_id) {
+      alert('Job Branch field is blank.');
     }
     return; // Stop if local validation fails
   }
 
   const companyData = {
     desgntn_job_title: this.desgntn_job_title,
+    branch_id: this.branch_id,
     desgntn_description: this.desgntn_description,
     desgntn_code: this.desgntn_code,
   };
@@ -221,6 +227,36 @@ registerDesignation(): void {
     }
   );
 }
+
+  ngOnInit(): void {
+    this.loadDeparmentBranch();
+
+
+   
+  }
+
+
+  loadDeparmentBranch(): void {
+    
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any) => {
+        this.Departments = result;
+        console.log(' fetching Companies:');
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
+
+
 
 
   ClosePopup(){

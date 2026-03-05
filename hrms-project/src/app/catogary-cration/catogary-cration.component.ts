@@ -8,6 +8,7 @@ import { CompanyRegistrationService } from '../company-registration.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { CatogaryService } from '../catogary-master/catogary.service'; 
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-catogary-cration',
@@ -21,13 +22,16 @@ export class CatogaryCrationComponent {
   registerButtonClicked = false;
   catogaries: any[] = [];
 
+
   ctgry_title: string = '';
   ctgry_description:string ='';
   ctgry_code:string ='';
+  branch_id:any ='';
 
 
 
-  constructor(private CatogaryService: CatogaryService ,
+  constructor(private DepartmentServiceService: DepartmentServiceService,
+    private CatogaryService: CatogaryService ,
     private companyRegistrationService: CompanyRegistrationService, 
     private http: HttpClient,
     private authService: AuthenticationService,
@@ -40,6 +44,7 @@ export class CatogaryCrationComponent {
 
 
    ngOnInit() {
+        this.loadDeparmentBranch();
   // Retrieve the copied data from the service
   this.copiedCategoryData = this.CatogaryService.getCopiedCategoryData();
 
@@ -92,6 +97,7 @@ registerCatogary(): void {
     ctgry_title: this.ctgry_title,
     ctgry_description: this.ctgry_description,
     ctgry_code: this.ctgry_code,
+     branch_id: this.branch_id,
   };
 
   this.CatogaryService.registerCatogary(companyData).subscribe(
@@ -131,6 +137,26 @@ registerCatogary(): void {
     }
   );
 }
+
+  loadDeparmentBranch(): void {
+    
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any) => {
+        this.catogaries = result;
+        console.log(' fetching Companies:');
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
 
 
   ClosePopup(){

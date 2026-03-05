@@ -1,4 +1,3 @@
-
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
     <div class="header_section">
@@ -180,12 +179,35 @@
                           <mat-icon>add_box</mat-icon>
                           <span>Save current view</span>
                         </div>
-                        <div class="save-input-wrapper">
-                          <input type="text" class="clean-input" [(ngModel)]="customFileName" placeholder="Filename...">
-                          <button class="btn-save-confirm" (click)="saveCustomFile()">
-                            Save
-                          </button>
-                        </div>
+<div class="save-input-wrapper modern-row">
+
+  <!-- Branch Select (Full Row) -->
+  <mat-form-field appearance="outline" class="branch-field">
+    <mat-select [(ngModel)]="branch"
+                multiple
+                placeholder="Select Branch"
+                #selectBrach>
+      <mat-option *ngFor="let branchItem of branches"
+                  [value]="branchItem.id">
+        {{ branchItem.branch_name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Second Row -->
+  <div class="file-save-row">
+    <input type="text"
+           class="clean-input"
+           [(ngModel)]="customFileName"
+           placeholder="Filename...">
+
+    <button class="btn-save-confirm"
+            (click)="saveCustomFile()">
+      Save
+    </button>
+  </div>
+
+</div>
                       </div>
                     </div>
                   </div>

@@ -491,34 +491,33 @@ updateAssetType(): void {
 
 
 
-onBranchChange(event: any): void {
-  const selectedBranchId = event.target.value;
-  const selectedSchema = localStorage.getItem('selectedSchema');
+onBranchChange(): void {
 
-  this.branch = selectedBranchId;
+  const selectedBranchId = this.branch;
+  const selectedSchema = localStorage.getItem('selectedSchema');
 
   /* -------------------------------------------------
      1️⃣ FILTER EMPLOYEES BY BRANCH
   ---------------------------------------------------*/
-if (!selectedBranchId) {
-  this.filteredEmployees = this.employees;
-  this.employee = '';
-} else {
-  // Find selected branch object
-  const selectedBranch = this.branches.find(
-    b => Number(b.id) === Number(selectedBranchId)
-  );
-
-  if (selectedBranch) {
-    this.filteredEmployees = this.employees.filter(emp =>
-      emp.emp_branch_id === selectedBranch.branch_name
-    );
+  if (!selectedBranchId) {
+    this.filteredEmployees = this.employees;
+    this.employee = '';
   } else {
-    this.filteredEmployees = [];
-  }
 
-  this.employee = '';
-}
+    const selectedBranch = this.branches.find(
+      b => Number(b.id) === Number(selectedBranchId)
+    );
+
+    if (selectedBranch) {
+      this.filteredEmployees = this.employees.filter(emp =>
+        emp.emp_branch_id === selectedBranch.branch_name
+      );
+    } else {
+      this.filteredEmployees = [];
+    }
+
+    this.employee = '';
+  }
 
   /* -------------------------------------------------
      2️⃣ DOCUMENT NUMBERING LOGIC
@@ -536,7 +535,10 @@ if (!selectedBranchId) {
 
   this.http.get<any>(apiUrl).subscribe({
     next: (response) => {
-      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
+
+      const data = Array.isArray(response) && response.length > 0
+        ? response[0]
+        : response;
 
       this.automaticNumbering = !!data?.automatic_numbering;
 
@@ -627,35 +629,34 @@ loadEmp(callback?: Function): void {
   console.log("Mapped employee_id:", this.editAsset.employee);
 }
 
-        onEmployeeChange(event: any): void {
-          const selectedEmployeeId = event.target.value;
-          if (selectedEmployeeId) {
-              // Fetch employee details including branch_id
-              this.employeeService.getEmployeeDetails(selectedEmployeeId).subscribe(
-                  (employee: any) => {
-                    
-                      this.branch = employee.emp_branch_id; // Update branch dropdown with employee's branch
-                      console.log('Selected employee branch:', this.branch); // Log selected employee's branch
+onEmployeeChange(): void {
 
-                  
-                    },
-                    (error:HttpErrorResponse) => {
+  if (!this.employee) return;
 
-                      if (error.status === 401) {
-                        // Unauthorized error, typically used for wrong credentials
-                        alert('Enter all fileds correctly.');
-                      } else {
-                        // General error message
-                        const errorMessage = error.error?.detail || 'Enter all fields';
-                        alert(`Creating error: ${errorMessage}`);
-                      }
-                         
+  const selectedEmployee = this.employees.find(
+    emp => emp.id == this.employee
+  );
 
-                      // console.error('Error fetching employee details:', error);
-                  }
-              );
-          }
-      }
+  if (!selectedEmployee) return;
+
+  if (typeof selectedEmployee.emp_branch_id === 'number') {
+    this.branch = selectedEmployee.emp_branch_id;
+  } else {
+
+    const matchedBranch = this.branches.find(
+      b => b.branch_name === selectedEmployee.emp_branch_id
+    );
+
+    if (matchedBranch) {
+      this.branch = matchedBranch.id;
+    }
+  }
+
+  this.onBranchChange();
+}
+
+
+
 
         loadUsers(): void {
     

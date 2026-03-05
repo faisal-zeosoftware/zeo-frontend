@@ -120,6 +120,21 @@
    
    <div *ngIf="registerButtonClicked && !desgntn_description" class="error-message">Description is required.</div>
 </div>
+
+        <div class="col-md-6">
+
+
+            <div class="custom-sel">
+                <label>Select Branches</label>
+                <select class="form-control" id="deparmentsec" required [(ngModel)]="branch_id"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_id}" >
+                    <option value="" >Select</option>
+                    <option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">{{ deparmentsec.branch_name     }} </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Company</div>
+            </div>
+                        
+    
+        </div>
        
          
       
