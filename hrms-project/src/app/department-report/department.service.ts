@@ -12,7 +12,7 @@ export class DepartmentService {
 
     // private apiUrl: string = '';
   constructor(private http: HttpClient) {
-    this.initializeApiUrl();
+    // this.initializeApiUrl();
    }
 
   // getDepartmentReport(): Observable<any> {
@@ -49,14 +49,14 @@ getDesignationReport(schema: string, branchIds: number[]): Observable<any> {
   return this.http.get<any>(url);
 }
 
-  private initializeApiUrl(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      throw new Error('No schema selected.');
-    }
-    this.apiUrl = `${this.apiUrl}/organisation/api/Department/department_report/?schema=${selectedSchema}`;
-  }
+  // private initializeApiUrl(): void {
+  //   const selectedSchema = localStorage.getItem('selectedSchema');
+  //   if (!selectedSchema) {
+  //     console.error('No schema selected.');
+  //     throw new Error('No schema selected.');
+  //   }
+  //   this.apiUrl = `${this.apiUrl}/organisation/api/Department/department_report/?schema=${selectedSchema}`;
+  // }
 
   getStandardReport(): Observable<any> {
     if (!this.apiUrl) {
