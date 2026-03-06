@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -22,6 +22,13 @@ export class EmployeeFaceRegisterComponent {
   private dataSubscription?: Subscription;
 
     private apiUrl = `${environment.apiBaseUrl}`;
+
+    // Add these to your component class
+@ViewChild('videoElement') videoElement!: ElementRef;
+employeeId: any = null;
+capturedImage: string | null = null;
+isCameraOpen = false;
+stream: MediaStream | null = null;
 
   
 
@@ -78,7 +85,7 @@ ngOnInit(): void {
    // Listen for sidebar changes so the dropdown updates instantly
    this.employeeService.selectedBranches$.subscribe(ids => {
  
-    // this.LoadEmployee(); 
+    this.LoadEmployee(); 
     // this.LoadEmployeeAttendance();
 
   });
@@ -209,6 +216,91 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
   
+
+
+  LoadEmployee(callback?: Function) {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
+        (result: any) => {
+          this.Employees = result;
+          console.log(' fetching Employees:');
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Employees:', error);
+        }
+      );
+    }
+
+  }
+
+
+  // Start the webcam feed
+async startCamera() {
+  this.isCameraOpen = true;
+  try {
+    this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
+    setTimeout(() => {
+      this.videoElement.nativeElement.srcObject = this.stream;
+    }, 100);
+  } catch (err) {
+    console.error("Camera access denied", err);
+  }
+}
+
+// Capture the frame from the video
+capturePhoto() {
+  const video = this.videoElement.nativeElement;
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  
+  const ctx = canvas.getContext('2d');
+  ctx?.drawImage(video, 0, 0);
+  
+  // Convert to Base64 (Data URL)
+  this.capturedImage = canvas.toDataURL('image/jpeg');
+}
+
+// Submit to Backend
+registerface() {
+  if (!this.employeeId || !this.capturedImage) {
+    alert("Please select an employee and capture a photo first.");
+    return;
+  }
+
+  const payload = {
+    employee: this.employeeId,
+    face_photo: this.capturedImage // This is the base64_string
+  };
+
+  const schema = this.authService.getSelectedSchema();
+  const url = `${this.apiUrl}/calendars/api/attendance/enroll_face/?schema=${schema}`;
+
+  this.http.post(url, payload).subscribe({
+    next: (response) => {
+      alert("Face registered successfully!");
+      this.stopCamera();
+    },
+    error: (err) => {
+      console.error("Enrollment error", err);
+      alert("Failed to register face.");
+    }
+  });
+}
+
+stopCamera() {
+  if (this.stream) {
+    this.stream.getTracks().forEach(track => track.stop());
+  }
+  this.isCameraOpen = false;
+  this.capturedImage = null;
+}
     
 
 }

@@ -49,6 +49,9 @@ stopCamera() {
   }
 }
 
+
+employee: any = null;
+
 captureAndPunch() {
   const video = this.videoElement.nativeElement;
   const canvas = document.createElement('canvas');
@@ -61,7 +64,7 @@ captureAndPunch() {
   const base64Image = canvas.toDataURL('image/jpeg').split(',')[1]; // Get only Base64 part
 
   const payload = {
-    employee: 1, // You should determine how to get the ID (e.g., from selection or recognition)
+    employee: this.employee, // You should determine how to get the ID (e.g., from selection or recognition)
     check_in_lat: 25.0,
     check_in_lng: 55.0,
     face_photo: base64Image

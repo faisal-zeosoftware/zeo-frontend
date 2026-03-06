@@ -11,6 +11,22 @@
             <div class="punch-header text-center py-4">
               <h1 class="font-weight-bold">Attendance Portal</h1>
               <p class="text-muted">Please select your preferred punching method</p>
+              <div class="row">
+                <div class="col-md-4">
+
+                </div>
+                <div class="col-md-4">
+
+                    <div class="custom-sel mt-2">
+                        <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
+                          <option [value]="null" disabled>--Select Employee--</option>
+                          <option *ngFor="let emp of Employees" [value]="emp.id">{{ emp.emp_code }} - {{ emp.emp_first_name }}</option>
+                        </select>
+                      </div>
+                </div>
+                </div>
+             
+         
             </div>
         
             <div class="row text-center p-4" *ngIf="!activeMode">
@@ -38,7 +54,10 @@
             </div>
         
             <div class="camera-container text-center p-4" *ngIf="activeMode === 'face'">
-              <div class="video-wrapper">
+
+                
+                
+              <div class="video-wrapper mt-4">
                 <video #videoElement autoplay class="video-feed"></video>
                 <div class="face-overlay"></div> </div>
               
