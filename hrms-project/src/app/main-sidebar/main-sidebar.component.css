@@ -308,12 +308,6 @@ width: 35px;
 
   }
 
-/* .list-group-flush:first-child .list-group-item:first-child {
-    border-top: 8;
-
-} */
-
-
 
 .blur-background {
     filter: blur(5px); /* Adjust the blur intensity as needed */

@@ -42,11 +42,13 @@
             <ul *ngIf="isPunchingDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
 
 
-              <li class="nav-item" [class.active]="activeTabNav === 'attendance'" (click)="selectTab('attendance')">
-                <a class="nav-link" href="javascript:void(0)">
-                  <i class="fa fa-paper-plane me-2"></i> Attendance
-                </a>
-              </li>
+<li class="nav-item" [class.active]="activeTabNav === 'attendance'" 
+    (click)="selectTabNav('attendance')">
+  <a class="nav-link" href="javascript:void(0)">
+    <i class="fa fa-paper-plane me-2"></i> Attendance
+  </a>
+</li>
+
 
               <li class="nav-item" [class.active]="activeTabNav === 'punching'" (click)="selectTabNav('punching')">
                 <a class="nav-link" href="javascript:void(0)">
@@ -344,21 +346,6 @@
           </div>
         </li>
       </ng-template>
-
-      <!-- 🔗 View All -->
-      <!-- <li>
-        <hr class="dropdown-divider" />
-      </li>
-      <li>
-        <a
-          class="dropdown-item text-center"
-          href="javascript:void(0)"
-          (click)="openAllNotifications()"
-        >
-          View all notifications
-        </a>
-      </li> -->
-
     </ul>
   </div>
 </div>
@@ -405,9 +392,6 @@
           </li>
           <li class="tab" [class.active]="activeTab === 'salary'" (click)="selectTab('salary')">
             <a href="javascript:void(0)">Salary</a>
-          </li>
-          <li class="tab" [class.active]="activeTab === 'attendance'" (click)="selectTab('attendance')">
-           <a href="javascript:void(0)">Attendance</a>
           </li>
           
         </ul>
@@ -690,7 +674,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Family Details</h5>
 
 <button 
   class="btn btn-success btn-sm btn-export-excel"
@@ -791,7 +775,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Qualification Details</h5>
 
 <button 
   class="btn btn-success btn-sm btn-export-excel"
@@ -853,7 +837,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Bank Details</h5>
 
 <button 
   class="btn btn-success btn-sm btn-export-excel"
@@ -936,7 +920,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Job Details</h5>
 <button 
   class="btn btn-success btn-sm btn-export-excel"
   (click)="downloadJobHistoryExcel(employeesec)"
@@ -1020,7 +1004,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Documents Details</h5>
 
 <button 
   class="btn btn-success btn-sm btn-export-excel"
@@ -1101,7 +1085,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Salary Details</h5>
 
 <button 
   class="btn btn-success btn-sm btn-export-excel"
@@ -1185,93 +1169,6 @@
             </div>
           </div>
 
-          <div id="attendance" *ngIf="activeTab === 'attendance'">
-            <!-- Your Run Employee Salary content -->
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
-
-              </div>
-              <div class="card-body">
-
-                <div class="tab_content  mt-3">
-                                 
-                  <div class="row">
-                      <div class="col-md-6">
-                          <label >Year</label>
-                          <input
-                            type="number"
-                            class="form-control"
-                            [(ngModel)]="year"
-                            [ngModelOptions]="{standalone: true}"
-                          />
-                      </div>
-                      <div class="col-md-6">
-                          <label >Month</label>
-                          <input
-                            type="number"
-                            class="form-control"
-                            [(ngModel)]="month"
-                            [ngModelOptions]="{standalone: true}"
-                          />
-                      </div>
-                      
-                  
-                      </div>
-                      <div class="row">
-                          <div class="col-md-10">
-                      
-                          </div>
-                          <div class="col-md-2 mt-3">
-                              <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate Report</button>
-                            </div>
-                      </div>
-                      
-
-                      <div *ngIf="attendanceData">
-                          <div class="row">
-                              <div class="col-md-8">
-                                  <h2>Attendance Sheet for {{ attendanceData.employee_name }} - {{ attendanceData.month }}/{{ attendanceData.year }}</h2>
-                      
-                              </div>
-                      
-                              <div class="col-md-2">
-                                  <button type="button" class="btn btn-success pull-right" (click)="exportToExcel()">Export</button>
-                              </div>
-                          </div>   
-
-<div class="table-container table-scroll">
-<table class="table table-bordered table-hover mt-3 text-center">
-<thead>
-<tr>
-<th>Employee Name</th>
-<th *ngFor="let day of daysArray">Day {{ day }}</th>
-<!-- <th>Total Days</th> -->
-<th>Present Days</th>
-<th>Absent Days</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>{{ attendanceData.employee_name }}</td>
-<td *ngFor="let day of daysArray">
-{{ getStatusForDay(day, attendanceData.summary_data) }}
-</td>
-<!-- <td>{{ attendanceData.total_days }}</td> -->
-<td>{{ attendanceData.total_present }}</td>
-<td>{{ attendanceData.total_absent }}</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-
-
-              </div>
-
-              </div>
-            </div>
-          </div>
 
           <!-- <div id="asset" *ngIf="activeTab === 'asset'">
 
@@ -2682,6 +2579,94 @@
 
 
 <!-- Employee Punching section -->
+
+      <div id="attendance" *ngIf="activeTabNav === 'attendance'">
+            <!-- Your Run Employee Salary content -->
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Details</h5>
+
+              </div>
+              <div class="card-body">
+
+                <div class="tab_content  mt-3">
+                                 
+                  <div class="row">
+                      <div class="col-md-6">
+                          <label >Year</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            [(ngModel)]="year"
+                            [ngModelOptions]="{standalone: true}"
+                          />
+                      </div>
+                      <div class="col-md-6">
+                          <label >Month</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            [(ngModel)]="month"
+                            [ngModelOptions]="{standalone: true}"
+                          />
+                      </div>
+                      
+                  
+                      </div>
+                      <div class="row">
+                          <div class="col-md-10">
+                      
+                          </div>
+                          <div class="col-md-2 mt-3">
+                              <button class="btn btn-primary" (click)="generateAttendanceReport()">Generate Report</button>
+                            </div>
+                      </div>
+                      
+
+                      <div *ngIf="attendanceData">
+                          <div class="row">
+                              <div class="col-md-8">
+                                  <h2>Attendance Sheet for {{ attendanceData.employee_name }} - {{ attendanceData.month }}/{{ attendanceData.year }}</h2>
+                      
+                              </div>
+                      
+                              <div class="col-md-2">
+                                  <button type="button" class="btn btn-success pull-right" (click)="exportToExcel()">Export</button>
+                              </div>
+                          </div>   
+
+<div class="table-container table-scroll">
+<table class="table table-bordered table-hover mt-3 text-center">
+<thead>
+<tr>
+<th>Employee Name</th>
+<th *ngFor="let day of daysArray">Day {{ day }}</th>
+<!-- <th>Total Days</th> -->
+<th>Present Days</th>
+<th>Absent Days</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>{{ attendanceData.employee_name }}</td>
+<td *ngFor="let day of daysArray">
+{{ getStatusForDay(day, attendanceData.summary_data) }}
+</td>
+<!-- <td>{{ attendanceData.total_days }}</td> -->
+<td>{{ attendanceData.total_present }}</td>
+<td>{{ attendanceData.total_absent }}</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+              </div>
+
+              </div>
+            </div>
+      </div>
 
 
       <section class="content-tab  animate__animated animate__fadeIn" id="punching"
