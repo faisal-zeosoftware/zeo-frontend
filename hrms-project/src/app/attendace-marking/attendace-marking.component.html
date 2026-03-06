@@ -211,40 +211,70 @@
           <div class="com_list mt-4">
     <div class="cpm-sec" *ngIf="hasViewPermission" >
 
-      <table width="100%" *ngIf="hasViewPermission">
+      <table class="punching-table" *ngIf="hasViewPermission">
         <thead>
           <tr>
-            <th>No</th>
-            <th>Employee </th>
+            <th></th> <th>No</th>
+            <th>Employee</th>
             <th>Shift</th>
-            <th> Date</th>
+            <th>Date</th>
             <th>Total Hours</th>
-            <th>Check In</th>
-            <th>Check Out</th>
-
-           
+            <th>First In</th>
+            <th>Last Out</th>
           </tr>
         </thead>
-        <tbody>
-            
-          <tr *ngFor="let docs of Punching;let i = index">
-            <td data-label="No">{{ i + 1 }}</td> 
-            <td>{{ docs.employee }}</td> 
-            <td>{{ docs.shift }}</td> 
-            <td >{{ docs.date }}</td>
-            <td >{{ docs.total_hours }}</td>
-            <td >{{ docs.check_in_time }}</td>
-            <td >{{ docs.check_out_time }}</td>
-
-
-           
-
+        
+        <ng-container *ngFor="let docs of Punching; let i = index">
+          <tr class="main-row">
+            <td>
+              <button mat-icon-button (click)="docs.isExpanded = !docs.isExpanded">
+                <mat-icon style="color: black;">{{ docs.isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+              </button>
+            </td>
+            <td>{{ i + 1 }}</td>
+            <td class="font-weight-bold">{{ docs.employee_name || docs.employee }}</td>
+            <td><span class="shift-badge">{{ docs.shift || 'Null' }}</span></td>
+            <td>{{ docs.date }}</td>
+            <td><strong class="text-primary">{{ docs.total_hours }} hrs</strong></td>
+            <td>{{ docs.check_in_time }}</td>
+            <td>{{ docs.check_out_time }}</td>
+          </tr>
       
-              
-      
-        </tbody>
+          <tr *ngIf="docs.isExpanded" class="log-details-row">
+            <td colspan="8">
+              <div class="log-container animate-fade-in">
+                <h6><mat-icon>history</mat-icon> Punch Log History</h6>
+                <table class="inner-log-table">
+                  <thead>
+                    <tr>
+                      <th>Type</th>
+                      <th>Time</th>
+                      <th>Location / Device</th>
+                      <th>face verified</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let log of docs.logs">
+                      <td>
+                        <span [class]="log.log_type === 'IN' ? 'text-success' : 'text-danger'">
+                          <mat-icon style="font-size: 14px;">{{ log.log_type === 'IN' ? 'login' : 'logout' }}</mat-icon>
+                          {{ log.log_type }}
+                        </span>
+                      </td>
+                      <td>{{ log.timestamp }}</td>
+                      <td><small>{{ log.location || 'Main Gate' }}</small></td>
+                      <td><small class="badge-method">{{ log.is_face_verified || 'No' }}</small></td>
+                    </tr>
+                    <tr *ngIf="!docs.logs || docs.logs.length === 0">
+                      <td colspan="4" class="text-center text-muted">No detailed logs available.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
       </table>
-
 
 
       </div>

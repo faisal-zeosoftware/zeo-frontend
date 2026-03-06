@@ -510,9 +510,12 @@ async registerCheckOut(): Promise<void> {
   fetchLoadEmployeePunching(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.employeeService.getPunchingsNew(schema, branchIds).subscribe({
-      next: (data: any) => {
+      next: (data: any[]) => {
         // Filter active employees
-        this.Punching = data;
+        this.Punching = data.map(item => ({
+          ...item,
+          isExpanded: false
+        }));
 
         this.isLoading = false;
       },

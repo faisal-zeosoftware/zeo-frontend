@@ -160,6 +160,7 @@ import { BranchPermissionsComponent } from './branch-permissions/branch-permissi
 import { OvertimeRuleComponent } from './overtime-rule/overtime-rule.component';
 import { PayStructureComponent } from './pay-structure/pay-structure.component';
 import { AttendancePunchingComponent } from './attendance-punching/attendance-punching.component';
+import { EmployeeFaceRegisterComponent } from './employee-face-register/employee-face-register.component';
 
 
 const routes: Routes = [
@@ -718,6 +719,10 @@ const routes: Routes = [
      {
       path: 'attendance-punching',
       component: AttendancePunchingComponent,
+    },
+      {
+      path: 'employee-face-register',
+      component: EmployeeFaceRegisterComponent,
     },
 
   ]

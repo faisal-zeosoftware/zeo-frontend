@@ -240,6 +240,7 @@ import { BranchPermissionsComponent } from './branch-permissions/branch-permissi
 import { OvertimeRuleComponent } from './overtime-rule/overtime-rule.component';
 import { PayStructureComponent } from './pay-structure/pay-structure.component';
 import { AttendancePunchingComponent } from './attendance-punching/attendance-punching.component';
+import { EmployeeFaceRegisterComponent } from './employee-face-register/employee-face-register.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -438,7 +439,8 @@ import { AttendancePunchingComponent } from './attendance-punching/attendance-pu
      BranchPermissionsComponent,
      OvertimeRuleComponent,
      PayStructureComponent,
-     AttendancePunchingComponent
+     AttendancePunchingComponent,
+     EmployeeFaceRegisterComponent
      
      
 

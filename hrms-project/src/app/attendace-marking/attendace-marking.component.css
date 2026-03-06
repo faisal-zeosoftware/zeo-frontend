@@ -509,3 +509,67 @@ font-size: 12px;
 table thead th{
 white-space: nowrap;
 }
+
+
+.punching-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.main-row:hover {
+  background-color: #f8faff;
+}
+
+.shift-badge {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Log Detail Styling */
+.log-details-row {
+  background-color: #fdfdfe;
+}
+
+.log-container {
+  padding: 15px 50px;
+  border-left: 4px solid #4f46e5;
+  margin: 10px;
+}
+
+.inner-log-table {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid #edf2f7;
+}
+
+.inner-log-table th {
+  background: #f7fafc;
+  color: #718096;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.badge-method {
+  background: #edf2f7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: black;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
