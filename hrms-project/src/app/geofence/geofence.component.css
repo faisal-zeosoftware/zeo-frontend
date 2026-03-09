@@ -288,3 +288,15 @@ outline: none-webkit-focus-ring-color auto 0px;
 
 
   }
+
+
+
+  #map {
+    cursor: crosshair;
+    border: 2px solid #eee;
+  }
+  
+  /* Fix for missing icons in some Angular builds */
+  .leaflet-marker-icon {
+    filter: hue-rotate(140deg);
+  }

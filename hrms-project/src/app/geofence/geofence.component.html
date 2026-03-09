@@ -69,7 +69,7 @@
               </div>
               <hr />
           
-  <form *ngIf="hasAddPermission" >
+  <!-- <form  >
                   <div class="row">
                     
                   <div class="col-md-6" >
@@ -78,7 +78,6 @@
                    <input type="text"  class="form-control" required  [(ngModel)]="location_name"  placeholder="Enter Location Name"
                     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location_name}">
                    
-                   <!-- <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div> -->
               </div>
 
 
@@ -129,7 +128,7 @@
           
 
             <mat-form-field>
-              <!-- <mat-label>Favorite food</mat-label> -->
+           
               <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
                 <div class="select-all">
                   <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
@@ -161,8 +160,147 @@
                         <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateGeofence()">Create</button>  
                      </div>
                 </div>
-                </form>
+                </form> -->
 
+
+                <div class="container-fluid py-3">
+                  <form>
+                    <div class="row">
+                      <div class="col-md-12 mb-3">
+                        <label class="fw-bold">Search Location</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control" #searchInput 
+                                 placeholder="Type to search (e.g. Dubai Mall)..." 
+                                 (input)="searchLocation(searchInput.value)"
+                                 (keyup.enter)="searchLocation(searchInput.value)">
+                          <button class="btn btn-primary" type="button" (click)="searchLocation(searchInput.value)">
+                            Search
+                          </button>
+                        </div>
+                
+                        <ul class="list-group mt-1 shadow-sm" *ngIf="searchResults.length > 0" 
+                            style="position: absolute; z-index: 1000; width: 95%;">
+                          <li class="list-group-item list-group-item-action" 
+                              style="cursor: pointer;"
+                              *ngFor="let res of searchResults" 
+                              (click)="selectResult(res)">
+                            <i class="fa fa-map-marker-alt text-danger me-2"></i> {{ res.display_name }}
+                          </li>
+                        </ul>
+                      </div>
+                
+                      <div class="col-md-12 mb-3" (click)="searchResults = []">
+                        <div id="map" style="height: 400px; width: 100%; border: 2px solid #ddd; border-radius: 8px;"></div>
+                      </div>
+                
+                      <!-- <div class="col-md-12 mb-3">
+                        <button type="button" class="btn btn-dark w-100" (click)="toggleStreetView()">
+                          {{ showStreetView ? 'Hide Street View' : 'Show Street View (Free)' }}
+                        </button>
+                      </div>
+                
+                      <div class="col-md-12 mb-3" [hidden]="!showStreetView">
+                        <div id="mly" style="height: 350px; width: 100%; border-radius: 8px; background: #000;"></div>
+                      </div> -->
+                
+                      <div class="col-md-6 mb-3">
+                        <label>Location Name</label>
+                        <input type="text" class="form-control" [(ngModel)]="location_name" name="locName">
+                      </div>
+                
+                      <div class="col-md-3 mb-3">
+                        <label>Latitude</label>
+                        <input type="number" class="form-control" [(ngModel)]="latitude" name="lat" readonly>
+                      </div>
+                
+                      <div class="col-md-3 mb-3">
+                        <label>Longitude</label>
+                        <input type="number" class="form-control" [(ngModel)]="longitude" name="lng" readonly>
+                      </div>
+                
+                      <div class="col-md-6 mb-3">
+                        <label>Radius (meters)</label>
+                        <input type="number" class="form-control" [(ngModel)]="radius" name="rad" (input)="updateCircle()">
+                      </div>
+
+                      
+      <div class="col-md-6" >
+        <label>Branch</label>
+        <div class="custom-sel">
+          <div class="form-control-wrapper">
+          
+
+            <mat-form-field>
+
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+
+                <input type="text" placeholder="serach" class="form-control">
+
+                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+          </div>
+         
+        </div>
+
+      </div>
+
+      <div class="col-md-6">
+        <label>Employee</label>
+    
+    
+    
+    
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+          
+    
+              <mat-form-field>
+                <!-- <mat-label>Favorite food</mat-label> -->
+                <mat-select placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
+                  <div class="select-all">
+                    <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
+                      Select All
+                    </mat-checkbox>
+                  </div>
+                  <input type="text" placeholder="serach" class="form-control">
+    
+                  <mat-option *ngFor="let deparmentsec of   Employees" [value]="deparmentsec.id">
+                    {{ deparmentsec.emp_code }} 
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              
+            </div>
+           
+          </div>
+                    
+    
+    </div>
+                
+                      <div class="col-md-6">
+                                  
+                       </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-6">
+                        
+                      </div>
+                      <div class="col-md-6">
+                        <button type="button" 
+                        class="btn btn-success mt-4 w-100" 
+                        [disabled]="isLoading"
+                        (click)="CreateGeofence()">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                  {{ isLoading ? 'Saving...' : 'Save Geofence' }}
+                </button>  
+                      </div>
+                    </div>
+                  </form>
+                </div>
             
             </div>
           </div>

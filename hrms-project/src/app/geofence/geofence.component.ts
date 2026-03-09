@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { HttpClient } from '@angular/common/http';
@@ -13,17 +13,25 @@ import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription } from 'rxjs';
+import * as L from 'leaflet';
+
+
+declare var mapillary: any;
 
 @Component({
   selector: 'app-geofence',
   templateUrl: './geofence.component.html',
   styleUrl: './geofence.component.css'
 })
-export class GeofenceComponent {
+export class GeofenceComponent implements AfterViewInit, OnDestroy{
 
-
+  // @ViewChild('searchBox', { static: false }) searchBox!: ElementRef;
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   private dataSubscription?: Subscription;
+
+
+  
   
     level:any='';
     role:any='';
@@ -34,15 +42,14 @@ export class GeofenceComponent {
   
     Approvers:any []=[];
     Branches:any []=[];
+    Employees:any []=[];
 
   
 
   branch: number[] = [];
-  
-         location_name:any='';
-         latitude:any='';
-         longitude:any='';
-         radius:any='';
+  employee: number[] = [];
+
+      
          is_active:  boolean = false;
   
   
@@ -72,11 +79,177 @@ export class GeofenceComponent {
       // @ViewChild('select') select: MatSelect | undefined;
       @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
+      @ViewChild('selectEmp') selectEmp: MatSelect | undefined;
+
+      allSelectedEmp=false;
   
+private map!: L.Map;
+  private marker!: L.Marker;
+  private circle!: L.Circle;
+  private mlyViewer: any;
+
+  location_name: string = '';
+  latitude: number = 25.2048;
+  longitude: number = 55.2708;
+  radius: number = 50;
+  showStreetView: boolean = false;
   
-  
+  // To store the list of results
+  searchResults: any[] = [];
+
+  ngAfterViewInit() {
+    this.initMapGuard();
+  }
+
+  private initMapGuard() {
+    const checkExist = setInterval(() => {
+      if (document.getElementById('map')) {
+        this.initMap();
+        clearInterval(checkExist);
+      }
+    }, 100);
+  }
+
+  private initMap(): void {
+    if (this.map) return;
+    this.map = L.map('map').setView([this.latitude, this.longitude], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(this.map);
+
+    this.marker = L.marker([this.latitude, this.longitude]).addTo(this.map);
+    this.circle = L.circle([this.latitude, this.longitude], {
+      radius: this.radius,
+      color: '#1976d2',
+      fillOpacity: 0.3
+    }).addTo(this.map);
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      this.updateLocation(e.latlng.lat, e.latlng.lng);
+      this.searchResults = []; // Close search list on map click
+    });
+  }
+
+  // Fetch multiple results as user types
+  async searchLocation(query: string) {
+    if (query.length < 3) {
+      this.searchResults = [];
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8`);
+      this.searchResults = await res.json();
+    } catch (err) {
+      console.error("Search Error:", err);
+    }
+  }
+
+  // When user selects a result from the list
+  selectResult(result: any) {
+    const lat = parseFloat(result.lat);
+    const lon = parseFloat(result.lon);
     
+    this.map.setView([lat, lon], 17);
+    this.updateLocation(lat, lon, result.display_name);
+    this.searchResults = []; // Clear the list after selection
+  }
+
+  updateLocation(lat: number, lng: number, name?: string): void {
+    this.latitude = lat;
+    this.longitude = lng;
+    if (name) this.location_name = name;
+
+    this.marker.setLatLng([lat, lng]);
+    this.circle.setLatLng([lat, lng]);
+
+    if (this.showStreetView && this.mlyViewer) {
+      this.mlyViewer.moveCloseTo(lat, lng).catch(() => {});
+    }
+  }
+
+  toggleStreetView() {
+    this.showStreetView = !this.showStreetView;
+    if (this.showStreetView) {
+      setTimeout(() => {
+        if (!this.mlyViewer) {
+          this.mlyViewer = new mapillary.Viewer({
+            accessToken: 'MLY|9112261628892418|451651817088927878788',
+            container: 'mly',
+          });
+        }
+        this.mlyViewer.moveCloseTo(this.latitude, this.longitude);
+      }, 200);
+    }
+  }
+
+  updateCircle() {
+    if (this.circle) this.circle.setRadius(this.radius);
+  }
+
+  ngOnDestroy() {
+    if (this.map) this.map.remove();
+  }
+
+  isLoading = false;
+
+  CreateGeofence() {
+    this.isLoading = true;
+    // 1. Validation
+    if (!this.location_name || !this.latitude || !this.longitude) {
+      alert('Please select a location and enter a name.');
+      return;
+    }
   
+    // 2. Prepare FormData
+    const formData = new FormData();
+    formData.append('location_name', this.location_name);
+    formData.append('latitude', this.latitude.toString());
+    formData.append('longitude', this.longitude.toString());
+    formData.append('radius', this.radius.toString());
+    formData.append('is_active', 'true'); // Optional: usually required by backends
+  
+
+    this.branch.forEach((id: number) =>
+      formData.append('branch', id.toString())
+    );
+    
+    this.employee.forEach((id: number) =>
+      formData.append('employee', id.toString())
+    );
+    
+
+    // 3. Call Service
+    this.employeeService.registerGeofence(formData).subscribe({
+      next: (response) => {
+        console.log('Geofence saved successfully:', response);
+        alert('Geofence created successfully!');
+        this.resetForm();
+        this.isLoading = false;
+
+      },
+      error: (err) => {
+            this.isLoading = false;
+
+        console.error('Submission failed:', err);
+        alert('Failed to save geofence. Please check console for details.');
+      }
+    });
+  }
+  
+  // Optional helper to clear form after success
+  resetForm() {
+    this.location_name = '';
+    this.radius = 50;
+    this.searchResults = [];
+    // Keep the map centered but you could reset coordinates if needed
+  }
+  
+
+
+
+
   userId: number | null | undefined;
   userDetails: any;
   userDetailss: any;
@@ -96,6 +269,9 @@ export class GeofenceComponent {
       private categoryService: CatogaryService,
   
     ) {}
+  // ngAfterViewInit(): void {
+  //   throw new Error('Method not implemented.');
+  // }
   
     ngOnInit(): void {
   
@@ -115,7 +291,7 @@ export class GeofenceComponent {
        // Listen for sidebar changes so the dropdown updates instantly
   this.employeeService.selectedBranches$.subscribe(ids => {
     this.loadBranch(); 
-    
+    this.LoadEmployees();
   });
 
 
@@ -232,6 +408,37 @@ export class GeofenceComponent {
     return groupPermissions.some(permission => permission.codename === codeName);
     }
     
+    toggleAllSelectionEmp(): void {
+      if (this.selectEmp) {
+        if (this.allSelectedEmp) {
+          
+          this.selectEmp.options.forEach((item: MatOption) => item.select());
+        } else {
+          this.selectEmp.options.forEach((item: MatOption) => item.deselect());
+        }
+      }
+    }
+
+    LoadEmployees(callback?: Function) {
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+      console.log('schemastore',selectedSchema )
+      // Check if selectedSchema is available
+      if (selectedSchema) {
+        this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
+          (result: any) => {
+            this.Employees = result;
+            console.log(' fetching Employees:');
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching Companies:', error);
+          }
+        );
+      }
+      }
+    
   
   
     
@@ -239,51 +446,51 @@ export class GeofenceComponent {
    registerButtonClicked = false;
   
   
-  CreateGeofence(): void {
-    this.registerButtonClicked = true;
+  // CreateGeofence(): void {
+  //   this.registerButtonClicked = true;
   
-    const formData = new FormData();
-    // ✅ EXACT backend field names
-    formData.append('location_name', this.location_name);
-    formData.append('latitude', this.latitude);
-    formData.append('longitude', this.longitude);
-    formData.append('radius', this.radius);
-    formData.append('is_active', String(this.is_active));
+  //   const formData = new FormData();
+  //   // ✅ EXACT backend field names
+  //   formData.append('location_name', this.location_name);
+  //   formData.append('latitude', this.latitude);
+  //   formData.append('longitude', this.longitude);
+  //   formData.append('radius', this.radius);
+  //   formData.append('is_active', String(this.is_active));
   
-    this.branch.forEach((id: number) =>
-    formData.append('branch', id.toString())
-  );
+  //   this.branch.forEach((id: number) =>
+  //   formData.append('branch', id.toString())
+  // );
   
 
   
-    this.employeeService.registerGeofence(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Geo Fence has been added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
+  //   this.employeeService.registerGeofence(formData).subscribe(
+  //     (response) => {
+  //       console.log('Registration successful', response);
+  //       alert('Geo Fence has been added');
+  //       window.location.reload();
+  //     },
+  //     (error) => {
+  //       console.error('Added failed', error);
   
-        let errorMessage = 'Enter all required fields!';
+  //       let errorMessage = 'Enter all required fields!';
   
-        // ✅ Handle backend validation or field-specific errors
-        if (error.error && typeof error.error === 'object') {
-          const messages: string[] = [];
-          for (const [key, value] of Object.entries(error.error)) {
-            if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-            else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-            else messages.push(`${key}: ${JSON.stringify(value)}`);
-          }
-          if (messages.length > 0) errorMessage = messages.join('\n');
-        } else if (error.error?.detail) {
-          errorMessage = error.error.detail;
-        }
+  //       // ✅ Handle backend validation or field-specific errors
+  //       if (error.error && typeof error.error === 'object') {
+  //         const messages: string[] = [];
+  //         for (const [key, value] of Object.entries(error.error)) {
+  //           if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+  //           else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+  //           else messages.push(`${key}: ${JSON.stringify(value)}`);
+  //         }
+  //         if (messages.length > 0) errorMessage = messages.join('\n');
+  //       } else if (error.error?.detail) {
+  //         errorMessage = error.error.detail;
+  //       }
   
-        alert(errorMessage);
-      }
-    );
-  }
+  //       alert(errorMessage);
+  //     }
+  //   );
+  // }
   
   
   
@@ -309,7 +516,7 @@ export class GeofenceComponent {
     //   }
 
 
-      isLoading: boolean = false;
+      // isLoading: boolean = false;
 
       fetchEmployees(schema: string, branchIds: number[]): void {
         this.isLoading = true;
