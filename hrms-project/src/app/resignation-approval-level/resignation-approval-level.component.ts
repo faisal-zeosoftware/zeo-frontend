@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { HttpClient } from '@angular/common/http';
@@ -20,6 +20,7 @@ export class ResignationApprovalLevelComponent {
   
 
   private dataSubscription?: Subscription;
+  @ViewChild('approverSelect') approverSelect: any;
 
   
   level:any='';
@@ -436,6 +437,36 @@ updateAssetType(): void {
   );
 }
 
+
+allApproverSelected = false;
+approverSearch = '';
+
+filteredApprovers() {
+
+  if (!this.approverSearch) {
+    return this.Users;
+  }
+
+  return this.Users.filter((user: any) =>
+    user.username.toLowerCase().includes(this.approverSearch.toLowerCase())
+  );
+
+}
+
+toggleAllApproverSelection(): void {
+
+  if (this.approverSelect) {
+
+    if (this.allApproverSelected) {
+      this.approverSelect.options.forEach((item: any) => item.select());
+    } 
+    else {
+      this.approverSelect.options.forEach((item: any) => item.deselect());
+    }
+
+  }
+
+}
 
 
 }

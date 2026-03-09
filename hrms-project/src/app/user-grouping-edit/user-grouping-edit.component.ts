@@ -128,6 +128,7 @@ export class UserGroupingEditComponent {
 
   //permission stored arrays for Payroll
   GrouppermissionsPayrollrun:any[] =[];
+  GrouppermissionsPayStructure:any[] =[];
   GrouppermissionsSalarycomponent:any[] =[];
   GrouppermissionsPayslipAprv: any[] = [];
   GrouppermissionsPayrollaprlvl:any[] =[];
@@ -205,6 +206,7 @@ export class UserGroupingEditComponent {
    GrouppermissionsShiftEmployee:any[] =[];
    GrouppermissionsShiftOverRide:any[] =[];
    GrouppermissionsOverTimePolicy:any[] =[];
+   GrouppermissionsOvertimeRule:any[] =[];
    GrouppermissionsEmpOver: any[] = [];
 
     //permission stored arrays for Attendance
@@ -214,6 +216,8 @@ export class UserGroupingEditComponent {
      GrouppermissionsEmpRecheck:any[] =[];
      GrouppermissionsPuncinglist:any[] =[];
      GrouppermissionsGeoFence:any[] =[];
+     GrouppermissionsFaceRegister:any[] =[];
+     GrouppermissionsPunching: any[] = [];
 
 
 
@@ -322,6 +326,7 @@ export class UserGroupingEditComponent {
     //selected payroll checkboxes.
 
     PayrollrunInderminate= false;
+    PayStructureInderminate= false;
     SalarycomponentInderminate= false;
     PayslipAprvInderminate= false;
     PayrollaprlvlInderminate= false;
@@ -400,15 +405,18 @@ export class UserGroupingEditComponent {
     ShiftEmployeeInderminate=false;
     ShiftOverRideInderminate=false;
     OverTimePolicyInderminate=false;
+    OvertimeRuleInderminate=false;
     EmpOverInderminate = false;
 
-  //selected Attendance Template checkboxes.
+     //selected Attendance Template checkboxes.
 
        AtdMasterInderminate = false;
+       FaceRegisterInderminate = false;
        EmpEarlygoingInderminate = false;
        EmpRecheckInderminate = false;
        PuncinglistInderminate = false;
        GeoFenceInderminate = false;
+       PunchingInderminate = false;
     
 
 
@@ -510,6 +518,7 @@ export class UserGroupingEditComponent {
      //Payroll checkbox checked values
 
     PayrollrunChecked:boolean= false;
+    PayStructureChecked:boolean= false;
     SalarycomponentChecked:boolean= false;
     PayslipAprvChecked: boolean = false;
     PayrollaprlvlChecked:boolean= false;
@@ -585,15 +594,18 @@ export class UserGroupingEditComponent {
      ShiftEmployeeChecked:boolean= false;
      ShiftOverRideChecked:boolean= false;
      OvertimePolicyChecked:boolean= false;
+     OvertimeRuleChecked:boolean= false;
      EmpOverChecked: boolean = false;
 
-      // Attendance checkbox checked values
+    // Attendance checkbox checked values
 
        AtdMasterChecked: boolean = false;
        EmpEarlygoingChecked:boolean= false;
        EmpRecheckChecked:boolean= false;
        PuncinglistChecked:boolean= false;
        GeoFenceChecked:boolean= false;
+       PunchingChecked: boolean = false;
+       FaceRegisterChecked: boolean = false;
 
 
 
@@ -1170,6 +1182,7 @@ isLeaveRejoinIndeterminate(): boolean {
 
 isPayrollManagementMasterChecked():boolean{
   return this.PayrollrunChecked &&
+  this.PayStructureChecked &&
   this.SalarycomponentChecked &&
   this.PayslipAprvChecked &&
   this.PayrollaprlvlChecked &&
@@ -1188,6 +1201,14 @@ isPayrollrunIndeterminate(): boolean {
   );
   return selectedPayrollPermissions.length > 0 &&
          selectedPayrollPermissions.length < this.GrouppermissionsPayrollrun.length;
+}
+
+isPayStructureIndeterminate(): boolean {
+  const selectedPayStructurePermissions = this.selectedPermissions.filter(permission =>
+    this.GrouppermissionsPayStructure.map(p => p.id).includes(permission)
+  );
+  return selectedPayStructurePermissions.length > 0 &&
+         selectedPayStructurePermissions.length < this.GrouppermissionsPayStructure.length;
 }
 
 isSalarycomponentIndeterminate(): boolean {
@@ -1617,6 +1638,7 @@ isAirTicketRuleIndeterminate(): boolean {
      this.ShiftEmployeeChecked &&
      this.ShiftOverRideChecked &&
      this.OvertimePolicyChecked &&
+     this.OvertimeRuleChecked &&
      this.EmpOverChecked
  
   }
@@ -1659,6 +1681,13 @@ isAirTicketRuleIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsOverTimePolicy.length;
 }
 
+isOvertimeRuleIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsOvertimeRule.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsOvertimeRule.length;
+}
+
   isEmpOverIndeterminate(): boolean {
     const selectedEmpOverPermissions = this.selectedPermissions.filter(permission =>
       this.GrouppermissionsEmpOver.map(p => p.id).includes(permission)
@@ -1695,11 +1724,12 @@ isAssetformIndeterminate(): boolean {
 
 isAttendanceManagementMasterChecked():boolean{
   return this.AtdMasterChecked &&
+  this.FaceRegisterChecked &&
   this.EmpEarlygoingChecked &&
   this.EmpRecheckChecked &&
   this.PuncinglistChecked &&
-  this.GeoFenceChecked  
-
+  this.PunchingChecked &&
+  this.GeoFenceChecked
 
 }
 
@@ -1708,6 +1738,20 @@ isAttendanceManagementMasterChecked():boolean{
       this.GrouppermissionsAtd.map(p => p.id).includes(permission)
     );
     return selectedGenPermissions.length > 0 && selectedGenPermissions.length < this.GrouppermissionsAtd.length;
+  }
+
+  isFaceRegisterIndeterminate(): boolean {
+    const selectedFacePermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsFaceRegister.map(p => p.id).includes(permission)
+    );
+    return selectedFacePermissions.length > 0 && selectedFacePermissions.length < this.GrouppermissionsFaceRegister.length;
+  }
+
+  isPunchingIndeterminate(): boolean {
+    const selectedPuchPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsPunching.map(p => p.id).includes(permission)
+    );
+    return selectedPuchPermissions.length > 0 && selectedPuchPermissions.length < this.GrouppermissionsPunching.length;
   }
 
   isEmpEarlygoingIndeterminate(): boolean {
@@ -1998,6 +2042,7 @@ updateInderminateLeave():void{
 
 updateInderminatePayroll():void{
   this.isPayrollrunIndeterminate();
+  this.isPayStructureIndeterminate();
   this.isSalarycomponentIndeterminate();
   this.isPayslipAprvIndeterminate();
   this.isPayrollaprlvlIndeterminate();
@@ -2113,6 +2158,7 @@ updateInderminateShift():void{
   this.isShiftEmployeeIndeterminate();
   this.isShiftOverRideIndeterminate();
   this.isOvertimePolicyIndeterminate();
+  this.isOvertimeRuleIndeterminate();
   this.isEmpOverIndeterminate();
 
 
@@ -2127,9 +2173,11 @@ updateInderminateShift():void{
 updateInderminateAttendance():void{
 
   this.isAtdMasterIndeterminate();
+  this.isFaceRegisterIndeterminate();
   this.isEmpEarlygoingIndeterminate();
   this.isEmpRecheckIndeterminate();
   this.isPuncinglistIndeterminate();
+  this.isPunchingIndeterminate();
   this.isGeoFenceIndeterminate();
 
 
@@ -2247,6 +2295,7 @@ updateInderminateAttendance():void{
   loadPayrollPermissions():void{
 
   this.loadpermissionsPayrollrun();
+  this.loadpermissionsPayStructure();
   this.loadpermissionsSalarycomponent();
   this.loadpermissionsPayslipAprv();
   this.loadpermissionsPayrollaprlvl();
@@ -2361,14 +2410,17 @@ updateInderminateAttendance():void{
   this.loadpermissionsShiftEmployee();
   this.loadpermissionsShiftOverRide();
   this.loadpermissionsOverTimepolicy();
+  this.loadpermissionsOverTimeRule();
   this.loadpermissionsEmpOver();
   }
 
-    loadAttendancePermissions():void{
+  loadAttendancePermissions():void{
     this.loadpermissionsAtdMaster();
+    this.loadpermissionsFaceRegister();
     this.loadpermissionsEmpEarlygoing();
     this.loadpermissionsEmpRecheck();
     this.loadpermissionsPuncinglist();
+    this.loadpermissionsPunching();
     this.loadpermissionsGeoFence();
   }
 
@@ -2900,6 +2952,108 @@ updateInderminateAttendance():void{
         return permissionCodename;
     }
   }
+
+       loadpermissionsFaceRegister(): void {
+      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+      console.log('schemastore', selectedSchema);
+    
+      if (selectedSchema) {
+        this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+          (result: any[]) => {
+            // Specify the codenames you want to filter
+            const requiredCodenames = ['add_attendance', 'change_attendance', 'delete_attendance', 'view_attendance'];
+    
+            // Filter and remove duplicates based on codename
+            const uniquePermissionsMap = new Map();
+            result.forEach(permission => {
+              const codename = permission.codename.trim().toLowerCase();
+              if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                uniquePermissionsMap.set(codename, permission);
+              }
+            });
+    
+            // Convert map values to an array
+            this.GrouppermissionsFaceRegister = Array.from(uniquePermissionsMap.values());
+    
+            console.log('Filtered Unique Permissions:', this.GrouppermissionsFaceRegister);
+          },
+          (error: any) => {
+            console.error('Error fetching permissions:', error);
+          }
+        );
+      }
+    }
+  
+  
+     //Display Name  add view delte code for General request master-------
+  
+     getDisplayNameFaceRegister(permissionCodename: string): string {
+      switch (permissionCodename.trim().toLowerCase()) {
+        case 'add_attendance':
+          return 'Add';
+        case 'change_attendance':
+          return 'Edit';
+        case 'delete_attendance':
+          return 'Delete';
+        case 'view_attendance':
+          return 'View';
+        default:
+          return permissionCodename;
+      }
+    }
+
+
+       loadpermissionsPunching(): void {
+        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    
+        console.log('schemastore', selectedSchema);
+      
+        if (selectedSchema) {
+          this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+            (result: any[]) => {
+              // Specify the codenames you want to filter
+              const requiredCodenames = ['add_attendance', 'change_attendance', 'delete_attendance', 'view_attendance'];
+      
+              // Filter and remove duplicates based on codename
+              const uniquePermissionsMap = new Map();
+              result.forEach(permission => {
+                const codename = permission.codename.trim().toLowerCase();
+                if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                  uniquePermissionsMap.set(codename, permission);
+                }
+              });
+      
+              // Convert map values to an array
+              this.GrouppermissionsPunching = Array.from(uniquePermissionsMap.values());
+      
+              console.log('Filtered Unique Permissions:', this.GrouppermissionsPunching);
+            },
+            (error: any) => {
+              console.error('Error fetching permissions:', error);
+            }
+          );
+        }
+      }
+    
+    
+       //Display Name  add view delte code for General request master-------
+    
+       getDisplayNamePunching(permissionCodename: string): string {
+        switch (permissionCodename.trim().toLowerCase()) {
+          case 'add_attendance':
+            return 'Add';
+          case 'change_attendance':
+            return 'Edit';
+          case 'delete_attendance':
+            return 'Delete';
+          case 'view_attendance':
+            return 'View';
+          default:
+            return permissionCodename;
+        }
+      }
+    
 
 
 
@@ -5612,6 +5766,53 @@ getDisplayNamePayrollrun(permissionCodename: string): string {
   }
 }
 
+loadpermissionsPayStructure(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        const requiredCodenames = [
+          'add_paystructure',
+          'change_paystructure',
+          'delete_paystructure',
+          'view_paystructure'
+        ];
+
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsPayStructure = Array.from(uniquePermissionsMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Pay Structure permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Payroll permissions ===
+getDisplayNamePayStructure(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_paystructure':
+      return 'Add';
+    case 'change_paystructure':
+      return 'Edit';
+    case 'delete_paystructure':
+      return 'Delete';
+    case 'view_paystructure':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 
 loadpermissionsSalarycomponent(): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -8102,6 +8303,54 @@ getDisplayNameOverTimepolicy(permissionCodename: string): string {
   }
 }
 
+loadpermissionsOverTimeRule(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_overtimerule',
+          'change_overtimerule',
+          'delete_overtimerule',
+          'view_overtimerule',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsOvertimeRule = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Overtime Rule permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Shifts permissions ===
+getDisplayNameOverTimeRule(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_overtimerule':
+      return 'Add';
+    case 'change_overtimerule':
+      return 'Edit';
+    case 'delete_overtimerule':
+      return 'Delete';
+    case 'view_overtimerule':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+
 
  loadpermissionsEmpOver(): void {
             const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -8552,6 +8801,44 @@ getDisplayNameOverTimepolicy(permissionCodename: string): string {
     );
     this.AtdMasterChecked = allPermissionsSelected;
     this.AtdMasterInderminate = this.isAtdMasterIndeterminate();
+
+  }
+
+     onCheckboxChangeFaceRegister(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updateFaceRegisterCheckbox();
+    this.updateAttendance();
+  }
+
+  updateFaceRegisterCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsFaceRegister.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.FaceRegisterChecked = allPermissionsSelected;
+    this.FaceRegisterInderminate = this.isFaceRegisterIndeterminate();
+
+  }
+
+    onCheckboxChangePunching(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+    this.updatePunchingCheckbox();
+    this.updateAttendance();
+  }
+
+  updatePunchingCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsPunching.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.PunchingChecked = allPermissionsSelected;
+    this.PunchingInderminate = this.isPunchingIndeterminate();
 
   }
 
@@ -9637,6 +9924,24 @@ updatePayrollrunCheckbox(): void {
   this.PayrollrunChecked = allPermissionsSelected;
 }
 
+onCheckboxChangesPayStructure(permission: string): void {
+  if (this.selectedPermissions.includes(permission)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+  } else {
+    this.selectedPermissions.push(permission);
+  }
+  this.updatePayStructureCheckbox();
+  this.updatePayroll();
+}
+
+updatePayStructureCheckbox(): void {
+  const allPermissionsSelected = this.GrouppermissionsPayStructure.every(permission =>
+    this.selectedPermissions.includes(permission.id)
+  );
+  this.PayStructureChecked = allPermissionsSelected;
+}
+
+
 
  onCheckboxChangesSalarycomponent(permission: string): void {
   if (this.selectedPermissions.includes(permission)) {
@@ -10687,6 +10992,24 @@ updateOverTimePolicyCheckbox(): void {
   this.OvertimePolicyChecked = allSelected;
 }
 
+onCheckboxChangesOvertimeRule(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateOvertimeRuleCheckbox();
+  this.updateShift();
+}
+
+updateOvertimeRuleCheckbox(): void {
+  const allSelected = this.GrouppermissionsOvertimeRule.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.OvertimeRuleChecked = allSelected;
+}
+
 
 
   onCheckboxChangesEmpEarlygoing(permissionId: number): void {
@@ -11650,6 +11973,17 @@ updateGeoFenceCheckbox(): void {
   this.updatePayrollCheckbox();
 }
 
+  onPayStructureChange(): void {
+  if (this.PayStructureChecked) {
+    this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsPayStructure.map(p => p.id));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      permission => !this.GrouppermissionsPayStructure.map(p => p.id).includes(permission)
+    );
+  }
+  this.updatePayrollCheckbox();
+}
+
 onSalarycomponentChange(): void {
   if (this.SalarycomponentChecked) {
     this.selectedPermissions = this.selectedPermissions.concat(
@@ -12295,6 +12629,19 @@ onLoanReqTempChange(): void {
   this.updateShiftCheckbox();
 }
 
+ onOvertimeRuleChange(): void {
+  if (this.OvertimeRuleChecked) {
+    const idsToAdd = this.GrouppermissionsOvertimeRule.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsOvertimeRule.some(p => p.id === id)
+    );
+  }
+  this.updateShiftCheckbox();
+}
+
+
 
 
   onAtdMasterChange(): void {
@@ -12306,6 +12653,32 @@ onLoanReqTempChange(): void {
   
     // Update related checkboxes
     this.updateAttendanceCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+      onFaceRegisterChange(): void {
+    if (this.FaceRegisterChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsFaceRegister.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsFaceRegister.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
+    // this.selectAllChecked = this.categoryMasterChecked;
+
+  }
+
+    onPunchingChange(): void {
+    if (this.PunchingChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsPunching.map(permission => permission.id));
+    } else {  
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsPunching.map(p => p.id).includes(permission));
+    }
+  
+    // Update related checkboxes
+    this.updateEmployeeManagementCheckbox();
     // this.selectAllChecked = this.categoryMasterChecked;
 
   }
@@ -12591,6 +12964,7 @@ isLeaves(): boolean {
 
 isPayrolls(): boolean {
   const PayrollrunIndeterminate = this.isPayrollrunIndeterminate();
+  const PayStructureIndeterminate = this.isPayStructureIndeterminate();
   const SalarycomponentIndeterminate = this.isSalarycomponentIndeterminate();
   const PayslipAprvIndeterminate = this.isPayslipAprvIndeterminate();
   const isPayrollaprlvlIndeterminate = this.isPayrollaprlvlIndeterminate();
@@ -12602,7 +12976,7 @@ isPayrolls(): boolean {
 
   const otherGroupIndeterminate = false;
 
-  return PayrollrunIndeterminate || AdavanceSalaryEscalationInderminate || SalarycomponentIndeterminate || PayslipAprvIndeterminate || isPayrollaprlvlIndeterminate || AdvanceSalaryAprvlstIndeterminate || AdvanceSalaryReqInderminate || AdvanceSalaryAprlvlInderminate || WpsInderminate || otherGroupIndeterminate;
+  return PayrollrunIndeterminate || PayStructureIndeterminate || AdavanceSalaryEscalationInderminate || SalarycomponentIndeterminate || PayslipAprvIndeterminate || isPayrollaprlvlIndeterminate || AdvanceSalaryAprvlstIndeterminate || AdvanceSalaryReqInderminate || AdvanceSalaryAprlvlInderminate || WpsInderminate || otherGroupIndeterminate;
 }
 
 
@@ -12716,6 +13090,7 @@ isShift(): boolean {
   const ShiftEmployeeInderminate = this.isShiftEmployeeIndeterminate();
   const ShiftOverRideInderminate = this.isShiftOverRideIndeterminate();
   const EmpOverInderminate = this.isEmpOverIndeterminate();
+  const OvertimeRuleInderminate = this.isOvertimeRuleIndeterminate();
   const OvertimePolicyInderminate = this.isOvertimePolicyIndeterminate();
 
 
@@ -12723,16 +13098,18 @@ isShift(): boolean {
 
   const otherGroupIndeterminate = false;
 
-  return ShiftsInderminate || ShiftOverRideInderminate || ShiftEmployeeInderminate || ShiftPatternInderminate || EmpOverInderminate || OvertimePolicyInderminate || otherGroupIndeterminate;
+  return ShiftsInderminate || ShiftOverRideInderminate || ShiftEmployeeInderminate || ShiftPatternInderminate || EmpOverInderminate || OvertimeRuleInderminate || OvertimePolicyInderminate || otherGroupIndeterminate;
 } 
 
 
 isAttend(): boolean {
 
   const AtdMasterInderminate = this.isAtdMasterIndeterminate();
+  const FaceRegisterInderminate = this.isFaceRegisterIndeterminate();
   const EmpEarlygoingInderminate = this.isEmpEarlygoingIndeterminate();
   const EmpRecheckInderminate = this.isEmpRecheckIndeterminate();
   const PuncinglistInderminate = this.isPuncinglistIndeterminate();
+  const PunchingInderminate = this.isPunchingIndeterminate();
   const GeoFenceInderminate = this.isGeoFenceIndeterminate();
 
 
@@ -12741,7 +13118,7 @@ isAttend(): boolean {
 
   const otherGroupIndeterminate = false;
 
-  return AtdMasterInderminate || EmpEarlygoingInderminate || EmpRecheckInderminate || PuncinglistInderminate || GeoFenceInderminate;
+  return AtdMasterInderminate || FaceRegisterInderminate || PunchingInderminate ||  EmpEarlygoingInderminate || EmpRecheckInderminate || PuncinglistInderminate || GeoFenceInderminate;
  
 } 
 
@@ -12998,6 +13375,7 @@ selectLeave(): void {
 selectPayroll(): void {
   const allPermissions = [
     ...this.GrouppermissionsPayrollrun,
+    ...this.GrouppermissionsPayStructure,
     ...this.GrouppermissionsSalarycomponent,
     ...this.GrouppermissionsPayslipAprv,
     ...this.GrouppermissionsPayrollaprlvl,
@@ -13017,6 +13395,7 @@ selectPayroll(): void {
   }
 
   this.updatePayrollrunCheckbox();
+  this.updatePayStructureCheckbox();
   this.updateSalarycomponentCheckbox();
   this.updatePayslipAprvCheckbox();
   this.updatePayrollaprlvlCheckbox();
@@ -13239,6 +13618,7 @@ selectShift(): void {
     ...this.GrouppermissionsShiftEmployee,
     ...this.GrouppermissionsShiftOverRide,
     ...this.GrouppermissionsOverTimePolicy,
+    ...this.GrouppermissionsOvertimeRule,
     ...this.GrouppermissionsEmpOver
 
    
@@ -13259,6 +13639,7 @@ selectShift(): void {
   this.updateShiftEmployeeCheckbox();
   this.updateShiftOverRideCheckbox();
   this.updateOverTimePolicyCheckbox();
+  this.updateOvertimeRuleCheckbox();
   this.updateEmpOverCheckbox();
 
 
@@ -13271,9 +13652,11 @@ selectShift(): void {
 selectAttendance(): void {
   const allPermissions = [
     ...this.GrouppermissionsAtd,
+    ...this.GrouppermissionsFaceRegister,
     ...this.GrouppermissionsEmpEarlygoing,
     ...this.GrouppermissionsEmpRecheck,
     ...this.GrouppermissionsPuncinglist,
+    ...this.GrouppermissionsPunching,
     ...this.GrouppermissionsGeoFence,
 
 
@@ -13289,9 +13672,11 @@ selectAttendance(): void {
   }
 
   this.updateAtdMasterCheckbox();
+  this.updateFaceRegisterCheckbox();
   this.updateEmpEarlygoingCheckbox();
   this.updateEmpRecheckCheckbox();
   this.updatePuncinglistCheckbox();
+  this.updatePunchingCheckbox();
   this.updateGeoFenceCheckbox();
 
 
@@ -13422,6 +13807,7 @@ updateLeave():void{
 
 updatePayroll():void{
   this.updatePayrollrunCheckbox();
+  this.updatePayStructureCheckbox();
   this.updateSalarycomponentCheckbox();
   this.updatePayslipAprvCheckbox();
   this.updatePayrollaprlvlCheckbox();
@@ -13515,6 +13901,7 @@ updateShift():void{
   this.updateShiftEmployeeCheckbox();
   this.updateShiftOverRideCheckbox();
   this.updateOverTimePolicyCheckbox();
+  this.updateOvertimeRuleCheckbox();
   this.updateEmpOverCheckbox();
 
 
@@ -13523,9 +13910,11 @@ updateShift():void{
 updateAttendance():void{
   
   this.updateAtdMasterCheckbox();
+  this.updateFaceRegisterCheckbox();
   this.updateEmpEarlygoingCheckbox();
   this.updateEmpRecheckCheckbox();
   this.updatePuncinglistCheckbox();
+  this.updatePunchingCheckbox();
   this.updateGeoFenceCheckbox();
 
 
@@ -13634,6 +14023,7 @@ isLeaveInderminate(): boolean {
 isPayrollInderminate(): boolean {
   const hasSelectedPermissions = [
     ...this.GrouppermissionsPayrollrun,
+    ...this.GrouppermissionsPayStructure,
     ...this.GrouppermissionsSalarycomponent,
     ...this.GrouppermissionsPayslipAprv,
     ...this.GrouppermissionsPayrollaprlvl,
@@ -13773,6 +14163,7 @@ isShiftInderminate(): boolean {
     ...this.GrouppermissionsShiftEmployee,
     ...this.GrouppermissionsShiftOverRide,
     ...this.GrouppermissionsOverTimePolicy,
+    ...this.GrouppermissionsOvertimeRule,
     ...this.GrouppermissionsEmpOver
 
   
@@ -13789,9 +14180,11 @@ isShiftInderminate(): boolean {
 isAttendanceInderminate(): boolean {
   const hasSelectedPermissions = [
     ...this.GrouppermissionsAtd,
+    ...this.GrouppermissionsFaceRegister,
     ...this.GrouppermissionsEmpEarlygoing,
     ...this.GrouppermissionsEmpRecheck,
     ...this.GrouppermissionsPuncinglist,
+    ...this.GrouppermissionsPunching,
     ...this.GrouppermissionsGeoFence
 
 

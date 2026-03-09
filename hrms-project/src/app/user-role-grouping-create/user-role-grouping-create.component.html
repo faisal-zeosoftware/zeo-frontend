@@ -2303,6 +2303,38 @@
                       </div>
                   </div>
 
+                  <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="PayStructureChecked" 
+                          [indeterminate]="isPayStructureIndeterminate()" 
+                          (change)="onPayStructureChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                          Pay Structure
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsPayStructure">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesPayStructure(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNamePayStructure(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
 
                     
 <div class="col-md-3">
@@ -3125,6 +3157,73 @@
                           </div>
                       </div>
                   </div>
+
+               <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="PunchingChecked" 
+                          [indeterminate]="isPunchingIndeterminate()" 
+                          (change)="onPunchingChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                           Punching
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsPunching">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangePunching(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNamePunching(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+
+                <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="FaceRegisterChecked" 
+                          [indeterminate]="isFaceRegisterIndeterminate()" 
+                          (change)="onFaceRegisterChange()" 
+                          [ngModelOptions]="{standalone: true}">
+                           Face Register
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsFaceRegister">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangeFaceRegister(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameFaceRegister(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                
 
 
                    <div class="col-md-3">
@@ -4136,6 +4235,39 @@
                                         (change)="onCheckboxChangesOverTimePolicy(permission.id)"
                                          [checked]="selectedPermissions.includes(permission.id)">
                                             {{ getDisplayNameOverTimepolicy(permission.codename) }}
+                                        </mat-checkbox> 
+                                    </span> 
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+           <div class="col-md-3">
+                <span class="">
+                    <mat-checkbox [(ngModel)]="OvertimeRuleChecked" 
+                    [indeterminate]="isOvertimeRuleIndeterminate()" 
+                    (change)="onOvertimeRuleChange()" 
+                    [ngModelOptions]="{standalone: true}">
+                     OverTime Rule 
+                    </mat-checkbox>
+                </span><br>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="selection_checkmark_sec">
+                    <div class="all_selection_Sec">
+                        <div class="row">
+                      
+                            <div class="col-md-2" *ngFor="let permission of GrouppermissionsOvertimeRule">
+                                <h2>
+                                    <span>
+                                        <mat-checkbox [value]="permission.id"
+                                        (change)="onCheckboxChangesOvertimeRule(permission.id)"
+                                         [checked]="selectedPermissions.includes(permission.id)">
+                                            {{ getDisplayNameOverTimeRule(permission.codename) }}
                                         </mat-checkbox> 
                                     </span> 
                                 </h2>
