@@ -300,3 +300,12 @@ outline: none-webkit-focus-ring-color auto 0px;
   .leaflet-marker-icon {
     filter: hue-rotate(140deg);
   }
+
+  /* Fix for Leaflet default marker icons not showing */
+.leaflet-default-icon-path {
+  background-image: url(https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png);
+}
+
+#map {
+  cursor: crosshair;
+}
