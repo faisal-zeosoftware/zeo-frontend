@@ -55,28 +55,32 @@
         
             <div class="camera-container text-center p-4" *ngIf="activeMode === 'face'">
   
-              <!-- <div class="punch-toggle-indicator mb-3">
-                <span class="badge" [ngClass]="lastPunchType === 'out' ? 'bg-success' : 'bg-danger'">
-                  NEXT ACTION: {{ lastPunchType === 'out' ? 'CHECK-IN' : 'CHECK-OUT' }}
-                </span>
+              <div class="header-info mb-3">
+                <h2 [class.text-success]="lastPunchType === 'out'" [class.text-danger]="lastPunchType === 'in'">
+                  SYSTEM READY: {{ lastPunchType === 'out' ? 'CHECK-IN' : 'CHECK-OUT' }}
+                </h2>
+                <p class="text-muted">Align your face inside the guide to punch automatically</p>
               </div>
-             -->
-              <div class="video-wrapper mt-4">
-                <video #videoElement autoplay class="video-feed"></video>
-                <div class="face-overlay"></div> 
+            
+              <div class="video-wrapper">
+                <video #videoElement autoplay class="video-feed shadow-lg"></video>
+                
+                <div class="scanner-ui">
+                  <div class="scanning-line"></div>
+                  <div class="target-bracket top-left"></div>
+                  <div class="target-bracket top-right"></div>
+                  <div class="target-bracket bottom-left"></div>
+                  <div class="target-bracket bottom-right"></div>
+                </div>
+            
+                <div class="processing-overlay" *ngIf="isProcessing">
+                  <div class="spinner-border text-light"></div>
+                  <p>Verifying Identity...</p>
+                </div>
               </div>
               
               <div class="mt-4">
-                <button mat-raised-button 
-                        [color]="lastPunchType === 'out' ? 'primary' : 'warn'" 
-                        class="px-5 py-2" 
-                        [disabled]="isProcessing"
-                        (click)="captureAndPunch()">
-                  <mat-icon *ngIf="!isProcessing">camera_alt</mat-icon>
-                  <span *ngIf="isProcessing" class="spinner-border spinner-border-sm mr-2"></span>
-                  {{ isProcessing ? 'PROCESSING...' : 'PUNCH ' + (lastPunchType === 'out' ? 'IN' : 'OUT') }}
-                </button>
-                <button mat-button class="ml-2" (click)="setMode(null)" [disabled]="isProcessing">Cancel</button>
+                <button mat-button color="warn" (click)="setMode(null)">Stop Scanner</button>
               </div>
             </div>
           </div>

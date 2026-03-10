@@ -21,90 +21,102 @@ export class AttendancePunchingComponent {
   
 
   @ViewChild('videoElement') videoElement!: ElementRef;
-activeMode: string | null = null;
-stream: MediaStream | null = null;
+  activeMode: string | null = null;
+  stream: MediaStream | null = null;
+  isProcessing = false;
+  lastPunchType: 'in' | 'out' = 'out'; // Toggle state
+  autoScanActive = false;
 
-setMode(mode: string | null) {
-  this.activeMode = mode;
-  if (mode === 'face') {
-    this.startCamera();
-  } else {
-    this.stopCamera();
+  setMode(mode: string | null) {
+    this.activeMode = mode;
+    if (mode === 'face') {
+      this.autoScanActive = true;
+      this.startCamera();
+    } else {
+      this.autoScanActive = false;
+      this.stopCamera();
+    }
   }
-}
 
-async startCamera() {
-  try {
-    this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    this.videoElement.nativeElement.srcObject = this.stream;
-  } catch (err) {
-    console.error("Error accessing camera:", err);
-    alert("Could not access camera.");
+  stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
   }
-}
 
-stopCamera() {
-  if (this.stream) {
-    this.stream.getTracks().forEach(track => track.stop());
-  }
-}
-
-
-
-// Add a button to manually override if they made a mistake
-toggleManualType() {
-  this.lastPunchType = this.lastPunchType === 'in' ? 'out' : 'in';
-}
-
-
-employee: any = null;
-// Add these variables to your class
-isProcessing = false;
-lastPunchType: 'in' | 'out' = 'out'; // Default starting state, or fetch from API
-
-captureAndPunch() {
-  if (this.isProcessing) return;
-  this.isProcessing = true;
-
-  const video = this.videoElement.nativeElement;
-  const canvas = document.createElement('canvas');
-  
-  // High quality capture for recognition
-  canvas.width = 640;
-  canvas.height = 480;
-  const ctx = canvas.getContext('2d');
-  ctx?.drawImage(video, 0, 0, 640, 480);
-  
-  const base64Image = canvas.toDataURL('image/jpeg').split(',')[1];
-
-  const payload = {
-    face_photo: base64Image
-  };
-
-  const schema = this.authService.getSelectedSchema();
-  
-  // Determine which API to call based on alternating logic
-  // If last was 'out', this one is 'check_in'. If last was 'in', this one is 'check_out'.
-  const punchAction = this.lastPunchType === 'out' ? 'check_in' : 'check_out';
-  const url = `${this.apiUrl}/calendars/api/attendance/${punchAction}/?schema=${schema}`;
-
-  this.http.post(url, payload).subscribe({
-    next: (res: any) => {
-      alert(`${punchAction.replace('_', ' ').toUpperCase()} Successful!`);
+  async startCamera() {
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: 640, height: 480 } 
+      });
+      this.videoElement.nativeElement.srcObject = this.stream;
       
-      // Toggle the state for the next punch
-      this.lastPunchType = this.lastPunchType === 'out' ? 'in' : 'out';
+      // Start the automatic scanning loop
+      this.autoCaptureLoop();
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+    }
+  }
+  
+  autoCaptureLoop() {
+    if (!this.autoScanActive) return;
+  
+    // Only attempt to punch if we aren't already waiting for a response
+    if (!this.isProcessing) {
+      this.performAutoPunch();
+    }
+  
+    // Check again in 2 seconds (gives the user time to align and prevents server overload)
+    setTimeout(() => {
+      requestAnimationFrame(() => this.autoCaptureLoop());
+    }, 2000); 
+  }
+  
+ performAutoPunch() {
+    const video = this.videoElement.nativeElement;
+    if (video.paused || video.ended) return;
+
+    this.isProcessing = true;
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = 640;
+    canvas.height = 480;
+    
+    const ctx = canvas.getContext('2d');
+
+    /**
+     * FIX FOR TS18047: Wrapped canvas operations in a null check
+     */
+    if (ctx) {
+      ctx.translate(640, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, 640, 480);
       
-      this.isProcessing = false;
-      this.setMode(null); // Return to main menu
-    },
-    error: (err) => {
-      console.error("Punch error:", err);
-      alert(err.error?.detail || "Recognition Failed. Please try again.");
+      const base64Image = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+      this.sendPunchRequest(base64Image);
+    } else {
+      // Handle the rare case where canvas context isn't available
       this.isProcessing = false;
     }
-  });
-}
+  }
+
+  private sendPunchRequest(base64Image: string) {
+    const schema = this.authService.getSelectedSchema();
+    const punchAction = this.lastPunchType === 'out' ? 'check_in' : 'check_out';
+    const url = `${this.apiUrl}/calendars/api/attendance/${punchAction}/?schema=${schema}`;
+
+    this.http.post(url, { face_photo: base64Image }).subscribe({
+      next: (res: any) => {
+        alert(`Auto ${punchAction.replace('_', ' ')} Success!`);
+        this.lastPunchType = this.lastPunchType === 'out' ? 'in' : 'out';
+        setTimeout(() => { this.isProcessing = false; }, 5000);
+      },
+      error: (err) => {
+        this.isProcessing = false;
+      }
+    });
+  }
 
   private dataSubscription?: Subscription;
 
