@@ -50,34 +50,61 @@ stopCamera() {
 }
 
 
+
+// Add a button to manually override if they made a mistake
+toggleManualType() {
+  this.lastPunchType = this.lastPunchType === 'in' ? 'out' : 'in';
+}
+
+
 employee: any = null;
+// Add these variables to your class
+isProcessing = false;
+lastPunchType: 'in' | 'out' = 'out'; // Default starting state, or fetch from API
 
 captureAndPunch() {
+  if (this.isProcessing) return;
+  this.isProcessing = true;
+
   const video = this.videoElement.nativeElement;
   const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
   
+  // High quality capture for recognition
+  canvas.width = 640;
+  canvas.height = 480;
   const ctx = canvas.getContext('2d');
-  ctx?.drawImage(video, 0, 0);
+  ctx?.drawImage(video, 0, 0, 640, 480);
   
-  const base64Image = canvas.toDataURL('image/jpeg').split(',')[1]; // Get only Base64 part
+  const base64Image = canvas.toDataURL('image/jpeg').split(',')[1];
 
   const payload = {
-    employee: this.employee, // You should determine how to get the ID (e.g., from selection or recognition)
-    check_in_lat: 25.0,
-    check_in_lng: 55.0,
     face_photo: base64Image
   };
 
   const schema = this.authService.getSelectedSchema();
-  this.http.post(`${this.apiUrl}/calendars/api/attendance/check_in/?schema=${schema}`, payload)
-    .subscribe(res => {
-      alert("Punch Successful!");
-      this.setMode(null);
-    }, err => alert("Recognition Failed"));
-}
+  
+  // Determine which API to call based on alternating logic
+  // If last was 'out', this one is 'check_in'. If last was 'in', this one is 'check_out'.
+  const punchAction = this.lastPunchType === 'out' ? 'check_in' : 'check_out';
+  const url = `${this.apiUrl}/calendars/api/attendance/${punchAction}/?schema=${schema}`;
 
+  this.http.post(url, payload).subscribe({
+    next: (res: any) => {
+      alert(`${punchAction.replace('_', ' ').toUpperCase()} Successful!`);
+      
+      // Toggle the state for the next punch
+      this.lastPunchType = this.lastPunchType === 'out' ? 'in' : 'out';
+      
+      this.isProcessing = false;
+      this.setMode(null); // Return to main menu
+    },
+    error: (err) => {
+      console.error("Punch error:", err);
+      alert(err.error?.detail || "Recognition Failed. Please try again.");
+      this.isProcessing = false;
+    }
+  });
+}
 
   private dataSubscription?: Subscription;
 

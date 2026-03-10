@@ -15,7 +15,7 @@
                 <div class="col-md-4">
 
                 </div>
-                <div class="col-md-4">
+                <!-- <div class="col-md-4">
 
                     <div class="custom-sel mt-2">
                         <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
@@ -23,7 +23,7 @@
                           <option *ngFor="let emp of Employees" [value]="emp.id">{{ emp.emp_code }} - {{ emp.emp_first_name }}</option>
                         </select>
                       </div>
-                </div>
+                </div> -->
                 </div>
              
          
@@ -54,21 +54,31 @@
             </div>
         
             <div class="camera-container text-center p-4" *ngIf="activeMode === 'face'">
-
-                
-                
+  
+              <!-- <div class="punch-toggle-indicator mb-3">
+                <span class="badge" [ngClass]="lastPunchType === 'out' ? 'bg-success' : 'bg-danger'">
+                  NEXT ACTION: {{ lastPunchType === 'out' ? 'CHECK-IN' : 'CHECK-OUT' }}
+                </span>
+              </div>
+             -->
               <div class="video-wrapper mt-4">
                 <video #videoElement autoplay class="video-feed"></video>
-                <div class="face-overlay"></div> </div>
+                <div class="face-overlay"></div> 
+              </div>
               
               <div class="mt-4">
-                <button mat-raised-button color="primary" class="px-5 py-2" (click)="captureAndPunch()">
-                  <mat-icon>camera_alt</mat-icon> PUNCH NOW
+                <button mat-raised-button 
+                        [color]="lastPunchType === 'out' ? 'primary' : 'warn'" 
+                        class="px-5 py-2" 
+                        [disabled]="isProcessing"
+                        (click)="captureAndPunch()">
+                  <mat-icon *ngIf="!isProcessing">camera_alt</mat-icon>
+                  <span *ngIf="isProcessing" class="spinner-border spinner-border-sm mr-2"></span>
+                  {{ isProcessing ? 'PROCESSING...' : 'PUNCH ' + (lastPunchType === 'out' ? 'IN' : 'OUT') }}
                 </button>
-                <button mat-button class="ml-2" (click)="setMode(null)">Cancel</button>
+                <button mat-button class="ml-2" (click)="setMode(null)" [disabled]="isProcessing">Cancel</button>
               </div>
             </div>
-        
           </div>
 
 
