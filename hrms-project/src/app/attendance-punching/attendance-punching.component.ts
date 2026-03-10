@@ -60,63 +60,100 @@ export class AttendancePunchingComponent {
   }
   
   autoCaptureLoop() {
-    if (!this.autoScanActive) return;
+    if (!this.autoScanActive || !this.activeMode) return;
   
-    // Only attempt to punch if we aren't already waiting for a response
     if (!this.isProcessing) {
-      this.performAutoPunch();
+      // Give the user 3 seconds to align their face before the automatic capture
+      setTimeout(() => {
+        if (this.autoScanActive) {
+          this.performAutoPunch();
+        }
+      }, 3000); 
     }
-  
-    // Check again in 2 seconds (gives the user time to align and prevents server overload)
-    setTimeout(() => {
-      requestAnimationFrame(() => this.autoCaptureLoop());
-    }, 2000); 
   }
-  
- performAutoPunch() {
+
+
+  performAutoPunch() {
     const video = this.videoElement.nativeElement;
-    if (video.paused || video.ended) return;
-
-    this.isProcessing = true;
-    
+    if (video.paused || video.ended || video.readyState < 2) return;
+  
     const canvas = document.createElement('canvas');
-    canvas.width = 640;
-    canvas.height = 480;
-    
+    canvas.width = 160; // Use small resolution for local verification to save memory
+    canvas.height = 120;
     const ctx = canvas.getContext('2d');
-
-    /**
-     * FIX FOR TS18047: Wrapped canvas operations in a null check
-     */
+  
     if (ctx) {
-      ctx.translate(640, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, 0, 0, 640, 480);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
-      const base64Image = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-      this.sendPunchRequest(base64Image);
-    } else {
-      // Handle the rare case where canvas context isn't available
-      this.isProcessing = false;
+      // Check if the image has enough detail/brightness to be a face
+      // This prevents calling the API on a dark room or empty wall
+      if (this.isHumanPresent(ctx, canvas.width, canvas.height)) {
+        
+        this.isProcessing = true; // Stop the loop
+        
+        // Capture high-quality image for the actual API call
+        const highResCanvas = document.createElement('canvas');
+        highResCanvas.width = 640;
+        highResCanvas.height = 480;
+        const highResCtx = highResCanvas.getContext('2d');
+        
+        if (highResCtx) {
+          highResCtx.translate(640, 0);
+          highResCtx.scale(-1, 1);
+          highResCtx.drawImage(video, 0, 0, 640, 480);
+          
+          const base64Image = highResCanvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+          this.sendPunchRequest(base64Image);
+        }
+      }
     }
   }
-
-  private sendPunchRequest(base64Image: string) {
-    const schema = this.authService.getSelectedSchema();
-    const punchAction = this.lastPunchType === 'out' ? 'check_in' : 'check_out';
-    const url = `${this.apiUrl}/calendars/api/attendance/${punchAction}/?schema=${schema}`;
-
-    this.http.post(url, { face_photo: base64Image }).subscribe({
-      next: (res: any) => {
-        alert(`Auto ${punchAction.replace('_', ' ')} Success!`);
-        this.lastPunchType = this.lastPunchType === 'out' ? 'in' : 'out';
-        setTimeout(() => { this.isProcessing = false; }, 5000);
-      },
-      error: (err) => {
-        this.isProcessing = false;
-      }
-    });
+  
+  // Simple local check to see if there is enough visual data to bother the API
+  private isHumanPresent(ctx: CanvasRenderingContext2D, w: number, h: number): boolean {
+    const imageData = ctx.getImageData(0, 0, w, h).data;
+    let brightness = 0;
+    for (let i = 0; i < imageData.length; i += 4) {
+      brightness += (imageData[i] + imageData[i + 1] + imageData[i + 2]) / 3;
+    }
+    const avgBrightness = brightness / (w * h);
+    
+    // Only trigger API if brightness is between 40 and 220 (avoids pitch black or pure white)
+    return avgBrightness > 40 && avgBrightness < 220;
   }
+
+
+ private sendPunchRequest(base64Image: string) {
+  const schema = this.authService.getSelectedSchema();
+  const punchAction = this.lastPunchType === 'out' ? 'check_in' : 'check_out';
+  const url = `${this.apiUrl}/calendars/api/attendance/${punchAction}/?schema=${schema}`;
+
+  this.http.post(url, { face_photo: base64Image }).subscribe({
+    next: (res: any) => {
+      alert(`Auto ${punchAction.replace('_', ' ')} Success!`);
+      this.lastPunchType = this.lastPunchType === 'out' ? 'in' : 'out';
+      this.closeAndReset(); // Close on success
+    },
+    error: (err) => {
+      console.error("Verification failed:", err);
+      const errorMsg = err.error?.detail || "Recognition Failed";
+      alert(errorMsg);
+      this.closeAndReset(); // Also close on failure
+    }
+  });
+}
+
+// Helper method to clean up the UI and Hardware
+private closeAndReset() {
+  this.autoScanActive = false;
+  this.stopCamera();
+  this.activeMode = null;
+  this.isProcessing = false;
+}
+
+
+  
+
 
   private dataSubscription?: Subscription;
 

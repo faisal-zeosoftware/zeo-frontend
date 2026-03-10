@@ -10,7 +10,7 @@
       
             <div class="punch-header text-center py-4">
               <h1 class="font-weight-bold">Attendance Portal</h1>
-              <p class="text-muted">Please select your preferred punching method</p>
+       
               <div class="row">
                 <div class="col-md-4">
 
@@ -54,12 +54,9 @@
             </div>
         
             <div class="camera-container text-center p-4" *ngIf="activeMode === 'face'">
-  
               <div class="header-info mb-3">
-                <h2 [class.text-success]="lastPunchType === 'out'" [class.text-danger]="lastPunchType === 'in'">
-                  SYSTEM READY: {{ lastPunchType === 'out' ? 'CHECK-IN' : 'CHECK-OUT' }}
-                </h2>
-                <p class="text-muted">Align your face inside the guide to punch automatically</p>
+                <h3 class="text-primary">Scanning...</h3>
+                <p class="text-muted">Please hold still and look at the camera</p>
               </div>
             
               <div class="video-wrapper">
@@ -67,22 +64,17 @@
                 
                 <div class="scanner-ui">
                   <div class="scanning-line"></div>
-                  <div class="target-bracket top-left"></div>
-                  <div class="target-bracket top-right"></div>
-                  <div class="target-bracket bottom-left"></div>
-                  <div class="target-bracket bottom-right"></div>
                 </div>
             
                 <div class="processing-overlay" *ngIf="isProcessing">
                   <div class="spinner-border text-light"></div>
-                  <p>Verifying Identity...</p>
+                  <p>Verifying...</p>
                 </div>
               </div>
-              
-              <div class="mt-4">
-                <button mat-button color="warn" (click)="setMode(null)">Stop Scanner</button>
-              </div>
             </div>
+
+
+
           </div>
 
 
