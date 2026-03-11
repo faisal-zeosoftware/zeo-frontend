@@ -242,6 +242,35 @@ setDropdownValues(): void {
     }
   }
 
+  employeeSearch: string = '';
+allEmployeesSelected: boolean = false;
+
+toggleAllEmployees() {
+
+  if (this.allEmployeesSelected) {
+
+    this.documentData.employee = this.Employees.map((emp: any) => emp.id);
+
+  } else {
+
+    this.documentData.employee = [];
+
+  }
+
+}
+
+filterEmployees() {
+
+  if (!this.employeeSearch) {
+    return this.Employees;
+  }
+
+  return this.Employees.filter((emp: any) =>
+    emp.emp_first_name.toLowerCase().includes(this.employeeSearch.toLowerCase())
+  );
+
+}
+
 
  
   ClosePopups(){

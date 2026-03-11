@@ -124,11 +124,19 @@
                   Select All
                 </mat-checkbox>
               </div>
-              <input type="text" placeholder="serach" class="form-control">
+            <input type="text" placeholder="Search Employee"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{standalone: true}"
+            (click)="$event.stopPropagation()">
 
-              <mat-option *ngFor="let deparmentsec of   Employees" [value]="deparmentsec.id">
-                {{ deparmentsec.emp_code }} 
-              </mat-option>
+        <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id">
+
+          {{ emp.emp_code }}
+
+        </mat-option>
             </mat-select>
           </mat-form-field>
           

@@ -974,6 +974,37 @@ getMonthNameFromDate(dateStr: string): string {
           }
         });
       }
+
+
+      
+    employeeSearch: string = '';
+allEmployeesSelected: boolean = false;
+
+toggleAllEmployees() {
+
+  if (this.allEmployeesSelected) {
+
+    this.employee = this.Employee.map((emp: any) => emp.id);
+
+  } else {
+
+    this.employee = [];
+
+  }
+
+}
+
+filterEmployees() {
+
+  if (!this.employeeSearch) {
+    return this.Employee;
+  }
+
+  return this.Employee.filter((emp: any) =>
+    emp.emp_first_name.toLowerCase().includes(this.employeeSearch.toLowerCase())
+  );
+
+}
     
 
 }

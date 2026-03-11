@@ -161,6 +161,7 @@ import { OvertimeRuleComponent } from './overtime-rule/overtime-rule.component';
 import { PayStructureComponent } from './pay-structure/pay-structure.component';
 import { AttendancePunchingComponent } from './attendance-punching/attendance-punching.component';
 import { EmployeeFaceRegisterComponent } from './employee-face-register/employee-face-register.component';
+import { ManualEntryComponent } from './manual-entry/manual-entry.component';
 
 
 const routes: Routes = [
@@ -723,6 +724,11 @@ const routes: Routes = [
       {
       path: 'employee-face-register',
       component: EmployeeFaceRegisterComponent,
+    },
+    
+   {
+      path: 'manual-entry',
+      component: ManualEntryComponent,
     },
 
   ]

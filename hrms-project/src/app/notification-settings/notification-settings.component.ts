@@ -716,7 +716,21 @@ deleteSelectedDocNotify() {
       
       
 
+ employeeSearch: string = '';
 
+
+
+filterEmployees() {
+
+  if (!this.employeeSearch) {
+    return this.Users;
+  }
+
+  return this.Users.filter((deparmentsec: any) =>
+    deparmentsec.username.toLowerCase().includes(this.employeeSearch.toLowerCase())
+  );
+
+}
       
 
 

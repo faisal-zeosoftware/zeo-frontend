@@ -35,7 +35,7 @@ export class ResignationRequestComponent {
   termination_type: any = '';
   reason_for_leaving: any = '';
 
-  employee:any='';
+  employee: number[] = [];
 
   
   created_by:any='';
@@ -366,7 +366,12 @@ if (this.userId !== null) {
 
       formData.append('reason_for_leaving', this.reason_for_leaving);
     
-      formData.append('employee', this.employee);
+      // formData.append('employee', this.employee);
+
+       this.employee.forEach((id: number) =>
+    formData.append('employee', id.toString())
+  );
+  
 
 
   
@@ -532,6 +537,37 @@ updateAssetType(): void {
 }
   );
 }
+
+
+    employeeSearch: string = '';
+allEmployeesSelected: boolean = false;
+
+toggleAllEmployees() {
+
+  if (this.allEmployeesSelected) {
+
+    this.employee = this.Employee.map((emp: any) => emp.id);
+
+  } else {
+
+    this.employee = [];
+
+  }
+
+}
+
+filterEmployees() {
+
+  if (!this.employeeSearch) {
+    return this.Employee;
+  }
+
+  return this.Employee.filter((emp: any) =>
+    emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
+  );
+
+}
+  
 
 
 

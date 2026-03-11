@@ -17,6 +17,7 @@ export class AttendanceSidebarComponent {
 
 
   hasViewPermissionAttendanceMarking:boolean = false;
+  hasViewPermissionmanualentry:boolean = false;
   hasViewPermissionEmpEarlygoing:boolean = false;
   hasViewPermissionEmpRecheck:boolean = false;
   hasViewPermissionPunchingList:boolean = false;
@@ -84,6 +85,7 @@ export class AttendanceSidebarComponent {
 
 
           this.hasViewPermissionAttendanceMarking = true;
+          this.hasViewPermissionmanualentry = true;
           this.hasViewPermissionEmpEarlygoing = true;
           this.hasViewPermissionEmpRecheck = true;
           this.hasViewPermissionPunchingList = true;
@@ -113,6 +115,7 @@ export class AttendanceSidebarComponent {
                   // Grant all permissions
 
           this.hasViewPermissionAttendanceMarking = true;
+          this.hasViewPermissionmanualentry = true;
           this.hasViewPermissionEmpEarlygoing = true;
           this.hasViewPermissionEmpRecheck = true;
           this.hasViewPermissionPunchingList = true;

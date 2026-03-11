@@ -770,5 +770,28 @@ deleteAirReq(categoryId: number): Observable<any> {
   }
 
 
+ registerEmployeeManualEntry(companyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post(apiUrl, companyData, { headers }).pipe(
+      catchError((error) => {
+        // Handle errors here (you can log, show a user-friendly message, etc.)
+        console.error('Error during company registration:', error);
+        return throwError(error);
+
+      })
+    );
+  }
+
+
+
   
 }

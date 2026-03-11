@@ -600,6 +600,22 @@ registerAnnouncement(): void {
       
 
 
-      
+       employeeSearch: string = '';
+
+
+
+filterEmployees() {
+
+  if (!this.employeeSearch) {
+    return this.Employees;
+  }
+
+  return this.Employees.filter((emp: any) =>
+    emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
+  );
+
+}
+  
+   
 
 }

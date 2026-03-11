@@ -88,18 +88,43 @@
 
     <div class="custom-sel">
         <label>Select Employee</label>
-        <select class="form-control" id="emp_id" required [(ngModel)]="documentData.emp_id"  
-        [ngModelOptions]="{standalone: true}" 
-        [ngClass]="{'error-field': registerButtonClicked && !documentData.emp_id}" >
-        
-        <option *ngFor="let employee of Employees" [value]="employee.id">
-            {{ employee.emp_first_name }}
-        </option>
-    </select>
+         <mat-form-field appearance="outline" style="width:100%">
+          <mat-select
+        placeholder="Select"
+        [(ngModel)]="documentData.employee"
+        [ngModelOptions]="{standalone: true}"
+        #employeeSelect
+        multiple>
+
+        <div class="select-all">
+                <mat-checkbox [(ngModel)]="allEmployeesSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllEmployees()">
+                  Select All
+                </mat-checkbox>
+              </div>
+              <input type="text" placeholder="Search Employee"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{standalone: true}"
+            (click)="$event.stopPropagation()">
+
+
+        <!-- Employee List -->
+        <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id">
+
+          {{ emp.emp_first_name }}
+
+        </mat-option>
+
+      </mat-select>
     <p>Selected Employee ID: {{ documentData.emp_id }}</p>
+
+       </mat-form-field>
     
     
     </div>
+
                 
 
 </div>

@@ -19,7 +19,7 @@ export class ApprovalLevelComponent {
 
   
   @ViewChild('select') select: MatSelect | undefined;
-  @ViewChild('approverSelect') approverSelect: any;
+  // @ViewChild('approverSelect') approverSelect: any;
 
   allSelected=false;
 
@@ -582,35 +582,35 @@ updateAssetType(): void {
   );
 }
 
-allApproverSelected = false;
-approverSearch = '';
+// allApproverSelected = false;
+// approverSearch = '';
 
-filteredApprovers() {
+// filteredApprovers() {
 
-  if (!this.approverSearch) {
-    return this.Users;
-  }
+//   if (!this.approverSearch) {
+//     return this.Users;
+//   }
 
-  return this.Users.filter((user: any) =>
-    user.username.toLowerCase().includes(this.approverSearch.toLowerCase())
-  );
+//   return this.Users.filter((user: any) =>
+//     user.username.toLowerCase().includes(this.approverSearch.toLowerCase())
+//   );
 
-}
+// }
 
-toggleAllApproverSelection(): void {
+// toggleAllApproverSelection(): void {
 
-  if (this.approverSelect) {
+//   if (this.approverSelect) {
 
-    if (this.allApproverSelected) {
-      this.approverSelect.options.forEach((item: any) => item.select());
-    } 
-    else {
-      this.approverSelect.options.forEach((item: any) => item.deselect());
-    }
+//     if (this.allApproverSelected) {
+//       this.approverSelect.options.forEach((item: any) => item.select());
+//     } 
+//     else {
+//       this.approverSelect.options.forEach((item: any) => item.deselect());
+//     }
 
-  }
+//   }
 
-}
+// }
 
     
 

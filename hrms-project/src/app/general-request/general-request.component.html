@@ -82,22 +82,22 @@
                 </div>
             </div>
 
-               <div class="col-md-6">
-                        <div class="custom-sel">
-                            <label>Select Employee</label>
-                            <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"
-                             [ngClass]="{'error-field': registerButtonClicked && !employee}" (change)="onEmployeeChange()" >
-                                <option value="" >Select</option>
-                                <option *ngFor="let deparmentsec of filteredEmployees"
-                                 [value]="deparmentsec .id">
-                                 {{ deparmentsec.emp_first_name }}
-                                 </option>
-                            </select>
-                            <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Your Employee</div>
-                        </div>
-                                    
-                
+                  <div class="col-md-6" >
+                    <label>Employee</label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="employee"
+                        name="employee"
+                        [(ngModel)]="employee"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
+                          {{ deparmentsec.emp_code }}
+                        </option>
+                      </select>
                     </div>
+                  </div>
 
     
 
@@ -243,21 +243,22 @@
 
         <div class="row">
 
-            <div class="col-md-6">
-
-
-                <div class="custom-sel">
-                    <label>Select Employee</label>
-                    <select class="form-control" id="employee" required [(ngModel)]="editAsset.employee"  [ngModelOptions]="{standalone: true}"
-                     [ngClass]="{'error-field': registerButtonClicked && !employee}" (change)="onEmployeeChange()" >
-                        <option value="" >Select</option>
-                        <option *ngFor="let deparmentsec of employees" [value]="deparmentsec.id">{{ deparmentsec.emp_first_name     }} </option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Your Employee</div>
-                </div>
-                            
-        
-            </div>
+                  <div class="col-md-6" >
+                    <label>Employee</label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="employee"
+                        name="employee"
+                        [(ngModel)]="employee"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
+                          {{ deparmentsec.emp_code }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
 
             <div class="col-md-3">
                 <div class="custom-sel">

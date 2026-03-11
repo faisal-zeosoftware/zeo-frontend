@@ -407,8 +407,8 @@ async registerCheckIn(): Promise<void> {
     const data = {
       employee: this.employee,
       date: this.date,
-      check_in_time: this.check_in_time,
-      check_out_time: this.check_out_time,
+      // check_in_time: this.check_in_time,
+      // check_out_time: this.check_out_time,
       total_hours: this.total_hours,
       check_in_lat: position.lat,
       check_in_lng: position.lng,
@@ -440,8 +440,8 @@ async registerCheckOut(): Promise<void> {
     const data = {
       employee: this.employee,
       date: this.date,
-      check_in_time: this.check_in_time,
-      check_out_time: this.check_out_time,
+      // check_in_time: this.check_in_time,
+      // check_out_time: this.check_out_time,
       total_hours: this.total_hours,
       check_out_lat: position.lat,
       check_out_lng: position.lng,
@@ -598,6 +598,36 @@ async registerCheckOut(): Promise<void> {
         window.URL.revokeObjectURL(url);
       });
     }
+
+    employeeSearch: string = '';
+allEmployeesSelected: boolean = false;
+
+toggleAllEmployees() {
+
+  if (this.allEmployeesSelected) {
+
+    this.employee = this.Employees.map((emp: any) => emp.id);
+
+  } else {
+
+    this.employee = [];
+
+  }
+
+}
+
+filterEmployees() {
+
+  if (!this.employeeSearch) {
+    return this.Employees;
+  }
+
+  return this.Employees.filter((emp: any) =>
+    emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
+  );
+
+}
+  
     
 
 
