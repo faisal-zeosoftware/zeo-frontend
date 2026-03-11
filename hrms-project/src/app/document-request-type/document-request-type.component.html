@@ -84,16 +84,25 @@
 
               <mat-form-field>
              
-              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+              <mat-select placeholder="Select" [(ngModel)]="editDocReqtype.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
                 <div class="select-all">
                   <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
                     Select All
                   </mat-checkbox>
                 </div>
-                <input type="text" placeholder="serach" class="form-control">
+            <input type="text" placeholder="Search Employee"
+                class="form-control"
+                [(ngModel)]="branchSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()">
 
-                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
-                </mat-option>
+                          <mat-option
+          *ngFor="let deparmentsec of filterEmployees()"
+          [value]="deparmentsec.id">
+
+          {{ deparmentsec.branch_name }}
+
+        </mat-option>
               </mat-select>
             </mat-form-field>
             </div>
@@ -181,10 +190,19 @@
                     Select All
                   </mat-checkbox>
                 </div>
-                <input type="text" placeholder="serach" class="form-control">
+            <input type="text" placeholder="Search Employee"
+                class="form-control"
+                [(ngModel)]="branchSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()">
 
-                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
-                </mat-option>
+                          <mat-option
+          *ngFor="let deparmentsec of filterEmployees()"
+          [value]="deparmentsec.id">
+
+          {{ deparmentsec.branch_name }}
+
+        </mat-option>
               </mat-select>
             </mat-form-field>
             </div>

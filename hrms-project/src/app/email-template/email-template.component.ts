@@ -631,6 +631,21 @@ onCheckboxChange(employee:number) {
         });
       }
     }
+ 
     
+     branchSearch: string = '';
+allBranchSelected: boolean = false;             
+
+ filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.branches;
+  }
+
+  return this.branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
     
 }

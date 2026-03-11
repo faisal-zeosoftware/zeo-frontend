@@ -90,45 +90,8 @@ table thead th {
     padding: 15px;
   }
   
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #5c1e81;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #5c1e81;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-  }
-  
 
 
-  
-  
 /* Add your CSS styles here */
 .modal {
     display: block; /* Hidden by default */
@@ -179,6 +142,48 @@ table thead th {
     font-family: math;
   }
 
+    @media only screen and (max-width: 640px) {
+    table thead {
+      display: none;
+    }
+  
+    table tbody {
+      display: block;
+    }
+  
+    table tbody tr td {
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+  
+    table tbody tr {
+      margin-bottom: 20px;
+      display: block;
+      border: 1px solid #5c1e81;
+      background: #f9f9f9;
+      overflow: hidden;
+    }
+  
+    table tbody td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      width: 30%;
+      display: flex;
+      background: #5c1e81;
+      color: #fff;
+      padding: 15px;
+      margin-inline-end: 10px;
+    }
+
+          .header_section{
+  background: white;
+  padding: 24px 18px 15px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  width: 100%;
+  border-bottom: solid 3px navy;
+}
+  }
 
   
 /* Phones */
@@ -189,6 +194,14 @@ table thead th {
     margin-top: 200px !important;
 
   }
+
+        .header_section{
+  background: white;
+  padding: 24px 18px 15px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  width: 100%;
+  border-bottom: solid 3px navy;
+}
 
 
   }

@@ -475,6 +475,16 @@ table thead td {
     min-width: 10px;
   }
 
+  
+ .header_section{
+  background: white;
+  padding: 24px 18px 15px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  width: 100%;
+  border-bottom: solid 3px navy;
+}
+
+
 }
 
 

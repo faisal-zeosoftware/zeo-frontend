@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -13,6 +13,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { DocExpEmailtemplateEditComponent } from '../doc-exp-emailtemplate-edit/doc-exp-emailtemplate-edit.component';
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption, MatSelect } from '@angular/material/select';
 @Component({
   selector: 'app-doc-exp-emailtemplate',
   templateUrl: './doc-exp-emailtemplate.component.html',
@@ -21,6 +22,7 @@ import {combineLatest, Subscription } from 'rxjs';
 export class DocExpEmailtemplateComponent {
 
   private dataSubscription?: Subscription;
+  @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
 
   template_name: any = '';
@@ -30,6 +32,10 @@ export class DocExpEmailtemplateComponent {
 
   request_type: any = '';
   registerButtonClicked = false;
+
+     branch: number[] = [];
+   branches:any []=[];
+  allSelectedBrach=false;
 
 
 
@@ -83,7 +89,8 @@ ngOnInit(): void {
   });
  
   this.loadRequestType();
-  this.loadEmailPlaceholders(); // Call the method on component init
+  this.loadEmailPlaceholders();
+  this.loadDeparmentBranch(); // Call the method on component init
 
   // this.loadtemp();
 
@@ -325,6 +332,7 @@ if (this.userId !== null) {
       
       const companyData = {
         template_name: this.template_name,
+        branch: this.branch,
       
         subject:this.subject,
         body: this.body,  // Use the captured Summernote content here
@@ -465,6 +473,38 @@ onCheckboxChange(employee:number) {
   // You can add any additional logic if needed.
 }
 
+   loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
 
 
    deleteSelectedAssetType() { 
@@ -521,8 +561,30 @@ onCheckboxChange(employee:number) {
         data: { template: selectedTemplate } // Passing the selected template data to the modal component
       });
     }
-  
-  
+
+                    toggleAllSelectionBrach(): void {
+                    if (this.selectBrach) {
+                      if (this.allSelectedBrach) {
+                        this.selectBrach.options.forEach((item: MatOption ) => item.select());
+                      } else {
+                        this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                      }
+                    }
+                  }
+       branchSearch: string = '';
+allBranchSelected: boolean = false;             
+
+ filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.branches;
+  }
+
+  return this.branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
   
 
 }

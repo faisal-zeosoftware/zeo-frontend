@@ -13,6 +13,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { DocReqEmailtemplateEditComponent } from '../doc-req-emailtemplate-edit/doc-req-emailtemplate-edit.component';
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
 @Component({
   selector: 'app-document-request-email-template',
   templateUrl: './document-request-email-template.component.html',
@@ -24,6 +26,7 @@ export class DocumentRequestEmailTemplateComponent {
   
   private dataSubscription?: Subscription;
   @ViewChild('summernoteEditor') summernoteEditor!: ElementRef;
+  @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
 
   template_type: any = '';
@@ -33,6 +36,10 @@ export class DocumentRequestEmailTemplateComponent {
 
   request_type: any = '';
   registerButtonClicked = false;
+
+       branch: number[] = [];
+   branches:any []=[];
+  allSelectedBrach=false;
 
 
 
@@ -86,7 +93,8 @@ ngOnInit(): void {
 
  
   this.loadRequestType();
-  this.loadEmailPlaceholders(); // Call the method on component init
+  this.loadEmailPlaceholders();
+  this.loadDeparmentBranch(); // Call the method on component init
 
   // this.loadtemp();
 
@@ -578,7 +586,63 @@ onCheckboxChange(employee:number) {
         });
       }
     }
+
+     loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
     
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+
+                      toggleAllSelectionBrach(): void {
+                        if (this.selectBrach) {
+                          if (this.allSelectedBrach) {
+                            this.selectBrach.options.forEach((item: MatOption ) => item.select());
+                          } else {
+                            this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                          }
+                        }
+                      }
     
+       branchSearch: string = '';
+allBranchSelected: boolean = false;             
+
+ filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.branches;
+  }
+
+  return this.branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}    
 
 }

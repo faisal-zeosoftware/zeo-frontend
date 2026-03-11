@@ -242,16 +242,15 @@
     </div>
     
     <div class="table-stats-bar px-4 d-flex justify-content-between align-items-center mt-4">
-      <div class="d-flex align-items-center gap-3">
+      <!-- <div class="d-flex align-items-center gap-3">
         <h3 class="m-0">Inventory List</h3>
         <span class="badge badge-pill badge-light border">Records: {{ displayData.length }}</span>
-        <!-- <span class="badge badge-pill badge-info" *ngIf="currentGroupBy">Grouped by: {{ currentGroupBy }}</span> -->
-      </div>
+      </div> -->
       <button class="btn btn-primary " 
       *ngIf="currentGroupBy.length > 0 || searchText" 
       (click)="resetToStandard()">
 <mat-icon>restart_alt</mat-icon> Reset View
-</button>
+</button> 
 <button class="btn btn-success btn-sm btn-export-excel" (click)="downloadExcel()" *ngIf="hasExportPermission">
   <mat-icon>download</mat-icon>
   <span>Export Excel</span>

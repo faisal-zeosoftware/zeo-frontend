@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
@@ -14,6 +14,8 @@ import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { LeaveTemplateEditComponent } from '../leave-template-edit/leave-template-edit.component';
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
 @Component({
   selector: 'app-leave-template',
   templateUrl: './leave-template.component.html',
@@ -23,6 +25,7 @@ export class  LeaveTemplateComponent {
 
   
   private dataSubscription?: Subscription;
+  @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
   template_type: any = '';
   subject: any = '';
@@ -33,6 +36,11 @@ export class  LeaveTemplateComponent {
 
 
   registerButtonClicked = false;
+
+
+  branch: number[] = [];
+  branches:any []=[];
+  allSelectedBrach=false;
 
 
    
@@ -88,7 +96,8 @@ ngOnInit(): void {
   // Listen for sidebar changes so the dropdown updates instantly
   this.employeeService.selectedBranches$.subscribe(ids => {
     this.loadEmailPlaceholders(); 
-    // this.loadDeparmentBranch();
+    this.loadDeparmentBranch();
+   
 
   });
  
@@ -432,6 +441,7 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       id: this.selectedTemplate.id, // Include the ID for updating the specific template
       template_type: this.template_type,
       subject: this.subject,
+      branch: this.branch,
       body: this.body,
       request_type: this.request_type
     };
@@ -557,7 +567,64 @@ onCheckboxChange(employee:number) {
         });
       }
     }
+
+
+ loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
     
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+
+                    toggleAllSelectionBrach(): void {
+                    if (this.selectBrach) {
+                      if (this.allSelectedBrach) {
+                        this.selectBrach.options.forEach((item: MatOption) => item.select());
+                      } else {
+                        this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                      }
+                    }
+                  }
     
+     branchSearch: string = '';
+allBranchSelected: boolean = false;             
+
+ filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.branches;
+  }
+
+  return this.branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}    
        
 }

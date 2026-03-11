@@ -14,6 +14,7 @@ import { SessionService } from '../login/session.service';
 import { AirticketEmailTemplateEditComponent } from '../airticket-email-template-edit/airticket-email-template-edit.component';
 
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption, MatSelect } from '@angular/material/select';
 @Component({
   selector: 'app-airticket-email-template',
   templateUrl: './airticket-email-template.component.html',
@@ -23,6 +24,7 @@ export class AirticketEmailTemplateComponent {
 
   private dataSubscription?: Subscription;
       @ViewChild('summernoteEditor') summernoteEditor!: ElementRef;
+      @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
     
     
       template_type: any = '';
@@ -32,6 +34,10 @@ export class AirticketEmailTemplateComponent {
     
       request_type: any = '';
       registerButtonClicked = false;
+
+  branch: number[] = [];
+  branches:any []=[];
+  allSelectedBrach=false;
     
     
     
@@ -72,7 +78,8 @@ export class AirticketEmailTemplateComponent {
     ngOnInit(): void {
      
       this.loadRequestType();
-      this.loadEmailPlaceholders(); // Call the method on component init
+      this.loadEmailPlaceholders();
+      this.loadDeparmentBranch(); // Call the method on component init
     
       // this.loadtemp();
     
@@ -212,8 +219,48 @@ export class AirticketEmailTemplateComponent {
       checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);
       }
+
+                                     toggleAllSelectionBrach(): void {
+                                     if (this.selectBrach) {
+                                       if (this.allSelectedBrach) {
+                                         this.selectBrach.options.forEach((item: MatOption ) => item.select());
+                                       } else {
+                                         this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                                       }
+                                     }
+                                   }
       
-      
+    loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
       
     
     
@@ -326,7 +373,8 @@ export class AirticketEmailTemplateComponent {
             template_type: this.template_type,
           
             subject:this.subject,
-            body: this.body,  // Use the captured Summernote content here
+            body: this.body,
+            branch: this.branch,  // Use the captured Summernote content here
       
             request_type: this.request_type,
           
@@ -515,7 +563,20 @@ export class AirticketEmailTemplateComponent {
           }
         }
         
-    
+        branchSearch: string = '';
+allBranchSelected: boolean = false;             
+
+ filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.branches;
+  }
+
+  return this.branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}       
     
   
   

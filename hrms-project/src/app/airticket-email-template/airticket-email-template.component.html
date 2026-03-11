@@ -86,6 +86,39 @@
                                     
                 
                     </div>
+
+                 <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                     <div class="form-control-wrapper">
+
+              <mat-form-field>
+             
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+                <div class="select-all">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                    Select All
+                  </mat-checkbox>
+                </div>
+                 <input type="text" placeholder="Search Employee"
+                class="form-control"
+                [(ngModel)]="branchSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()">
+
+      <mat-option
+          *ngFor="let deparmentsec of filterEmployees()"
+          [value]="deparmentsec.id">
+
+          {{ deparmentsec.branch_name }}
+
+        </mat-option>
+              </mat-select>
+            </mat-form-field>
+            </div>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
     
                     <div class="col-md-12">
                         <label>Subject</label>

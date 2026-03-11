@@ -558,6 +558,35 @@ this.employeeService.updateDocReqApprovallevel(this.editAsset.id, this.editAsset
 );
 }
 
+    branchSearch: string = '';
+allBranchSelected: boolean = false;
+
+// toggleAllEmployees() {
+
+//   if (this.allBranchSelected) {
+
+//     this.deparmentsec = this.Branches.map((emp: any) => emp.id);
+
+//   } else {
+
+//     this.deparmentsec = [];
+
+//   }
+
+// }
+
+filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
+
 
 
 
