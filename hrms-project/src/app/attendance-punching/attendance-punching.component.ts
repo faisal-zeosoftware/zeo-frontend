@@ -122,54 +122,27 @@ export class AttendancePunchingComponent {
     return avgBrightness > 40 && avgBrightness < 220;
   }
 
-  private sendPunchRequest(base64Image: string) {
-    const schema = this.authService.getSelectedSchema();
-  
-    // FIX FOR TS2345: Ensure schema is a string before continuing
-    if (!schema) {
-      console.error("Schema not found");
-      alert("System Error: Session expired. Please log in again.");
-      this.closeAndReset();
-      return;
+
+ private sendPunchRequest(base64Image: string) {
+  const schema = this.authService.getSelectedSchema();
+  const punchAction = this.lastPunchType === 'out' ? 'check_in' : 'check_out';
+  const url = `${this.apiUrl}/calendars/api/attendance/face_attendance/?schema=${schema}`;
+
+  this.http.post(url, { face_photo: base64Image }).subscribe({
+    next: (res: any) => {
+      alert(`Auto ${punchAction.replace('_', ' ')} Success!`);
+      this.lastPunchType = this.lastPunchType === 'out' ? 'in' : 'out';
+      this.closeAndReset(); // Close on success
+    },
+    error: (err) => {
+      console.error("Verification failed:", err);
+      const errorMsg = err.error?.detail || "Recognition Failed";
+      alert(errorMsg);
+      this.closeAndReset(); // Also close on failure
     }
-  
-    // Now TypeScript knows 'schema' is definitely a string
-    const urlIn = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${schema}`;
-  
-    this.http.post(urlIn, { face_photo: base64Image }).subscribe({
-      next: (res: any) => {
-        alert("Check-In Successful!");
-        this.lastPunchType = 'in'; // Set state to in so next scan is out
-        this.closeAndReset();
-      },
-      error: (err) => {
-        // Check if they are already checked in
-        if (err.status === 400 || err.error?.detail?.includes('already checked in')) {
-          this.performCheckOut(base64Image, schema); // schema is now safely a string
-        } else {
-          alert(err.error?.detail || "Recognition Failed");
-          this.closeAndReset();
-        }
-      }
-    });
-  }
-  
-  // Ensure the parameter is typed as string
-  private performCheckOut(base64Image: string, schema: string) {
-    const urlOut = `${this.apiUrl}/calendars/api/attendance/check_out/?schema=${schema}`;
-    
-    this.http.post(urlOut, { face_photo: base64Image }).subscribe({
-      next: (res: any) => {
-        alert("Check-Out Successful!");
-        this.lastPunchType = 'out'; // Set state to out so next scan is in
-        this.closeAndReset();
-      },
-      error: (err) => {
-        alert(err.error?.detail || "Check-out Failed");
-        this.closeAndReset();
-      }
-    });
-  }
+  });
+}
+
 // Helper method to clean up the UI and Hardware
 private closeAndReset() {
   this.autoScanActive = false;
