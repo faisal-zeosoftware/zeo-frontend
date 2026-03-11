@@ -162,6 +162,7 @@ import { PayStructureComponent } from './pay-structure/pay-structure.component';
 import { AttendancePunchingComponent } from './attendance-punching/attendance-punching.component';
 import { EmployeeFaceRegisterComponent } from './employee-face-register/employee-face-register.component';
 import { ManualEntryComponent } from './manual-entry/manual-entry.component';
+import { EmployeePunchingDetailsComponent } from './employee-punching-details/employee-punching-details.component';
 
 
 const routes: Routes = [
@@ -730,6 +731,13 @@ const routes: Routes = [
       path: 'manual-entry',
       component: ManualEntryComponent,
     },
+
+    {
+      path: 'employee-punching-details',
+      component: EmployeePunchingDetailsComponent,
+    },
+
+
 
   ]
 
