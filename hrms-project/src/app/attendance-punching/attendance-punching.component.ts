@@ -123,26 +123,44 @@ export class AttendancePunchingComponent {
   }
 
 
- private sendPunchRequest(base64Image: string) {
-  const schema = this.authService.getSelectedSchema();
-  const punchAction = this.lastPunchType === 'out' ? 'check_in' : 'check_out';
-  const url = `${this.apiUrl}/calendars/api/attendance/face_attendance/?schema=${schema}`;
-
-  this.http.post(url, { face_photo: base64Image }).subscribe({
-    next: (res: any) => {
-      alert(`Auto ${punchAction.replace('_', ' ')} Success!`);
-      this.lastPunchType = this.lastPunchType === 'out' ? 'in' : 'out';
-      this.closeAndReset(); // Close on success
-    },
-    error: (err) => {
-      console.error("Verification failed:", err);
-      const errorMsg = err.error?.detail || "Recognition Failed";
-      alert(errorMsg);
-      this.closeAndReset(); // Also close on failure
+  private sendPunchRequest(base64Image: string) {
+    const schema = this.authService.getSelectedSchema();
+  
+    // FIX FOR TS2345: Guard clause ensures schema is a string, not null
+    if (!schema) {
+      console.error("Schema is missing");
+      this.closeAndReset();
+      return;
     }
-  });
-}
-
+  
+    // Updated to use your new single endpoint: /face_attendance/
+    const url = `${this.apiUrl}/calendars/api/attendance/face_attendance/?schema=${schema}`;
+  
+    this.http.post(url, { face_photo: base64Image }).subscribe({
+      next: (res: any) => {
+        // Assuming your backend returns the status (In or Out) in the response
+        // Example: res.status might be "check_in" or "check_out"
+        const status = res.status ? res.status.replace('_', ' ').toUpperCase() : 'PUNCH';
+        
+        alert(`${status} Successful!`);
+        
+        // Update the local lastPunchType based on what the backend actually did
+        if (res.status === 'check_in') {
+          this.lastPunchType = 'in';
+        } else if (res.status === 'check_out') {
+          this.lastPunchType = 'out';
+        }
+  
+        this.closeAndReset(); // Always close camera on success
+      },
+      error: (err) => {
+        console.error("Verification failed:", err);
+        const errorMsg = err.error?.detail || "Recognition Failed";
+        alert(errorMsg);
+        this.closeAndReset(); // Always close camera on failure
+      }
+    });
+  }
 // Helper method to clean up the UI and Hardware
 private closeAndReset() {
   this.autoScanActive = false;
