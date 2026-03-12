@@ -84,6 +84,7 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy{
       allSelectedEmp=false;
   
 private map!: L.Map;
+private searchTimer: any;
   private marker!: L.Marker;
   private circle!: L.Circle;
   private mlyViewer: any;
@@ -99,6 +100,49 @@ private map!: L.Map;
 
   ngAfterViewInit() {
     this.initMapGuard();
+  }
+
+  onSearchInput(query: string) {
+    // Clear the previous timer
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+  
+    // Wait 500ms after user stops typing to search
+    this.searchTimer = setTimeout(() => {
+      this.searchLocation(query);
+    }, 500);
+  }
+
+  getCurrentLocation() {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+  
+    // Show a small loading state if you like
+    this.isLoading = true;
+  
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+  
+        // Move the map and marker
+        this.map.setView([lat, lng], 17);
+        this.updateLocation(lat, lng, "My Current Location");
+        
+        this.isLoading = false;
+      },
+      (error) => {
+        this.isLoading = false;
+        console.error("Geolocation Error:", error);
+        alert("Unable to retrieve your location. Please check your GPS settings.");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+    );
   }
 
   private initMapGuard() {
@@ -133,11 +177,25 @@ private map!: L.Map;
 
   // Fetch multiple results as user types
   async searchLocation(query: string) {
-    if (query.length < 3) {
+    if (!query || query.trim().length < 3) {
       this.searchResults = [];
       return;
     }
-
+  
+    // Coordinate check (Same as before)
+    const coordRegex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
+    const match = query.match(coordRegex);
+    if (match) {
+      const lat = parseFloat(match[1]);
+      const lng = parseFloat(match[3]);
+      if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+        this.searchResults = [];
+        this.map.setView([lat, lng], 17);
+        this.updateLocation(lat, lng, `Coordinates: ${lat}, ${lng}`);
+        return;
+      }
+    }
+  
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8`);
       this.searchResults = await res.json();
@@ -192,6 +250,7 @@ private map!: L.Map;
     if (this.map) this.map.remove();
   }
 
+ 
   isLoading = false;
 
   CreateGeofence() {
@@ -248,6 +307,113 @@ private map!: L.Map;
   
 
 
+  getBranchNames(branchIds: number[]): string {
+    if (!this.Branches || !branchIds) return 'None';
+    return this.Branches
+      .filter(b => branchIds.includes(b.id))
+      .map(b => b.branch_name)
+      .join(', ');
+  }
+
+
+  showPreviewModal = false;
+selectedPreview: any = null;
+private previewMap!: L.Map;
+
+viewOnMap(policy: any) {
+  this.selectedPreview = policy;
+  
+  // Smoothly glide the map to the location
+  this.previewMap.flyTo([policy.latitude, policy.longitude], 17, {
+    animate: true,
+    duration: 1.5
+  });
+
+  // Clear old layers
+  this.previewMap.eachLayer((layer) => {
+    if (layer instanceof L.Circle || layer instanceof L.Marker) {
+      this.previewMap.removeLayer(layer);
+    }
+  });
+
+  // Create an attractive glow-boundary
+  L.circle([policy.latitude, policy.longitude], {
+    radius: policy.radius,
+    color: '#3b82f6',       // Blue stroke
+    weight: 2,
+    fillColor: '#3b82f6',   // Blue fill
+    fillOpacity: 0.15,
+    className: 'pulsing-circle' // Add a CSS pulse animation
+  }).addTo(this.previewMap);
+
+  // Add a sleek marker
+  const icon = L.divIcon({
+    className: 'custom-marker',
+    html: `<div class="marker-pin"></div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 30]
+  });
+  
+  L.marker([policy.latitude, policy.longitude], { icon }).addTo(this.previewMap);
+}
+closePreview() {
+  this.showPreviewModal = false;
+  this.selectedPreview = null;
+  if (this.previewMap) {
+    this.previewMap.remove();
+  }
+}
+
+
+  selectedLocation: any = null;
+  private displayMap!: L.Map;
+  private layerGroup = L.layerGroup();
+
+  onLocationChange(event: any) {
+    const id = event.target.value;
+    this.selectedLocation = this.geofencepol.find(loc => loc.id == id);
+    
+    if (this.selectedLocation) {
+      this.updateMapDisplay();
+    }
+  }
+
+  private updateMapDisplay() {
+    const lat = this.selectedLocation.latitude;
+    const lng = this.selectedLocation.longitude;
+    const radius = this.selectedLocation.radius;
+
+    // Initialize map if it doesn't exist
+    if (!this.displayMap) {
+      this.displayMap = L.map('displayMap').setView([lat, lng], 16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.displayMap);
+      this.layerGroup.addTo(this.displayMap);
+    }
+
+    // Clear old drawings
+    this.layerGroup.clearLayers();
+
+    // 1. Mark the Boundary (The "Marked" display)
+    const boundary = L.circle([lat, lng], {
+      radius: radius,
+      color: '#0d6efd',
+      weight: 3,
+      fillColor: '#0d6efd',
+      fillOpacity: 0.2,
+      interactive: false // Users cannot edit/drag
+    });
+
+    // 2. Add Center Marker
+    const marker = L.marker([lat, lng], { interactive: false });
+
+    this.layerGroup.addLayer(boundary);
+    this.layerGroup.addLayer(marker);
+
+    // Zoom to the location
+    this.displayMap.flyTo([lat, lng], 17);
+  }
+
+
 
 
   userId: number | null | undefined;
@@ -276,6 +442,7 @@ private map!: L.Map;
     ngOnInit(): void {
   
 
+  
        // combineLatest waits for both Schema and Branches to have a value
        this.dataSubscription = combineLatest([
         this.employeeService.selectedSchema$,
@@ -446,77 +613,9 @@ private map!: L.Map;
    registerButtonClicked = false;
   
   
-  // CreateGeofence(): void {
-  //   this.registerButtonClicked = true;
-  
-  //   const formData = new FormData();
-  //   // ✅ EXACT backend field names
-  //   formData.append('location_name', this.location_name);
-  //   formData.append('latitude', this.latitude);
-  //   formData.append('longitude', this.longitude);
-  //   formData.append('radius', this.radius);
-  //   formData.append('is_active', String(this.is_active));
-  
-  //   this.branch.forEach((id: number) =>
-  //   formData.append('branch', id.toString())
-  // );
-  
-
-  
-  //   this.employeeService.registerGeofence(formData).subscribe(
-  //     (response) => {
-  //       console.log('Registration successful', response);
-  //       alert('Geo Fence has been added');
-  //       window.location.reload();
-  //     },
-  //     (error) => {
-  //       console.error('Added failed', error);
-  
-  //       let errorMessage = 'Enter all required fields!';
-  
-  //       // ✅ Handle backend validation or field-specific errors
-  //       if (error.error && typeof error.error === 'object') {
-  //         const messages: string[] = [];
-  //         for (const [key, value] of Object.entries(error.error)) {
-  //           if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-  //           else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-  //           else messages.push(`${key}: ${JSON.stringify(value)}`);
-  //         }
-  //         if (messages.length > 0) errorMessage = messages.join('\n');
-  //       } else if (error.error?.detail) {
-  //         errorMessage = error.error.detail;
-  //       }
-  
-  //       alert(errorMessage);
-  //     }
-  //   );
-  // }
   
   
   
-  
-    // loadgeofence(): void {
-      
-    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-    //   console.log('schemastore',selectedSchema )
-    //   // Check if selectedSchema is available
-    //   if (selectedSchema) {
-    //     this.employeeService.getGeofence(selectedSchema).subscribe(
-    //       (result: any) => {
-    //         this.geofencepol = result;
-    //         console.log(' fetching Geo Fences:');
-    
-    //       },
-    //       (error) => {
-    //         console.error('Error fetching Companies:', error);
-    //       }
-    //     );
-    //   }
-    //   }
-
-
-      // isLoading: boolean = false;
 
       fetchEmployees(schema: string, branchIds: number[]): void {
         this.isLoading = true;
@@ -535,29 +634,6 @@ private map!: L.Map;
       }
   
   
-  
-      // loadLoanapprover(): void {
-    
-      //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-      
-      //   console.log('schemastore',selectedSchema )
-      //   // Check if selectedSchema is available
-      //   if (selectedSchema) {
-      //     this.employeeService.getLoanapprover(selectedSchema).subscribe(
-      //       (result: any) => {
-      //         this.Approvers = result;
-      //         console.log(' fetching Loantypes:');
-      
-      //       },
-      //       (error) => {
-      //         console.error('Error fetching Companies:', error);
-      //       }
-      //     );
-      //   }
-      //   }
-  
-  
-        // non-ess-users usermaster services
   
     loadUsers(callback?: Function): void {
       

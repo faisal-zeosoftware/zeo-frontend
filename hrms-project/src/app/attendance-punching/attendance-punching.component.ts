@@ -73,6 +73,8 @@ export class AttendancePunchingComponent {
   }
 
 
+  
+
   performAutoPunch() {
     const video = this.videoElement.nativeElement;
     if (video.paused || video.ended || video.readyState < 2) return;
@@ -134,7 +136,7 @@ export class AttendancePunchingComponent {
     }
   
     // Updated to use your new single endpoint: /face_attendance/
-    const url = `${this.apiUrl}/calendars/api/attendance/face_attendance/?schema=${schema}`;
+    const url = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${schema}`;
   
     this.http.post(url, { face_photo: base64Image }).subscribe({
       next: (res: any) => {

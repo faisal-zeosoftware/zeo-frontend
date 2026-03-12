@@ -68,140 +68,53 @@
                 </div>
               </div>
               <hr />
-          
-  <!-- <form  >
-                  <div class="row">
-                    
-                  <div class="col-md-6" >
-                   
-                    <label>Location name</label>
-                   <input type="text"  class="form-control" required  [(ngModel)]="location_name"  placeholder="Enter Location Name"
-                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location_name}">
-                   
-              </div>
-
-
-          <div class="col-md-6" >
-                   
-            <label>Latitude</label>
-           <input type="number"  class="form-control" [(ngModel)]="latitude"  placeholder="Enter Latitude"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
-
-        
-
-
-          <div class="col-md-6" >
-                   
-            <label>Longitude</label>
-           <input type="number"  class="form-control" [(ngModel)]="longitude"  placeholder="Enter Longitude"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
-
-                <div class="col-md-6" >
-                   
-            <label>Radius</label>
-           <input type="number"  class="form-control" [(ngModel)]="radius"  placeholder="Enter Radius"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
-
-      
-
-
-
-<div class="col-md-6">
-  <label></label>
-  <div class="check-box-selection-sec form-control mt-3">
-    <div class="mat-set">
-      <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
-    </div>
-  </div>
-</div>
-
-      <div class="col-md-6" >
-        <label>Branch</label>
-        <div class="custom-sel">
-          <div class="form-control-wrapper">
-          
-
-            <mat-form-field>
-           
-              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
-                <div class="select-all">
-                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
-                    Select All
-                  </mat-checkbox>
-                </div>
-                <input type="text" placeholder="serach" class="form-control">
-
-                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            
-          </div>
-         
-        </div>
-
-      </div>
-
-         
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-10">
-                
-                    </div>
-                
-                    <div class="col-md-2">
-                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateGeofence()">Create</button>  
-                     </div>
-                </div>
-                </form> -->
-
+   
 
                 <div class="container-fluid py-3">
                   <form>
                     <div class="row">
                       <div class="col-md-12 mb-3">
-                        <label class="fw-bold">Search Location</label>
-                        <div class="input-group">
-                          <input type="text" class="form-control" #searchInput 
-                                 placeholder="Type to search (e.g. Dubai Mall)..." 
-                                 (input)="searchLocation(searchInput.value)"
+                        <label class="fw-bold mb-1">Search Location</label>
+                        <div class="google-search-container">
+                          <i class="fa fa-search search-icon"></i>
+                          <input type="text" 
+                                 class="google-search-input" 
+                                 #searchInput 
+                                 placeholder="Search Google Maps" 
+                                 (input)="onSearchInput(searchInput.value)"
                                  (keyup.enter)="searchLocation(searchInput.value)">
-                          <button class="btn btn-primary" type="button" (click)="searchLocation(searchInput.value)">
-                            Search
-                          </button>
+                          
+                          <i class="fa fa-times clear-icon" 
+                             *ngIf="searchInput.value" 
+                             (click)="searchInput.value = ''; searchResults = []"></i>
                         </div>
-                
-                        <ul class="list-group mt-1 shadow-sm" *ngIf="searchResults.length > 0" 
-                            style="position: absolute; z-index: 1000; width: 95%;">
-                          <li class="list-group-item list-group-item-action" 
-                              style="cursor: pointer;"
+                      
+                        <ul class="list-group mt-1 shadow-lg search-results-dropdown" *ngIf="searchResults.length > 0">
+                          <li class="list-group-item list-group-item-action border-0 py-2" 
                               *ngFor="let res of searchResults" 
-                              (click)="selectResult(res)">
-                            <i class="fa fa-map-marker-alt text-danger me-2"></i> {{ res.display_name }}
+                              (click)="selectResult(res); searchInput.value = res.display_name">
+                            <div class="d-flex align-items-center">
+                              <i class="fa fa-map-marker-alt text-muted me-3"></i>
+                              <div class="text-truncate">
+                                <div class="fw-500">{{ res.display_name.split(',')[0] }}</div>
+                                <small class="text-muted">{{ res.display_name }}</small>
+                              </div>
+                            </div>
                           </li>
                         </ul>
                       </div>
-                
-                      <div class="col-md-12 mb-3" (click)="searchResults = []">
+                      <div class="col-md-12 mb-3" style="position: relative;">
                         <div id="map" style="height: 400px; width: 100%; border: 2px solid #ddd; border-radius: 8px;"></div>
-                      </div>
-                
-                      <!-- <div class="col-md-12 mb-3">
-                        <button type="button" class="btn btn-dark w-100" (click)="toggleStreetView()">
-                          {{ showStreetView ? 'Hide Street View' : 'Show Street View (Free)' }}
+                        
+                        <button class="btn btn-light shadow-sm locate-btn" 
+                                type="button" 
+                                (click)="getCurrentLocation()" 
+                                title="Show My Location">
+                          <i class="fa fa-crosshairs text-primary"></i>
                         </button>
                       </div>
                 
-                      <div class="col-md-12 mb-3" [hidden]="!showStreetView">
-                        <div id="mly" style="height: 350px; width: 100%; border-radius: 8px; background: #000;"></div>
-                      </div> -->
+                     
                 
                       <div class="col-md-6 mb-3">
                         <label>Location Name</label>
@@ -425,57 +338,71 @@
 
 
 
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
-
-
-           
-            <table class="table-container " width="100%">
-                <thead>
-                  <tr>
-                    <th>Location Name</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                    <th>Branch</th>
-                    <th>Radius</th>
-
-                   <th>Action</th>
-      
-        
-                   
-                  </tr>
-                </thead>
-                <tbody>
-                    
-                  <tr *ngFor="let pol of geofencepol;let i = index">
-                    <td data-label="Location name">{{ pol.location_name }}</td> 
-                    <td data-label="Latitude">{{ pol.latitude }}</td>
-                    <td data-label="Longitude">{{ pol.longitude }}</td> 
-                    <td data-label="Branch">{{ pol.branch }}</td> 
-                    <td data-label="Radius">{{ pol.radius }}</td>
-
-
-                   <td data-label="Action">
-              <button
-                mat-fab
-                color="primary"
-                aria-label="Edit icon"
-                *ngIf="showEditBtn"
-    
-                
-                (click)="openEditModal(pol)"
-              >
-                <mat-icon style="color: white;">draw</mat-icon>
-              </button>
-    
-              <mat-checkbox *ngIf="Delete" [(ngModel)]="pol.selected" ></mat-checkbox>
-    
-            </td>
-    
-                  </tr>
-              
-                </tbody>
-              </table>
-
+    <div class="com_list mt-4" >
+      <div class="viewer-container p-4" *ngIf="geofencepol && geofencepol.length > 0">
+  
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="cartoon-dropdown-wrapper">
+              <label class="fw-bold mb-2 text-dark">Select Location to View</label>
+              <select class="form-select cartoon-select" (change)="onLocationChange($event)">
+                <option value="" disabled selected>Choose a Geofence...</option>
+                <option *ngFor="let loc of geofencepol" [value]="loc.id">
+                  {{ loc.location_name.split(',')[0] }}
+                </option>
+              </select>
+            </div>
+          </div>
         </div>
+      
+        <div class="map-frame mb-4">
+          <div id="displayMap" style="height: 400px; width: 100%; border-radius: 20px;"></div>
+          <div class="view-only-ribbon">VIEW ONLY MODE</div>
+        </div>
+      
+        <div class="details-card shadow-sm" *ngIf="selectedLocation">
+          <div class="card-header bg-primary text-white py-3 px-4">
+            <h5 class="m-0 fw-bold"><i class="fa fa-info-circle me-2"></i>Location Details</h5>
+          </div>
+          
+          <div class="card-body p-0">
+            <div class="row g-0">
+              <div class="col-md-8 p-4 border-end">
+                <h4 class="fw-bold text-dark mb-1">{{ selectedLocation.location_name.split(',')[0] }}</h4>
+                <p class="text-muted mb-4">{{ selectedLocation.location_name }}</p>
+                
+                <div class="row">
+                  <div class="col-sm-6 mb-3">
+                    <label class="stat-label">LATITUDE</label>
+                    <div class="stat-value">{{ selectedLocation.latitude }}</div>
+                  </div>
+                  <div class="col-sm-6 mb-3">
+                    <label class="stat-label">LONGITUDE</label>
+                    <div class="stat-value">{{ selectedLocation.longitude }}</div>
+                  </div>
+                </div>
+              </div>
+      
+              <div class="col-md-4 p-4 bg-light">
+                <div class="mb-3">
+                  <label class="stat-label">SAFE RADIUS</label>
+                  <div class="stat-value text-primary">{{ selectedLocation.radius }} Meters</div>
+                </div>
+                <div class="mb-3">
+                  <label class="stat-label">LINKED BRANCHES</label>
+                  <div class="d-flex flex-wrap gap-1 mt-1">
+                    <span class="badge bg-dark" *ngFor="let b of selectedLocation.branch">ID: {{b}}</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="stat-label">EMPLOYEE COUNT</label>
+                  <div class="stat-value">{{ selectedLocation.employee.length }} Staff</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
         </div>
         </div>  

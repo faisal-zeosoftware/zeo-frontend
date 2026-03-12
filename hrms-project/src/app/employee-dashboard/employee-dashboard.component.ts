@@ -1,5 +1,6 @@
 import { style } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
@@ -20,7 +21,9 @@ import {combineLatest} from 'rxjs';
   templateUrl: './employee-dashboard.component.html',
   styleUrl: './employee-dashboard.component.css'
 })
-export class EmployeeDashboardComponent {
+export class EmployeeDashboardComponent implements OnInit, AfterViewInit, OnDestroy{
+
+  @ViewChild('video', { static: false }) videoElement!: ElementRef;
 
     private dataSubscription?: Subscription;
 
@@ -167,6 +170,9 @@ branchIds: number[] = [];
     this.loadProject();
     this.loadStages();
   
+    this.initCamera();
+    this.getLocation();
+    this.getLocationfacePunch();
     
 
 
@@ -805,6 +811,16 @@ activeTabNav: string = 'dashboard';
 
 selectTabNav(tabNameNav: string): void {
   this.activeTabNav = tabNameNav;
+
+  if (tabNameNav === 'facepunch') {
+    // Wait for Angular to render the *ngIf block
+    setTimeout(() => {
+      this.initCamera();
+    }, 200); 
+  } else {
+    this.stopCamera(); // Clean up when leaving the tab
+  }
+
 }
 
 activetTab: string = 'home'; 
@@ -3770,6 +3786,137 @@ confirmDocRejection(approvalId: number): void {
                 }
               });
             }
+
+
+
+
+            punchMode: 'face' | 'barcode' = 'face';
+            capturedImage: string | null = null;
+            currentLat: number | null = null;
+            currentLng: number | null = null;
+           
+            cameraStream: MediaStream | null = null;
+// CRITICAL: Initialize camera after view is ready
+ngAfterViewInit() {
+  this.initCamera();
+}
+
+
+
+// 2. Add a null check in initCamera
+initCamera() {
+  // Security Check: Ensure the element actually exists
+  if (!this.videoElement) {
+    console.error("Video element not found in DOM yet.");
+    return;
+  }
+
+  const constraints = {
+    video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" }
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then(stream => {
+      this.cameraStream = stream;
+      const video = this.videoElement.nativeElement; // This won't be undefined now
+      video.srcObject = stream;
+      video.onloadedmetadata = () => video.play();
+    })
+    .catch(err => {
+      console.error("Camera access denied:", err);
+    });
+}
+
+// 3. Helper to stop camera
+stopCamera() {
+  if (this.cameraStream) {
+    this.cameraStream.getTracks().forEach(track => track.stop());
+    this.cameraStream = null;
+  }
+}
+
+capturePhoto() {
+  const video = this.videoElement.nativeElement;
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx?.drawImage(video, 0, 0);
+  this.capturedImage = canvas.toDataURL('image/jpeg');
+}
+
+retakePhoto() {
+  this.capturedImage = null;
+  // Ensure video resumes
+  setTimeout(() => this.videoElement.nativeElement.play(), 100);
+}
+
+// getLocation() {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition(pos => {
+//       this.currentLat = pos.coords.latitude;
+//       this.currentLng = pos.coords.longitude;
+//     });
+//   }
+// }
+
+processPunch(type: 'in' | 'out') {
+  const payload = {
+    employee: this.selectedEmployeeId,
+    date: new Date().toISOString().split('T')[0],
+    face_photo: this.capturedImage,
+    [`check_${type}_time`]: new Date().toLocaleTimeString('en-GB'),
+    [`check_${type}_lat`]: this.currentLat,
+    [`check_${type}_lng`]: this.currentLng,
+    check_in_location: "Office Main Gate"
+  };
+
+  const request = type === 'in' 
+    ? this.employeeService.registerEmployeeAttendenceCheckIn(payload)
+    : this.employeeService.registerEmployeeAttendenceCheckOut(payload);
+
+  request.subscribe((res: any) => {
+    alert(`${type.toUpperCase()} Successful!`);
+    this.retakePhoto();
+  });
+}
+
+// Stop camera when leaving page to prevent "Camera in use" errors
+ngOnDestroy() {
+  if (this.cameraStream) {
+    this.cameraStream.getTracks().forEach(track => track.stop());
+  }
+}
+
+currentLocationName: string = "Fetching address...";
+getLocationfacePunch() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      this.currentLat = pos.coords.latitude;
+      this.currentLng = pos.coords.longitude;
+
+      // Fetch the Address Name
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${this.currentLat}&lon=${this.currentLng}`
+        );
+        const data = await response.json();
+        
+        // This will give you a full address string
+        this.currentLocationName = data.display_name;
+        
+        console.log("Location Found:", this.currentLocationName);
+      } catch (error) {
+        console.error("Error fetching location name:", error);
+        this.currentLocationName = "Address not found";
+      }
+    }, (error) => {
+      console.error("GPS Error:", error);
+      this.currentLocationName = "Location permission denied";
+    });
+  }
+}
+}
   
 
-}
+
