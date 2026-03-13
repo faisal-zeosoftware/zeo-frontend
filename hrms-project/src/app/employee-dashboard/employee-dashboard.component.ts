@@ -3870,51 +3870,58 @@ private base64ToBlob(base64: string, type: string) {
 isPunching:boolean=false;
 
 // 2. Separate Check-In Function
-processCheckIn() {
-  if (!this.capturedImage) return alert("No image captured");
-  if (!this.selectedEmployeeId  ) {
-    alert('Please ensure Employee is loaded.');
-    return;
-  }
-  this.isPunching = true;
-
-  // 1. Convert Base64 to Blob
-  const imageBlob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
-
-  // 2. Create FormData
-  const formData = new FormData();
-  
-  // 3. Append Data - THE ORDER SOMETIMES MATTERS FOR DJANGO
-  formData.append('employee', this.selectedEmployeeId.toString());
-  formData.append('date', new Date().toISOString().split('T')[0]);
-  formData.append('check_in_time', new Date().toLocaleTimeString('en-GB'));
-  formData.append('check_in_lat', this.currentLat?.toString() || '0');
-  formData.append('check_in_lng', this.currentLng?.toString() || '0');
-  formData.append('check_in_location', this.currentLocationName || "Office");
-
-  // 4. Append Files (The 3rd argument is the filename - DO NOT OMIT THIS)
-  formData.append('check_in_image', imageBlob, 'employee_capture.jpg');
-  formData.append('face_photo', imageBlob, 'verification_face.jpg');
-
-  // DEBUG: Check your console. If you don't see "check_in_image: [object File]", the blob failed.
-  formData.forEach((value, key) => {
-    console.log(`${key}:`, value);
-  });
-
-  this.employeeService.registerEmployeeAttendenceCheckInnew(formData).subscribe({
-    next: (res) => {
-      this.isPunching = false;
-      alert("Success!");
-      this.retakePhoto();
-    },
-    error: (err) => {
-      this.isPunching = false;
-      console.error("Server Error:", err);
-      alert(err.error?.detail || "Error saving image");
+async processCheckIn(): Promise<void> {
+  try {
+    // 1. Validation
+    if (!this.selectedEmployeeId) {
+      alert("Employee data not loaded.");
+      return;
     }
-  });
-}
+    if (!this.capturedImage) {
+      alert("Please capture a photo first.");
+      return;
+    }
 
+    this.registerButtonClicked = true;
+    this.isPunching = true;
+
+    // 2. Await Location and Address
+    const position = await this.getLocation();
+    const address = await this.getAddress(position.lat, position.lng);
+
+    // 3. Create the data object (as requested)
+    const data = {
+      employee: this.selectedEmployeeId,
+      date: new Date().toISOString().split('T')[0],
+      check_in_time: new Date().toLocaleTimeString('en-GB'),
+      check_in_lat: position.lat,
+      check_in_lng: position.lng,
+      check_in_location: address,
+      // Sending as Base64 strings
+      check_in_image: this.capturedImage, 
+      face_photo: this.capturedImage
+    };
+
+    // 4. Submit using your standard service method
+    this.employeeService.registerEmployeeAttendenceCheckIn(data).subscribe({
+      next: (response) => {
+        this.isPunching = false;
+        alert("Check In successful");
+        this.retakePhoto();
+      },
+      error: (error) => {
+        this.isPunching = false;
+        const errorMsg = error.error?.detail || "Check-In Failed";
+        alert(errorMsg);
+        console.error("Error details:", error);
+      }
+    });
+
+  } catch (error) {
+    this.isPunching = false;
+    alert("Please allow location access!");
+  }
+}
 // 3. Separate Check-Out Function
 processCheckOut() {
   if (!this.capturedImage) return alert("Please capture a photo first");

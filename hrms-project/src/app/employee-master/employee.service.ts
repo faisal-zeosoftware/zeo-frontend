@@ -3465,11 +3465,13 @@ updateGeofence(id: number, data: any): Observable<any> {
 
 
   registerEmployeeAttendenceCheckInnew(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    const url = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${selectedSchema}`;
+    const selectedSchema = localStorage.getItem('selectedSchema') || 'default';
+    
+    // Pass schema as a query parameter
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${selectedSchema}`;
   
-    // DO NOT add { headers: ... } here. Let Angular handle it.
-    return this.http.post(url, formData);
+    // DO NOT add HttpHeaders. Angular handles the boundary automatically for FormData.
+    return this.http.post(apiUrl, formData);
   }
 
   registerEmailTemplateDocReq(companyData: any): Observable<any> {
