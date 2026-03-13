@@ -3871,50 +3871,46 @@ isPunching:boolean=false;
 
 // 2. Separate Check-In Function
 processCheckIn() {
-  if (!this.capturedImage) {
-    alert("Please capture a photo first.");
-    return;
-  }
-   if (!this.selectedEmployeeId  ) {
+  if (!this.capturedImage) return alert("No image captured");
+  if (!this.selectedEmployeeId  ) {
     alert('Please ensure Employee is loaded.');
     return;
   }
-
   this.isPunching = true;
 
-  // 1. Prepare FormData (Multipart/Form-Data)
+  // 1. Convert Base64 to Blob
+  const imageBlob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
+
+  // 2. Create FormData
   const formData = new FormData();
   
-  // 2. Add standard fields
+  // 3. Append Data - THE ORDER SOMETIMES MATTERS FOR DJANGO
   formData.append('employee', this.selectedEmployeeId.toString());
   formData.append('date', new Date().toISOString().split('T')[0]);
   formData.append('check_in_time', new Date().toLocaleTimeString('en-GB'));
   formData.append('check_in_lat', this.currentLat?.toString() || '0');
   formData.append('check_in_lng', this.currentLng?.toString() || '0');
-  formData.append('check_in_location', this.currentLocationName || "Office Gate");
+  formData.append('check_in_location', this.currentLocationName || "Office");
 
-  // 3. Convert image and add to specific keys
-  const imageBlob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
-  
-  // Key 1: For the database record (check_in_image)
-  formData.append('check_in_image', imageBlob, `checkin_${Date.now()}.jpg`);
-  
-  // Key 2: For the backend verification logic (face_photo)
-  formData.append('face_photo', imageBlob, `verify_${Date.now()}.jpg`);
+  // 4. Append Files (The 3rd argument is the filename - DO NOT OMIT THIS)
+  formData.append('check_in_image', imageBlob, 'employee_capture.jpg');
+  formData.append('face_photo', imageBlob, 'verification_face.jpg');
 
-  // 4. Send to Service
+  // DEBUG: Check your console. If you don't see "check_in_image: [object File]", the blob failed.
+  formData.forEach((value, key) => {
+    console.log(`${key}:`, value);
+  });
+
   this.employeeService.registerEmployeeAttendenceCheckInnew(formData).subscribe({
-    next: (res: any) => {
+    next: (res) => {
       this.isPunching = false;
-      alert("CHECK-IN SUCCESSFUL!");
-      console.log("Response:", res);
-      this.retakePhoto(); // Reset UI for next user
+      alert("Success!");
+      this.retakePhoto();
     },
-    error: (err: any) => {
+    error: (err) => {
       this.isPunching = false;
-      console.error("Full Error details:", err);
-      const msg = err.error?.detail || "Verification Failed. Check lighting.";
-      alert(`Error: ${msg}`);
+      console.error("Server Error:", err);
+      alert(err.error?.detail || "Error saving image");
     }
   });
 }
