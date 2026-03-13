@@ -14,6 +14,8 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription } from 'rxjs';
 import * as L from 'leaflet';
+import { fromEvent } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 
 declare var mapillary: any;
@@ -145,14 +147,25 @@ private searchTimer: any;
     );
   }
 
-  private initMapGuard() {
-    const checkExist = setInterval(() => {
-      if (document.getElementById('map')) {
-        this.initMap();
-        clearInterval(checkExist);
-      }
-    }, 100);
-  }
+ // 1. Update the Guard to include a size refresh
+
+ private initMapGuard() {
+  const checkExist = setInterval(() => {
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+      this.initMap();
+      
+      // CRITICAL: Leaflet needs a moment for the modal animation to finish
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize(); 
+        }
+      }, 300); 
+      
+      clearInterval(checkExist);
+    }
+  }, 100);
+}
 
   private initMap(): void {
     if (this.map) return;
@@ -382,37 +395,36 @@ closePreview() {
     const lat = this.selectedLocation.latitude;
     const lng = this.selectedLocation.longitude;
     const radius = this.selectedLocation.radius;
-
-    // Initialize map if it doesn't exist
-    if (!this.displayMap) {
-      this.displayMap = L.map('displayMap').setView([lat, lng], 16);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.displayMap);
-      this.layerGroup.addTo(this.displayMap);
-    }
-
-    // Clear old drawings
-    this.layerGroup.clearLayers();
-
-    // 1. Mark the Boundary (The "Marked" display)
-    const boundary = L.circle([lat, lng], {
-      radius: radius,
-      color: '#0d6efd',
-      weight: 3,
-      fillColor: '#0d6efd',
-      fillOpacity: 0.2,
-      interactive: false // Users cannot edit/drag
-    });
-
-    // 2. Add Center Marker
-    const marker = L.marker([lat, lng], { interactive: false });
-
-    this.layerGroup.addLayer(boundary);
-    this.layerGroup.addLayer(marker);
-
-    // Zoom to the location
-    this.displayMap.flyTo([lat, lng], 17);
+  
+    // Small delay to ensure the div is rendered before Leaflet tries to find it
+    setTimeout(() => {
+      if (!this.displayMap) {
+        this.displayMap = L.map('displayMap', {
+          zoomControl: false, // Cleaner look for short map
+          attributionControl: false // Hide leaflet logo for more space
+        }).setView([lat, lng], 16);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.displayMap);
+        this.layerGroup.addTo(this.displayMap);
+      }
+  
+      this.layerGroup.clearLayers();
+  
+      L.circle([lat, lng], {
+        radius: radius,
+        color: '#0d6efd',
+        weight: 2,
+        fillColor: '#0d6efd',
+        fillOpacity: 0.2,
+        interactive: false
+      }).addTo(this.layerGroup);
+  
+      L.marker([lat, lng], { interactive: false }).addTo(this.layerGroup);
+  
+      this.displayMap.invalidateSize(); // CRITICAL for dynamic short maps
+      this.displayMap.flyTo([lat, lng], 17);
+    }, 100);
   }
-
 
 
 
@@ -441,6 +453,14 @@ closePreview() {
   
     ngOnInit(): void {
   
+
+      fromEvent(window, 'resize')
+  .pipe(debounceTime(200))
+  .subscribe(() => {
+    if (this.map) {
+      this.map.invalidateSize();
+    }
+  });
 
   
        // combineLatest waits for both Schema and Branches to have a value
@@ -682,14 +702,22 @@ closePreview() {
   
         openPopus():void{
           this.iscreateovertimepolicy = true;
+
+          this
   
         }
       
-        closeapplicationModal():void{
-          this.iscreateovertimepolicy = false;
+       // 2. Update your close method to destroy the map
+closeapplicationModal() {
+  this.iscreateovertimepolicy = false; // Hide modal
+
+  if (this.map) {
+    this.map.remove(); // This destroys the map instance correctly
+    (this.map as any) = null; // Clear the variable
+  }
   
-        }
-  
+  this.resetForm();
+}
   
   
   

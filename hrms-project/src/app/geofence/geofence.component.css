@@ -104,6 +104,8 @@ table thead th {
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+
+    z-index: 2000 !important; /* Higher than Leaflet's 400-1000 range */
   }
   
   .modal-content {
@@ -490,3 +492,78 @@ outline: none-webkit-focus-ring-color auto 0px;
   border: 2px solid #2d3436;
 }
 .status-bubble.on { background: #55efc4; }
+
+
+/* Rounded corners for the container */
+.rounded-15 { border-radius: 15px; }
+
+/* Short Map Styling */
+.map-wrapper {
+  border: 1px solid #eee;
+  background: #f8f9fa;
+}
+
+.map-label {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  padding: 2px 8px;
+  font-size: 10px;
+  border-radius: 4px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Detailed Stat Box */
+.stat-box {
+  background: #f8f9fa;
+  padding: 8px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #f1f1f1;
+}
+
+.stat-box .label {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.stat-box .val {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Icon for header */
+.icon-circle {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.bg-primary-subtle { background-color: #e7f1ff; }
+
+#map {
+  height: 400px !important; /* Force height */
+  width: 100%;
+  display: block;
+  background-color: #f8f9fa; /* Background color helps you see if the div exists */
+}
+
+/* Ensure the modal content doesn't collapse */
+.modal-content {
+  min-height: 500px;
+}
+
+
+#displayMap, #map {
+  z-index: 1 !important; /* Force the map to stay in the background of the modal */
+  border-radius: 15px;
+}

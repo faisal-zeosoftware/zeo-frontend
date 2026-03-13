@@ -3796,6 +3796,7 @@ confirmDocRejection(approvalId: number): void {
             currentLng: number | null = null;
            
             cameraStream: MediaStream | null = null;
+            
 // CRITICAL: Initialize camera after view is ready
 ngAfterViewInit() {
   this.initCamera();
@@ -3843,24 +3844,20 @@ capturePhoto() {
   const ctx = canvas.getContext('2d');
   ctx?.drawImage(video, 0, 0);
   this.capturedImage = canvas.toDataURL('image/jpeg');
+  this.stopCamera();
 }
 
 retakePhoto() {
+  this.initCamera();
   this.capturedImage = null;
   // Ensure video resumes
   setTimeout(() => this.videoElement.nativeElement.play(), 100);
 }
 
-// getLocation() {
-//   if (navigator.geolocation) {
-//     navigator.geolocation.getCurrentPosition(pos => {
-//       this.currentLat = pos.coords.latitude;
-//       this.currentLng = pos.coords.longitude;
-//     });
-//   }
-// }
-
+isPunching:boolean=false;
 processPunch(type: 'in' | 'out') {
+  this.isPunching = true; // Start your loader
+
   const payload = {
     employee: this.selectedEmployeeId,
     date: new Date().toISOString().split('T')[0],
@@ -3868,16 +3865,46 @@ processPunch(type: 'in' | 'out') {
     [`check_${type}_time`]: new Date().toLocaleTimeString('en-GB'),
     [`check_${type}_lat`]: this.currentLat,
     [`check_${type}_lng`]: this.currentLng,
-    check_in_location: "Office Main Gate"
+    check_in_location: this.currentLocationName || "Office Main Gate"
   };
 
   const request = type === 'in' 
     ? this.employeeService.registerEmployeeAttendenceCheckIn(payload)
     : this.employeeService.registerEmployeeAttendenceCheckOut(payload);
 
-  request.subscribe((res: any) => {
-    alert(`${type.toUpperCase()} Successful!`);
-    this.retakePhoto();
+  request.subscribe({
+    next: (res: any) => {
+      this.isPunching = false;
+      // SUCCESS ALERT
+      alert(`${type.toUpperCase()} SUCCESSFUL!`);
+      // this.attendanceStatus = (type === 'in') ? 'IN' : 'OUT';
+      this.retakePhoto();
+    },
+    error: (err: any) => {
+      this.isPunching = false;
+      
+      // BACKEND ERROR LOGIC
+      // 1. Try to get the specific message from the backend response
+      // 2. If it's a string, show it. If it's an object, show the 'error' or 'message' field.
+      let errorMessage = `Failed to ${type}`;
+      
+      if (err.error) {
+        if (typeof err.error === 'string') {
+          errorMessage = err.error;
+        } else if (err.error.message) {
+          errorMessage = err.error.message;
+        } else if (err.error.error) {
+          errorMessage = err.error.error;
+        } else if (err.error.detail) {
+          errorMessage = err.error.detail;
+        }
+      }
+
+      // ALERT THE BACKEND ERROR
+      alert(`  (${type.toUpperCase()}): ${errorMessage}`);
+      
+      console.error(`${type} error details:`, err);
+    }
   });
 }
 
@@ -3916,6 +3943,8 @@ getLocationfacePunch() {
     });
   }
 }
+
+
 }
   
 

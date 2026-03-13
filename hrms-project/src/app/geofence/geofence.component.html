@@ -19,7 +19,7 @@
             </mat-icon></span> Create</button>
             <span *ngIf="!hasAddPermission"></span>
 
-            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+            <!-- <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
               <span class="header-btn-icon">
                 <mat-icon>draw
                 </mat-icon></span> Edit</button>
@@ -31,7 +31,7 @@
                 <mat-icon> delete
                 </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
 
-            <span *ngIf="!hasDeletePermission"></span>
+            <span *ngIf="!hasDeletePermission"></span> -->
           </div>
         </div>
       </div>
@@ -339,66 +339,71 @@
 
 
     <div class="com_list mt-4" >
-      <div class="viewer-container p-4" *ngIf="geofencepol && geofencepol.length > 0">
+      <div class="viewer-container p-3" *ngIf="geofencepol && geofencepol.length > 0">
   
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="cartoon-dropdown-wrapper">
-              <label class="fw-bold mb-2 text-dark">Select Location to View</label>
-              <select class="form-select cartoon-select" (change)="onLocationChange($event)">
-                <option value="" disabled selected>Choose a Geofence...</option>
-                <option *ngFor="let loc of geofencepol" [value]="loc.id">
-                  {{ loc.location_name.split(',')[0] }}
-                </option>
-              </select>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold m-0 text-muted">GEOFENCE VIEWER</h6>
+          <div class="compact-select-wrapper" style="width: 250px;">
+            <select class="form-select form-select-sm shadow-sm"  (change)="onLocationChange($event)">
+              <option value="" disabled selected>Select Location...</option>
+              <option *ngFor="let loc of geofencepol" [value]="loc.id">
+                {{ loc.location_name.split(',')[0] }}
+              </option>
+            </select>
+          </div>
+        </div>
+      
+        <div class="row g-3" *ngIf="selectedLocation">
+          <div class="col-md-5">
+            <div class="card border-0 shadow-sm h-100 rounded-15">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="icon-circle bg-primary-subtle me-2">
+                    <i class="fa fa-map-marker-alt text-primary"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 fw-bold">{{ selectedLocation.location_name.split(',')[0] }}</h6>
+                    <small class="text-muted d-block text-truncate" style="max-width: 180px;">
+                      {{ selectedLocation.location_name }}
+                    </small>
+                  </div>
+                </div>
+      
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <div class="stat-box">
+                      <span class="label">RADIUS</span>
+                      <span class="val text-primary">{{ selectedLocation.radius }}m</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="stat-box">
+                      <span class="label">STAFF</span>
+                      <span class="val">{{ selectedLocation.employee.length }}</span>
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="mb-2">
+                  <label class="small fw-bold text-muted mb-1">BRANCHES</label>
+                  <div class="d-flex flex-wrap gap-1">
+                    <span class="badge bg-light text-dark border fw-normal" *ngFor="let b of selectedLocation.branch">
+                      Branch ID: {{b}}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="mt-3 pt-2 border-top">
+                  <small class="text-muted d-block">GPS: {{selectedLocation.latitude}}, {{selectedLocation.longitude}}</small>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
       
-        <div class="map-frame mb-4">
-          <div id="displayMap" style="height: 400px; width: 100%; border-radius: 20px;"></div>
-          <div class="view-only-ribbon">VIEW ONLY MODE</div>
-        </div>
-      
-        <div class="details-card shadow-sm" *ngIf="selectedLocation">
-          <div class="card-header bg-primary text-white py-3 px-4">
-            <h5 class="m-0 fw-bold"><i class="fa fa-info-circle me-2"></i>Location Details</h5>
-          </div>
-          
-          <div class="card-body p-0">
-            <div class="row g-0">
-              <div class="col-md-8 p-4 border-end">
-                <h4 class="fw-bold text-dark mb-1">{{ selectedLocation.location_name.split(',')[0] }}</h4>
-                <p class="text-muted mb-4">{{ selectedLocation.location_name }}</p>
-                
-                <div class="row">
-                  <div class="col-sm-6 mb-3">
-                    <label class="stat-label">LATITUDE</label>
-                    <div class="stat-value">{{ selectedLocation.latitude }}</div>
-                  </div>
-                  <div class="col-sm-6 mb-3">
-                    <label class="stat-label">LONGITUDE</label>
-                    <div class="stat-value">{{ selectedLocation.longitude }}</div>
-                  </div>
-                </div>
-              </div>
-      
-              <div class="col-md-4 p-4 bg-light">
-                <div class="mb-3">
-                  <label class="stat-label">SAFE RADIUS</label>
-                  <div class="stat-value text-primary">{{ selectedLocation.radius }} Meters</div>
-                </div>
-                <div class="mb-3">
-                  <label class="stat-label">LINKED BRANCHES</label>
-                  <div class="d-flex flex-wrap gap-1 mt-1">
-                    <span class="badge bg-dark" *ngFor="let b of selectedLocation.branch">ID: {{b}}</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="stat-label">EMPLOYEE COUNT</label>
-                  <div class="stat-value">{{ selectedLocation.employee.length }} Staff</div>
-                </div>
-              </div>
+          <div class="col-md-7">
+            <div class="map-wrapper shadow-sm rounded-15 overflow-hidden position-relative">
+              <div id="displayMap" style="height: 250px; width: 100%;"></div>
+              <div class="map-label">READ ONLY</div>
             </div>
           </div>
         </div>
