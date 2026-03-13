@@ -3464,6 +3464,12 @@ updateGeofence(id: number, data: any): Observable<any> {
   }
 
 
+  registerEmployeeAttendenceCheckInnew(formData: FormData): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${selectedSchema}`;
+    return this.http.post(apiUrl, formData); // No headers needed for FormData
+  }
+
   registerEmailTemplateDocReq(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -3586,6 +3592,12 @@ updateGeofence(id: number, data: any): Observable<any> {
 
       })
     );
+  }
+
+  registerEmployeeAttendenceCheckOutnew(formData: FormData): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance/check_out/?schema=${selectedSchema}`;
+    return this.http.post(apiUrl, formData);
   }
   //   getApprovalslist(selectedSchema: string, userId: number): Observable<any> {
   //     const apiUrl = `${this.apiUrl}/users/api/user/${userId}/approvals/?schema=${selectedSchema}`;

@@ -2755,15 +2755,15 @@
       
                     <div class="d-grid gap-3">
                       <button class="btn btn-outline-success btn-lg py-3 fw-bold shadow-sm" 
-                              (click)="processPunch('in')" 
-                              [disabled]="!capturedImage || !currentLat || isPunching">
+                              (click)="processCheckIn()" 
+                              [disabled]="!capturedImage || isPunching">
                         <span *ngIf="!isPunching">CONFIRM CHECK-IN</span>
                         <span *ngIf="isPunching"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
                       </button>
                       
                       <button class="btn btn-outline-danger btn-lg py-3 fw-bold" 
-                              (click)="processPunch('out')" 
-                              [disabled]="!capturedImage || !currentLat || isPunching">
+                              (click)="processCheckOut()" 
+                              [disabled]="!capturedImage || isPunching">
                         <span *ngIf="!isPunching">CONFIRM CHECK-OUT</span>
                         <span *ngIf="isPunching"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
                       </button>

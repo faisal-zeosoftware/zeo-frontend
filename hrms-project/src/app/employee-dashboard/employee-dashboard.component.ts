@@ -3854,48 +3854,93 @@ retakePhoto() {
   setTimeout(() => this.videoElement.nativeElement.play(), 100);
 }
 
+
+// 1. Helper to convert Base64 to a Blob (File)
+private base64ToBlob(base64: string, type: string) {
+  const byteString = atob(base64.split(',')[1]);
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: type });
+}
+
+
 isPunching:boolean=false;
 
-processPunch(type: 'in' | 'out') {
+// 2. Separate Check-In Function
+processCheckIn() {
+  if (!this.capturedImage) return alert("Please capture a photo first");
+  if (!this.selectedEmployeeId ) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
   this.isPunching = true;
 
-  // Build the payload dynamically
-  const payload: any = {
-    employee: this.selectedEmployeeId,
-    date: new Date().toISOString().split('T')[0],
-    // Set coordinates and time dynamically
-    [`check_${type}_time`]: new Date().toLocaleTimeString('en-GB'),
-    [`check_${type}_lat`]: this.currentLat,
-    [`check_${type}_lng`]: this.currentLng,
-    [`check_${type}_location`]: this.currentLocationName || "Office Main Gate"
-  };
+  const formData = new FormData();
+  formData.append('employee', this.selectedEmployeeId.toString());
+  formData.append('date', new Date().toISOString().split('T')[0]);
+  formData.append('check_in_time', new Date().toLocaleTimeString('en-GB'));
+  formData.append('check_in_lat', this.currentLat?.toString() || '0');
+  formData.append('check_in_lng', this.currentLng?.toString() || '0');
+  formData.append('check_in_location', this.currentLocationName || "Office Main Gate");
 
-  // CRITICAL: Assign the image to the specific field name your backend expects
-  if (type === 'in') {
-    payload.check_in_image = this.capturedImage;
-  } else {
-    payload.check_out_image = this.capturedImage;
-  }
+  // Convert and append the image as a FILE
+  const imageBlob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
+  formData.append('check_in_image', imageBlob, 'check_in.jpg');
+  
+  // Also send as face_photo if the backend middleware requires that specific key for verification
+  formData.append('face_photo', imageBlob, 'verify.jpg');
 
-  // Choose the correct service function
-  const request = type === 'in' 
-    ? this.employeeService.registerEmployeeAttendenceCheckIn(payload)
-    : this.employeeService.registerEmployeeAttendenceCheckOut(payload);
-
-  request.subscribe({
-    next: (res: any) => {
+  this.employeeService.registerEmployeeAttendenceCheckInnew(formData).subscribe({
+    next: (res) => {
       this.isPunching = false;
-      alert(`${type.toUpperCase()} SUCCESSFUL!`);
-      this.retakePhoto(); // Reset camera for next use
+      alert("CHECK-IN SUCCESSFUL!");
+      this.retakePhoto();
     },
-    error: (err: any) => {
+    error: (err) => {
       this.isPunching = false;
-      let errorMessage = this.getErrorMessage(err, type);
-      alert(`Error (${type.toUpperCase()}): ${errorMessage}`);
-      console.error(`${type} error details:`, err);
+      alert(`Check-In Error: ${err.error?.detail || 'Verification Failed'}`);
     }
   });
 }
+
+
+// 3. Separate Check-Out Function
+processCheckOut() {
+  if (!this.capturedImage) return alert("Please capture a photo first");
+  if (!this.selectedEmployeeId  ) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+  this.isPunching = true;
+
+  const formData = new FormData();
+  formData.append('employee', this.selectedEmployeeId.toString());
+  formData.append('date', new Date().toISOString().split('T')[0]);
+  formData.append('check_out_time', new Date().toLocaleTimeString('en-GB'));
+  formData.append('check_out_lat', this.currentLat?.toString() || '0');
+  formData.append('check_out_lng', this.currentLng?.toString() || '0');
+  formData.append('check_out_location', this.currentLocationName || "Office Main Gate");
+
+  const imageBlob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
+  formData.append('check_out_image', imageBlob, 'check_out.jpg');
+  formData.append('face_photo', imageBlob, 'verify.jpg');
+
+  this.employeeService.registerEmployeeAttendenceCheckOutnew(formData).subscribe({
+    next: (res) => {
+      this.isPunching = false;
+      alert("CHECK-OUT SUCCESSFUL!");
+      this.retakePhoto();
+    },
+    error: (err) => {
+      this.isPunching = false;
+      alert(`Check-Out Error: ${err.error?.detail || 'Verification Failed'}`);
+    }
+  });
+}
+
 
 // Optional: Helper to keep code clean
 private getErrorMessage(err: any, type: string): string {
