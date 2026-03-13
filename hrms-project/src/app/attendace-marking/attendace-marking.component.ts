@@ -308,56 +308,6 @@ closeUploadForm(): void {
 
 
 
-    // Submit file to backend
-    // submitBulkUpload() {
-    //   if (!this.selectedFile) {
-    //     alert('Please select a file first.');
-    //     return;
-    //   }
-    
-    //   const selectedSchema = localStorage.getItem('selectedSchema');
-    //   if (!selectedSchema) {
-    //     alert('No schema selected.');
-    //     return;
-    //   }
-    
-    //   const formData = new FormData();
-    //   formData.append('file', this.selectedFile);
-    
-    //   const uploadUrl = `http://localhost:8000/calendars/api/import-attendance/bulk_upload/?schema=${selectedSchema}`;
-    
-    //   this.http.post(uploadUrl, formData).subscribe(
-    //     (response: any) => {
-    //       console.log('Bulk upload successful', response);
-    //       alert('Bulk upload successful!');
-    //       this.selectedFile = null;
-    //       this.showBulkUpload = false;
-    //     },
-    //     (error: any) => {
-    //       console.error('Bulk upload failed', error);
-    //       alert('Bulk upload failed. Please check the file and try again.');
-    //     }
-    //   );
-    // }
-        
-
-
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_attendance' ||'change_attendance' ||'delete_attendance' ||'view_attendance';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-
   
 checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
@@ -505,6 +455,19 @@ async registerCheckOut(): Promise<void> {
 
   // }
 
+
+  // Add these to your component class
+selectedAttendance: any = null;
+
+// This method hides the table and shows the face dashboard
+openFaceDashboard(employeeData: any) {
+  this.selectedAttendance = employeeData;
+}
+
+// This method returns to the main table
+closeFaceDashboard() {
+  this.selectedAttendance = null;
+}
  
 
   fetchLoadEmployeePunching(schema: string, branchIds: number[]): void {
@@ -527,25 +490,6 @@ async registerCheckOut(): Promise<void> {
   }
 
 
-  // LoadEmployeeAttendance() {
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore',selectedSchema )
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.employeeService.getAllEmployeeAtttendance(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.EmployeeAllAttendance = result;
-  //         console.log(' fetching EmployeeAllAttendance:');
-  
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching EmployeeAllAttendance:', error);
-  //       }
-  //     );
-  //   }
-
-  // }
 
 
   LoadEmployeeAttendance(callback?: Function): void {

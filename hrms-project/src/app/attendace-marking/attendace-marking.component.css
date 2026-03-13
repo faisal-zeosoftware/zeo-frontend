@@ -683,3 +683,55 @@ input:focus-visible {
   padding: 4px 7px;
   height: 35px;
 }
+
+
+
+
+.thumb-lg {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #eee;
+}
+
+.dashboard-card {
+  border-top: 4px solid #1976d2;
+  background: #fff;
+}
+
+.dashboard-card p {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.dashboard-card strong {
+  color: #555;
+  width: 110px;
+  display: inline-block;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.main-row:hover {
+  background-color: #f1f8ff !important;
+}
+
+/* Add this to your CSS */
+.log-details-row {
+  display: table-row !important;
+  background-color: #f9f9f9;
+}
+
+.log-container {
+  display: block;
+  width: 100%;
+  padding: 15px;
+}
