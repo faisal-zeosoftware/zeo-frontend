@@ -3871,41 +3871,53 @@ isPunching:boolean=false;
 
 // 2. Separate Check-In Function
 processCheckIn() {
-  if (!this.capturedImage) return alert("Please capture a photo first");
-  if (!this.selectedEmployeeId ) {
+  if (!this.capturedImage) {
+    alert("Please capture a photo first.");
+    return;
+  }
+   if (!this.selectedEmployeeId  ) {
     alert('Please ensure Employee is loaded.');
     return;
   }
+
   this.isPunching = true;
 
+  // 1. Prepare FormData (Multipart/Form-Data)
   const formData = new FormData();
+  
+  // 2. Add standard fields
   formData.append('employee', this.selectedEmployeeId.toString());
   formData.append('date', new Date().toISOString().split('T')[0]);
   formData.append('check_in_time', new Date().toLocaleTimeString('en-GB'));
   formData.append('check_in_lat', this.currentLat?.toString() || '0');
   formData.append('check_in_lng', this.currentLng?.toString() || '0');
-  formData.append('check_in_location', this.currentLocationName || "Office Main Gate");
+  formData.append('check_in_location', this.currentLocationName || "Office Gate");
 
-  // Convert and append the image as a FILE
+  // 3. Convert image and add to specific keys
   const imageBlob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
-  formData.append('check_in_image', imageBlob, 'check_in.jpg');
   
-  // Also send as face_photo if the backend middleware requires that specific key for verification
-  formData.append('face_photo', imageBlob, 'verify.jpg');
+  // Key 1: For the database record (check_in_image)
+  formData.append('check_in_image', imageBlob, `checkin_${Date.now()}.jpg`);
+  
+  // Key 2: For the backend verification logic (face_photo)
+  formData.append('face_photo', imageBlob, `verify_${Date.now()}.jpg`);
 
+  // 4. Send to Service
   this.employeeService.registerEmployeeAttendenceCheckInnew(formData).subscribe({
-    next: (res) => {
+    next: (res: any) => {
       this.isPunching = false;
       alert("CHECK-IN SUCCESSFUL!");
-      this.retakePhoto();
+      console.log("Response:", res);
+      this.retakePhoto(); // Reset UI for next user
     },
-    error: (err) => {
+    error: (err: any) => {
       this.isPunching = false;
-      alert(`Check-In Error: ${err.error?.detail || 'Verification Failed'}`);
+      console.error("Full Error details:", err);
+      const msg = err.error?.detail || "Verification Failed. Check lighting.";
+      alert(`Error: ${msg}`);
     }
   });
 }
-
 
 // 3. Separate Check-Out Function
 processCheckOut() {
