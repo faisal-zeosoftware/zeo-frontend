@@ -3855,19 +3855,29 @@ retakePhoto() {
 }
 
 isPunching:boolean=false;
-processPunch(type: 'in' | 'out') {
-  this.isPunching = true; // Start your loader
 
-  const payload = {
+processPunch(type: 'in' | 'out') {
+  this.isPunching = true;
+
+  // Build the payload dynamically
+  const payload: any = {
     employee: this.selectedEmployeeId,
     date: new Date().toISOString().split('T')[0],
-    face_photo: this.capturedImage,
+    // Set coordinates and time dynamically
     [`check_${type}_time`]: new Date().toLocaleTimeString('en-GB'),
     [`check_${type}_lat`]: this.currentLat,
     [`check_${type}_lng`]: this.currentLng,
-    check_in_location: this.currentLocationName || "Office Main Gate"
+    [`check_${type}_location`]: this.currentLocationName || "Office Main Gate"
   };
 
+  // CRITICAL: Assign the image to the specific field name your backend expects
+  if (type === 'in') {
+    payload.check_in_image = this.capturedImage;
+  } else {
+    payload.check_out_image = this.capturedImage;
+  }
+
+  // Choose the correct service function
   const request = type === 'in' 
     ? this.employeeService.registerEmployeeAttendenceCheckIn(payload)
     : this.employeeService.registerEmployeeAttendenceCheckOut(payload);
@@ -3875,39 +3885,26 @@ processPunch(type: 'in' | 'out') {
   request.subscribe({
     next: (res: any) => {
       this.isPunching = false;
-      // SUCCESS ALERT
       alert(`${type.toUpperCase()} SUCCESSFUL!`);
-      // this.attendanceStatus = (type === 'in') ? 'IN' : 'OUT';
-      this.retakePhoto();
+      this.retakePhoto(); // Reset camera for next use
     },
     error: (err: any) => {
       this.isPunching = false;
-      
-      // BACKEND ERROR LOGIC
-      // 1. Try to get the specific message from the backend response
-      // 2. If it's a string, show it. If it's an object, show the 'error' or 'message' field.
-      let errorMessage = `Failed to ${type}`;
-      
-      if (err.error) {
-        if (typeof err.error === 'string') {
-          errorMessage = err.error;
-        } else if (err.error.message) {
-          errorMessage = err.error.message;
-        } else if (err.error.error) {
-          errorMessage = err.error.error;
-        } else if (err.error.detail) {
-          errorMessage = err.error.detail;
-        }
-      }
-
-      // ALERT THE BACKEND ERROR
-      alert(`  (${type.toUpperCase()}): ${errorMessage}`);
-      
+      let errorMessage = this.getErrorMessage(err, type);
+      alert(`Error (${type.toUpperCase()}): ${errorMessage}`);
       console.error(`${type} error details:`, err);
     }
   });
 }
 
+// Optional: Helper to keep code clean
+private getErrorMessage(err: any, type: string): string {
+  if (err.error) {
+    if (typeof err.error === 'string') return err.error;
+    return err.error.message || err.error.error || err.error.detail || `Failed to ${type}`;
+  }
+  return `Failed to ${type}`;
+}
 // Stop camera when leaving page to prevent "Camera in use" errors
 ngOnDestroy() {
   if (this.cameraStream) {

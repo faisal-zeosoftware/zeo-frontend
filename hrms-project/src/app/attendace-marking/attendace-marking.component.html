@@ -245,8 +245,8 @@
                   <ng-container *ngFor="let docs of Punching; let i = index">
                     <tr class="main-row" (click)="openFaceDashboard(docs)" style="cursor: pointer;">
                       <td (click)="$event.stopPropagation()"> 
-                        <button mat-icon-button (click)="docs.isExpanded = !docs.isExpanded">
-                          <mat-icon>{{ docs.isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                        <button mat-icon-button (click)="docs.isExpanded = !docs.isExpanded" style="background: whitesmoke;">
+                          <mat-icon style="color: black;">{{ docs.isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
                         </button>
                       </td>
                       <td>{{ i + 1 }}</td>
