@@ -3467,7 +3467,10 @@ updateGeofence(id: number, data: any): Observable<any> {
   registerEmployeeAttendenceCheckInnew(formData: FormData): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     const apiUrl = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${selectedSchema}`;
-    return this.http.post(apiUrl, formData); // No headers needed for FormData
+    
+    // IMPORTANT: Just pass the formData. 
+    // Angular will automatically set the correct Content-Type with boundary.
+    return this.http.post(apiUrl, formData); 
   }
 
   registerEmailTemplateDocReq(companyData: any): Observable<any> {

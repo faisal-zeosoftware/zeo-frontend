@@ -3903,7 +3903,7 @@ processCheckIn() {
   formData.append('face_photo', imageBlob, `verify_${Date.now()}.jpg`);
 
   // 4. Send to Service
-  this.employeeService.registerEmployeeAttendenceCheckInnew(formData).subscribe({
+  this.employeeService.registerEmployeeAttendenceCheckIn(formData).subscribe({
     next: (res: any) => {
       this.isPunching = false;
       alert("CHECK-IN SUCCESSFUL!");
