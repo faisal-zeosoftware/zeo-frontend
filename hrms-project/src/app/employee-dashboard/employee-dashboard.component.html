@@ -1386,7 +1386,7 @@
                [ngModelOptions]="{standalone: true}">
               <option value="">-- Select Leave Type --</option>
               <option *ngFor="let lt of LeaveTypes" [value]="lt.id">
-                {{ lt.leave_type }}
+                {{ lt.name }}
               </option>
              </select>
           

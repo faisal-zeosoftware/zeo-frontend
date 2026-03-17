@@ -1152,27 +1152,24 @@ formatComponents(components: any[]): string {
 
 
 
-
+allLeaveTypes: any[] = [];
+  leaveBalances: any[] = [];
 LeaveTypes: any[] = [];
 
 loadEmpLeaveBalance(selectedSchema: string, empId: number): void {
   this.EmployeeService.getEmpLeaveBalance(selectedSchema, empId).subscribe(
-    (result: any) => {
-      console.log('Raw leave balance result:', result);
+    (data: any) =>  {
+      this.leaveBalances = data.leave_balance;
+      this.allLeaveTypes = data.available_leave_types;
 
-      // ✅ Combine data — only take leave types with balance > 0
-      if (result && result.leave_balance && Array.isArray(result.leave_balance)) {
-        this.LeaveTypes = result.leave_balance.filter(
-          (item: any) => item.balance > 0 // show only leaves with balance
-        );
+      // Filter available leave types based on the employee's leave balance
+      const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
+      this.LeaveTypes = this.allLeaveTypes.filter(lt => leaveTypeNames.includes(lt.name));
 
-        console.log('Filtered LeaveTypes (with balance):', this.LeaveTypes);
-      } else {
-        this.LeaveTypes = [];
-      }
+      console.log('Filtered Leave Types:', this.LeaveTypes);
     },
-    (error) => {
-      console.error('Error fetching Employee Leave Balance:', error);
+    (error: any) => {
+      console.error('Error fetching leave balance:', error);
     }
   );
 }
@@ -1375,43 +1372,36 @@ toggleApprovalsDropdown() {
   totalDays: number = 0;
 
   requestLeave(): void {
-    // 1. Better Validation
-    if (!this.selectedEmployeeId) {
-      alert('Employee data not loaded.');
-      return;
-    }
-    if (!this.leave_type) {
-      alert('Please select a Leave Type.');
-      return;
-    }
+    if (!this.selectedEmployeeId) return alert('Employee data not loaded.');
+    if (!this.leave_type) return alert('Please select a Leave Type.');
   
     const formData = new FormData();
     
-    // Basic Fields
     formData.append('start_date', this.start_date);
     formData.append('end_date', this.end_date);
     formData.append('reason', this.reason || '');
     formData.append('dis_half_day', String(this.dis_half_day));
     formData.append('half_day_period', this.dis_half_day ? this.half_day_period : '');
-    
-    // Foreign Keys (Ensure they are strings of IDs)
-    // formData.append('leave_type', this.leave_type.toString());
     formData.append('leave_type', String(this.leave_type));
-    formData.append('employee', this.selectedEmployeeId.toString());
+    formData.append('employee', String(this.selectedEmployeeId));
+    
+    // Add Branch if your backend requires it for the employee_leave_request model
+    if (this.selectedBranchId) {
+      formData.append('branch', String(this.selectedBranchId));
+    }
   
     this.leaveService.requestLeaveAdmin(formData).subscribe({
       next: (response) => {
         alert('Leave Request sent successfully!');
-        // Reset form or redirect
       },
       error: (error) => {
-        console.error('Full Error Object:', error);
-        // Your existing error handling logic is good
-        alert("Error: " + (error.error?.leave_type?.[0] || "Server Error"));
+        console.error('Error Details:', error.error);
+        // This will now alert "Invalid pk" specifically if that's the error
+        const msg = error.error?.leave_type?.[0] || error.error?.detail || "Server Error";
+        alert("Leave Request Failed: " + msg);
       }
     });
   }
-
 
   getLocation(): Promise<any> {
     return new Promise((resolve, reject) => {
