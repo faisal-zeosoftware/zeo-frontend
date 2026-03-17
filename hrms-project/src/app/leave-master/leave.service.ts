@@ -100,23 +100,31 @@ export class LeaveService {
   }
 
 
-  requestLeaveAdmin(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError('No schema selected.');
-    }
+  // requestLeaveAdmin(formData: FormData): Observable<any> {
+  //   const selectedSchema = localStorage.getItem('selectedSchema');
+  //   if (!selectedSchema) {
+  //     console.error('No schema selected.');
+  //     return throwError('No schema selected.');
+  //   }
   
-    const apiUrl = `${this.apiUrl}/calendars/api/emp-leave-request/?schema=${selectedSchema}`;
+  //   const apiUrl = `${this.apiUrl}/calendars/api/emp-leave-request/?schema=${selectedSchema}`;
   
-    return this.http.post(apiUrl, formData).pipe(
-      catchError((error) => {
-        console.error('Error during leave type registration:', error);
-        return throwError(error);
-      })
-    );
-  }
+  //   return this.http.post(apiUrl, formData).pipe(
+  //     catchError((error) => {
+  //       console.error('Error during leave type registration:', error);
+  //       return throwError(error);
+  //     })
+  //   );
+  // }
 
+  requestLeaveAdmin(formData: FormData): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema'); 
+    
+    // Ensure the schema is being passed in the query params correctly
+    const url = `${this.apiUrl}/calendars/api/emp-leave-request/?schema=${selectedSchema}`;
+    
+    return this.http.post(url, formData);
+  }
 
 
   EmployeeRechecIn(data: any): Observable<any> {

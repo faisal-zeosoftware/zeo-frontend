@@ -1395,7 +1395,8 @@ toggleApprovalsDropdown() {
     formData.append('half_day_period', this.dis_half_day ? this.half_day_period : '');
     
     // Foreign Keys (Ensure they are strings of IDs)
-    formData.append('leave_type', this.leave_type.toString());
+    // formData.append('leave_type', this.leave_type.toString());
+    formData.append('leave_type', String(this.leave_type));
     formData.append('employee', this.selectedEmployeeId.toString());
   
     this.leaveService.requestLeaveAdmin(formData).subscribe({
