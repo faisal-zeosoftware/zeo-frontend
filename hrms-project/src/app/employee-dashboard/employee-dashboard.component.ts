@@ -1374,71 +1374,42 @@ toggleApprovalsDropdown() {
   LeaveRequests: any[] = [];
   totalDays: number = 0;
 
-requestLeave(): void {
-  if (!this.selectedEmployeeId  || !this.selectedBranchId) {
-    alert('Please ensure Employee is loaded.');
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('start_date', this.start_date);
-  formData.append('end_date', this.end_date);
-  formData.append('reason', this.reason);
-  formData.append('status', this.status);
-  formData.append('dis_half_day', this.dis_half_day.toString());
-  formData.append('half_day_period', this.half_day_period);
-  formData.append('document_number', this.document_number?.toString() || '');
-  formData.append('leave_type', this.leave_type.toString());
-  formData.append('employee', this.selectedEmployeeId.toString());
-
-  this.leaveService.requestLeaveAdmin(formData).subscribe(
-    (response) => {
-      console.log('Leave request successful:', response);
-      alert('Leave Request has been sent successfully!');
-      // window.location.reload();
-    },
-(error) => {
-  console.error('Leave request failed:', error);
-
-  let errorMessage = 'Something went wrong.';
-
-  if (error.error) {
-
-    // 🔹 Case 1: Plain string error
-    if (typeof error.error === 'string') {
-      errorMessage = error.error;
+  requestLeave(): void {
+    // 1. Better Validation
+    if (!this.selectedEmployeeId) {
+      alert('Employee data not loaded.');
+      return;
     }
-
-    // 🔹 Case 2: DRF validation errors (object)
-    else if (typeof error.error === 'object') {
-
-      const messages: string[] = [];
-
-      Object.keys(error.error).forEach((field) => {
-        const value = error.error[field];
-
-        if (Array.isArray(value)) {
-          messages.push(`${field}: ${value.join(', ')}`);
-        } else if (typeof value === 'string') {
-          messages.push(`${field}: ${value}`);
-        }
-      });
-
-      if (messages.length > 0) {
-        errorMessage = messages.join('\n');
+    if (!this.leave_type) {
+      alert('Please select a Leave Type.');
+      return;
+    }
+  
+    const formData = new FormData();
+    
+    // Basic Fields
+    formData.append('start_date', this.start_date);
+    formData.append('end_date', this.end_date);
+    formData.append('reason', this.reason || '');
+    formData.append('dis_half_day', String(this.dis_half_day));
+    formData.append('half_day_period', this.dis_half_day ? this.half_day_period : '');
+    
+    // Foreign Keys (Ensure they are strings of IDs)
+    formData.append('leave_type', this.leave_type.toString());
+    formData.append('employee', this.selectedEmployeeId.toString());
+  
+    this.leaveService.requestLeaveAdmin(formData).subscribe({
+      next: (response) => {
+        alert('Leave Request sent successfully!');
+        // Reset form or redirect
+      },
+      error: (error) => {
+        console.error('Full Error Object:', error);
+        // Your existing error handling logic is good
+        alert("Error: " + (error.error?.leave_type?.[0] || "Server Error"));
       }
-    }
-
-    // 🔹 Case 3: DRF "detail" message
-    else if (error.error.detail) {
-      errorMessage = error.error.detail;
-    }
+    });
   }
-
-  alert(`Leave request failed!\n\n${errorMessage}`);
-}
-  );
-}
 
 
   getLocation(): Promise<any> {
