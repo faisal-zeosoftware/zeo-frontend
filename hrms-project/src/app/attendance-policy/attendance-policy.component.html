@@ -1,0 +1,217 @@
+<div class="container" *ngIf="hasViewPermission">
+  <div class="comapny_section">
+
+    <!-- HEADER -->
+    <div class="header_section">
+      <div class="row align-items-center">
+          <div class="col-md-3">
+            <h1>Attendance Policy</h1>
+          </div>
+
+        <!-- <div class="col-md-6 text-end" *ngIf="hasAddPermission">
+          <button type="button"
+            class="btn btn-secondary"
+            (click)="OpenBulkuploadModal()"
+            *ngIf="hasEditPermission">
+            <mat-icon>system_update_alt</mat-icon> Import
+          </button>
+        </div> -->
+      </div>
+    </div>
+
+    <!-- FORM SECTION -->
+  <div class="com_list mt-4">
+    <div class="form-section mt-3">
+
+      <!-- ROW 1 -->
+      <div class="row align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Policy Name</label>
+          <input type="text" class="form-control"
+            [(ngModel)]="policy.name"
+            [ngModelOptions]="{standalone: true}">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Select Branch</label>
+          <select class="form-control"
+            [(ngModel)]="policy.branch"
+            [ngModelOptions]="{standalone: true}">
+            <option value="">Select</option>
+            <option *ngFor="let b of branches" [value]="b.id">
+              {{ b.branch_name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-center mt-3">
+          <input type="checkbox"
+            [(ngModel)]="policy.is_active"
+            [ngModelOptions]="{standalone: true}">
+          <label class="ms-2">Is Active</label>
+        </div>
+      </div>
+
+      <!-- POLICY OPTIONS -->
+      <div class="row mt-4">
+
+        <!-- Early Check In -->
+        <div class="col-md-6 policy-box">
+          <div class="d-flex align-items-center mb-2">
+            <input type="checkbox"
+              [(ngModel)]="policy.early_check_in"
+              [ngModelOptions]="{standalone: true}">
+            <label class="ms-2">Early Check In</label>
+          </div>
+          <input type="number" class="form-control"
+            placeholder="Minutes"
+            [(ngModel)]="policy.early_check_in_minutes"
+            [disabled]="!policy.early_check_in"
+            [ngModelOptions]="{standalone: true}">
+        </div>
+
+        <!-- Late Check In -->
+        <div class="col-md-6 policy-box">
+          <div class="d-flex align-items-center mb-2">
+            <input type="checkbox"
+              [(ngModel)]="policy.late_check_in"
+              [ngModelOptions]="{standalone: true}">
+            <label class="ms-2">Late Check In</label>
+          </div>
+          <input type="number" class="form-control"
+            placeholder="Minutes"
+            [(ngModel)]="policy.late_check_in_minutes"
+            [disabled]="!policy.late_check_in"
+            [ngModelOptions]="{standalone: true}">
+        </div>
+
+        <!-- Early Check Out -->
+        <div class="col-md-6 policy-box mt-3">
+          <div class="d-flex align-items-center mb-2">
+            <input type="checkbox"
+              [(ngModel)]="policy.early_check_out"
+              [ngModelOptions]="{standalone: true}">
+            <label class="ms-2">Early Check Out</label>
+          </div>
+          <input type="number" class="form-control"
+            placeholder="Minutes"
+            [(ngModel)]="policy.early_check_out_minutes"
+            [disabled]="!policy.early_check_out"
+            [ngModelOptions]="{standalone: true}">
+        </div>
+
+        <!-- Late Check Out -->
+        <div class="col-md-6 policy-box mt-3">
+          <div class="d-flex align-items-center mb-2">
+            <input type="checkbox"
+              [(ngModel)]="policy.late_check_out"
+              [ngModelOptions]="{standalone: true}">
+            <label class="ms-2">Late Check Out</label>
+          </div>
+          <input type="number" class="form-control"
+            placeholder="Minutes"
+            [(ngModel)]="policy.late_check_out_minutes"
+            [disabled]="!policy.late_check_out"
+            [ngModelOptions]="{standalone: true}">
+        </div>
+
+      </div>
+
+      <!-- SAVE BUTTON -->
+      <div class="text-end mt-4">
+        <button class="btn btn-success" (click)="saveAttendancePolicy()">
+          Save Policy
+        </button>
+      </div>
+
+    </div>
+
+
+    </div>
+
+    <!-- TABLE SECTION -->
+<div class="com_list mt-4">
+  <div class="table-container">
+
+    <table class="punching-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Policy Name</th>
+          <th>Branch</th>
+          <th>Early Check In</th>
+          <th>Late Check In</th>
+          <th>Early Check Out</th>
+          <th>Late Check Out</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let policy of policies; let i = index">
+
+          <td>{{ i + 1 }}</td>
+
+          <td>{{ policy.name }}</td>
+
+          <td>{{ getBranchName(policy.branch) }}</td>
+
+          <td>
+            <span *ngIf="policy.early_check_in; else noEarlyIn">
+              {{ policy.early_check_in_minutes }} min
+            </span>
+            <ng-template #noEarlyIn>-</ng-template>
+          </td>
+
+          <td>
+            <span *ngIf="policy.late_check_in; else noLateIn">
+              {{ policy.late_check_in_minutes }} min
+            </span>
+            <ng-template #noLateIn>-</ng-template>
+          </td>
+
+          <td>
+            <span *ngIf="policy.early_check_out; else noEarlyOut">
+              {{ policy.early_check_out_minutes }} min
+            </span>
+            <ng-template #noEarlyOut>-</ng-template>
+          </td>
+
+          <td>
+            <span *ngIf="policy.late_check_out; else noLateOut">
+              {{ policy.late_check_out_minutes }} min
+            </span>
+            <ng-template #noLateOut>-</ng-template>
+          </td>
+
+          <td>
+            <span class="badge"
+              [ngClass]="policy.is_active ? 'bg-success' : 'bg-secondary'">
+              {{ policy.is_active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+
+        </tr>
+
+        <!-- EMPTY STATE -->
+        <tr *ngIf="policies.length === 0">
+          <td colspan="8" class="text-center text-muted">
+            No Attendance Policies Found
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+  </div>
+</div>
+
+
+
+
+
+
+

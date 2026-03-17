@@ -244,6 +244,7 @@ import { AttendancePunchingComponent } from './attendance-punching/attendance-pu
 import { EmployeeFaceRegisterComponent } from './employee-face-register/employee-face-register.component';
 import { ManualEntryComponent } from './manual-entry/manual-entry.component';
 import { EmployeePunchingDetailsComponent } from './employee-punching-details/employee-punching-details.component';
+import { AttendancePolicyComponent } from './attendance-policy/attendance-policy.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -446,6 +447,7 @@ import { EmployeePunchingDetailsComponent } from './employee-punching-details/em
      EmployeeFaceRegisterComponent,
      ManualEntryComponent,
      EmployeePunchingDetailsComponent,
+     AttendancePolicyComponent,
      
      
 

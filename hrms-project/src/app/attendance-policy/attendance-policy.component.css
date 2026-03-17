@@ -1,0 +1,182 @@
+/* ===== LAYOUT ===== */
+.comapny_section{
+  margin-top: 100px;
+  margin-left: 50px;
+}
+
+.header_section{
+  background: white;
+  padding: 24px 20px 15px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  width: 100%;
+  border-bottom: solid 3px #004976;
+  border-radius: 6px;
+}
+
+.header_section h1{
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+/* ===== CARD SECTION ===== */
+.com_list{
+  padding: 20px;
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  border-top: solid 3px #004976;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+/* ===== TABLE ===== */
+.punching-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.punching-table th {
+  background: #004976;
+  color: #fff;
+  padding: 15px;
+  border: 1px solid #ebebec;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.punching-table td {
+  border: 1px solid #e6edf1;
+  padding: 15px;
+}
+
+.main-row:hover {
+  background-color: #f1f8ff !important;
+  cursor: pointer;
+}
+
+/* ===== SHIFT BADGE ===== */
+.shift-badge {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ===== LOG DETAILS ===== */
+.log-details-row {
+  display: table-row !important;
+  background-color: #f9f9f9;
+}
+
+.log-container {
+  padding: 15px;
+  border-left: 4px solid #4f46e5;
+}
+
+.inner-log-table {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid #edf2f7;
+}
+
+.inner-log-table th {
+  background: #f7fafc;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.badge-method {
+  background: #edf2f7;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ===== FORM ===== */
+.form-control {
+  height: 38px;
+  border-radius: 6px;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  width: 60%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.close {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* ===== IMAGE ===== */
+.thumb-lg {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #eee;
+}
+
+/* ===== ANIMATION ===== */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== RESPONSIVE TABLE ===== */
+@media only screen and (max-width: 640px) {
+  table thead {
+    display: none;
+  }
+
+  table tbody {
+    display: block;
+  }
+
+  table tbody tr {
+    margin-bottom: 20px;
+    display: block;
+    border: 1px solid #004976;
+    background: #f9f9f9;
+  }
+
+  table tbody tr td {
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+
+  table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 30%;
+    display: flex;
+    background: #004976;
+    color: #fff;
+    padding: 15px;
+    margin-inline-end: 10px;
+  }
+}

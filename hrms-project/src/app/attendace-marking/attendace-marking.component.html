@@ -57,40 +57,42 @@
             <div class="form-control-wrapper">
 
       <label>Select Employee</label>
-       <mat-form-field appearance="outline" style="width:100%">
+<mat-form-field appearance="outline" style="width:100%">
+  <mat-select
+    placeholder="Select"
+    [(ngModel)]="employee"
+    [ngModelOptions]="{standalone: true}">
 
-   
- <mat-select
-        placeholder="Select">
-              <input type="text" placeholder="Search Employee"
-            class="form-control"
-            [(ngModel)]="employeeSearch"
-            [ngModelOptions]="{standalone: true}"
-            (click)="$event.stopPropagation()">
+    <!-- Search -->
+    <input type="text"
+           placeholder="Search Employee"
+           class="form-control"
+           [(ngModel)]="employeeSearch"
+           [ngModelOptions]="{standalone: true}"
+           (click)="$event.stopPropagation()">
 
+    <!-- Employee List -->
+    <mat-option
+      *ngFor="let emp of filterEmployees()"
+      [value]="emp.id">
 
-        <!-- Employee List -->
-        <mat-option
-          *ngFor="let emp of filterEmployees()"
-          [value]="emp.id">
+      {{ emp.emp_code }}
 
-          {{ emp.emp_code }}
+    </mat-option>
 
-        </mat-option>
-
-      </mat-select>
-          </mat-form-field>
+  </mat-select>
+</mat-form-field>
 </div>
          
 
   </div>
 
 </div>
-          <div class="col-md-4">
+          <!-- <div class="col-md-4">
                 <label>Date</label>
                 <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Payment  date"
                 [ngModelOptions]="{standalone: true}">
-          </div>
+          </div> -->
 
 
           <!-- <div class="col-md-4" >  

@@ -22,6 +22,7 @@ export class AttendanceSidebarComponent {
   hasViewPermissionEmpRecheck:boolean = false;
   hasViewPermissionPunchingList:boolean = false;
   hasViewPermissionGeoFence:boolean = false;
+  hasViewPermissionAttendancepolicy:boolean = false;
 
 
 
@@ -90,6 +91,7 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionEmpRecheck = true;
           this.hasViewPermissionPunchingList = true;
           this.hasViewPermissionGeoFence = true;
+          this.hasViewPermissionAttendancepolicy = true;
   
   
   
@@ -120,6 +122,7 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionEmpRecheck = true;
           this.hasViewPermissionPunchingList = true;
           this.hasViewPermissionGeoFence = true;
+          this.hasViewPermissionAttendancepolicy = true;
 
                  
   
