@@ -3463,16 +3463,16 @@ updateGeofence(id: number, data: any): Observable<any> {
     );
   }
 
-
-  registerEmployeeAttendenceCheckInnew(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema') || 'default';
-    
-    // Pass schema as a query parameter
-    const apiUrl = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${selectedSchema}`;
   
-    // DO NOT add HttpHeaders. Angular handles the boundary automatically for FormData.
-    return this.http.post(apiUrl, formData);
-  }
+// employee.service.ts
+registerEmployeeAttendenceCheckInNew(data: FormData): Observable<any> {
+  const schema = localStorage.getItem('selectedSchema');
+  
+  // Do NOT add headers here. 
+  // Angular and the Browser will automatically set the correct 
+  // 'multipart/form-data; boundary=...' header because 'data' is a FormData object.
+  return this.http.post(`${this.apiUrl}/calendars/api/attendance/check_in/?schema=${schema}`, data);
+}
 
   registerEmailTemplateDocReq(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');

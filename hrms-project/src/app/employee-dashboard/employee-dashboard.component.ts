@@ -23,7 +23,8 @@ import {combineLatest} from 'rxjs';
 })
 export class EmployeeDashboardComponent implements OnInit, AfterViewInit, OnDestroy{
 
-  @ViewChild('video', { static: false }) videoElement!: ElementRef;
+  // @ViewChild('video', { static: false }) videoElement!: ElementRef;
+  @ViewChild('video') videoElement!: ElementRef<HTMLVideoElement>;
 
     private dataSubscription?: Subscription;
 
@@ -3833,57 +3834,68 @@ isPunching:boolean=false;
 
 // 2. Separate Check-In Function
 async processCheckIn(): Promise<void> {
-  try {
-    // 1. Validation
-    if (!this.selectedEmployeeId) {
-      alert("Employee data not loaded.");
-      return;
-    }
-    if (!this.capturedImage) {
-      alert("Please capture a photo first.");
-      return;
-    }
 
-    this.registerButtonClicked = true;
+  // 🔴 VALIDATIONS
+  if (!this.capturedImage) {
+    alert("Please capture photo");
+    return;
+  }
+
+  if (!this.selectedEmployeeId) {
+    alert("Please select employee");
+    return;
+  }
+
+  if (!this.currentLat || !this.currentLng) {
+    alert("Location not available");
+    return;
+  }
+
+  try {
     this.isPunching = true;
 
-    // 2. Await Location and Address
-    const position = await this.getLocation();
-    const address = await this.getAddress(position.lat, position.lng);
+    // 🟢 Convert Base64 → Blob
+    const blob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
 
-    // 3. Create the data object (as requested)
-    const data = {
-      employee: this.selectedEmployeeId,
-      date: new Date().toISOString().split('T')[0],
-      check_in_time: new Date().toLocaleTimeString('en-GB'),
-      check_in_lat: position.lat,
-      check_in_lng: position.lng,
-      check_in_location: address,
-      // Sending as Base64 strings
-      check_in_image: this.capturedImage, 
-      face_photo: this.capturedImage
-    };
+    // 🟢 Create FormData
+    const formData = new FormData();
+    formData.append('employee', this.selectedEmployeeId.toString());
+    formData.append('check_in_image', blob, 'checkin.jpg');
+    formData.append('face_photo', blob, 'face.jpg'); // 🔥 for face verification
+    console.log("Blob size:", blob.size);
+    console.log("Captured:", this.capturedImage);
 
-    // 4. Submit using your standard service method
-    this.employeeService.registerEmployeeAttendenceCheckIn(data).subscribe({
-      next: (response) => {
-        this.isPunching = false;
-        alert("Check In successful");
-        this.retakePhoto();
-      },
-      error: (error) => {
-        this.isPunching = false;
-        const errorMsg = error.error?.detail || "Check-In Failed";
-        alert(errorMsg);
-        console.error("Error details:", error);
-      }
-    });
+    formData.append('check_in_lat', this.currentLat.toString());
+    formData.append('check_in_lng', this.currentLng.toString());
+    formData.append('check_in_location', this.currentLocationName || '');
+
+    // 🟢 API CALL
+    this.employeeService.registerEmployeeAttendenceCheckInNew(formData)
+      .subscribe({
+        next: (res) => {
+          alert("✅ Check-In Successful");
+
+          // Reset UI
+          this.capturedImage = null;
+          this.initCamera();
+        },
+        error: (err) => {
+          console.error(err);
+          alert(this.getErrorMessage(err, 'check-in'));
+        },
+        complete: () => {
+          this.isPunching = false;
+        }
+      });
 
   } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
     this.isPunching = false;
-    alert("Please allow location access!");
   }
 }
+
+
 // 3. Separate Check-Out Function
 processCheckOut() {
   if (!this.capturedImage) return alert("Please capture a photo first");
