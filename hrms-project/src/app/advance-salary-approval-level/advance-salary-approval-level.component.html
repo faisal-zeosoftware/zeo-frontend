@@ -104,7 +104,7 @@
 
 
                                          <!-- non-ess users  -->
-                            <div class="col-md-6">
+           <div class="col-md-6">
             <div class="custom-sel">
                 <label>Approver</label>
                 <select class="form-control" id="approver" required [(ngModel)]="approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
@@ -114,6 +114,61 @@
                 <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
             </div>
         </div>
+
+          <div class="col-md-6">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+      <label>Branch</label>
+
+      <div class="custom-sel">
+          <div class="form-control-wrapper">
+        
+  
+            <mat-form-field>
+              <!-- <mat-label>Favorite food</mat-label> -->
+                        <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #select multiple>
+                          <div class="select-all">
+                            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                              Select All
+                            </mat-checkbox>
+                          </div>
+                              <input type="text" placeholder="Search Employee"
+                                     class="form-control"
+                                     [(ngModel)]="branchSearch"
+                                     [ngModelOptions]="{standalone: true}"
+                                     (click)="$event.stopPropagation()">
+            
+                          <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
+                            {{ deparmentsec.branch_name }} 
+                          </mat-option> -->
+                <mat-option
+          *ngFor="let deparmentsec of filterEmployees()"
+          [value]="deparmentsec.id">
+
+          {{ deparmentsec.branch_name }}
+
+        </mat-option>
+                        </mat-select>
+            </mat-form-field>
+            
+          </div>
+          <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
+            Please Select Your branch
+          </div>
+        </div>
+                  
+  
+  </div>
              
              
               
@@ -179,6 +234,62 @@
           </select>
           <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
       </div>
+  </div>
+
+
+    <div class="col-md-6">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+      <label>Branch</label>
+
+      <div class="custom-sel">
+          <div class="form-control-wrapper">
+        
+  
+            <mat-form-field>
+              <!-- <mat-label>Favorite food</mat-label> -->
+                        <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #select multiple>
+                          <div class="select-all">
+                            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                              Select All
+                            </mat-checkbox>
+                          </div>
+                              <input type="text" placeholder="Search Employee"
+                                     class="form-control"
+                                     [(ngModel)]="branchSearch"
+                                     [ngModelOptions]="{standalone: true}"
+                                     (click)="$event.stopPropagation()">
+            
+                          <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
+                            {{ deparmentsec.branch_name }} 
+                          </mat-option> -->
+                <mat-option
+          *ngFor="let deparmentsec of filterEmployees()"
+          [value]="deparmentsec.id">
+
+          {{ deparmentsec.branch_name }}
+
+        </mat-option>
+                        </mat-select>
+            </mat-form-field>
+            
+          </div>
+          <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
+            Please Select Your branch
+          </div>
+        </div>
+                  
+  
   </div>
        
        

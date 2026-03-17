@@ -29,6 +29,7 @@ export class DocumentRequestLevelComponent {
   role:any='';
   level:any='' ;
   request_type:any='' ;
+  approval_type: any = '';
 
   approver:any='' ;
   branch: any = '';
@@ -383,6 +384,7 @@ if (this.userId !== null) {
   
       formData.append('approver', this.approver);
       formData.append('request_type', this.request_type);
+      formData.append('approval_type', this.approval_type);
     
       formData.append('branch', this.branch);
 

@@ -32,6 +32,7 @@ export class LeaveApprovalLevelComponent {
 
   approver:any='' ;
   branch: any = '';
+  approval_type: any = '';
 
 
 
@@ -474,6 +475,7 @@ SetLeaveApprovaLevel(): void {
   formData.append('role', this.role.toString());
   formData.append('is_compensatory', this.is_compensatory.toString());
   formData.append('approver', this.approver.toString());
+  formData.append('approval_type', this.approval_type)
   formData.append('request_type', this.request_type.toString());
 
   // 🔹 Send branch IDs one by one (IMPORTANT)
@@ -668,7 +670,19 @@ this.employeeService.updateLeaveApprovalLevel(this.editAsset.id, this.editAsset)
 );
 }
 
+ branchSearch: string = '';
 
+filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
 
 
 }

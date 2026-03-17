@@ -32,6 +32,7 @@ export class ApprovalLevelComponent {
   approver: any = '';
   request_type: any = '';
   branch: any = '';
+  approval_type: any = '';
 
  
   Users:any []=[];
@@ -311,6 +312,7 @@ registerApproveLevel(): void {
     role: this.role,
     approver: this.approver,
     request_type: this.request_type,
+    approval_type: this.approval_type,
     branch: this.branch,
     // Add other form field values to the companyData object
   };
@@ -612,6 +614,21 @@ updateAssetType(): void {
 
 // }
 
+
+  branchSearch: string = '';
+  
+  filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
+  
     
 
 }

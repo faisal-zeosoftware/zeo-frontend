@@ -105,6 +105,19 @@
                 </div>
               </div>
 
+
+  <div class="col-md-6">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
+    </div>
+  </div>
+
               <div class="col-md-6">
                 <label>Branch</label>
             
@@ -216,6 +229,18 @@
         </select>
       </div>
     </div>
+
+    <div class="col-md-6">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
+    </div>
+  </div>
 
               <div class="col-md-6">
                 <label>Branch</label>

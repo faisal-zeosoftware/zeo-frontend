@@ -243,24 +243,7 @@
 
         <div class="row">
 
-                  <div class="col-md-6" >
-                    <label>Employee</label>
-                    <div class="custom-sel">
-                      <select
-                        class="form-control"
-                        id="employee"
-                        name="employee"
-                        [(ngModel)]="employee"
-                        [ngModelOptions]="{ standalone: true }"
-                      >
-                        <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
-                          {{ deparmentsec.emp_code }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-
-            <div class="col-md-3">
+           <div class="col-md-6">
                 <div class="custom-sel">
                     <label>Select Branches</label>
                     <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange()" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
@@ -270,6 +253,24 @@
                     <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
                 </div>
             </div>
+
+              <div class="col-md-6" >
+                    <label>Employee</label>
+                    <div class="custom-sel">
+                      <select
+                        class="form-control"
+                        id="employee"
+                        name="employee"
+                        [(ngModel)]="editAsset.employee"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
+                          {{ deparmentsec.emp_code }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+
 
 <div class="col-md-6">
   <label>Document Number</label>

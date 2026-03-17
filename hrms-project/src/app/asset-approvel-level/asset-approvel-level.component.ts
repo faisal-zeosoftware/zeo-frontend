@@ -27,6 +27,7 @@ export class AssetApprovelLevelComponent {
     level:any='';
     role:any='';
     approver:any='';
+    approval_type: any = '';
   
   
     asset_type:any='';
@@ -227,6 +228,7 @@ export class AssetApprovelLevelComponent {
     formData.append('approver', this.approver);
     formData.append('asset_type', this.asset_type);
     formData.append('branch',this.branch)
+    formData.append('approval_type',this.approval_type)
   
     this.employeeService.registerAssetApproverLevel(formData).subscribe(
       (response) => {
@@ -620,9 +622,19 @@ mapLoanTypeNameToId() {
     );
   }
   
+  branchSearch: string = '';
   
-  
-  
+  filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
   
 
 }

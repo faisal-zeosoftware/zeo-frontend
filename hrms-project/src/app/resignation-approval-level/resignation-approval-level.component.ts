@@ -8,6 +8,9 @@ import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 @Component({
@@ -21,11 +24,18 @@ export class ResignationApprovalLevelComponent {
 
   private dataSubscription?: Subscription;
   @ViewChild('approverSelect') approverSelect: any;
+  @ViewChild('select') select: MatSelect | undefined;
 
   
   level:any='';
   role:any='';
   approver:any='';
+  approval_type: any = '';
+  branch: any = '';
+
+  allSelected=false;
+
+  Branches: any[] = []; 
 
 
   Users:any []=[];
@@ -51,6 +61,7 @@ schemas: string[] = []; // Array to store schema names
     private authService: AuthenticationService, 
 
       private userService: UserMasterService,
+      private DepartmentServiceService: DepartmentServiceService,
 
     private http: HttpClient,
     private DesignationService: DesignationService,
@@ -79,6 +90,11 @@ private employeeService: EmployeeService,
     this.loadLoanapprover();
 
       this.loadUsers();
+
+
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadDeparmentBranch(); 
+    });
 
 
     this.userId = this.sessionService.getUserId();
@@ -198,6 +214,8 @@ private employeeService: EmployeeService,
     formData.append('level', this.level);
     formData.append('role', this.role);
     formData.append('approver', this.approver);
+    formData.append('branch', this.branch);
+    formData.append('approval_type', this.approval_type)
 
 
  
@@ -404,6 +422,65 @@ if (completed === total) {
   }
 }
 
+loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+        }
+        // Inside the subscribe block of loadDeparmentBranch
+        if (this.Branches.length === 1) {
+          this.branch = this.Branches[0].id;
+        }
+
+        console.log('Filtered branches for selection:', this.Branches);
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
+  }
+}
+
+
+mapBranchesNameToId() {
+  if (!this.Branches || !this.editAsset?.branch) return;
+
+  // Case A: backend returns single ID
+  if (typeof this.editAsset.branch === 'number') {
+    this.editAsset.branch = [this.editAsset.branch];
+    return;
+  }
+
+  // Case B: backend returns single NAME
+  if (typeof this.editAsset.branch === 'string') {
+    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
+    this.editAsset.branch = found ? [found.id] : [];
+    return;
+  }
+
+  // Case C: backend returns an array of names
+  if (Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = this.Branches
+      .filter(b => this.editAsset.branch.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log("Mapped branch IDs:", this.editAsset.branch);
+}
+
 
 updateAssetType(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
@@ -468,5 +545,30 @@ toggleAllApproverSelection(): void {
 
 }
 
+    toggleAllSelection(): void {
+      if (this.select) {
+        if (this.allSelected) {
+          
+          this.select.options.forEach((item: MatOption) => item.select());
+        } else {
+          this.select.options.forEach((item: MatOption) => item.deselect());
+        }
+      }
+    }
+
+
+      branchSearch: string = '';
+  
+  filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
 
 }
