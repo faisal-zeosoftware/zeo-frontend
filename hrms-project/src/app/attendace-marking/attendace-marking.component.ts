@@ -490,7 +490,9 @@ closeFaceDashboard() {
   }
 
 
-
+  onImageError(event: any) {
+    event.target.src = 'assets/no-image.png';
+  }
 
   LoadEmployeeAttendance(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();
