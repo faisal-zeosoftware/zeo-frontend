@@ -9,32 +9,33 @@
         <div class="punching-card shadow-lg">
       
             <div class="punch-header text-center py-4">
-              <h1 class="font-weight-bold">Attendance Portal</h1>
+              <h1 class="font-weight-bold">Employee Face / Barcode Register  Portal</h1>
        
               <div class="row">
                 <div class="col-md-4">
 
                 </div>
-                <!-- <div class="col-md-4">
+                <div class="col-md-4">
 
                     <div class="custom-sel mt-2">
-                        <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
+                        <select class="form-control"  [(ngModel)]="employeeId" [ngModelOptions]="{standalone: true}">
                           <option [value]="null" disabled>--Select Employee--</option>
                           <option *ngFor="let emp of Employees" [value]="emp.id">{{ emp.emp_code }} - {{ emp.emp_first_name }}</option>
                         </select>
                       </div>
-                </div> -->
+                </div>
                 </div>
              
          
             </div>
         
-            <div class="row text-center p-4" *ngIf="!activeMode">
+            <div class="row text-center p-2" *ngIf="!activeMode">
+              <div class="col-md-2"></div>
               <div class="col-md-4">
                 <div class="method-card" (click)="setMode('face')">
                   <mat-icon class="method-icon face-color">face_unlock</mat-icon>
-                  <h3>Face Recognition</h3>
-                  <p class="small text-muted">Scan your face to check-in</p>
+                  <h3>Face Register</h3>
+                  <p class="small text-muted">Scan your face to register</p>
                 </div>
               </div>
               <div class="col-md-4">
@@ -44,33 +45,47 @@
                   <p class="small text-muted">Scan your employee card</p>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="method-card" (click)="setMode('manual')">
-                  <mat-icon class="method-icon pin-color">pin</mat-icon>
-                  <h3>Manual Entry</h3>
-                  <p class="small text-muted">Enter Code or PIN</p>
-                </div>
-              </div>
+              
             </div>
         
             <div class="camera-container text-center p-4" *ngIf="activeMode === 'face'">
-              <div class="header-info mb-3">
-                <h3 class="text-primary">Scanning...</h3>
-                <p class="text-muted">Please hold still and look at the camera</p>
-              </div>
-            
-              <div class="video-wrapper">
-                <video #videoElement autoplay class="video-feed shadow-lg"></video>
-                
-                <div class="scanner-ui">
-                  <div class="scanning-line"></div>
-                </div>
-            
-                <div class="processing-overlay" *ngIf="isProcessing">
-                  <div class="spinner-border text-light"></div>
-                  <p>Verifying...</p>
-                </div>
-              </div>
+              <div class="row">
+              <div class="col-md-12 text-center mb-3" *ngIf="!isCameraOpen">
+                <button type="button" class="btn btn-lg btn-primary px-5" (click)="startCamera()">
+                   <mat-icon>videocam</mat-icon> Open Camera for Face Scan
+                </button>
+             </div>
+         
+             <div class="col-md-6" *ngIf="isCameraOpen">
+               <div class="video-container position-relative">
+                 <video #videoElement autoplay class="w-100 rounded border bg-dark"></video>
+                 <div class="camera-overlay"></div>
+               </div>
+               <button type="button" class="btn btn-info btn-block mt-2" (click)="capturePhoto()">
+                 <mat-icon>camera_alt</mat-icon> Capture Photo
+               </button>
+             </div>
+         
+             <div class="col-md-6" *ngIf="isCameraOpen">
+               <div class="preview-container text-center border rounded bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                 <img *ngIf="capturedImage" [src]="capturedImage" class="img-fluid rounded shadow-sm" style="max-height: 100%;">
+                 <p *ngIf="!capturedImage" class="text-muted">Preview will appear here</p>
+               </div>
+               <button type="button" class="btn btn-success btn-block mt-2 py-2" [disabled]="!capturedImage || !employeeId" (click)="registerFace()">
+                 <mat-icon>save</mat-icon> Register Face to Profile
+               </button>
+             </div>
+             </div>
+
+            </div>
+
+
+
+            <div class="camera-container text-center p-4" *ngIf="activeMode === 'barcode'">
+              <div class="row">
+              
+             </div>
+
             </div>
 
 

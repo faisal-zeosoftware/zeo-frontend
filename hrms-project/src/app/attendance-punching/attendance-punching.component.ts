@@ -27,6 +27,11 @@ export class AttendancePunchingComponent {
   lastPunchType: 'in' | 'out' = 'out'; // Toggle state
   autoScanActive = false;
 
+employeeId: any = null;
+capturedImage: string | null = null;
+isCameraOpen = false;
+
+
   setMode(mode: string | null) {
     this.activeMode = mode;
     if (mode === 'face') {
@@ -38,140 +43,68 @@ export class AttendancePunchingComponent {
     }
   }
 
-  stopCamera() {
-    if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
-      this.stream = null;
-    }
-  }
-
+  // Start the webcam feed
   async startCamera() {
+    this.isCameraOpen = true;
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 640, height: 480 } 
-      });
-      this.videoElement.nativeElement.srcObject = this.stream;
-      
-      // Start the automatic scanning loop
-      this.autoCaptureLoop();
-    } catch (err) {
-      console.error("Error accessing camera:", err);
-    }
-  }
-  
-  autoCaptureLoop() {
-    if (!this.autoScanActive || !this.activeMode) return;
-  
-    if (!this.isProcessing) {
-      // Give the user 3 seconds to align their face before the automatic capture
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
       setTimeout(() => {
-        if (this.autoScanActive) {
-          this.performAutoPunch();
-        }
-      }, 3000); 
+        this.videoElement.nativeElement.srcObject = this.stream;
+      }, 100);
+    } catch (err) {
+      console.error("Camera access denied", err);
     }
   }
-
-
   
-
-  performAutoPunch() {
+  // Capture the frame from the video
+  capturePhoto() {
     const video = this.videoElement.nativeElement;
-    if (video.paused || video.ended || video.readyState < 2) return;
-  
     const canvas = document.createElement('canvas');
-    canvas.width = 160; // Use small resolution for local verification to save memory
-    canvas.height = 120;
-    const ctx = canvas.getContext('2d');
-  
-    if (ctx) {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // Check if the image has enough detail/brightness to be a face
-      // This prevents calling the API on a dark room or empty wall
-      if (this.isHumanPresent(ctx, canvas.width, canvas.height)) {
-        
-        this.isProcessing = true; // Stop the loop
-        
-        // Capture high-quality image for the actual API call
-        const highResCanvas = document.createElement('canvas');
-        highResCanvas.width = 640;
-        highResCanvas.height = 480;
-        const highResCtx = highResCanvas.getContext('2d');
-        
-        if (highResCtx) {
-          highResCtx.translate(640, 0);
-          highResCtx.scale(-1, 1);
-          highResCtx.drawImage(video, 0, 0, 640, 480);
-          
-          const base64Image = highResCanvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-          this.sendPunchRequest(base64Image);
-        }
-      }
-    }
-  }
-  
-  // Simple local check to see if there is enough visual data to bother the API
-  private isHumanPresent(ctx: CanvasRenderingContext2D, w: number, h: number): boolean {
-    const imageData = ctx.getImageData(0, 0, w, h).data;
-    let brightness = 0;
-    for (let i = 0; i < imageData.length; i += 4) {
-      brightness += (imageData[i] + imageData[i + 1] + imageData[i + 2]) / 3;
-    }
-    const avgBrightness = brightness / (w * h);
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
     
-    // Only trigger API if brightness is between 40 and 220 (avoids pitch black or pure white)
-    return avgBrightness > 40 && avgBrightness < 220;
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(video, 0, 0);
+    
+    // Convert to Base64 (Data URL)
+    this.capturedImage = canvas.toDataURL('image/jpeg');
   }
-
-
-  private sendPunchRequest(base64Image: string) {
-    const schema = this.authService.getSelectedSchema();
   
-    // FIX FOR TS2345: Guard clause ensures schema is a string, not null
-    if (!schema) {
-      console.error("Schema is missing");
-      this.closeAndReset();
+  // Submit to Backend
+  registerFace() {
+    if (!this.employeeId || !this.capturedImage) {
+      alert("Please select an employee and capture a photo first.");
       return;
     }
   
-    // Updated to use your new single endpoint: /face_attendance/
-    const url = `${this.apiUrl}/calendars/api/attendance/check_in/?schema=${schema}`;
+    const payload = {
+      employee: this.employeeId,
+      face_photo: this.capturedImage // This is the base64_string
+    };
   
-    this.http.post(url, { face_photo: base64Image }).subscribe({
-      next: (res: any) => {
-        // Assuming your backend returns the status (In or Out) in the response
-        // Example: res.status might be "check_in" or "check_out"
-        const status = res.status ? res.status.replace('_', ' ').toUpperCase() : 'PUNCH';
-        
-        alert(`${status} Successful!`);
-        
-        // Update the local lastPunchType based on what the backend actually did
-        if (res.status === 'check_in') {
-          this.lastPunchType = 'in';
-        } else if (res.status === 'check_out') {
-          this.lastPunchType = 'out';
-        }
+    const schema = this.authService.getSelectedSchema();
+    const url = `${this.apiUrl}/calendars/api/attendance/enroll_face/?schema=${schema}`;
   
-        this.closeAndReset(); // Always close camera on success
+    this.http.post(url, payload).subscribe({
+      next: (response) => {
+        alert("Face registered successfully!");
+        this.stopCamera();
       },
       error: (err) => {
-        console.error("Verification failed:", err);
-        const errorMsg = err.error?.detail || "Recognition Failed";
-        alert(errorMsg);
-        this.closeAndReset(); // Always close camera on failure
+        console.error("Enrollment error", err);
+        alert("Failed to register face.");
       }
     });
   }
-// Helper method to clean up the UI and Hardware
-private closeAndReset() {
-  this.autoScanActive = false;
-  this.stopCamera();
-  this.activeMode = null;
-  this.isProcessing = false;
-}
-
-
+  
+  stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+    }
+    this.isCameraOpen = false;
+    this.capturedImage = null;
+  }
+      
   
 
 

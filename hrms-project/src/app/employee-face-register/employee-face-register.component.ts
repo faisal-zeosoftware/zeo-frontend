@@ -17,20 +17,100 @@ import {combineLatest, Subscription } from 'rxjs';
 })
 export class EmployeeFaceRegisterComponent {
 
-
   
+
+  @ViewChild('videoElement') videoElement!: ElementRef;
+  activeMode: string | null = null;
+  stream: MediaStream | null = null;  
+  isProcessing = false;
+  lastPunchType: 'in' | 'out' = 'out'; // Toggle state
+  autoScanActive = false;
+
+employeeId: any = null;
+capturedImage: string | null = null;
+isCameraOpen = false;
+
+
+  setMode(mode: string | null) {
+    this.activeMode = mode;
+    if (mode === 'face') {
+      this.autoScanActive = true;
+      this.startCamera();
+    } else {
+      this.autoScanActive = false;
+      this.stopCamera();
+    }
+  }
+
+  // Start the webcam feed
+  async startCamera() {
+    this.isCameraOpen = true;
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
+      setTimeout(() => {
+        this.videoElement.nativeElement.srcObject = this.stream;
+      }, 100);
+    } catch (err) {
+      console.error("Camera access denied", err);
+    }
+  }
+  
+  // Capture the frame from the video
+  capturePhoto() {
+    const video = this.videoElement.nativeElement;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(video, 0, 0);
+    
+    // Convert to Base64 (Data URL)
+    this.capturedImage = canvas.toDataURL('image/jpeg');
+  }
+  
+  // Submit to Backend
+  registerFace() {
+    if (!this.employeeId || !this.capturedImage) {
+      alert("Please select an employee and capture a photo first.");
+      return;
+    }
+  
+    const payload = {
+      employee: this.employeeId,
+      face_photo: this.capturedImage // This is the base64_string
+    };
+  
+    const schema = this.authService.getSelectedSchema();
+    const url = `${this.apiUrl}/calendars/api/attendance/enroll_face/?schema=${schema}`;
+  
+    this.http.post(url, payload).subscribe({
+      next: (response) => {
+        alert("Face registered successfully!");
+        this.stopCamera();
+      },
+      error: (err) => {
+        console.error("Enrollment error", err);
+        alert("Failed to register face.");
+      }
+    });
+  }
+  
+  stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+    }
+    this.isCameraOpen = false;
+    this.capturedImage = null;
+  }
+      
+  
+
+
   private dataSubscription?: Subscription;
 
     private apiUrl = `${environment.apiBaseUrl}`;
 
-    // Add these to your component class
-@ViewChild('videoElement') videoElement!: ElementRef;
-employeeId: any = null;
-capturedImage: string | null = null;
-isCameraOpen = false;
-stream: MediaStream | null = null;
-
-  
 
   isLoading: boolean = false;
 
@@ -76,7 +156,7 @@ ngOnInit(): void {
     this.employeeService.selectedBranches$
   ]).subscribe(([schema, branchIds]) => {
     if (schema) {
-      // this.fetchLoadEmployeePunching(schema, branchIds);  
+      this.fetchLoadEmployeePunching(schema, branchIds);  
       
 
     }
@@ -86,7 +166,7 @@ ngOnInit(): void {
    this.employeeService.selectedBranches$.subscribe(ids => {
  
     this.LoadEmployee(); 
-    // this.LoadEmployeeAttendance();
+   
 
   });
  
@@ -212,10 +292,28 @@ ngOnInit(): void {
 }
 
 
+
+    
+
+
+
+
+
+  
 checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
   
+  
+
+
+
+
+
+
+
+
+
 
 
   LoadEmployee(callback?: Function) {
@@ -240,67 +338,32 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   }
 
 
-  // Start the webcam feed
-async startCamera() {
-  this.isCameraOpen = true;
-  try {
-    this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
-    setTimeout(() => {
-      this.videoElement.nativeElement.srcObject = this.stream;
-    }, 100);
-  } catch (err) {
-    console.error("Camera access denied", err);
-  }
-}
 
-// Capture the frame from the video
-capturePhoto() {
-  const video = this.videoElement.nativeElement;
-  const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+
+ 
+
+  fetchLoadEmployeePunching(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.employeeService.getPunchingsNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Punching = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
   
-  const ctx = canvas.getContext('2d');
-  ctx?.drawImage(video, 0, 0);
-  
-  // Convert to Base64 (Data URL)
-  this.capturedImage = canvas.toDataURL('image/jpeg');
-}
 
-// Submit to Backend
-registerface() {
-  if (!this.employeeId || !this.capturedImage) {
-    alert("Please select an employee and capture a photo first.");
-    return;
-  }
 
-  const payload = {
-    employee: this.employeeId,
-    face_photo: this.capturedImage // This is the base64_string
-  };
 
-  const schema = this.authService.getSelectedSchema();
-  const url = `${this.apiUrl}/calendars/api/attendance/enroll_face/?schema=${schema}`;
 
-  this.http.post(url, payload).subscribe({
-    next: (response) => {
-      alert("Face registered successfully!");
-      this.stopCamera();
-    },
-    error: (err) => {
-      console.error("Enrollment error", err);
-      alert("Failed to register face.");
-    }
-  });
-}
-
-stopCamera() {
-  if (this.stream) {
-    this.stream.getTracks().forEach(track => track.stop());
-  }
-  this.isCameraOpen = false;
-  this.capturedImage = null;
-}
     
 
 }
