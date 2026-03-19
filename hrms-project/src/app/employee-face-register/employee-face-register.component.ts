@@ -9,6 +9,7 @@ import { SessionService } from '../login/session.service';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 import {combineLatest, Subscription } from 'rxjs';
+import JsBarcode from 'jsbarcode';
 
 @Component({
   selector: 'app-employee-face-register',
@@ -29,6 +30,9 @@ export class EmployeeFaceRegisterComponent {
 employeeId: any = null;
 capturedImage: string | null = null;
 isCameraOpen = false;
+
+barcodeValue: string = '';
+
 
 
   // setMode(mode: string | null) {
@@ -62,14 +66,64 @@ setMode(mode: string | null) {
   }
 }
 
-// Submit Barcode to Backend
+// 🎯 Generate Barcode
+generateBarcode() {
+  if (!this.employeeId) {
+    alert("Please select an employee first");
+    return;
+  }
+
+  const random = Math.random().toString(36).substring(2, 10).toUpperCase();
+  this.barcodeValue = `EMP-${random}`;
+
+  setTimeout(() => {
+    this.renderBarcode();
+  }, 100);
+}
+
+// 🎯 Render Barcode Image
+renderBarcode() {
+  const element = document.getElementById('barcode');
+
+  if (element && this.barcodeValue) {
+    JsBarcode(element, this.barcodeValue, {
+      format: "CODE128",
+      width: 2,
+      height: 80,
+      displayValue: true
+    });
+  }
+}
+
+// 🎯 Download Barcode
+downloadBarcode() {
+  const svg = document.getElementById("barcode") as any;
+
+  if (!svg) return;
+
+  const serializer = new XMLSerializer();
+  const source = serializer.serializeToString(svg);
+
+  const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${this.barcodeValue}.svg`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+// 🎯 Register Barcode API
 registerBarcode() {
   if (!this.employeeId || !this.barcodeValue) {
-    alert("Please select an employee and scan the card.");
+    alert("Please select employee and generate barcode.");
     return;
   }
 
   this.isProcessing = true;
+
   const schema = this.authService.getSelectedSchema();
   const url = `${this.apiUrl}/calendars/api/attendance/register_barcode/?schema=${schema}`;
 
@@ -79,15 +133,15 @@ registerBarcode() {
   };
 
   this.http.post(url, payload).subscribe({
-    next: (response) => {
-      alert("ID Card linked successfully!");
-      this.barcodeValue = ''; // Clear for next registration
-      this.activeMode = null; // Go back to selection
+    next: () => {
+      alert("Barcode assigned successfully!");
+      this.barcodeValue = '';
       this.isProcessing = false;
+      this.activeMode = null;
     },
     error: (err) => {
-      console.error("Barcode registration error", err);
-      alert(err.error?.detail || "Failed to register barcode.");
+      console.error(err);
+      alert(err.error?.detail || "Failed to register barcode");
       this.isProcessing = false;
     }
   });
@@ -185,7 +239,7 @@ registerBarcode() {
   }
       
 
-  barcodeValue: string = '';
+
   
 
 

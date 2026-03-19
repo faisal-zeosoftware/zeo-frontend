@@ -74,39 +74,65 @@
            </div>
 
           </div>
-          <div class="camera-container text-center p-4" *ngIf="activeMode === 'barcode'">
-            <div class="row justify-content-center">
-              <div class="col-md-6">
-                <div class="barcode-scan-box p-5 border rounded bg-light shadow-sm">
-                  <mat-icon style="font-size: 60px; height: 60px; width: 60px;" class="text-primary mb-3">qr_code_2</mat-icon>
-                  <h4 class="font-weight-bold">Scan Employee ID Card</h4>
-                  <p class="text-muted">Please use the scanner to read the barcode on the ID card.</p>
-                  
-                  <div class="form-group mt-4">
-                    <input type="text" 
-                           #barcodeInput
-                           class="form-control form-control-lg text-center" 
-                           placeholder="Waiting for scan..." 
-                           [(ngModel)]="barcodeValue"
-                           (keyup.enter)="registerBarcode()"
-                           [disabled]="!employeeId">
-                    <small class="text-danger" *ngIf="!employeeId">Please select an employee first</small>
-                  </div>
-          
-                  <div class="mt-4 d-flex gap-2">
-                    <button class="btn btn-outline-secondary btn-block" (click)="setMode(null)">
-                      Cancel
-                    </button>
-                    <button class="btn btn-success btn-block" 
-                            [disabled]="!barcodeValue || !employeeId" 
-                            (click)="registerBarcode()">
-                      <mat-icon>save</mat-icon> Register Barcode
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
+
+         <div class="camera-container text-center p-4" *ngIf="activeMode === 'barcode'">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="barcode-scan-box p-4 border rounded bg-light shadow-sm">
+
+        <mat-icon style="font-size: 60px;" class="text-primary mb-3">qr_code_2</mat-icon>
+
+        <h4 class="fw-bold">Employee Barcode Generator</h4>
+        <p class="text-muted">Generate or scan barcode for employee ID card</p>
+
+        <!-- INPUT -->
+        <div class="form-group mt-3">
+          <input type="text"
+                 class="form-control form-control-lg text-center"
+                 placeholder="Barcode value"
+                 [(ngModel)]="barcodeValue"
+                 readonly>
+        </div>
+
+        <!-- BARCODE DISPLAY -->
+        <div class="mt-4" *ngIf="barcodeValue">
+          <svg id="barcode"></svg>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="mt-4 d-grid gap-2">
+
+          <button class="btn btn-primary"
+                  [disabled]="!employeeId"
+                  (click)="generateBarcode()">
+            <mat-icon>qr_code</mat-icon> Generate Barcode
+          </button>
+
+          <button class="btn btn-info"
+                  [disabled]="!barcodeValue"
+                  (click)="downloadBarcode()">
+            <mat-icon>download</mat-icon> Download Barcode
+          </button>
+
+          <button class="btn btn-success"
+                  [disabled]="!barcodeValue || !employeeId"
+                  (click)="registerBarcode()">
+            <mat-icon>save</mat-icon> Register Barcode
+          </button>
+
+          <button class="btn btn-outline-secondary" (click)="setMode(null)">
+            Cancel
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
 
 
         </div>
