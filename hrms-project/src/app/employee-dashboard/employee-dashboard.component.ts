@@ -141,8 +141,6 @@ todayDate: string = '';
   //   this.marginLeftValue = this.isMenuOpen ? '200px' : '0px';
   // 
   ngOnInit(): void {
-      const today = new Date();
-  this.todayDate = today.toISOString().split('T')[0];
 
       // ✅ Get schema first
   this.selectedSchema = this.authService.getSelectedSchema() || '';
