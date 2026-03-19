@@ -39,8 +39,8 @@
   
       </div>
   
-        <div class="com_list mt-4">
-    <div class="cpm-sec" *ngIf="hasViewPermission">
+        <div class="com_list mt-4" *ngIf="!selectedAttendance">
+    <div class="cpm-sec" *ngIf="hasViewPermission" >
 
     
 
@@ -325,7 +325,7 @@
                         <div class="photo-box ml-3">
                           <label class="small d-block text-muted">Check-In Photo</label>
                           <img [src]="selectedAttendance.check_in_image || 'assets/no-image.png'"
-                               class="img-thumbnail thumb-lg">
+                               class="img-thumbnail thumb-lg" style="width: 300px;">
                         </div>
                       </div>
                     </div>
@@ -347,7 +347,7 @@
                         <div class="photo-box ml-3">
                           <label class="small d-block text-muted">Check-Out Photo</label>
                           <img [src]="selectedAttendance.check_out_image || 'assets/no-image.png'"
-                               class="img-thumbnail thumb-lg">
+                               class="img-thumbnail thumb-lg" style="width: 300px;" >
                         </div>
                       </div>
                     </div>

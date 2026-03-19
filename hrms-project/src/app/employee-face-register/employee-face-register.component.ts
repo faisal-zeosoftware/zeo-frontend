@@ -31,16 +31,67 @@ capturedImage: string | null = null;
 isCameraOpen = false;
 
 
-  setMode(mode: string | null) {
-    this.activeMode = mode;
-    if (mode === 'face') {
-      this.autoScanActive = true;
-      this.startCamera();
-    } else {
-      this.autoScanActive = false;
-      this.stopCamera();
+  // setMode(mode: string | null) {
+  //   this.activeMode = mode;
+  //   if (mode === 'face') {
+  //     this.autoScanActive = true;
+  //     this.startCamera();
+  //   } else {
+  //     this.autoScanActive = false;
+  //     this.stopCamera();
+  //   }
+  // }
+
+  // Update setMode to clear barcode values
+setMode(mode: string | null) {
+  this.activeMode = mode;
+  this.barcodeValue = ''; // Reset barcode on mode change
+  if (mode === 'face') {
+    this.autoScanActive = true;
+    this.startCamera();
+  } else {
+    this.autoScanActive = false;
+    this.stopCamera();
+    // Optional: Focus the input field after a short delay if barcode mode
+    if(mode === 'barcode') {
+       setTimeout(() => {
+         const input = document.querySelector('input[placeholder="Waiting for scan..."]') as HTMLElement;
+         input?.focus();
+       }, 500);
     }
   }
+}
+
+// Submit Barcode to Backend
+registerBarcode() {
+  if (!this.employeeId || !this.barcodeValue) {
+    alert("Please select an employee and scan the card.");
+    return;
+  }
+
+  this.isProcessing = true;
+  const schema = this.authService.getSelectedSchema();
+  const url = `${this.apiUrl}/calendars/api/attendance/register_barcode/?schema=${schema}`;
+
+  const payload = {
+    employee: this.employeeId,
+    barcode: this.barcodeValue
+  };
+
+  this.http.post(url, payload).subscribe({
+    next: (response) => {
+      alert("ID Card linked successfully!");
+      this.barcodeValue = ''; // Clear for next registration
+      this.activeMode = null; // Go back to selection
+      this.isProcessing = false;
+    },
+    error: (err) => {
+      console.error("Barcode registration error", err);
+      alert(err.error?.detail || "Failed to register barcode.");
+      this.isProcessing = false;
+    }
+  });
+}
 
   // Start the webcam feed
   async startCamera() {
@@ -104,6 +155,8 @@ isCameraOpen = false;
     this.capturedImage = null;
   }
       
+
+  barcodeValue: string = '';
   
 
 

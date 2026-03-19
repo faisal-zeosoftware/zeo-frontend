@@ -602,3 +602,32 @@ white-space: nowrap;
 .top-right { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
 .bottom-left { bottom: 20px; left: 20px; border-right: 0; border-top: 0; }
 .bottom-right { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+
+/* barcode section */
+
+
+
+.method-card {
+  padding: 30px;
+  border: 2px solid #f0f0f0;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: white;
+}
+
+.method-card:hover {
+  border-color: #007bff;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.method-icon {
+  font-size: 50px !important;
+  height: 50px !important;
+  width: 50px !important;
+  margin-bottom: 15px;
+}
+
+.face-color { color: #6f42c1; }
+.barcode-color { color: #28a745; }
