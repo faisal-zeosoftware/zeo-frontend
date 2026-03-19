@@ -94,15 +94,39 @@ registerBarcode() {
 }
 
   // Start the webcam feed
+  // async startCamera() {
+  //   this.isCameraOpen = true;
+  //   try {
+  //     this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
+  //     setTimeout(() => {
+  //       this.videoElement.nativeElement.srcObject = this.stream;
+  //     }, 100);
+  //   } catch (err) {
+  //     console.error("Camera access denied", err);
+  //   }
+  // }
+
+
   async startCamera() {
     this.isCameraOpen = true;
     try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ video: { width: 400, height: 300 } });
+      // 1. Request the stream
+      this.stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: 400, height: 300 } 
+      });
+  
+      // 2. Use a small delay to ensure the *ngIf has rendered the #videoElement
       setTimeout(() => {
-        this.videoElement.nativeElement.srcObject = this.stream;
-      }, 100);
+        if (this.videoElement && this.videoElement.nativeElement) {
+          this.videoElement.nativeElement.srcObject = this.stream;
+        } else {
+          console.error("Video element not found in DOM");
+        }
+      }, 200);
+  
     } catch (err) {
-      console.error("Camera access denied", err);
+      console.error("Camera access denied or Not a Secure Origin", err);
+      alert("Camera failed: Ensure you are using HTTPS.");
     }
   }
   
