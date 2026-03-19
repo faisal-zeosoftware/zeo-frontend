@@ -114,40 +114,80 @@ private searchTimer: any;
     }, 500);
   }
 
-  getCurrentLocation() {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
-      return;
-    }
+  // getCurrentLocation() {
+  //   if (!navigator.geolocation) {
+  //     alert("Geolocation is not supported by your browser.");
+  //     return;
+  //   }
   
-    // Show a small loading state if you like
-    this.isLoading = true;
+  //   // Show a small loading state if you like
+  //   this.isLoading = true;
   
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+  //   navigator.geolocation.getCurrentPosition(
+  //     (position) => {
+  //       const lat = position.coords.latitude;
+  //       const lng = position.coords.longitude;
   
-        // Move the map and marker
-        this.map.setView([lat, lng], 17);
-        this.updateLocation(lat, lng, "My Current Location");
+  //       // Move the map and marker
+  //       this.map.setView([lat, lng], 17);
+  //       this.updateLocation(lat, lng, "My Current Location");
         
-        this.isLoading = false;
-      },
-      (error) => {
-        this.isLoading = false;
-        console.error("Geolocation Error:", error);
-        alert("Unable to retrieve your location. Please check your GPS settings.");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      }
-    );
-  }
+  //       this.isLoading = false;
+  //     },
+  //     (error) => {
+  //       this.isLoading = false;
+  //       console.error("Geolocation Error:", error);
+  //       alert("Unable to retrieve your location. Please check your GPS settings.");
+  //     },
+  //     {
+  //       enableHighAccuracy: true,
+  //       timeout: 5000,
+  //       maximumAge: 0
+  //     }
+  //   );
+  // }
 
  // 1. Update the Guard to include a size refresh
+
+
+
+ getCurrentLocation() {
+  // Check if the protocol is secure
+  if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+    alert("Geolocation requires a secure connection (HTTPS). Please contact your administrator or use a secure URL.");
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  this.isLoading = true;
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      this.map.setView([lat, lng], 17);
+      this.updateLocation(lat, lng, "My Current Location");
+      this.isLoading = false;
+    },
+    (error) => {
+      this.isLoading = false;
+      console.error("Geolocation Error:", error);
+      
+      if (error.code === 1) {
+        alert("Permission Denied: Please ensure your site is using HTTPS and you have allowed location access in your browser settings.");
+      } else {
+        alert("Unable to retrieve your location. Please check your GPS settings.");
+      }
+    },
+    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+  );
+}
+
+
 
  private initMapGuard() {
   const checkExist = setInterval(() => {
@@ -695,13 +735,13 @@ closePreview() {
   
   
         
-        iscreateovertimepolicy: boolean = false;
+  isgeofence: boolean = false;
   
   
   
   
         openPopus():void{
-          this.iscreateovertimepolicy = true;
+          this.isgeofence = true;
 
           this
   
@@ -709,7 +749,7 @@ closePreview() {
       
        // 2. Update your close method to destroy the map
 closeapplicationModal() {
-  this.iscreateovertimepolicy = false; // Hide modal
+  this.isgeofence = false; // Hide modal
 
   if (this.map) {
     this.map.remove(); // This destroys the map instance correctly
