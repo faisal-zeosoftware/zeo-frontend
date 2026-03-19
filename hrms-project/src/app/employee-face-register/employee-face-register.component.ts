@@ -109,24 +109,29 @@ registerBarcode() {
 
   async startCamera() {
     this.isCameraOpen = true;
+  
+    // 1. Check if the browser even supports/allows mediaDevices
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.error("Browser does not support camera access in this context (Needs HTTPS)");
+      alert("Security Error: Camera access is blocked. This site MUST use HTTPS to use the camera.");
+      this.isCameraOpen = false;
+      return;
+    }
+  
     try {
-      // 1. Request the stream
       this.stream = await navigator.mediaDevices.getUserMedia({ 
         video: { width: 400, height: 300 } 
       });
   
-      // 2. Use a small delay to ensure the *ngIf has rendered the #videoElement
       setTimeout(() => {
-        if (this.videoElement && this.videoElement.nativeElement) {
+        if (this.videoElement) {
           this.videoElement.nativeElement.srcObject = this.stream;
-        } else {
-          console.error("Video element not found in DOM");
         }
       }, 200);
   
     } catch (err) {
-      console.error("Camera access denied or Not a Secure Origin", err);
-      alert("Camera failed: Ensure you are using HTTPS.");
+      console.error("Camera access denied", err);
+      alert("Camera access denied. Please check site permissions.");
     }
   }
   
