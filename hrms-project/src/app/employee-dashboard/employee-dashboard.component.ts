@@ -1,6 +1,6 @@
 import { style } from '@angular/animations';
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-
+import { HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
@@ -102,7 +102,13 @@ export class EmployeeDashboardComponent implements OnInit, AfterViewInit, OnDest
 branchIds: number[] = [];
 
 
+startDate: string = '';
+endDate: string = '';
+attendanceList: any[] = [];
+todayDate: string = '';
+
   constructor(private authService: AuthenticationService,
+     private http: HttpClient,
      private router: Router,
     private EmployeeService: EmployeeService,
     private employeeService: EmployeeService,
@@ -135,6 +141,8 @@ branchIds: number[] = [];
   //   this.marginLeftValue = this.isMenuOpen ? '200px' : '0px';
   // 
   ngOnInit(): void {
+      const today = new Date();
+  this.todayDate = today.toISOString().split('T')[0];
 
       // ✅ Get schema first
   this.selectedSchema = this.authService.getSelectedSchema() || '';
@@ -869,6 +877,28 @@ downloadExcel() {
   XLSX.writeFile(wb, 'Employee_Assets_Report.xlsx');
 }
 
+downloadPunchExcel() {
+
+  if (!this.attendanceList || this.attendanceList.length === 0) {
+    alert('No Punching data available to export.');
+    return;
+  }
+
+  const exportData = this.attendanceList.map(att => ({
+    'Date': att.date || '',
+    'Checkin Time': att.check_in_time || '',
+    'Checkout Time': att.check_out_time || '',
+    'Total Hours': att.total_hours || '',
+    'Checkin Location': att.check_in_location || ''
+  }));
+
+  const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Employee Punching');
+
+  XLSX.writeFile(wb, 'Employee_Punching_Report.xlsx');
+}
+
 EmpAirticket: any[] = [];
 
 loadEmpAirticketDetails(selectedSchema: string, empId: number): void {
@@ -1394,6 +1424,10 @@ toggleApprovalsDropdown() {
     this.leaveService.requestLeaveAdmin(formData).subscribe({
       next: (response) => {
         alert('Leave Request sent successfully!');
+    const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
       },
       error: (error) => {
         console.error('Error Details:', error.error);
@@ -1674,7 +1708,11 @@ registerGeneralreq(): void {
   this.EmployeeService.registerGeneralReq(formData).subscribe(
     (response) => {
       alert('✅ General request has been added successfully!');
-      window.location.reload();
+      // window.location.reload();
+    const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
     },
 (error) => {
   console.error('Leave request failed:', error);
@@ -1790,8 +1828,10 @@ CreateAssetType(): void {
     asset_type: this.asset_type?.toString() || '',
     requested_asset: this.requested_asset || '',
      employee: this.selectedEmployeeId,
+    branch: this.selectedBranchId.toString() || '',
     // Convert document_number safely to string
-    document_number: this.document_number?.toString() || '',
+    document_number: this.document_number,
+
  
   };
 
@@ -1799,7 +1839,11 @@ CreateAssetType(): void {
     next: (response) => {
       console.log('Registration successful', response);
       alert('Asset request has been added!');
-      window.location.reload();
+      // window.location.reload();
+       const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
     },
     error: (error) => {
       // same error handling as above...
@@ -1919,7 +1963,11 @@ CreateAssetType(): void {
     
             alert('Advanced salary Request  has been Sent');
     
-            window.location.reload();
+            // window.location.reload();
+                   const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
           },
 (error) => {
   console.error('Leave request failed:', error);
@@ -2013,7 +2061,11 @@ CreateAssetType(): void {
       (response) => {
         console.log('Registration successful', response);
         alert('Loan application has been added');
-        window.location.reload();
+               const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
+        // window.location.reload();
       },
 (error) => {
   console.error('Leave request failed:', error);
@@ -2135,8 +2187,12 @@ CreateAssetType(): void {
 
 
         alert('Resignation Request has been Send');
+               const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
 
-        window.location.reload();
+        // window.location.reload();
       },  
 (error) => {
   console.error('Leave request failed:', error);
@@ -2299,7 +2355,11 @@ CreateAssetType(): void {
               (response) => {
                 console.log('Registration successful', response);
                     alert('Request sent successfuly completed');
-                    window.location.reload();
+                    // window.location.reload();
+         const selectedSchema = this.authService.getSelectedSchema();
+     if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
                
         
               },
@@ -2428,8 +2488,12 @@ CreateAssetType(): void {
   
   
           alert('Document Request  has been Sent');
+                 const selectedSchema = this.authService.getSelectedSchema();
+          if (selectedSchema) {
+      this.fetchDesignations(selectedSchema);
+    }
   
-          window.location.reload();
+          // window.location.reload();
         },  
 (error) => {
   console.error('Leave request failed:', error);
@@ -3832,6 +3896,9 @@ private base64ToBlob(base64: string, type: string) {
 
 isPunching:boolean=false;
 
+isPunchings:boolean=false;
+
+
 // 2. Separate Check-In Function
 async processCheckIn(): Promise<void> {
 
@@ -3874,6 +3941,7 @@ async processCheckIn(): Promise<void> {
       .subscribe({
         next: (res) => {
           alert("✅ Check-In Successful");
+              this.isPunching = false;
 
           // Reset UI
           this.capturedImage = null;
@@ -3882,6 +3950,7 @@ async processCheckIn(): Promise<void> {
         error: (err) => {
           console.error(err);
           alert(this.getErrorMessage(err, 'check-in'));
+            this.isPunching = false;
         },
         complete: () => {
           this.isPunching = false;
@@ -3903,7 +3972,7 @@ processCheckOut() {
     alert('Please ensure Employee is loaded.');
     return;
   }
-  this.isPunching = true;
+  this.isPunchings = true;
 
   const formData = new FormData();
   formData.append('employee', this.selectedEmployeeId.toString());
@@ -3919,12 +3988,12 @@ processCheckOut() {
 
   this.employeeService.registerEmployeeAttendenceCheckOutnew(formData).subscribe({
     next: (res) => {
-      this.isPunching = false;
+      this.isPunchings = false;
       alert("CHECK-OUT SUCCESSFUL!");
       this.retakePhoto();
     },
     error: (err) => {
-      this.isPunching = false;
+      this.isPunchings = false;
       alert(`Check-Out Error: ${err.error?.detail || 'Verification Failed'}`);
     }
   });
@@ -3973,6 +4042,48 @@ getLocationfacePunch() {
       this.currentLocationName = "Location permission denied";
     });
   }
+}
+
+// Punching Details
+
+filterAttendance(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  // ✅ AUTO EMPLOYEE (instead of this.employee)
+  const employeeId = this.selectedEmployeeId;
+  const branchId = this.selectedBranchId;
+
+  // ✅ VALIDATIONS
+  if (!this.startDate || !this.endDate) {
+    alert('Please select both dates');
+    return;
+  }
+
+  if (!employeeId || !branchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
+  console.log('Employee:', employeeId);
+  console.log('Branch:', branchId);
+
+  this.http.get<any[]>(
+    `${this.apiUrl}/employee/api/Employee/${employeeId}/attendance/?schema=${selectedSchema}`
+  ).subscribe({
+    next: (res: any[]) => {
+      console.log('Full API data:', res);
+
+      // ✅ FILTER BY DATE
+      this.attendanceList = res.filter((item: any) =>
+        item.date >= this.startDate && item.date <= this.endDate
+      );
+
+      console.log('Filtered:', this.attendanceList);
+    },
+    error: (err: any) => {
+      console.error(err);
+    }
+  });
 }
 
 

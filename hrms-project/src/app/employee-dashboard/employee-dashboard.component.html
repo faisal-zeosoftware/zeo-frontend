@@ -56,6 +56,12 @@
   </a>
 </li>
 
+              <li class="nav-item" [class.active]="activeTabNav === 'punchingdetails'" (click)="selectTabNav('punchingdetails')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Punching Details
+                </a>
+              </li>
+
 
               <li class="nav-item" [class.active]="activeTabNav === 'punching'" (click)="selectTabNav('punching')">
                 <a class="nav-link" href="javascript:void(0)">
@@ -1285,8 +1291,6 @@
             </div>
           </div> -->
 
-
-
            <!-- <div id="advanceSalary" *ngIf="activeTab === 'advanceSalary'">
            
             <div class="card border-0 shadow-sm">
@@ -1366,13 +1370,19 @@
 
       </section>
 
-      <!-- Other tabs would go here, initially hidden -->
+      <!-- Requests Sections Here -->
+       
       <section class="content-tab  animate__animated animate__fadeIn" id="leaverequest"
         *ngIf="activeTabNav === 'leaverequest'">
         <!-- Academic content here -->
-
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Leave Request</h3>
+  </div>
         <div class="white-outer-sec">
+              <!-- <div class="card-header bg-white d-flex justify-content-between align-items-center"> -->
+             
+
+              <!-- </div> -->
           <form (ngSubmit)="requestLeave()" enctype="multipart/form-data">
             <div class="row">
 
@@ -1557,6 +1567,10 @@
       <section class="content-tab  animate__animated animate__fadeIn" id="generalRequest"
       *ngIf="activeTabNav === 'generalRequest'">
 
+       <div class="white-outer-sec">
+       <h3 class="mb-0">General Request</h3>
+  </div>
+
 
         <!-- Extracurricular content here -->
 
@@ -1718,7 +1732,9 @@
       *ngIf="activeTabNav === 'assetRequest'">
         <!-- Financial content here -->
 
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Asset Request</h3>
+  </div>
          
            <div class="white-outer-sec">
                  
@@ -1727,23 +1743,11 @@
             <div class="row">
 
 
-<div class="col-md-6">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
-
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
+                  <div class="col-md-6">
+                      <label>Document Number</label>
+                      <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+                          [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
+                  </div>
 
 
 
@@ -1862,7 +1866,9 @@
       *ngIf="activeTabNav === 'airticketRequest'">
         <!-- Financial content here -->
 
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">AirTicket Request</h3>
+  </div>
          
            <div class="white-outer-sec">
                  
@@ -2056,7 +2062,9 @@
       *ngIf="activeTabNav === 'documentRequest'">
         <!-- Financial content here -->
 
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Document Request</h3>
+  </div>
          
            <div class="white-outer-sec">
                  
@@ -2180,7 +2188,9 @@
       *ngIf="activeTabNav === 'advsalaryRequest'">
 
         <!-- Financial content here -->
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Advance Salary Request</h3>
+  </div>
 
          
            <div class="white-outer-sec">
@@ -2291,6 +2301,10 @@
 
       <section class="content-tab  animate__animated animate__fadeIn" id="loanRequest"
       *ngIf="activeTabNav === 'loanRequest'">
+
+       <div class="white-outer-sec">
+       <h3 class="mb-0">Loan Request</h3>
+  </div>
 
         <!-- Financial content here -->
 
@@ -2438,7 +2452,9 @@
       *ngIf="activeTabNav === 'resignationRequest'">
 
         <!-- Financial content here -->
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Resignation Request</h3>
+  </div>
 
          
            <div class="white-outer-sec">
@@ -2498,7 +2514,12 @@
         
                 <div class="col-md-12">
                   <label>Reason</label>
-                  <textarea class="form-control" [(ngModel)]="reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
+          <textarea class="form-control"
+          [(ngModel)]="reason_for_leaving"
+          name="reason_for_leaving"
+          [ngModelOptions]="{standalone: true}"
+          placeholder="Enter reason for leaving">
+          </textarea>
                 </div>
   
    
@@ -2563,7 +2584,7 @@
                     <td>{{ leavereq.last_working_date }}</td>
                     <td>{{ leavereq.location }}</td>
                     <td>{{ leavereq.termination_type }}</td>
-                    <td>{{ leavereq.reason }}</td>
+                    <td>{{ leavereq.reason_for_leaving }}</td>
                     <td>{{ leavereq.status }}</td>
 
 
@@ -2591,7 +2612,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Attendance Details</h5>
 
               </div>
               <div class="card-body">
@@ -2763,9 +2784,9 @@
                       
                       <button class="btn btn-outline-danger btn-lg py-3 fw-bold" 
                               (click)="processCheckOut()" 
-                              [disabled]="!capturedImage || isPunching">
-                        <span *ngIf="!isPunching">CONFIRM CHECK-OUT</span>
-                        <span *ngIf="isPunching"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
+                              [disabled]="!capturedImage || isPunchings">
+                        <span *ngIf="!isPunchings">CONFIRM CHECK-OUT</span>
+                        <span *ngIf="isPunchings"><i class="fa fa-spinner fa-spin"></i> Processing...</span>
                       </button>
                     </div>
                   </div>
@@ -2778,13 +2799,15 @@
         </div>
       </div>
 
-
-
       <section class="content-tab  animate__animated animate__fadeIn" id="punching"
       *ngIf="activeTabNav === 'punching'">
 
         <!-- Financial content here -->
+           <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Attendance Marking Details</h5>
 
+              </div>
 
          
            <div class="white-outer-sec">
@@ -2823,6 +2846,7 @@
                     </div>
                   </div>
                 </form>
+                 </div>
       
                 
               </div>
@@ -2836,13 +2860,15 @@
 
       </section>
 
-
-
       <section class="content-tab  animate__animated animate__fadeIn" id="recheckemp"
       *ngIf="activeTabNav === 'recheckemp'">
 
         <!-- Financial content here -->
+           <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recheck Details</h5>
 
+              </div>
 
          
            <div class="white-outer-sec">
@@ -2856,8 +2882,108 @@
                 </div>
               </div>
             </form>
+             </div>
   
         </div>
+
+
+       
+
+
+      </section>
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="punchingdetails"
+      *ngIf="activeTabNav === 'punchingdetails'">
+
+        <!-- Financial content here -->
+           <div class="card border-0 shadow-sm">
+              <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Punching Details</h5>
+<button class="btn btn-success btn-sm btn-export-excel" (click)="downloadPunchExcel()">
+  <mat-icon>download</mat-icon>
+  <span>Export Excel</span>
+</button>
+
+              </div>
+
+         
+<div class="white-outer-sec">
+  <form (ngSubmit)="filterAttendance()">
+
+    <div class="row">
+
+      <!-- START DATE -->
+      <div class="col-md-3">
+        <label>Start Date</label>
+        <input type="date" class="form-control"
+               [(ngModel)]="startDate"
+               name="startDate"
+               [max]="todayDate"
+               required>
+      </div>
+
+      <!-- END DATE -->
+      <div class="col-md-3">
+        <label>End Date</label>
+        <input type="date" class="form-control"
+               [(ngModel)]="endDate"
+               name="endDate"
+               [max]="todayDate"
+               required>
+      </div>
+
+      <!-- BUTTON -->
+
+<div class="col-md-3 d-flex align-items-end">
+  <button type="submit" class="btn btn-success w-100">
+    Search
+  </button>
+</div>
+
+    </div>
+
+
+  </form>
+
+  </div>
+<div class="white-outer-sec">
+     <div class="row">
+     <div class="col-md-12">
+       <div class="table-scroll">
+  <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+    <thead>
+      <tr>
+        <th class="text-table-header" style="width: 0;">No</th>
+        <th>Date</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+        <th>Total Hours</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+
+    <tbody class="text-table-body">
+      <tr *ngFor="let att of attendanceList; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ att.date }}</td>
+        <td>{{ att.check_in_time || '-' }}</td>
+        <td>{{ att.check_out_time || '-' }}</td>
+        <td>{{ att.total_hours || '-' }}</td>
+        <td>{{ att.check_in_location || '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  </div>
+  </div>
+</div>
+
+<!-- EMPTY STATE -->
+<div *ngIf="attendanceList.length === 0" class="text-center mt-3">
+  No data found
+</div>
+  </div>
+
 
 
        
@@ -2880,7 +3006,9 @@
       *ngIf="activeTabNav === 'Genapproval'">
 
         <!-- Financial content here -->
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">General Approvals</h3>
+  </div>
 
          
            <div class="white-outer-sec">
@@ -2964,7 +3092,9 @@
       *ngIf="activeTabNav === 'Resignationapproval'">
 
   
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Resignation Approvals</h3>
+  </div>
 
          
            <div class="white-outer-sec">
@@ -3084,7 +3214,9 @@
       *ngIf="activeTabNav === 'Leaveapproval'">
 
   
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Leave Approvals</h3>
+  </div>
 
          
            <div class="white-outer-sec">
@@ -3208,7 +3340,9 @@
       *ngIf="activeTabNav === 'Advsalapproval'">
 
   
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Advance Salary Approvals</h3>
+  </div>
 
          
            <div class="white-outer-sec">
@@ -3323,7 +3457,9 @@
       <section class="content-tab  animate__animated animate__fadeIn" id="Loanapproval"
       *ngIf="activeTabNav === 'Loanapproval'">
 
-  
+   <div class="white-outer-sec">
+       <h3 class="mb-0">Loan Approvals</h3>
+  </div>
 
 
          
@@ -3456,7 +3592,9 @@
       *ngIf="activeTabNav === 'Assetapproval'">
 
   
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Asset Approvals</h3>
+  </div>
 
          
            <div class="white-outer-sec">
@@ -3580,7 +3718,9 @@
 
   
 
-
+ <div class="white-outer-sec">
+       <h3 class="mb-0">Airticket Approvals</h3>
+  </div>
          
            <div class="white-outer-sec">
         <div class="row">
@@ -3705,7 +3845,9 @@
       <section class="content-tab  animate__animated animate__fadeIn" id="Docapproval"
       *ngIf="activeTabNav === 'Docapproval'">
 
-  
+   <div class="white-outer-sec">
+       <h3 class="mb-0">Document Approvals</h3>
+  </div>
 
 
          
@@ -3845,7 +3987,7 @@
       
     <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">           
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Asset Details</h5>
 <button class="btn btn-success btn-sm btn-export-excel" (click)="downloadExcel()">
   <mat-icon>download</mat-icon>
   <span>Export Excel</span>
@@ -3891,7 +4033,7 @@
            
     <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Airticket Details</h5>
 
 <button class="btn btn-success btn-sm btn-export-excel" (click)="downloadAirExcel()">
   <mat-icon>download</mat-icon>
@@ -3940,7 +4082,7 @@
            
     <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Loan Details</h5>
 
 <button class="btn btn-success btn-sm btn-export-excel" (click)="downloadAirExcel()">
   <mat-icon>download</mat-icon>
@@ -3994,7 +4136,7 @@
            
     <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
+                <h5 class="mb-0">Advance Salary Details</h5>
 
 <button class="btn btn-success btn-sm btn-export-excel" (click)="downloadAdvSalExcel()">
   <mat-icon>download</mat-icon>
@@ -4035,13 +4177,19 @@
     </div>
 
 
-    </section>
+   </section>
 
 
-
-        <section class="content-tab  animate__animated animate__fadeIn" id="TimeSheet"
+   <!-- Time Sheet here -->
+    <section class="content-tab  animate__animated animate__fadeIn" id="TimeSheet"
         *ngIf="activeTabNav === 'TimeSheet'">
+
+         
         <!-- Academic content here -->
+
+   <div class="white-outer-sec">
+       <h3 class="mb-0">Time Sheet</h3>
+  </div>
 
 
         <div class="white-outer-sec">
@@ -4163,7 +4311,7 @@
                     <td>{{ docs.task }}</td>
                     <td>{{ docs.description }}</td>
                     <td>{{ docs.project }}</td>
-                    <td>{{ docs.status?.[0]?.status || '-' }}</td>
+                    <td>{{ docs.status|| '-' }}</td>
 
 
                   </tr>
@@ -4174,17 +4322,7 @@
           </div>
           </div>
 
-      </section>
-
-
-
-
-
-
-
-      
-
-
+    </section>
 
 
 
