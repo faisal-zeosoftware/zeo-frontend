@@ -2709,10 +2709,15 @@
                   </div>
                   
                   <div class="nav-pills-custom">
-                    <button class="btn btn-sm me-2" [class.btn-primary]="punchMode === 'face'" (click)="punchMode = 'face'">
+                    <button class="btn btn-sm me-2"
+                            [class.btn-primary]="punchMode === 'face'"
+                            (click)="switchMode('face')">
                       <i class="fa fa-user-shield me-1"></i> Face Scan
                     </button>
-                    <button class="btn btn-sm" [class.btn-primary]="punchMode === 'barcode'" (click)="punchMode = 'barcode'">
+                  
+                    <button class="btn btn-sm"
+                            [class.btn-primary]="punchMode === 'barcode'"
+                            (click)="switchMode('barcode')">
                       <i class="fa fa-barcode me-1"></i> Barcode
                     </button>
                   </div>
@@ -2720,7 +2725,7 @@
               </div>
       
               <div class="card-body p-0">
-                <div class="row g-0">
+                <div class="row g-0" *ngIf="punchMode === 'face'">
                   
                   <div class="col-md-7 " >
 
@@ -2792,6 +2797,27 @@
                   </div>
       
                 </div>
+
+
+            
+               <!-- BARCODE MODE -->
+<div *ngIf="punchMode === 'barcode'" class="p-4 text-center">
+
+  <h5 class="fw-bold">Barcode Punching</h5>
+  <p class="text-muted">Scan employee ID card</p>
+
+  <!-- Scanner -->
+  <div id="barcode-reader" style="width: 100%; max-width: 400px; margin: auto;"></div>
+
+  <!-- Optional fallback -->
+  <input type="text"
+         class="form-control mt-3"
+         placeholder="Scan barcode..."
+         (change)="onBarcodeManual($event)" />
+
+</div>
+
+
               </div>
             </div>
       

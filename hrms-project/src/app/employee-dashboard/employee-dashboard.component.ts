@@ -14,6 +14,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { CountryService } from '../country.service';
 import { Subscription } from 'rxjs';
 import {combineLatest} from 'rxjs';
+import { Html5Qrcode } from 'html5-qrcode';
 
 
 @Component({
@@ -142,6 +143,8 @@ todayDate: string = '';
   // 
   ngOnInit(): void {
 
+      const today = new Date();
+  this.todayDate = today.toISOString().split('T')[0];
       // ✅ Get schema first
   this.selectedSchema = this.authService.getSelectedSchema() || '';
 
@@ -4011,6 +4014,9 @@ ngOnDestroy() {
   if (this.cameraStream) {
     this.cameraStream.getTracks().forEach(track => track.stop());
   }
+
+  this.stopCamera();
+  this.stopBarcodeScanner();
 }
 
 currentLocationName: string = "Fetching address...";
@@ -4041,6 +4047,104 @@ getLocationfacePunch() {
     });
   }
 }
+
+
+
+
+
+switchMode(mode: 'face' | 'barcode') {
+  this.punchMode = mode;
+  this.capturedImage = null;
+
+  if (mode === 'face') {
+    this.stopBarcodeScanner(); // 🔴 STOP scanner
+    setTimeout(() => this.initCamera(), 200);
+  } else {
+    this.stopCamera(); // 🔴 STOP face camera
+
+    setTimeout(() => {
+      this.startBarcodeScanner(); // 🟢 START scanner
+    }, 300);
+  }
+}
+
+qrCodeScanner: Html5Qrcode | null = null;
+isScanning: boolean = false;
+
+
+startBarcodeScanner() {
+  const readerId = "barcode-reader";
+
+  this.qrCodeScanner = new Html5Qrcode(readerId);
+
+  this.qrCodeScanner.start(
+    { facingMode: "environment" }, // back camera
+    {
+      fps: 10,
+      qrbox: { width: 250, height: 100 }
+    },
+    (decodedText) => {
+      console.log("Scanned:", decodedText);
+
+      // 🔥 STOP AFTER SUCCESS
+      this.stopBarcodeScanner();
+
+      // 🔥 CALL CHECK-IN API
+      this.handleBarcodeCheckIn(decodedText);
+    },
+    (error) => {
+      // ignore scan errors
+    }
+  ).then(() => {
+    this.isScanning = true;
+  }).catch(err => {
+    console.error("Scanner error:", err);
+  });
+}
+
+stopBarcodeScanner() {
+  if (this.qrCodeScanner && this.isScanning) {
+    this.qrCodeScanner.stop().then(() => {
+      this.qrCodeScanner?.clear();
+      this.isScanning = false;
+    });
+  }
+}
+
+handleBarcodeCheckIn(barcode: string) {
+
+  if (!barcode) return;
+
+  const formData = new FormData();
+  formData.append('barcode', barcode);
+
+  // Optional: send location
+  formData.append('check_in_lat', this.currentLat?.toString() || '');
+  formData.append('check_in_lng', this.currentLng?.toString() || '');
+  formData.append('check_in_location', this.currentLocationName || '');
+
+  this.employeeService.registerEmployeeAttendenceCheckInNew(formData)
+    .subscribe({
+      next: (res) => {
+        alert("✅ Barcode Check-In Successful");
+
+        // restart scanner for next scan
+        setTimeout(() => this.startBarcodeScanner(), 1500);
+      },
+      error: (err) => {
+        alert(err.error?.detail || "Scan failed");
+
+        // restart scanner
+        setTimeout(() => this.startBarcodeScanner(), 1500);
+      }
+    });
+}
+
+onBarcodeManual(event: any) {
+  const barcode = event.target.value;
+  this.handleBarcodeCheckIn(barcode);
+}
+
 
 // Punching Details
 
@@ -4083,6 +4187,9 @@ filterAttendance(): void {
     }
   });
 }
+
+
+
 
 
 }
