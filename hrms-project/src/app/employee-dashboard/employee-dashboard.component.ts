@@ -15,6 +15,9 @@ import { CountryService } from '../country.service';
 import { Subscription } from 'rxjs';
 import {combineLatest} from 'rxjs';
 import { Html5Qrcode } from 'html5-qrcode';
+import { Html5QrcodeSupportedFormats } from 'html5-qrcode';
+import { BrowserMultiFormatReader } from '@zxing/browser';
+
 
 
 @Component({
@@ -142,6 +145,9 @@ todayDate: string = '';
   //   this.marginLeftValue = this.isMenuOpen ? '200px' : '0px';
   // 
   ngOnInit(): void {
+
+
+    
 
       const today = new Date();
   this.todayDate = today.toISOString().split('T')[0];
@@ -4049,97 +4055,137 @@ getLocationfacePunch() {
 }
 
 
-
-
-
 switchMode(mode: 'face' | 'barcode') {
   this.punchMode = mode;
   this.capturedImage = null;
 
   if (mode === 'face') {
-    this.stopBarcodeScanner(); // 🔴 STOP scanner
+    this.stopBarcodeScanner();
     setTimeout(() => this.initCamera(), 200);
   } else {
-    this.stopCamera(); // 🔴 STOP face camera
+    this.stopCamera();
 
     setTimeout(() => {
-      this.startBarcodeScanner(); // 🟢 START scanner
+      this.startBarcodeScanner();
     }, 300);
   }
 }
 
-qrCodeScanner: Html5Qrcode | null = null;
-isScanning: boolean = false;
+codeReader = new BrowserMultiFormatReader();
+
+scanTimeout: any;
+isScanSuccess: boolean = false;
+scanStatus: string = "Initializing scanner...";
 
 
 startBarcodeScanner() {
-  const readerId = "barcode-reader";
 
-  this.qrCodeScanner = new Html5Qrcode(readerId);
+  console.log("🚀 ZXing scanner starting...");
 
-  this.qrCodeScanner.start(
-    { facingMode: "environment" }, // back camera
-    {
-      fps: 10,
-      qrbox: { width: 250, height: 100 }
-    },
-    (decodedText) => {
-      console.log("Scanned:", decodedText);
+  this.scanStatus = "📡 Scanning...";
+  this.isScanSuccess = false;
 
-      // 🔥 STOP AFTER SUCCESS
+  // ⏳ Timeout (10 sec)
+  this.scanTimeout = setTimeout(() => {
+    if (!this.isScanSuccess) {
+      this.scanStatus = "❌ No barcode detected. Try again.";
+
       this.stopBarcodeScanner();
 
-      // 🔥 CALL CHECK-IN API
-      this.handleBarcodeCheckIn(decodedText);
-    },
-    (error) => {
-      // ignore scan errors
+      console.warn("No barcode detected within time");
     }
-  ).then(() => {
-    this.isScanning = true;
-  }).catch(err => {
-    console.error("Scanner error:", err);
-  });
+  }, 10000);
+
+  this.codeReader.decodeFromVideoDevice(
+    undefined,
+    'barcode-reader',
+    (result, err) => {
+
+      if (result) {
+        this.isScanSuccess = true;
+        clearTimeout(this.scanTimeout);
+
+        let barcode = result.getText();
+
+        console.log("✅ SCANNED RAW:", barcode);
+
+        // 🔥 Clean barcode
+        barcode = barcode.trim().toUpperCase().replace(/\*/g, '');
+
+        console.log("✅ CLEANED:", barcode);
+
+        this.scanStatus = "✅ Barcode detected";
+
+        this.stopBarcodeScanner();
+
+        // 🎯 API CALL
+        this.handleBarcodeCheckIn(barcode);
+      }
+
+      // Ignore normal scan noise
+      if (err && err.name !== 'NotFoundException') {
+        console.error("Scanner Error:", err);
+      }
+    }
+  );
 }
 
-stopBarcodeScanner() {
-  if (this.qrCodeScanner && this.isScanning) {
-    this.qrCodeScanner.stop().then(() => {
-      this.qrCodeScanner?.clear();
-      this.isScanning = false;
-    });
-  }
+
+restartScanner() {
+  this.stopBarcodeScanner();
+
+  setTimeout(() => {
+    this.startBarcodeScanner();
+  }, 300);
 }
+
+
+stopBarcodeScanner() {
+  // try {
+  //   this.codeReader.reset();
+  // } catch (e) {}
+
+  // if (this.scanTimeout) {
+  //   clearTimeout(this.scanTimeout);
+  // }
+}
+
 
 handleBarcodeCheckIn(barcode: string) {
 
-  if (!barcode) return;
+  if (!barcode) {
+    alert("Invalid barcode");
+    return;
+  }
 
   const formData = new FormData();
   formData.append('barcode', barcode);
 
-  // Optional: send location
+  // Optional location
   formData.append('check_in_lat', this.currentLat?.toString() || '');
   formData.append('check_in_lng', this.currentLng?.toString() || '');
   formData.append('check_in_location', this.currentLocationName || '');
 
   this.employeeService.registerEmployeeAttendenceCheckInNew(formData)
     .subscribe({
-      next: (res) => {
+      next: () => {
+        this.scanStatus = "✅ Check-in successful";
+
         alert("✅ Barcode Check-In Successful");
 
-        // restart scanner for next scan
+        // restart scanner after success
         setTimeout(() => this.startBarcodeScanner(), 1500);
       },
       error: (err) => {
-        alert(err.error?.detail || "Scan failed");
+        this.scanStatus = "❌ Invalid barcode";
+
+        alert(err.error?.detail || "Invalid barcode");
 
         // restart scanner
         setTimeout(() => this.startBarcodeScanner(), 1500);
       }
     });
 }
-
 onBarcodeManual(event: any) {
   const barcode = event.target.value;
   this.handleBarcodeCheckIn(barcode);
