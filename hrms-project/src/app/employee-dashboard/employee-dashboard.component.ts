@@ -14,8 +14,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import { CountryService } from '../country.service';
 import { Subscription } from 'rxjs';
 import {combineLatest} from 'rxjs';
-import { Html5Qrcode } from 'html5-qrcode';
-import { Html5QrcodeSupportedFormats } from 'html5-qrcode';
+
 import { BrowserMultiFormatReader } from '@zxing/browser';
 
 
