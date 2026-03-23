@@ -519,7 +519,19 @@ table thead th {
   .mobview {
     display: none;
   }
+.standard-dropdown {
+  position: relative;
+}
 
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
 
 /* mobile responsive */
 

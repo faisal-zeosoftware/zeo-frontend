@@ -13,6 +13,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { CreateLeavetypeComponent } from '../create-leavetype/create-leavetype.component';
 import {combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { environment } from '../../environments/environment';
+
 
 
 
@@ -23,6 +25,8 @@ import { DepartmentServiceService } from '../department-master/department-servic
   styleUrl: './leave-master.component.css'
 })
 export class LeaveMasterComponent {
+
+    private apiUrl = environment.apiBaseUrl;
 
   // Define months with both full and short forms
   months: { short: string, full: string }[] = [
@@ -79,6 +83,10 @@ export class LeaveMasterComponent {
   accrual: boolean = false;
 
   prorate_accrual: boolean = false;
+
+  enable_leave_pay_rule: boolean = false;
+
+  leavePayRules: any[] = [];
 
   
 
@@ -585,48 +593,144 @@ updateLeavetype(): void {
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
+
+showPayRuleForm: boolean = false;
+
+payRuleData = {
+  sequence: '',
+  days: '',
+  pay_percentage: ''
+};
+
+currentEntitlementId: number | null = null;
   
-  registerleaveEntitlement(): void {
-    this.registerButtonClicked = true;
-  
-    const companyData = {
-      min_experience: this.min_experience,
-      effective_after_from: this.effective_after_from,
-      effective_after_unit: this.effective_after_unit,
-   
-       
-      accrual_rate: this.accrual_rate,
-      accrual_frequency: this.accrual_frequency,
-      accrual_month: this.accrual_month,
-      accrual_day: this.accrual_day,
-  
-      prorate_type: this.prorate_type,
-  
-      leave_type: this.selectedLeaveTypeForModal.id,
-      created_by: this.created_by,
-  
-      // ⭐ MULTI SELECT FIELDS — now sent as JSON arrays
-      branches: this.branch?.length ? this.branch : [],
-      categories: this.categories?.length ? this.categories : [],
-      departments: this.departments?.length ? this.departments : [],
-      designations: this.designations?.length ? this.designations : [],
-      prorate_accrual: this.prorate_accrual,
-      accrual: this.accrual,
-    };
-  
-    this.leaveService.registerLeaveEntitlement(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Leave Entitlement has been added');
-        this.loadLeaveEntitlements();
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
-        alert('Enter all required fields!');
-      }
-    );
+registerleaveEntitlement(): void {
+  this.registerButtonClicked = true;
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  const companyData = {
+    min_experience: this.min_experience,
+    effective_after_from: this.effective_after_from,
+    effective_after_unit: this.effective_after_unit,
+
+    accrual_rate: this.accrual_rate,
+    accrual_frequency: this.accrual_frequency,
+    accrual_month: this.accrual_month,
+    accrual_day: this.accrual_day,
+
+    prorate_type: this.prorate_type,
+    leave_type: this.selectedLeaveTypeForModal.id,
+    created_by: this.created_by,
+
+    branches: this.branch?.length ? this.branch : [],
+    categories: this.categories?.length ? this.categories : [],
+    departments: this.departments?.length ? this.departments : [],
+    designations: this.designations?.length ? this.designations : [],
+
+    prorate_accrual: this.prorate_accrual,
+    enable_leave_pay_rule: this.enable_leave_pay_rule,
+    
+    accrual: this.accrual,
+  };
+   console.log('Payload:', companyData);
+this.leaveService.registerLeaveEntitlement(companyData).subscribe(
+  (response: any) => {
+    console.log('Entitlement Created', response);
+
+    if (this.enable_leave_pay_rule) {
+      this.showPayRuleForm = true;   // 👈 SHOW FORM
+      this.currentEntitlementId = response.id; // 👈 SAVE ID
+    }
+
+    alert('Leave Entitlement added');
+  },
+    (error) => {
+      console.error('Added failed', error);
+      alert('Enter all required fields!');
+    }
+  );
+}
+
+submitPayRule(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!this.currentEntitlementId) {
+    alert('Entitlement missing!');
+    return;
   }
+
+  const payload = {
+    sequence: this.payRuleData.sequence,
+    days: this.payRuleData.days,
+    pay_percentage: this.payRuleData.pay_percentage,
+    entitlement: this.currentEntitlementId,
+    created_by: this.userId
+  };
+
+  console.log('PayRule Payload:', payload);
+
+  this.http.post(
+    `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+    payload
+  ).subscribe({
+    next: () => {
+      alert('Pay Rule Saved ✅');
+      window.location.reload();
+
+      this.showPayRuleForm = false; // hide form after save
+      this.payRuleData = { sequence: '', days: '', pay_percentage: '' };
+
+      // this.loadLeavePayRules(); 
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Error saving pay rule');
+    }
+  });
+}
+
+// createDefaultPayRules(entitlementId: number): void {
+//   const selectedSchema = this.authService.getSelectedSchema();
+
+//   const payload = {
+//     sequence: 1,
+//     days: 2,
+//     pay_percentage: 100,
+//     entitlement: entitlementId,
+//     created_by: this.userId
+//   };
+
+//   this.http.post(
+//     `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+//     payload
+//   ).subscribe({
+//     next: () => {
+//       console.log('✅ Pay rule created');
+
+//       // this.loadLeavePayRules(); 
+//     },
+//     error: (err) => {
+//       console.error('❌ Error:', err);
+//     }
+//   });
+// }
+
+// loadLeavePayRules(): void {
+//   const selectedSchema = this.authService.getSelectedSchema();
+
+//   this.http.get<any[]>(
+//     `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`
+//   ).subscribe({
+//     next: (res: any[]) => {
+//       console.log('Pay Rules:', res);
+//       this.leavePayRules = res;
+//     },
+//     error: (err: any) => {
+//       console.error(err);
+//     }
+//   });
+// }
   
 
   registerleaveReset(): void {
@@ -1016,11 +1120,11 @@ loadLeaveEntitlements(): void {
       this.showMonth = true;  // Show month dropdown
       this.showDay = true;    // Show day dropdown
     } else if (this.accrual_frequency === 'months') {
-      this.showMonth = false; // Hide month dropdown
-      this.showDay = true;    // Show day dropdown
+      this.showMonth = true; // Hide month dropdown
+      this.showDay = false;    // Show day dropdown
     } else {
       this.showMonth = false; // Hide both dropdowns
-      this.showDay = false;
+      this.showDay = true;
     }
   }
 

@@ -211,52 +211,69 @@
 
        <!-- select company -->
    
-       <li class="nav-item dropdown" *ngIf="schemas.length > 0">
-        <div class="Company_pro company_bor" (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen">
-          <div class="cmp_drop">
-            <mat-icon>business</mat-icon>
-            <h1>{{ selectedSchema || 'Select Company' }}</h1>
-            <mat-icon [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">expand_more</mat-icon>
-          </div>
-          <div class="standard-dropdown" [class.show]="isCompanyDropdownOpen" (click)="$event.stopPropagation()">
-            <div class="menu-header">
-              <mat-icon>checklist</mat-icon>
-              <span>Select Branches</span>
+<li class="nav-item dropdown" *ngIf="schemas.length > 0">
+  <div class="Company_pro company_bor" (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen">
+    
+    <div class="cmp_drop">
+      <mat-icon>business</mat-icon>
+      <h1>{{ selectedSchema || 'Select Company' }}</h1>
+      <mat-icon [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">
+        expand_more
+      </mat-icon>
+    </div>
+
+    <div class="standard-dropdown" 
+         [class.show]="isCompanyDropdownOpen" 
+         (click)="$event.stopPropagation()">
+
+      <!-- 🔥 SPINNER OVERLAY (CORRECT PLACE) -->
+      <div class="spinner-overlay" *ngIf="isLoadingEss">
+        <mat-progress-spinner diameter="30" mode="indeterminate"></mat-progress-spinner>
+      </div>
+
+      <div class="menu-header">
+        <mat-icon>checklist</mat-icon>
+        <span>Select Branches</span>
+      </div>
+
+      <div class="scrollable-content">
+        <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
+
+          <div class="schema-row" (click)="toggleSchema(i, $event)">
+            <div class="schema-info">
+              <div class="avatar">{{ data.name | slice:0:1 }}</div>
+              <span class="company-name">{{ data.name }}</span>
             </div>
-            
-            <div class="scrollable-content">
-              <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
-                <div class="schema-row" (click)="toggleSchema(i, $event)">
-                  <div class="schema-info">
-                    <div class="avatar">{{ data.name | slice:0:1 }}</div>
-                    <span class="company-name">{{ data.name }}</span>
-                  </div>
-                  <mat-icon>{{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
-                </div>
-                <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
-                  <div class="branch-option multi-select" 
-                       *ngFor="let branch of data.branches" 
-                       (click)="toggleBranchSelection(data, branch, $event)">
-                    
-                    <mat-icon class="check-box">
-                      {{ (selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)) ? 'check_box' : 'check_box_outline_blank' }}
-                    </mat-icon>
-                    
-                    <span class="branch-name" 
-                          [class.selected-text]="(selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id))">
-                      {{ branch.branch_name }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          
-            <!-- <div class="dropdown-footer">
-              <button class="btn-apply" (click)="applySelection()">Apply Selection</button>
-            </div> -->
+            <mat-icon>
+              {{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}
+            </mat-icon>
           </div>
+
+          <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
+            <div class="branch-option multi-select"
+                 *ngFor="let branch of data.branches"
+                 (click)="!isLoadingEss && toggleBranchSelection(data, branch, $event)">
+
+              <mat-icon class="check-box">
+                {{ (selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)) 
+                    ? 'check_box' 
+                    : 'check_box_outline_blank' }}
+              </mat-icon>
+
+              <span class="branch-name"
+                    [class.selected-text]="(selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id))">
+                {{ branch.branch_name }}
+              </span>
+
+            </div>
+          </div>
+
         </div>
-      </li>
+      </div>
+
+    </div>
+  </div>
+</li>
 
       <!-- Admin logo -->
 
