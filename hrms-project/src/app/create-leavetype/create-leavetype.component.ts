@@ -49,6 +49,11 @@ export class CreateLeavetypeComponent {
 
   selectedFile!: File | null;
 
+    enable_leave_pay_rule: boolean = false;
+
+  showPayRuleForm: boolean = false;
+currentEntitlementId: number | null = null;
+
 
   constructor(
     private http: HttpClient,
@@ -119,7 +124,7 @@ export class CreateLeavetypeComponent {
     formData.append('valid_to', formattedValidTo);      // ✅ Fixing Date Format
     formData.append('description', this.description);
     formData.append('branch', this.branch);
-
+    formData.append('enable_leave_pay_rule', this.enable_leave_pay_rule.toString());
     formData.append('created_by', this.created_by);
     formData.append('negative', this.negative.toString());
     formData.append('allow_half_day', this.allow_half_day.toString());
@@ -137,6 +142,11 @@ export class CreateLeavetypeComponent {
     this.leaveService.registerLeaveType(formData).subscribe(
       (response) => {
         console.log('Registration successful', response);
+        
+    if (this.enable_leave_pay_rule) {
+      this.showPayRuleForm = true;   // 👈 SHOW FORM
+      this.currentEntitlementId = response.id; // 👈 SAVE ID
+    }
         alert('Leave type has been added');
         window.location.reload();
       },
@@ -165,22 +175,23 @@ export class CreateLeavetypeComponent {
   }
   
 
+
+
+payRuleData = {
+  sequence: '',
+  days: '',
+  pay_percentage: ''
+};
+
+  onTogglePayRule(event: any): void {
+  this.showPayRuleForm = event.checked;
+
+  if (!event.checked) {
+    this.payRuleData = { sequence: '', days: '', pay_percentage: '' };
+  }
+}
+
   Branches: any[] = [];
-
-
-
-  // LoadBranch(selectedSchema: string) {
-  //   this.leaveService.getBranches(selectedSchema).subscribe(
-  //     (data: any) => {
-  //       this.Branches = data;
-
-  //       console.log('employee:', this.Branches);
-  //     },
-  //     (error: any) => {
-  //       console.error('Error fetching categories:', error);
-  //     }
-  //   );
-  // }
 
 
   LoadBranch(callback?: Function) {

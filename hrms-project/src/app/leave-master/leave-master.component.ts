@@ -169,6 +169,7 @@ export class LeaveMasterComponent {
   encashment_value: any = '';
   encashment_unit_or_percentage: any = '';
   encashment_max_limit: any = '';
+  opening_balance: any = '';
 
   allow_cf:boolean =false;
   allow_encashment: boolean = false;
@@ -450,7 +451,13 @@ deleteSelectedLeavetype() {
 }
 
 
+  onTogglePayRule(event: any): void {
+  this.showPayRuleForm = event.checked;
 
+  if (!event.checked) {
+    this.payRuleData = { sequence: null, days: null, pay_percentage: null};
+  }
+}
 
 updateLeavetype(): void {
   if (!this.editLeaveType.id) {
@@ -535,17 +542,26 @@ updateLeavetype(): void {
     formData.append('include_weekend_and_holiday', this.include_weekend_and_holiday.toString());
     formData.append('use_common_workflow', this.use_common_workflow.toString());
     formData.append('include_dashboard', this.include_dashboard.toString());
+    formData.append('enable_leave_pay_rule', this.enable_leave_pay_rule.toString());
   
     if (this.selectedFile) {
       formData.append('image', this.selectedFile);
     }
   
-    this.leaveService.registerLeaveType(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Leave type has been added');
-        window.location.reload();
-      },
+this.leaveService.registerLeaveType(formData).subscribe(
+  (response: any) => {
+    console.log('Registration successful', response);
+
+    if (response.enable_leave_pay_rule) {
+      this.showPayRuleForm = true;   // ✅ SHOW TAB
+      this.currentEntitlementId = response.id; // ✅ STORE ID
+    }
+
+    alert('Leave type has been added');
+
+    // ❌ REMOVE THIS
+    // window.location.reload();
+  },
       (error) => {
         console.error('Added failed', error);
   
@@ -597,10 +613,12 @@ updateLeavetype(): void {
 showPayRuleForm: boolean = false;
 
 payRuleData = {
-  sequence: '',
-  days: '',
-  pay_percentage: ''
-};
+  sequence: null,
+  days: null,
+  pay_percentage: null
+};;
+
+
 
 currentEntitlementId: number | null = null;
   
@@ -629,7 +647,7 @@ registerleaveEntitlement(): void {
     designations: this.designations?.length ? this.designations : [],
 
     prorate_accrual: this.prorate_accrual,
-    enable_leave_pay_rule: this.enable_leave_pay_rule,
+
     
     accrual: this.accrual,
   };
@@ -637,12 +655,6 @@ registerleaveEntitlement(): void {
 this.leaveService.registerLeaveEntitlement(companyData).subscribe(
   (response: any) => {
     console.log('Entitlement Created', response);
-
-    if (this.enable_leave_pay_rule) {
-      this.showPayRuleForm = true;   // 👈 SHOW FORM
-      this.currentEntitlementId = response.id; // 👈 SAVE ID
-    }
-
     alert('Leave Entitlement added');
   },
     (error) => {
@@ -655,8 +667,8 @@ this.leaveService.registerLeaveEntitlement(companyData).subscribe(
 submitPayRule(): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
-  if (!this.currentEntitlementId) {
-    alert('Entitlement missing!');
+  if (!this.selectedLeaveTypeForModal?.id) {
+    alert('Leave Type missing!');
     return;
   }
 
@@ -664,11 +676,9 @@ submitPayRule(): void {
     sequence: this.payRuleData.sequence,
     days: this.payRuleData.days,
     pay_percentage: this.payRuleData.pay_percentage,
-    entitlement: this.currentEntitlementId,
+    leave_type: this.selectedLeaveTypeForModal.id,
     created_by: this.userId
   };
-
-  console.log('PayRule Payload:', payload);
 
   this.http.post(
     `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
@@ -676,12 +686,12 @@ submitPayRule(): void {
   ).subscribe({
     next: () => {
       alert('Pay Rule Saved ✅');
-      window.location.reload();
 
-      this.showPayRuleForm = false; // hide form after save
-      this.payRuleData = { sequence: '', days: '', pay_percentage: '' };
+      // 🔥 RELOAD DATA (MAIN FIX)
+      this.loadLeavePayRules();
 
-      // this.loadLeavePayRules(); 
+      // reset form
+      this.payRuleData = { sequence: null, days: null, pay_percentage: null };
     },
     error: (err) => {
       console.error(err);
@@ -690,47 +700,27 @@ submitPayRule(): void {
   });
 }
 
-// createDefaultPayRules(entitlementId: number): void {
-//   const selectedSchema = this.authService.getSelectedSchema();
+loadLeavePayRules(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
 
-//   const payload = {
-//     sequence: 1,
-//     days: 2,
-//     pay_percentage: 100,
-//     entitlement: entitlementId,
-//     created_by: this.userId
-//   };
+  this.http.get<any[]>(
+    `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`
+  ).subscribe({
+    next: (res: any[]) => {
+      console.log('All Pay Rules:', res);
 
-//   this.http.post(
-//     `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-//     payload
-//   ).subscribe({
-//     next: () => {
-//       console.log('✅ Pay rule created');
+      // 🔥 FILTER BY CURRENT LEAVE TYPE
+      this.leavePayRules = res.filter(rule =>
+        rule.leave_type === this.selectedLeaveTypeForModal.id
+      );
 
-//       // this.loadLeavePayRules(); 
-//     },
-//     error: (err) => {
-//       console.error('❌ Error:', err);
-//     }
-//   });
-// }
-
-// loadLeavePayRules(): void {
-//   const selectedSchema = this.authService.getSelectedSchema();
-
-//   this.http.get<any[]>(
-//     `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`
-//   ).subscribe({
-//     next: (res: any[]) => {
-//       console.log('Pay Rules:', res);
-//       this.leavePayRules = res;
-//     },
-//     error: (err: any) => {
-//       console.error(err);
-//     }
-//   });
-// }
+      console.log('Filtered Pay Rules:', this.leavePayRules);
+    },
+    error: (err: any) => {
+      console.error(err);
+    }
+  });
+}
   
 
   registerleaveReset(): void {
@@ -751,6 +741,8 @@ submitPayRule(): void {
       formData.append('encashment_unit_or_percentage', this.encashment_unit_or_percentage);
       formData.append('encashment_max_limit', this.encashment_max_limit);
       formData.append('leave_type', this.selectedLeaveTypeForModal.id);
+      formData.append('opening_balance', this.opening_balance);
+
 
       formData.append('reset', this.reset.toString());
       formData.append('allow_cf', this.allow_cf.toString());
@@ -1121,7 +1113,7 @@ loadLeaveEntitlements(): void {
       this.showDay = true;    // Show day dropdown
     } else if (this.accrual_frequency === 'months') {
       this.showMonth = true; // Hide month dropdown
-      this.showDay = false;    // Show day dropdown
+      this.showDay = true;    // Show day dropdown
     } else {
       this.showMonth = false; // Hide both dropdowns
       this.showDay = true;
@@ -1159,13 +1151,17 @@ openLeaveConfigurationModal(leavetype: any): void {
   this.selectedLeaveTypeForModal = { ...leavetype }; 
   this.isLeavetypeCreationModalOpen = true;
 
-  // 2. Filter Entitlements (previous step)
+  // 🔥 ADD THIS LINE (MAIN FIX)
+  this.showPayRuleForm = leavetype.enable_leave_pay_rule === true;
+
+  console.log('Pay Rule Enabled:', this.showPayRuleForm);
+
+  // 2. Filter Entitlements
   this.filteredEntitlements = this.leaveEntitlements.filter(ent => 
     ent.leave_type === leavetype.name
   );
 
-  // 3. Filter Reset Values (new step)
-  // We match ent.leave_type from the Reset JSON to the clicked card's name
+  // 3. Filter Reset Values
   this.filteredLeaveRests = this.leaveRests.filter(res => 
     res.leave_type === leavetype.name
   );

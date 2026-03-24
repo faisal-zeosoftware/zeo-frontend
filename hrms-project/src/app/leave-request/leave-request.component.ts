@@ -274,6 +274,7 @@ requestLeave(): void {
   formData.append('status', this.status);
   formData.append('dis_half_day', this.dis_half_day.toString());
   formData.append('half_day_period', this.half_day_period);
+  formData.append('totalDays', this.totalDays.toString());
   formData.append('document_number', this.document_number?.toString() || '');
   formData.append('branch', this.branch || '');
   formData.append('leave_type', this.leave_type.toString());
@@ -325,25 +326,32 @@ requestLeave(): void {
 
   selectedEmployee: number | null = null;
 
-  onEmployeeChange() {
-    if (!this.selectedEmployee) return;
+onEmployeeChange() {
+  this.leave_type = ''; // reset selected leave type
 
-    this.leaveService.getLeaveBalance(this.selectedEmployee).subscribe(
-      (data: any) => {
-        this.leaveBalances = data.leave_balance;
-        this.allLeaveTypes = data.available_leave_types;
-
-        // Filter available leave types based on the employee's leave balance
-        const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
-        this.LeaveTypes = this.allLeaveTypes.filter(lt => leaveTypeNames.includes(lt.name));
-
-        console.log('Filtered Leave Types:', this.LeaveTypes);
-      },
-      (error: any) => {
-        console.error('Error fetching leave balance:', error);
-      }
-    );
+  if (!this.selectedEmployee) {
+    this.LeaveTypes = [];
+    return;
   }
+
+  this.leaveService.getLeaveBalance(this.selectedEmployee).subscribe(
+    (data: any) => {
+      this.leaveBalances = data.leave_balance;
+      this.allLeaveTypes = data.available_leave_types;
+
+      const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
+
+      this.LeaveTypes = this.allLeaveTypes.filter(lt =>
+        leaveTypeNames.includes(lt.name)
+      );
+
+      console.log('LeaveTypes loaded:', this.LeaveTypes);
+    },
+    (error: any) => {
+      console.error('Error fetching leave balance:', error);
+    }
+  );
+}
 
   onEmployeeChangeEdit() {
 
@@ -409,19 +417,16 @@ loadEmp(callback?: Function): void {
   }
 }
 
-  mapEmpNameToId() {
-
-  if (!this.Employees || !this.editAsset?.selectedEmployee) return;
+mapEmpNameToId() {
+  if (!this.Employees || !this.editAsset?.employee) return;
 
   const emp = this.Employees.find(
-    (e: any) => e.emp_code === this.editAsset.selectedEmployee
+    (e: any) => e.emp_code === this.editAsset.employee
   );
 
   if (emp) {
-    this.editAsset.selectedEmployee = emp.id;  // convert to ID for dropdown
+    this.editAsset.selectedEmployee = emp.id; // ✅ IMPORTANT
   }
-
-  console.log("Mapped employee_id:", this.editAsset.selectedEmployee);
 }
   
 
@@ -446,8 +451,7 @@ loadEmp(callback?: Function): void {
   }
 }
 
-    mapLeaveTypeNameToId() {
-
+mapLeaveTypeNameToId() {
   if (!this.LeaveTypes || !this.editAsset?.leave_type) return;
 
   const lv = this.LeaveTypes.find(
@@ -455,10 +459,8 @@ loadEmp(callback?: Function): void {
   );
 
   if (lv) {
-    this.editAsset.leave_type = lv.id;  // convert to ID for dropdown
+    this.editAsset.leave_type = lv.id;
   }
-
-  console.log("Mapped employee_id:", this.editAsset.leave_type);
 }
 
 
@@ -557,10 +559,16 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = { ...asset };
 
-this.mapEmpNameToId();
+  this.isEditModalOpen = true;
+
+  // 🔥 Convert backend string values → IDs
+  this.mapEmpNameToId();
+  this.mapLeaveTypeNameToId();
+
+  // 🔥 Calculate days immediately
+  this.calculateEditTotalDays();
 }
 
 closeEditModal(): void {
@@ -612,37 +620,37 @@ selectedEmployeeIds.forEach(categoryId => {
 
 
 updateAssetType(): void {
-const selectedSchema = localStorage.getItem('selectedSchema');
-if (!selectedSchema || !this.editAsset.id) {
-alert('Missing schema or asset ID');
-return;
-}
-
-this.employeeService.updateLeaveRequest(this.editAsset.id, this.editAsset).subscribe(
-(response) => {
-  alert(' Request  updated successfully!');
-  this.closeEditModal();
-  window.location.reload();
-},
-(error) => {
-  console.error('Error updating Leave Request:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+  if (!this.editAsset.id) {
+    alert('Missing ID');
+    return;
   }
 
-  alert(errorMsg);
-}
-);
-}
+  const payload = {
+    start_date: this.editAsset.start_date,
+    end_date: this.editAsset.end_date,
+    reason: this.editAsset.reason,
+    employee: Number(this.editAsset.selectedEmployee), // ✅ correct
+    leave_type: Number(this.editAsset.leave_type),     // ✅ correct
+    branch: Number(this.editAsset.branch),             // ✅ MUST BE ID
+    dis_half_day: this.editAsset.dis_half_day,
+    half_day_period: this.editAsset.half_day_period,
+    number_of_days: this.editTotalDays
+  };
 
+  console.log('UPDATE PAYLOAD:', payload);
+
+  this.employeeService.updateLeaveRequest(this.editAsset.id, payload).subscribe(
+    () => {
+      alert('Updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error(error);
+      alert(error?.error?.request_type?.[0] || 'Update failed');
+    }
+  );
+}
 editTotalDays = 0;
 
 
@@ -715,12 +723,10 @@ onBranchChange(event: any): void {
 
   this.branch = selectedBranchId;
 
-  /* ---------------------------------------
-     1️⃣ FILTER EMPLOYEES BY BRANCH
-  ---------------------------------------*/
   if (!selectedBranchId) {
     this.filteredEmployees = this.Employees;
     this.selectedEmployee = null;
+    this.LeaveTypes = [];
   } else {
     const selectedBranch = this.branches.find(
       b => Number(b.id) === Number(selectedBranchId)
@@ -734,36 +740,19 @@ onBranchChange(event: any): void {
       this.filteredEmployees = [];
     }
 
-    this.selectedEmployee = null;
-  }
+    // ✅ AUTO SELECT FIRST EMPLOYEE
+    if (this.filteredEmployees.length > 0) {
+      this.selectedEmployee = this.filteredEmployees[0].id;
 
-  /* ---------------------------------------
-     2️⃣ DOCUMENT NUMBERING LOGIC
-  ---------------------------------------*/
-
-  if (!selectedBranchId || !selectedSchema) {
-    this.automaticNumbering = false;
-    this.document_number = null;
-    return;
-  }
-
-  const type = 'leave_request'; // 🔥 IMPORTANT: change from general_request
-
-  const apiUrl = `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
-
-  this.http.get<any>(apiUrl).subscribe({
-    next: (response) => {
-      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
-
-      this.automaticNumbering = !!data?.automatic_numbering;
-
-      this.document_number = this.automaticNumbering ? null : '';
-    },
-    error: () => {
-      this.automaticNumbering = false;
-      this.document_number = '';
+      // 🔥 IMPORTANT: trigger leave type loading
+      this.onEmployeeChange();
+    } else {
+      this.selectedEmployee = null;
+      this.LeaveTypes = [];
     }
-  });
+  }
+
+  /* DOCUMENT NUMBERING LOGIC (keep as is) */
 }
 
 

@@ -113,6 +113,21 @@
                           </div>
                         </div>
                       </div>
+
+                   <div class="col-md-4">
+                      <label></label>
+                     <div class="check-box-selection-sec form-control mt-3">
+                          <div class="mat-set">
+                             <mat-checkbox 
+                              [(ngModel)]="enable_leave_pay_rule"
+                              (change)="onTogglePayRule($event)"
+                              [ngModelOptions]="{standalone: true}">
+                              Enable leave pay rule
+                            </mat-checkbox>
+                          </div>
+                         
+                      </div>
+                  </div>
           
               <!-- <div class="col-md-4">
                 <label></label>
