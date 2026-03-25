@@ -663,9 +663,11 @@ calculateEditTotalDays() {
     const diff =
       Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
-    this.editTotalDays = diff > 0 ? diff : 0;
+    // ✅ update correct variable
+    this.editAsset.number_of_days = diff > 0 ? diff : 0;
+
   } else {
-    this.editTotalDays = 0;
+    this.editAsset.number_of_days = 0;
   }
 }
 

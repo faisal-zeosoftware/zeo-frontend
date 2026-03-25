@@ -47,10 +47,13 @@ export class UesrEmployeeComponent {
   public designations: any[] = [];
   public catogories: any[] = [];
 
+
   languages:any[] = [];
 
   registerButtonClicked = false;
   employees: Employee[] = [];
+nationalities: any[] = [];
+religions: any[] = [];
   // emp_code: string = ''; // Ensure this is initialized properly
 
   emp_code: string = ''; // Ensure this is bound correctly
@@ -101,6 +104,11 @@ export class UesrEmployeeComponent {
 
   isUserSelectDisabled: boolean = true; // Initially disabled
 
+  nationFieldName: string = 'Nationality';
+  religionFieldName: string = 'Religion';
+  Nationations: any[] = [];
+  Religions: any[] = [];
+
   // dialog: any;
 
   constructor(private EmployeeService: EmployeeService ,
@@ -145,7 +153,8 @@ export class UesrEmployeeComponent {
     this.loadLanguages();
 
     this.loadUsers();
-
+    this.loadNationality();
+    this.loadReligoin();
 
     this.fetchEmployees();
     this.id = '2'; // Example, replace with actual logic
@@ -611,7 +620,9 @@ setEmpCode(code: string): void {
 
   onCompanyChange(): void {
     console.log('Selected Company Name:', this.selectedCompany?.schema_name);
-    this.fetchEmployees(); // Fetch employees based on the selected company
+    this.fetchEmployees(); 
+    this.loadNationality();
+    this.loadReligoin();// Fetch employees based on the selected company
     this.emp_code = ''; // Optionally reset or clear the selected employee
 }
 
@@ -650,6 +661,45 @@ loadCountries(): void {
   );
   }
 }
+
+  loadNationality(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+
+      this.CountryService.getNationality(selectedSchema).subscribe(
+        (result: any) => {
+          this.Nationations = result;
+        },
+        (error: any) => {
+          console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
+
+
+  loadReligoin(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+
+      this.CountryService.getReligionList(selectedSchema).subscribe(
+        (result: any) => {
+          this.Religions = result;
+        },
+        (error: any) => {
+          console.error('Error fetching countries:', error);
+        }
+      );
+    }
+  }
 
 
 

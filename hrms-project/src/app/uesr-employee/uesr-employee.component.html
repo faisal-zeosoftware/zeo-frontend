@@ -5,7 +5,7 @@
 
         <h1>Create Employee</h1><hr>
         <mat-tab-group>
-            <mat-tab >
+            <mat-tab label="User to Employee" >
 
         <form >
 
@@ -93,9 +93,10 @@
         <label>Select Gender</label>
         <select class="form-control" id="emp_gender" name="emp_gender"  [(ngModel)]="emp_gender"  [ngModelOptions]="{standalone: true}" >
           
-            <option >Male</option>
-            <option>Female</option>
-            <option>Other</option>
+  <option value="">Select</option>
+  <option value="Male">Male</option>
+  <option value="F">Female</option>
+  <option value="O">Other</option>
         </select>
     </div>
     <!-- <label>Last Name</label>
@@ -182,13 +183,18 @@
 </div>
 
 
-<div class="col-md-6" >
-               
-    <label>Religion</label>
-   <input type="text"  class="form-control" required id="emp_relegion" name="emp_relegion"  [(ngModel)]="emp_relegion"  placeholder="Enter Religion"
-    [ngModelOptions]="{standalone: true}" >
-   
-   <!-- <div *ngIf="registerButtonClicked && !emp_relegion" class="error-message">Description is required.</div> -->
+<div class="col-md-6">
+    
+    
+    <div class="custom-sel">
+        <label>{{religionFieldName}}</label>
+        <select class="form-control" id="emp_relegion" name="emp_relegion" required [(ngModel)]="emp_relegion"  [ngModelOptions]="{standalone: true}"  >
+            <option value="" >Select</option>
+            <option *ngFor="let emp_relegion of Religions" [value]="emp_relegion.id">{{ emp_relegion.religion }}</option>
+        </select>
+    </div>
+                
+
 </div>
 
 <div class="col-md-6" >
@@ -200,13 +206,18 @@
    <!-- <div *ngIf="registerButtonClicked && !emp_blood_group" class="error-message">Description is required.</div> -->
 </div>
 
-<div class="col-md-6" >
-               
-    <label>Nationality</label>
-   <input type="text"  class="form-control" required  id="emp_nationality" name="emp_nationality" [(ngModel)]="emp_nationality"  placeholder="Enter Nationality"
-    [ngModelOptions]="{standalone: true}" >
-   
-   <!-- <div *ngIf="registerButtonClicked && !emp_nationality" class="error-message">Description is required.</div> -->
+<div class="col-md-6">
+    
+    
+    <div class="custom-sel">
+        <label>{{nationFieldName}}</label>
+        <select class="form-control" id="emp_nationality" name="emp_nationality" required [(ngModel)]="emp_nationality"  [ngModelOptions]="{standalone: true}"  >
+            <option value="" >Select</option>
+            <option *ngFor="let emp_nationality of Nationations" [value]="emp_nationality.id">{{ emp_nationality.N_name }}</option>
+        </select>
+    </div>
+                
+
 </div>
 
 
@@ -217,10 +228,14 @@
         <label>marital Status</label>
         <select class="form-control" id="emp_marital_status" name="emp_marital_status"  [(ngModel)]="emp_marital_status"  [ngModelOptions]="{standalone: true}" >
           
-            <option >Married</option>
-            <option>Single</option>
-            <option>Divorced</option>
-            <option>Widow</option>
+  <option value="">Select</option>
+  <option value="M">Married</option>
+  <option value="S">Single</option>
+  <option value="divorced">Divorced</option>
+  <option value="widow">Widow</option>
+
+
+
             
         </select>
     </div>
@@ -274,7 +289,9 @@
                 <label>Country</label>
                 <select class="form-control" id="emp_country_id" name="emp_country_id" required [(ngModel)]="emp_country_id" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}" >
                     <option value="" >Select</option>
-                    <option *ngFor="let emp_country_id of countries" [value]="emp_country_id.id">{{ emp_country_id.country_name }}</option>
+                    <option *ngFor="let c of countries" [value]="c.id">
+                    {{ c.country_name }}
+                    </option>
                 </select>
                 <!-- <div *ngIf="registerButtonClicked && !emp_country_id" class="error-message">Please Select Your Country</div> -->
             </div>
@@ -469,7 +486,8 @@
     </div>
 
 </mat-tab>
-<mat-tab >
+<mat-tab label="Select Employee to User">
+
 
     <form>
         <div class="row">

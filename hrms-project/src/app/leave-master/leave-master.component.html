@@ -562,7 +562,7 @@
                         <select class="form-control" id="accrual_day" name="accrual_day" [(ngModel)]="accrual_day" [ngModelOptions]="{standalone: true}">
                           <option value="1st">1st Day Of the Month</option>
                           <option value="last">Last Day Of the Month</option>
-                          <option value="joining_day  ">Employee joining Date</option>
+                          <option value="joining_day">Employee joining Date</option>
                         </select>
                       </div>
                     </div>
@@ -721,14 +721,7 @@
                         </div>
                       </div>
 
-    <div class="col-md-4">
-      <label>Opening Balance</label>
-         <div class="custom-sel">
-      <input type="number" class="form-control"
-             [(ngModel)]="opening_balance"
-             [ngModelOptions]="{standalone: true}">
-    </div>
-    </div>
+
   
                       <div class="col-md-4">
                         <label></label>
@@ -798,6 +791,15 @@
                     </div>
 
                     <div class="row">
+
+   <div class="col-md-4">
+      <label>Opening Balance</label>
+         <div class="custom-sel">
+      <input type="number" class="form-control"
+             [(ngModel)]="opening_balance"
+             [ngModelOptions]="{standalone: true}">
+    </div>
+    </div>
                       
                       <div class="col-md-4">
                         <label></label>
