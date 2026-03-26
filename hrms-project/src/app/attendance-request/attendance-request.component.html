@@ -67,15 +67,36 @@
           </div>
           <hr />
       
-          <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
+          <form (ngSubmit)="SetLateInEarlyOut()" enctype="multipart/form-data">
             <div class="row">
 
 
               <div class="col-md-6">
                 <label>Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Enter document date"
+                <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Enter date"
                        [ngModelOptions]="{standalone: true}" >
               </div>
+
+           <div class="col-md-6">
+                <label>Request Type</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
+                    <option  value="LATE_IN">Late Check In</option>
+                    <option  value="EARLY_OUT">Early Check Out</option>          
+                  </select>
+                </div>
+              </div>
+
+            <!-- <div class="col-md-6">
+                <label>Status</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="status" name="status" [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
+                    <option  value="PENDING">Pending</option>
+                    <option  value="APPROVED">Approved</option>
+                    <option  value="REJECTED">Rejected</option>           
+                  </select>
+                </div>
+              </div> -->
 
 <div class="col-md-6">
 
@@ -86,22 +107,23 @@
        <mat-form-field appearance="outline" style="width:100%">
 
     <!-- Employee Dropdown -->
- <mat-select>
-              <input type="text" placeholder="Search Employee"
-            class="form-control"
-            [(ngModel)]="employeeSearch"
-            [ngModelOptions]="{standalone: true}"
-            (click)="$event.stopPropagation()">
+  <mat-select [(ngModel)]="employee"
+              [ngModelOptions]="{standalone: true}"
+              multiple>
+
+    <input type="text"
+           placeholder="Search Employee"
+           class="form-control"
+           [(ngModel)]="employeeSearch"
+           [ngModelOptions]="{standalone: true}"
+           (click)="$event.stopPropagation()">
 
 
         <!-- Employee List -->
-        <mat-option
-          *ngFor="let emp of filterEmployees()"
-          [value]="emp.id">
-
-          {{ emp.emp_code }}
-
-        </mat-option>
+    <mat-option *ngFor="let emp of filterEmployees()"
+                [value]="emp.id">
+      {{ emp.emp_code }}
+    </mat-option>
 
       </mat-select>
           </mat-form-field>
@@ -112,53 +134,9 @@
 
 </div>
 
-              <div class="col-md-6">
-                <label> resigned on</label>
-                <input type="date" class="form-control" required [(ngModel)]="resigned_on" placeholder="Enter resigned on"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-          
-              <div class="col-md-6">
-                <label>notice period</label>
-                <input type="number" class="form-control" required [(ngModel)]="notice_period" placeholder="Enter notice period"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-
-            
-              <div class="col-md-6">
-                <label>last working date</label>
-                <input type="date" class="form-control" required [(ngModel)]="last_working_date" placeholder="Enter last working date"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-            
-
-              <div class="col-md-6">
-                <label>location</label>
-                <input type="text" class="form-control" required [(ngModel)]="location" placeholder="Enter location"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-            
-
-            
-              <div class="col-md-6">
-                <label>Type</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}">
-                    <option  value="resignation" >Resignation</option>
-                    <option  value="termination" >Termination</option>
-
-                    <option  value="retirement" >Retirement</option>
-
-                    <option  value="death_or_disablement" >Death or Disablement</option>
-                    
-                  </select>
-                </div>
-              </div>
-              
-      
               <div class="col-md-12">
                 <label>Reason</label>
-                <textarea class="form-control" [(ngModel)]="reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
+                <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}" placeholder="Enter reason"></textarea>
               </div>
 
  
@@ -206,81 +184,74 @@
   <form >
     <div class="row">
 
-      <div class="col-md-6">
-          <label>Employee</label>
-          <div class="custom-sel">
-            <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee" [ngModelOptions]="{standalone: true}">
-              <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
-            </select>
-          </div>
-        </div>
+              <div class="col-md-6">
+                <label>Date</label>
+                <input type="date" class="form-control" required [(ngModel)]="editAsset.date" placeholder="Enter date"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
 
-    <div class="col-md-6">
-      <label>Document date</label>
-      <input type="date" class="form-control" required [(ngModel)]="editAsset.document_date" placeholder="Enter document date"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
+           <div class="col-md-6">
+                <label>Request Type</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
+                    <option  value="LATE_IN">Late Check In</option>
+                    <option  value="EARLY_OUT">Early Check Out</option>          
+                  </select>
+                </div>
+              </div>
 
-    <div class="col-md-6">
-      <label> resigned on</label>
-      <input type="date" class="form-control" required [(ngModel)]="editAsset.resigned_on" placeholder="Enter resigned on"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
-
-    <div class="col-md-6">
-      <label>notice period</label>
-      <input type="number" class="form-control" required [(ngModel)]="editAsset.notice_period" placeholder="Enter notice period"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
-
+            <!-- <div class="col-md-6">
+                <label>Status</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="status" name="status" [(ngModel)]="editAsset.status" [ngModelOptions]="{standalone: true}">
+                    <option  value="PENDING">Pending</option>
+                    <option  value="APPROVED">Approved</option>
+                    <option  value="REJECTED">Rejected</option>           
+                  </select>
+                </div>
+              </div> -->
   
-    <div class="col-md-6">
-      <label>last working date</label>
-      <input type="date" class="form-control" required [(ngModel)]="editAsset.last_working_date" placeholder="Enter last working date"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
+<div class="col-md-6">
+
+  <div class="custom-sel">
+            <div class="form-control-wrapper">
+
+      <label>Select Employee</label>
+       <mat-form-field appearance="outline" style="width:100%">
+
+    <!-- Employee Dropdown -->
+  <mat-select [(ngModel)]="editAsset.employee"
+              [ngModelOptions]="{standalone: true}"
+              multiple>
+
+    <input type="text"
+           placeholder="Search Employee"
+           class="form-control"
+           [(ngModel)]="employeeSearch"
+           [ngModelOptions]="{standalone: true}"
+           (click)="$event.stopPropagation()">
+
+
+        <!-- Employee List -->
+    <mat-option *ngFor="let emp of filterEmployees()"
+                [value]="emp.id">
+      {{ emp.emp_code }}
+    </mat-option>
+
+      </mat-select>
+          </mat-form-field>
+</div>
+         
+
+  </div>
+
+</div>
   
 
-    <div class="col-md-6">
-      <label>location</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.location" placeholder="Enter location"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
-  
-
-  
-    <div class="col-md-6">
-      <label>Type</label>
-      <div class="custom-sel">
-        <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="editAsset.termination_type" [ngModelOptions]="{standalone: true}">
-          <option  value="resignation" >Resignation</option>
-          <option  value="termination" >Termination</option>
-
-          <option  value="retirement" >Retirement</option>
-
-          <option  value="death_or_disablement" >Death or Disablement</option>
-          
-        </select>
-      </div>
-    </div>
-    
-
-    <div class="col-md-12">
-      <label>Reason</label>
-      <textarea class="form-control" [(ngModel)]="editAsset.reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
-    </div>
-
-
-
-
-    
-
-
-
-
-
-     
-
+              <div class="col-md-12">
+                <label>Reason</label>
+                <textarea class="form-control" [(ngModel)]="editAsset.reason" placeholder="Enter reason"></textarea>
+              </div>
 
 
   </div>
@@ -288,7 +259,7 @@
     <div class="row" >
       <div class="col-md-9"></div>
       <div class="col-md-3">
-        <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Sent</button>
+        <button type="button" (click)="updateLateInEarlyOut()"  class="btn btn-success btn-full mt-4">Sent</button>
       </div>
     </div>
   </form>
@@ -308,20 +279,12 @@
           <thead>
             <tr>
               <th>No</th>
-
-              <th> Document date  </th>
-              <th> Resigned on</th>
-              <th>Notice period</th>
-              <th>Last working date</th>
-              <th>Location</th>
-              <th>Termination type</th>
-             
-  
-              <th>Reason for leaving</th>
-              <th>Status</th>
+              <th>Date</th>
+              <th>Request Type</th>
+              <th>Reason</th>
               <th>Employee</th>
-              <th>Attachment</th>
-              <th>Actions</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -330,17 +293,15 @@
       
           
         <td data-label="No">{{ i + 1 }}</td>
-        <td data-label="Document Date">{{ docs.document_date }}</td>
-        <td data-label="Resigned On">{{ docs.resigned_on }}</td>
-        <td data-label="Notice Period">{{ docs.notice_period }}</td>
-        <td data-label="Last Working Date">{{ docs.last_working_date }}</td>
-        <td data-label="Location">{{ docs.location }}</td>
-        <td data-label="Termination Type">{{ docs.termination_type }}</td>
-        <td data-label="Reason for Leaving">{{ docs.reason_for_leaving }}</td>
-        <td data-label="Status">{{ docs.status }}</td>
+        <td data-label="Date">{{ docs.date }}</td>
+        <td data-label="RequestType">{{ docs.request_type }}</td>
+        <td data-label="Reason">{{ docs.reason }}</td>
         <td data-label="Employee">{{ docs.employee }}</td>
-        <td data-label="Attachment">{{ docs.attachment }}</td>
-   
+        <td>
+           <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
+                 {{ docs.status }}
+            </span>
+        </td>
        
               <td data-label="Actions">
                 <button

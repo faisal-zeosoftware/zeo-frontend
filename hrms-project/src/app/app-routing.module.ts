@@ -165,6 +165,8 @@ import { ManualEntryComponent } from './manual-entry/manual-entry.component';
 import { EmployeePunchingDetailsComponent } from './employee-punching-details/employee-punching-details.component';
 import { AttendancePolicyComponent } from './attendance-policy/attendance-policy.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
+import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval-level/latein-earlyout-approval-level.component';
+import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/latein-earlyout-approvals.component';
 
 
 const routes: Routes = [
@@ -749,8 +751,16 @@ const routes: Routes = [
       component: AttendanceRequestComponent,
     },
 
+    {
+      path: 'latein-earlyout-approval-level',
+      component: LateinEarlyoutApprovalLevelComponent,
+    },
 
-    
+    {
+      path: 'latein-earlyout-approvals',
+      component: LateinEarlyoutApprovalsComponent,
+    },
+
 
 
 

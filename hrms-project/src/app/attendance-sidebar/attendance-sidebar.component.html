@@ -21,6 +21,18 @@
 
                   <li routerLink="/main-sidebar/attendance-sidebar/attendace-marking" *ngIf="hasViewPermissionAttendanceMarking"><a><mat-icon>person_raised_hand</mat-icon> Attendance Marking</a></li>
 
+                  <li (click)="toggleGeneralRequest()" style="cursor: pointer;">
+                    <a>
+                      <mat-icon>peoples</mat-icon>Attendance Request 
+                      <mat-icon style="float: right;">{{ showGeneralRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </a>
+                  </li>
+                  <ul *ngIf="showGeneralRequest" style="padding-left: 20px;">
+                  <li routerLink="/main-sidebar/attendance-sidebar/attendance-attendance-request" *ngIf="hasViewPermissionAttendanceReq"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Request</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/latein-earlyout-approval-level" *ngIf="hasViewPermissionLateinEarlyOutApprovallevel"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Approval Level</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/latein-earlyout-approvals" *ngIf="hasViewPermissionLateinEarlyOutApprovals"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Approvals</a></li>
+                  </ul>
+
                   <li routerLink="/main-sidebar/attendance-sidebar/manual-entry" *ngIf="hasViewPermissionmanualentry"><a><mat-icon>person_raised_hand</mat-icon>Manual entry</a></li>
                
                   <li routerLink="/main-sidebar/attendance-sidebar/attendance-policy" *ngIf="hasViewPermissionAttendancepolicy"><a><mat-icon>person_raised_hand</mat-icon>Attendance Policy</a></li>
@@ -34,18 +46,6 @@
                   <li routerLink="/main-sidebar/attendance-sidebar/geofence" *ngIf="hasViewPermissionGeoFence"><a><mat-icon>person_raised_hand</mat-icon> Geo Fence</a></li>
                   
                   <li routerLink="/main-sidebar/attendance-sidebar/employee-face-register" *ngIf="hasViewPermissionFaceRegister"><a><mat-icon>person_raised_hand</mat-icon>  Face Register</a></li>
-
-
-
-                  <li (click)="toggleGeneralRequest()" style="cursor: pointer;">
-                    <a>
-                      <mat-icon>peoples</mat-icon>Attendance Request 
-                      <mat-icon style="float: right;">{{ showGeneralRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
-                    </a>
-                  </li>
-                  <ul *ngIf="showGeneralRequest" style="padding-left: 20px;">
-                  <li routerLink="/main-sidebar/attendance-sidebar/attendance-attendance-request" *ngIf="hasViewPermissionAttendanceReq"><a><mat-icon>person_raised_hand</mat-icon>Attendance Request</a></li>
-                  </ul>
 
 
                     <mat-nav-list>

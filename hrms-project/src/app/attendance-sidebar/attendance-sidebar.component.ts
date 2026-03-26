@@ -25,6 +25,8 @@ export class AttendanceSidebarComponent {
   hasViewPermissionAttendancepolicy:boolean = false;
   hasViewPermissionFaceRegister:boolean = false;
   hasViewPermissionAttendanceReq:boolean = false;
+  hasViewPermissionLateinEarlyOutApprovallevel:boolean = false;
+  hasViewPermissionLateinEarlyOutApprovals:boolean = false;
   
 
 
@@ -97,6 +99,8 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionAttendancepolicy = true;
           this.hasViewPermissionFaceRegister = true;
           this.hasViewPermissionAttendanceReq = true;
+          this.hasViewPermissionLateinEarlyOutApprovallevel = true;
+          this.hasViewPermissionLateinEarlyOutApprovals = true;
   
   
   
@@ -130,6 +134,8 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionAttendancepolicy = true;
           this.hasViewPermissionFaceRegister = true;
           this.hasViewPermissionAttendanceReq = true;
+          this.hasViewPermissionLateinEarlyOutApprovallevel = true;
+          this.hasViewPermissionLateinEarlyOutApprovals = true;
 
                  
   

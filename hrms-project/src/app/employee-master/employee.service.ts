@@ -132,7 +132,20 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
   }
     
 
-   getEmpResignationMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+   getLateInEarlyOutNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/lateinearly-request/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+
+     getEmpResignationMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
     // Converts [1,3,4] into the string "[1,3,4]" for the URL
     const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
     
@@ -150,6 +163,18 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
     const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
     
     let url = `${this.apiUrl}/employee/api/resign-approval-level/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+    getemployeesLateInEarlyOutApprovalLevel(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/lateineralyout-approval-level/?schema=${selectedSchema}`;
     if (branchParam) {
       url += `&branch_id=${branchParam}`;
     }
@@ -645,10 +670,38 @@ deleteResignationReq(categoryId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+deleteLateInEarlyOutReq(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/lateinearly-request/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
 
 updateResignationReq(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/employee/api/employee-resignation/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateLateInEarlyOutReq(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/lateinearly-request/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(
@@ -678,10 +731,38 @@ deleteResignationApprovaLevel(categoryId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+deleteLateInEarlyOutApprovaLevel(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval-level/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
 
 updateResignationApprovaLevel(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/employee/api/resign-approval-level/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating asset:', error);
+      return throwError(error);
+    })
+  );
+}
+
+updateLateInEarlyOutApprovaLevel(id: number, data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval-level/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(
@@ -1805,6 +1886,18 @@ updateGeofence(id: number, data: any): Observable<any> {
     const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
     
     let url = `${this.apiUrl}/employee/api/resign-approval/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+    getLateInEarlyOutApprovalsMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/lateineralyout-approval/?schema=${selectedSchema}`;
     if (branchParam) {
       url += `&branch_id=${branchParam}`;
     }
@@ -5928,6 +6021,23 @@ registerResigantionApproverLevel(formData: FormData): Observable<any> {
   return this.http.post(apiUrl, formData).pipe(
     catchError((error) => {
       console.error('Error during leave type registration:', error);
+      return throwError(error);
+    })
+  );
+}
+
+registerLateInEarlyOutApproverLevel(formData: FormData): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval-level/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, formData).pipe(
+    catchError((error) => {
+      console.error('Error during LateIn EarlyOut:', error);
       return throwError(error);
     })
   );

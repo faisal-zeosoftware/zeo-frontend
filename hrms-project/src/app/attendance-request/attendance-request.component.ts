@@ -26,15 +26,10 @@ export class AttendanceRequestComponent {
     // document_date:any='';
 
     date:any='';
-    resigned_on:any='' ;
-    notice_period:any='' ;
-  
-    last_working_date:any='' ;
-    location: any = '';
-    termination_type: any = '';
-    reason_for_leaving: any = '';
-  
-    employee: number[] = [];
+    request_type:any='';
+    reason:any='';
+    status:any='';
+   employee: number[] = [];
   
     
     created_by:any='';
@@ -328,7 +323,7 @@ export class AttendanceRequestComponent {
   
       fetchResignation(schema: string, branchIds: number[]): void {
         this.isLoading = true;
-        this.employeeService.getEmpResignationMasterNew(schema, branchIds).subscribe({
+        this.employeeService.getLateInEarlyOutNew(schema, branchIds).subscribe({
           next: (data: any) => {
             // Filter active employees
                  this.DocRequest = data;
@@ -344,7 +339,7 @@ export class AttendanceRequestComponent {
     
   
   
-      SetLeaveApprovaLevel(): void {
+      SetLateInEarlyOut(): void {
         this.registerButtonClicked = true;
         // if (!this.name || !this.code || !this.valid_to) {
         //   return;
@@ -352,37 +347,26 @@ export class AttendanceRequestComponent {
       
         const formData = new FormData();
         formData.append('date', this.date);
-        formData.append('resigned_on', this.resigned_on);
+        // formData.append('status', this.status);
   
+        formData.append('request_type', this.request_type);
   
-    
-    
-        formData.append('notice_period', this.notice_period);
-      
-        formData.append('last_working_date', this.last_working_date);
-        formData.append('location', this.location);
-        formData.append('termination_type', this.termination_type);
-  
-        formData.append('reason_for_leaving', this.reason_for_leaving);
+        formData.append('reason', this.reason);
       
         // formData.append('employee', this.employee);
-  
-         this.employee.forEach((id: number) =>
+
+      this.employee.forEach((id: number) =>
       formData.append('employee', id.toString())
     );
     
-  
-  
-    
-        
-      
-      
-        this.leaveService.CreateEmpResignationRequest(formData).subscribe(
+
+        this.leaveService.CreateLateinEarlyOutRequest(formData).subscribe(
           (response) => {
-            console.log('Registration successful', response);
+            console.log('Latein Early Out successful', response);
+             
     
     
-            alert('Resignation Request  has been Sent');
+            alert('Latein Early Out Request has been Sent');
     
             window.location.reload();
           },  
@@ -395,7 +379,10 @@ export class AttendanceRequestComponent {
   
   
   
-  
+  getEmployeeName(empId: number): string {
+  const emp = this.Employee.find(e => e.id === empId);
+  return emp ? emp.emp_code : 'Unknown';
+}
   
   
   
@@ -472,31 +459,31 @@ export class AttendanceRequestComponent {
       .map(employee => employee.id);
   
     if (selectedEmployeeIds.length === 0) {
-      alert('No Resignation Request selected for deletion.');
+      alert('No LateIn EarlyOut Request selected for deletion.');
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected Resignation Request ?')) {
+    if (confirm('Are you sure you want to delete the selected LateIn EarlyOut Request ?')) {
   
       let total = selectedEmployeeIds.length;
       let completed = 0;
   
       selectedEmployeeIds.forEach(categoryId => {
-        this.employeeService.deleteResignationReq(categoryId).subscribe(
+        this.employeeService.deleteLateInEarlyOutReq(categoryId).subscribe(
           () => {
             console.log(' Request deleted successfully:', categoryId);
             // Remove the deleted employee from the local list
             this.DocRequest = this.DocRequest.filter(employee => employee.id !== categoryId);
                completed++;
                  if (completed === total) {
-            alert(' Request  deleted successfully');
+            alert(' Request deleted successfully');
             window.location.reload();
                  }
   
           },
           (error) => {
-            console.error('Error deleting Resignation Request:', error);
-              alert('Error deleting Resignation Request:' + error.statusText);
+            console.error('Error deleting LateIn EarlyOut Request:', error);
+              alert('Error deleting LateIn EarlyOut Request:' + error.statusText);
   
           }
         );
@@ -505,16 +492,16 @@ export class AttendanceRequestComponent {
   }
   
   
-  updateAssetType(): void {
+  updateLateInEarlyOut(): void {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema || !this.editAsset.id) {
       alert('Missing schema or asset ID');
       return;
     }
   
-    this.employeeService.updateResignationReq(this.editAsset.id, this.editAsset).subscribe(
+    this.employeeService.updateLateInEarlyOutReq(this.editAsset.id, this.editAsset).subscribe(
       (response) => {
-        alert(' Request  updated successfully!');
+        alert(' Request updated successfully!');
         this.closeEditModal();
         window.location.reload();
       },
@@ -555,17 +542,16 @@ export class AttendanceRequestComponent {
   
   }
   
-  filterEmployees() {
-  
-    if (!this.employeeSearch) {
-      return this.Employee;
-    }
-  
-    return this.Employee.filter((emp: any) =>
-      emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
-    );
-  
+filterEmployees() {
+
+  if (!this.employeeSearch) {
+    return this.Employee; // 👈 full list
   }
+
+  return this.Employee.filter((emp: any) =>
+    emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
+  );
+}
     
   
   

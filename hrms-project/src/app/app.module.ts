@@ -246,6 +246,8 @@ import { ManualEntryComponent } from './manual-entry/manual-entry.component';
 import { EmployeePunchingDetailsComponent } from './employee-punching-details/employee-punching-details.component';
 import { AttendancePolicyComponent } from './attendance-policy/attendance-policy.component';
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
+import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval-level/latein-earlyout-approval-level.component';
+import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/latein-earlyout-approvals.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -450,6 +452,8 @@ import { AttendanceRequestComponent } from './attendance-request/attendance-requ
      EmployeePunchingDetailsComponent,
      AttendancePolicyComponent,
      AttendanceRequestComponent,
+     LateinEarlyoutApprovalLevelComponent,
+     LateinEarlyoutApprovalsComponent,
      
      
 

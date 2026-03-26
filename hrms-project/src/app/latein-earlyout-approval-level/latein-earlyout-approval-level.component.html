@@ -1,10 +1,11 @@
+
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section">
         <div class="header_section">
 
             <div class="row">
                 <div class="col-md-5">
-                    <h1> Resignation Approval Level Setting</h1>
+                    <h1> Late In Early Out Approval Level </h1>
                 </div>
                 <div class="col-md-2">
                     
@@ -45,7 +46,7 @@
   
           </div>
           <div class="col-md-3">
-              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedResignationAprlvl()">Delete Selected </button>
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLateInEarlyOutAprlvl()">Delete Selected </button>
   
           </div>
       </div>
@@ -55,7 +56,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>   Approval level </h2>
+                  <h2> Approval level </h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -63,7 +64,7 @@
               </div>
               <hr />
           
-              <form (ngSubmit)="CreateLoanApproverLevel()" enctype="multipart/form-data">
+              <form (ngSubmit)="CreateLateInEarlyOutApproverLevel()" enctype="multipart/form-data">
                 <div class="row">
                   <div class="col-md-6">
                     <label>Level</label>
@@ -79,23 +80,6 @@
                   </div>
 
               
-
-                  <!-- <div class="col-md-6" >
-                    <label>Approver</label>
-                    <div class="custom-sel">
-                      <select
-                        class="form-control"
-                        id="approver"
-                        name="approver"
-                        [(ngModel)]="approver"
-                        [ngModelOptions]="{ standalone: true }"
-                      >
-                        <option *ngFor="let employees of Approvers" [value]="employees.id">
-                          {{ employees.username }}
-                        </option>
-                      </select>
-                    </div>
-                  </div> -->
 
                             <!-- non-ess users  -->
 <div class="col-md-6">
@@ -114,14 +98,14 @@
           multiple>
 
           <!-- Select All -->
-          <div class="select-all">
+          <!-- <div class="select-all">
             <mat-checkbox
               [(ngModel)]="allApproverSelected"
               [ngModelOptions]="{standalone: true}"
               (change)="toggleAllApproverSelection()">
               Select All
             </mat-checkbox>
-          </div>
+          </div> -->
 
           <!-- Search -->
           <input
@@ -241,7 +225,7 @@
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">
-        <h2>Edit  Request Type</h2>
+        <h2>Edit Request Type</h2>
       </div>
       <div class="col-md-2">
         <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -409,3 +393,4 @@
         </div>
         </div>
         
+
