@@ -662,6 +662,17 @@
                     <form (ngSubmit)="registerleaveReset()" enctype="multipart/form-data">
   
   
+                    <div class="row">
+                      
+                      <div class="col-md-4" style="display: none;">
+                        <label>Leave Type</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="leave_type" name="leave_entitlement"  [ngModelOptions]="{standalone: true}">
+                            <option *ngFor="let ent of filteredEntitlements" [value]="ent.id">{{ ent.min_experience }} {{ ent.effective_after_unit }}</option>
+                          </select>
+                        </div>
+                      </div>
+                      </div>
   
                       <div class="row"  style="display: none;">
   

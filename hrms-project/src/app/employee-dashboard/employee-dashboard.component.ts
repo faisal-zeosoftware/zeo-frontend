@@ -18,7 +18,7 @@ import {combineLatest} from 'rxjs';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 
 
-
+  
 @Component({
   selector: 'app-employee-dashboard',
   templateUrl: './employee-dashboard.component.html',

@@ -79,6 +79,8 @@ export class LeaveMasterComponent {
   round_of: any = '';
   prorate_type:any = '';
   leave_type: any = '';
+  leave_entitlement: any = '';
+
 
   accrual: boolean = false;
 
