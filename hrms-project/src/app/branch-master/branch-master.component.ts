@@ -9,6 +9,7 @@ import { BrachRegistrationService } from '../branch-creation/brach-registration.
 import { BranchCreationComponent } from '../branch-creation/branch-creation.component';
 import { BranchEditComponent } from '../branch-edit/branch-edit.component';
 import { SessionService } from '../login/session.service';
+import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
   selector: 'app-branch-master',
@@ -165,6 +166,7 @@ export class BranchMasterComponent {
     private http: HttpClient,
     private authService: AuthenticationService,
     private sessionService: SessionService,
+    private employeeService: EmployeeService,
     private dialog:MatDialog,
     ) {}
 
@@ -174,6 +176,13 @@ export class BranchMasterComponent {
     async ngOnInit(): Promise<void> {
 
       // this.loadcatogary();
+
+        this.employeeService.selectedBranches$.subscribe(ids => {
+
+    this.loadbranchType();
+
+
+  })
 
 // Retrieve user ID
 this.userId = this.sessionService.getUserId();
@@ -203,7 +212,7 @@ if (this.userId !== null) {
         this.hasEditPermission = true;
 
         // Fetch designations without checking permissions
-        this.fetchDesignations(selectedSchema);
+        // this.fetchDesignations(selectedSchema);
       } else {
         console.log('User is not superuser');
 
@@ -245,7 +254,7 @@ if (this.userId !== null) {
             }
 
             // Fetching designations after checking permissions
-            this.fetchDesignations(selectedSchema);
+            // this.fetchDesignations(selectedSchema);
           }
            catch (error) {
             console.error('Error fetching permissions:', error);
@@ -271,18 +280,38 @@ if (this.userId !== null) {
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);
     }
-    fetchDesignations(selectedSchema: string) {
-      this.BrachRegistrationService.getBranchess(selectedSchema).subscribe(
-        (data: any) => {
-          this.branches = data;
-          this.filteredEmployees = this.branches;
-          console.log('employee:', this.branches);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
+    // fetchDesignations(selectedSchema: string) {
+    //   this.BrachRegistrationService.getBranchess(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.branches = data;
+    //       this.filteredEmployees = this.branches;
+    //       console.log('employee:', this.branches);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
+
+          loadbranchType(callback?: Function): void {
+            const selectedSchema = this.authService.getSelectedSchema();
+            const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+          
+          
+            if (selectedSchema) {
+              this.BrachRegistrationService.getbranchNew(selectedSchema, savedIds).subscribe(
+                (result: any) => {
+                  this.branches = result;
+                  this.filteredEmployees = this.branches;
+                  
+                  if (callback) callback();
+                },
+                (error) => {
+                  console.error('Error fetching Companies:', error);
+                }
+              );
+            }
+            }
 
     
 

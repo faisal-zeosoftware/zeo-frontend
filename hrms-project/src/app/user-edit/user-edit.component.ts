@@ -14,6 +14,7 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 import { EmployeeService } from '../employee-master/employee.service'; 
 import { SuccesModalComponent } from '../succes-modal/succes-modal.component';
 import { UserMasterService } from '../user-master/user-master.service';
+import { UesrEmployeeComponent } from '../uesr-employee/uesr-employee.component';
 
 @Component({
   selector: 'app-user-edit',
@@ -50,6 +51,8 @@ export class UserEditComponent {
   groups:any='';
   user_permissions:any='';
   tenants:any='';
+
+  createdUserId: any ='';
 
   constructor(
     private ref:MatDialogRef<UserEditComponent>,
@@ -93,6 +96,7 @@ export class UserEditComponent {
   }
 
   updateEmp(): void {
+ 
     // Basic validation before sending request
     if (!this.Emp.username || !this.Emp.email || !this.Emp.tenants) {
       if (!this.Emp.username) {
@@ -119,7 +123,11 @@ export class UserEditComponent {
       (response) => {
         console.log('USER updated successfully:', response);
         alert('User has been updated successfully!');
-        window.location.reload();
+       const createdUserId = response.id; // Assume backend returns new user ID
+  
+        // Store the created user ID and open the modal
+        this.createdUserId = createdUserId;
+        this.isAddFieldsModalOpen = true;
       },
       (error) => {
         console.error('Error updating USER:', error);
@@ -167,6 +175,23 @@ export class UserEditComponent {
     );
   }
 
+
+    isAddFieldsModalOpen:boolean=false;
+
+      closeAddFieldsModal(){
+    this.isAddFieldsModalOpen=false;
+    window.location.reload();
+  }
+
+    openPopus(userId: string): void {
+      this.isAddFieldsModalOpen = false; // Close the modal
+  
+      this.dialog.open(UesrEmployeeComponent, {
+        width: '80%',
+        height: '500px',
+        data: { userId: userId } // Pass the created user ID to the component
+      });
+    }
   
 
 

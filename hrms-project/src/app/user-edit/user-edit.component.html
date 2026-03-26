@@ -88,6 +88,27 @@
     </div>
         </form>
 
+
+                <div *ngIf="isAddFieldsModalOpen" class="modal">
+            <div class="modal-content">
+                <h2>Do you want to connect the created user to the employee?</h2>
+            
+            <div class="row">
+              
+                <div class="col-md-6">
+                    <button (click)="closeAddFieldsModal()"   class="pull-right btn btn-danger btn-full mt-4" >No</button>
+        
+                </div>
+                <div class="col-md-6">
+                    <button type="button" (click)="openPopus(createdUserId)"    mat-raised-button color="primary" class="pull-right btn-full mt-4" >Yes</button>
+        
+                </div>
+            </div>
+          
+             
+            </div>
+          </div>
+
   
     
 

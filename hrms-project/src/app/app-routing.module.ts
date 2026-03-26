@@ -164,6 +164,7 @@ import { EmployeeFaceRegisterComponent } from './employee-face-register/employee
 import { ManualEntryComponent } from './manual-entry/manual-entry.component';
 import { EmployeePunchingDetailsComponent } from './employee-punching-details/employee-punching-details.component';
 import { AttendancePolicyComponent } from './attendance-policy/attendance-policy.component';
+import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 
 
 const routes: Routes = [
@@ -742,6 +743,12 @@ const routes: Routes = [
       path: 'attendance-policy',
       component: AttendancePolicyComponent,
     },
+
+    {
+      path: 'attendance-attendance-request',
+      component: AttendanceRequestComponent,
+    },
+
 
     
 

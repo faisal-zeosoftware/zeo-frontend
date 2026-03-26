@@ -23,6 +23,9 @@ export class AttendanceSidebarComponent {
   hasViewPermissionPunchingList:boolean = false;
   hasViewPermissionGeoFence:boolean = false;
   hasViewPermissionAttendancepolicy:boolean = false;
+  hasViewPermissionFaceRegister:boolean = false;
+  hasViewPermissionAttendanceReq:boolean = false;
+  
 
 
 
@@ -92,6 +95,8 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionPunchingList = true;
           this.hasViewPermissionGeoFence = true;
           this.hasViewPermissionAttendancepolicy = true;
+          this.hasViewPermissionFaceRegister = true;
+          this.hasViewPermissionAttendanceReq = true;
   
   
   
@@ -123,6 +128,8 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionPunchingList = true;
           this.hasViewPermissionGeoFence = true;
           this.hasViewPermissionAttendancepolicy = true;
+          this.hasViewPermissionFaceRegister = true;
+          this.hasViewPermissionAttendanceReq = true;
 
                  
   
@@ -219,6 +226,12 @@ export class AttendanceSidebarComponent {
           console.error('Error fetching categories:', error);
         }
       );
+    }
+
+           showGeneralRequest = false;
+
+    toggleGeneralRequest() {
+      this.showGeneralRequest = !this.showGeneralRequest;
     }
 
 
