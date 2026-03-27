@@ -101,7 +101,6 @@ export class SchemaCreationComponent {
     this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
   }
 
-  emp_profile_pic: string | undefined;
 
   registerCatogary(): void {
     this.registerButtonClicked = true;
@@ -134,10 +133,7 @@ export class SchemaCreationComponent {
 
     if (this.selectedFile) {
       companyData.append('logo', this.selectedFile);
-    } else {
-      companyData.append('logo', '');
     }
-
 
    
     this.isLoading = true;
@@ -154,10 +150,13 @@ export class SchemaCreationComponent {
         window.location.reload();
       },
       (error) => {
-        this.isLoading = false;
-
-        console.error('Registration failed', error);
-        alert('Registration failed! Please ensure all fields are filled out correctly.');
+        console.log('Full Error:', error);
+      
+        if (error.status === 504 || error.status === 0) {
+          alert('Company created, but server response timeout ⚠️');
+        } else {
+          alert(error.error?.detail || 'Registration failed!');
+        }
       }
     );
   }
