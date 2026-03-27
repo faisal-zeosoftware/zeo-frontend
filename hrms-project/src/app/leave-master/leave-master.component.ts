@@ -622,49 +622,6 @@ payRuleData = {
 
 
 
-currentEntitlementId: number | null = null;
-  
-registerleaveEntitlement(): void {
-  this.registerButtonClicked = true;
-
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  const companyData = {
-    min_experience: this.min_experience,
-    effective_after_from: this.effective_after_from,
-    effective_after_unit: this.effective_after_unit,
-
-    accrual_rate: this.accrual_rate,
-    accrual_frequency: this.accrual_frequency,
-    accrual_month: this.accrual_month,
-    accrual_day: this.accrual_day,
-
-    prorate_type: this.prorate_type,
-    leave_type: this.selectedLeaveTypeForModal.id,
-    created_by: this.created_by,
-
-    branches: this.branch?.length ? this.branch : [],
-    categories: this.categories?.length ? this.categories : [],
-    departments: this.departments?.length ? this.departments : [],
-    designations: this.designations?.length ? this.designations : [],
-
-    prorate_accrual: this.prorate_accrual,
-
-    
-    accrual: this.accrual,
-  };
-   console.log('Payload:', companyData);
-this.leaveService.registerLeaveEntitlement(companyData).subscribe(
-  (response: any) => {
-    console.log('Entitlement Created', response);
-    alert('Leave Entitlement added');
-  },
-    (error) => {
-      console.error('Added failed', error);
-      alert('Enter all required fields!');
-    }
-  );
-}
 
 submitPayRule(): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -723,66 +680,197 @@ loadLeavePayRules(): void {
     }
   });
 }
-  
-
-  registerleaveReset(): void {
-    this.registerButtonClicked = true;
-  
-    const formData = new FormData();
-      
-      formData.append('frequency', this.frequency);
-      formData.append('month', this.month);
-      formData.append('day', this.day);
-      formData.append('carry_forward_choice', this.carry_forward_choice);
-      formData.append('cf_value', this.cf_value);
-      formData.append('cf_unit_or_percentage', this.cf_unit_or_percentage);
-      formData.append('cf_max_limit', this.cf_max_limit);
-      formData.append('cf_expires_in_value', this.cf_expires_in_value);
-      formData.append('cf_time_choice', this.cf_time_choice);
-      formData.append('encashment_value', this.encashment_value);
-      formData.append('encashment_unit_or_percentage', this.encashment_unit_or_percentage);
-      formData.append('encashment_max_limit', this.encashment_max_limit);
-      formData.append('leave_type', this.selectedLeaveTypeForModal.id);
-      formData.append('opening_balance', this.opening_balance);
 
 
-      formData.append('reset', this.reset.toString());
-      formData.append('allow_cf', this.allow_cf.toString());
-      formData.append('allow_encashment', this.allow_encashment.toString());
 
-  
-    this.leaveService.requestLeaveResetPolicy(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Leave Reset has been added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
-  
-        // Extract backend error message
-        let errorMessage = 'An unexpected error occurred. Please try again.';
-  
-        if (error.error) {
-          if (typeof error.error === 'string') {
-            errorMessage = error.error; // If backend returns a plain string message
-          } else if (error.error.detail) {
-            errorMessage = error.error.detail; // If backend returns { detail: "message" }
-          } else if (error.error.non_field_errors) {
-            errorMessage = error.error.non_field_errors.join(', '); // Handle non-field errors array
-          } else {
-            // Handle field-specific errors
-            const fieldErrors = Object.keys(error.error)
-              .map((field) => `${field}: ${error.error[field]}`)
-              .join('\n');
-            errorMessage = fieldErrors || errorMessage;
-          }
-        }
-  
-        alert(errorMessage); // Show extracted error
-      }
-    );
+isEntitlementCreated: boolean = false;
+createdEntitlementId: number | null = null;
+
+
+currentEntitlementId: number | null = null;
+
+
+
+registerleaveEntitlement(): void {
+  this.registerButtonClicked = true;
+
+  const payload = {
+    min_experience: this.min_experience,
+    effective_after_from: this.effective_after_from,
+    effective_after_unit: this.effective_after_unit,
+    accrual_rate: this.accrual_rate,
+    accrual_frequency: this.accrual_frequency,
+    accrual_month: this.accrual_month,
+    accrual_day: this.accrual_day,
+    prorate_type: this.prorate_type,
+    leave_type: this.selectedLeaveTypeForModal.id,
+    created_by: this.created_by,
+    branches: this.branch || [],
+    categories: this.categories || [],
+    departments: this.departments || [],
+    designations: this.designations || [],
+    prorate_accrual: this.prorate_accrual,
+    accrual: this.accrual,
+  };
+
+  if (this.isEditMode && this.selectedEntitlementId) {
+
+    // 🔥 UPDATE API
+    this.leaveService.updateLeaveEntitlement(this.selectedEntitlementId, payload)
+      .subscribe(() => {
+        alert("✅ Entitlement Updated");
+        this.resetForm();
+        this.loadLeaveEntitlements();
+      });
+
+  } else {
+
+    // 🔥 CREATE API
+    this.leaveService.registerLeaveEntitlement(payload)
+      .subscribe((res: any) => {
+        alert("✅ Entitlement Added");
+
+        this.isEntitlementCreated = true;
+        this.createdEntitlementId = res.id;
+
+        this.loadLeaveEntitlements();
+      });
   }
+}
+
+  
+
+registerleaveReset(): void {
+
+  const formData = new FormData();
+
+  formData.append('leave_entitlement', this.leave_entitlement);
+  formData.append('leave_type', this.selectedLeaveTypeForModal.id);
+
+  formData.append('frequency', this.frequency);
+  formData.append('month', this.month);
+  formData.append('day', this.day);
+
+  formData.append('carry_forward_choice', this.carry_forward_choice);
+  formData.append('cf_value', this.cf_value);
+  formData.append('cf_unit_or_percentage', this.cf_unit_or_percentage);
+  formData.append('cf_max_limit', this.cf_max_limit);
+
+  formData.append('encashment_value', this.encashment_value);
+  formData.append('encashment_unit_or_percentage', this.encashment_unit_or_percentage);
+  formData.append('encashment_max_limit', this.encashment_max_limit);
+
+  formData.append('opening_balance', this.opening_balance);
+
+  formData.append('reset', this.reset.toString());
+  formData.append('allow_cf', this.allow_cf.toString());
+  formData.append('allow_encashment', this.allow_encashment.toString());
+
+  this.leaveService.requestLeaveResetPolicy(formData).subscribe(() => {
+    alert("✅ Reset Saved / Updated");
+  });
+}
+
+
+  isEditMode: boolean = false;
+selectedEntitlementId: number | null = null;
+
+
+
+editEntitlement(ent: any) {
+  console.log("Editing entitlement:", ent);
+
+  this.isEditMode = true;
+  this.selectedEntitlementId = ent.id;
+
+  // 🔥 Populate form fields
+  this.min_experience = ent.min_experience;
+  this.effective_after_unit = ent.effective_after_unit;
+  this.effective_after_from = ent.effective_after_from;
+
+  this.accrual = ent.accrual;
+  this.accrual_rate = ent.accrual_rate;
+  this.accrual_frequency = ent.accrual_frequency;
+  this.accrual_month = ent.accrual_month;
+  this.accrual_day = ent.accrual_day;
+
+  this.prorate_accrual = ent.prorate_accrual;
+
+  this.branch = ent.branches || [];
+  this.departments = ent.departments || [];
+  this.designations = ent.designations || [];
+  this.categories = ent.categories || [];
+
+  this.leave_entitlement = ent.id;
+
+  // ✅ Enable reset form
+  this.isEntitlementCreated = true;
+
+  // 🔥 Load reset data for this entitlement
+  this.loadResetByEntitlement(ent.id);
+}
+
+
+loadResetByEntitlement(entitlementId: number) {
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return;
+  }
+  
+
+  this.leaveService.getAllLeaveResetValues(selectedSchema).subscribe((res: any[]) => {
+
+    const reset = res.find(r => r.leave_entitlement == entitlementId);
+
+    if (reset) {
+      console.log("Reset data found:", reset);
+
+      this.reset = reset.reset;
+      this.frequency = reset.frequency;
+      this.month = reset.month;
+      this.day = reset.day;
+
+      this.allow_cf = reset.allow_cf;
+      this.carry_forward_choice = reset.carry_forward_choice;
+      this.cf_value = reset.cf_value;
+      this.cf_unit_or_percentage = reset.cf_unit_or_percentage;
+      this.cf_max_limit = reset.cf_max_limit;
+      this.cf_expires_in_value = reset.cf_expires_in_value;
+      this.cf_time_choice = reset.cf_time_choice;
+
+      this.allow_encashment = reset.allow_encashment;
+      this.encashment_value = reset.encashment_value;
+      this.encashment_unit_or_percentage = reset.encashment_unit_or_percentage;
+      this.encashment_max_limit = reset.encashment_max_limit;
+
+      this.opening_balance = reset.opening_balance;
+    }
+  });
+}
+
+
+
+
+
+
+resetForm() {
+  this.isEditMode = false;
+  this.selectedEntitlementId = null;
+
+  this.min_experience = '';
+  this.accrual_rate = '';
+  this.accrual = false;
+  this.prorate_accrual = false;
+
+  this.branch = [];
+  this.departments = [];
+  this.designations = [];
+  this.categories = [];
+}
+
+
 
   toggleFlip(leavetype: any): void {
     // Toggle the 'flipped' property on the current card
@@ -806,6 +894,12 @@ loadLeaveEntitlements(): void {
     (result: any) => {
       console.log('Fetched leave entitlements:', result);
       this.leaveEntitlements = result; // Assuming your API returns an array of records
+
+          // ✅ Auto select latest entitlement
+    if (result.length > 0) {
+      const latest = result[result.length - 1];
+      this.leave_entitlement = latest.id;
+    }
     },
     (error) => {
       console.error('Error fetching leave entitlements:', error);

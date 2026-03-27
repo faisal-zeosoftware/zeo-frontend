@@ -604,6 +604,229 @@
                           </div>
                       </div>
                   </form>  
+
+                  <div *ngIf="!isEntitlementCreated" class="alert alert-warning mt-3">
+                    ⚠️ Please create Leave Entitlement first to enable Reset Configuration
+                  </div>
+                    <form (ngSubmit)="registerleaveReset()" enctype="multipart/form-data"
+                     [class.disabled-form]="!isEntitlementCreated">
+  
+                      <fieldset [disabled]="!isEntitlementCreated">
+                    <div class="row">
+                      
+                      <div class="col-md-4" style="display: none;">
+                        <label>Leave Entitlement</label>
+                        <div class="custom-sel">
+                          <select class="form-control"
+        [(ngModel)]="leave_entitlement"
+        name="leave_entitlement"
+        [ngModelOptions]="{standalone: true}">
+  <option *ngFor="let ent of filteredEntitlements" [value]="ent.id">
+    {{ ent.min_experience }} {{ ent.effective_after_unit }}
+  </option>
+</select>
+                        </div>
+                      </div>
+                      </div>
+  
+                      <div class="row"  style="display: none;">
+  
+                        <div class="col-md-4">
+                          <label></label>
+                          <div class="check-box-selection-sec mt-2">
+                              <div class="mat-set">
+                                  <mat-checkbox [(ngModel)]="reset" [ngModelOptions]="{standalone: true}">Reset</mat-checkbox>
+                              </div>
+                             
+                          </div>
+                      </div>
+  
+                </div>
+                  <div class="row" *ngIf="reset">
+  
+                      <div class="col-md-4" >
+                        <label>Frequency</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="frequency" name="frequency" [(ngModel)]="frequency"
+                          (change)="onResetFrequencyChange()" [ngModelOptions]="{standalone: true}">
+                            <option value="years">Years</option>
+                            <option value="months">Months</option>
+                            <option value="days">Days</option>
+                          </select>
+                        </div>
+                      </div>
+          
+                      <div class="col-md-4" *ngIf="showResetMonth">
+                        <label> Month</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="month" name="month" [(ngModel)]="month" [ngModelOptions]="{standalone: true}">
+                            <option value="Jan">January</option>
+                            <option value="Feb">February</option>
+                            <option value="Mar">March</option>
+                            <option value="Apr">April</option>
+                            <option value="May">May</option>
+                            <option value="Jun">June</option>
+                            <option value="Jul">July</option>
+                            <option value="Aug">August</option>
+                            <option value="Sep">September</option>
+                            <option value="Oct">October</option>
+                            <option value="Nov">November</option>
+                            <option value="Dec">December</option>
+                         
+                          </select>
+                        </div>
+                      </div>
+                    
+                      <div class="col-md-4" *ngIf="showResetDay">
+                        <label>Day</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="day" name="day" [(ngModel)]="day" [ngModelOptions]="{standalone: true}">
+                            <option value="1st">1st Day Of the Month</option>
+                            <option value="last">Last Day Of the Month</option>
+                          </select>
+                        </div>
+                      </div>
+
+
+  
+                      <div class="col-md-4">
+                        <label></label>
+                        <div class="check-box-selection-sec form-control mt-3">
+                            <div class="mat-set">
+                                <mat-checkbox [(ngModel)]="allow_cf" [ngModelOptions]="{standalone: true}">Allow CF</mat-checkbox>
+                            </div>
+                           
+                        </div>
+                    </div>
+  </div>
+  <div class="row" *ngIf="allow_cf">
+  
+                      <div class="col-md-4" >
+                        <label>Carry forward choice</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="carry_forward_choice" name="carry_forward_choice" [(ngModel)]="carry_forward_choice" [ngModelOptions]="{standalone: true}">
+                            <option value="carry_forward">carry forward</option>
+                            <option value="carry_forward_with_expiry">carry forward with Expiry</option>
+                          </select>
+                        </div>
+                      </div>
+          
+          
+                      <div class="col-md-4">
+                        <label>Cf value</label>
+                        <input type="number" class="form-control"  [(ngModel)]="cf_value" placeholder="Enter cf value"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+          
+                      <div class="col-md-4">
+                        <label>Cf unit or percentage</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="cf_unit_or_percentage" name="cf_unit_or_percentage" [(ngModel)]="cf_unit_or_percentage" [ngModelOptions]="{standalone: true}">
+                            <option value="percentage">Percentage</option>
+                            <option value="unit">Unit</option>
+                          </select>
+                        </div>
+                      </div>
+          
+                      <div class="col-md-4">
+                        <label>Cf max limit</label>
+                        <input type="number" class="form-control"  [(ngModel)]="cf_max_limit" placeholder="Enter cf Max Limit"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+                      <div class="col-md-4" *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                        <label>Cf expires in value</label>
+                        <input type="number" class="form-control"  [(ngModel)]="cf_expires_in_value" placeholder="Enter value"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+          
+                      
+                      <div class="col-md-4" *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                        <label>Cf time choice</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="cf_time_choice" name="cf_time_choice" [(ngModel)]="cf_time_choice" [ngModelOptions]="{standalone: true}">
+                            <option value="Years">Years</option>
+                            <option value="months">Months</option>
+                            <option value="days">Days</option>
+                          </select>
+                        </div>
+                      </div>
+  
+  
+
+
+                    </div>
+
+                    <div class="row">
+
+   <div class="col-md-4">
+      <label>Opening Balance</label>
+         <div class="custom-sel">
+      <input type="number" class="form-control"
+             [(ngModel)]="opening_balance"
+             [ngModelOptions]="{standalone: true}">
+    </div>
+    </div>
+                      
+                      <div class="col-md-4">
+                        <label></label>
+                        <div class="check-box-selection-sec form-control mt-3">
+                            <div class="mat-set">
+                                <mat-checkbox [(ngModel)]="allow_encashment" [ngModelOptions]="{standalone: true}">Allow Encashment</mat-checkbox>
+                            </div>
+                           
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row" *ngIf="allow_encashment">
+                      <div class="col-md-4">
+                        <label>Encashment value</label>
+                        <input type="number" class="form-control"  [(ngModel)]="encashment_value" placeholder="Enter Value"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+          
+                      <div class="col-md-4">
+                        <label> Unit or percentage</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="encashment_unit_or_percentage" name="encashment_unit_or_percentage" [(ngModel)]="encashment_unit_or_percentage" [ngModelOptions]="{standalone: true}">
+                            <option value="percentage">Percentage</option>
+                            <option value="unit">Unit</option>
+                          </select>
+                        </div>
+                      </div>
+          
+                      <div class="col-md-4">
+                        <label>Encashment max limit</label>
+                        <input type="number" class="form-control"  [(ngModel)]="encashment_max_limit" placeholder="Enter Limit"
+                               [ngModelOptions]="{standalone: true}" >
+                      </div>
+  
+                     
+          
+                      <div class="col-md-4" style="display: none;">
+                        <label>Leave Type</label>
+                        <div class="custom-sel">
+                          <select class="form-control" id="leave_type" name="leave_type" [(ngModel)]="selectedLeaveTypeForModal.id" [ngModelOptions]="{standalone: true}">
+                            <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">{{ leavetype.name }}</option>
+                          </select>
+                        </div>
+                      </div>
+          
+  
+  
+  
+                      </div>
+                
+        
+        
+                      <div class="row" *ngIf="hasAddPermission">
+                          <div class="col-md-8"></div>
+                          <div class="col-md-4">
+                              <button type="submit"  class="btn btn-success btn-full mt-4">Add Leave Reset </button>
+        
+                          </div>
+                      </div>
+                    </fieldset>
+                  </form>  
                   
                   
                   
@@ -630,7 +853,9 @@
           </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let ent of filteredEntitlements; let i = index">
+        <tr *ngFor="let ent of filteredEntitlements; let i = index"
+    (click)="editEntitlement(ent)"
+    style="cursor: pointer;">
           <td>{{ i + 1 }}</td>
           <td>{{ ent.leave_type }}</td>
           <td>{{ ent.min_experience }} {{ ent.effective_after_unit }}</td>

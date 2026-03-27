@@ -82,14 +82,27 @@ export class SchemaCreationComponent {
   this.loadCountries();
    }
 
-   onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.logo = input.files[0];
-    } else {
-      this.logo = null;
-    }
+  //  onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     this.logo = input.files[0];
+  //   } else {
+  //     this.logo = null;
+  //   }
+  // }
+
+  selectedFiles!: File;
+
+    selectedFile!: File | null;
+
+
+  
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
   }
+
+  emp_profile_pic: string | undefined;
+
   registerCatogary(): void {
     this.registerButtonClicked = true;
 
@@ -119,6 +132,13 @@ export class SchemaCreationComponent {
     
     companyData.append('country', this.country);
 
+    if (this.selectedFile) {
+      companyData.append('emp_profile_pic', this.selectedFile);
+    } else {
+      companyData.append('emp_profile_pic', '');
+    }
+
+
    
     this.isLoading = true;
 
@@ -131,7 +151,7 @@ export class SchemaCreationComponent {
         alert('Location has been Registered!');
         this.ref.close('Closed using function');
 
-        window.location.reload();
+        // window.location.reload();
       },
       (error) => {
         this.isLoading = false;

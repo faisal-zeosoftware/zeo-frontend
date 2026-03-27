@@ -53,6 +53,14 @@ export class LeaveService {
   }
 
 
+  updateLeaveEntitlement(id: number, data: any): Observable<any> {
+    const schema = localStorage.getItem('selectedSchema');
+    return this.http.put(
+      `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${schema}`,
+      data
+    );
+  }
+
   requestLeaveResetPolicy(formData: FormData): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
