@@ -133,9 +133,9 @@ export class SchemaCreationComponent {
     companyData.append('country', this.country);
 
     if (this.selectedFile) {
-      companyData.append('emp_profile_pic', this.selectedFile);
+      companyData.append('logo', this.selectedFile);
     } else {
-      companyData.append('emp_profile_pic', '');
+      companyData.append('logo', '');
     }
 
 
@@ -148,10 +148,10 @@ export class SchemaCreationComponent {
         console.log('Registration successful', response);
         this.isLoading = false;
 
-        alert('Location has been Registered!');
+        alert('Company has been Registered! ✅');
         this.ref.close('Closed using function');
 
-        // window.location.reload();
+        window.location.reload();
       },
       (error) => {
         this.isLoading = false;

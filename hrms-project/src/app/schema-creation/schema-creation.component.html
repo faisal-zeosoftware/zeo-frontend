@@ -5,14 +5,7 @@
 
         <form >
         <div class="row">
-            <!-- <div class="col-md-6" >
-               
-      <label>Schema Name</label>
-     <input type="text"  class="form-control" required  [(ngModel)]="schema_name"  placeholder="Enter schema name"
-      [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !schema_name}">
-     
-     <div *ngIf="registerButtonClicked && !schema_name" class="error-message">schema_name  is required.</div>
-</div> -->
+           
 
 
 <div class="col-md-6" >
@@ -44,8 +37,7 @@
 </div>
 <div class="col-md-6">
     <label for="logo">Company Logo:</label>
-    <input type="file" class="form-control" id="logo " name="logo" (change)="onFileSelected($event)" >
-   
+    <input type="file" class="form-control" id="logo" name="logo" (change)="onFileSelected($event)">   
     </div>
 
 
