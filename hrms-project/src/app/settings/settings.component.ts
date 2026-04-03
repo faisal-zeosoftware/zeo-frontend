@@ -53,6 +53,7 @@ export class SettingsComponent {
   hasViewPermissionAssetEmptemp: boolean = false;
   hasViewPermissionAirticketEmptemp: boolean = false;
   hasViewPermissionResignationEmptemp: boolean = false;
+  hasViewPermissionLateInEarlyOutEmptemp: boolean = false;
 
 
   hasViewPermissionDocReqType: boolean = false;
@@ -172,6 +173,7 @@ if (this.userId !== null) {
         this.hasViewPermissionAssetEmptemp = true;
         this.hasViewPermissionAirticketEmptemp = true;
         this.hasViewPermissionResignationEmptemp = true;
+        this.hasViewPermissionLateInEarlyOutEmptemp = true;
 
 
 
@@ -257,6 +259,7 @@ if (this.userId !== null) {
                 this.hasViewPermissionAssetEmptemp = true;
                 this.hasViewPermissionAirticketEmptemp = true;
                 this.hasViewPermissionResignationEmptemp = true;
+                this.hasViewPermissionLateInEarlyOutEmptemp = true;
 
 
 

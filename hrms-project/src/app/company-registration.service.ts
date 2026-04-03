@@ -305,6 +305,14 @@ getFilteredAttendance(filters: any, selectedSchema: string): Observable<any> {
 
   }
 
+    getEmailPlaceholderLateInEarlyOut(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-email-template/placeholders/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
 
     registerEmailTemplateResignation(companyData: any): Observable<any> {
       const selectedSchema = localStorage.getItem('selectedSchema');
@@ -328,6 +336,42 @@ getFilteredAttendance(filters: any, selectedSchema: string): Observable<any> {
       );
     }
 
+    registerEmailTemplateLateInEarlyOut(companyData: any): Observable<any> {
+      const selectedSchema = localStorage.getItem('selectedSchema');
+      if (!selectedSchema) {
+        console.error('No schema selected.');
+        return throwError('No schema selected.'); // Return an error observable if no schema is selected
+      }
+  
+  
+  
+      const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-email-template/?schema=${selectedSchema}`;
+      const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+      return this.http.post(apiUrl, companyData, { headers }).pipe(
+        catchError((error) => {
+          // Handle errors here (you can log, show a user-friendly message, etc.)
+          console.error('Error during company registration:', error);
+          return throwError(error);
+  
+        })
+      );
+    }
+
+      getEmailTemplatesLateInEarlyOutNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+        // Converts [1,3,4] into the string "[1,3,4]" for the URL
+        const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+        
+        let url = `${this.apiUrl}/calendars/api/lateineralyout-email-template/?schema=${selectedSchema}`;
+        if (branchParam) {
+          url += `&branch_id=${branchParam}`;
+        }
+        
+        return this.http.get(url);
+      }
+
+
+
 
     deleteEmailTemplateResignation(categoryId: number): Observable<any> {
   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
@@ -344,6 +388,40 @@ getFilteredAttendance(filters: any, selectedSchema: string): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
+
+   updateLateInEarlyOutEmailTemplate(selectedSchema: string, templateId: number, data: any): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-email-template/${templateId}/?schema=${selectedSchema}`;
+    return this.http.put(apiUrl, data);
+  }
+
+
+  deleteEmailTemplateLateInEarlyOut(categoryId: number): Observable<any> {
+  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+  // return this.http.delete(url);
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+ 
+  const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-email-template/${categoryId}/?schema=${selectedSchema}`;
+ 
+  return this.http.delete(apiUrl);
+}
+
+
+  getLateInEarlyOutNotNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/lateinearlyrequest-notification/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
 
 
 

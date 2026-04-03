@@ -184,6 +184,7 @@
               <strong *ngIf="noti.type === 'assetrequest'">🧰 Asset Request</strong>
               <strong *ngIf="noti.type === 'airticket'">✈️ AirTicket Request</strong>
               <strong *ngIf="noti.type === 'advancesalaryrequest'">💵 Advance Salary Request</strong>
+              <strong *ngIf="noti.type === 'lateinearlyrequest'">⏱️ Late In / Early Out Request</strong>
               <div class="text-muted small">
                 {{ noti.created_at | date: 'medium' }}
               </div>

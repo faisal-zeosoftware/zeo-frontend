@@ -248,6 +248,8 @@ import { AttendancePolicyComponent } from './attendance-policy/attendance-policy
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval-level/latein-earlyout-approval-level.component';
 import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/latein-earlyout-approvals.component';
+import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-template/latein-earlyout-email-template.component';
+import { LateinEarlyoutEmailTemplateEditComponent } from './latein-earlyout-email-template-edit/latein-earlyout-email-template-edit.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -454,6 +456,8 @@ import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/la
      AttendanceRequestComponent,
      LateinEarlyoutApprovalLevelComponent,
      LateinEarlyoutApprovalsComponent,
+     LateinEarlyoutEmailTemplateComponent,
+     LateinEarlyoutEmailTemplateEditComponent,
      
      
 

@@ -167,6 +167,7 @@ import { AttendancePolicyComponent } from './attendance-policy/attendance-policy
 import { AttendanceRequestComponent } from './attendance-request/attendance-request.component';
 import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval-level/latein-earlyout-approval-level.component';
 import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/latein-earlyout-approvals.component';
+import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-template/latein-earlyout-email-template.component';
 
 
 const routes: Routes = [
@@ -477,6 +478,11 @@ const routes: Routes = [
           {
             path:'resignation-email-template',
             component:ResignationEmailTemplateComponent
+          },
+
+          {
+            path:'latein-earlyout-email-template',
+            component:LateinEarlyoutEmailTemplateComponent
           },
 
 

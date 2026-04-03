@@ -6,6 +6,7 @@ import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorRes
 import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
+import { CompanyRegistrationService } from '../company-registration.service';
 
 // import { DivControlService } from '../div-control.service';
 // import { AuthService } from '../auth/auth.service';
@@ -34,6 +35,7 @@ export class MainSidebarComponent {
   DocReqNot: any[] = [];
   LoanReqNot: any[] = [];
   AdvancesalaryReqNot: any[] = [];
+  LateInEarlyOutReqNot: any[] = [];
 
   hideButton = false;
   // constructor(public authService: AuthService) {}
@@ -54,6 +56,7 @@ export class MainSidebarComponent {
     private EmployeeService: EmployeeService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
+    private companyservice: CompanyRegistrationService,
     ) { }
  
   // marginLeftValue = '200px';
@@ -152,6 +155,7 @@ this.EmployeeService.selectedBranches$.subscribe(ids => {
   this.loadDocumentReqNotifications();
   this.loadLoanReqNotifications();
   this.loadAdvancesalaryReqNotifications();
+  this.loadLateinEarlyOutNotifications();
 });
 
   // this.loadExpiredDocuments(selectedSchema);    
@@ -482,6 +486,30 @@ loadLoanReqNotifications(callback?: Function): void {
   }
   }
 
+  loadLateinEarlyOutNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.companyservice.getLateInEarlyOutNotNew(selectedSchema, savedIds).subscribe({
+      next: (loan: any[]) => {
+        this.LateInEarlyOutReqNot = (loan || []).map(item => ({
+          ...item,
+          type: 'lateinearlyrequest',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading loan request notifications:', err);
+        this.LateInEarlyOutReqNot = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
+
 
 
 // ✅ Advance Salary Request Notifications
@@ -542,7 +570,8 @@ combineNotifications(): void {
     ...this.GeneralReqNot.map(item => ({ ...item, type: 'general' as const, highlighted: false })),
     ...this.DocReqNot.map(item => ({ ...item, type: 'docrequest' as const, highlighted: false })),
     ...this.LoanReqNot.map(item => ({ ...item, type: 'loanrequest' as const, highlighted: false })),
-    ...this.AdvancesalaryReqNot.map(item => ({ ...item, type: 'advancesalaryrequest' as const, highlighted: false }))
+    ...this.AdvancesalaryReqNot.map(item => ({ ...item, type: 'advancesalaryrequest' as const, highlighted: false })),
+    ...this.LateInEarlyOutReqNot.map(item => ({ ...item, type: 'lateinearlyrequest' as const, highlighted: false }))
   ];
 
   this.AllNotifications = allItems
@@ -591,6 +620,9 @@ onNotificationClick(noti: any): void {
       break;
     case 'advancesalaryrequest':
       this.router.navigate(['/main-sidebar/salary-options/advance-salary-approvals']);
+      break;
+    case 'lateinearlyrequest':
+      this.router.navigate(['/main-sidebar/attendance-sidebar/latein-earlyout-approvals']);
       break;
     default:
       return;
