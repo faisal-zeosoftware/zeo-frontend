@@ -79,6 +79,9 @@
                     <div class="col-md-3">
                         <p>Category code</p>
                     </div>
+                  <div class="col-md-2">
+                        <p>Branch</p>
+                    </div>
                   
                 </div>
                 <div class="com_list" *ngFor="let catogarysec of filteredEmployees" [ngClass]="{ 'selected-item': catogarysec.selected }">
@@ -86,16 +89,21 @@
 
                   <div class="row">
                   
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <h2 class="text-center">{{ catogarysec.ctgry_title }}</h2>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <h2 class="text-center">{{ catogarysec.ctgry_description }}</h2>
                     </div>
                     <div class="col-md-3">
                         <h2 class="text-center">{{ catogarysec.ctgry_code }}</h2>
 
+                    </div>
+                  <div class="col-md-2">
+                        <h2 class="text-center">
+                            {{ catogarysec.branch }}
+                            </h2>
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-Edit btn-info" (click)="openEditPopuss(catogarysec.id)" *ngIf="showEditBtn">Edit</button>
