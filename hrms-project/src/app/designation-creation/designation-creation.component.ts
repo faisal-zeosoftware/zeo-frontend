@@ -1,4 +1,4 @@
-import { Component , OnInit} from '@angular/core';
+import { Component , OnInit, ViewChild} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -10,6 +10,8 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { MatOption } from '@angular/material/core';
+import { MatSelect } from '@angular/material/select';
 @Component({
   selector: 'app-designation-creation',
   templateUrl: './designation-creation.component.html',
@@ -18,7 +20,8 @@ import { DepartmentServiceService } from '../department-master/department-servic
 export class DesignationCreationComponent {
 
 
-  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
+  private apiUrl = `${environment.apiBaseUrl}`;
+  @ViewChild('select') select: MatSelect | undefined;  // Use the correct `apiBaseUrl` for live and local
 
   selectedFiles! : File;
   selectedFile!: File;
@@ -42,6 +45,10 @@ export class DesignationCreationComponent {
   errors_Sheet1: any;
 
   errors_sheet1:any='';
+
+  branch:any='';
+
+  Branches: any[] = [];
 
 
   constructor(private DepartmentServiceService: DepartmentServiceService,
@@ -139,7 +146,7 @@ export class DesignationCreationComponent {
   
     formData.append('desgntn_description', this.desgntn_description);
     
-    formData.append('branch_id', this.branch_id);
+    formData.append('branch', this.branch);
   
     
   
@@ -173,11 +180,11 @@ registerDesignation(): void {
   this.registerButtonClicked = true;
 
   // Basic validation for required fields
-  if (!this.desgntn_job_title || !this.branch_id) {
+  if (!this.desgntn_job_title || !this.branch) {
     if (!this.desgntn_job_title) {
       alert('Job Title field is blank.');
     }
-    if (!this.branch_id) {
+    if (!this.branch) {
       alert('Job Branch field is blank.');
     }
     return; // Stop if local validation fails
@@ -185,7 +192,7 @@ registerDesignation(): void {
 
   const companyData = {
     desgntn_job_title: this.desgntn_job_title,
-    branch_id: this.branch_id,
+    branch: this.branch,
     desgntn_description: this.desgntn_description,
     desgntn_code: this.desgntn_code,
   };
@@ -229,32 +236,65 @@ registerDesignation(): void {
 }
 
   ngOnInit(): void {
-    this.loadDeparmentBranch();
+     this.loadDeparmentBranch();
 
 
    
   }
 
 
-  loadDeparmentBranch(): void {
+  // loadDeparmentBranch(): void {
     
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  // const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
+  // console.log('schemastore',selectedSchema )
+  // // Check if selectedSchema is available
+  // if (selectedSchema) {
+  //   this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+  //     (result: any) => {
+  //       this.Departments = result;
+  //       console.log(' fetching Companies:');
+
+  //     },
+  //     (error) => {
+  //       console.error('Error fetching Companies:', error);
+  //     }
+  //   );
+  // }
+  // }
+
+
+      loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
   if (selectedSchema) {
     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any) => {
-        this.Departments = result;
-        console.log(' fetching Companies:');
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+        }
+        // Inside the subscribe block of loadDeparmentBranch
+        if (this.Branches.length === 1) {
+          this.branch = this.Branches[0].id;
+        }
+
+        console.log('Filtered branches for selection:', this.Branches);
+        if (callback) callback();
       },
       (error) => {
-        console.error('Error fetching Companies:', error);
+        console.error('Error fetching branches:', error);
       }
     );
   }
-  }
+}
 
 
 
@@ -262,6 +302,35 @@ registerDesignation(): void {
   ClosePopup(){
     this.ref.close('Closed using function')
   }
+
+        toggleAllSelection(): void {
+          if (this.select) {
+            if (this.allSelected) {
+              
+              this.select.options.forEach((item: MatOption) => item.select());
+            } else {
+              this.select.options.forEach((item: MatOption) => item.deselect());
+            }
+          }
+        }
+
+
+  allSelected=false;
+
+  branchSearch: string = '';
+  
+  filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+}
+
 
 
 }

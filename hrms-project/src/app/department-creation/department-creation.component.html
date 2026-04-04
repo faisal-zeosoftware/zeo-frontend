@@ -146,20 +146,48 @@
             
         </div> -->
 
-        <div class="col-md-6">
+      <div class="col-md-6">
+      <label>Branch</label>
 
+      <div class="custom-sel">
+          <div class="form-control-wrapper">
+        
+  
+            <mat-form-field>
+              <!-- <mat-label>Favorite food</mat-label> -->
+                        <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #select multiple>
+                          <div class="select-all">
+                            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                              Select All
+                            </mat-checkbox>
+                          </div>
+                              <input type="text" placeholder="Search Employee"
+                                     class="form-control"
+                                     [(ngModel)]="branchSearch"
+                                     [ngModelOptions]="{standalone: true}"
+                                     (click)="$event.stopPropagation()">
+            
+                          <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
+                            {{ deparmentsec.branch_name }} 
+                          </mat-option> -->
+                <mat-option
+          *ngFor="let deparmentsec of filterEmployees()"
+          [value]="deparmentsec.id">
 
-            <div class="custom-sel">
-                <label>Select Branches</label>
-                <select class="form-control" id="deparmentsec" required [(ngModel)]="branch_id"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_id}" >
-                    <option value="" >Select</option>
-                    <option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">{{ deparmentsec.branch_name     }} </option>
-                </select>
-                <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Company</div>
-            </div>
-                        
-    
+          {{ deparmentsec.branch_name }}
+
+        </mat-option>
+                        </mat-select>
+            </mat-form-field>
+            
+          </div>
+          <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
+            Please Select Your branch
+          </div>
         </div>
+                  
+  
+  </div>
     
         
    
