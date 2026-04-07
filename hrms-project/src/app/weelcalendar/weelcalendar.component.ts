@@ -380,48 +380,184 @@ if (this.userId !== null) {
   capitalize(day: string) {
     return day.charAt(0).toUpperCase() + day.slice(1);
   }
-  
 
-  registerweekCalendar(): void {
-  
-    const altWeekendData = this.convertToAlternateWeekendFormat(this.alternativeWeekOff);
-  
-    let payload: any = {
-      calander_title: this.calander_title,
-      description: this.description,
-      calendar_code: this.calendar_code,
-      year: this.year,
-      is_alternate: true,
-      alternate_weekends: altWeekendData
-    };
-  
-    console.log("FINAL PAYLOAD:", payload);
-  
-    this.countryService.registerWeekCalendar(payload).subscribe(
-      (res) => {
-        alert("Added Successfully");
-        window.location.reload();
-      },
-(error) => {
-  console.error('Error updating Policy:', error);
 
-  let errorMsg = 'Update failed';
+  
+  iscreateLoanApp: boolean = false;
 
-  const backendError = error?.error;
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+
+
+  openPopus():void{
+    this.iscreateLoanApp = true;
+
   }
 
-  alert(errorMsg);
+  closeapplicationModal():void{
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+
+  openEditPopuss(categoryId: number):void{
+    
+  }
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelected: boolean = false;
+
+toggleCheckboxes() {
+  this.Delete = !this.Delete;
 }
-    );
-  }
+
+toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+this.calendars.forEach(employee => employee.selected = this.allSelected);
+
+}
+
+onCheckboxChange(employee:number) {
+  // No need to implement any logic here if you just want to change the style.
+  // You can add any additional logic if needed.
+}
+
+
+
+
   
 
+registerweekCalendar(): void {
+
+  let payload: any = {
+    description: this.description,
+    calendar_code: this.calendar_code,
+    year: this.year,
+    is_alternate: this.selectedWeekOff === 'alternative'
+  };
+
+  // ✅ If GENERAL
+  if (this.selectedWeekOff === 'general') {
+    payload = {
+      ...payload,
+      monday: this.monday,
+      tuesday: this.tuesday,
+      wednesday: this.wednesday,
+      thursday: this.thursday,
+      friday: this.friday,
+      saturday: this.saturday,
+      sunday: this.sunday,
+      alternate_weekends: {}   // important
+    };
+  }
+
+  // ✅ If ALTERNATIVE
+  else {
+    payload.alternate_weekends = this.convertToAlternateWeekendFormat(this.alternativeWeekOff);
+  }
+
+  console.log("FINAL PAYLOAD:", payload);
+
+  this.countryService.registerWeekCalendar(payload).subscribe(
+    (res) => {
+      alert("Added Successfully");
+      window.location.reload();
+    },
+    (error) => {
+      console.error(error);
+      alert("Error");
+    }
+  );
+}
+  
+  isEditModalOpenWeekoff: boolean = false;
+  editAsset: any = {}; // holds the asset being edited
+  
+  // openEditModalWeekoff(asset: any): void {
+  //   this.editAsset = { ...asset }; // copy asset data
+  //   this.isEditModalOpenWeekoff = true;
+  // }
+
+  initializeAlternativeWeekOff() {
+    this.alternativeWeekOff = {};
+  
+    this.weekDays.forEach(day => {
+      this.alternativeWeekOff[day.key] = {};
+  
+      this.weekList.forEach(week => {
+        this.alternativeWeekOff[day.key][week.key] = false;
+      });
+    });
+  }
+
+  openEditModalWeekoff(asset: any): void {
+    this.editAsset = { ...asset };
+  
+    // ✅ Set radio button
+    this.selectedWeekOff = asset.is_alternate ? 'alternative' : 'general';
+  
+    // ✅ Step 1: Initialize FULL structure
+    this.initializeAlternativeWeekOff();
+  
+    // ✅ Step 2: Patch API values into UI
+    if (asset.is_alternate && asset.alternate_weekends) {
+
+      Object.entries(asset.alternate_weekends).forEach(([day, weekNumbers]) => {
+    
+        const dayKey = day.toLowerCase(); // ✅ Fix case issue
+    
+        // ✅ Convert "1,2,3" → ["1","2","3"]
+        const weeksArray = (weekNumbers as string).split(',');
+    
+        weeksArray.forEach(week => {
+          const weekKey = 'week' + week.trim();
+    
+          if (
+            this.alternativeWeekOff[dayKey] &&
+            this.alternativeWeekOff[dayKey][weekKey] !== undefined
+          ) {
+            this.alternativeWeekOff[dayKey][weekKey] = true;
+          }
+        });
+    
+      });
+    }
+  
+    this.isEditModalOpenWeekoff = true;
+  }
+
+
+
+  setAlternativeWeekOff(data: any) {
+    this.alternativeWeekOff = {};
+  
+    Object.keys(data).forEach(day => {
+      this.alternativeWeekOff[day] = {
+        week1: false,
+        week2: false,
+        week3: false,
+        week4: false
+      };
+  
+      const week = 'week' + data[day]; // convert "4" → week4
+      this.alternativeWeekOff[day][week] = true;
+    });
+  }
+  
+  closeEditModalWeekoff(): void {
+    this.isEditModalOpenWeekoff = false;
+    this.editAsset = {};
+    this.selectedWeekOff = 'general'; // reset
+  }
 
 
 
@@ -469,6 +605,172 @@ if (this.userId !== null) {
       });
       
   }
+
+  updateAssetType(): void {
+
+    let payload: any = {
+      ...this.editAsset,
+      is_alternate: this.selectedWeekOff === 'alternative'
+    };
+  
+    // If alternative → send alternate_weekends
+    if (this.selectedWeekOff === 'alternative') {
+      payload.alternate_weekends = this.convertToAlternateWeekendFormat(this.alternativeWeekOff);
+    } else {
+      payload.alternate_weekends = {};
+    }
+  
+    this.employeeService.updateWeekoff(this.editAsset.id, payload).subscribe(
+      (res) => {
+        alert('Updated successfully');
+        this.closeEditModalWeekoff();
+        window.location.reload();
+      },
+      (error) => {
+        console.error(error);
+        alert('Update failed');
+      }
+    );
+  }
+
+
+  deleteSelectedAssetType() { 
+    const selectedEmployeeIds = this.calendars
+      .filter(employee => employee.selected)
+      .map(employee => employee.id);
+  
+    if (selectedEmployeeIds.length === 0) {
+      alert('No Weekend Calendar selected for deletion.');
+      return;
+    }
+  
+    if (confirm('Are you sure you want to delete the selected Weekend Calendar?')) {
+  
+       let total = selectedEmployeeIds.length;
+      let completed = 0;
+  
+  
+      selectedEmployeeIds.forEach(categoryId => {
+        this.employeeService.deleteWeekOff(categoryId).subscribe(
+          () => {
+            console.log('Weekend deleted successfully:', categoryId);
+            // Remove the deleted employee from the local list
+            this.calendars = this.calendars.filter(employee => employee.id !== categoryId);
+            completed++;
+       if (completed === total) {        
+            alert('Weekend calendar deleted successfully');
+            window.location.reload();
+       }
+  
+          },
+          (error) => {
+            console.error('Error deleting Asset type:', error);
+            alert('Error deleting Asset type: ' + error.statusText);
+          }
+        );
+      });
+    }
+  }
+
+
+  onViewClick(item: any) {
+    console.log('View clicked:', item);
+  
+    // If your list already has full data → use directly
+    this.openViewModal(item);
+  
+    // 🔴 If you need API call instead, use below 👇
+    // this.getWeekendCalendarById(item.id);
+  }
+
+  isViewModalOpen = false;
+viewAsset: any;
+
+weekDaysShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+calendarMonths: any[] = [];
+
+openViewModal(asset: any) {
+  this.viewAsset = asset;
+  this.generateCalendar(asset.year);
+  this.isViewModalOpen = true;
+}
+
+generateCalendar(year: number) {
+
+  this.calendarMonths = [];
+
+  for (let month = 0; month < 12; month++) {
+
+    const firstDay = new Date(year, month, 1);
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    const startDay = firstDay.getDay();
+
+    let days: any[] = [];
+
+    // empty slots
+    for (let i = 0; i < startDay; i++) {
+      days.push({ empty: true });
+    }
+
+    // actual days
+    for (let d = 1; d <= lastDate; d++) {
+      const dateObj = new Date(year, month, d);
+
+      days.push({
+        date: d,
+        dayName: dateObj.toLocaleString('en-us', { weekday: 'long' }),
+        weekNumber: Math.ceil(d / 7)
+      });
+    }
+
+    this.calendarMonths.push({
+      name: firstDay.toLocaleString('en-us', { month: 'long' }),
+      days: days
+    });
+  }
+}
+  
+
+getDayClass(day: any) {
+
+  if (day.empty) return 'empty-day';
+
+  const weekday = day.dayName.toLowerCase();
+
+  // 🔴 ALTERNATIVE WEEK OFF
+  if (this.viewAsset.is_alternate && this.viewAsset.alternate_weekends) {
+
+    const altData = this.viewAsset.alternate_weekends;
+
+    const apiDayKey = Object.keys(altData).find(
+      d => d.toLowerCase() === weekday
+    );
+
+    if (apiDayKey) {
+      const weeks = altData[apiDayKey].split(',');
+
+      if (weeks.includes(day.weekNumber.toString())) {
+        return 'off-day';
+      }
+    }
+  }
+
+  // 🟢 GENERAL WEEK OFF
+  const dayType = this.viewAsset[weekday];
+
+  if (dayType === 'leave') return 'off-day';
+  if (dayType === 'halfday') return 'half-day';
+
+  return 'full-day';
+}
+
+
+closeViewModal() {
+  this.isViewModalOpen = false;
+}
+
 
   
 }

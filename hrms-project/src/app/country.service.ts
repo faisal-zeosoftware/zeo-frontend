@@ -791,7 +791,15 @@ deleteAirReq(categoryId: number): Observable<any> {
     );
   }
 
-
+  updateHoliday(id: number, data: any): Observable<any> {
+    const schema = localStorage.getItem('selectedSchema');
+    return this.http.put(`${this.apiUrl}/calendars/api/holiday/${id}/?schema=${schema}`, data);
+  }
+  
+  deleteHoliday(id: number): Observable<any> {
+    const schema = localStorage.getItem('selectedSchema');
+    return this.http.delete(`${this.apiUrl}/calendars/api/holiday/${id}/?schema=${schema}`);
+  }
 
   
 }

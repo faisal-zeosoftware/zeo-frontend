@@ -1,414 +1,942 @@
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section">
-        <div class="com_list ">
-    <div class="cpm-sec">
+  <div class="comapny_section">
 
-        <h2>Create Weekend Calendar</h2><hr>
-        <!-- RADIO BUTTONS -->
-<div class="weekoff-type">
-  <label>
-    <input type="radio" name="weekoff" value="general" checked (change)="onWeekOffChange($event)">
-    General Week Off
-  </label>
 
-  <label class="ms-3">
-    <input type="radio" name="weekoff" value="alternative" (change)="onWeekOffChange($event)">
-    Alternative Week Off
-  </label>
-</div>
 
-        <form >
-          
+    <div class="header_section">
+
+      <div class="row">
+        <div class="col-md-4">
+          <h1> Create Weekend Calendar</h1>
+        </div>
+
+        <div class="col-md-3">
+
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "
+              *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                </mat-icon></span> Create</button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+              <span class="header-btn-icon">
+                <mat-icon>draw
+                </mat-icon></span> Edit</button>
+            <span *ngIf="hasEditPermission"></span>
+
+            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission">
+              <span class="header-btn-icon">
+                <mat-icon> delete
+                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+
+        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()">Select All</button>
+
+      </div>
+      <div class="col-md-3">
+        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete
+          Selected </button>
+
+      </div>
+    </div>
+
+
+
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2> Create Weekend calendar</h2>
+          </div>
+          <div class="col-md-2">
+            <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+          </div>
+        </div>
+        <hr />
+
+        <div class="weekoff-type">
+          <label>
+            <input 
+            type="radio" 
+            name="weekoff" 
+            value="general"
+            [(ngModel)]="selectedWeekOff"
+            [ngModelOptions]="{standalone: true}"
+          >    General Week Off  
+             </label>
+
+          <label class="ms-3">
+            <input 
+            type="radio" 
+            name="weekoff" 
+            value="alternative"
+            [(ngModel)]="selectedWeekOff"
+            [ngModelOptions]="{standalone: true}"
+          > Alternative Week Off
+          </label>
+        </div>
+
+        <form>
+
           <div class="row">
-            
-
-          <div class="col-md-4" >
-               
-            <label>Description</label>
-           <input type="text"  class="form-control" required  [(ngModel)]="description"  placeholder="Enter description "
-            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !description}">
-           
-           <div *ngIf="registerButtonClicked && !description" class="error-message">description is required.</div>
-      </div>
-
-      <div class="col-md-4" >
-               
-        <label>calendar code</label>
-       <input type="text"  class="form-control" required  [(ngModel)]="calendar_code"  placeholder="Enter calendar code "
-        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !calendar_code}">
-       
-       <div *ngIf="registerButtonClicked && !calendar_code" class="error-message">calendar code is required.</div>
-  </div>
-
-  <div class="col-md-4" >
-               
-    <label>year</label>
-
-    <div class="custom-sel">
-        <select class="form-control" [(ngModel)]="year" [ngModelOptions]="{standalone: true}">
-            <option>2000</option>
-            <option>2001</option>
-            <option>2002</option>
-            <option>2003</option>
-            <option>2004</option>
-            <option>2005</option>
-            <option>2006</option>
-            <option>2007</option>
-            <option>2008</option>
-            <option>2009</option>
-            <option>2010</option>
-            <option>2011</option>
-            <option>2012</option>
-            <option>2013</option>
-            <option>2014</option>
-            <option>2015</option>
-            <option>2016</option>
-            <option>2017</option>
-            <option>2018</option>
-            <option>2019</option>
-            <option>2020</option>
-            <option>2021</option>
-            <option>2022</option>
-            <option>2023</option>
-            <option>2024</option>
-            <option>2025</option>
-            <option>2026</option>
-            <option>2027</option>
-            <option>2028</option>
-            <option>2029</option>
-            <option>2030</option>
-            <option>2031</option>
-            <option>2032</option>
-            <option>2033</option>
-            <option>2034</option>
-            <option>2035</option>
-            <option>2036</option>
-            <option>2037</option>
-            <option>2038</option>
-            <option>2039</option>
-            <option>2040</option>
-            <option>2041</option>
-            <option>2042</option>
-            <option>2043</option>
-            <option>2044</option>
-            <option>2045</option>
-            <option>2046</option>
-            <option>2047</option>
-            <option>2048</option>
-            <option>2049</option>
-            <option>2050</option>
-            <option>2051</option>
-            <option>2052</option>
-            <option>2053</option>
-            <option>2054</option>
-            <option>2055</option>
-            <option>2056</option>
-            <option>2057</option>
-            <option>2058</option>
-            <option>2059</option>
-            <option>2060</option>
-            <option>2061</option>
-            <option>2062</option>
-            <option>2063</option>
-            <option>2064</option>
-            <option>2065</option>
-            <option>2066</option>
-            <option>2067</option>
-            <option>2068</option>
-            <option>2069</option>
-            <option>2070</option>
-            <option>2071</option>
-            <option>2072</option>
-            <option>2073</option>
-            <option>2074</option>
-            <option>2075</option>
-            <option>2076</option>
-            <option>2077</option>
-            <option>2078</option>
-            <option>2079</option>
-            <option>2080</option>
-            <option>2081</option>
-            <option>2082</option>
-            <option>2083</option>
-            <option>2084</option>
-            <option>2085</option>
-            <option>2086</option>
-            <option>2087</option>
-            <option>2088</option>
-            <option>2089</option>
-            <option>2090</option>
-            <option>2091</option>
-            <option>2092</option>
-            <option>2093</option>
-            <option>2094</option>
-            <option>2095</option>
-            <option>2096</option>
-            <option>2097</option>
-            <option>2098</option>
-            <option>2099</option>
-            <option>2100</option>
-        </select>
-    </div>
-
-</div>
-          </div>
 
 
-<div class="general-week-sec" *ngIf="selectedWeekOff === 'general'">
-
-            <div class="row">
-          
-
-
-
-
-
-
-
-
-
-<div class="col-md-4">
-    <label>Monday</label>
-    <div class="custom-sel">
-        <select class="form-control" id="monday" name="monday"  [(ngModel)]="monday"  [ngModelOptions]="{standalone: true}">
-            <option value="fullday">Full Day</option>
-            <option value="halfday">Half Day</option>
-            <option value="leave">Off</option>
-        </select>
-    </div>
-</div>
-
-<div class="col-md-4">
-    <label>Tuesday</label>
-    <div class="custom-sel">
-        <select class="form-control" id="tuesday" name="tuesday"  [(ngModel)]="tuesday"  [ngModelOptions]="{standalone: true}">
-          <option value="fullday">Full Day</option>
-          <option value="halfday">Half Day</option>
-          <option value="leave">Off</option>
-        </select>
-    </div>
-</div>
-
-<div class="col-md-4">
-    <label>wednesday</label>
-    <div class="custom-sel">
-        <select class="form-control" id="wednesday" name="wednesday"  [(ngModel)]="wednesday"  [ngModelOptions]="{standalone: true}">
-          <option value="fullday">Full Day</option>
-          <option value="halfday">Half Day</option>
-          <option value="leave">Off</option>
-        </select>
-    </div>
-</div>
-
-<div class="col-md-4">
-    <label>thursday</label>
-    <div class="custom-sel">
-        <select class="form-control" id="thursday" name="thursday"  [(ngModel)]="thursday"  [ngModelOptions]="{standalone: true}">
-          <option value="fullday">Full Day</option>
-          <option value="halfday">Half Day</option>
-          <option value="leave">Off</option>
-        </select>
-    </div>
-</div>
-
-<div class="col-md-4">
-    <label>friday</label>
-    <div class="custom-sel">
-        <select class="form-control" id="friday" name="friday"  [(ngModel)]="friday"  [ngModelOptions]="{standalone: true}">
-          <option value="fullday">Full Day</option>
-          <option value="halfday">Half Day</option>
-          <option value="leave">Off</option>
-        </select>
-    </div>
-</div>
-
-<div class="col-md-4">
-    <label>saturday</label>
-    <div class="custom-sel">
-        <select class="form-control" id="saturday" name="saturday"  [(ngModel)]="saturday"  [ngModelOptions]="{standalone: true}">
-          <option value="fullday">Full Day</option>
-          <option value="halfday">Half Day</option>
-          <option value="leave">Off</option>
-        </select>
-    </div>
-</div>
-
-<div class="col-md-4">
-    <label>sunday</label>
-    <div class="custom-sel">
-        <select class="form-control" id="sunday" name="sunday"  [(ngModel)]="sunday"  [ngModelOptions]="{standalone: true}">
-          <option value="fullday">Full Day</option>
-          <option value="halfday">Half Day</option>
-          <option value="leave">Off</option>
-        </select>
-    </div>
-</div>
-     
-</div>
-</div>
-
-
-<div class="alternative-section mt-4" *ngIf="selectedWeekOff === 'alternative'">
-
-  <h4>Alternating Weekly Offs</h4>
-
-  <div *ngFor="let day of weekDays" class="alter-week-sec mt-4">
-    <h4>{{ day.label }}</h4>
-
-    <div class="toggle-container ">
-      <ng-container *ngFor="let week of weekList">
-        <span>{{ week.name }}</span>
-
-        <input 
-          type="checkbox" 
-          class="toggle"
-          [id]="day.key + '_' + week.key"
-          [(ngModel)]="alternativeWeekOff[day.key][week.key]"
-          [ngModelOptions]="{standalone: true}"
-        >
-
-        <label [for]="day.key + '_' + week.key" class="label">
-          <div class="ball"></div>
-          <div class="background">
-            <div class="fill"></div>
-          </div>
-        </label>
-      </ng-container>
-    </div>
-  </div>
-
-</div>
-
-
-
- 
-
-
-
-
-
-
-
-<div class="row">
-    <div class="col-md-10">
-
-    </div>
-
-    <div class="col-md-2" *ngIf="hasAddPermission">
-        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerweekCalendar()">Save</button>  
-     </div>
-</div>
-     
-    </form>
-
-
-    <div>
-        <!-- Calendar Dropdown List -->
-        <div class="row mt-4" *ngIf="hasViewPermission">
-          <div class="col-md-6">
-            <label>Weekend Calendar</label>
-            <div class="custom-sel">
-              <select class="form-control" (change)="selectCalendar($event)">
-                <option>select</option>
-                <option *ngFor="let calendar of calendars" [value]="calendar.id">
-                  {{ calendar.description }} ({{ calendar.year }})
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      
-        <div class="calendar_view_sec" *ngIf="selectedCalendar">
-          <div class="row mt-5">
             <div class="col-md-4">
-              <h4>Calendar Description</h4>
-              <h5>{{ selectedCalendar.description }} </h5>
+
+              <label>Description</label>
+              <input type="text" class="form-control" required [(ngModel)]="description"
+                placeholder="Enter description " [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !description}">
+
+              <div *ngIf="registerButtonClicked && !description" class="error-message">description is required.</div>
             </div>
+
             <div class="col-md-4">
-              <h4>Calendar Year</h4>
-              <h5>{{ selectedCalendar.year }} </h5>
-            </div>
-            <div class="col-md-4">
-              <h4>Calendar Code</h4>
-              <h5>{{ selectedCalendar.calendar_code }} </h5>
-            </div>
-          </div>
-      
-          <mat-accordion>
-            <mat-expansion-panel *ngFor="let month of getMonthKeys()">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  {{ month }}
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <table class="table mt-4">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Day</th>
-                    <th>Day Type</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let detail of groupDetailsByMonth()[month]">
-                    <td data-label="Date">{{ formatDate(detail.date) }}</td>
-                    <td data-label="Day">{{ getDayName(detail.date) }}</td>
-                    <td class="leave_type_clm" data-label="Day Type">{{ getDayTypeDisplayName(detail.day_type) }}</td>
-                    <td data-label="Action" *ngIf="hasEditPermission">
-                      <button type="button" class="btn-Edit btn-info btn btn_tabl" (click)="openEditModal(detail)">
-                        <span class="header-btn-icon">
-                          <mat-icon>draw</mat-icon>
-                        </span>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </mat-expansion-panel>
-          </mat-accordion>
-        </div>
-      
-        <!-- Modal Popup -->
-        <div *ngIf="isEditModalOpen" class="modal">
-          <div class="modal-content">
-            <div class="row">
-              <div class="col-md-10">
-                <h2>Edit Day Type</h2>
-                <hr>
-              </div>
-              <div class="col-md-2">
-                <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+
+              <label>calendar code</label>
+              <input type="text" class="form-control" required [(ngModel)]="calendar_code"
+                placeholder="Enter calendar code " [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !calendar_code}">
+
+              <div *ngIf="registerButtonClicked && !calendar_code" class="error-message">calendar code is required.
               </div>
             </div>
-      
-            <form (submit)="updateDate()">
-              <label for="dayType">Day Type</label>
-              <div class="custom-sel input-group">
-                <select class="form-control" id="dayType" [(ngModel)]="editDateDetails.day_type" name="dayType">
-                  <option value="leave">Off</option>
-                  <option value="fullday">Full Day</option>
-                  <option value="halfday">Half Day</option>
+
+            <div class="col-md-4">
+
+              <label>year</label>
+
+              <div class="custom-sel">
+                <select class="form-control" [(ngModel)]="year" [ngModelOptions]="{standalone: true}">
+                  <option>2000</option>
+                  <option>2001</option>
+                  <option>2002</option>
+                  <option>2003</option>
+                  <option>2004</option>
+                  <option>2005</option>
+                  <option>2006</option>
+                  <option>2007</option>
+                  <option>2008</option>
+                  <option>2009</option>
+                  <option>2010</option>
+                  <option>2011</option>
+                  <option>2012</option>
+                  <option>2013</option>
+                  <option>2014</option>
+                  <option>2015</option>
+                  <option>2016</option>
+                  <option>2017</option>
+                  <option>2018</option>
+                  <option>2019</option>
+                  <option>2020</option>
+                  <option>2021</option>
+                  <option>2022</option>
+                  <option>2023</option>
+                  <option>2024</option>
+                  <option>2025</option>
+                  <option>2026</option>
+                  <option>2027</option>
+                  <option>2028</option>
+                  <option>2029</option>
+                  <option>2030</option>
+                  <option>2031</option>
+                  <option>2032</option>
+                  <option>2033</option>
+                  <option>2034</option>
+                  <option>2035</option>
+                  <option>2036</option>
+                  <option>2037</option>
+                  <option>2038</option>
+                  <option>2039</option>
+                  <option>2040</option>
+                  <option>2041</option>
+                  <option>2042</option>
+                  <option>2043</option>
+                  <option>2044</option>
+                  <option>2045</option>
+                  <option>2046</option>
+                  <option>2047</option>
+                  <option>2048</option>
+                  <option>2049</option>
+                  <option>2050</option>
+                  <option>2051</option>
+                  <option>2052</option>
+                  <option>2053</option>
+                  <option>2054</option>
+                  <option>2055</option>
+                  <option>2056</option>
+                  <option>2057</option>
+                  <option>2058</option>
+                  <option>2059</option>
+                  <option>2060</option>
+                  <option>2061</option>
+                  <option>2062</option>
+                  <option>2063</option>
+                  <option>2064</option>
+                  <option>2065</option>
+                  <option>2066</option>
+                  <option>2067</option>
+                  <option>2068</option>
+                  <option>2069</option>
+                  <option>2070</option>
+                  <option>2071</option>
+                  <option>2072</option>
+                  <option>2073</option>
+                  <option>2074</option>
+                  <option>2075</option>
+                  <option>2076</option>
+                  <option>2077</option>
+                  <option>2078</option>
+                  <option>2079</option>
+                  <option>2080</option>
+                  <option>2081</option>
+                  <option>2082</option>
+                  <option>2083</option>
+                  <option>2084</option>
+                  <option>2085</option>
+                  <option>2086</option>
+                  <option>2087</option>
+                  <option>2088</option>
+                  <option>2089</option>
+                  <option>2090</option>
+                  <option>2091</option>
+                  <option>2092</option>
+                  <option>2093</option>
+                  <option>2094</option>
+                  <option>2095</option>
+                  <option>2096</option>
+                  <option>2097</option>
+                  <option>2098</option>
+                  <option>2099</option>
+                  <option>2100</option>
                 </select>
-                <button type="submit" class="update-btn btn btn-info">Update</button>
               </div>
-            </form>
+
+            </div>
           </div>
+
+
+          <div class="general-week-sec" *ngIf="selectedWeekOff === 'general'">
+
+            <div class="row">
+
+
+
+
+
+
+
+
+
+
+              <div class="col-md-4">
+                <label>Monday</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="monday" name="monday" [(ngModel)]="monday"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                    <option value="leave">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label>Tuesday</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="tuesday" name="tuesday" [(ngModel)]="tuesday"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                    <option value="leave">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label>wednesday</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="wednesday" name="wednesday" [(ngModel)]="wednesday"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                    <option value="leave">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label>thursday</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="thursday" name="thursday" [(ngModel)]="thursday"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                    <option value="leave">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label>friday</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="friday" name="friday" [(ngModel)]="friday"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                    <option value="leave">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label>saturday</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="saturday" name="saturday" [(ngModel)]="saturday"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                    <option value="leave">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label>sunday</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="sunday" name="sunday" [(ngModel)]="sunday"
+                    [ngModelOptions]="{standalone: true}">
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                    <option value="leave">Off</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          <div class="alternative-section mt-4" *ngIf="selectedWeekOff === 'alternative'">
+
+            <h4>Alternating Weekly Offs</h4>
+
+            <div *ngFor="let day of weekDays" class="alter-week-sec mt-4">
+              <h4>{{ day.label }}</h4>
+
+              <div class="toggle-container ">
+                <ng-container *ngFor="let week of weekList">
+                  <span>{{ week.name }}</span>
+
+                  <input type="checkbox" class="toggle" [id]="day.key + '_' + week.key"
+                    [(ngModel)]="alternativeWeekOff[day.key][week.key]" [ngModelOptions]="{standalone: true}">
+
+                  <label [for]="day.key + '_' + week.key" class="label">
+                    <div class="ball"></div>
+                    <div class="background">
+                      <div class="fill"></div>
+                    </div>
+                  </label>
+                </ng-container>
+              </div>
+            </div>
+
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+          <div class="row">
+            <div class="col-md-8">
+
+            </div>
+            <div class="col-md-2" *ngIf="hasAddPermission">
+              <button type="button" class="btn-danger btn-full mt-5 btn-success btn"
+                (click)="closeapplicationModal()">Close</button>
+            </div>
+
+            <div class="col-md-2" *ngIf="hasAddPermission">
+              <button type="button" class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="registerweekCalendar()">Save</button>
+            </div>
+          </div>
+
+        </form>
+
+
+      </div>
+    </div>
+
+      <!-- Edit Modal -->
+      <div *ngIf="isEditModalOpenWeekoff" class="modal">
+        <div class="modal-content">
+          <div class="row">
+            <div class="col-md-10">
+              <h2>Edit Weekend calendar</h2>
+            </div>
+            <div class="col-md-2">
+              <span class="close pull-right" (click)="closeEditModalWeekoff()">&times;</span>
+            </div>
+          </div>
+          <hr />
+      
+          <form>
+
+            <div class="weekoff-type">
+              <label>
+                <input
+                  type="radio"
+                  name="weekoff"
+                  value="general"
+                  [(ngModel)]="selectedWeekOff"
+                  [ngModelOptions]="{standalone: true}"
+                >
+                General Week Off
+              </label>
+            
+              <label class="ms-3">
+                <input
+                  type="radio"
+                  name="weekoff"
+                  value="alternative"
+                  [(ngModel)]="selectedWeekOff"
+                  [ngModelOptions]="{standalone: true}"
+                >
+                Alternative Week Off
+              </label>
+            </div>
+            <div class="row">
+
+
+              <div class="col-md-4">
+  
+                <label>Description</label>
+                <input type="text" class="form-control" required [(ngModel)]="editAsset.description"
+                  placeholder="Enter description " [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'error-field': registerButtonClicked && !description}">
+  
+                <div *ngIf="registerButtonClicked && !description" class="error-message">description is required.</div>
+              </div>
+  
+              <div class="col-md-4">
+  
+                <label>calendar code</label>
+                <input type="text" class="form-control" required [(ngModel)]="editAsset.calendar_code"
+                  placeholder="Enter calendar code " [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'error-field': registerButtonClicked && !calendar_code}">
+  
+                <div *ngIf="registerButtonClicked && !calendar_code" class="error-message">calendar code is required.
+                </div>
+              </div>
+  
+              <div class="col-md-4">
+  
+                <label>year</label>
+  
+                <div class="custom-sel">
+                  <select class="form-control" [(ngModel)]="editAsset.year" [ngModelOptions]="{standalone: true}">
+                    <option>2000</option>
+                    <option>2001</option>
+                    <option>2002</option>
+                    <option>2003</option>
+                    <option>2004</option>
+                    <option>2005</option>
+                    <option>2006</option>
+                    <option>2007</option>
+                    <option>2008</option>
+                    <option>2009</option>
+                    <option>2010</option>
+                    <option>2011</option>
+                    <option>2012</option>
+                    <option>2013</option>
+                    <option>2014</option>
+                    <option>2015</option>
+                    <option>2016</option>
+                    <option>2017</option>
+                    <option>2018</option>
+                    <option>2019</option>
+                    <option>2020</option>
+                    <option>2021</option>
+                    <option>2022</option>
+                    <option>2023</option>
+                    <option>2024</option>
+                    <option>2025</option>
+                    <option>2026</option>
+                    <option>2027</option>
+                    <option>2028</option>
+                    <option>2029</option>
+                    <option>2030</option>
+                    <option>2031</option>
+                    <option>2032</option>
+                    <option>2033</option>
+                    <option>2034</option>
+                    <option>2035</option>
+                    <option>2036</option>
+                    <option>2037</option>
+                    <option>2038</option>
+                    <option>2039</option>
+                    <option>2040</option>
+                    <option>2041</option>
+                    <option>2042</option>
+                    <option>2043</option>
+                    <option>2044</option>
+                    <option>2045</option>
+                    <option>2046</option>
+                    <option>2047</option>
+                    <option>2048</option>
+                    <option>2049</option>
+                    <option>2050</option>
+                    <option>2051</option>
+                    <option>2052</option>
+                    <option>2053</option>
+                    <option>2054</option>
+                    <option>2055</option>
+                    <option>2056</option>
+                    <option>2057</option>
+                    <option>2058</option>
+                    <option>2059</option>
+                    <option>2060</option>
+                    <option>2061</option>
+                    <option>2062</option>
+                    <option>2063</option>
+                    <option>2064</option>
+                    <option>2065</option>
+                    <option>2066</option>
+                    <option>2067</option>
+                    <option>2068</option>
+                    <option>2069</option>
+                    <option>2070</option>
+                    <option>2071</option>
+                    <option>2072</option>
+                    <option>2073</option>
+                    <option>2074</option>
+                    <option>2075</option>
+                    <option>2076</option>
+                    <option>2077</option>
+                    <option>2078</option>
+                    <option>2079</option>
+                    <option>2080</option>
+                    <option>2081</option>
+                    <option>2082</option>
+                    <option>2083</option>
+                    <option>2084</option>
+                    <option>2085</option>
+                    <option>2086</option>
+                    <option>2087</option>
+                    <option>2088</option>
+                    <option>2089</option>
+                    <option>2090</option>
+                    <option>2091</option>
+                    <option>2092</option>
+                    <option>2093</option>
+                    <option>2094</option>
+                    <option>2095</option>
+                    <option>2096</option>
+                    <option>2097</option>
+                    <option>2098</option>
+                    <option>2099</option>
+                    <option>2100</option>
+                  </select>
+                </div>
+  
+              </div>
+            </div>
+  
+  
+            <div class="general-week-sec" *ngIf="selectedWeekOff === 'general'">
+  
+              <div class="row">
+  
+  
+  
+  
+  
+                <div class="col-md-4">
+                  <label>Monday</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="monday" name="monday" [(ngModel)]="editAsset.monday"
+                      [ngModelOptions]="{standalone: true}">
+                      <option value="fullday">Full Day</option>
+                      <option value="halfday">Half Day</option>
+                      <option value="leave">Off</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="col-md-4">
+                  <label>Tuesday</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="tuesday" name="tuesday" [(ngModel)]="editAsset.tuesday"
+                      [ngModelOptions]="{standalone: true}">
+                      <option value="fullday">Full Day</option>
+                      <option value="halfday">Half Day</option>
+                      <option value="leave">Off</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="col-md-4">
+                  <label>wednesday</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="wednesday" name="wednesday" [(ngModel)]="editAsset.wednesday"
+                      [ngModelOptions]="{standalone: true}">
+                      <option value="fullday">Full Day</option>
+                      <option value="halfday">Half Day</option>
+                      <option value="leave">Off</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="col-md-4">
+                  <label>thursday</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="thursday" name="thursday" [(ngModel)]="editAsset.thursday"
+                      [ngModelOptions]="{standalone: true}">
+                      <option value="fullday">Full Day</option>
+                      <option value="halfday">Half Day</option>
+                      <option value="leave">Off</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="col-md-4">
+                  <label>friday</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="friday" name="friday" [(ngModel)]="editAsset.friday"
+                      [ngModelOptions]="{standalone: true}">
+                      <option value="fullday">Full Day</option>
+                      <option value="halfday">Half Day</option>
+                      <option value="leave">Off</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="col-md-4">
+                  <label>saturday</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="saturday" name="saturday" [(ngModel)]="editAsset.saturday"
+                      [ngModelOptions]="{standalone: true}">
+                      <option value="fullday">Full Day</option>
+                      <option value="halfday">Half Day</option>
+                      <option value="leave">Off</option>
+                    </select>
+                  </div>
+                </div>
+  
+                <div class="col-md-4">
+                  <label>sunday</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="sunday" name="sunday" [(ngModel)]="editAsset.sunday"
+                      [ngModelOptions]="{standalone: true}">
+                      <option value="fullday">Full Day</option>
+                      <option value="halfday">Half Day</option>
+                      <option value="leave">Off</option>
+                    </select>
+                  </div>
+                </div>
+  
+              </div>
+            </div>
+  
+  
+            <div class="alternative-section mt-4" *ngIf="selectedWeekOff === 'alternative'">
+  
+              <h4>Alternating Weekly Offs</h4>
+  
+              <div *ngFor="let day of weekDays" class="alter-week-sec mt-4">
+                <h4>{{ day.label }}</h4>
+  
+                <div class="toggle-container ">
+                  <ng-container *ngFor="let week of weekList">
+                    <span>{{ week.name }}</span>
+  
+                    <input type="checkbox" class="toggle" [id]="day.key + '_' + week.key"
+                      [(ngModel)]="alternativeWeekOff[day.key][week.key]" [ngModelOptions]="{standalone: true}">
+  
+                    <label [for]="day.key + '_' + week.key" class="label">
+                      <div class="ball"></div>
+                      <div class="background">
+                        <div class="fill"></div>
+                      </div>
+                    </label>
+                  </ng-container>
+                </div>
+              </div>
+  
+            </div>
+  
+  
+  
+      
+            <div class="row">
+              <div class="col-md-8"></div>
+
+              <div class="col-md-2">
+                <button
+                  type="button"
+                  class="btn-danger btn-Create btn-full mt-5 btn"
+                  (click)="closeEditModalWeekoff()"
+                >
+                  Close
+                </button>
+                </div>
+              <div class="col-md-2">
+                <button
+                  type="button"
+                  class="btn-Create btn-full mt-5 btn-success btn"
+                  (click)="updateAssetType()"
+                >
+                  Update
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
+
+
+    <div class="com_list mt-4">
+
+
+<!-- ================= TABLE ================= -->
+<table width="100%" *ngIf="hasViewPermission" >
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Code</th>
+      <th>Description</th>
+      <th>Year</th>
+      <th>Type</th>
+      <th>Week Info</th>
+      <th>View</th>
+      <th>Action</th>
       
-  
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let calendar of calendars; let i = index" >
+
+      <td>{{ i + 1 }}</td>
+      <td>{{ calendar.calendar_code }}</td>
+      <td>{{ calendar.description }}</td>
+      <td>{{ calendar.year }}</td>
+
+      <td>
+        <span *ngIf="!calendar.is_alternate" class="badge bg-success">General</span>
+        <span *ngIf="calendar.is_alternate" class="badge bg-warning">Alternative</span>
+      </td>
+
+      <td>
+        <!-- GENERAL -->
+        <ng-container *ngIf="!calendar.is_alternate">
+          Mon: {{ calendar.monday }},
+          Tue: {{ calendar.tuesday }},
+          Wed: {{ calendar.wednesday }}
+        </ng-container>
+
+        <!-- ALTERNATIVE -->
+        <ng-container *ngIf="calendar.is_alternate">
+          <span *ngFor="let item of calendar.alternate_weekends | keyvalue">
+            {{ item.key }} - Week {{ item.value }} <br>
+          </span>
+        </ng-container>
+      </td>
+      <td><button class="btn btn-info"
+        (click)="onViewClick(calendar)">
+  View
+</button></td>
+
+      <td data-label="Action">
+        <button
+          mat-fab
+          color="primary"
+          aria-label="Edit icon"
+          *ngIf="showEditBtn"
+
+          
+          (click)="openEditModalWeekoff(calendar)"
+        >
+          <mat-icon style="color: white;">draw</mat-icon>
+        </button>
+
+        <mat-checkbox *ngIf="Delete" [(ngModel)]="calendar.selected" ></mat-checkbox>
+
+      </td>
+
+    </tr>
+  </tbody>
+</table>
 
 
+<!-- VIEW CALENDAR MODAL -->
+<div *ngIf="isViewModalOpen" class="modal">
+  <div class="modal-content calendar-modal">
+
+    <div class="row">
+      <div class="col-md-10">
+        <h2>{{ viewAsset?.description }} - {{ viewAsset?.year }}</h2>
+      </div>
+      <div class="col-md-2 text-end">
+        <span class="close" (click)="closeViewModal()">&times;</span>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="calendar-grid">
+
+      <div *ngFor="let month of calendarMonths" class="month-card">
+        <h4>{{ month.name }}</h4>
+
+        <div class="week-header">
+          <span *ngFor="let d of weekDaysShort">{{ d }}</span>
         </div>
 
+        <div class="days-grid">
+          <span *ngFor="let day of month.days"
+                [ngClass]="getDayClass(day)">
+            {{ day.date }}
+          </span>
         </div>
 
+      </div>
 
-  
+    </div>
 
+  </div>
 </div>
+
+
+
+        <!-- <div>
+        
+          <div class="row mt-4" *ngIf="hasViewPermission">
+            <div class="col-md-6">
+              <label>Weekend Calendar</label>
+              <div class="custom-sel">
+                <select class="form-control" (change)="selectCalendar($event)">
+                  <option>select</option>
+                  <option *ngFor="let calendar of calendars" [value]="calendar.id">
+                    {{ calendar.description }} ({{ calendar.year }})
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="calendar_view_sec" *ngIf="selectedCalendar">
+            <div class="row mt-5">
+              <div class="col-md-4">
+                <h4>Calendar Description</h4>
+                <h5>{{ selectedCalendar.description }} </h5>
+              </div>
+              <div class="col-md-4">
+                <h4>Calendar Year</h4>
+                <h5>{{ selectedCalendar.year }} </h5>
+              </div>
+              <div class="col-md-4">
+                <h4>Calendar Code</h4>
+                <h5>{{ selectedCalendar.calendar_code }} </h5>
+              </div>
+            </div>
+
+            <mat-accordion>
+              <mat-expansion-panel *ngFor="let month of getMonthKeys()">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{ month }}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <table class="table mt-4">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Day</th>
+                      <th>Day Type</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let detail of groupDetailsByMonth()[month]">
+                      <td data-label="Date">{{ formatDate(detail.date) }}</td>
+                      <td data-label="Day">{{ getDayName(detail.date) }}</td>
+                      <td class="leave_type_clm" data-label="Day Type">{{ getDayTypeDisplayName(detail.day_type) }}</td>
+                      <td data-label="Action" *ngIf="hasEditPermission">
+                        <button type="button" class="btn-Edit btn-info btn btn_tabl" (click)="openEditModal(detail)">
+                          <span class="header-btn-icon">
+                            <mat-icon>draw</mat-icon>
+                          </span>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+
+       
+          <div *ngIf="isEditModalOpen" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-10">
+                  <h2>Edit Day Type</h2>
+                  <hr>
+                </div>
+                <div class="col-md-2">
+                  <span class="close pull-right" (click)="closeEditModal()">&times;</span>
+                </div>
+              </div>
+
+              <form (submit)="updateDate()">
+                <label for="dayType">Day Type</label>
+                <div class="custom-sel input-group">
+                  <select class="form-control" id="dayType" [(ngModel)]="editDateDetails.day_type" name="dayType">
+                    <option value="leave">Off</option>
+                    <option value="fullday">Full Day</option>
+                    <option value="halfday">Half Day</option>
+                  </select>
+                  <button type="submit" class="update-btn btn btn-info">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div> -->
+
+
+
+
+
+    </div>
+
+
+
+
+  </div>
 </div>
-
-    
-

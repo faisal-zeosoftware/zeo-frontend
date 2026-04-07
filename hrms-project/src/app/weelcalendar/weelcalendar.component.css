@@ -1,4 +1,5 @@
 
+
 .comapny_section{
 
   margin-top: 100px;
@@ -23,13 +24,48 @@
 
 }
 
+.btn-Create{
+   /* padding: 5px 15px; */
+   /* border: none; */
+margin-right: 10px;     
+ 
+}
+
+.btn-Edit{
+  margin-right: 10px;
+}
+
+.btn-Delete{
+  margin-right: 10px;
+}
+
+.header-btn-icon{
+  vertical-align: middle;
+}
+
+.btn-Create .mat-icon{
+  margin-top: 4px;
+}
+.btn-Create .mat-icon{
+  margin-top: 2px;
+}
+
+
+
+.list_company_sec{
+  padding: 25px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  border-top: solid 3px navy;
+
+}
 
 .com_list{
   padding: 20px;
   width: 100%;
   background: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  border-top: solid 3px navy;
+  border-bottom: solid 3px navy;
   margin-bottom: 20px;
 
 
@@ -37,31 +73,29 @@
 
 .com_list h2{
   font-size: 16px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 10px;
-}
-
-
-
-
-table thead th {
-  color: #ffffff;
-  background: #004976;
-  padding: 15px;
-  border: 1px solid #ebebec;
+  margin-top: 15px;
   font-weight: 500;
 }
 
-table tr {
-  background: #ffffff;
+.comp_logo{
+  width: 40px;
+  height: 50px;
+  overflow: hidden;
 }
 
-table tr td {
-  border: 1px solid #e6edf1;
-  padding: 15px;
+.comapny_section p{
+  text-align: center;
+  color: grey;
 }
+
+.com_list .mat-icon{
+  color: #FDCC0D;
+  height: 20px;
+  width: 25px;
+}
+
+
+
 
 /* Add your CSS styles here */
 .modal {
@@ -80,13 +114,13 @@ table tr td {
 
 .modal-content {
   background-color: #fefefe;
-  padding: 20px;
+  padding: 30px;
   border: 1px solid #888;
-  width: 40%; /* Could be more or less, depending on screen size */
+  width: 70%; /* Could be more or less, depending on screen size */
   margin-right: auto;
-  margin-left: auto;
+  margin-left: 25%;
   margin-top: 100px;
-  height: 240px;
+  height: auto;
 
 }
 
@@ -104,6 +138,136 @@ table tr td {
   text-decoration: none;
   cursor: pointer;
 }
+
+.modal h2{
+
+  font-size: 16px;
+  text-transform: capitalize;
+  font-weight: 600;
+  font-family: math;
+}
+
+
+/* Phones */
+@media (max-width: 728px) {
+
+.modal-content{
+  
+  margin-top: 200px;
+
+}
+}
+
+
+
+
+
+.mat-icon{
+  height: 18px ;
+  width: 18px ;
+  font-size: 18px ;
+
+}
+
+.btn_tabl{
+  padding: 3px 12px 0px 12px ;
+}
+
+.update-btn{
+ 
+  border-radius: 0px;
+
+}
+
+
+.calendar_view_sec h4{
+  font-size: 14px;
+  font-weight: 400;
+
+}
+
+.calendar_view_sec h5{
+  font-size: 16px;
+  font-weight: 500;
+ color: #5c1e7f;
+}
+
+.week-1 {
+  background-color: white !important;
+}
+
+.week-2 {
+  background-color: #b2ffaa1f  !important;
+}
+
+.week-3 {
+  background-color: #fff1f1e0 !important;
+}
+
+.week-4 {
+  background-color: #d38bff29 !important;
+}
+
+.week-5 {
+  background-color: #dceaff8f !important;
+}
+
+
+.leave_type_clm{
+  text-transform: capitalize;
+}
+
+.search-input::placeholder {
+  font-size: 12px; /* Adjust the size as needed */
+  color: gray; /* You can also change the color if needed */
+}
+
+.search-input{
+  width: 100px;
+}
+
+
+
+@media only screen and (max-width: 768px) {
+  table thead {
+    display: none;
+  }
+
+  table tbody {
+    display: block;
+  }
+
+  table tbody tr td {
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+
+  table tbody tr {
+    margin-bottom: 20px;
+    display: block;
+    border: 1px solid  #5c1e7f;
+    background: #f9f9f9;
+    overflow: hidden;
+  }
+
+  table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 30%;
+    display: flex;
+    background: #5c1e7f;
+    color: #fff;
+    padding: 15px;
+    margin-inline-end: 10px;
+  }
+}
+
+
+
+
+
+
 
 .mat-icon{
   height: 18px ;
@@ -330,4 +494,68 @@ table tr td {
 
 .weekoff-type label {
   margin-right: 20px;
+}
+
+
+
+.calendar-modal {
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.month-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.month-card h4 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.week-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.days-grid span {
+  padding: 6px;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+/* COLORS */
+.full-day {
+  background: #d4edda;
+}
+
+.half-day {
+  background: #fff3cd;
+}
+
+.off-day {
+  background: #f8d7da;
+}
+
+.empty-day {
+  visibility: hidden;
 }

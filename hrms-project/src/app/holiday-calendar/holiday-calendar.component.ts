@@ -231,22 +231,7 @@ if (this.userId !== null) {
     }
 
 
-    // checkViewPermission(permissions: any[]): boolean {
-    //   const requiredPermission = 'add_holiday' ||'change_holiday' ||'delete_holiday' ||'view_holiday';
-      
-      
-    //   // Check user permissions
-    //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-    //     return true;
-    //   }
-      
-    //   // Check group permissions (if applicable)
-    //   // Replace `// TODO: Implement group permission check`
-    //   // with your logic to retrieve and check group permissions
-    //   // (consider using a separate service or approach)
-    //   return false; // Replace with actual group permission check
-    //   }
-      
+   
       
       
       
@@ -372,37 +357,37 @@ openEditModal(detail: any): void {
 
 
 
-updateHoliday(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-  if (!selectedSchema || !this.editHoliday?.id) return;
+// updateHoliday(): void {
+//   const selectedSchema = this.authService.getSelectedSchema();
+//   if (!selectedSchema || !this.editHoliday?.id) return;
 
-  const payload = {
-    description: this.editHoliday.description,
-    start_date: this.editHoliday.start_date,
-    end_date: this.editHoliday.start_date, // single-day holiday
-    calendar: this.editHoliday.calendar
-  };
+//   const payload = {
+//     description: this.editHoliday.description,
+//     start_date: this.editHoliday.start_date,
+//     end_date: this.editHoliday.start_date, // single-day holiday
+//     calendar: this.editHoliday.calendar
+//   };
 
-  this.http.put(
-    `${this.apiUrl}/calendars/api/holiday/${this.editHoliday.id}/?schema=${selectedSchema}`,
-    payload
-  ).subscribe({
-    next: () => {
-      // 🔥 Update UI immediately
-      const localDetails = this.selectedCalendar.details.filter(
-        (d: any) => d.holiday_id === this.editHoliday.id
-      );
+//   this.http.put(
+//     `${this.apiUrl}/calendars/api/holiday/${this.editHoliday.id}/?schema=${selectedSchema}`,
+//     payload
+//   ).subscribe({
+//     next: () => {
+//       // 🔥 Update UI immediately
+//       const localDetails = this.selectedCalendar.details.filter(
+//         (d: any) => d.holiday_id === this.editHoliday.id
+//       );
 
-      localDetails.forEach((d: any) => {
-        d.description = this.editHoliday.description;
-        d.date = new Date(this.editHoliday.start_date); // ✅ FIX
-      });
+//       localDetails.forEach((d: any) => {
+//         d.description = this.editHoliday.description;
+//         d.date = new Date(this.editHoliday.start_date); // ✅ FIX
+//       });
 
-      this.closeEditModal();
-    },
-    error: err => console.error('Holiday update failed', err)
-  });
-}
+//       this.closeEditModal();
+//     },
+//     error: err => console.error('Holiday update failed', err)
+//   });
+// }
 
 
 
@@ -425,23 +410,23 @@ updateHoliday(): void {
   registerHolidayCalendar(): void {
     this.registerButtonClicked = true;
 
-    if (!this.description || !this.start_date || !this.end_date|| !this.calendar) {
-      alert('Please fill out all required fields.');
-      return;
-    }
+    // if (!this.description || !this.start_date || !this.end_date|| !this.calendar) {
+    //   alert('Please fill out all required fields.');
+    //   return;
+    // }
 
     const companyData = {
       description: this.description,
       start_date: this.start_date,
       end_date: this.end_date,
       restricted: this.restricted,
-      calendar: this.calendar,
+      calendar: this.selectedCalendarId,
     };
 
     this.countryService.registerHolidayCalendar(companyData).subscribe(
       (response) => {
         console.log('Registration successful', response);
-        alert('Holiday calendar has been added.');
+        alert('Holiday day has been added.');
         window.location.reload();
       },
       (error) => {
@@ -495,26 +480,6 @@ updateHoliday(): void {
     );
   }
 
-  // loadholidayCalendar(): void {
-    
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-  //   console.log('schemastore',selectedSchema )
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.countryService.getholidayCalendars(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.HolidaysCalendar = result;
-  //         console.log(' fetching Companies:');
-  
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Companies:', error);
-  //       }
-  //     );
-  //   }
-  //   }
-
     isLoading: boolean = false;
 
     fetchEmployees(schema: string, branchIds: number[]): void {
@@ -532,6 +497,235 @@ updateHoliday(): void {
         }
       });
     }
+
+
+
+
+
+    
+
+    iscreateLoanApp: boolean = false;
+
+
+
+
+    openPopus():void{
+      this.iscreateLoanApp = true;
+
+    }
+  
+    closeapplicationModal():void{
+      this.iscreateLoanApp = false;
+
+    }
+
+
+
+
+    openEditPopuss(categoryId: number):void{
+      
+    }
+
+
+    showEditBtn: boolean = false;
+
+    EditShowButtons() {
+      this.showEditBtn = !this.showEditBtn;
+    }
+
+
+    Delete: boolean = false;
+    allSelectedDelete: boolean = false;
+
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
+  }
+
+  toggleSelectAllEmployees() {
+      this.allSelected = !this.allSelected;
+  this.HolidaysCalendar.forEach(employee => employee.selected = this.allSelected);
+
+  }
+
+  onCheckboxChange(employee:number) {
+    // No need to implement any logic here if you just want to change the style.
+    // You can add any additional logic if needed.
+  }
+
+
+
+
+
+  isCalendarModal = false;
+  isHolidayModal = false;
+  
+ 
+  
+  selectedCalendarId: number | null = null;
+
+  /* ================= MODALS ================= */
+openCalendarModal() {
+  this.isCalendarModal = true;
+}
+
+closeCalendarModal() {
+  this.isCalendarModal = false;
+}
+
+openHolidayModal(calendarId: number) {
+  this.selectedCalendarId = calendarId;
+  this.isHolidayModal = true;
+}
+
+closeHolidayModal() {
+  this.isHolidayModal = false;
+}
+
+
+
+
+
+
+
+
+
+
+isEditModalOpenCal: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+openEditModalCal(asset: any): void {
+  this.editAsset = { ...asset }; // copy asset data
+  this.isEditModalOpenCal = true;
+}
+
+closeEditModalCal(): void {
+  this.isEditModalOpenCal = false;
+  this.editAsset = {};
+}
+
+
+updateAssetType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  this.employeeService.updateHolidayCal(this.editAsset.id, this.editAsset).subscribe(
+    (response) => {
+      alert('Holidays Calendar updated successfully!');
+      this.closeEditModal();
+      // this.loadLAssetType(); // reload updated list
+      window.location.reload();
+    },
+(error) => {
+  console.error('Error updating Holidays Calendar:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
+  );
+}
+
+
+deleteSelectedAssetType() { 
+  const selectedEmployeeIds = this.HolidaysCalendar
+    .filter(employee => employee.selected)
+    .map(employee => employee.id);
+
+  if (selectedEmployeeIds.length === 0) {
+    alert('No Asset type selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected Holidays Calendar?')) {
+
+     let total = selectedEmployeeIds.length;
+    let completed = 0;
+
+
+    selectedEmployeeIds.forEach(categoryId => {
+      this.employeeService.deleteholidays(categoryId).subscribe(
+        () => {
+          console.log('HolidaysCalendar deleted successfully:', categoryId);
+          // Remove the deleted employee from the local list
+          this.HolidaysCalendar = this.HolidaysCalendar.filter(employee => employee.id !== categoryId);
+          completed++;
+     if (completed === total) {        
+          alert(' Holidays Calendar deleted successfully');
+          window.location.reload();
+     }
+
+        },
+        (error) => {
+          console.error('Error deleting Holidays Calendar:', error);
+          alert('Error deleting Holidays Calendar: ' + error.statusText);
+        }
+      );
+    });
+  }
+}
+
+
+
+editHolidayData: any = {};
+isEditHolidayModal = false;
+
+
+openEditHolidayModal(holiday: any, calendarId: number) {
+  this.editHolidayData = {
+    ...holiday,
+    calendar: calendarId
+  };
+
+  this.isEditHolidayModal = true;
+}
+
+
+closeEditHolidayModal() {
+  this.isEditHolidayModal = false;
+}
+
+
+updateHoliday() {
+
+  const data = {
+    description: this.editHolidayData.description,
+    start_date: this.editHolidayData.start_date,
+    end_date: this.editHolidayData.end_date,
+    restricted: this.editHolidayData.restricted,
+    calendar: this.editHolidayData.calendar
+  };
+
+  this.countryService.updateHoliday(this.editHolidayData.id, data)
+    .subscribe(() => {
+      alert('Holiday Updated');
+      this.closeEditHolidayModal();
+  
+    });
+}
+
+
+deleteHoliday(id: number) {
+
+  if (!confirm('Are you sure to delete this holiday?')) return;
+
+  this.countryService.deleteHoliday(id)
+    .subscribe(() => {
+      alert('Deleted Successfully');
+    
+    });
+}
 
 
 }

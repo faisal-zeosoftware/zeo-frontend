@@ -22,7 +22,7 @@ export class AssignWeekcalendarComponent {
 
   private dataSubscription?: Subscription;
 
-  related_to: any = '';
+  related_to: any = 'branch';
   // branch: any = '';
 
   // department: any = '';
@@ -61,7 +61,7 @@ export class AssignWeekcalendarComponent {
 
   registerButtonClicked = false;
 
-  allSelected = false;
+  allSelectedBrach = false;
   allSelecteddept = false;
   allSelectedcat = false;
   allSelecteddes = false;
@@ -83,8 +83,11 @@ export class AssignWeekcalendarComponent {
   filteredDocuments: any[] = [];  // Filtered list
 
 
-  @ViewChild('select') select: MatSelect | undefined;
-  @ViewChild('selectdes') selectdes: MatSelect | undefined;
+  @ViewChild('branchSelect') branchSelect!: MatSelect;
+  @ViewChild('deptSelect') deptSelect!: MatSelect;
+  @ViewChild('catSelect') catSelect!: MatSelect;
+  @ViewChild('empSelect') empSelect!: MatSelect;
+  @ViewChild('selectdes') selectdes!: MatSelect;
 
 
   constructor(private DepartmentServiceService: DepartmentServiceService,
@@ -115,7 +118,7 @@ export class AssignWeekcalendarComponent {
 
      // Listen for sidebar changes so the dropdown updates instantly
   this.employeeService.selectedBranches$.subscribe(ids => {
-    this.loadBranch();
+    this.loadBranches();
     this.loadEmp();
     this.loadDEpartments();
     this.loadWeekendCalendar();
@@ -284,7 +287,8 @@ export class AssignWeekcalendarComponent {
   }
 
  
-  loadBranch(callback?: Function): void {
+  loadBranches(callback?: Function): void {
+
     const selectedSchema = this.authService.getSelectedSchema();
     
     if (selectedSchema) {
@@ -303,7 +307,7 @@ export class AssignWeekcalendarComponent {
           }
           // Inside the subscribe block of loadDeparmentBranch
           if (this.branches.length === 1) {
-            this.branch = this.branches[0].id;
+            this.branches = this.branches[0].id;
           }
   
           console.log('Filtered branches for selection:', this.branches);
@@ -319,56 +323,56 @@ export class AssignWeekcalendarComponent {
 
 
 
-  toggleAllSelection(): void {
-    if (this.select) {
-      if (this.allSelected) {
-
-        this.select.options.forEach((item: MatOption) => item.select());
-      } else {
-        this.select.options.forEach((item: MatOption) => item.deselect());
-      }
+  toggleAllSelectionBrach(): void {
+    if (this.branchSelect) {
+      this.branchSelect.options.forEach((item: MatOption) =>
+        this.allSelectedBrach ? item.select() : item.deselect()
+      );
     }
   }
+  
 
   toggleAllSelectiondept(): void {
-    if (this.select) {
-      if (this.allSelecteddept) {
-        this.select.options.forEach((item: MatOption) => item.select());
-      } else {
-        this.select.options.forEach((item: MatOption) => item.deselect());
-      }
+    if (this.deptSelect) {
+      this.deptSelect.options.forEach((item: MatOption) =>
+        this.allSelecteddept ? item.select() : item.deselect()
+      );
     }
   }
 
   toggleAllSelectioncat(): void {
-    if (this.select) {
-      if (this.allSelectedcat) {
-        this.select.options.forEach((item: MatOption) => item.select());
-      } else {
-        this.select.options.forEach((item: MatOption) => item.deselect());
-      }
+    if (this.catSelect) {
+      this.catSelect.options.forEach((item: MatOption) =>
+        this.allSelectedcat ? item.select() : item.deselect()
+      );
     }
   }
 
 
   toggleAllSelectiondes(): void {
-    if (this.selectdes) {
-      if (this.allSelecteddes) {
-        this.selectdes.options.forEach((item: MatOption) => item.select());
-      } else {
-        this.selectdes.options.forEach((item: MatOption) => item.deselect());
-      }
+    // if (this.selectdes) {
+    //   if (this.allSelecteddes) {
+    //     this.selectdes.options.forEach((item: MatOption) => item.select());
+    //   } else {
+    //     this.selectdes.options.forEach((item: MatOption) => item.deselect());
+    //   }
+    // }
+
+     if (this.selectdes) {
+      this.selectdes.options.forEach((item: MatOption) =>
+        this.allSelecteddes ? item.select() : item.deselect()
+      );
     }
+
+
   }
 
 
   toggleAllSelectionEmp(): void {
-    if (this.select) {
-      if (this.allSelectedEmp) {
-        this.select.options.forEach((item: MatOption) => item.select());
-      } else {
-        this.select.options.forEach((item: MatOption) => item.deselect());
-      }
+    if (this.empSelect) {
+      this.empSelect.options.forEach((item: MatOption) =>
+        this.allSelectedEmp ? item.select() : item.deselect()
+      );
     }
   }
 
@@ -671,6 +675,181 @@ export class AssignWeekcalendarComponent {
       // doc.employee.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
   }
+
+
+
+
+
+  iscreateLoanApp: boolean = false;
+
+
+
+
+  openPopus():void{
+    this.iscreateLoanApp = true;
+
+  }
+
+  closeapplicationModal():void{
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+
+  openEditPopuss(categoryId: number):void{
+    
+  }
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelecteddelete: boolean = false;
+
+toggleCheckboxes() {
+  this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+    this.allSelecteddelete = !this.allSelecteddelete;
+this.AssignWeekCalendar.forEach(employee => employee.selected = this.allSelecteddelete);
+
+}
+
+onCheckboxChange(employee:number) {
+  // No need to implement any logic here if you just want to change the style.
+  // You can add any additional logic if needed.
+}
+
+
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+// openEditModal(asset: any): void {
+// this.editAsset = { ...asset }; // copy asset data
+// this.isEditModalOpen = true;
+// }
+
+openEditModal(asset: any): void {
+  this.editAsset = { ...asset };
+
+  // Convert branch names → IDs
+  if (this.editAsset.branch?.length) {
+    this.editAsset.branch = this.branches
+      .filter(b => this.editAsset.branch.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  // Department
+  if (this.editAsset.department?.length) {
+    this.editAsset.department = this.Departments
+      .filter(d => this.editAsset.department.includes(d.dept_name))
+      .map(d => d.id);
+  }
+
+  // Category
+  if (this.editAsset.category?.length) {
+    this.editAsset.category = this.Categories
+      .filter(c => this.editAsset.category.includes(c.ctgry_title))
+      .map(c => c.id);
+  }
+
+  // Designation
+  if (this.editAsset.designation?.length) {
+    this.editAsset.designation = this.Designations
+      .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
+      .map(d => d.id);
+  }
+
+  this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+updateAssetType(): void {
+const selectedSchema = localStorage.getItem('selectedSchema');
+if (!selectedSchema || !this.editAsset.id) {
+alert('Missing schema or asset ID');
+return;
+}
+
+this.employeeService.updateAssignweekoff(this.editAsset.id, this.editAsset).subscribe(
+(response) => {
+  alert('Assign week off updated successfully!');
+  this.closeEditModal();
+  // this.loadLAssetType(); // reload updated list
+  window.location.reload();
+},
+(error) => {
+console.error('Error updating Asset type:', error);
+
+let errorMsg = 'Update failed';
+
+const backendError = error?.error;
+
+if (backendError && typeof backendError === 'object') {
+// Convert the object into a readable string
+errorMsg = Object.keys(backendError)
+  .map(key => `${key}: ${backendError[key].join(', ')}`)
+  .join('\n');
+}
+
+alert(errorMsg);
+}
+);
+}
+
+
+deleteSelectedAssetType() { 
+const selectedEmployeeIds = this.AssignWeekCalendar
+.filter(employee => employee.selected)
+.map(employee => employee.id);
+
+if (selectedEmployeeIds.length === 0) {
+alert('No assign week off selected for deletion.');
+return;
+}
+
+if (confirm('Are you sure you want to delete the selected assign week off?')) {
+
+ let total = selectedEmployeeIds.length;
+let completed = 0;
+
+
+selectedEmployeeIds.forEach(categoryId => {
+  this.employeeService.deleteAssignweekoffs(categoryId).subscribe(
+    () => {
+      console.log('Asset type deleted successfully:', categoryId);
+      // Remove the deleted employee from the local list
+      this.AssignWeekCalendar = this.AssignWeekCalendar.filter(employee => employee.id !== categoryId);
+      completed++;
+ if (completed === total) {        
+      alert(' assign week off deleted successfully');
+      window.location.reload();
+ }
+
+    },
+    (error) => {
+      console.error('Error deleting Asset type:', error);
+      alert('Error deleting Asset type: ' + error.statusText);
+    }
+  );
+});
+}
+}
+
 
 
 

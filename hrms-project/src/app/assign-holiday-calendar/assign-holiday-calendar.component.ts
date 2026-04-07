@@ -19,10 +19,9 @@ import {combineLatest, Subscription } from 'rxjs';
 })
 export class AssignHolidayCalendarComponent {
 
-  
   private dataSubscription?: Subscription;
 
-  related_to: any = '';
+  related_to: any = 'branch';
   // branch: any = '';
 
   // department: any = '';
@@ -34,249 +33,261 @@ export class AssignHolidayCalendarComponent {
 
 
 
-  branches:any []=[];
-  Departments:any []=[];
-  Categories:any []=[];
+  branches: any[] = [];
+  Departments: any[] = [];
+  Categories: any[] = [];
+  Designations: any[] = [];
+
   Employee: any[] = [];
+
+
+  WeekCalendar: any[] = [];
+
+  branch: number[] = [];
+  department: number[] = [];
+  category: number[] = [];
+  designation: number[] = [];
+
+  employee: number[] = [];
+
   AssignHolCalendar: any[] = [];
 
 
 
-  WeekCalendar:any []=[];
 
-  branch: number[] = [];
-  department: number[] = [];
-  category: number[] = [];  
-  employee: number[] = [];
-
-  
-
-
-  @ViewChild('select') select: MatSelect | undefined;
 
 
 
   registerButtonClicked = false;
 
-  allSelected=false;
-  allSelecteddept=false;
-  allSelectedcat=false;
-  allSelectedEmp=false;
+  allSelectedBrach = false;
+  allSelecteddept = false;
+  allSelectedcat = false;
+  allSelecteddes = false;
+
+  allSelectedEmp = false;
 
   hasAddPermission: boolean = false;
-hasDeletePermission: boolean = false;
-hasViewPermission: boolean =false;
-hasEditPermission: boolean = false;
+  hasDeletePermission: boolean = false;
+  hasViewPermission: boolean = false;
+  hasEditPermission: boolean = false;
 
-userId: number | null | undefined;
-userDetails: any;
-userDetailss: any;
-schemas: string[] = []; // Array to store schema names
+  userId: number | null | undefined;
+  userDetails: any;
+  userDetailss: any;
+  schemas: string[] = []; // Array to store schema names
 
+  FilteredEmployees: any[] = [];
 
-
-
-
-  
+  filteredDocuments: any[] = [];  // Filtered list
 
 
-  constructor(private DepartmentServiceService: DepartmentServiceService ,
-    private companyRegistrationService: CompanyRegistrationService, 
+  @ViewChild('branchSelect') branchSelect!: MatSelect;
+  @ViewChild('deptSelect') deptSelect!: MatSelect;
+  @ViewChild('catSelect') catSelect!: MatSelect;
+  @ViewChild('empSelect') empSelect!: MatSelect;
+  @ViewChild('selectdes') selectdes!: MatSelect;
+
+
+  constructor(private DepartmentServiceService: DepartmentServiceService,
+    private companyRegistrationService: CompanyRegistrationService,
     private http: HttpClient,
     private authService: AuthenticationService,
-      private categoryService: CatogaryService,
+    private categoryService: CatogaryService,
     private userService: UserMasterService,
     private employeeService: EmployeeService,
+
     private DesignationService: DesignationService,
-private sessionService: SessionService,
-
-
-  
-
-) {}
+    private sessionService: SessionService,
 
 
 
 
+  ) { }
 
-ngOnInit(): void {
 
- // combineLatest waits for both Schema and Branches to have a value
- this.dataSubscription = combineLatest([
-  this.employeeService.selectedSchema$,
-  this.employeeService.selectedBranches$
-]).subscribe(([schema, branchIds]) => {
-  if (schema) {
-    this.fetchEmployees(schema, branchIds);  
-    
 
-  }
-});
+
+
+  ngOnInit(): void {
+ 
+    this.loadCAtegory();
+    // this.loadEmployee();
+    this.loadDesignations();
 
      // Listen for sidebar changes so the dropdown updates instantly
-     this.employeeService.selectedBranches$.subscribe(ids => {
-      this.loadBranch();
-      this.loadEmp();
-      // this.loadDEpartments();
-      this.loadWeekendCalendar();
-      this.loadDEpartments();
-  
-  
+  this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadBranches();
+    this.loadEmp();
+    this.loadDEpartments();
+    this.loadWeekendCalendar();
+
+
+
+  });
+
+    // this.loadAssignedWeekendCalendar();
+
+
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
     });
 
-  // this.loadBranch();
-  this.loadCAtegory();
-  // this.loadDEpartments();
-  // this.loadWeekendCalendar();
-  // this.loadEmployee();
-  // this.loadAssignedHolCalendar();
+
+    this.userId = this.sessionService.getUserId();
+    if (this.userId !== null) {
+      this.authService.getUserData(this.userId).subscribe(
+        async (userData: any) => {
+          this.userDetails = userData; // Store user details in userDetails property
 
 
-  this.userId = this.sessionService.getUserId();
-  if (this.userId !== null) {
-    this.authService.getUserData(this.userId).subscribe(
-      async (userData: any) => {
-        this.userDetails = userData; // Store user details in userDetails property
-     
-  
-        console.log('User ID:', this.userId); // Log user ID
-        console.log('User Details:', this.userDetails); // Log user details
-  
-        // Check if user is_superuser is true or false
-        let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
-        const selectedSchema = this.authService.getSelectedSchema();
-        if (!selectedSchema) {
-          console.error('No schema selected.');
-          return;
-        }
-      
-      
-        if (isSuperuser) {
-          console.log('User is superuser or ESS user');
-          
-          // Grant all permissions
-          this.hasViewPermission = true;
-          this.hasAddPermission = true;
-          this.hasDeletePermission = true;
-          this.hasEditPermission = true;
-      
-          // Fetch designations without checking permissions
-          // this.fetchDesignations(selectedSchema);
-        } else {
-          console.log('User is not superuser');
-  
+          console.log('User ID:', this.userId); // Log user ID
+          console.log('User Details:', this.userDetails); // Log user details
+
+          // Check if user is_superuser is true or false
+          let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
           const selectedSchema = this.authService.getSelectedSchema();
-          if (selectedSchema) {
-           
-            
-            
-            try {
-              const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
-              console.log('Permissions data:', permissionsData);
-  
-              if (Array.isArray(permissionsData) && permissionsData.length > 0) {
-                const firstItem = permissionsData[0];
-  
-                if (firstItem.is_superuser) {
-                  console.log('User is superuser according to permissions API');
-                  // Grant all permissions
-                  this.hasViewPermission = true;
-                  this.hasAddPermission = true;
-                  this.hasDeletePermission = true;
-                  this.hasEditPermission = true;
-                } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                  const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
-                  console.log('Group Permissions:', groupPermissions);
-  
-                 
-                  this.hasAddPermission = this.checkGroupPermission('add_assign_holiday', groupPermissions);
-                  console.log('Has add permission:', this.hasAddPermission);
-                  
-                  this.hasEditPermission = this.checkGroupPermission('change_assign_holiday', groupPermissions);
-                  console.log('Has edit permission:', this.hasEditPermission);
-    
-                 this.hasDeletePermission = this.checkGroupPermission('delete_assign_holiday', groupPermissions);
-                 console.log('Has delete permission:', this.hasDeletePermission);
-    
-  
-                  this.hasViewPermission = this.checkGroupPermission('view_assign_holiday', groupPermissions);
-                  console.log('Has view permission:', this.hasViewPermission);
-  
-  
-                } else {
-                  console.error('No groups found in data or groups array is empty.', firstItem);
-                }
-              } else {
-                console.error('Permissions data is not an array or is empty.', permissionsData);
-              }
-  
-              // Fetching designations after checking permissions
-              // this.fetchDesignations(selectedSchema);
-            }
-            
-            catch (error) {
-              console.error('Error fetching permissions:', error);
-            }
-          } else {
+          if (!selectedSchema) {
             console.error('No schema selected.');
+            return;
           }
-            
+
+
+          if (isSuperuser) {
+            console.log('User is superuser or ESS user');
+
+            // Grant all permissions
+            this.hasViewPermission = true;
+            this.hasAddPermission = true;
+            this.hasDeletePermission = true;
+            this.hasEditPermission = true;
+
+            // Fetch designations without checking permissions
+            // this.fetchDesignations(selectedSchema);
+          } else {
+            console.log('User is not superuser');
+
+            const selectedSchema = this.authService.getSelectedSchema();
+            if (selectedSchema) {
+
+
+
+              try {
+                const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
+                console.log('Permissions data:', permissionsData);
+
+                if (Array.isArray(permissionsData) && permissionsData.length > 0) {
+                  const firstItem = permissionsData[0];
+
+                  if (firstItem.is_superuser) {
+                    console.log('User is superuser according to permissions API');
+                    // Grant all permissions
+                    this.hasViewPermission = true;
+                    this.hasAddPermission = true;
+                    this.hasDeletePermission = true;
+                    this.hasEditPermission = true;
+                  } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
+                    const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
+                    console.log('Group Permissions:', groupPermissions);
+
+
+                    this.hasAddPermission = this.checkGroupPermission('add_assign_weekend', groupPermissions);
+                    console.log('Has add permission:', this.hasAddPermission);
+
+                    this.hasEditPermission = this.checkGroupPermission('change_assign_weekend', groupPermissions);
+                    console.log('Has edit permission:', this.hasEditPermission);
+
+                    this.hasDeletePermission = this.checkGroupPermission('delete_assign_weekend', groupPermissions);
+                    console.log('Has delete permission:', this.hasDeletePermission);
+
+
+                    this.hasViewPermission = this.checkGroupPermission('view_assign_weekend', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermission);
+
+
+                  } else {
+                    console.error('No groups found in data or groups array is empty.', firstItem);
+                  }
+                } else {
+                  console.error('Permissions data is not an array or is empty.', permissionsData);
+                }
+
+                // Fetching designations after checking permissions
+                // this.fetchDesignations(selectedSchema);
+              }
+
+              catch (error) {
+                console.error('Error fetching permissions:', error);
+              }
+            } else {
+              console.error('No schema selected.');
+            }
+
+          }
+        },
+        (error) => {
+          console.error('Failed to fetch user details:', error);
         }
-      },
-      (error) => {
-        console.error('Failed to fetch user details:', error);
-      }
-    );
-  
-      // this.fetchingApprovals();
-  
-  
-      this.authService.getUserSchema(this.userId).subscribe(
-          (userData: any) => {
-              this.userDetailss = userData;
-              this.schemas = userData.map((schema: any) => schema.schema_name);
-              console.log('scehmas-de',userData)
-          },
-          (error) => {
-              console.error('Failed to fetch user schemas:', error);
-          }
       );
-  } else {
+
+      // this.fetchingApprovals();
+
+
+      this.authService.getUserSchema(this.userId).subscribe(
+        (userData: any) => {
+          this.userDetailss = userData;
+          this.schemas = userData.map((schema: any) => schema.schema_name);
+          console.log('scehmas-de', userData)
+        },
+        (error) => {
+          console.error('Failed to fetch user schemas:', error);
+        }
+      );
+    } else {
       console.error('User ID is null.');
+    }
+
+
+
+
+
   }
-  
 
 
-  
+  // checkViewPermission(permissions: any[]): boolean {
+  //   const requiredPermission = 'add_assign_weekend' ||'change_assign_weekend' ||'delete_assign_weekend' ||'view_assign_weekend';
+
+
+  //   // Check user permissions
+  //   if (permissions.some(permission => permission.codename === requiredPermission)) {
+  //     return true;
+  //   }
+
+  //   // Check group permissions (if applicable)
+  //   // Replace `// TODO: Implement group permission check`
+  //   // with your logic to retrieve and check group permissions
+  //   // (consider using a separate service or approach)
+  //   return false; // Replace with actual group permission check
+  //   }
+
+
+
+
+  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+    return groupPermissions.some(permission => permission.codename === codeName);
+  }
 
  
-}
+  loadBranches(callback?: Function): void {
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_assign_holiday' ||'change_assign_holiday' ||'delete_assign_holiday' ||'view_assign_holiday';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
-  
-  
-  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-  return groupPermissions.some(permission => permission.codename === codeName);
-  }
-  
-
-  loadBranch(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();
     
     if (selectedSchema) {
@@ -295,7 +306,7 @@ ngOnInit(): void {
           }
           // Inside the subscribe block of loadDeparmentBranch
           if (this.branches.length === 1) {
-            this.branch = this.branches[0].id;
+            this.branches = this.branches[0].id;
           }
   
           console.log('Filtered branches for selection:', this.branches);
@@ -308,258 +319,535 @@ ngOnInit(): void {
     }
   }
 
-    
-    // loadEmployee(): void {
-    
-    //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-    //   console.log('schemastore',selectedSchema )
-    //   // Check if selectedSchema is available
-    //   if (selectedSchema) {
-    //     this.employeeService.getemployees(selectedSchema).subscribe(
-    //       (result: any) => {
-    //         this.Employee = result;
-    //         console.log(' fetching Employees:');
-    
-    //       },
-    //       (error) => {
-    //         console.error('Error fetching Employees:', error);
-    //       }
-    //     );
-    //   }
-    //   }
-
-
-      loadEmp(callback?: Function): void {
-        const selectedSchema = this.authService.getSelectedSchema();
-        const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-      
-      
-        if (selectedSchema) {
-          this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-            (result: any) => {
-              this.Employee = result;
-               
-              if (callback) callback();
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
-        }
-      }
 
 
 
-
-    toggleAllSelection(): void {
-      if (this.select) {
-        if (this.allSelected) {
-          this.select.options.forEach((item: MatOption) => item.select());
-        } else {
-          this.select.options.forEach((item: MatOption) => item.deselect());
-        }
-      }
+  toggleAllSelectionBrach(): void {
+    if (this.branchSelect) {
+      this.branchSelect.options.forEach((item: MatOption) =>
+        this.allSelectedBrach ? item.select() : item.deselect()
+      );
     }
-
-    toggleAllSelectiondept(): void {
-      if (this.select) {
-        if (this.allSelecteddept) {
-          this.select.options.forEach((item: MatOption) => item.select());
-        } else {
-          this.select.options.forEach((item: MatOption) => item.deselect());
-        }
-      }
-    }
-
-    toggleAllSelectioncat(): void {
-      if (this.select) {
-        if (this.allSelectedcat) {
-          this.select.options.forEach((item: MatOption) => item.select());
-        } else {
-          this.select.options.forEach((item: MatOption) => item.deselect());
-        }
-      }
-    }
-    toggleAllSelectionEmp(): void {
-      if (this.select) {
-        if (this.allSelectedEmp) {
-          this.select.options.forEach((item: MatOption) => item.select());
-        } else {
-          this.select.options.forEach((item: MatOption) => item.deselect());
-        }
-      }
-    }
-
-
-     
-
-    loadDEpartments(callback?: Function): void {
-
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  }
   
-      console.log('schemastore', selectedSchema)
-      // Check if selectedSchema is available
+
+  toggleAllSelectiondept(): void {
+    if (this.deptSelect) {
+      this.deptSelect.options.forEach((item: MatOption) =>
+        this.allSelecteddept ? item.select() : item.deselect()
+      );
+    }
+  }
+
+  toggleAllSelectioncat(): void {
+    if (this.catSelect) {
+      this.catSelect.options.forEach((item: MatOption) =>
+        this.allSelectedcat ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+  toggleAllSelectiondes(): void {
+    // if (this.selectdes) {
+    //   if (this.allSelecteddes) {
+    //     this.selectdes.options.forEach((item: MatOption) => item.select());
+    //   } else {
+    //     this.selectdes.options.forEach((item: MatOption) => item.deselect());
+    //   }
+    // }
+
+     if (this.selectdes) {
+      this.selectdes.options.forEach((item: MatOption) =>
+        this.allSelecteddes ? item.select() : item.deselect()
+      );
+    }
+
+
+  }
+
+
+  toggleAllSelectionEmp(): void {
+    if (this.empSelect) {
+      this.empSelect.options.forEach((item: MatOption) =>
+        this.allSelectedEmp ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+
+
+  loadDEpartments(callback?: Function): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Departments = result;
+          console.log(' fetching Companies:');
+          if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  loadCAtegory(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.categoryService.getcatogarys(selectedSchema).subscribe(
+        (result: any) => {
+          this.Categories = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+
+  loadDesignations(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getDesignations(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Designations:', error);
+        }
+      );
+    }
+  }
+
+
+  // loadEmployee(): void {
+
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  //   console.log('schemastore', selectedSchema)
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getemployeesMaster(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.Employee = result;
+  //         this.FilteredEmployees = result;
+  //         console.log(' fetching Employees:');
+
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Employees:', error);
+  //       }
+  //     );
+  //   }
+  // }
+
+
+  loadEmp(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+  
+    if (selectedSchema) {
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Employee = result;
+          this.FilteredEmployees = result;          
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  deleteAssignedWeekend(id: number): void {
+    if (confirm('Are you sure you want to delete this record?')) {
+      const selectedSchema = this.authService.getSelectedSchema();
+
       if (selectedSchema) {
-        this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
-          (result: any) => {
-            this.Departments = result;
-            console.log(' fetching Companies:');
-            if (callback) callback();
-  
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
+
+        this.employeeService.deleteAssignWeekendcalendar(id, selectedSchema).subscribe(
+          () => {
+            alert('Deleted successfully!');
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployees(schema, branchIds);  
+    
+
+  }
+});
+    },
+          (error: any) => {   // ✅ Add explicit type here
+            console.error('Error deleting record:', error);
+            alert('Failed to delete record');
           }
         );
       }
     }
-          loadCAtegory(): void {
-    
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-          
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.categoryService.getcatogarys(selectedSchema).subscribe(
-                (result: any) => {
-                  this.Categories = result;
-                  console.log(' fetching Companies:');
-          
-                },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
-                }
-              );
-            }
-            }
-
-            // loadWeekendCalendar(): void {
-    
-            //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-            
-            //   console.log('schemastore',selectedSchema )
-            //   // Check if selectedSchema is available
-            //   if (selectedSchema) {
-            //     this.categoryService.getHolidayCalendar(selectedSchema).subscribe(
-            //       (result: any) => {
-            //         this.WeekCalendar = result;
-            //         console.log(' fetching Companies:');
-            
-            //       },
-            //       (error) => {
-            //         console.error('Error fetching Companies:', error);
-            //       }
-            //     );
-            //   }
-            //   }
-              loadWeekendCalendar(callback?: Function): void {
-                const selectedSchema = this.authService.getSelectedSchema();
-                const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-              
-              
-                if (selectedSchema) {
-                  this.categoryService.getHolidayCalendarNew(selectedSchema, savedIds).subscribe(
-                    (result: any) => {
-                      this.WeekCalendar = result;
-       
-                      if (callback) callback();
-                    },
-                    (error) => {
-                      console.error('Error fetching Companies:', error);
-                    }
-                  );
-                }
-              }
-            
-  
-
-  //  loadAssignedHolCalendar(): void {
-    
-  //               const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-              
-  //               console.log('schemastore',selectedSchema )
-  //               // Check if selectedSchema is available
-  //               if (selectedSchema) {
-  //                 this.employeeService.getAssignHolcalendar(selectedSchema).subscribe(
-  //                   (result: any) => {
-  //                     this.AssignHolCalendar = result;
-  //                     console.log(' fetching Companies:');
-              
-  //                   },
-  //                   (error) => {
-  //                     console.error('Error fetching Companies:', error);
-  //                   }
-  //                 );
-  //               }
-  //               }
-
-                isLoading: boolean = false;
-
-                fetchEmployees(schema: string, branchIds: number[]): void {
-                  this.isLoading = true;
-                  this.employeeService.getAssignHolcalendarNew(schema, branchIds).subscribe({
-                    next: (data: any) => {
-                      // Filter active employees
-                      this.AssignHolCalendar = data;
-              
-                      this.isLoading = false;
-                    },
-                    error: (err) => {
-                      console.error('Fetch error:', err);
-                      this.isLoading = false;
-                    }
-                  });
-                }
+  }
 
 
+  SearchEmployee = '';
 
-            registerAssignCalendar(): void {
-              this.registerButtonClicked = true;
-              const companyData = {
-                related_to: this.related_to,
-              
-                branch:this.branch,
-                department: this.department,
-              
-                category:this.category,
-                employee:this.employee,
+  FilterEmployee() {
+    this.FilteredEmployees = this.Employee.filter(emp =>
+      emp.emp_first_name.toLowerCase().includes(this.SearchEmployee.toLowerCase())
 
-                holiday_model: this.holiday_model,
-              
-               
+    );
+
+  }
+
+  // loadWeekendCalendar(): void {
+
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  //   console.log('schemastore', selectedSchema)
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.categoryService.getWeekendcalendar(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.WeekCalendar = result;
+  //         console.log(' fetching Companies:');
+
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  // }
+
+
+  loadWeekendCalendar(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
   
   
-             
+    if (selectedSchema) {
+      this.categoryService.getWeekendcalendarNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.WeekCalendar = result;
           
-                // Add other form field values to the companyData object
-              };
-            
-          
-              this.employeeService.registerHolidacalendar(companyData).subscribe(
-                (response) => {
-                  console.log('Registration successful', response);
-                
-                      alert('Holiday Calendar has been Assigned ');
-                      window.location.reload();
-                      // window.location.reload();
-                 
-          
-                },
-                (error) => {
-                  console.error('Add failed', error);
-                  console.log('Full error response:', error);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+  
+
+
+
+
+  // loadAssignedWeekendCalendar(): void {
+
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  //   console.log('schemastore', selectedSchema)
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.employeeService.getAssignWeekendcalendar(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.AssignWeekCalendar = result;
+  //         this.filteredDocuments = result;  // Initialize filtered data
+
+  //         console.log(' fetching Companies:');
+
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  // }
+
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.employeeService.getAssignHolcalendarNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.AssignHolCalendar = data;
+        this.filteredDocuments = data;  // Initialize filtered data
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+  
+
+
+  registerAssignCalendar(): void {
+    this.registerButtonClicked = true;
+    const companyData = {
+      related_to: this.related_to,
+    
+      branch:this.branch,
+      department: this.department,
+    
+      category:this.category,
+      employee:this.employee,
+
+      holiday_model: this.holiday_model,
+    
+     
+
+
+   
+
+      // Add other form field values to the companyData object
+    };
+  
+
+    this.employeeService.registerHolidacalendar(companyData).subscribe(
+      (response) => {
+        console.log('Registration successful', response);
       
-                  // Check if the error message matches the specific error
-                  const errorMessage = error.error?.error || 'An error occurred while Assign the Holiday Calendar. Please try again.';
-                  alert(errorMessage);
-              }
-              );
-            }
+            alert('Holiday Calendar has been Assigned ');
+            window.location.reload();
+            // window.location.reload();
+       
+
+      },
+      (error) => {
+        console.error('Add failed', error);
+        console.log('Full error response:', error);
+
+        // Check if the error message matches the specific error
+        const errorMessage = error.error?.error || 'An error occurred while Assign the Holiday Calendar. Please try again.';
+        alert(errorMessage);
+    }
+    );
+  }
 
 
 
+  isExpanded = false;
+  searchQuery = '';
+
+  toggleSearch() {
+    this.isExpanded = !this.isExpanded;
+  }
+
+
+  // Filter documents based on searchQuery
+  filterDocuments() {
+    this.filteredDocuments = this.AssignHolCalendar.filter(doc =>
+      doc.holiday_model.toLowerCase().includes(this.searchQuery.toLowerCase())
+      // doc.employee.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+  }
+
+
+
+
+
+  iscreateLoanApp: boolean = false;
+
+
+
+
+  openPopus():void{
+    this.iscreateLoanApp = true;
+
+  }
+
+  closeapplicationModal():void{
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+
+  openEditPopuss(categoryId: number):void{
+    
+  }
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelecteddelete: boolean = false;
+
+toggleCheckboxes() {
+  this.Delete = !this.Delete;
+}
+
+toggleSelectAllEmployees() {
+    this.allSelecteddelete = !this.allSelecteddelete;
+this.AssignHolCalendar.forEach(employee => employee.selected = this.allSelecteddelete);
+
+}
+
+onCheckboxChange(employee:number) {
+  // No need to implement any logic here if you just want to change the style.
+  // You can add any additional logic if needed.
+}
+
+
+
+isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+// openEditModal(asset: any): void {
+// this.editAsset = { ...asset }; // copy asset data
+// this.isEditModalOpen = true;
+// }
+
+openEditModal(asset: any): void {
+  this.editAsset = { ...asset };
+
+  // Convert branch names → IDs
+  if (this.editAsset.branch?.length) {
+    this.editAsset.branch = this.branches
+      .filter(b => this.editAsset.branch.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  // Department
+  if (this.editAsset.department?.length) {
+    this.editAsset.department = this.Departments
+      .filter(d => this.editAsset.department.includes(d.dept_name))
+      .map(d => d.id);
+  }
+
+  // Category
+  if (this.editAsset.category?.length) {
+    this.editAsset.category = this.Categories
+      .filter(c => this.editAsset.category.includes(c.ctgry_title))
+      .map(c => c.id);
+  }
+
+  // Designation
+  if (this.editAsset.designation?.length) {
+    this.editAsset.designation = this.Designations
+      .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
+      .map(d => d.id);
+  }
+
+  this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+updateAssetType(): void {
+const selectedSchema = localStorage.getItem('selectedSchema');
+if (!selectedSchema || !this.editAsset.id) {
+alert('Missing schema or asset ID');
+return;
+}
+
+this.employeeService.updateAssigHolidayCal(this.editAsset.id, this.editAsset).subscribe(
+(response) => {
+  alert('Assign holiday calendar updated successfully!');
+  this.closeEditModal();
+  // this.loadLAssetType(); // reload updated list
+  window.location.reload();
+},
+(error) => {
+console.error('Error updating Asset type:', error);
+
+let errorMsg = 'Update failed';
+
+const backendError = error?.error;
+
+if (backendError && typeof backendError === 'object') {
+// Convert the object into a readable string
+errorMsg = Object.keys(backendError)
+  .map(key => `${key}: ${backendError[key].join(', ')}`)
+  .join('\n');
+}
+
+alert(errorMsg);
+}
+);
+}
+
+
+deleteSelectedAssetType() { 
+const selectedEmployeeIds = this.AssignHolCalendar
+.filter(employee => employee.selected)
+.map(employee => employee.id);
+
+if (selectedEmployeeIds.length === 0) {
+alert('No assign holiday calendar selected for deletion.');
+return;
+}
+
+if (confirm('Are you sure you want to delete the selected assign holiday calendar?')) {
+
+ let total = selectedEmployeeIds.length;
+let completed = 0;
+
+
+selectedEmployeeIds.forEach(categoryId => {
+  this.employeeService.deleteAssignHolidaycal(categoryId).subscribe(
+    () => {
+      console.log('holiday calendar  deleted successfully:', categoryId);
+      // Remove the deleted employee from the local list
+      this.AssignHolCalendar = this.AssignHolCalendar.filter(employee => employee.id !== categoryId);
+      completed++;
+ if (completed === total) {        
+      alert(' assign holiday calendar deleted successfully');
+      window.location.reload();
+ }
+
+    },
+    (error) => {
+      console.error('Error deleting Asset type:', error);
+      alert('Error deleting holiday calendar: ' + error.statusText);
+    }
+  );
+});
+}
+}
 
 
 
