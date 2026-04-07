@@ -151,7 +151,7 @@ export class LeaveService {
       return throwError('No schema selected.');
     }
   
-    const apiUrl = `${this.apiUrl}/calendars/api/CompensatoryLeaveRequest/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/calendars/api/compensatory-leave-request/?schema=${selectedSchema}`;
   
     return this.http.post(apiUrl, formData).pipe(
       catchError((error) => {

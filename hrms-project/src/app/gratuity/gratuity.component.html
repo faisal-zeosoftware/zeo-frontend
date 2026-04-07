@@ -4,7 +4,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1> Gratuity Master</h1>
+                    <h1 style="color: #878787;text-transform: capitalize;">Gratuity Master</h1>
                 </div>
                 <div class="col-md-3">
                     
@@ -54,7 +54,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Create Gratuity </h2>
+                  <h2 style="color: #878787;text-transform: capitalize;">Create Gratuity </h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -117,9 +117,13 @@
 
 
             <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-8">
     
                 </div>
+
+       <div class="col-md-2">
+          <button type="button" (click)="closeapplicationModal()"  class="btn-Create btn-full mt-5 btn-danger btn">Cancel</button>
+        </div>
     
                 <div class="col-md-2">
                     <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateLoanType()">Save</button>  
@@ -138,7 +142,7 @@
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">
-        <h2>Edit  Gratuity Type</h2>
+        <h2 style="color: #878787;text-transform: capitalize;">Edit  Gratuity Type</h2>
       </div>
       <div class="col-md-2">
         <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -199,9 +203,14 @@
     </div>
 
       <div class="row" >
-        <div class="col-md-9"></div>
-        <div class="col-md-3">
-          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+        <div class="col-md-8">
+        </div>
+       <div class="col-md-2">
+          <button type="button" (click)="closeEditModal()"  class="btn-Create btn-full mt-5 btn-danger btn">Cancel</button>
+        </div>
+
+        <div class="col-md-2">
+          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-5">Update</button>
         </div>
       </div>
     </form>

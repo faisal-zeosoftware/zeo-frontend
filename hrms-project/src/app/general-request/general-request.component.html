@@ -6,7 +6,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1> General Request</h1>
+                    <h1 style="color: #878787;text-transform: capitalize;">General Request</h1>
                 </div>
 
                 <div class="col-md-3">
@@ -58,7 +58,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Create General Request</h2>
+                  <h2 style="color: #878787;text-transform: capitalize;"> Create General Request</h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -231,7 +231,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit General Request</h2>
+          <h2 style="color: #878787;text-transform: capitalize;">Edit General Request</h2>
         </div>
         <div class="col-md-2">
           <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -389,18 +389,20 @@
         </div>
 
 
-        <div class="row">
-            <div class="col-md-10"></div>
-            <div class="col-md-2">
-              <button
-                type="button"
-                class="btn-Create btn-full mt-5 btn-success btn"
-                (click)="updateAssetType()"
-              >
-                Update
-              </button>
-            </div>
-          </div>
+                <div class="row">
+                    <div class="col-md-8">
+        
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
+                     </div>
+        
+                    <div class="col-md-2">
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateAssetType()">Update</button>  
+                     </div>
+    
+                     
+                </div>
         
    
 </form>
@@ -418,9 +420,10 @@
 
 
 
-        <div class="table-responsive mt-4" *ngIf="hasViewPermission">
-  <table class="table table-bordered table-striped">
-    <thead class="thead-dark">
+       
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+  <table width="100%" *ngIf="hasViewPermission">
+    <thead>
       <tr>
         <th>No</th>
         <th>Employee</th>
@@ -429,7 +432,7 @@
         <th>Request Type</th>
         <th>Reason</th>
         <th>Total</th>
-        <th>Approval Status</th>
+        <th>Status</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -442,7 +445,7 @@
         <td data-label="Request Type">{{ docs.request_type }}</td>
         <td data-label="Reason">{{ docs.reason }}</td>
         <td data-label="Total">{{ docs.total }}</td>
-        <td data-label="Approval Status">{{ docs.status }}</td>
+        <td data-label="Status">{{ docs.status }}</td>
         <td data-label="Action" class="text-center">
           <button
             mat-fab
@@ -464,6 +467,7 @@
     </tbody>
   </table>
 </div>
+
 
 
         </div>

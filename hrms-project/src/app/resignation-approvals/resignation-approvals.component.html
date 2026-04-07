@@ -6,7 +6,7 @@
 
         <div class="row">
             <div class="col-md-9">
-                <h2>Employee Resignation Approval List </h2>
+                <h2 style="color: #878787;text-transform: capitalize;">Employee Resignation Approval List </h2>
     
               </div>
               <div class="col-md-3">
@@ -23,7 +23,7 @@
         <div class="row">
             <div class="col-md-12">
               <div class="approval_sec" *ngFor="let apr of Approvals" >
-                <h6>Employee Resignation Request Approvals</h6><hr>
+                <h6 style="color: #878787;text-transform: capitalize;">Employee Resignation Request Approvals</h6><hr>
                 <div class="row ">
                     <div class="col-md-3">
                       <h4>Resignation Request</h4>
@@ -66,7 +66,7 @@
       <span class="close pull-right" (click)="closemarketModal()">&times;</span>
   
       <div *ngIf="selectedApproval">
-        <h6>Resignation Request Approvals</h6>
+        <h6 style="color: #878787;text-transform: capitalize;">Resignation Request Approvals</h6>
         <hr>
         <h6>Resignation Request - {{ selectedApproval.general_request }}</h6>
         <h6>Status - {{ selectedApproval.status }}</h6>

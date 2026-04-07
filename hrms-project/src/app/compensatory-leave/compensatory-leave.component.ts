@@ -270,7 +270,7 @@ if (this.userId !== null) {
           console.log('Registration successful', response);
   
   
-          alert('Leave Request   has been Sent');
+          alert('Leave Transaction has been Sent');
   
           window.location.reload();
         },  

@@ -565,7 +565,7 @@
                                     [indeterminate]="isIndeterminates()"
                                     [ngModelOptions]="{standalone: true}">
                       </mat-checkbox>
-                      <span (click)="showexpandables()">Settings</span>
+                      <span (click)="showsettings()">Settings</span>
                     </span>
                   </div>
                   
@@ -573,7 +573,7 @@
                 </div>
         
                 <div class="child_per">
-                <div class="row"  *ngIf="expandedMasters" >               
+                <div class="row"  *ngIf="settingsMastersvalue" >               
                   <div class="col-md-3">
                       <span class="">
                           <mat-checkbox [(ngModel)]="branchMasterChecked" 
@@ -1833,6 +1833,33 @@
                                         (change)="onCheckboxChangesResignationReqTemp(permission.id)" 
                                         [checked]="selectedPermissions.includes(permission.id)" >
                                          {{ getDisplayNameResignationReqTemp(permission.codename) }} </mat-checkbox> </span> </h2>
+                                    </div>
+                                  
+                              </div>
+                          </div>
+                      </div>
+      
+                  </div>
+
+                 <div class="col-md-3">
+                      <span class=""><mat-checkbox [(ngModel)]="LinEoutReqTempChecked"
+                        [indeterminate]="isLinEoutReqTempIndeterminate()" 
+                         (change)="onLinEoutReqTempChange()"
+                          [ngModelOptions]="{standalone: true}" >
+                         LateIn EarlyOut Request Template
+                      </mat-checkbox> </span><br>
+    
+                  </div>
+    
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsLinEoutReqTemp">
+                                      <h2> <span> <mat-checkbox [value]="permission.id" 
+                                        (change)="onCheckboxChangesLinEoutReqTemp(permission.id)" 
+                                        [checked]="selectedPermissions.includes(permission.id)" >
+                                         {{ getDisplayNameLinEoutReqTemp(permission.codename) }} </mat-checkbox> </span> </h2>
                                     </div>
                                   
                               </div>
@@ -3164,7 +3191,7 @@
                           [indeterminate]="isPunchingIndeterminate()" 
                           (change)="onPunchingChange()" 
                           [ngModelOptions]="{standalone: true}">
-                           Punching
+                           Employee Attendance
                           </mat-checkbox>
                       </span><br>
                   </div>
@@ -3299,7 +3326,7 @@
                           [indeterminate]="isPuncinglistIndeterminate()" 
                           (change)="onPuncinglistChange()" 
                           [ngModelOptions]="{standalone: true}">
-                          Punching List
+                          Attendance Policy
                           </mat-checkbox>
                       </span><br>
                   </div>
@@ -3316,6 +3343,38 @@
                                               (change)="onCheckboxChangesPuncinglist(permission.id)"
                                                [checked]="selectedPermissions.includes(permission.id)">
                                                   {{ getDisplayNamePuncinglist(permission.codename) }}
+                                              </mat-checkbox> 
+                                          </span> 
+                                      </h2>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+             <div class="col-md-3">
+                      <span class="">
+                          <mat-checkbox [(ngModel)]="ManualentryChecked" 
+                          [indeterminate]="isManualentryIndeterminate()" 
+                          (change)="onManualentryChange()" 
+                          [ngModelOptions]="{standalone: true}">               
+                          Manual Entry
+                          </mat-checkbox>
+                      </span><br>
+                  </div>
+                  
+                  <div class="col-md-9">
+                      <div class="selection_checkmark_sec">
+                          <div class="all_selection_Sec">
+                              <div class="row">
+                            
+                                  <div class="col-md-2" *ngFor="let permission of GrouppermissionsManualentry">
+                                      <h2> 
+                                          <span> 
+                                              <mat-checkbox [value]="permission.id" 
+                                              (change)="onCheckboxChangesManualentry(permission.id)"
+                                               [checked]="selectedPermissions.includes(permission.id)">
+                                                  {{ getDisplayNameManualentry(permission.codename) }}
                                               </mat-checkbox> 
                                           </span> 
                                       </h2>
@@ -3358,8 +3417,109 @@
                       </div>
                   </div>
               </div>
+
+             <div class="col-md-3">
+                  <span class="">
+                      <mat-checkbox [(ngModel)]="LateinEarlyoutChecked" 
+                      [indeterminate]="isLateinEarlyoutIndeterminate()" 
+                      (change)="onLateinEarlyoutChange()" 
+                      [ngModelOptions]="{standalone: true}">
+                       Late In Early Out Request
+                      </mat-checkbox>
+                  </span><br>
+              </div>
+              
+              <div class="col-md-9">
+                  <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                          <div class="row">
+                        
+                              <div class="col-md-2" *ngFor="let permission of GrouppermissionsLateinEarlyout">
+                                  <h2>
+                                      <span>
+                                          <mat-checkbox [value]="permission.id"
+                                          (change)="onCheckboxChangesLateinEarlyout(permission.id)"
+                                           [checked]="selectedPermissions.includes(permission.id)">
+                                              {{ getDisplayNameLateinEarlyout(permission.codename) }}
+                                          </mat-checkbox> 
+                                      </span> 
+                                  </h2>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+            <div class="col-md-3">
+                  <span class="">
+                      <mat-checkbox [(ngModel)]="LinEoutAprlvlChecked" 
+                      [indeterminate]="isLinEoutAprlvlIndeterminate()" 
+                      (change)="onLinEoutAprlvlChange()" 
+                      [ngModelOptions]="{standalone: true}">
+                       Late In Early Out Approval level
+                      </mat-checkbox>
+                  </span><br>
+              </div>
+              
+              <div class="col-md-9">
+                  <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                          <div class="row">
+                        
+                              <div class="col-md-2" *ngFor="let permission of GrouppermissionsLinEoutAprlvl">
+                                  <h2>
+                                      <span>
+                                          <mat-checkbox [value]="permission.id"
+                                          (change)="onCheckboxChangesLinEoutAprlvl(permission.id)"
+                                           [checked]="selectedPermissions.includes(permission.id)">
+                                              {{ getDisplayNameLinEoutAprlvl(permission.codename) }}
+                                          </mat-checkbox> 
+                                      </span> 
+                                  </h2>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+
+             <div class="col-md-3">
+                  <span class="">
+                      <mat-checkbox [(ngModel)]="LinEoutAprChecked" 
+                      [indeterminate]="isLinEoutAprIndeterminate()" 
+                      (change)="onLinEoutAprChange()" 
+                      [ngModelOptions]="{standalone: true}">
+                       Late In Early Out Approvals
+                      </mat-checkbox>
+                  </span><br>
+              </div>
+              
+              <div class="col-md-9">
+                  <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                          <div class="row">
+                        
+                              <div class="col-md-2" *ngFor="let permission of GrouppermissionsLinEoutApr">
+                                  <h2>
+                                      <span>
+                                          <mat-checkbox [value]="permission.id"
+                                          (change)="onCheckboxChangesLinEoutApr(permission.id)"
+                                           [checked]="selectedPermissions.includes(permission.id)">
+                                              {{ getDisplayNameLinEoutApr(permission.codename) }}
+                                          </mat-checkbox> 
+                                      </span> 
+                                  </h2>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
           
                 </div>
+
+
+          
+            
                 
         
         

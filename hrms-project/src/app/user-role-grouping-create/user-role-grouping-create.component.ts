@@ -184,6 +184,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsAssetReqTemp:any[] =[];
   GrouppermissionsAirticketReqTemp:any[] =[];
   GrouppermissionsResignationReqTemp:any[] =[];
+  GrouppermissionsLinEoutReqTemp:any[] =[];
 
   //permission stored arrays for Shifts
 
@@ -204,6 +205,10 @@ export class UserRoleGroupingCreateComponent implements OnInit {
      GrouppermissionsGeoFence:any[] =[];
      GrouppermissionsFaceRegister:any[] =[];
      GrouppermissionsPunching: any[] = [];
+     GrouppermissionsManualentry:any[] =[];
+     GrouppermissionsLateinEarlyout:any[] =[];
+     GrouppermissionsLinEoutAprlvl:any[] =[];
+     GrouppermissionsLinEoutApr:any[] =[];
 
 
 
@@ -396,6 +401,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     AssetReqTempInderminate=false;
     AirticketReqTempInderminate=false;
     ResignationReqTempInderminate=false;
+    LinEoutReqTempInderminate=false;
 
 
     
@@ -418,6 +424,10 @@ export class UserRoleGroupingCreateComponent implements OnInit {
        PuncinglistInderminate = false;
        GeoFenceInderminate = false;
        PunchingInderminate = false;
+       ManualentryInderminate = false;
+       LateinEarlyoutInderminate = false;
+       LinEoutAprlvlInderminate = false;
+       LinEoutAprInderminate = false;
 
 
 
@@ -600,6 +610,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     AssetReqTempChecked:boolean= false;
     AirticketReqTempChecked:boolean= false;
     ResignationReqTempChecked:boolean= false;
+    LinEoutReqTempChecked:boolean= false;
 
      // Shift checkbox checked values
 
@@ -620,6 +631,11 @@ export class UserRoleGroupingCreateComponent implements OnInit {
        GeoFenceChecked:boolean= false;
        PunchingChecked: boolean = false;
        FaceRegisterChecked: boolean = false;
+       ManualentryChecked:boolean= false;
+       LateinEarlyoutChecked:boolean= false;
+       LinEoutAprlvlChecked:boolean= false;
+       LinEoutAprChecked:boolean= false;
+       
        
 
        
@@ -665,6 +681,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   expandedMasters: boolean = true;
   expandedMastersvalue: boolean = true;
   reportMastersvalue:boolean =true;
+  settingsMastersvalue:boolean =true;
   CustomizationMastersvalue:boolean =true;
 
   calenderMastersvalue:boolean =true;
@@ -1596,7 +1613,8 @@ isAirTicketRuleIndeterminate(): boolean {
     this.LoanReqTempChecked &&
     this.AssetReqTempChecked &&
     this.AirticketReqTempChecked &&
-    this.ResignationReqTempChecked; 
+    this.ResignationReqTempChecked &&
+    this.LinEoutReqTempChecked;
   }
 
 
@@ -1662,6 +1680,13 @@ isAirTicketRuleIndeterminate(): boolean {
       this.GrouppermissionsResignationReqTemp.map(p => p.id).includes(permission)
     );
     return selectedResignReqTempPermissions.length > 0 && selectedResignReqTempPermissions.length < this.GrouppermissionsResignationReqTemp.length;
+  }
+
+  isLinEoutReqTempIndeterminate(): boolean {
+    const selectedLinEoutReqTempPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsLinEoutReqTemp.map(p => p.id).includes(permission)
+    );
+    return selectedLinEoutReqTempPermissions.length > 0 && selectedLinEoutReqTempPermissions.length < this.GrouppermissionsLinEoutReqTemp.length;
   }
 
 
@@ -1742,7 +1767,11 @@ isAttendanceManagementMasterChecked():boolean{
   this.EmpRecheckChecked &&
   this.PuncinglistChecked &&
   this.PunchingChecked &&
-  this.GeoFenceChecked
+  this.GeoFenceChecked &&
+  this.ManualentryChecked &&
+  this.LateinEarlyoutChecked &&
+  this.LinEoutAprlvlChecked &&
+  this.LinEoutAprChecked 
 
 
 }
@@ -1791,12 +1820,41 @@ isPuncinglistIndeterminate(): boolean {
   return selected.length > 0 && selected.length < this.GrouppermissionsPuncinglist.length;
 }
 
+isManualentryIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsManualentry.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsManualentry.length;
+}
+
 isGeoFenceIndeterminate(): boolean {
   const selected = this.selectedPermissions.filter(id =>
     this.GrouppermissionsGeoFence.map(p => p.id).includes(id)
   );
   return selected.length > 0 && selected.length < this.GrouppermissionsGeoFence.length;
 }
+
+isLateinEarlyoutIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsLateinEarlyout.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsLateinEarlyout.length;
+}
+
+isLinEoutAprlvlIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsLinEoutAprlvl.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsLinEoutAprlvl.length;
+}
+
+isLinEoutAprIndeterminate(): boolean {
+  const selected = this.selectedPermissions.filter(id =>
+    this.GrouppermissionsLinEoutApr.map(p => p.id).includes(id)
+  );
+  return selected.length > 0 && selected.length < this.GrouppermissionsLinEoutApr.length;
+}
+
 
 
 
@@ -2056,6 +2114,7 @@ updateInderminateEmailTemplate():void{
   this.isAssetReqTempIndeterminate();
   this.isAirticketReqTempIndeterminate();
   this.isResignationReqTempIndeterminate();
+  this.isLinEoutReqTempIndeterminate();
 
 
 
@@ -2089,6 +2148,10 @@ updateInderminateAttendance():void{
   this.isPuncinglistIndeterminate();
   this.isPunchingIndeterminate();
   this.isGeoFenceIndeterminate();
+  this.isManualentryIndeterminate();
+  this.isLateinEarlyoutIndeterminate();
+  this.isLinEoutAprlvlIndeterminate();
+  this.isLinEoutAprIndeterminate();
 
 
 }
@@ -2355,6 +2418,10 @@ updateInderminateAttendance():void{
     this.loadpermissionsPuncinglist();
     this.loadpermissionsPunching();
     this.loadpermissionsGeoFence();
+    this.loadpermissionsManualentry();
+    this.loadpermissionsLateinEarlyout();
+    this.loadpermissionsLinEoutAprlvl();
+    this.loadpermissionsLinEoutApr();
   }
 
 
@@ -6642,6 +6709,54 @@ getDisplayNameResignationReqTemp(permissionCodename: string): string {
   }
 }
 
+loadpermissionsLinEoutReqTemp(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        const requiredCodenames = [
+          'add_resignationemailtemplate',
+          'change_resignationemailtemplate',
+          'delete_resignationemailtemplate',
+          'view_resignationemailtemplate'
+        ];
+
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsLinEoutReqTemp = Array.from(uniquePermissionsMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Resignation request Email Template permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Loan Request Email Template permissions ===
+
+getDisplayNameLinEoutReqTemp(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_resignationemailtemplate':
+      return 'Add';
+    case 'change_resignationemailtemplate':
+      return 'Edit';
+    case 'delete_resignationemailtemplate':
+      return 'Delete';
+    case 'view_resignationemailtemplate':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 
 
 loadpermissionsAssetType(): void {
@@ -8487,6 +8602,54 @@ getDisplayNamePuncinglist(permissionCodename: string): string {
   }
 }
 
+
+loadpermissionsManualentry(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_attendance_list',
+          'change_attendance_list',
+          'delete_attendance_list',
+          'view_attendance_list',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsManualentry = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Asset Approvals permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Type permissions ===
+getDisplayNameManualentry(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_attendance_list':
+      return 'Add';
+    case 'change_attendance_list':
+      return 'Edit';
+    case 'delete_attendance_list':
+      return 'Delete';
+    case 'view_attendance_list':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 loadpermissionsGeoFence(): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
@@ -8533,6 +8696,148 @@ getDisplayNameGeoFence(permissionCodename: string): string {
       return permissionCodename;
   }
 }
+
+loadpermissionsLateinEarlyout(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_branchgeofence',
+          'change_branchgeofence',
+          'delete_branchgeofence',
+          'view_branchgeofence',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsLateinEarlyout = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Geo Fence permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Allocation permissions ===
+getDisplayNameLateinEarlyout(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_branchgeofence':
+      return 'Add';
+    case 'change_branchgeofence':
+      return 'Edit';
+    case 'delete_branchgeofence':
+      return 'Delete';
+    case 'view_branchgeofence':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+loadpermissionsLinEoutAprlvl(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_branchgeofence',
+          'change_branchgeofence',
+          'delete_branchgeofence',
+          'view_branchgeofence',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsLinEoutAprlvl = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Geo Fence permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Allocation permissions ===
+getDisplayNameLinEoutAprlvl(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_branchgeofence':
+      return 'Add';
+    case 'change_branchgeofence':
+      return 'Edit';
+    case 'delete_branchgeofence':
+      return 'Delete';
+    case 'view_branchgeofence':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
+loadpermissionsLinEoutApr(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        console.log("All permissions from API:", result); // Debug
+        const requiredCodenames = [
+          'add_branchgeofence',
+          'change_branchgeofence',
+          'delete_branchgeofence',
+          'view_branchgeofence',
+        ];
+
+        const uniqueMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniqueMap.has(codename)) {
+            uniqueMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsLinEoutApr = Array.from(uniqueMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Geo Fence permissions:', error);
+      }
+    );
+  }
+}
+
+// === Display readable names for Asset Allocation permissions ===
+getDisplayNameLinEoutApr(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_branchgeofence':
+      return 'Add';
+    case 'change_branchgeofence':
+      return 'Edit';
+    case 'delete_branchgeofence':
+      return 'Delete';
+    case 'view_branchgeofence':
+      return 'View';
+    default:
+      return permissionCodename;
+  }
+}
+
 
 
 
@@ -10821,6 +11126,29 @@ updateAirTicketRuleCheckbox(): void {
     this.ResignationReqTempInderminate = this.isResignationReqTempIndeterminate();
   }
 
+    onCheckboxChangesLinEoutReqTemp(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateLinEoutReqTempCheckbox();
+    this.updateEmailTemplate();
+
+  }
+
+
+  updateLinEoutReqTempCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsLinEoutReqTemp.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.LinEoutReqTempChecked = allPermissionsSelected;
+    this.LinEoutReqTempInderminate = this.isLinEoutReqTempIndeterminate();
+  }
+
 // Shift
 
   onCheckboxChangesShifts(permissionId: number): void {
@@ -11013,6 +11341,25 @@ updatePuncinglistCheckbox(): void {
   this.PuncinglistChecked = allSelected;
 }
 
+onCheckboxChangesManualentry(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateManualentryCheckbox();
+  this.updateAttendance();
+}
+
+
+updateManualentryCheckbox(): void {
+  const allSelected = this.GrouppermissionsManualentry.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.ManualentryChecked = allSelected;
+}
+
 onCheckboxChangesGeoFence(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
     this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
@@ -11030,6 +11377,61 @@ updateGeoFenceCheckbox(): void {
   );
   this.GeoFenceChecked = allSelected;
 }
+
+onCheckboxChangesLateinEarlyout(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateLateinEarlyoutCheckbox();
+  this.updateAttendance();
+}
+
+updateLateinEarlyoutCheckbox(): void {
+  const allSelected = this.GrouppermissionsLateinEarlyout.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.LateinEarlyoutChecked = allSelected;
+}
+
+onCheckboxChangesLinEoutAprlvl(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateLinEoutAprlvlCheckbox();
+  this.updateAttendance();
+}
+
+updateLinEoutAprlvlCheckbox(): void {
+  const allSelected = this.GrouppermissionsLinEoutAprlvl.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.LinEoutAprlvlChecked = allSelected;
+}
+
+onCheckboxChangesLinEoutApr(permissionId: number): void {
+  if (this.selectedPermissions.includes(permissionId)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permissionId);
+  } else {
+    this.selectedPermissions.push(permissionId);
+  }
+
+  this.updateLinEoutAprCheckbox();
+  this.updateAttendance();
+}
+
+updateLinEoutAprCheckbox(): void {
+  const allSelected = this.GrouppermissionsLinEoutApr.every(p =>
+    this.selectedPermissions.includes(p.id)
+  );
+  this.LinEoutAprChecked = allSelected;
+}
+
 
 
 
@@ -11423,6 +11825,7 @@ isEmailTemplate(): boolean {
   const AssetReqTempInderminate = this.isAssetReqTempIndeterminate();
   const AirticketReqTempInderminate = this.isAirticketReqTempIndeterminate();
   const ResignationReqTempInderminate = this.isResignationReqTempIndeterminate();
+  const LinEoutReqTempInderminate = this.isLinEoutReqTempIndeterminate();
 
 
 
@@ -11463,6 +11866,10 @@ isAttend(): boolean {
   const PuncinglistInderminate = this.isPuncinglistIndeterminate();
   const PunchingInderminate = this.isPunchingIndeterminate();
   const GeoFenceInderminate = this.isGeoFenceIndeterminate();
+  const ManualentryInderminate = this.isManualentryIndeterminate();
+  const LateinEarlyoutInderminate = this.isLateinEarlyoutIndeterminate();
+  const LinEoutParlvlInderminate = this.isLinEoutAprlvlIndeterminate();
+  const LinEourAprInderminate = this.isLinEoutAprIndeterminate();
 
 
 
@@ -11470,7 +11877,7 @@ isAttend(): boolean {
 
   const otherGroupIndeterminate = false;
 
-  return AtdMasterInderminate ||  FaceRegisterInderminate || PunchingInderminate || EmpEarlygoingInderminate || EmpRecheckInderminate || PuncinglistInderminate || GeoFenceInderminate;
+  return AtdMasterInderminate || LateinEarlyoutInderminate || LinEoutParlvlInderminate || LinEourAprInderminate || ManualentryInderminate || FaceRegisterInderminate || PunchingInderminate || EmpEarlygoingInderminate || EmpRecheckInderminate || PuncinglistInderminate || GeoFenceInderminate;
  
 } 
 
@@ -12841,6 +13248,18 @@ onLoanReqTempChange(): void {
 
   }
 
+  onLinEoutReqTempChange(): void {
+
+  if (this.LinEoutReqTempChecked) {
+
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLinEoutReqTemp.map(permission => permission.id));
+   } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLinEoutReqTemp.map(p => p.id).includes(permission));
+    }
+    this.updateLinEoutReqTempCheckbox();
+
+  }
+
 
   // Shifts 
 
@@ -12996,6 +13415,18 @@ onPuncinglistChange(): void {
   this.updateAttendanceCheckbox();
 }
 
+onManualentryChange(): void {
+  if (this.ManualentryChecked) {
+    const idsToAdd = this.GrouppermissionsManualentry.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsManualentry.some(p => p.id === id)
+    );
+  }
+  this.updateAttendanceCheckbox();
+}
+
 onGeoFenceChange(): void {
   if (this.GeoFenceChecked) {
     const idsToAdd = this.GrouppermissionsGeoFence.map(p => p.id);
@@ -13003,6 +13434,42 @@ onGeoFenceChange(): void {
   } else {
     this.selectedPermissions = this.selectedPermissions.filter(
       id => !this.GrouppermissionsGeoFence.some(p => p.id === id)
+    );
+  }
+  this.updateAttendanceCheckbox();
+}
+
+onLateinEarlyoutChange(): void {
+  if (this.LateinEarlyoutChecked) {
+    const idsToAdd = this.GrouppermissionsLateinEarlyout.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsLateinEarlyout.some(p => p.id === id)
+    );
+  }
+  this.updateAttendanceCheckbox();
+}
+
+onLinEoutAprlvlChange(): void {
+  if (this.LinEoutAprlvlChecked) {
+    const idsToAdd = this.GrouppermissionsLinEoutAprlvl.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsLinEoutAprlvl.some(p => p.id === id)
+    );
+  }
+  this.updateAttendanceCheckbox();
+}
+
+onLinEoutAprChange(): void {
+  if (this.LinEoutAprChecked) {
+    const idsToAdd = this.GrouppermissionsLinEoutApr.map(p => p.id);
+    this.selectedPermissions = Array.from(new Set([...this.selectedPermissions, ...idsToAdd]));
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      id => !this.GrouppermissionsLinEoutApr.some(p => p.id === id)
     );
   }
   this.updateAttendanceCheckbox();
@@ -13550,7 +14017,8 @@ selectEmailTemplate(): void {
     ...this.GrouppermissionsLoanReqTemp,
     ...this.GrouppermissionsAssetReqTemp,
     ...this.GrouppermissionsAirticketReqTemp,
-    ...this.GrouppermissionsResignationReqTemp
+    ...this.GrouppermissionsResignationReqTemp,
+    ...this.GrouppermissionsLinEoutReqTemp
 
 
 
@@ -13572,6 +14040,7 @@ selectEmailTemplate(): void {
   this.updateAssetReqTempCheckbox();
   this.updateAirticketReqTempCheckbox();
   this.updateResignationReqTempCheckbox();
+  this.updateLinEoutReqTempCheckbox();
 
   
 }
@@ -13620,6 +14089,10 @@ selectAttendance(): void {
     ...this.GrouppermissionsPuncinglist,
     ...this.GrouppermissionsPunching,
     ...this.GrouppermissionsGeoFence,
+    ...this.GrouppermissionsManualentry,
+    ...this.GrouppermissionsLateinEarlyout,
+    ...this.GrouppermissionsLinEoutAprlvl,
+    ...this.GrouppermissionsLinEoutApr
 
 
 
@@ -13640,6 +14113,10 @@ selectAttendance(): void {
   this.updatePuncinglistCheckbox();
   this.updatePunchingCheckbox();
   this.updateGeoFenceCheckbox();
+  this.updateManualentryCheckbox();
+  this.updateLateinEarlyoutCheckbox();
+  this.updateLinEoutAprlvlCheckbox();
+  this.updateLinEoutAprCheckbox();
 
 
  
@@ -13839,6 +14316,7 @@ updateEmailTemplate():void{
   this.updateAssetReqTempCheckbox();
   this.updateAirticketReqTempCheckbox();
   this.updateResignationReqTempCheckbox();
+  this.updateLinEoutReqTempCheckbox();
   
   
   
@@ -13876,6 +14354,10 @@ updateAttendance():void{
   this.updatePuncinglistCheckbox();
   this.updatePunchingCheckbox();
   this.updateGeoFenceCheckbox();
+  this.updateManualentryCheckbox();
+  this.updateLateinEarlyoutCheckbox();
+  this.updateLinEoutAprlvlCheckbox();
+  this.updateLinEoutAprCheckbox();
 
 
 }
@@ -14106,7 +14588,8 @@ isEmailTemplateInderminate(): boolean {
     ...this.GrouppermissionsLoanReqTemp,
     ...this.GrouppermissionsAssetReqTemp,
     ...this.GrouppermissionsAirticketReqTemp,
-    ...this.GrouppermissionsResignationReqTemp
+    ...this.GrouppermissionsResignationReqTemp,
+    ...this.GrouppermissionsLinEoutReqTemp
 
 
 
@@ -14145,7 +14628,11 @@ isAttendanceInderminate(): boolean {
     ...this.GrouppermissionsEmpRecheck,
     ...this.GrouppermissionsPuncinglist,
     ...this.GrouppermissionsPunching,
-    ...this.GrouppermissionsGeoFence
+    ...this.GrouppermissionsGeoFence,
+    ...this.GrouppermissionsManualentry,
+    ...this.GrouppermissionsLateinEarlyout,
+    ...this.GrouppermissionsLinEoutAprlvl,
+    ...this.GrouppermissionsLinEoutApr
 
 
   ].some(permission => this.selectedPermissions.includes(permission.id));
@@ -14167,8 +14654,8 @@ showexpandable(): void {
   this.expandedMasters = !this.expandedMasters;
 }
 
-showexpandables(): void {
-    this.expandedMastersvalue = !this.expandedMastersvalue;
+showsettings(): void {
+    this.settingsMastersvalue = !this.settingsMastersvalue;
   }
 showreports(): void {
   this.reportMastersvalue =!this.reportMastersvalue;

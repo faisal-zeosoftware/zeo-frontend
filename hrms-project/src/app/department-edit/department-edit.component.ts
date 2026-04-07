@@ -149,6 +149,34 @@ loadDeparmentBranch(callback?: () => void): void {
   }
 }
 
+
+mapBranchesNameToId() {
+  if (!this.Branches || !this.department?.branch) return;
+
+  // Case A: backend returns single ID
+  if (typeof this.department.branch === 'number') {
+    this.department.branch = [this.department.branch];
+    return;
+  }
+
+  // Case B: backend returns single NAME
+  if (typeof this.department.branch === 'string') {
+    const found = this.Branches.find(b => b.branch_name === this.department.branch);
+    this.department.branch = found ? [found.id] : [];
+    return;
+  }
+
+  // Case C: backend returns an array of names
+  if (Array.isArray(this.department.branch)) {
+    this.department.branch = this.Branches
+      .filter(b => this.department.branch.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log("Mapped branch IDs:", this.department.branch);
+}
+
+
         toggleAllSelection(): void {
           if (this.select) {
             if (this.allSelected) {

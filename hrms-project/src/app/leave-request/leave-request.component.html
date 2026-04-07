@@ -5,7 +5,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1> Employee Leave Request</h1>
+                <h1 style="color: #878787;text-transform: capitalize;"> Employee Leave Request</h1>
             </div>
             <div class="col-md-3">
                 
@@ -55,7 +55,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Employee Leave Request </h2>
+              <h2 style="color: #878787;text-transform: capitalize;"> Employee Leave Request </h2>
             </div>
             <div class="col-md-2">
               <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -205,9 +205,12 @@
           
             <div class="row" *ngIf="hasAddPermission"
             >
-              <div class="col-md-9"></div>
-              <div class="col-md-3">
-                <button type="submit" class="btn btn-success btn-full mt-4">Send Leave Request</button>
+              <div class="col-md-8"></div>
+      <div class="col-md-2">
+        <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
+      </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-success btn-full mt-5">Send</button>
               </div>
             </div>
           </form>
@@ -220,7 +223,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit  Employee Leave Request</h2>
+    <h2 style="color: #878787;text-transform: capitalize;">Edit  Employee Leave Request</h2>
   </div>
   <div class="col-md-2">
     <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -337,9 +340,12 @@
 
   </div>
   <div class="row" >
-    <div class="col-md-9"></div>
-    <div class="col-md-3">
-      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+    <div class="col-md-8"></div>
+      <div class="col-md-2">
+        <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
+      </div>
+    <div class="col-md-2">
+      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-5">Update</button>
     </div>
   </div>
 </form>

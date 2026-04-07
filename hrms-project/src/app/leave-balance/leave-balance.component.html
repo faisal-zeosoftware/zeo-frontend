@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <h1>Employee Opening Leave Balance</h1>
+                    <h1 style="color: #878787;text-transform: capitalize;">Employee Opening Leave Balance</h1>
                 </div>
 
                 <div class="col-md-6">
@@ -59,7 +59,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-8">
-                  <h2> Add Employee Opening Leave Balance </h2>
+                  <h2 style="color: #878787;text-transform: capitalize;"> Add Employee Opening Leave Balance </h2>
                 </div>
 
                 <div class="col-md-4">
@@ -144,13 +144,13 @@
                     </div>
                   
                     <div class="row"  *ngIf="hasAddPermission">
-                      <div class="col-md-6"></div>
-                      <div class="col-md-3">
+                      <div class="col-md-8"></div>
+                      <div class="col-md-2">
                         <button type="button" class="btn btn-danger btn-full mt-4" (click)="closeapplicationModal()">Close</button>
 
                         </div>
-                      <div class="col-md-3">
-                        <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Balance</button>
+                      <div class="col-md-2">
+                        <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
                       </div>
                     </div>
                   </form>
@@ -166,7 +166,7 @@
 
     <div class="row">
       <div class="col-md-8">
-        <h2>Leave Balance Bulk Upload</h2>
+        <h2 style="color: #878787;text-transform: capitalize;">Leave Balance Bulk Upload</h2>
       </div>
       <div class="col-md-4">
         <span class="close pull-right" (click)="closeBulkuploadModal()">&times;</span>
@@ -242,7 +242,7 @@
   <div class="modal-content">
     <div class="row">
       <div class="col-md-10">
-        <h2>Edit  Employee Opening Leave Balance </h2>
+        <h2 style="color: #878787;text-transform: capitalize;">Edit  Employee Opening Leave Balance </h2>
       </div>
       <div class="col-md-2">
         <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -328,8 +328,12 @@ name="employee"
     
 
       <div class="row" >
-        <div class="col-md-9"></div>
-        <div class="col-md-3">
+        <div class="col-md-8"></div>
+      <div class="col-md-2">
+        <button type="button" class="btn btn-danger btn-full mt-4" (click)="closeEditModal()">Close</button>
+
+      </div>
+        <div class="col-md-2">
           <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
         </div>
       </div>
@@ -341,12 +345,13 @@ name="employee"
   </div>
 
   
-                <table class="mt-4" width="100%" *ngIf="hasViewPermission">
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+  <table width="100%" *ngIf="hasViewPermission">
                     <thead>
                       <tr>
                         <th>No</th>
-                        <th> Leave Type</th>
-                        <th> Balance</th>
+                        <th>Leave Type</th>
+                        <th>Balance</th>
                         <th>Openings</th>
                         <th>Employee</th>
                       <th>Action</th>

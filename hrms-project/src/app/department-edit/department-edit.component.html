@@ -3,7 +3,7 @@
     <div class="cpm-sec" *ngIf="department" >
         <span class="close pull-right" (click)="ClosePopup()">&times;</span>
 
-        <h1>Edit Department</h1><hr>
+        <h1 style="color: #878787;text-transform: capitalize;">Edit Department</h1><hr>
 
         <form (submit)="updateCategory()">
         <div class="row" >
@@ -29,7 +29,7 @@
 <div class="col-md-6" >
                
     <label>Description</label>
-   <input type="text"  class="form-control" required id="dept_description" name="dept_description"  [(ngModel)]="department.dept_description"  placeholder="Enter Description "
+   <input type="text"  class="form-control" required id="dept_description" name="department.dept_description"  [(ngModel)]="department.dept_description"  placeholder="Enter Description "
     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !dept_description}">
    
    <div *ngIf="registerButtonClicked && !dept_description" class="error-message">Description is required.</div>

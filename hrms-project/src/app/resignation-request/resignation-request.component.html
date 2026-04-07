@@ -8,7 +8,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>  Resignation Request </h1>
+                <h1 style="color: #878787;text-transform: capitalize;">Resignation Request </h1>
             </div>
 
             <div class="col-md-3">
@@ -61,7 +61,7 @@
         <div class="modal-content">  
           <div class="row">
             <div class="col-md-10">
-              <h2> Create Resigantion Request</h2>
+              <h2 style="color: #878787;text-transform: capitalize;"> Create Resigantion Request</h2>
             </div>
             <div class="col-md-2">
               <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -76,11 +76,11 @@
   <div class="custom-sel">
             <div class="form-control-wrapper">
 
-      <label>Select Employee</label>
-       <mat-form-field appearance="outline" style="width:100%">
+      <label placeholder="Select Employee">Employees</label>
+       <mat-form-field  appearance="outline" style="width:100%">
 
     <!-- Employee Dropdown -->
- <mat-select>
+ <mat-select placeholder="Select Employee">
               <input type="text" placeholder="Search Employee"
             class="form-control"
             [(ngModel)]="employeeSearch"
@@ -177,9 +177,13 @@
             </div>
           
             <div class="row" >
-              <div class="col-md-9"></div>
-              <div class="col-md-3">
-                <button type="submit" class="btn btn-success btn-full mt-4">Sent</button>
+              <div class="col-md-8">
+              </div>
+             <div class="col-md-2">
+            <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
+             </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-success btn-full mt-5">Sent</button>
               </div>
             </div>
           </form>
@@ -195,7 +199,7 @@
 <div class="modal-content">
   <div class="row">
     <div class="col-md-10">
-      <h2>Edit  Resignation Request </h2>
+      <h2 style="color: #878787;text-transform: capitalize;">Edit  Resignation Request </h2>
     </div>
     <div class="col-md-2">
       <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -286,9 +290,14 @@
   </div>
 
     <div class="row" >
-      <div class="col-md-9"></div>
-      <div class="col-md-3">
-        <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Sent</button>
+      <div class="col-md-8">
+
+      </div>
+     <div class="col-md-2">
+       <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
+     </div>
+      <div class="col-md-2">
+        <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-5">Update</button>
       </div>
     </div>
   </form>
@@ -303,9 +312,10 @@
 
 
 
-        <div class="table-responsive mt-4" style="overflow-x: auto; width: 100%;">
-        <table width="100%" >
-          <thead>
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+    <div style="overflow-x: auto; width: 100%;">
+      <table width="100%">
+          <thead class="thead-dark">
             <tr>
               <th>No</th>
 
@@ -364,6 +374,7 @@
           </tbody>
         </table>
 
+</div>
 </div>
 
   

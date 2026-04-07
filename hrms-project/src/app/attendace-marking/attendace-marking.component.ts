@@ -368,6 +368,7 @@ async registerCheckIn(): Promise<void> {
     this.employeeService.registerEmployeeAttendenceCheckIn(data).subscribe(
       (response) => {
         alert("Check In successful");
+        window.location.reload();
       },
       (error) => {
         alert("Check-In Failed");
@@ -401,6 +402,7 @@ async registerCheckOut(): Promise<void> {
     this.employeeService.registerEmployeeAttendenceCheckOut(data).subscribe(
       (response) => {
         alert("Check Out successful");
+        window.location.reload();
       },
       (error) => {
         alert("Check-Out Failed");

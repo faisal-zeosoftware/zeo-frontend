@@ -7,7 +7,7 @@
 
       <div class="row">
           <div class="col-md-4">
-              <h1>  Request Type Master</h1>
+              <h1 style="color: #878787;text-transform: capitalize;">  Request Type Master</h1>
           </div>
 
           <div class="col-md-3">
@@ -59,7 +59,7 @@
       <div class="modal-content">  
         <div class="row">
           <div class="col-md-10">
-            <h2> Create Request Type</h2>
+            <h2 style="color: #878787;text-transform: capitalize;"> Create Request Type</h2>
           </div>
           <div class="col-md-2">
             <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -154,9 +154,12 @@
 
 
           <div class="row">
-              <div class="col-md-10">
-  
+              <div class="col-md-8">
               </div>
+               <div class="col-md-2">
+                    <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
+               </div>
+        
   
               <div class="col-md-2">
                   <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Save</button>  
@@ -177,7 +180,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit  Request Type</h2>
+    <h2 style="color: #878787;text-transform: capitalize;">Edit  Request Type</h2>
   </div>
   <div class="col-md-2">
     <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -261,9 +264,13 @@
 
 
   <div class="row">
-      <div class="col-md-10">
-
+      <div class="col-md-8">
       </div>
+
+      <div class="col-md-2">
+         <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
+      </div>
+        
 
       <div class="col-md-2">
           <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateAssetType()">Save</button>  
@@ -283,10 +290,9 @@
 
 
 
-      <div class="mt-4" *ngIf="hasViewPermission">
+      <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-        <div class="table-responsive">
-          <table class="table table-striped custom-table" *ngIf="hasViewPermission">
+          <table width="100%" *ngIf="hasViewPermission">
             <thead>
               <tr>
                 <th>No</th>
@@ -326,5 +332,5 @@
         </div>
       </div>
       </div>
-      </div>
+
       

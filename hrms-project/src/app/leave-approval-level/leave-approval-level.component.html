@@ -6,7 +6,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1>Leave Approval Level</h1>
+                <h1 style="color: #878787;text-transform: capitalize;">Leave Approval Level</h1>
             </div>
             <div class="col-md-3">
                 
@@ -56,7 +56,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Create Leave Approval Level </h2>
+              <h2 style="color: #878787;text-transform: capitalize;"> Create Leave Approval Level </h2>
             </div>
             <div class="col-md-2">
               <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -205,8 +205,11 @@
           
             <div class="row"  *ngIf="hasAddPermission">
               <div class="col-md-8"></div>
-              <div class="col-md-4">
-                <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Aproval Level</button>
+            <div class="col-md-2">
+              <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
+            </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-success btn-full mt-5">Add</button>
               </div>
             </div>
           </form>
@@ -220,7 +223,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit   Approval Level </h2>
+    <h2 style="color: #878787;text-transform: capitalize;">Edit Approval Level </h2>
   </div>
   <div class="col-md-2">
     <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -353,9 +356,12 @@ name="request_type"
 
   </div>
   <div class="row" >
-    <div class="col-md-9"></div>
-    <div class="col-md-3">
-      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+    <div class="col-md-8"></div>
+    <div class="col-md-2">
+      <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
+     </div>
+    <div class="col-md-2">
+      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-5">Update</button>
     </div>
   </div>
 </form>
@@ -367,25 +373,24 @@ name="request_type"
 
 
     
-        
-        <table class="mt-4" width="100%" *ngIf="hasViewPermission">
-          <thead>
-            <tr>
+
+
+
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+  <table width="100%" *ngIf="hasViewPermission">
+    <thead>
+      <tr>
               <th>No</th>
-              <th> Level  </th>
-              <th> Branch</th>
+              <th>Level  </th>
+              <th>Branch</th>
               <th>Leave Type</th>
               <th>Approver</th>
               <th>Is compensatory</th>
                <th>Action</th>
-
- 
-             
-            </tr>
-          </thead>
-          <tbody>
-              
-            <tr *ngFor="let docs of LeaveapprovalLevels;let i = index">
+      </tr>
+    </thead>
+    <tbody>
+       <tr *ngFor="let docs of LeaveapprovalLevels;let i = index">
               <td data-label="No">{{ i + 1 }}</td> 
               <td data-label="Level">{{ docs.level }}</td>
               <td data-label="Branch">{{ docs.branch }}</td>
@@ -393,28 +398,23 @@ name="request_type"
               <td data-label="Approver">{{ docs.approver }}</td>
               <td data-label="Is Compensatory">{{ docs.is_compensatory }}</td>
               <td data-label="Action">
-                <button
-                  mat-fab
-                  color="primary"
-                  aria-label="Edit icon"
-                  *ngIf="showEditBtn"
-  
-                  
-                  (click)="openEditModal(docs)"
-                >
-                  <mat-icon style="color: white;">draw</mat-icon>
-                </button>
-  
-                <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-  
-              </td>
-            </tr>
-          
-          </tbody>
-        </table>
+          <button
+            mat-fab
+            color="primary"
+            aria-label="Edit"
+            *ngIf="showEditBtn"
+            (click)="openEditModal(docs)"
+            style="transform: scale(0.7); margin-right: 6px;"
+          >
+            <mat-icon style="color: white;">draw</mat-icon>
+          </button>
 
-
-
+<mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
     </div>
 </div>
