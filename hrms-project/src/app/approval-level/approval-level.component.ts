@@ -303,59 +303,119 @@ loadUsers(callback?: Function): void {
     }
 
 
+    levels: any[] = [
+  {
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  }
+];
+
+addLevel() {
+  this.levels.push({
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  });
+}
+
+removeLevel(index: number) {
+  this.levels.splice(index, 1);
+}
+
+
+// registerApproveLevel(): void {
+//   this.registerButtonClicked = true;
+
+//   const companyData = {
+//     level: this.level,
+//     role: this.role,
+//     approver: this.approver,
+//     request_type: this.request_type,
+//     approval_type: this.approval_type,
+//     branch: this.branch,
+//     // Add other form field values to the companyData object
+//   };
+
+//   this.employeeService.registerApproveLevel(companyData).subscribe(
+//     (response) => {
+//       console.log('Registration successful', response);
+//       alert('Approval Level has been assigned successfully!');
+//       window.location.reload();
+//     },
+//     (error) => {
+//       console.error('Approval level assignment failed:', error);
+
+//       let errorMessage = 'Something went wrong.';
+
+//       // ✅ Handle backend validation or field-level errors
+//       if (error.error && typeof error.error === 'object') {
+//         const messages: string[] = [];
+
+//         for (const [key, value] of Object.entries(error.error)) {
+//           if (Array.isArray(value)) {
+//             messages.push(`${key}: ${value.join(', ')}`);
+//           } else if (typeof value === 'string') {
+//             messages.push(`${key}: ${value}`);
+//           } else {
+//             messages.push(`${key}: ${JSON.stringify(value)}`);
+//           }
+//         }
+
+//         if (messages.length > 0) {
+//           errorMessage = messages.join('\n');
+//         }
+//       } else if (error.error?.detail) {
+//         // Handles backend messages like { "detail": "Invalid data" }
+//         errorMessage = error.error.detail;
+//       }
+
+//       alert(`Registration failed!\n\n${errorMessage}`);
+//     }
+//   );
+// }
+
 
 registerApproveLevel(): void {
   this.registerButtonClicked = true;
 
+  // ✅ Ensure level numbering
+  const formattedLevels = this.levels.map((lvl, index) => ({
+    ...lvl,
+    level: index + 1,
+    approver: Number(lvl.approver),
+    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
+  }));
+
   const companyData = {
-    level: this.level,
-    role: this.role,
-    approver: this.approver,
-    request_type: this.request_type,
-    approval_type: this.approval_type,
+    request_type: Number(this.request_type),
     branch: this.branch,
-    // Add other form field values to the companyData object
+    approval_type: this.approval_type,
+
+    // 🔥 IMPORTANT FIX
+    level: formattedLevels.length,   // ✅ REQUIRED FIELD
+
+    levels: formattedLevels
   };
 
   this.employeeService.registerApproveLevel(companyData).subscribe(
     (response) => {
-      console.log('Registration successful', response);
       alert('Approval Level has been assigned successfully!');
       window.location.reload();
     },
     (error) => {
-      console.error('Approval level assignment failed:', error);
-
-      let errorMessage = 'Something went wrong.';
-
-      // ✅ Handle backend validation or field-level errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) {
-            messages.push(`${key}: ${value.join(', ')}`);
-          } else if (typeof value === 'string') {
-            messages.push(`${key}: ${value}`);
-          } else {
-            messages.push(`${key}: ${JSON.stringify(value)}`);
-          }
-        }
-
-        if (messages.length > 0) {
-          errorMessage = messages.join('\n');
-        }
-      } else if (error.error?.detail) {
-        // Handles backend messages like { "detail": "Invalid data" }
-        errorMessage = error.error.detail;
-      }
-
-      alert(`Registration failed!\n\n${errorMessage}`);
+      console.error(error);
     }
   );
 }
-
-  
 
     
 
