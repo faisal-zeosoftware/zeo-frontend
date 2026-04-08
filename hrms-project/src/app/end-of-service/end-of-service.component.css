@@ -8,7 +8,7 @@
 
 .com_list {
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(2, 51, 92, 0.1);
   border-top: 4px solid #004976;
   padding: 25px;
   border-radius: 10px;
@@ -16,7 +16,7 @@
 }
 
 .com_list h2, .com_list h4 {
-  color: #004976;
+  color: #1a1a1b;
   font-size: 18px;
   font-weight: 600;
   text-transform: uppercase;

@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-5">
-                    <h1> Late In Early Out Approval Level </h1>
+                    <h1>Late In Early Out Approval Level </h1>
                 </div>
                 <div class="col-md-2">
                     
@@ -207,8 +207,11 @@
               
                 <div class="row" *ngIf="hasAddPermission">
                   <div class="col-md-8"></div>
-                  <div class="col-md-4">
-                    <button type="submit" class="btn btn-success btn-full mt-4">Add Approval Level </button>
+             <div class="col-md-2">
+                <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close</button>
+              </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-success btn-full mt-5">Add</button>
                   </div>
                 </div>
               </form>
@@ -335,9 +338,12 @@
       </div>
     
       <div class="row" >
-        <div class="col-md-9"></div>
-        <div class="col-md-3">
-          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+        <div class="col-md-8"></div>
+        <div class="col-md-2">
+          <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close</button>
+        </div>
+        <div class="col-md-2">
+          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-5">Update</button>
         </div>
       </div>
     </form>
