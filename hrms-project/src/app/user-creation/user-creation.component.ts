@@ -172,6 +172,12 @@ export class UserCreationComponent {
   }
 
 
+  showPassword: boolean = false;
+
+togglePassword() {
+  this.showPassword = !this.showPassword;
+}
+
   // openUserToEmployee():void{
 
   //   this.isAddFieldsModalOpen=false;

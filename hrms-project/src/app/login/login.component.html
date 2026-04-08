@@ -49,11 +49,26 @@
              placeholder="enter user id"
              [ngModelOptions]="{standalone: true}">
     
-      <input type="password" class="form-control"
+      <!-- <input type="password" class="form-control"
              [(ngModel)]="password"
              placeholder="enter password"
-             [ngModelOptions]="{standalone: true}">
-    
+             [ngModelOptions]="{standalone: true}"> -->
+             <div class="position-relative" style="width: 100%;">
+
+              <input 
+                [type]="showPassword ? 'text' : 'password'" 
+                class="form-control"
+                [(ngModel)]="password"
+                placeholder="enter password"
+                [ngModelOptions]="{standalone: true}"
+              >
+            
+              <!-- Eye Icon -->
+              <span class="toggle-eye" (click)="togglePassword()">
+                <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+              </span>
+            
+            </div>
       <button class="btn-log" type="submit">Login</button>
     </form>
     
@@ -152,8 +167,8 @@
 
         <h1>Hello, Friend!</h1>
         <p>Register with your Personal details to use all of site features</p>
-        <button  class="hidden btn-log" id="register" *ngIf="showButton" (click)="toggleDivs()"> {{ showCurrentDiv ? 'Sign Up' :
-          'Sign In' }}</button>
+        <!-- <button  class="hidden btn-log" id="register" *ngIf="showButton" (click)="toggleDivs()"> {{ showCurrentDiv ? 'Sign Up' :
+          'Sign In' }}</button> -->
       </div>
     </div>
   </div>

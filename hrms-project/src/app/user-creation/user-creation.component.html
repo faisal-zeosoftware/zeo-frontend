@@ -83,14 +83,34 @@
 
 
                 <div class="col-md-6">
-
                     <label>Password</label>
-                    <input type="text" class="form-control" required [(ngModel)]="password" placeholder="Enter Password "
+                  
+                    <div class="position-relative">
+                  
+                      <input 
+                        [type]="showPassword ? 'text' : 'password'" 
+                        class="form-control"
+                        required 
+                        [(ngModel)]="password" 
+                        placeholder="Enter Password"
                         [ngModelOptions]="{standalone: true}"
-                        [ngClass]="{'error-field': registerButtonClicked && !password}">
-
-                    <div *ngIf="registerButtonClicked && !password" class="error-message">Description is required.</div>
-                </div>
+                        [ngClass]="{'error-field': registerButtonClicked && !password}"
+                      >
+                  
+                      <!-- Eye Icon -->
+                      <span 
+                        class="toggle-eye" 
+                        (click)="togglePassword()"
+                      >
+                        <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                      </span>
+                  
+                    </div>
+                  
+                    <div *ngIf="registerButtonClicked && !password" class="error-message">
+                      Password is required.
+                    </div>
+                  </div>
 
                 <!-- <div class="col-md-6">
                

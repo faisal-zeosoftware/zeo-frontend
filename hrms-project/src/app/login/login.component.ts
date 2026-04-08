@@ -92,6 +92,12 @@ export class LoginComponent implements OnInit {
   userId: number | null = null;
 
   isLoading = false;
+
+  showPassword: boolean = false;
+
+togglePassword() {
+  this.showPassword = !this.showPassword;
+}
   
   validateCredentials() {
 

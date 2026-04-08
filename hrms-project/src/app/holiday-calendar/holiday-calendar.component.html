@@ -464,7 +464,7 @@
           <th>Description</th>
           <th>Start</th>
           <th>End</th>
-          <th>Restricted</th>
+          <!-- <th>Restricted</th> -->
           <th class="text-center">Action</th>
         </tr>
       </thead>
@@ -475,12 +475,12 @@
           <td>{{ h.description }}</td>
           <td>{{ h.start_date }}</td>
           <td>{{ h.end_date }}</td>
-          <td>
+          <!-- <td>
             <span class="badge"
                   [ngClass]="h.restricted ? 'badge-danger' : 'badge-success'">
               {{ h.restricted ? 'Restricted' : 'General' }}
             </span>
-          </td>
+          </td> -->
 
           <td class="text-center">
 
@@ -529,12 +529,12 @@
         <input type="date" [(ngModel)]="editHolidayData.end_date" class="form-control">
       </div>
 
-      <div class="col-md-6 mt-4">
+      <!-- <div class="col-md-6 mt-4">
         <label>
           <input type="checkbox" [(ngModel)]="editHolidayData.restricted">
           Restricted
         </label>
-      </div>
+      </div> -->
 
     </div>
 
@@ -578,12 +578,12 @@
     
       </div>
 
-  
+<!--   
       <div class="col-md-6 mt-4">
         <label class="mt-4">
           <input type="checkbox" [(ngModel)]="restricted" [ngModelOptions]="{standalone: true}"> Restricted
         </label>
-        </div>
+        </div> -->
 
       </div>
 

@@ -233,4 +233,19 @@
 
   
 
+  .position-relative {
+    position: relative;
+  }
   
+  .toggle-eye {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .toggle-eye:hover {
+    color: #000;
+  }

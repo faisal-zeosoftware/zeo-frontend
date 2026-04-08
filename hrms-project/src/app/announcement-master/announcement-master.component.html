@@ -190,7 +190,7 @@
             </div>
         </div>
        
-        <div class="col-md-4 mt-4">
+        <!-- <div class="col-md-4 mt-4">
             <div class="check-box-selection-sec form-control">
                 <div class="mat-set">
                     <mat-checkbox [(ngModel)]="is_sticky" [ngModelOptions]="{standalone: true}">is sticky</mat-checkbox>
@@ -206,7 +206,7 @@
                 </div>
                
             </div>
-        </div>
+        </div> -->
        
 
         <!-- <div class="col-md-6">
@@ -223,7 +223,7 @@
                 <option value="" >Select</option>
                 <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
             </select>
-\        </div>
+        </div>
                     
 
     </div>
@@ -231,7 +231,11 @@
 
 
       <div class="row">
-            <div class="col-md-10"></div>
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-4">Close</button>
+  
+            </div>
 
                <div class="col-md-2">
       <button
@@ -380,7 +384,7 @@
       </div>
   </div>
  
-  <div class="col-md-4 mt-4">
+  <!-- <div class="col-md-4 mt-4">
       <div class="check-box-selection-sec form-control">
           <div class="mat-set">
               <mat-checkbox [(ngModel)]="editAsset.is_sticky" [ngModelOptions]="{standalone: true}">is sticky</mat-checkbox>
@@ -397,7 +401,7 @@
          
       </div>
   </div>
- 
+  -->
 
   <!-- <div class="col-md-6">
       <label>Request Document</label>
@@ -413,7 +417,7 @@
           <option value="" >Select</option>
           <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
       </select>
-\        </div>
+      </div>
               
 
 </div>
@@ -445,10 +449,10 @@
         <th>Title</th>
         <th>Message</th>
         <th>Send Email</th>
-        <th>Is Sticky</th>
+        <!-- <th>Is Sticky</th> -->
         <th>Schedule At</th>
         <th>Expires At</th>
-        <th>Allow Comments</th>
+        <!-- <th>Allow Comments</th> -->
         <th>Specific Employees</th>
         <th>Branches</th>
         <th>Actions</th>
@@ -460,10 +464,10 @@
         <td data-label="Title">{{ docs.title }}</td>
         <td data-label="Message">{{ docs.message }}</td>
         <td data-label="Send Email">{{ docs.send_email }}</td>
-        <td data-label="Is Sticky">{{ docs.is_sticky }}</td>
+        <!-- <td data-label="Is Sticky">{{ docs.is_sticky }}</td> -->
         <td data-label="Schedule At">{{ docs.schedule_at }}</td>
         <td data-label="Expires At">{{ docs.expires_at }}</td>
-        <td data-label="Allow Comments">{{ docs.allow_comments }}</td>
+        <!-- <td data-label="Allow Comments">{{ docs.allow_comments }}</td> -->
         <td data-label="Specific Employees">{{ docs.specific_employees }}</td>
         <td data-label="Branches">{{ docs.branches }}</td>
         <td data-label="Action">

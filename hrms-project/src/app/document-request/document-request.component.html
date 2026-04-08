@@ -17,8 +17,8 @@
             </div>
             <div class="col-md-5">
               <div class="button-group pull-right">
-                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission" ><span class="header-btn-icon"><mat-icon>add_circle
-                  </mat-icon></span> Create</button>
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission" ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
+                  </span> Create</button>
                   <span *ngIf="!hasAddPermission"></span>
 
                   <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
@@ -68,35 +68,11 @@
           <hr />
           <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
             <div class="row">
-
-<div class="col-md-6">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
-
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
-
-             <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches</label>
-                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
-                </div>
-            </div>
+              <div class="col-md-6">
+                <label>Document Number</label>
+                <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
           
               <div class="col-md-6">
                 <label>reason</label>
@@ -104,11 +80,11 @@
                        [ngModelOptions]="{standalone: true}" >
               </div>
 
-              <div class="col-md-6">
+              <!-- <div class="col-md-6">
                 <label>Total</label>
                 <input type="number" class="form-control" required [(ngModel)]="total" placeholder="Enter total "
                        [ngModelOptions]="{standalone: true}" >
-              </div>
+              </div> -->
           
               <div class="col-md-6">
                 <label>Remark</label>
@@ -136,7 +112,7 @@
                 <label>Employee</label>
                 <div class="custom-sel">
                   <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }}</option>
+                    <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
                   </select>
                 </div>
               </div>
@@ -163,7 +139,7 @@
         
               </div>
               <div class="col-md-2">
-                <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
+                <button type="submit" class="btn btn-success btn-full mt-4">Save</button>
               </div>
             </div>
           </form>
@@ -189,51 +165,27 @@
 
 <form >
   <div class="row">
-<div class="col-md-6">
-
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="editAsset.document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
-
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
-
-             <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches</label>
-                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
-                </div>
-            </div>
+    <div class="col-md-6">
+      <label>Document Number</label>
+      <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+             [ngModelOptions]="{standalone: true}" >
+    </div>
 
     <div class="col-md-6">
       <label>reason</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.reason" placeholder="Enter reason"
+      <input type="text" class="form-control" required [(ngModel)]="reason" placeholder="Enter reason"
              [ngModelOptions]="{standalone: true}" >
     </div>
 
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
       <label>Total</label>
-      <input type="number" class="form-control" required [(ngModel)]="editAsset.total" placeholder="Enter total "
+      <input type="number" class="form-control" required [(ngModel)]="total" placeholder="Enter total "
              [ngModelOptions]="{standalone: true}" >
-    </div>
+    </div> -->
 
     <div class="col-md-6">
       <label>Remark</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.remarks" placeholder="Enter remarks"
+      <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
              [ngModelOptions]="{standalone: true}" >
     </div>
   
@@ -241,7 +193,7 @@
     <div class="col-md-6">
       <label>Request Type</label>
       <div class="custom-sel">
-        <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
+        <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
           <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
         </select>
       </div>
@@ -256,8 +208,8 @@
     <div class="col-md-6">
       <label>Employee</label>
       <div class="custom-sel">
-        <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee" [ngModelOptions]="{standalone: true}">
-          <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
+        <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
+          <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.emp_code }}</option>
         </select>
       </div>
     </div>
@@ -302,15 +254,15 @@
           <thead>
             <tr>
               <th>No</th>
-              <th>Document number</th>
-              <th>Branch</th>
-              <th>Reason</th>
-              <th>Total</th>
+              <th> Document number  </th>
+              <th> Reason</th>
+              <!-- <th>Total</th> -->
               <th>Remarks</th>
               <th>Request type</th>   
               <th>Employee</th>
               <th>Status</th>
-               <th>Action</th>
+             
+  <th>Action</th>
              
             </tr>
           </thead>
@@ -319,9 +271,8 @@
             <tr *ngFor="let docs of DocRequest;let i = index">
               <td data-label="No">{{ i + 1 }}</td> 
               <td data-label="Document number">{{ docs.document_number }}</td>
-              <td data-label="branch">{{ docs.branch }}</td>
               <td data-label="Reason">{{ docs.reason }}</td>
-              <td data-label="Total">{{ docs.total }}</td> 
+              <!-- <td data-label="Total">{{ docs.total }}</td>  -->
               <td data-label="Remarks">{{ docs.remarks }}</td>
               <td data-label="Request type">{{ docs.request_type }}</td>
               <td data-label="Employee">{{ docs.employee }}</td> 
