@@ -268,6 +268,38 @@ ngOnInit(): void {
   //   }
   //   }
 
+    // loadDeparmentBranch(callback?: Function): void {
+    //   const selectedSchema = this.authService.getSelectedSchema();
+      
+    //   if (selectedSchema) {
+    //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+    //       (result: any[]) => {
+    //         // 1. Get the sidebar selected IDs from localStorage
+    //         const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    
+    //         // 2. Filter the API result to only include branches selected in the sidebar
+    //         // If sidebar is empty, you might want to show all, or show none. 
+    //         // Usually, we show only the selected ones:
+    //         if (sidebarSelectedIds.length > 0) {
+    //           this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+    //         } else {
+    //           this.branches = result; // Fallback: show all if nothing is selected in sidebar
+    //         }
+    //         // Inside the subscribe block of loadDeparmentBranch
+    //         if (this.branches.length === 1) {
+    //           this.branches = this.branches[0].id;
+    //         }
+    
+    //         console.log('Filtered branches for selection:', this.branches);
+    //         if (callback) callback();
+    //       },
+    //       (error) => {
+    //         console.error('Error fetching branches:', error);
+    //       }
+    //     );
+    //   }
+    // }
+
     loadDeparmentBranch(callback?: Function): void {
       const selectedSchema = this.authService.getSelectedSchema();
       
@@ -287,7 +319,7 @@ ngOnInit(): void {
             }
             // Inside the subscribe block of loadDeparmentBranch
             if (this.branches.length === 1) {
-              this.branches = this.branches[0].id;
+              this.branch_id = this.branches[0].id;
             }
     
             console.log('Filtered branches for selection:', this.branches);
@@ -299,23 +331,48 @@ ngOnInit(): void {
         );
       }
     }
-
-  mapBranchNameToId() {
     
+//   mapBranchNameToId() {
+    
+//   if (!this.branches || !this.editAsset?.branch_id) return;
+
+//   const bra = this.branches.find(
+//     (b: any) => b.branch_name === this.editAsset.branch_id
+//   );
+
+//   if (bra) {
+//     this.editAsset.branch_id = bra.id;  // convert to ID for dropdown
+//   }
+
+//   console.log("Mapped employee_id:", this.editAsset.branch_id);
+// }
+
+
+mapBranchesNameToId() {
   if (!this.branches || !this.editAsset?.branch_id) return;
 
-  const bra = this.branches.find(
-    (b: any) => b.branch_name === this.editAsset.branch_id
-  );
-
-  if (bra) {
-    this.editAsset.branch_id = bra.id;  // convert to ID for dropdown
+  // Case A: backend returns single ID
+  if (typeof this.editAsset.branch_id === 'number') {
+    this.editAsset.branch_id = [this.editAsset.branch_id];
+    return;
   }
 
-  console.log("Mapped employee_id:", this.editAsset.branch_id);
+  // Case B: backend returns single NAME
+  if (typeof this.editAsset.branch_id === 'string') {
+    const found = this.branches.find(b => b.branch_name === this.editAsset.branch_id);
+    this.editAsset.branch_id = found ? [found.id] : [];
+    return;
+  }
+
+  // Case C: backend returns an array of names
+  if (Array.isArray(this.editAsset.branch_id)) {
+    this.editAsset.branch_id = this.branches
+      .filter(b => this.editAsset.branch_id.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log("Mapped branch IDs:", this.editAsset.branch_id);
 }
-
-
 
     
 
@@ -568,7 +625,7 @@ openEditModal(asset: any): void {
 this.editAsset = { ...asset }; // copy asset data
 this.isEditModalOpen = true;
 
-this.mapBranchNameToId();
+this.mapBranchesNameToId();
 }
 
 closeEditModal(): void {
