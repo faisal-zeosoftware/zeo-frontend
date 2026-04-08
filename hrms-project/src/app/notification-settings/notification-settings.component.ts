@@ -391,7 +391,7 @@ mapUsersNameToId() {
             }
             // Inside the subscribe block of loadDeparmentBranch
             if (this.Branches.length === 1) {
-              this.Branches = this.Branches[0].id;
+              this.branch = this.Branches[0].id;
             }
     
             console.log('Filtered branches for selection:', this.Branches);
@@ -403,22 +403,34 @@ mapUsersNameToId() {
         );
       }
     }
+    
   
 
-       mapBranchNameToId() {
-
-  if (!this.Branches || !this.editAsset?.branch) return;
-
-  const bra = this.Branches.find(
-    (b: any) => b.branch_name === this.editAsset.branch
-  );
-
-  if (bra) {
-    this.editAsset.branch = bra.id;  // convert to ID for dropdown
-  }
-
-  console.log("Mapped employee_id:", this.editAsset.branch);
-}
+    mapBranchesNameToId() {
+      if (!this.Branches || !this.editAsset?.branch) return;
+    
+      // Case A: backend returns single ID
+      if (typeof this.editAsset.branch === 'number') {
+        this.editAsset.branch = [this.editAsset.branch];
+        return;
+      }
+    
+      // Case B: backend returns single NAME
+      if (typeof this.editAsset.branch === 'string') {
+        const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
+        this.editAsset.branch = found ? [found.id] : [];
+        return;
+      }
+    
+      // Case C: backend returns an array of names
+      if (Array.isArray(this.editAsset.branch)) {
+        this.editAsset.branch = this.Branches
+          .filter(b => this.editAsset.branch.includes(b.branch_name))
+          .map(b => b.id);
+      }
+    
+      console.log("Mapped branch IDs:", this.editAsset.branch);
+    }
     
 
 
@@ -642,7 +654,7 @@ deleteSelectedDocNotify() {
 
 
 
-      this.mapBranchNameToId();
+      this.mapBranchesNameToId();
       }
       
       closeEditModal(): void {
