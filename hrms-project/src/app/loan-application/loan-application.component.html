@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1> Loan Application</h1>
+                    <h1 style="color: #878787;text-transform: capitalize;"> Loan Application</h1>
                 </div>
                 <div class="col-md-3">
                     
@@ -141,7 +141,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Loan Application</h2>
+                  <h2 style="color: #878787;text-transform: capitalize;">Loan Application</h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -254,8 +254,11 @@
               
                 <div class="row" *ngIf="hasAddPermission">
                   <div class="col-md-8"></div>
-                  <div class="col-md-4">
-                    <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Application</button>
+             <div class="col-md-2">
+                <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close </button>
+              </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-success btn-full mt-5">Add</button>
                   </div>
                 </div>
               </form>
@@ -267,7 +270,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit Loan Application</h2>
+    <h2 style="color: #878787;text-transform: capitalize;">Edit Loan Application</h2>
   </div>
   <div class="col-md-2">
     <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -374,8 +377,11 @@
               
                 <div class="row" *ngIf="hasAddPermission">
                   <div class="col-md-8"></div>
-                  <div class="col-md-4">
-                    <button type="submit" class="btn btn-success btn-full mt-4">Add Loan Application</button>
+              <div class="col-md-2">
+                <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-5">Close</button>
+              </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-success btn-full mt-5">Add</button>
                   </div>
                 </div>
               </form>
@@ -397,7 +403,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Pause Loan Application</h2>
+          <h2 style="color: #878787;text-transform: capitalize;">Pause Loan Application</h2>
         </div>
         <div class="col-md-2">
           <span class="close pull-right" (click)="closePauseModal()">&times;</span>
@@ -429,7 +435,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Resume Loan Application</h2>
+          <h2 style="color: #878787;text-transform: capitalize;">Resume Loan Application</h2>
         </div>
         <div class="col-md-2">
           <span class="close pull-right" (click)="closeResumeModal()">&times;</span>

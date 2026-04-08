@@ -5,7 +5,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1> Asset Allocation</h1>
+                    <h1 style="color: #878787;text-transform: capitalize;"> Asset Allocation</h1>
                 </div>
 
                 <div class="col-md-3">
@@ -57,7 +57,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>  Asset Allocation</h2>
+                  <h2 style="color: #878787;text-transform: capitalize;">Asset Allocation</h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -146,10 +146,11 @@
 
 
             <div class="row">
-                <div class="col-md-10">
-    
+                <div class="col-md-8">
                 </div>
-    
+            <div class="col-md-2">
+              <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
+            </div>
                 <div class="col-md-2">
                     <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateAssetType()">Save</button>  
                  </div>
@@ -167,7 +168,7 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Edit Asset Allocation</h2>
+          <h2 style="color: #878787;text-transform: capitalize;">Edit Asset Allocation</h2>
         </div>
         <div class="col-md-2">
           <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -254,7 +255,10 @@
           </div>
   
         <div class="row">
-          <div class="col-md-10"></div>
+          <div class="col-md-8"></div>
+          <div class="col-md-2">
+              <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
+            </div>
           <div class="col-md-2">
             <button
               type="button"

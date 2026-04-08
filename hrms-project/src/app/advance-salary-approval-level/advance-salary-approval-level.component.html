@@ -5,7 +5,7 @@
 
         <div class="row">
           <div class="col-md-4">
-            <h1> Advance Salary Approval Level  </h1>
+            <h1 style="color: #878787;text-transform: capitalize;"> Advance Salary Approval Level  </h1>
           </div>
           <div class="col-md-3">
   
@@ -60,7 +60,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>   Approval level </h2>
+                  <h2 style="color: #878787;text-transform: capitalize;">Create Approval level </h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -181,8 +181,11 @@
               
                 <div class="row" *ngIf="hasAddPermission">
                   <div class="col-md-8"></div>
-                  <div class="col-md-4">
-                    <button type="submit" class="btn btn-success btn-full mt-4">Add Approval Level </button>
+           <div class="col-md-2">
+            <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Close</button>  
+            </div>
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-success btn-full mt-5">Add</button>
                   </div>
                 </div>
               </form>
@@ -198,7 +201,7 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit Payroll Approval Level Setting </h2>
+            <h2 style="color: #878787;text-transform: capitalize;">Edit Payroll Approval Level Setting </h2>
           </div>
           <div class="col-md-2">
             <span class="close pull-right" (click)="closeEditModal()">&times;</span>

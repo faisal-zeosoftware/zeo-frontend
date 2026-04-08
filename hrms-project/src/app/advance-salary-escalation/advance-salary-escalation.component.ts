@@ -414,6 +414,7 @@ export class AdvanceSalaryEscalationComponent {
     this.employeeService.updateAdvSalEsc(this.editAsset.id, this.editAsset).subscribe(
       (response) => {
         alert('Advance Salary Escalation updated successfully!');
+        window.location.reload();
         this.closeEditModal();
  // combineLatest waits for both Schema and Branches to have a value
  this.dataSubscription = combineLatest([

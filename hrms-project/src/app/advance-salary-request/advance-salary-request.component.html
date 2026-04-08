@@ -7,7 +7,7 @@
 
         <div class="row">
           <div class="col-md-4">
-            <h1> Advance Salary Request </h1>
+            <h1 style="color: #878787;text-transform: capitalize;">Advance Salary Request </h1>
           </div>
           <div class="col-md-3">
   
@@ -61,7 +61,7 @@
               <div class="modal-content">
                 <div class="row">
                   <div class="col-md-10">
-                    <h2>  Advance Salary Request </h2>
+                    <h2 style="color: #878787;text-transform: capitalize;">Advance Salary Request </h2>
                   </div>
                   <div class="col-md-2">
                     <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -170,7 +170,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2>Edit Advance Salary Request </h2>
+              <h2 style="color: #878787;text-transform: capitalize;">Edit Advance Salary Request </h2>
             </div>
             <div class="col-md-2">
               <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -277,17 +277,17 @@
   
 
 
-
-        <div class="mt-4" style="overflow-x: auto; width: 100%;">
-        <table width="100%" >
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+    <div style="overflow-x: auto; width: 100%;">
+        <table class="thead-dark">
           <thead>
             <tr>
               <th>No</th>
               <th>Actions</th>
 
-              <th> Document number  </th>
-              <th> Branch </th>
-              <th> Reason</th>
+              <th>Document number  </th>
+              <th>Branch </th>
+              <th>Reason</th>
               <th>Requested amount</th>
               <th>Remarks</th>
               <th>Employee</th>

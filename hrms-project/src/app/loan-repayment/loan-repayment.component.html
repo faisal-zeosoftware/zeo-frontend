@@ -5,7 +5,7 @@
 
           <div class="row">
               <div class="col-md-4">
-                  <h1> Loan Repayment</h1>
+                  <h1 style="color: #878787;text-transform: capitalize;"> Loan Repayment</h1>
               </div>
               <div class="col-md-3">
                   
@@ -56,7 +56,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2> Create Loan Repayment</h2>
+              <h2 style="color: #878787;text-transform: capitalize;">Create Loan Repayment</h2>
             </div>
             <div class="col-md-2">
               <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -131,7 +131,7 @@
 <div class="modal-content">
 <div class="row">
   <div class="col-md-10">
-    <h2>Edit Location</h2>
+    <h2 style="color: #878787;text-transform: capitalize;">Edit Location</h2>
   </div>
   <div class="col-md-2">
     <span class="close pull-right" (click)="closeEditModal()">&times;</span>
@@ -211,9 +211,10 @@
     
 
 
-            <div class="mt-4"  *ngIf="hasViewPermission">
+        <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-                <table class="table-container " width="100%">
+
+            <table width="100%" *ngIf="hasViewPermission">
                     <thead>
                       <tr>
                         <th>No</th>
