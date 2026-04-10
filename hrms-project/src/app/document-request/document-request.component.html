@@ -8,7 +8,7 @@
 
         <div class="row">
             <div class="col-md-4">
-                <h1> Document Request </h1>
+                <h1> Document Request</h1>
             </div>
             <div class="col-md-3">
                 
@@ -17,8 +17,8 @@
             </div>
             <div class="col-md-5">
               <div class="button-group pull-right">
-                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission" ><span class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
-                  </span> Create</button>
+                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                  </mat-icon></span> Create</button>
                   <span *ngIf="!hasAddPermission"></span>
 
                   <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
@@ -133,9 +133,9 @@
             </div>
           
             <div class="row" >
-              <div class="col-md-2"></div>
+              <div class="col-md-8"></div>
               <div class="col-md-2">
-                <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
+                <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-4">Close</button>
         
               </div>
               <div class="col-md-2">

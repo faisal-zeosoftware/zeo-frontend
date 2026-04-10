@@ -57,7 +57,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>  Project Timesheet</h2>
+                  <h2>Project Timesheet</h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -176,12 +176,16 @@
 
     
             <div class="row">
-                <div class="col-md-10">
+                <div class="col-md-8">
     
                 </div>
+
+            <div class="col-md-2">
+              <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close</button>
+            </div>
     
                 <div class="col-md-2">
-                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateProject()">Save</button>  
+                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateProject()">Update</button>  
                  </div>
             </div>
             
@@ -316,9 +320,11 @@
 
     
             <div class="row">
-                <div class="col-md-10">
-    
+                <div class="col-md-8">
                 </div>
+           <div class="col-md-2">
+              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-5">Close</button>
+            </div>
     
                 <div class="col-md-2">
                     <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateProjecttimesheet()">Save</button>  

@@ -113,10 +113,12 @@
 
   
   <div class="row">
-    <div class="col-md-10">
+    <div class="col-md-8">
   
     </div>
-  
+         <div class="col-md-2">
+          <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close</button>
+        </div>
     <div class="col-md-2">
         <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerShiftOverride()">Create</button>  
      </div>
@@ -189,7 +191,10 @@
 </div>
 
      <div class="row">
-          <div class="col-md-10"></div>
+          <div class="col-md-8"></div>
+          <div class="col-md-2">
+          <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-5">Close</button>
+        </div>
           <div class="col-md-2">
             <button
               type="button"
@@ -216,46 +221,47 @@
   </div>
   
 
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-
-      <table class="table">
-        <thead>
+    <div class="com_list mt-4" *ngIf="hasViewPermission">
+        <table width="100%" *ngIf="hasViewPermission">
+         <thead>
           <tr>
-            <th>Date</th>
+           <th>Date</th>
             <th>Employee</th>
             <th>OverRide</th>
             <th>Action</th>
           </tr>
-        </thead>
+          </thead>
         <tbody>
-          <tr *ngFor="let pattern of ShiftsOverride">
+                        
+        <tr *ngFor="let pattern of ShiftsOverride">
             <td data-label="Date">{{ pattern.date }}</td>
             <td data-label="Employee">{{ pattern.employee }}</td>
             <td data-label="OverRide">{{ pattern.override_shift }}</td>
-            
-          
             <td data-label="Action">
-                        <button
-                          mat-fab
-                          color="primary"
-                          aria-label="Edit icon"
-                          *ngIf="showEditBtn"
+             <button
+                            mat-fab
+                            color="primary"
+                            aria-label="Edit icon"
+                            *ngIf="showEditBtn"
+          
+                            
+                            (click)="openEditModal(pattern)"
+                          >
+                            <mat-icon style="color: white;">draw</mat-icon>
+                          </button>
+          
+                          <mat-checkbox *ngIf="Delete" [(ngModel)]="pattern.selected" ></mat-checkbox>
+          
+                        </td>
+        
+                      </tr>
+                  
+                    </tbody>
+                  </table>
+    
+                  </div>
 
-                          
-                          (click)="openEditModal(pattern)"
-                        >
-                          <mat-icon style="color: white;">draw</mat-icon>
-                        </button>
-
-                        <mat-checkbox *ngIf="Delete" [(ngModel)]="pattern.selected" ></mat-checkbox>
-
-                      </td>
-          </tr>
-        </tbody>
-        </table>
-
-        </div>
         </div>
         </div>
         

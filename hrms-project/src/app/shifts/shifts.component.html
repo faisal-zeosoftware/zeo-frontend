@@ -113,8 +113,11 @@
             
     
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-8">
     
+        </div>
+        <div class="col-md-2">
+          <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close</button>
         </div>
     
         <div class="col-md-2">
@@ -185,7 +188,10 @@
                 </div>
     
          <div class="row">
-          <div class="col-md-10"></div>
+          <div class="col-md-8"></div>
+          <div class="col-md-2">
+              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-5">Close</button>
+           </div>
           <div class="col-md-2">
             <button
               type="button"
@@ -202,49 +208,53 @@
   </div>
   
 
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-
-    <table class="table">
-      <thead>
-        <tr>
+      <div class="com_list mt-4" *ngIf="hasViewPermission">
+        <table width="100%" *ngIf="hasViewPermission">
+         <thead>
+          <tr>
           <th>No</th>
           <th>Shift Name</th>
           <th>Start Time</th>
           <th>End Time</th>
           <th>Break Duration</th>
           <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
+          </tr>
+          </thead>
+        <tbody>
+                        
         <tr *ngFor="let shift of Shifts; let i = index">
           <td data-label="No">{{ i + 1 }}</td>
           <td data-label="Shift Name">{{ shift.name }}</td>
           <td data-label="Start Time">{{ shift.start_time }}</td>
           <td data-label="End Time">{{ shift.end_time }}</td>
           <td data-label="Break Duration">{{ shift.break_duration }}</td>
-           <td data-label="Action">
-                        <button
-                          mat-fab
-                          color="primary"
-                          aria-label="Edit icon"
-                          *ngIf="showEditBtn"
-
-                          
-                          (click)="openEditModal(shift)"
-                        >
-                          <mat-icon style="color: white;">draw</mat-icon>
-                        </button>
-
-                        <mat-checkbox *ngIf="Delete" [(ngModel)]="shift.selected" ></mat-checkbox>
-
-                      </td>
+          <td data-label="Action">
+             <button
+                            mat-fab
+                            color="primary"
+                            aria-label="Edit icon"
+                            *ngIf="showEditBtn"
           
-        </tr>
-      </tbody>
-      </table>
+                            
+                            (click)="openEditModal(shift)"
+                          >
+                            <mat-icon style="color: white;">draw</mat-icon>
+                          </button>
+          
+                          <mat-checkbox *ngIf="Delete" [(ngModel)]="shift.selected" ></mat-checkbox>
+          
+                        </td>
+        
+                      </tr>
+                  
+                    </tbody>
+                  </table>
+    
+                  </div>
 
-        </div>
+
+
         </div>
         </div>
         

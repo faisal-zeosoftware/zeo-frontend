@@ -149,7 +149,10 @@
                 </div>
         
                 <div class="row">
-                    <div  class="col-md-10"></div>
+                    <div  class="col-md-8"></div>
+            <div class="col-md-2">
+            <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Close</button>  
+            </div>
                     <div class="col-md-2">
     
                         <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="onclickEmailTemplate()">Save</button>  
@@ -174,7 +177,7 @@
         <div class="com_list mt-4 " *ngIf="hasViewPermission">
             <div class="cpm-sec">
         
-                <h2>General Request Email Templates</h2><hr>
+                <h2>Loan Email Templates</h2><hr>
 
                 <div class="row" *ngFor="let deparmentsec of tempEmails">
                     <div class="col-md-12">

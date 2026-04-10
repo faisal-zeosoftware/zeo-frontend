@@ -123,9 +123,11 @@
     
             </div>
             <div class="row">
-                <div class="col-md-10">
-    
+                <div class="col-md-8">
                 </div>
+            <div class="col-md-2">
+            <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Close</button>  
+            </div>
     
                 <div class="col-md-2">
                     <button type="submit" class="btn-Create btn-full mt-5 btn-success btn" *ngIf="hasAddPermission">Save</button>  
@@ -248,10 +250,10 @@
 
 
   
-        
-<div class="table-responsive mt-4" *ngIf="hasViewPermission">
-  <table class="table table-bordered table-striped align-middle">
-    <thead class="table-light">
+  <div class="com_list  mt-4" style="border-top: white;">
+   <div class="table-responsive" *ngIf="hasViewPermission">
+    <table class="table table-striped custom-table mt-4">
+    <thead>
       <tr>
         <th>Title</th>
         <th>Description</th>
@@ -293,6 +295,7 @@
     </tbody>
   </table>
 </div>
+</div>    
 
      
 

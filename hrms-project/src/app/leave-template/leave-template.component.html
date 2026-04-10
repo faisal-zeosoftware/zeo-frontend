@@ -8,7 +8,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1> Leave Email Template</h1>
+                    <h1>Leave Request Email Template</h1>
                 </div>
 
                 <div class="col-md-3">
@@ -57,7 +57,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>Leave Email Template</h2>
+                  <h2>Leave Request Email Template</h2>
                 </div>
                 <div class="col-md-2">
                   <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
@@ -146,7 +146,10 @@
                 </div>
         
                 <div class="row">
-                    <div  class="col-md-10"></div>
+                    <div  class="col-md-8"></div>
+            <div class="col-md-2">
+                  <button type="button" class="btn btn-danger btn-full mt-5" (click)="closeapplicationModal()" >Close</button>
+            </div>
                     <div class="col-md-2">
     
                         <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="onclickEmailTemplate()">Save</button>  
@@ -172,7 +175,7 @@
 
    
         
-        <div class="com_list "  *ngIf="hasViewPermission">
+        <div class="com_list mt-4"  *ngIf="hasViewPermission">
             <div class="cpm-sec">
         
                 <h2>Leave Email Templates</h2><hr>

@@ -148,9 +148,13 @@
         
                 </div>
                 <div class="row" *ngIf="hasAddPermission">
-                    <div class="col-md-10">
+                    <div class="col-md-8">
         
                     </div>
+      <div class="col-md-2">
+      <button type="button" (click)="closeapplicationModal()"  class="btn btn-danger btn-full mt-5">Close</button>
+
+    </div>
         
                     <div class="col-md-2">
                         <button type="submit" class="btn-Create btn-full mt-5 btn-success btn" >Save</button>  
@@ -249,7 +253,11 @@
         </div>
   
         <div class="row">
-          <div class="col-md-10"></div>
+          <div class="col-md-8"></div>
+    <div class="col-md-2">
+      <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-5">Close</button>
+
+    </div>
           <div class="col-md-2">
             <button
               type="button"
