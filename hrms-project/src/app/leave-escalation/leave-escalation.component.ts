@@ -415,6 +415,7 @@ export class LeaveEscalationComponent {
           this.employeeService.updateLeaveEsc(this.editAsset.id, this.editAsset).subscribe(
             (response) => {
               alert('Leave Escalation updated successfully!');
+                window.location.reload();
               this.closeEditModal();
               // this.loadgeneralReq(); // reload updated list
             },

@@ -620,6 +620,7 @@ updateAssetType(): void {
   this.employeeService.updateShiftPattern(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
       alert('Shift Pattern  updated successfully!');
+        window.location.reload();
       this.closeEditModal();
       // combineLatest waits for both Schema and Branches to have a value
       this.dataSubscription = combineLatest([

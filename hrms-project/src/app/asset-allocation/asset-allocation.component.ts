@@ -269,7 +269,6 @@ this.loadEmployees();
               
                     alert('Asset  has been Allocated ');
                     window.location.reload();
-                    // window.location.reload();
                
         
               },
@@ -459,6 +458,7 @@ updateAssetType(): void {
   this.employeeService.updateAssetAllocation(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
       alert('Asset  updated successfully!');
+        window.location.reload();
       this.closeEditModal();
       // this.loadLAssetType(); 
         // combineLatest waits for both Schema and Branches to have a value

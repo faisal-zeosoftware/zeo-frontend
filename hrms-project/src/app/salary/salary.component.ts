@@ -340,6 +340,7 @@ if (this.userId !== null) {
         this.leaveService.updateSalaryComponent(this.updateId, formData).subscribe(
           (response) => {
             alert('Salary Component updated successfully');
+            window.location.reload();
             this.resetForm();
             this.dataSubscription = combineLatest([
               this.EmployeeService.selectedSchema$,

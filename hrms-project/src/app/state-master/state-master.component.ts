@@ -68,9 +68,9 @@ private employeeService: EmployeeService,
       (response) => {
         console.log('Registration successful', response);
       
-            alert('State has been Added ');
+            alert('Successfully added');
             window.location.reload();
-            // window.location.reload();
+         
        
 
       },
@@ -411,7 +411,7 @@ return;
 
 this.employeeService.updateState(this.editAsset.id, this.editAsset).subscribe(
 (response) => {
-  alert(' States  updated successfully!');
+  alert('Updated successfully!');
   this.closeEditModal();
   window.location.reload();
 },

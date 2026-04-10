@@ -643,7 +643,7 @@ export class AssignWeekcalendarComponent {
 
         alert('Weekend Calendar has been Assigned ');
         window.location.reload();
-        // window.location.reload();
+
 
 
       },

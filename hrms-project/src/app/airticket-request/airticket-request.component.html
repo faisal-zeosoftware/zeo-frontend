@@ -69,6 +69,36 @@
 
             <div class="row">
 
+             <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
+             <div class="col-md-6">
+                
+                
+                    <div class="custom-sel">
+                        <label>Employee</label>
+                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"  >
+                            <option value="" >Select</option>
+                            <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
+                        </select>
+                       
+                    </div>
+                                
+                
+                
+                       
+                       
+                    
+                </div> 
+
 <div class="col-md-6">
   <label>Document Number</label>
   <input 
@@ -87,16 +117,7 @@
   </small>
 </div>
 
-             <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches</label>
-                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
-                </div>
-            </div>
+
 
                 <div class="col-md-6">
                 
@@ -116,24 +137,7 @@
                        
                     
                 </div> 
-                <div class="col-md-6">
-                
-                
-                    <div class="custom-sel">
-                        <label>Employee</label>
-                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"  >
-                            <option value="" >Select</option>
-                            <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
-                        </select>
-                       
-                    </div>
-                                
-                
-                
-                       
-                       
-                    
-                </div> 
+
 
                 <div class="col-md-6" >
                     <label>request type</label>
@@ -248,6 +252,37 @@
 
             <div class="row">
 
+               <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
+
+                    <div class="col-md-6">
+                
+                
+                    <div class="custom-sel">
+                        <label>Employee</label>
+                        <select class="form-control" id="employee" required [(ngModel)]="editAsset.employee"  [ngModelOptions]="{standalone: true}"  >
+                            <option value="" >Select</option>
+                            <option *ngFor="let user of Employees" [value]="user.id">{{ user.emp_code }} </option>
+                        </select>
+                       
+                    </div>
+                                
+                
+                
+                       
+                       
+                    
+                </div> 
+
 <div class="col-md-6">
   <label>Document Number</label>
   <input 
@@ -266,16 +301,7 @@
   </small>
 </div>
 
-             <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches</label>
-                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
-                </div>
-            </div>
+
 
 
                 <div class="col-md-6">
@@ -296,24 +322,7 @@
                        
                     
                 </div> 
-                <div class="col-md-6">
-                
-                
-                    <div class="custom-sel">
-                        <label>Employee</label>
-                        <select class="form-control" id="employee" required [(ngModel)]="editAsset.employee"  [ngModelOptions]="{standalone: true}"  >
-                            <option value="" >Select</option>
-                            <option *ngFor="let user of Employees" [value]="user.id">{{ user.emp_code }} </option>
-                        </select>
-                       
-                    </div>
-                                
-                
-                
-                       
-                       
-                    
-                </div> 
+
 
                 <div class="col-md-6" >
                     <label>request type</label>

@@ -505,6 +505,7 @@ updateProjectStagesType(): void {
   this.employeeService.updateProjectStages(this.editProjectStages.id, this.editProjectStages).subscribe(
     (response) => {
       alert('Project stages  updated successfully!');
+        window.location.reload();
       this.closeEditModal();
  // combineLatest waits for both Schema and Branches to have a value
  this.dataSubscription = combineLatest([

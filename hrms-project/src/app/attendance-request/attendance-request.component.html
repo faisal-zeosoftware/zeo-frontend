@@ -70,35 +70,7 @@
           <form (ngSubmit)="SetLateInEarlyOut()" enctype="multipart/form-data">
             <div class="row">
 
-
-              <div class="col-md-6">
-                <label>Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Enter date"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-
-           <div class="col-md-6">
-                <label>Request Type</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
-                    <option  value="LATE_IN">Late Check In</option>
-                    <option  value="EARLY_OUT">Early Check Out</option>          
-                  </select>
-                </div>
-              </div>
-
-            <!-- <div class="col-md-6">
-                <label>Status</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="status" name="status" [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
-                    <option  value="PENDING">Pending</option>
-                    <option  value="APPROVED">Approved</option>
-                    <option  value="REJECTED">Rejected</option>           
-                  </select>
-                </div>
-              </div> -->
-
-<div class="col-md-6">
+        <div class="col-md-6">
 
   <div class="custom-sel">
             <div class="form-control-wrapper">
@@ -133,6 +105,36 @@
   </div>
 
 </div>
+
+
+              <div class="col-md-6">
+                <label>Date</label>
+                <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Enter date"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+
+           <div class="col-md-6">
+                <label>Request Type</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
+                    <option  value="LATE_IN">Late Check In</option>
+                    <option  value="EARLY_OUT">Early Check Out</option>          
+                  </select>
+                </div>
+              </div>
+
+            <!-- <div class="col-md-6">
+                <label>Status</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="status" name="status" [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
+                    <option  value="PENDING">Pending</option>
+                    <option  value="APPROVED">Approved</option>
+                    <option  value="REJECTED">Rejected</option>           
+                  </select>
+                </div>
+              </div> -->
+
+
 
               <div class="col-md-12">
                 <label>Reason</label>
@@ -185,36 +187,10 @@
   <hr />
 
   <form >
+    
     <div class="row">
 
-              <div class="col-md-6">
-                <label>Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="editAsset.date" placeholder="Enter date"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-
-           <div class="col-md-6">
-                <label>Request Type</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
-                    <option  value="LATE_IN">Late Check In</option>
-                    <option  value="EARLY_OUT">Early Check Out</option>          
-                  </select>
-                </div>
-              </div>
-
-            <!-- <div class="col-md-6">
-                <label>Status</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="status" name="status" [(ngModel)]="editAsset.status" [ngModelOptions]="{standalone: true}">
-                    <option  value="PENDING">Pending</option>
-                    <option  value="APPROVED">Approved</option>
-                    <option  value="REJECTED">Rejected</option>           
-                  </select>
-                </div>
-              </div> -->
-  
-<div class="col-md-6">
+      <div class="col-md-6">
 
   <div class="custom-sel">
             <div class="form-control-wrapper">
@@ -249,6 +225,35 @@
   </div>
 
 </div>
+
+              <div class="col-md-6">
+                <label>Date</label>
+                <input type="date" class="form-control" required [(ngModel)]="editAsset.date" placeholder="Enter date"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+
+           <div class="col-md-6">
+                <label>Request Type</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
+                    <option  value="LATE_IN">Late Check In</option>
+                    <option  value="EARLY_OUT">Early Check Out</option>          
+                  </select>
+                </div>
+              </div>
+
+            <!-- <div class="col-md-6">
+                <label>Status</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="status" name="status" [(ngModel)]="editAsset.status" [ngModelOptions]="{standalone: true}">
+                    <option  value="PENDING">Pending</option>
+                    <option  value="APPROVED">Approved</option>
+                    <option  value="REJECTED">Rejected</option>           
+                  </select>
+                </div>
+              </div> -->
+  
+
   
 
               <div class="col-md-12">

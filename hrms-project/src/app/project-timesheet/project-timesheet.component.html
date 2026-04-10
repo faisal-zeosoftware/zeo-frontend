@@ -69,6 +69,22 @@
 
             <div class="row">
                
+          <div class="col-md-6" >
+    <label>Select Employee</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="employee"
+        name="employee"
+        [(ngModel)]="employee"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Employees" [value]="employees.id">
+          {{ employees.emp_code }}
+        </option>
+      </select>
+    </div>
+  </div>
 
               <div class="col-md-6" >
                
@@ -150,26 +166,6 @@
   </div>
 
 
-  <div class="col-md-6" >
-    <label>Select Employee</label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="employee"
-        name="employee"
-        [(ngModel)]="employee"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let employees of Employees" [value]="employees.id">
-          {{ employees.emp_code }}
-        </option>
-      </select>
-    </div>
-  </div>
-
-
-      
-
 
     
             </div>
@@ -211,7 +207,24 @@
   
         <form >
 
-            <div class="row">
+       <div class="row">
+
+                <div class="col-md-6" >
+    <label>Select Employee</label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="employee"
+        name="employee"
+        [(ngModel)]="editProjectTime.employee"
+        [ngModelOptions]="{ standalone: true }"
+      >
+        <option *ngFor="let employees of Employees" [value]="employees.id">
+          {{ employees.emp_code }}
+        </option>
+      </select>
+    </div>
+  </div>
                
 
               <div class="col-md-6" >
@@ -294,22 +307,7 @@
   </div>
 
 
-  <div class="col-md-6" >
-    <label>Select Employee</label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="employee"
-        name="employee"
-        [(ngModel)]="editProjectTime.employee"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let employees of Employees" [value]="employees.id">
-          {{ employees.emp_code }}
-        </option>
-      </select>
-    </div>
-  </div>
+
 
 
       
@@ -327,7 +325,7 @@
             </div>
     
                 <div class="col-md-2">
-                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateProjecttimesheet()">Save</button>  
+                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateProjecttimesheet()">Update</button>  
                  </div>
             </div>
             

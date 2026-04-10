@@ -433,6 +433,7 @@ async registerentrty(): Promise<void> {
     this.CountryService.registerEmployeeManualEntry(data).subscribe(
       (response) => {
         alert("Entry successful");
+          window.location.reload();
       },
       (error) => {
         alert("Entry Failed");

@@ -351,29 +351,19 @@ ngOnInit(): void {
 mapBranchesNameToId() {
   if (!this.branches || !this.editAsset?.branch_id) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch_id === 'number') {
-    this.editAsset.branch_id = [this.editAsset.branch_id];
-    return;
-  }
+  // If already number → keep it
+  if (typeof this.editAsset.branch_id === 'number') return;
 
-  // Case B: backend returns single NAME
+  // If string (branch name) → convert to ID
   if (typeof this.editAsset.branch_id === 'string') {
-    const found = this.branches.find(b => b.branch_name === this.editAsset.branch_id);
-    this.editAsset.branch_id = found ? [found.id] : [];
-    return;
+    const found = this.branches.find(
+      b => b.branch_name === this.editAsset.branch_id
+    );
+    this.editAsset.branch_id = found ? found.id : null;
   }
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch_id)) {
-    this.editAsset.branch_id = this.branches
-      .filter(b => this.editAsset.branch_id.includes(b.branch_name))
-      .map(b => b.id);
-  }
-
-  console.log("Mapped branch IDs:", this.editAsset.branch_id);
+  console.log("Mapped branch ID:", this.editAsset.branch_id);
 }
-
     
 
      

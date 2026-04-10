@@ -75,6 +75,19 @@
 
           <div class="row">
 
+    
+            <div class="col-md-6">
+              <label>Employee</label>
+              <div class="custom-sel">
+                <select class="form-control" id="employee" name="employee" [(ngModel)]="employee"
+                  [ngModelOptions]="{ standalone: true }">
+                  <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
+                    {{ leavetype.emp_code }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
 
             <div class="col-md-6">
               <label>Date</label>
@@ -121,17 +134,6 @@
               </div>
             </div>
 
-            <div class="col-md-6">
-              <label>Employee</label>
-              <div class="custom-sel">
-                <select class="form-control" id="employee" name="employee" [(ngModel)]="employee"
-                  [ngModelOptions]="{ standalone: true }">
-                  <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
-                    {{ leavetype.emp_code }}
-                  </option>
-                </select>
-              </div>
-            </div>
 
 
 
@@ -189,6 +191,19 @@
           <div class="row">
 
 
+              <div class="col-md-6">
+              <label>Employee</label>
+              <div class="custom-sel">
+                <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee"
+                  [ngModelOptions]="{ standalone: true }">
+                  <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
+                    {{ leavetype.emp_code }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+
             <div class="col-md-6">
               <label>Date</label>
               <input type="date" class="form-control" required [(ngModel)]="editAsset.date" placeholder="Enter date"
@@ -232,20 +247,6 @@
                 </select>
               </div>
             </div>
-
-
-            <div class="col-md-6">
-              <label>Employee</label>
-              <div class="custom-sel">
-                <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee"
-                  [ngModelOptions]="{ standalone: true }">
-                  <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
-                    {{ leavetype.emp_code }}
-                  </option>
-                </select>
-              </div>
-            </div>
-
 
 
 

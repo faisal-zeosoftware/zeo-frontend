@@ -74,39 +74,8 @@
         <form >
 
             <div class="row">
-                <div class="col-md-6" >
-               
-                    <label>Title</label>
-                   <input type="text"  class="form-control" required  [(ngModel)]="title"  placeholder="Enter title"
-                    [ngModelOptions]="{standalone: true}" >
-                   
-              </div>
-              
 
-              <div class="col-md-6" >
-               
-                <label>Message</label>
-             <textarea class="form-control" [(ngModel)]="message"  [ngModelOptions]="{standalone: true}"></textarea>
-          </div>
-
-          
-          <div class="col-md-6" >
-               
-            <label>Schedule at</label>
-           <input type="date"  class="form-control" required  [(ngModel)]="schedule_at"  placeholder="Enter schedule at"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
-
-      <div class="col-md-6" >
-               
-        <label>Expires at</label>
-       <input type="date"  class="form-control" required  [(ngModel)]="expires_at"  placeholder="Enter expires at"
-        [ngModelOptions]="{standalone: true}" >
-       
-  </div>
-
-  <div class="col-md-6">
+      <div class="col-md-6">
     <label>Employee</label>
 
 
@@ -146,6 +115,39 @@
                 
 
 </div>
+                <div class="col-md-6" >
+               
+                    <label>Title</label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="title"  placeholder="Enter title"
+                    [ngModelOptions]="{standalone: true}" >
+                   
+              </div>
+              
+
+              <div class="col-md-6" >
+               
+                <label>Message</label>
+             <textarea class="form-control" [(ngModel)]="message"  [ngModelOptions]="{standalone: true}"></textarea>
+          </div>
+
+          
+          <div class="col-md-6" >
+               
+            <label>Schedule at</label>
+           <input type="date"  class="form-control" required  [(ngModel)]="schedule_at"  placeholder="Enter schedule at"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+
+      <div class="col-md-6" >
+               
+        <label>Expires at</label>
+       <input type="date"  class="form-control" required  [(ngModel)]="expires_at"  placeholder="Enter expires at"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
+
+
 
   <div class="col-md-6">
     <label>Branch</label>
@@ -276,6 +278,40 @@
 
       <form (ngSubmit)="updateAssetType()">
         <div class="row">
+
+      <div class="col-md-6">
+<label>Employee</label>
+
+
+
+
+<div class="custom-sel">
+  <div class="form-control-wrapper">
+
+
+    <mat-form-field>
+      <!-- <mat-label>Favorite food</mat-label> -->
+      <mat-select placeholder="Select" [(ngModel)]="editAsset.specific_employees" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
+        <div class="select-all">
+          <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
+            Select All
+          </mat-checkbox>
+        </div>
+        <input type="text" placeholder="serach" class="form-control">
+
+        <mat-option *ngFor="let deparmentsec of   Employees" [value]="deparmentsec.id">
+          {{ deparmentsec.emp_code }} 
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+  </div>
+ 
+</div>
+          
+
+</div>
+
           <div class="col-md-6" >
          
               <label>Title</label>
@@ -308,38 +344,6 @@
  
 </div>
 
-<div class="col-md-6">
-<label>Employee</label>
-
-
-
-
-<div class="custom-sel">
-  <div class="form-control-wrapper">
-
-
-    <mat-form-field>
-      <!-- <mat-label>Favorite food</mat-label> -->
-      <mat-select placeholder="Select" [(ngModel)]="editAsset.specific_employees" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
-        <div class="select-all">
-          <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
-            Select All
-          </mat-checkbox>
-        </div>
-        <input type="text" placeholder="serach" class="form-control">
-
-        <mat-option *ngFor="let deparmentsec of   Employees" [value]="deparmentsec.id">
-          {{ deparmentsec.emp_code }} 
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    
-  </div>
- 
-</div>
-          
-
-</div>
 
 <div class="col-md-6">
 <label>Branch</label>

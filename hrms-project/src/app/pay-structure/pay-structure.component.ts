@@ -288,7 +288,13 @@ CreatePayStructure(): void {
   formData.append('cycle_end_day', this.cycle_end_day);
   formData.append('payday_type', this.payday_type);
   formData.append('payday', this.payday);
-  formData.append('payroll_start_month', this.payroll_start_month);
+let formattedDate = '';
+
+if (this.payroll_start_month) {
+  formattedDate = this.payroll_start_month + '-01'; // add day
+}
+
+formData.append('payroll_start_month', formattedDate);
   formData.append('branch', this.branch);
 
   
@@ -298,7 +304,7 @@ CreatePayStructure(): void {
     (response) => {
       console.log('Registration successful', response);
       alert('Pay Structure has been added');
-      // window.location.reload();
+        window.location.reload();
     },
     (error) => {
       console.error('Added failed', error);

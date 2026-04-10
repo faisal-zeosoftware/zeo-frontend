@@ -398,6 +398,7 @@ updateAssetType(): void {
     .subscribe(
       (response) => {
         alert('General Request updated successfully!');
+        window.location.reload();
         this.closeEditModal();
         this.loadgeneralReq();
       },

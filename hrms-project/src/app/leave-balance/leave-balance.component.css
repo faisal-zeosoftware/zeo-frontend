@@ -50,7 +50,7 @@ margin-right: 10px;
   margin-top: 2px;
 }
 
- /* .close-btn {
+ .close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -63,7 +63,7 @@ margin-right: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid #dee2e6;
-} */
+}
 
 
 .list_company_sec{

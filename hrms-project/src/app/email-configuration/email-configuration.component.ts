@@ -382,6 +382,7 @@ closeEditModal(): void {
       this.employeeService.updateEmaiConfiguration(this.editAsset.id, this.editAsset).subscribe(
         (response) => {
           alert('Email Configuration updated successfully!');
+            window.location.reload();
           this.closeEditModal();
  // combineLatest waits for both Schema and Branches to have a value
  this.dataSubscription = combineLatest([

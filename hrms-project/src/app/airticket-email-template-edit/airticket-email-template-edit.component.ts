@@ -170,6 +170,7 @@ export class AirticketEmailTemplateEditComponent {
       .subscribe(
         (response: any) => {
           alert("Template updated successfully!");
+            window.location.reload();
           this.dialogRef.close(true);
         },
     (error) => {

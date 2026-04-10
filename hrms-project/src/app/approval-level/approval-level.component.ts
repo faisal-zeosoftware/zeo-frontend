@@ -622,6 +622,7 @@ updateAssetType(): void {
   this.employeeService.updateGenreqApprovalLevel(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
       alert(' Approval Level updated successfully!');
+      window.location.reload();
       this.closeEditModal();
       this.loadApprovalLevelGen(); // reload updated list
     },

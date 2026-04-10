@@ -337,6 +337,7 @@ private searchTimer: any;
       next: (response) => {
         console.log('Geofence saved successfully:', response);
         alert('Geofence created successfully!');
+         window.location.reload();
         this.resetForm();
         this.isLoading = false;
 

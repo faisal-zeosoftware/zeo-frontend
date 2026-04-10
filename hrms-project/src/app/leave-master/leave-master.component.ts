@@ -719,6 +719,7 @@ registerleaveEntitlement(): void {
     this.leaveService.updateLeaveEntitlement(this.selectedEntitlementId, payload)
       .subscribe(() => {
         alert("✅ Entitlement Updated");
+        window.location.reload();
         this.resetForm();
         this.loadLeaveEntitlements();
       });
@@ -729,7 +730,7 @@ registerleaveEntitlement(): void {
     this.leaveService.registerLeaveEntitlement(payload)
       .subscribe((res: any) => {
         alert("✅ Entitlement Added");
-
+  window.location.reload();
         this.isEntitlementCreated = true;
         this.createdEntitlementId = res.id;
 
@@ -768,6 +769,7 @@ registerleaveReset(): void {
 
   this.leaveService.requestLeaveResetPolicy(formData).subscribe(() => {
     alert("✅ Reset Saved / Updated");
+      window.location.reload();
   });
 }
 

@@ -198,6 +198,11 @@ export class DocumentFolderFilesComponent {
     console.log("Popup opened with folder:", this.folder);
   }
 
+    closeapplicationModal():void{
+    this.isopenDocement = false;
+  
+  }
+
   selectedFile: File | null = null;
 
 

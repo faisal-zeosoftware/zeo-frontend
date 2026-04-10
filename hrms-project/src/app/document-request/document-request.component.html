@@ -68,6 +68,16 @@
           <hr />
           <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
             <div class="row">
+
+              <div class="col-md-6">
+                <label>Employee</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="col-md-6">
                 <label>Document Number</label>
                 <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
@@ -101,34 +111,7 @@
                   </select>
                 </div>
               </div> 
-
-        
-      
-
- 
-
-        
-              <div class="col-md-6">
-                <label>Employee</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
-                  </select>
-                </div>
-              </div>
-
-    
-
-
               
-
-
-          
-
-        
-               
-         
-          
          
             </div>
           
@@ -165,15 +148,26 @@
 
 <form >
   <div class="row">
+
+
+              <div class="col-md-6">
+                <label>Employee</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee" [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
+                  </select>
+                </div>
+              </div>
+
     <div class="col-md-6">
       <label>Document Number</label>
-      <input type="number" class="form-control" required [(ngModel)]="document_number" placeholder="Enter document number"
+      <input type="number" class="form-control" required [(ngModel)]="editAsset.document_number" placeholder="Enter document number"
              [ngModelOptions]="{standalone: true}" >
     </div>
 
     <div class="col-md-6">
       <label>reason</label>
-      <input type="text" class="form-control" required [(ngModel)]="reason" placeholder="Enter reason"
+      <input type="text" class="form-control" required [(ngModel)]="editAsset.reason" placeholder="Enter reason"
              [ngModelOptions]="{standalone: true}" >
     </div>
 
@@ -185,7 +179,7 @@
 
     <div class="col-md-6">
       <label>Remark</label>
-      <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
+      <input type="text" class="form-control" required [(ngModel)]="editAsset.remarks" placeholder="Enter remarks"
              [ngModelOptions]="{standalone: true}" >
     </div>
   
@@ -193,33 +187,11 @@
     <div class="col-md-6">
       <label>Request Type</label>
       <div class="custom-sel">
-        <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
+        <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
           <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
         </select>
       </div>
     </div> 
-
-
-
-
-
-
-
-    <div class="col-md-6">
-      <label>Employee</label>
-      <div class="custom-sel">
-        <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
-          <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.emp_code }}</option>
-        </select>
-      </div>
-    </div>
-
-
-
-
-
-     
-
 
 
   </div>

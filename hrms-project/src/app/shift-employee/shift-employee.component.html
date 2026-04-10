@@ -70,6 +70,48 @@
           
   <form *ngIf="hasAddPermission">
                   <div class="row">
+
+          
+              <div class="col-md-6" >
+                            <label>Employee</label>
+                            <div class="custom-sel">
+                                <div class="form-control-wrapper">
+                                  <mat-form-field>
+                                    <mat-select  placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
+                                      <div class="select-all">
+                                        <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
+                                          Select All
+                                        </mat-checkbox>
+                                      </div>
+                                      
+      
+             <input type="text" placeholder="Search Employee"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{standalone: true}"
+            (click)="$event.stopPropagation()">
+
+
+        <!-- Employee List -->
+        <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id">
+
+          {{ emp.emp_first_name }}
+
+        </mat-option>
+
+
+                                     
+          <mat-option *ngFor="let emp of Employee" [value]="emp.id">
+                                        {{ emp.emp_first_name }}   {{ emp.emp_last_name }}
+                                      </mat-option>
+                                    </mat-select>
+                                  </mat-form-field>
+                                </div>
+                                
+                              </div>
+                        </div>
                     
                   <div class="col-md-6" >
                    
@@ -273,53 +315,6 @@
     </div>
       
 
-              <div class="col-md-6" >
-                            <label>Employee</label>
-                            <div class="custom-sel">
-                                <div class="form-control-wrapper">
-                                  <mat-form-field>
-                                    <mat-select  placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
-                                      <div class="select-all">
-                                        <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
-                                          Select All
-                                        </mat-checkbox>
-                                      </div>
-                                      
-      
-             <input type="text" placeholder="Search Employee"
-            class="form-control"
-            [(ngModel)]="employeeSearch"
-            [ngModelOptions]="{standalone: true}"
-            (click)="$event.stopPropagation()">
-
-
-        <!-- Employee List -->
-        <mat-option
-          *ngFor="let emp of filterEmployees()"
-          [value]="emp.id">
-
-          {{ emp.emp_first_name }}
-
-        </mat-option>
-
-
-                                     
-                                      <mat-option *ngFor="let emp of Employee" [value]="emp.id">
-                                        {{ emp.emp_first_name }}   {{ emp.emp_last_name }}
-                                      </mat-option>
-                                    </mat-select>
-                                  </mat-form-field>
-                                </div>
-                                
-                              </div>
-                        </div>
-
-                     
-                            
-                         
-                    
-                     
-        
         
                   </div>
 
