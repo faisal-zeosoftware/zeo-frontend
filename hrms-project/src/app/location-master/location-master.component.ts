@@ -31,6 +31,8 @@ export class LocationMasterComponent {
 
   Locations:any[]=[];
     LoanTypes:any []=[];
+    Currencies:any[]=[];
+
 
  hasAddPermission: boolean = false;
  hasDeletePermission: boolean = false;
@@ -74,6 +76,7 @@ schemas: string[] = [];
     this.loadUsers();
     this.loadCompanies();
     this.loadCountries();
+    this.loadCurrencies();
 
     this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
@@ -345,7 +348,7 @@ closeEditModal(): void {
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected  ?')) {
+  if (confirm('Are you sure you want to delete the selected  Company?')) {
 
     let total = selectedEmployeeIds.length;
     let completed = 0;
@@ -367,7 +370,7 @@ closeEditModal(): void {
         },
         (error) => {
           console.error('Error deleting Loan Repayment:', error);
-          alert('Error deleting Loan Repayment: ' + error.statusText);
+          alert('Error deleting Company: ' + error.statusText);
         }
       );
     });
@@ -439,6 +442,17 @@ onStateChange(event: any): void {
 }
 
 
+
+loadCurrencies(): void {
+  this.countryService.getCurrencies().subscribe(
+    (result: any) => {
+      this.Currencies = result;
+    },
+    (error) => {
+      console.error('Error fetching Currencies:', error);
+    }
+  );
+}
 
 
 

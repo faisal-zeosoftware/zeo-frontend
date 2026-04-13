@@ -150,6 +150,11 @@ export class CountryService {
     return this.http.get(url);
   }
 
+  getCurrencies(): Observable<any> {
+    const url = `${this.apiUrl}/core/api/Currency/`;
+    return this.http.get(url);
+  }
+
   getCountriesList(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/Branch/`;
     // return this.http.get(url);

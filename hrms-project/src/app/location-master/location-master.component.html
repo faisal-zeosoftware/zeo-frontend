@@ -214,6 +214,26 @@
         
             </textarea>
         </div>
+
+        <div class="col-md-6">
+
+
+          <div class="custom-sel">
+              <label>Currency </label>
+              <select class="form-control" id="currency" required [(ngModel)]="editAsset.currency"  [ngModelOptions]="{standalone: true}"  >
+                  <option value="" >Select</option>
+                  <option *ngFor="let user of Currencies" [value]="user.id">{{ user.currency_name }}</option>
+              </select>
+             
+          </div>
+                      
+      
+      
+             
+             
+          
+      </div>
+      
         
         <div class="col-md-6">
             <label>financial year start month</label>

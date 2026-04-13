@@ -22,6 +22,8 @@ export class SchemaCreationComponent {
   name : string = '';
   owner:any='';
   country:any='';
+  currency:any='';
+
   industry_type : string = '';
   address_line1 : string = '';
   address_line2 : string = '';
@@ -35,6 +37,8 @@ export class SchemaCreationComponent {
   users:any[]=[];
   countries:any[]=[];
   states: any[] = [];
+  Currencies:any[]=[];
+
 
   logo: File | null = null;
 
@@ -92,6 +96,7 @@ export class SchemaCreationComponent {
 
     this.loadUsers();
   this.loadCountries();
+  this.loadCurrencies();
    }
 
   //  onFileSelected(event: Event): void {
@@ -142,6 +147,8 @@ export class SchemaCreationComponent {
     companyData.append('owner', this.owner);
     
     companyData.append('country', this.country);
+    companyData.append('currency', this.currency);
+
     companyData.append('industry_type', this.industry_type);
 
     companyData.append('address_line1', this.address_line1);
@@ -218,6 +225,18 @@ loadStatesByCountry(): void {
       },
       (error) => {
         console.error('Error fetching countries:', error);
+      }
+    );
+  }
+
+
+  loadCurrencies(): void {
+    this.countryService.getCurrencies().subscribe(
+      (result: any) => {
+        this.Currencies = result;
+      },
+      (error) => {
+        console.error('Error fetching Currencies:', error);
       }
     );
   }

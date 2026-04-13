@@ -69,10 +69,7 @@
        
     </div>
                 
-
-
-       
-       
+    
     
 </div>
 
@@ -88,6 +85,25 @@
     <textarea class="form-control" placeholder="enter address" [(ngModel)]="address_line2"  [ngModelOptions]="{standalone: true}"  >
 
     </textarea>
+</div>
+
+<div class="col-md-6">
+
+
+    <div class="custom-sel">
+        <label>Currency Time</label>
+        <select class="form-control" id="currency" required [(ngModel)]="currency"  [ngModelOptions]="{standalone: true}"  >
+            <option value="" >Select</option>
+            <option *ngFor="let user of Currencies" [value]="user.id">{{ user.currency_name }}</option>
+        </select>
+       
+    </div>
+                
+
+
+       
+       
+    
 </div>
 
 <div class="col-md-6">

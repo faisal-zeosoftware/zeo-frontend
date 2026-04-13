@@ -975,7 +975,7 @@ deleteLocations(categoryId: number): Observable<any> {
     return throwError('No schema selected.'); // Return an error observable if no schema is selected
   }
  
-  const apiUrl = `${this.apiUrl}/users/api/company/${categoryId}/?schema=${selectedSchema}`;
+  const apiUrl = `${this.apiUrl}/users/api/company/${categoryId}/`;
  
   return this.http.delete(apiUrl);
 }
