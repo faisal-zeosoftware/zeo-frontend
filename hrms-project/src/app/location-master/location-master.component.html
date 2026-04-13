@@ -72,6 +72,7 @@
                 <th>Industry Type</th>
                 <th>Address line 1</th>
                 <th>Address line 2</th>
+                <th>Currency</th>
                 <th>financial year start month</th>
                 <th>
                 financial year start Day </th>
@@ -86,10 +87,17 @@
                 <td>{{ i + 1 }}</td> 
                 <td>{{ schema.name }}</td>
                 <td>{{ schema.country }}</td>
-                <td>{{ schema.state }}</td>
+                <td>
+                  {{ schema.states?.length ? schema.states[0].state_name : 'N/A' }}
+                </td>
                 <td>{{ schema.industry_type }}</td>
                 <td>{{ schema.address_line1 }}</td>
                 <td>{{ schema.address_line2 }}</td>
+                <td>
+                  {{ schema.currency_details?.currency_name }} ({{ schema.currency_details?.currency_code }})
+                </td>
+           
+
                 <td>{{ schema.financial_year_start_month }}</td>
                 <td>{{ schema.financial_year_start_day }}</td>
 
@@ -215,7 +223,7 @@
             </textarea>
         </div>
 
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
 
 
           <div class="custom-sel">
@@ -232,7 +240,7 @@
              
              
           
-      </div>
+      </div> -->
       
         
         <div class="col-md-6">
