@@ -7,6 +7,8 @@ import { CountryService } from '../country.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { SchemaCreationComponent } from '../schema-creation/schema-creation.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-location-master',
@@ -53,6 +55,8 @@ schemas: string[] = [];
     private DesignationService: DesignationService,
     private sessionService: SessionService,
     private employeeService: EmployeeService,
+    private dialog:MatDialog,
+
    ) {}
 
 
@@ -194,10 +198,12 @@ if (this.userId !== null) {
 
 
 
-      openPopus():void{
-        this.iscreateLoanApp = true;
-
-      }
+     openPopus(){
+      this.dialog.open(SchemaCreationComponent,{
+        width:'80%',
+        height:'700px',
+      })
+    }
     
       closeapplicationModal():void{
         this.iscreateLoanApp = false;
@@ -368,57 +374,69 @@ closeEditModal(): void {
   }
 }
 
-
-updateLocations(): void {
-
-  this.registerButtonClicked = true;
-
+updateCompany(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
-
   if (!selectedSchema || !this.editAsset.id) {
     alert('Missing schema or asset ID');
     return;
   }
 
-  const formData = new FormData();
+  this.employeeService.updateCompany(this.editAsset.id, this.editAsset).subscribe(
+    (response) => {
+      alert(' Company updated successfully!');
+      window.location.reload();
+      this.closeEditModal();
+    },
+(error) => {
+  console.error('Error updating Company:', error);
 
-  // Append text fields
-  formData.append('schema_name', this.editAsset.schema_name);
-  formData.append('name', this.editAsset.name);
-  formData.append('country', this.editAsset.country);
+  let errorMsg = 'Update failed';
 
-  // Append file ONLY if new file is selected
-  if (this.selectedLogoFile) {
-    formData.append('logo', this.selectedLogoFile);
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
   }
 
-  this.employeeService.updateLC(this.editAsset.id, formData).subscribe(
-    (response) => {
-      alert('Location updated successfully!');
-      this.closeEditModal();
-      window.location.reload();
-    },
-    (error) => {
-      console.error('Error updating Location:', error);
-
-      let errorMsg = 'Update failed';
-
-      if (error?.error && typeof error.error === 'object') {
-        errorMsg = Object.keys(error.error)
-          .map(key => `${key}: ${error.error[key].join(', ')}`)
-          .join('\n');
-      }
-
-      alert(errorMsg);
-    }
+  alert(errorMsg);
+}
   );
 }
 
 
 
+onCountryChange(): void {
+  if (this.country !== undefined) {
+    this.loadStatesByCountry();
+  }
+}
 
 
 
+states: any[] = [];
+state_label: string = ''; // For dynamically storing state_label
+
+
+loadStatesByCountry(): void {
+  this.countryService.getStatesByCountryId(this.country!).subscribe(
+    (result: any) => {
+      console.log('State Response:', result);
+      this.states = result.states; // Accessing the 'states' array
+      this.state_label = result.state_label; // Accessing the dynamic state label
+    },
+    (error) => {
+      console.error('Error fetching states:', error);
+    }
+  );
+}
+
+
+onStateChange(event: any): void {
+  this.editAsset.state = Number(event);
+}
 
 
 

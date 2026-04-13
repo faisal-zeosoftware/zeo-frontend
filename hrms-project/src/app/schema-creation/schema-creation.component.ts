@@ -22,8 +22,20 @@ export class SchemaCreationComponent {
   name : string = '';
   owner:any='';
   country:any='';
+  industry_type : string = '';
+  address_line1 : string = '';
+  address_line2 : string = '';
+  financial_year_start_month : string = '';
+  financial_year_start_day : string = '';
+  state: any | undefined;
+
+  state_label: string = ''; // For dynamically storing state_label
+
+
   users:any[]=[];
   countries:any[]=[];
+  states: any[] = [];
+
   logo: File | null = null;
 
 
@@ -130,7 +142,21 @@ export class SchemaCreationComponent {
     companyData.append('owner', this.owner);
     
     companyData.append('country', this.country);
+    companyData.append('industry_type', this.industry_type);
 
+    companyData.append('address_line1', this.address_line1);
+
+    companyData.append('address_line2', this.address_line2);
+
+    companyData.append('financial_year_start_month', this.financial_year_start_month);
+    companyData.append('financial_year_start_day', this.financial_year_start_day);
+
+  // ✅ Only append state if selected
+  if (this.state) {
+    companyData.append('state', this.state.toString());
+  } else {
+    companyData.append('state', '');  // backend will save null
+  }
     if (this.selectedFile) {
       companyData.append('logo', this.selectedFile);
     }
@@ -161,6 +187,27 @@ export class SchemaCreationComponent {
     );
   }
   
+
+  
+onCountryChange(): void {
+  if (this.country !== undefined) {
+    this.loadStatesByCountry();
+  }
+}
+
+loadStatesByCountry(): void {
+  this.countryService.getStatesByCountryId(this.country!).subscribe(
+    (result: any) => {
+      console.log('State Response:', result);
+      this.states = result.states; // Accessing the 'states' array
+      this.state_label = result.state_label; // Accessing the dynamic state label
+    },
+    (error) => {
+      console.error('Error fetching states:', error);
+    }
+  );
+}
+
   
   
 

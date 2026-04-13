@@ -22,7 +22,7 @@
 
     <div class="custom-sel">
         <label>Country</label>
-        <select class="form-control" id="country" required [(ngModel)]="country"  [ngModelOptions]="{standalone: true}"  >
+        <select class="form-control" id="country" (change)="onCountryChange()" required [(ngModel)]="country"  [ngModelOptions]="{standalone: true}"  >
             <option value="" >Select</option>
             <option *ngFor="let user of countries" [value]="user.id">{{ user.country_name }}</option>
         </select>
@@ -35,6 +35,71 @@
        
     
 </div>
+   <!-- Dynamic State Section -->
+   <div class="col-md-6" *ngIf="states && states.length > 0">
+    <div class="custom-sel">
+      <!-- Dynamically displaying the state_label from the API response -->
+      <label>{{ state_label }}</label>
+      <select class="form-control" id="state"  [(ngModel)]="state" [ngModelOptions]="{standalone:true}">
+        <option value="">Select</option>
+        <option *ngFor="let state of states" [value]="state.id">{{ state.state_name }}</option>
+      </select>
+    </div>
+  </div>
+  
+
+<div class="col-md-6">
+
+
+    <div class="custom-sel">
+        <label>Industry Type</label>
+        <select class="form-control" id="country" required [(ngModel)]="industry_type"  [ngModelOptions]="{standalone: true}"  >
+            <option value="" >Select</option>
+            <option value="IT" >Information Technology</option>
+            <option value="HC" >Healthcare</option>
+            <option value="FIN" >Finance</option>
+            <option value="EDU" >Education</option>
+            <option value="MFG" >Manufacturing</option>
+            <option value="RET" >Retail</option>
+            <option value="OTH" >Other</option>
+
+
+
+        </select>
+       
+    </div>
+                
+
+
+       
+       
+    
+</div>
+
+<div class="col-md-6">
+    <label>Address Line 1</label>
+    <textarea class="form-control" placeholder="enter address" [(ngModel)]="address_line1"  [ngModelOptions]="{standalone: true}"  >
+
+    </textarea>
+</div>
+
+<div class="col-md-6">
+    <label>Address Line 2</label>
+    <textarea class="form-control" placeholder="enter address" [(ngModel)]="address_line2"  [ngModelOptions]="{standalone: true}"  >
+
+    </textarea>
+</div>
+
+<div class="col-md-6">
+    <label>financial year start month</label>
+    <input type="number" class="form-control" [(ngModel)]="financial_year_start_month"  [ngModelOptions]="{standalone: true}"  placeholder="enter start month"  >
+</div>
+
+<div class="col-md-6">
+    <label>financial year start day</label>
+    <input type="number" class="form-control" [(ngModel)]="financial_year_start_day"  [ngModelOptions]="{standalone: true}"  placeholder="enter start month"  >
+</div>
+
 <div class="col-md-6">
     <label for="logo">Company Logo:</label>
     <input type="file" class="form-control" id="logo" name="logo" (change)="onFileSelected($event)">   

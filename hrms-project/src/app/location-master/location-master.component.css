@@ -177,3 +177,19 @@ margin-right: 10px;
 
   }
 }
+
+
+.com_list{
+  overflow: hidden;
+}
+
+.table-scroll{
+  overflow-x: scroll;
+  overflow-y: scroll;
+}
+
+
+
+::ng-deep .table-scroll thead th{
+  white-space: nowrap;
+}
