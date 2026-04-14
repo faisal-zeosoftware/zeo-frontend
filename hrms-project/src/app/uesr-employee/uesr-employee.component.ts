@@ -583,6 +583,7 @@ uploaduserDocument(): void {
     next: (response) => {
       console.log('Connect employee to user updated successfully:', response);
       window.alert('Employee Details Updated');
+      window.location.reload();
     },
     error: (error) => {
       console.error('Error updating the form:', error);
