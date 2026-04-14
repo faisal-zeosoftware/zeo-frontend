@@ -184,11 +184,17 @@ export class SchemaCreationComponent {
       },
       (error) => {
         console.log('Full Error:', error);
+        this.isLoading = false;
+
       
         if (error.status === 504 || error.status === 0) {
           alert('Company created, but server response timeout ⚠️');
+          this.isLoading = false;
+
         } else {
           alert(error.error?.detail || 'Registration failed!');
+          this.isLoading = false;
+
         }
       }
     );
