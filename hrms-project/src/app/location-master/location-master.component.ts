@@ -62,12 +62,19 @@ schemas: string[] = [];
    ) {}
 
 
-   onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.logo = input.files[0];
-    } else {
-      this.logo = null;
+  //  onFileSelected(event: Event): void {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     this.logo = input.files[0];
+  //   } else {
+  //     this.logo = null;
+  //   }
+  // }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedLogoFile = file;
     }
   }
 
@@ -254,17 +261,6 @@ closeEditModal(): void {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
     
     
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -377,6 +373,58 @@ closeEditModal(): void {
   }
 }
 
+
+
+// updateCompany(): void {
+//   const selectedSchema = localStorage.getItem('selectedSchema');
+
+//   if (!selectedSchema || !this.editAsset.id) {
+//     alert('Missing schema or asset ID');
+//     return;
+//   }
+
+//   const formData = new FormData();
+
+//   // Append all fields
+//   formData.append('name', this.editAsset.name);
+//   formData.append('country', this.editAsset.country);
+//   formData.append('state', this.editAsset.state);
+//   formData.append('industry_type', this.editAsset.industry_type || '');
+//   formData.append('address_line1', this.editAsset.address_line1 || '');
+//   formData.append('address_line2', this.editAsset.address_line2 || '');
+//   formData.append('financial_year_start_month', this.editAsset.financial_year_start_month);
+//   formData.append('financial_year_start_day', this.editAsset.financial_year_start_day);
+
+//   // ✅ Append file properly
+//   if (this.selectedLogoFile) {
+//     formData.append('logo', this.selectedLogoFile);
+//   }
+
+//   this.employeeService.updateCompany(this.editAsset.id, formData).subscribe(
+//     (response) => {
+//       alert('Company updated successfully!');
+//       window.location.reload();
+//       this.closeEditModal();
+//     },
+//     (error) => {
+//       console.error('Error updating Company:', error);
+
+//       let errorMsg = '';
+
+//       if (error.error && typeof error.error === 'object') {
+//         errorMsg = Object.keys(error.error)
+//           .map(key => `${key}: ${error.error[key].join(', ')}`)
+//           .join('\n');
+//       } else {
+//         errorMsg = error.message || 'Update failed';
+//       }
+
+//       alert(errorMsg);
+//     }
+//   );
+// }
+
+
 updateCompany(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
   if (!selectedSchema || !this.editAsset.id) {
@@ -412,7 +460,7 @@ updateCompany(): void {
 
 
 onCountryChange(): void {
-  if (this.country !== undefined) {
+  if (this.editAsset.country !== undefined) {
     this.loadStatesByCountry();
   }
 }
@@ -424,7 +472,7 @@ state_label: string = ''; // For dynamically storing state_label
 
 
 loadStatesByCountry(): void {
-  this.countryService.getStatesByCountryId(this.country!).subscribe(
+  this.countryService.getStatesByCountryId(this.editAsset.country!).subscribe(
     (result: any) => {
       console.log('State Response:', result);
       this.states = result.states; // Accessing the 'states' array
