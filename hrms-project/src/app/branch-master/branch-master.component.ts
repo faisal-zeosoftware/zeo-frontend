@@ -399,9 +399,31 @@ deleteSelectedEmployees() {
         },
         (error) => {
           console.error('Error deleting Branch:', error);
-          const errorMessage = error.error?.detail || 'Error deleting Branch';
-          alert(`deleting error: ${errorMessage}`);
-          alert('Error deleting Branch: ' + error.statusText);
+        
+          // Get backend error message properly
+          let errorMessage = '';
+        
+          if (error.error) {
+            if (typeof error.error === 'string') {
+              errorMessage = error.error;
+            } else if (error.error.detail) {
+              errorMessage = error.error.detail;
+            } else if (error.error.message) {
+              errorMessage = error.error.message;
+            } else {
+              errorMessage = JSON.stringify(error.error);
+            }
+          } else {
+            errorMessage = error.message || 'Unknown error occurred';
+          }
+        
+          // Show ONLY backend message
+          alert(errorMessage);
+        
+          // ❌ remove unnecessary extra alerts
+          // alert('Error deleting Branch: ' + error.statusText);
+        
+          window.location.reload();
         }
       );
     });

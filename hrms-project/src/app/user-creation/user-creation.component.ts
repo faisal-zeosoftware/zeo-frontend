@@ -188,7 +188,9 @@ togglePassword() {
 
 
   ClosePopup(){
-    this.ref.close('Closed using function')
+    this.ref.close('Closed using function');
+    window.location.reload();
+
   }
   
   isAddFieldsModalOpen:boolean=false;

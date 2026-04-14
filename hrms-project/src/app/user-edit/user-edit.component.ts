@@ -158,6 +158,8 @@ export class UserEditComponent {
     );
   }
   
+
+  
   
   showPasswordField: boolean = false;
 
@@ -213,7 +215,8 @@ export class UserEditComponent {
 
 
 ClosePopup(){
-  this.ref.close('Closed using function')
+  this.ref.close('Closed using function');
+  window.location.reload();
 }
  
 

@@ -469,7 +469,7 @@ createEmpCodeToIdMap(employees: Employee[]): { [key: string]: number } {
         .subscribe({
           next: (response) => {
             console.log('Response:', response);
-            window.alert('Form submitted successfully!');
+            window.alert('Connect User to employee Updated successfully!');
           },
           error: (error) => {
             console.error('Error:', error);
@@ -575,13 +575,13 @@ uploaduserDocument(): void {
   formData.append('company', JSON.stringify(this.selectedCompany));
 
   const companyName = this.selectedCompany.schema_name;
-  const apiUrl = `${this.apiUrl}/employee/api/add-employee/${empId}/?schema=${companyName}`; // Updated to 'update-employee'
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${empId}/?schema=${companyName}`; // Updated to 'update-employee'
 
   console.log(`Submitting to: ${apiUrl}`);
  
   this.http.put(apiUrl, formData).subscribe({
     next: (response) => {
-      console.log('Form updated successfully:', response);
+      console.log('Connect employee to user updated successfully:', response);
       window.alert('Employee Details Updated');
     },
     error: (error) => {
