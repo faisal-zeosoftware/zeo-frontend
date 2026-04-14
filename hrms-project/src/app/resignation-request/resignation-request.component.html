@@ -80,7 +80,11 @@
        <mat-form-field  appearance="outline" style="width:100%">
 
     <!-- Employee Dropdown -->
- <mat-select placeholder="Select Employee">
+<mat-select 
+  placeholder="Select Employee"
+  [(ngModel)]="employee"
+  [ngModelOptions]="{standalone: true}"
+  multiple>
               <input type="text" placeholder="Search Employee"
             class="form-control"
             [(ngModel)]="employeeSearch"

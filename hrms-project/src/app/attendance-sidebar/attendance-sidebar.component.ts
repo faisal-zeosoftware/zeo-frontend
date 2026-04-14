@@ -161,6 +161,24 @@ export class AttendanceSidebarComponent {
 
                       this.hasViewPermissionGeoFence = this.checkGroupPermission('view_branchgeofence', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionGeoFence);
+
+                      this.hasViewPermissionmanualentry = this.checkGroupPermission('view_attendance', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionmanualentry);
+
+                      this.hasViewPermissionAttendancepolicy = this.checkGroupPermission('view_attendancepolicy', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAttendancepolicy);
+
+                       this.hasViewPermissionFaceRegister = this.checkGroupPermission('view_attendance', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionFaceRegister);
+
+                       this.hasViewPermissionLateinEarlyOutApprovallevel = this.checkGroupPermission('view_lateinearlyoutapprovallevel', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLateinEarlyOutApprovallevel);
+
+                      this.hasViewPermissionLateinEarlyOutApprovals = this.checkGroupPermission('view_lateinearlyoutapproval', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionLateinEarlyOutApprovals);
+
+                       this.hasViewPermissionAttendanceReq = this.checkGroupPermission('view_attendance', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAttendanceReq);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

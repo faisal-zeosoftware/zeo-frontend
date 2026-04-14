@@ -164,17 +164,17 @@ export class LateinEarlyoutApprovalsComponent {
                       console.log('Group Permissions:', groupPermissions);
       
                      
-                      this.hasAddPermission = this.checkGroupPermission('add_resignationapproval', groupPermissions);
+                      this.hasAddPermission = this.checkGroupPermission('add_lateinearlyoutapproval', groupPermissions);
                       console.log('Has add permission:', this.hasAddPermission);
                       
-                      this.hasEditPermission = this.checkGroupPermission('change_resignationapproval', groupPermissions);
+                      this.hasEditPermission = this.checkGroupPermission('change_lateinearlyoutapproval', groupPermissions);
                       console.log('Has edit permission:', this.hasEditPermission);
         
-                     this.hasDeletePermission = this.checkGroupPermission('delete_resignationapproval', groupPermissions);
+                     this.hasDeletePermission = this.checkGroupPermission('delete_lateinearlyoutapproval', groupPermissions);
                      console.log('Has delete permission:', this.hasDeletePermission);
         
       
-                      this.hasViewPermission = this.checkGroupPermission('view_resignationapproval', groupPermissions);
+                      this.hasViewPermission = this.checkGroupPermission('view_lateinearlyoutapproval', groupPermissions);
                       console.log('Has view permission:', this.hasViewPermission);
       
       

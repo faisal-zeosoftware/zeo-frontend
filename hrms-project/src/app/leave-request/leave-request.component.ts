@@ -265,20 +265,29 @@ this.loadDeparmentBranch();
 
 
 requestLeave(): void {
+
   this.registerButtonClicked = true;
 
-  const formData = new FormData();
+    if (!this.selectedEmployee || !this.leave_type) {
+    alert('Please select Employee and Leave Type');
+    return;
+  }
+
+
+const formData = new FormData();
+
+  formData.append('employee', this.selectedEmployee.toString());
+  formData.append('leave_type', this.leave_type.toString());
+
   formData.append('start_date', this.start_date);
   formData.append('end_date', this.end_date);
   formData.append('reason', this.reason);
   formData.append('status', this.status);
   formData.append('dis_half_day', this.dis_half_day.toString());
   formData.append('half_day_period', this.half_day_period);
-  formData.append('totalDays', this.totalDays.toString());
+  formData.append('number_of_days', this.totalDays.toString()); // ✅ ALWAYS FULL DAYS
   formData.append('document_number', this.document_number?.toString() || '');
   formData.append('branch', this.branch || '');
-  formData.append('leave_type', this.leave_type.toString());
-  formData.append('employee', this.selectedEmployee?.toString() || '');
 
   this.leaveService.requestLeaveAdmin(formData).subscribe(
     (response) => {
@@ -578,6 +587,7 @@ this.editAsset = {};
 
 
 
+
 deleteSelectedLeaveReq() { 
 const selectedEmployeeIds = this.LeaveRequests
 .filter(employee => employee.selected)
@@ -720,41 +730,61 @@ calculateEditTotalDays() {
 
 
 onBranchChange(event: any): void {
+
   const selectedBranchId = event.target.value;
   const selectedSchema = localStorage.getItem('selectedSchema');
 
   this.branch = selectedBranchId;
 
+  /* ------------------ FILTER EMPLOYEES ------------------ */
   if (!selectedBranchId) {
     this.filteredEmployees = this.Employees;
-    this.selectedEmployee = null;
-    this.LeaveTypes = [];
+    this.employee = '';
   } else {
+
     const selectedBranch = this.branches.find(
       b => Number(b.id) === Number(selectedBranchId)
     );
 
     if (selectedBranch) {
       this.filteredEmployees = this.Employees.filter(emp =>
-        emp.emp_branch_id === selectedBranch.branch_name
+        emp.emp_branch_id == selectedBranch.id ||
+        emp.emp_branch_id == selectedBranch.branch_name
       );
     } else {
       this.filteredEmployees = [];
     }
 
-    // ✅ AUTO SELECT FIRST EMPLOYEE
-    if (this.filteredEmployees.length > 0) {
-      this.selectedEmployee = this.filteredEmployees[0].id;
-
-      // 🔥 IMPORTANT: trigger leave type loading
-      this.onEmployeeChange();
-    } else {
-      this.selectedEmployee = null;
-      this.LeaveTypes = [];
-    }
+    this.employee = '';
   }
 
-  /* DOCUMENT NUMBERING LOGIC (keep as is) */
+  /* ------------------ DOCUMENT NUMBERING ------------------ */
+  if (!selectedBranchId || !selectedSchema) {
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'air_ticket_request'; // ✅ FIXED
+
+  const apiUrl =
+    `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+
+  this.http.get<any>(apiUrl).subscribe({
+    next: (response) => {
+
+      const data = Array.isArray(response) && response.length > 0
+        ? response[0]
+        : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+      this.document_number = this.automaticNumbering ? null : '';
+    },
+    error: () => {
+      this.automaticNumbering = false;
+      this.document_number = '';
+    }
+  });
 }
 
 

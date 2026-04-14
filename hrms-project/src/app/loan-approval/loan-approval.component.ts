@@ -43,7 +43,7 @@ export class LoanApprovalComponent {
   RejectionResons: any[] = []; // Assuming this array holds the list of expired documents
 
 
-  // hasAddPermission: boolean = false;
+  hasAddPermission: boolean = false;
   // hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   // hasEditPermission: boolean = false;
@@ -139,7 +139,7 @@ export class LoanApprovalComponent {
             
             // Grant all permissions
             this.hasViewPermission = true;
-            // this.hasAddPermission = true;
+            this.hasAddPermission = true;
             // this.hasDeletePermission = true;
             // this.hasEditPermission = true;
         
@@ -164,7 +164,7 @@ export class LoanApprovalComponent {
                     console.log('User is superuser according to permissions API');
                     // Grant all permissions
                     this.hasViewPermission = true;
-                    // this.hasAddPermission = true;
+                    this.hasAddPermission = true;
                     // this.hasDeletePermission = true;
                     // this.hasEditPermission = true;
                     
@@ -173,8 +173,8 @@ export class LoanApprovalComponent {
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                  //   this.hasAddPermission = this.checkGroupPermission('add_loanapproval', groupPermissions);
-                  //   console.log('Has add permission:', this.hasAddPermission);
+                    this.hasAddPermission = this.checkGroupPermission('add_loanapproval', groupPermissions);
+                    console.log('Has add permission:', this.hasAddPermission);
                     
                   //   this.hasEditPermission = this.checkGroupPermission('change_loanapproval', groupPermissions);
                   //   console.log('Has edit permission:', this.hasEditPermission);

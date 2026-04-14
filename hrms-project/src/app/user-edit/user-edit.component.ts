@@ -1,4 +1,4 @@
-import { Component , OnInit, Renderer2} from '@angular/core';
+import { Component , OnInit, Renderer2, ViewChild} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -15,6 +15,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { SuccesModalComponent } from '../succes-modal/succes-modal.component';
 import { UserMasterService } from '../user-master/user-master.service';
 import { UesrEmployeeComponent } from '../uesr-employee/uesr-employee.component';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-user-edit',
@@ -22,6 +23,8 @@ import { UesrEmployeeComponent } from '../uesr-employee/uesr-employee.component'
   styleUrl: './user-edit.component.css'
 })
 export class UserEditComponent {
+
+    @ViewChild('select') select: MatSelect | undefined;
 
   companies: any[] = [];
   branches:any[] = [];
@@ -192,7 +195,21 @@ export class UserEditComponent {
         data: { userId: userId } // Pass the created user ID to the component
       });
     }
-  
+
+      allSelected=false;
+    
+      
+      
+      toggleAllSelection(): void {
+        if (this.select) {
+          if (this.allSelected) {
+            
+            this.select.options.forEach((item: MatOption) => item.select());
+          } else {
+            this.select.options.forEach((item: MatOption) => item.deselect());
+          }
+        }
+      }
 
 
 ClosePopup(){

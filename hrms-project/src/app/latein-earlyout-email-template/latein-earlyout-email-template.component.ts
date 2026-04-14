@@ -159,17 +159,17 @@ export class LateinEarlyoutEmailTemplateComponent {
                         console.log('Group Permissions:', groupPermissions);
         
                        
-                        this.hasAddPermission = this.checkGroupPermission('add_resignationemailtemplate', groupPermissions);
+                        this.hasAddPermission = this.checkGroupPermission('add_latinearlyoutemailtemplate', groupPermissions);
                         console.log('Has add permission:', this.hasAddPermission);
                         
-                        this.hasEditPermission = this.checkGroupPermission('change_resignationemailtemplate', groupPermissions);
+                        this.hasEditPermission = this.checkGroupPermission('change_latinearlyoutemailtemplate', groupPermissions);
                         console.log('Has edit permission:', this.hasEditPermission);
           
-                       this.hasDeletePermission = this.checkGroupPermission('delete_resignationemailtemplate', groupPermissions);
+                       this.hasDeletePermission = this.checkGroupPermission('delete_latinearlyoutemailtemplate', groupPermissions);
                        console.log('Has delete permission:', this.hasDeletePermission);
           
         
-                        this.hasViewPermission = this.checkGroupPermission('view_resignationemailtemplate', groupPermissions);
+                        this.hasViewPermission = this.checkGroupPermission('view_latinearlyoutemailtemplate', groupPermissions);
                         console.log('Has view permission:', this.hasViewPermission);
         
         

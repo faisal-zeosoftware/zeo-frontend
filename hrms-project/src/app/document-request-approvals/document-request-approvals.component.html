@@ -69,7 +69,13 @@
 <!-- Modal Popup for selected approval details -->
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
+       <div class="col-md-4 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closemarketModal()">
+      ×
+    </span>
+  </div>
   
       <div *ngIf="selectedApproval">
         <h6>Document Request Approvals</h6>

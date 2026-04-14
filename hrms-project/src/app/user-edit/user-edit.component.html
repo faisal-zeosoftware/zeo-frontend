@@ -41,21 +41,38 @@
 
         
     
-    <div class="col-md-6">
-    
-    
-        <div class="custom-sel">
-            <label>Select Company</label>
-            <select class="form-control" id="country" multiple required [(ngModel)]="Emp.tenants" 
-             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !tenants}" >
-                <option value="" >Select</option>
-                <option *ngFor="let country of companies" [value]="country.id">{{ country.schema_name }}</option>
-            </select>
-            <div *ngIf="registerButtonClicked && !tenants" class="error-message">Please Select Your Company</div>
-        </div>
-                    
+<div class="col-md-6">
 
-    </div>
+    <div class="custom-sel">
+         <label>Select Company</label>
+     <div class="form-control-wrapper">
+      
+
+
+
+
+ <mat-form-field>
+ <mat-select placeholder="Select" id="tenants" multiple required [(ngModel)]="Emp.tenants"  [ngModelOptions]="{standalone: true}" #select multiple>
+     <div class="select-all">
+  <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+     Select All
+    </mat-checkbox>
+     </div>
+    <input type="text" placeholder="serach" class="form-control">
+          
+        <mat-option
+          *ngFor="let company of companies"
+          [value]="company.id">
+          {{ company.schema_name }}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+
+
+</div>
+  </div>
+
+</div>
 
 
     

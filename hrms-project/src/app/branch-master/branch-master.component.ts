@@ -24,7 +24,13 @@ import { EmployeeService } from '../employee-master/employee.service';
               </div>
               <div class="col-md-4">
                      
-                    <input type="text" class="form-control mt-1" placeholder="Search by branch or branch code " [(ngModel)]="searchQuery" (input)="filterEmployees()">
+              
+                     <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search by branch or code"    [(ngModel)]="searchQuery" (input)="filterEmployees()">
+                        <button class="search-btn" >
+                          <i class="fa fa-search"></i>
+                        </button>
+                      </div>
 
                 </div>
               <div class="col-md-5">

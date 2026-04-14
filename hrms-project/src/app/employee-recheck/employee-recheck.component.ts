@@ -143,21 +143,21 @@ export class EmployeeRecheckComponent {
                     console.log('Group Permissions:', groupPermissions);
 
 
-                    this.hasAddPermission = this.checkGroupPermission('add_attendancereport', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_attendancerecheck', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
 
-                    this.hasEditPermission = this.checkGroupPermission('change_attendancereport', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_attendancerecheck', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
 
-                    this.hasDeletePermission = this.checkGroupPermission('delete_attendancereport', groupPermissions);
+                    this.hasDeletePermission = this.checkGroupPermission('delete_attendancerecheck', groupPermissions);
                     console.log('Has delete permission:', this.hasDeletePermission);
 
 
-                    this.hasViewPermission = this.checkGroupPermission('view_attendancereport', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_attendancerecheck', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
 
-                    this.hasExportPermission = this.checkGroupPermission('attendance_export_report', groupPermissions);
-                    console.log('Has view permission:', this.hasExportPermission);
+                    // this.hasExportPermission = this.checkGroupPermission('attendance_export_report', groupPermissions);
+                    // console.log('Has view permission:', this.hasExportPermission);
 
 
                   } else {

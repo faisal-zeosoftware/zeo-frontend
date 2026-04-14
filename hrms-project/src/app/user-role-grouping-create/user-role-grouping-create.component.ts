@@ -3018,7 +3018,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_attendance', 'change_attendance', 'delete_attendance', 'view_attendance'];
+          const requiredCodenames = ['add_attendance_list', 'change_attendance_list', 'delete_attendance_list', 'view_attendance_list'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -3046,13 +3046,13 @@ updateInderminateAttendance():void{
 
    getDisplayNamePunching(permissionCodename: string): string {
     switch (permissionCodename.trim().toLowerCase()) {
-      case 'add_attendance':
+      case 'add_attendance_list':
         return 'Add';
-      case 'change_attendance':
+      case 'change_attendance_list':
         return 'Edit';
-      case 'delete_attendance':
+      case 'delete_attendance_list':
         return 'Delete';
-      case 'view_attendance':
+      case 'view_attendance_list':
         return 'View';
       default:
         return permissionCodename;
@@ -6716,10 +6716,10 @@ loadpermissionsLinEoutReqTemp(): void {
     this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
       (result: any[]) => {
         const requiredCodenames = [
-          'add_resignationemailtemplate',
-          'change_resignationemailtemplate',
-          'delete_resignationemailtemplate',
-          'view_resignationemailtemplate'
+          'add_latinearlyoutemailtemplate',
+          'change_latinearlyoutemailtemplate',
+          'delete_latinearlyoutemailtemplate',
+          'view_latinearlyoutemailtemplate'
         ];
 
         const uniquePermissionsMap = new Map();
@@ -6744,13 +6744,13 @@ loadpermissionsLinEoutReqTemp(): void {
 
 getDisplayNameLinEoutReqTemp(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_resignationemailtemplate':
+    case 'add_latinearlyoutemailtemplate':
       return 'Add';
-    case 'change_resignationemailtemplate':
+    case 'change_latinearlyoutemailtemplate':
       return 'Edit';
-    case 'delete_resignationemailtemplate':
+    case 'delete_latinearlyoutemailtemplate':
       return 'Delete';
-    case 'view_resignationemailtemplate':
+    case 'view_latinearlyoutemailtemplate':
       return 'View';
     default:
       return permissionCodename;
@@ -8563,10 +8563,10 @@ loadpermissionsPuncinglist(): void {
       (result: any[]) => {
         console.log("All permissions from API:", result); // Debug
         const requiredCodenames = [
-          'add_attendance_list',
-          'change_attendance_list',
-          'delete_attendance_list',
-          'view_attendance_list',
+          'add_attendancepolicy',
+          'change_attendancepolicy',
+          'delete_attendancepolicy',
+          'view_attendancepolicy',
         ];
 
         const uniqueMap = new Map();
@@ -8589,13 +8589,13 @@ loadpermissionsPuncinglist(): void {
 // === Display readable names for Asset Type permissions ===
 getDisplayNamePuncinglist(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_attendance_list':
+    case 'add_attendancepolicy':
       return 'Add';
-    case 'change_attendance_list':
+    case 'change_attendancepolicy':
       return 'Edit';
-    case 'delete_attendance_list':
+    case 'delete_attendancepolicy':
       return 'Delete';
-    case 'view_attendance_list':
+    case 'view_attendancepolicy':
       return 'View';
     default:
       return permissionCodename;
@@ -8705,10 +8705,10 @@ loadpermissionsLateinEarlyout(): void {
       (result: any[]) => {
         console.log("All permissions from API:", result); // Debug
         const requiredCodenames = [
-          'add_branchgeofence',
-          'change_branchgeofence',
-          'delete_branchgeofence',
-          'view_branchgeofence',
+          'add_lateinearlyoutrequest',
+          'change_lateinearlyoutrequest',
+          'delete_lateinearlyoutrequest',
+          'view_lateinearlyoutrequest',
         ];
 
         const uniqueMap = new Map();
@@ -8731,13 +8731,13 @@ loadpermissionsLateinEarlyout(): void {
 // === Display readable names for Asset Allocation permissions ===
 getDisplayNameLateinEarlyout(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_branchgeofence':
+    case 'add_lateinearlyoutrequest':
       return 'Add';
-    case 'change_branchgeofence':
+    case 'change_lateinearlyoutrequest':
       return 'Edit';
-    case 'delete_branchgeofence':
+    case 'delete_lateinearlyoutrequest':
       return 'Delete';
-    case 'view_branchgeofence':
+    case 'view_lateinearlyoutrequest':
       return 'View';
     default:
       return permissionCodename;
@@ -8752,10 +8752,10 @@ loadpermissionsLinEoutAprlvl(): void {
       (result: any[]) => {
         console.log("All permissions from API:", result); // Debug
         const requiredCodenames = [
-          'add_branchgeofence',
-          'change_branchgeofence',
-          'delete_branchgeofence',
-          'view_branchgeofence',
+          'add_lateinearlyoutapprovallevel',
+          'change_lateinearlyoutapprovallevel',
+          'delete_lateinearlyoutapprovallevel',
+          'view_lateinearlyoutapprovallevel',
         ];
 
         const uniqueMap = new Map();
@@ -8778,13 +8778,13 @@ loadpermissionsLinEoutAprlvl(): void {
 // === Display readable names for Asset Allocation permissions ===
 getDisplayNameLinEoutAprlvl(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_branchgeofence':
+    case 'add_lateinearlyoutapprovallevel':
       return 'Add';
-    case 'change_branchgeofence':
+    case 'change_lateinearlyoutapprovallevel':
       return 'Edit';
-    case 'delete_branchgeofence':
+    case 'delete_lateinearlyoutapprovallevel':
       return 'Delete';
-    case 'view_branchgeofence':
+    case 'view_lateinearlyoutapprovallevel':
       return 'View';
     default:
       return permissionCodename;
@@ -8799,10 +8799,10 @@ loadpermissionsLinEoutApr(): void {
       (result: any[]) => {
         console.log("All permissions from API:", result); // Debug
         const requiredCodenames = [
-          'add_branchgeofence',
-          'change_branchgeofence',
-          'delete_branchgeofence',
-          'view_branchgeofence',
+          'add_lateinearlyoutapproval',
+          'change_lateinearlyoutapproval',
+          'delete_lateinearlyoutapproval',
+          'view_lateinearlyoutapproval',
         ];
 
         const uniqueMap = new Map();
@@ -8825,13 +8825,13 @@ loadpermissionsLinEoutApr(): void {
 // === Display readable names for Asset Allocation permissions ===
 getDisplayNameLinEoutApr(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_branchgeofence':
+    case 'add_lateinearlyoutapproval':
       return 'Add';
-    case 'change_branchgeofence':
+    case 'change_lateinearlyoutapproval':
       return 'Edit';
-    case 'delete_branchgeofence':
+    case 'delete_lateinearlyoutapproval':
       return 'Delete';
-    case 'view_branchgeofence':
+    case 'view_lateinearlyoutapproval':
       return 'View';
     default:
       return permissionCodename;
