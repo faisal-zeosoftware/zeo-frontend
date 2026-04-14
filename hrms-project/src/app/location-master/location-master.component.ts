@@ -71,12 +71,7 @@ schemas: string[] = [];
   //   }
   // }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedLogoFile = file;
-    }
-  }
+  
 
   ngOnInit(): void {
 
@@ -424,6 +419,15 @@ closeEditModal(): void {
 //   );
 // }
 
+selectedFiles!: File;
+
+    selectedFile!: File | null;
+
+
+  
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
+  }
 
 updateCompany(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
