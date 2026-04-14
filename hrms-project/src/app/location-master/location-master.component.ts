@@ -419,7 +419,6 @@ closeEditModal(): void {
 //   );
 // }
 
-selectedFiles!: File;
 
     selectedFile!: File | null;
 
@@ -429,38 +428,53 @@ selectedFiles!: File;
     this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
   }
 
-updateCompany(): void {
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema || !this.editAsset.id) {
-    alert('Missing schema or asset ID');
-    return;
+  updateCompany(): void {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+  
+    if (!selectedSchema || !this.editAsset.id) {
+      alert('Missing schema or asset ID');
+      return;
+    }
+  
+    const formData = new FormData();
+  
+    formData.append('name', this.editAsset.name);
+    formData.append('country', this.editAsset.country);
+    formData.append('state', this.editAsset.state);
+    formData.append('industry_type', this.editAsset.industry_type || '');
+    formData.append('address_line1', this.editAsset.address_line1 || '');
+    formData.append('address_line2', this.editAsset.address_line2 || '');
+    formData.append('financial_year_start_month', this.editAsset.financial_year_start_month);
+    formData.append('financial_year_start_day', this.editAsset.financial_year_start_day);
+  
+    // ✅ Append file ONLY if selected
+    if (this.selectedFile) {
+      formData.append('logo', this.selectedFile);
+    }
+  
+    this.employeeService.updateCompany(this.editAsset.id, formData).subscribe(
+      (response) => {
+        alert('Company updated successfully!');
+        window.location.reload();
+        this.closeEditModal();
+      },
+      (error) => {
+        console.error('Error updating Company:', error);
+  
+        let errorMsg = '';
+  
+        if (error.error && typeof error.error === 'object') {
+          errorMsg = Object.keys(error.error)
+            .map(key => `${key}: ${error.error[key].join(', ')}`)
+            .join('\n');
+        } else {
+          errorMsg = error.message || 'Update failed';
+        }
+  
+        alert(errorMsg);
+      }
+    );
   }
-
-  this.employeeService.updateCompany(this.editAsset.id, this.editAsset).subscribe(
-    (response) => {
-      alert(' Company updated successfully!');
-      window.location.reload();
-      this.closeEditModal();
-    },
-(error) => {
-  console.error('Error updating Company:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
-  );
-}
-
 
 
 onCountryChange(): void {
