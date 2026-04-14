@@ -579,14 +579,29 @@ uploaduserDocument(): void {
 
   console.log(`Submitting to: ${apiUrl}`);
  
-  this.http.put(apiUrl, formData).subscribe({
+  this.http.patch(apiUrl, formData).subscribe({
     next: (response) => {
       console.log('Connect employee to user updated successfully:', response);
       window.alert('Employee Details Updated');
     },
     error: (error) => {
       console.error('Error updating the form:', error);
-      window.alert('An error occurred while updating the form. Please try again.');
+  
+      let errorMessage = '';
+  
+      if (error.error) {
+        if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.error.detail) {
+          errorMessage = error.error.detail;
+        } else {
+          errorMessage = Object.values(error.error).flat().join('\n');
+        }
+      } else {
+        errorMessage = error.message || 'An unknown error occurred';
+      }
+  
+      window.alert(errorMessage);
     }
   });
 }
