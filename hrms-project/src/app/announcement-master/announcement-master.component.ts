@@ -378,7 +378,7 @@ if (selectedSchema) {
             const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
     
             // 2. Filter the API result to only include branches selected in the sidebar
-            // If sidebar is empty, you might want to show all, or show none. 
+           
             // Usually, we show only the selected ones:
             if (sidebarSelectedIds.length > 0) {
               this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
