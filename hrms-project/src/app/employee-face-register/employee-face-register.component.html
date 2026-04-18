@@ -67,9 +67,11 @@
                <img *ngIf="capturedImage" [src]="capturedImage" class="img-fluid rounded shadow-sm" style="max-height: 100%;">
                <p *ngIf="!capturedImage" class="text-muted">Preview will appear here</p>
              </div>
+             <div *ngIf="hasAddPermission">
              <button type="button" class="btn btn-success btn-block mt-2 py-2" [disabled]="!capturedImage || !employeeId" (click)="registerFace()">
                <mat-icon>save</mat-icon> Register Face to Profile
              </button>
+             </div>
            </div>
            </div>
 
@@ -102,7 +104,7 @@
         </div>
 
         <!-- BUTTONS -->
-        <div class="mt-4 d-grid gap-2">
+        <div class="mt-4 d-grid gap-2" *ngIf="hasAddPermission">
 
           <button class="btn btn-primary"
                   [disabled]="!employeeId"

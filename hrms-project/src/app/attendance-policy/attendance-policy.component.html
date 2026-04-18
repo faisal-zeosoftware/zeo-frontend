@@ -118,7 +118,7 @@
       </div>
 
       <!-- SAVE BUTTON -->
-      <div class="text-end mt-4">
+      <div class="text-end mt-4" *ngIf="hasAddPermission">
         <button class="btn btn-success" (click)="saveAttendancePolicy()">
           Save Policy
         </button>

@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-md-5">
                     <div class="button-group pull-right">
-                        <button type="button"  class="btn-Create btn btn-success" (click)="CreateLeaveModal()"> <span class="header-btn-icon"><mat-icon>add_circle
+                        <button type="button"  class="btn-Create btn btn-success" (click)="CreateLeaveModal()" *ngIf="hasAddPermission"> <span class="header-btn-icon"><mat-icon>add_circle
                         </mat-icon></span> Create</button>
                         <span *ngIf="!hasAddPermission"></span>
 
@@ -23,7 +23,7 @@
                             <span class="header-btn-icon">
                              <mat-icon>draw
                         </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
+                        <span *ngIf="!hasEditPermission"></span>
                         <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
                             <span class="header-btn-icon">
                                 <mat-icon> delete
@@ -1183,7 +1183,7 @@
 
   </div>
 
-  <div class="mt-3">
+  <div class="mt-3" *ngIf="hasAddPermission">
     <button class="btn btn-primary" (click)="submitPayRule()">
      Save Pay Rule
     </button>

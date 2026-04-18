@@ -153,8 +153,8 @@ export class SalaryOptionsComponent {
                         this.hasViewPermissionAdvanceSalaryRequest = this.checkGroupPermission('view_advancesalaryrequest', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryRequest);
 
-                       this.hasViewPermissionAdvanceSalaryRequest = this.checkGroupPermission('view_advancesalaryrequest', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryRequest);
+                       this.hasViewPermissionAdvanceSalaryApprovalLevel = this.checkGroupPermission('view_advancecommonworkflow', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryApprovalLevel);
 
                         this.hasViewPermissionAdvanceSalaryEscalation = this.checkGroupPermission('view_advsalary_escalation', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionAdvanceSalaryEscalation);

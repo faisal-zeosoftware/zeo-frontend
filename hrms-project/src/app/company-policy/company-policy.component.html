@@ -71,7 +71,7 @@
             <div class="row">
                
                
-                <div class="col-md-12" >
+                <div class="col-md-6" >
                
                     <label>Title</label>
                    <input type="text"  class="form-control" required  [(ngModel)]="title"  placeholder="Enter title"
@@ -79,6 +79,17 @@
                    
                    <div *ngIf="registerButtonClicked && !title" class="error-message">title is required.</div>
               </div>
+
+          <div class="col-md-6">
+            <div class="custom-sel">
+                <label>Specific users</label>
+                <select class="form-control" id="approver" required [(ngModel)]="approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
+                    <option value="" >Select</option>
+                    <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
+            </div>
+        </div>
               
     
               <div class="col-md-12">
@@ -158,7 +169,7 @@
   <div class="row">
                
                
-    <div class="col-md-12" >
+    <div class="col-md-6" >
    
         <label>Title</label>
        <input type="text"  class="form-control" required  [(ngModel)]="editAsset.title"  placeholder="Enter title"
@@ -166,6 +177,17 @@
        
        <div *ngIf="registerButtonClicked && !title" class="error-message">title is required.</div>
   </div>
+
+            <div class="col-md-6">
+            <div class="custom-sel">
+                <label>Specific users</label>
+                <select class="form-control" id="approver" required [(ngModel)]="editAsset.approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
+                    <option value="" >Select</option>
+                    <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
+            </div>
+        </div>
   
 
   <div class="col-md-12">
@@ -256,6 +278,7 @@
     <thead>
       <tr>
         <th>Title</th>
+        <th>Specific users</th>
         <th>Description</th>
         <th>Branch</th>
         <th>Department</th>
@@ -267,6 +290,7 @@
     <tbody>
       <tr *ngFor="let policy of policies">
         <td data-label="Title">{{ policy.title }}</td>
+        <td data-label="Specific users">{{ policy.specific_users }}</td>
         <td data-label="Description">{{ policy.description }}</td>
         <td data-label="Branch">{{ policy.branch }}</td>
         <td data-label="Department">{{ policy.department }}</td>

@@ -58,10 +58,12 @@ export class CatogaryMasterComponent  implements OnInit{
   
   userPermissions: string[] = [];
   user_permissions: string[] = [];
+
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
+  hasImportPermission: boolean = false;
 
   employee: any;
 
@@ -128,6 +130,7 @@ if (this.userId !== null) {
         this.hasAddPermission = true;
         this.hasDeletePermission = true;
         this.hasEditPermission = true;
+        this.hasImportPermission = true;
     
         // Fetch designations without checking permissions
         this.fetchDesignations(selectedSchema);
@@ -153,6 +156,8 @@ if (this.userId !== null) {
                 this.hasAddPermission = true;
                 this.hasDeletePermission = true;
                 this.hasEditPermission = true;
+                this.hasImportPermission = true;
+
               } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
@@ -169,6 +174,10 @@ if (this.userId !== null) {
   
                 this.hasEditPermission = this.checkGroupPermission('change_ctgry_master', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
+              
+                this.hasImportPermission = this.checkGroupPermission('import_ctgry_master', groupPermissions);
+                console.log('Has edit permission:', this.hasImportPermission);
+
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);
               }

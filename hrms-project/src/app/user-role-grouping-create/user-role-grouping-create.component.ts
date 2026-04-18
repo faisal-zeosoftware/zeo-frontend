@@ -1613,8 +1613,7 @@ isAirTicketRuleIndeterminate(): boolean {
     this.LoanReqTempChecked &&
     this.AssetReqTempChecked &&
     this.AirticketReqTempChecked &&
-    this.ResignationReqTempChecked &&
-    this.LinEoutReqTempChecked;
+    this.ResignationReqTempChecked; 
   }
 
 
@@ -2387,6 +2386,7 @@ updateInderminateAttendance():void{
   this.loadpermissionsAssetReqTemp();
   this.loadpermissionsAirticketReqTemp();
   this.loadpermissionsResignationReqTemp();
+  this.loadpermissionsLinEoutReqTemp();
 
   
 
@@ -2443,7 +2443,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_emp_master', 'change_emp_master', 'delete_emp_master', 'view_emp_master'];
+          const requiredCodenames = ['add_emp_master', 'change_emp_master', 'delete_emp_master', 'view_emp_master','import_emp_master'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -2479,6 +2479,8 @@ updateInderminateAttendance():void{
           return 'Delete';
         case 'view_emp_master':
           return 'View';
+        case 'import_emp_master':
+          return 'Import';
         default:
           return permissionCodename;
       }
@@ -2968,7 +2970,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_attendance', 'change_attendance', 'delete_attendance', 'view_attendance'];
+          const requiredCodenames = ['add_attendance_faceregister', 'change_attendance_faceregister', 'delete_attendance_faceregister', 'view_attendance_faceregister'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -2996,13 +2998,13 @@ updateInderminateAttendance():void{
 
    getDisplayNameFaceRegister(permissionCodename: string): string {
     switch (permissionCodename.trim().toLowerCase()) {
-      case 'add_attendance':
+      case 'add_attendance_faceregister':
         return 'Add';
-      case 'change_attendance':
+      case 'change_attendance_faceregister':
         return 'Edit';
-      case 'delete_attendance':
+      case 'delete_attendance_faceregister':
         return 'Delete';
-      case 'view_attendance':
+      case 'view_attendance_faceregister':
         return 'View';
       default:
         return permissionCodename;
@@ -6178,8 +6180,8 @@ loadpermissionsWps(): void {
           'add_wps',
            'export_wps',
             'view_wps',
-          // 'change_wps',
-          // 'delete_wps',
+          'change_wps',
+          'delete_wps',
         ];
 
         const uniqueMap = new Map();
@@ -6209,10 +6211,10 @@ getDisplayNameWps(permissionCodename: string): string {
       return 'Export';
     case 'view_wps':
       return 'View';
-    // case 'change_wps':
-    //   return 'Edit';
-    // case 'delete_wps':
-    //   return 'Delete';
+    case 'change_wps':
+      return 'Edit';
+    case 'delete_wps':
+      return 'Delete';
     default:
       return permissionCodename;
   }
@@ -6733,7 +6735,7 @@ loadpermissionsLinEoutReqTemp(): void {
         this.GrouppermissionsLinEoutReqTemp = Array.from(uniquePermissionsMap.values());
       },
       (error: any) => {
-        console.error('Error fetching Resignation request Email Template permissions:', error);
+        console.error('Error fetching Late in EarlyOut request Email Template permissions:', error);
       }
     );
   }
@@ -8611,10 +8613,10 @@ loadpermissionsManualentry(): void {
       (result: any[]) => {
         console.log("All permissions from API:", result); // Debug
         const requiredCodenames = [
-          'add_attendance_list',
-          'change_attendance_list',
-          'delete_attendance_list',
-          'view_attendance_list',
+          'add_attendance_manual',
+          'change_attendance_manual',
+          'delete_attendance_manual',
+          'view_attendance_manual',
         ];
 
         const uniqueMap = new Map();
@@ -8637,13 +8639,13 @@ loadpermissionsManualentry(): void {
 // === Display readable names for Asset Type permissions ===
 getDisplayNameManualentry(permissionCodename: string): string {
   switch (permissionCodename.trim().toLowerCase()) {
-    case 'add_attendance_list':
+    case 'add_attendance_manual':
       return 'Add';
-    case 'change_attendance_list':
+    case 'change_attendance_manual':
       return 'Edit';
-    case 'delete_attendance_list':
+    case 'delete_attendance_manual':
       return 'Delete';
-    case 'view_attendance_list':
+    case 'view_attendance_manual':
       return 'View';
     default:
       return permissionCodename;
@@ -11671,6 +11673,7 @@ isreports(): boolean {
 }
 
 
+
 isCustomization(): boolean {
   const EmpformInderminate = this.isEmpformIndeterminate();
   const AssetformInderminate = this.isAssetformIndeterminate();
@@ -12455,7 +12458,6 @@ isAttend(): boolean {
     this.updateCustomizationCheckbox();
     // this.updateSelectedPermissions(this.expireddocumnetsMasterChecked, this.Grouppermissionsexpirydocuments);
     // this.settingsChecked = this.expireddocumnetsMasterChecked;
-
 
   }
 
@@ -13703,9 +13705,6 @@ updateShiftCheckbox(): void {
     this.updateAttendReportCheckbox();
     this.updateAssetReportCheckbox();
     this.updateAssetTransReportCheckbox();
-
-
-
     this.updateReportCheckbox();
   }
 
@@ -14316,7 +14315,6 @@ updateEmailTemplate():void{
   this.updateAssetReqTempCheckbox();
   this.updateAirticketReqTempCheckbox();
   this.updateResignationReqTempCheckbox();
-  this.updateLinEoutReqTempCheckbox();
   
   
   

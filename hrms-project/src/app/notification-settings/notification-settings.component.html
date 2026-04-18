@@ -83,7 +83,7 @@
           
               <div class="col-md-6">
                 <label>Days after expiry</label>
-                <input type="number" class="form-control" required [(ngModel)]="days_after_expiry" placeholder="Enter openings"
+                <input type="number" class="form-control" required [(ngModel)]="days_after_expiry" placeholder="Enter days after expiry"
                        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !days_after_expiry}">
                 <div *ngIf="registerButtonClicked && !days_after_expiry" class="error-message">days_after_expiry field is required.</div>
               </div>

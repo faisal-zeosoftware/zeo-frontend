@@ -55,6 +55,7 @@ hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
+hasImportPermission: boolean = false;
 
 
 schemas: string[] = []; // Array to store schema names
@@ -129,6 +130,7 @@ ngOnInit(): void {
           this.hasAddPermission = true;
           this.hasDeletePermission = true;
           this.hasEditPermission = true;
+          this.hasImportPermission = true;
       
           // Fetch designations without checking permissions
           // this.fetchDesignations(selectedSchema);
@@ -154,6 +156,8 @@ ngOnInit(): void {
                   this.hasAddPermission = true;
                   this.hasDeletePermission = true;
                   this.hasEditPermission = true;
+                  this.hasImportPermission = true;
+
                 } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                   const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                   console.log('Group Permissions:', groupPermissions);
@@ -171,6 +175,9 @@ ngOnInit(): void {
   
                   this.hasViewPermission = this.checkGroupPermission('view_attendance', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
+
+                  this.hasImportPermission = this.checkGroupPermission('import_attendance', groupPermissions);
+                  console.log('Has view permission:', this.hasImportPermission);
   
   
                 } else {

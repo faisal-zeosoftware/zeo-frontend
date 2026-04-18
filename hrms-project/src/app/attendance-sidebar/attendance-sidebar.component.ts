@@ -147,38 +147,38 @@ export class AttendanceSidebarComponent {
   
               
                        
-                       this.hasViewPermissionAttendanceMarking = this.checkGroupPermission('view_attendance', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAttendanceMarking);
+                      this.hasViewPermissionAttendanceMarking = this.checkGroupPermission('view_attendance', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionAttendanceMarking);
                       
-                       this.hasViewPermissionEmpEarlygoing = this.checkGroupPermission('view_early_going', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionEmpEarlygoing);
+                      this.hasViewPermissionEmpEarlygoing = this.checkGroupPermission('view_early_going', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionEmpEarlygoing);
 
-                       this.hasViewPermissionEmpRecheck = this.checkGroupPermission('view_attendancerecheck', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionEmpRecheck);
+                      this.hasViewPermissionEmpRecheck = this.checkGroupPermission('view_attendancerecheck', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionEmpRecheck);
 
-                       this.hasViewPermissionPunchingList = this.checkGroupPermission('view_attendance_list', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionPunchingList);
+                      this.hasViewPermissionPunchingList = this.checkGroupPermission('view_attendance_list', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionPunchingList);
 
                       this.hasViewPermissionGeoFence = this.checkGroupPermission('view_branchgeofence', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionGeoFence);
+                      console.log('Has view permission:', this.hasViewPermissionGeoFence);
 
-                      this.hasViewPermissionmanualentry = this.checkGroupPermission('view_attendance', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionmanualentry);
+                      this.hasViewPermissionmanualentry = this.checkGroupPermission('view_attendance_manual', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionmanualentry);
 
                       this.hasViewPermissionAttendancepolicy = this.checkGroupPermission('view_attendancepolicy', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAttendancepolicy);
+                      console.log('Has view permission:', this.hasViewPermissionAttendancepolicy);
 
-                       this.hasViewPermissionFaceRegister = this.checkGroupPermission('view_attendance', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionFaceRegister);
+                      this.hasViewPermissionFaceRegister = this.checkGroupPermission('view_attendance_faceregister', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionFaceRegister);
 
-                       this.hasViewPermissionLateinEarlyOutApprovallevel = this.checkGroupPermission('view_lateinearlyoutapprovallevel', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionLateinEarlyOutApprovallevel);
+                      this.hasViewPermissionLateinEarlyOutApprovallevel = this.checkGroupPermission('view_lateinearlyoutapprovallevel', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionLateinEarlyOutApprovallevel);
 
                       this.hasViewPermissionLateinEarlyOutApprovals = this.checkGroupPermission('view_lateinearlyoutapproval', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionLateinEarlyOutApprovals);
+                      console.log('Has view permission:', this.hasViewPermissionLateinEarlyOutApprovals);
 
-                       this.hasViewPermissionAttendanceReq = this.checkGroupPermission('view_attendance', groupPermissions);
-                       console.log('Has view permission:', this.hasViewPermissionAttendanceReq);
+                      this.hasViewPermissionAttendanceReq = this.checkGroupPermission('view_lateinearlyoutrequest', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionAttendanceReq);
                        
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

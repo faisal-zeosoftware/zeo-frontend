@@ -28,6 +28,7 @@
                     </a>
                   </li>
                   <ul *ngIf="showGeneralRequest" style="padding-left: 20px;">
+                    
                   <li routerLink="/main-sidebar/attendance-sidebar/attendance-attendance-request" *ngIf="hasViewPermissionAttendanceReq"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Request</a></li>
                   <li routerLink="/main-sidebar/attendance-sidebar/latein-earlyout-approval-level" *ngIf="hasViewPermissionLateinEarlyOutApprovallevel"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Approval Level</a></li>
                   <li routerLink="/main-sidebar/attendance-sidebar/latein-earlyout-approvals" *ngIf="hasViewPermissionLateinEarlyOutApprovals"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Approvals</a></li>

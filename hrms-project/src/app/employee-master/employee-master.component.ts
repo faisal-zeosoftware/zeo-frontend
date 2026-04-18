@@ -42,6 +42,7 @@ export class EmployeeMasterComponent {
   hasDeletePermission: boolean = true;
   hasViewPermission: boolean =true;
   hasEditPermission: boolean = true;
+  hasImportPermission: boolean = true;
 
   userId: number | null | undefined;
   userDetails: any;
@@ -265,6 +266,7 @@ if (this.userId !== null) {
         this.hasAddPermission = true;
         this.hasDeletePermission = true;
         this.hasEditPermission = true;
+        this.hasImportPermission = true;
     
         // Fetch designations without checking permissions
         // this.fetchDesignations(selectedSchema);
@@ -290,6 +292,8 @@ if (this.userId !== null) {
                 this.hasAddPermission = true;
                 this.hasDeletePermission = true;
                 this.hasEditPermission = true;
+                this.hasImportPermission = true;
+
               } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
@@ -301,10 +305,14 @@ if (this.userId !== null) {
               console.log('Has add permission:', this.hasAddPermission);
         
              this.hasDeletePermission = this.checkGroupPermission('delete_emp_master', groupPermissions);
-          console.log('Has delete permission:', this.hasDeletePermission);
+            console.log('Has delete permission:', this.hasDeletePermission);
         
-              this.hasEditPermission = this.checkGroupPermission('change_emp_master', groupPermissions);
-             console.log('Has edit permission:', this.hasEditPermission);
+            this.hasEditPermission = this.checkGroupPermission('change_emp_master', groupPermissions);
+            console.log('Has edit permission:', this.hasEditPermission);
+
+            this.hasImportPermission = this.checkGroupPermission('import_emp_master', groupPermissions);
+            console.log('Has edit permission:', this.hasImportPermission);
+
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);
               }

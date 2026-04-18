@@ -6,6 +6,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { BranchServiceService } from '../branch-master/branch-service.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
+import { UserMasterService } from '../user-master/user-master.service';
 
 
 @Component({
@@ -29,7 +30,9 @@ export class CompanyPolicyComponent {
 
   selectedFile!: File | null;
 
+    Users: any[] = [];
 
+  approver:any='' ;
   Branches: any[] = [];
   Depts: any[] = [];
 
@@ -62,6 +65,7 @@ policies: any[] = [];
     private branchService:BranchServiceService,
     private DesignationService: DesignationService,
     private employeeService:EmployeeService,
+     private userService: UserMasterService,
 
   
     ) {}
@@ -70,9 +74,10 @@ policies: any[] = [];
  
       this.LoadBranches();
       this.LoadCats();
-
       this.LoadDepts();
+      this.loadUsers();
       this.getCompanyPolicies();
+      
 
 
       
@@ -231,6 +236,9 @@ if (this.userId !== null) {
       formData.append('title', this.title);
       formData.append('description', this.description);
       formData.append('branch', this.branch);
+      if (this.approver !== null) {
+      formData.append('specific_users', this.approver.toString());
+        }
       formData.append('department', this.department);
       formData.append('category', this.category);
 
@@ -246,7 +254,7 @@ if (this.userId !== null) {
         (response) => {
           console.log('Registration successful', response);
           alert('Company Policy has been added');
-          window.location.reload();
+          // window.location.reload();
         },
         (error) => {
           console.error('Added failed', error);
@@ -342,6 +350,43 @@ if (this.userId !== null) {
 
   console.log("Mapped employee_id:", this.editAsset.branch);
 }
+
+    loadUsers(callback?: Function): void {
+    
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+        console.log(' fetching Companies:');
+         if (callback) callback();
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+  }
+  }
+
+    mapUsersNameToId() {
+    
+  if (!this.Users || !this.editAsset?.approver) return;
+
+  const use = this.Users.find(
+    (u: any) => u.username === this.editAsset.approver
+  );
+
+  if (use) {
+    this.editAsset.approver = use.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.approver);
+}
+
 
 
 
@@ -477,12 +522,17 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = { ...asset };
 
-this.mapBranchNameToId();
-this.mapDeptNameToId();
-this.mapCatsNameToId();
+  // ✅ IMPORTANT: extract first user ID from array
+  this.editAsset.approver = asset.specific_users?.[0] || null;
+
+  this.selectedFile = null; // reset file
+  this.isEditModalOpen = true;
+
+  this.mapBranchNameToId();
+  this.mapDeptNameToId();
+  this.mapCatsNameToId();
 }
 
 closeEditModal(): void {
@@ -530,35 +580,52 @@ if (confirm('Are you sure you want to delete the selected policies ?')) {
 
 
 updateAssetType(): void {
-const selectedSchema = localStorage.getItem('selectedSchema');
-if (!selectedSchema || !this.editAsset.id) {
-  alert('Missing schema or asset ID');
-  return;
-}
-
-this.employeeService.updatePolicy(this.editAsset.id, this.editAsset).subscribe(
-  (response) => {
-    alert(' policies  updated successfully!');
-    this.closeEditModal();
-    window.location.reload();
-  },
-(error) => {
-  console.error('Error updating Company Policy:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
   }
 
-  alert(errorMsg);
-}
-);
+  const formData = new FormData();
+
+  formData.append('title', this.editAsset.title || '');
+  formData.append('description', this.editAsset.description || '');
+  formData.append('branch', this.editAsset.branch || '');
+  formData.append('department', this.editAsset.department || '');
+  formData.append('category', this.editAsset.category || '');
+
+  // ✅ FIX: correct field name
+  if (this.editAsset.approver) {
+    formData.append('specific_users', this.editAsset.approver.toString());
+  }
+
+  // ✅ FIX: only send file if user selected new one
+  if (this.selectedFile) {
+    formData.append('policy_file', this.selectedFile);
+  }
+
+  this.employeeService.updatePolicy(this.editAsset.id, formData).subscribe(
+    () => {
+      alert('Policies updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Error updating Company Policy:', error);
+
+      let errorMsg = 'Update failed';
+
+      const backendError = error?.error;
+
+      if (backendError && typeof backendError === 'object') {
+        errorMsg = Object.keys(backendError)
+          .map(key => `${key}: ${backendError[key].join(', ')}`)
+          .join('\n');
+      }
+
+      alert(errorMsg);
+    }
+  );
 }
 
 

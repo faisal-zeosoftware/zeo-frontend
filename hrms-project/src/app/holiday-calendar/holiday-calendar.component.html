@@ -450,7 +450,7 @@
   <!-- BODY -->
   <div *ngIf="cal.expanded" class="holiday-list">
 
-    <div class="table-header">
+    <div class="table-header" *ngIf="hasAddPermission">
       <button class="btn btn-sm btn-primary"
         (click)="openHolidayModal(cal.id); $event.stopPropagation()">
         + Add Holiday

@@ -68,7 +68,7 @@
               </div>
               <hr />
           
-  <form *ngIf="hasAddPermission">
+  <form>
                   <div class="row">
 
           
@@ -499,12 +499,12 @@
   </div> -->
   
 
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
+        <div class="com_list mt-4" >
 
        <div class="shift-board-container">
 
                    <!-- Selection Form -->
-                   <form (ngSubmit)="fetchShifts()" *ngIf="hasAddPermission">
+                   <form (ngSubmit)="fetchShifts()">
                     <div class="row">
                         <!-- Schedule Dropdown -->
                         <div class="col-md-6">

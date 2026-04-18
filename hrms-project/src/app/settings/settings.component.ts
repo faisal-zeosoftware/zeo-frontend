@@ -369,6 +369,9 @@ if (this.userId !== null) {
                     this.hasViewPermissionResignationEmptemp = this.checkGroupPermission('view_resignationemailtemplate', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermissionResignationEmptemp);
 
+                    this.hasViewPermissionLateInEarlyOutEmptemp = this.checkGroupPermission('view_latinearlyoutemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermissionLateInEarlyOutEmptemp);
+
 
                   //  Company Policy Permissions
 
