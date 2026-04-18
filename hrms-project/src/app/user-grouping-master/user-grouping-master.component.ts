@@ -175,10 +175,10 @@ if (this.userId !== null) {
                this.hasAddPermission = this.checkGroupPermission('add_group', groupPermissions);
               console.log('Has add permission:', this.hasAddPermission);
         
-            this.hasDeletePermission = this.checkGroupPermission('change_group', groupPermissions);
+            this.hasDeletePermission = this.checkGroupPermission('delete_group', groupPermissions);
               console.log('Has delete permission:', this.hasDeletePermission);
         
-              this.hasEditPermission = this.checkGroupPermission('delete_group', groupPermissions);
+              this.hasEditPermission = this.checkGroupPermission('change_group', groupPermissions);
              console.log('Has edit permission:', this.hasEditPermission);
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);

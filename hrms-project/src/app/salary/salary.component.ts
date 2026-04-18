@@ -63,6 +63,7 @@ export class SalaryComponent {
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
+  hasImportPermission: boolean = false;
 
   userId: number | null | undefined;
 userDetails: any;
@@ -174,6 +175,7 @@ if (this.userId !== null) {
         this.hasAddPermission = true;
         this.hasDeletePermission = true;
         this.hasEditPermission = true;
+        this.hasImportPermission = true;
     
         // Fetch designations without checking permissions
         // this.fetchDesignations(selectedSchema);
@@ -199,6 +201,8 @@ if (this.userId !== null) {
                 this.hasAddPermission = true;
                 this.hasDeletePermission = true;
                 this.hasEditPermission = true;
+                this.hasImportPermission = true;
+
               } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
@@ -212,10 +216,12 @@ if (this.userId !== null) {
   
                this.hasDeletePermission = this.checkGroupPermission('delete_salarycomponent', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
-  
 
                 this.hasViewPermission = this.checkGroupPermission('view_salarycomponent', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
+
+                this.hasImportPermission = this.checkGroupPermission('import_salarycomponent', groupPermissions);
+                console.log('Has view permission:', this.hasImportPermission);
 
 
               } else {

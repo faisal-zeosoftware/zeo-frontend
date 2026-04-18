@@ -18,7 +18,8 @@
                             <span class="header-btn-icon">
                              <mat-icon>draw
                         </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
+                        <span *ngIf="!hasEditPermission"></span>
+                        
                         <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
                             <span class="header-btn-icon">
                                 <mat-icon> delete

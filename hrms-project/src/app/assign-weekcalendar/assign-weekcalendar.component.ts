@@ -18,6 +18,7 @@ import {combineLatest, Subscription } from 'rxjs';
   templateUrl: './assign-weekcalendar.component.html',
   styleUrl: './assign-weekcalendar.component.css'
 })
+
 export class AssignWeekcalendarComponent {
 
   private dataSubscription?: Subscription;
@@ -287,38 +288,39 @@ export class AssignWeekcalendarComponent {
   }
 
  
-  loadBranches(callback?: Function): void {
+loadBranches(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
 
-    const selectedSchema = this.authService.getSelectedSchema();
-    
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any[]) => {
-          // 1. Get the sidebar selected IDs from localStorage
-          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
-          // 2. Filter the API result to only include branches selected in the sidebar
-          // If sidebar is empty, you might want to show all, or show none. 
-          // Usually, we show only the selected ones:
-          if (sidebarSelectedIds.length > 0) {
-            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-          } else {
-            this.branches = result; // Fallback: show all if nothing is selected in sidebar
-          }
-          // Inside the subscribe block of loadDeparmentBranch
-          if (this.branches.length === 1) {
-            this.branches = this.branches[0].id;
-          }
-  
-          console.log('Filtered branches for selection:', this.branches);
-          if (callback) callback();
-        },
-        (error) => {
-          console.error('Error fetching branches:', error);
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+
+        const sidebarSelectedIds: number[] =
+          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        if (sidebarSelectedIds.length > 0) {
+          this.branches = result.filter(branch =>
+            sidebarSelectedIds.includes(branch.id)
+          );
+        } else {
+          this.branches = result;
         }
-      );
-    }
+
+        // ✅ FIX: DO NOT overwrite array
+        if (this.branches.length === 1) {
+          this.branch = [this.branches[0].id]; // auto select
+        }
+
+        console.log('Filtered branches:', this.branches);
+
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
   }
+}
 
 
 
