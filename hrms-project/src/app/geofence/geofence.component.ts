@@ -922,37 +922,41 @@ updateGeoFenceing(): void {
               //   }
 
 
-                loadBranch(callback?: Function): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-    
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any[]) => {
-          // 1. Get the sidebar selected IDs from localStorage
-          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
-          // 2. Filter the API result to only include branches selected in the sidebar
-          // If sidebar is empty, you might want to show all, or show none. 
-          // Usually, we show only the selected ones:
-          if (sidebarSelectedIds.length > 0) {
-            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-          } else {
-            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
-          }
-          // Inside the subscribe block of loadDeparmentBranch
-          if (this.Branches.length === 1) {
-            this.Branches = this.Branches[0].id;
-          }
-  
-          console.log('Filtered branches for selection:', this.Branches);
-          if (callback) callback();
-        },
-        (error) => {
-          console.error('Error fetching branches:', error);
+loadBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+
+        const sidebarSelectedIds: number[] =
+          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        if (sidebarSelectedIds.length > 0) {
+          this.Branches = result.filter(branch =>
+            sidebarSelectedIds.includes(branch.id)
+          );
+        } else {
+          this.Branches = result;
         }
-      );
-    }
+
+        // ✅ FIX: auto select, DON'T overwrite array
+        if (this.Branches.length === 1) {
+          this.branch = this.Branches[0].id; // for single select
+          // OR if multi-select:
+          // this.branch = [this.Branches[0].id];
+        }
+
+        console.log('Filtered branches:', this.Branches);
+
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
   }
+}
 
             
                   toggleAllSelectionBrach(): void {

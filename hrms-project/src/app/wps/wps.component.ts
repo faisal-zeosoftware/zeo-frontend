@@ -45,6 +45,7 @@ hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
+hasExportPermission: boolean = false;
 
 userId: number | null | undefined;
 userDetails: any;
@@ -109,6 +110,7 @@ private employeeService: EmployeeService,
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
+            this.hasExportPermission = true;
         
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
@@ -134,6 +136,7 @@ private employeeService: EmployeeService,
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
+                    this.hasExportPermission = true;
 
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
@@ -152,6 +155,9 @@ private employeeService: EmployeeService,
     
                     this.hasViewPermission = this.checkGroupPermission('view_wps', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
+
+                    this.hasExportPermission = this.checkGroupPermission('export_wps', groupPermissions);
+                    console.log('Has view permission:', this.hasExportPermission);
     
     
                   } else {

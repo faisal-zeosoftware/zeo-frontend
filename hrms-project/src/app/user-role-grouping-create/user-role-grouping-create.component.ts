@@ -4494,7 +4494,7 @@ loadpermissionsEmpReport(): void {
                 const requiredCodenames = ['add_lvbalancereport',
                                          'change_lvbalancereport', 
                                           'delete_lvbalancereport',
-                                          'delete_lvbalancereport',
+                                          'lv_balance_export_report',
                                            'view_lvbalancereport'];
         
                 // Filter and remove duplicates based on codename
