@@ -185,8 +185,8 @@ ngOnInit(): void {
                  this.hasViewPermission = this.checkGroupPermission('view_report', groupPermissions);
                  console.log('Has view permission:', this.hasViewPermission);
 
-                 this.hasExportPermission = this.checkGroupPermission('export_report', groupPermissions);
-                 console.log('Has view permission:', this.hasExportPermission);
+                 this.hasExportPermission = this.checkGroupPermission('emp_export_report', groupPermissions);
+                 console.log('Has export permission:', this.hasExportPermission);
 
                 } else {
                   console.error('No groups found in data or groups array is empty.', firstItem);

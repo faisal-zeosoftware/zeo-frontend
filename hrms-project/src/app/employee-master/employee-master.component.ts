@@ -311,7 +311,7 @@ if (this.userId !== null) {
             console.log('Has edit permission:', this.hasEditPermission);
 
             this.hasImportPermission = this.checkGroupPermission('import_emp_master', groupPermissions);
-            console.log('Has edit permission:', this.hasImportPermission);
+            console.log('Has import permission:', this.hasImportPermission);
 
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);

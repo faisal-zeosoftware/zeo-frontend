@@ -148,8 +148,8 @@ if (this.userId !== null) {
               this.hasEditPermission = this.checkGroupPermission('change_desgntn_master', groupPermissions);
               console.log('Has edit permission:', this.hasEditPermission);
 
-              this.hasImportPermission = this.checkGroupPermission('import_desgntn_master', groupPermissions);
-              console.log('Has edit permission:', this.hasImportPermission);
+              this.hasImportPermission = this.checkGroupPermission('import_designtn_master', groupPermissions);
+              console.log('Has import permission:', this.hasImportPermission);
 
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);

@@ -67,7 +67,8 @@ label {
 }
 
 input[type="text"]::placeholder {
-  text-transform: lowercase !important;
+  text-transform: capitalize !important;
+  color: #666262 !important;
 }
 
 .mat-mdc-dialog-content {
@@ -363,7 +364,4 @@ option { width: 200px; }
 
 table thead th {
   white-space: nowrap !important;
-}
-::placeholder {
-color: #555;
 }

@@ -178,7 +178,7 @@ if (this.userId !== null) {
                 console.log('Has view permission:', this.hasViewPermission);
 
                 this.hasImportPermission = this.checkGroupPermission('import_emp_leave_balance', groupPermissions);
-                console.log('Has view permission:', this.hasImportPermission);
+                console.log('Has import permission:', this.hasImportPermission);
 
 
               } else {

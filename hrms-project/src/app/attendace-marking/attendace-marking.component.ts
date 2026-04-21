@@ -177,7 +177,7 @@ ngOnInit(): void {
                   console.log('Has view permission:', this.hasViewPermission);
 
                   this.hasImportPermission = this.checkGroupPermission('import_attendance', groupPermissions);
-                  console.log('Has view permission:', this.hasImportPermission);
+                  console.log('Has import permission:', this.hasImportPermission);
   
   
                 } else {

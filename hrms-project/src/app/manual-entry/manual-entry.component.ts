@@ -178,8 +178,8 @@ export class ManualEntryComponent {
                     this.hasViewPermission = this.checkGroupPermission('view_attendance_manual', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
 
-                    this.hasImportPermission = this.checkGroupPermission('import_attendance_manual', groupPermissions);
-                    console.log('Has view permission:', this.hasImportPermission);
+                    this.hasImportPermission = this.checkGroupPermission('export_attendance_manual', groupPermissions);
+                    console.log('Has import permission:', this.hasImportPermission);
     
     
                   } else {

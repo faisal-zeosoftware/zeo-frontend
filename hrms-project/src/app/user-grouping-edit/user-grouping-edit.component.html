@@ -64,7 +64,7 @@
                     <div class="selection_checkmark_sec">
                       <div class="all_selection_Sec">
                         <div class="row">
-                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsEmp">
+                          <div class="col-md-2" *ngFor="let permission of GrouppermissionsEmp">
                             <mat-checkbox [value]="permission.id" 
                                           (change)="onCheckboxChangeEmp(permission.id)" 
                                           [checked]="selectedPermissions.includes(permission.id)">
@@ -92,7 +92,7 @@
                     <div class="selection_checkmark_sec">
                       <div class="all_selection_Sec">
                         <div class="row">
-                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsDept">
+                          <div class="col-md-2" *ngFor="let permission of GrouppermissionsDept">
                             <mat-checkbox [value]="permission.id" 
                                           (change)="onCheckboxChangeDept(permission.id)" 
                                           [checked]="selectedPermissions.includes(permission.id)">
@@ -118,7 +118,7 @@
                     <div class="selection_checkmark_sec">
                       <div class="all_selection_Sec">
                         <div class="row">
-                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsDis">
+                          <div class="col-md-2" *ngFor="let permission of GrouppermissionsDis">
                             <mat-checkbox [value]="permission.id" 
                                           (change)="onCheckboxChangeDesg(permission.id)" 
                                           [checked]="selectedPermissions.includes(permission.id)">
@@ -144,7 +144,7 @@
                     <div class="selection_checkmark_sec">
                       <div class="all_selection_Sec">
                         <div class="row">
-                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsCat">
+                          <div class="col-md-2" *ngFor="let permission of GrouppermissionsCat">
                             <mat-checkbox [value]="permission.id" 
                                           (change)="onCheckboxChangeCat(permission.id)" 
                                           [checked]="selectedPermissions.includes(permission.id)">

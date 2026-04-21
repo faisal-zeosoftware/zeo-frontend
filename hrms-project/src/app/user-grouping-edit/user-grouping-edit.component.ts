@@ -2508,7 +2508,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_emp_master', 'change_emp_master', 'delete_emp_master', 'view_emp_master'];
+          const requiredCodenames = ['add_emp_master', 'change_emp_master', 'delete_emp_master', 'view_emp_master','import_emp_master'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -2544,6 +2544,8 @@ updateInderminateAttendance():void{
           return 'Delete';
         case 'view_emp_master':
           return 'View';
+        case 'import_emp_master':
+          return 'Import';
         default:
           return permissionCodename;
       }
@@ -2561,7 +2563,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_dept_master', 'change_dept_master', 'delete_dept_master', 'view_dept_master'];
+          const requiredCodenames = ['add_dept_master', 'change_dept_master', 'delete_dept_master', 'view_dept_master','import_dept_master'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -2595,6 +2597,8 @@ updateInderminateAttendance():void{
         return 'Delete';
       case 'view_dept_master':
         return 'View';
+      case 'import_dept_master':
+        return 'Import';
       default:
         return permissionCodename;
     }
@@ -2612,7 +2616,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_desgntn_master', 'change_desgntn_master', 'delete_desgntn_master', 'view_desgntn_master'];
+          const requiredCodenames = ['add_desgntn_master', 'change_desgntn_master', 'delete_desgntn_master', 'view_desgntn_master','import_designtn_master'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -2647,6 +2651,8 @@ updateInderminateAttendance():void{
           return 'Delete';
         case 'view_desgntn_master':
           return 'View';
+        case 'import_designtn_master':
+          return 'Import';
         default:
           return permissionCodename;
       }
@@ -2663,7 +2669,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_ctgry_master', 'change_ctgry_master', 'delete_ctgry_master', 'view_ctgry_master'];
+          const requiredCodenames = ['add_ctgry_master', 'change_ctgry_master', 'delete_ctgry_master', 'view_ctgry_master','import_ctgry_master'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -2699,6 +2705,8 @@ updateInderminateAttendance():void{
         return 'Delete';
       case 'view_ctgry_master':
         return 'View';
+      case 'import_ctgry_master':
+        return 'Import';
       default:
         return permissionCodename;
     }
@@ -2943,6 +2951,19 @@ updateInderminateAttendance():void{
       
               // Convert map values to an array
               this.GrouppermissionsGenReqEsc = Array.from(uniquePermissionsMap.values());
+
+              const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsGenReqEsc.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
+
+
       
               console.log('Filtered Unique Permissions:', this.GrouppermissionsGenReqEsc);
             },
@@ -2983,7 +3004,7 @@ updateInderminateAttendance():void{
       this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
         (result: any[]) => {
           // Specify the codenames you want to filter
-          const requiredCodenames = ['add_attendance', 'change_attendance', 'delete_attendance', 'view_attendance'];
+          const requiredCodenames = ['add_attendance', 'change_attendance', 'delete_attendance', 'view_attendance','import_attendance'];
   
           // Filter and remove duplicates based on codename
           const uniquePermissionsMap = new Map();
@@ -3019,6 +3040,8 @@ updateInderminateAttendance():void{
         return 'Delete';
       case 'view_attendance':
         return 'View';
+      case 'import_attendance':
+        return 'Import';
       default:
         return permissionCodename;
     }
@@ -3046,6 +3069,17 @@ updateInderminateAttendance():void{
   
           // Convert map values to an array
           this.GrouppermissionsFaceRegister = Array.from(uniquePermissionsMap.values());
+
+               const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsFaceRegister.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
   
           console.log('Filtered Unique Permissions:', this.GrouppermissionsFaceRegister);
         },
@@ -3096,6 +3130,16 @@ updateInderminateAttendance():void{
   
           // Convert map values to an array
           this.GrouppermissionsPunching = Array.from(uniquePermissionsMap.values());
+                    const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsPunching.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
   
           console.log('Filtered Unique Permissions:', this.GrouppermissionsPunching);
         },
@@ -4260,7 +4304,7 @@ loadpermissionsEmpReport(): void {
           'change_report',
           'delete_report',
           'view_report',
-          'export_report'
+          'emp_export_report'
         ];
 
         const uniquePermissionsMap = new Map();
@@ -4278,7 +4322,7 @@ loadpermissionsEmpReport(): void {
           'change_report',
           'delete_report',
           'view_report',
-          'export_report'
+          'emp_export_report'
         ];
 
         // Convert & sort
@@ -4312,7 +4356,7 @@ loadpermissionsEmpReport(): void {
               return 'Delete';
               case 'view_report':
                 return 'View';
-              case 'export_report':
+              case 'emp_export_report':
               return 'Export';
             default:
               return permissionCodename;
@@ -5338,6 +5382,16 @@ loadpermissionsEmpReport(): void {
                     
                             // Convert map values to an array
                             this.GrouppermissionsLeaveEscalation = Array.from(uniquePermissionsMap.values());
+                            const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsLeaveEscalation.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
                     
                             console.log('Filtered Unique Permissions:', this.GrouppermissionsLeaveEscalation);
                           },
@@ -5579,7 +5633,8 @@ loadpermissionsEmpReport(): void {
                                   const requiredCodenames = ['add_emp_leave_balance',
                                                            'change_emp_leave_balance',
                                                             'delete_emp_leave_balance',
-                                                            'view_emp_leave_balance'];
+                                                            'view_emp_leave_balance',
+                                                            'import_emp_leave_balance'];
                           
                                   // Filter and remove duplicates based on codename
                                   const uniquePermissionsMap = new Map();
@@ -5615,6 +5670,8 @@ loadpermissionsEmpReport(): void {
                                   return 'Delete';
                                 case 'view_emp_leave_balance':
                                   return 'View';
+                                case 'import_emp_leave_balance':
+                                  return 'Import';
                                 default:
                                   return permissionCodename;
                               }
@@ -5894,7 +5951,8 @@ loadpermissionsSalarycomponent(): void {
           'add_salarycomponent',
           'change_salarycomponent',
           'delete_salarycomponent',
-          'view_salarycomponent'
+          'view_salarycomponent',
+          'import_salarycomponent'
         ];
 
         const uniquePermissionsMap = new Map();
@@ -5926,6 +5984,8 @@ getDisplayNameSalarycomponent(permissionCodename: string): string {
       return 'Delete';
     case 'view_salarycomponent':
       return 'View';
+    case 'import_salarycomponent':
+      return 'Import';
     default:
       return permissionCodename;
   }
@@ -6155,6 +6215,16 @@ loadpermissionsAdvanceSalaryEscalation(): void {
         });
 
         this.GrouppermissionsAdvanceSalaryEscalation = Array.from(uniquePermissionsMap.values());
+     const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsAdvanceSalaryEscalation.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
       },
       (error: any) => {
         console.error('Error fetching Payroll Advance Salary Escalation permissions:', error);
@@ -6506,6 +6576,16 @@ loadpermissionsLoanEscalation(): void {
         });
 
         this.GrouppermissionsLoanEscalation = Array.from(uniqueMap.values());
+         const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsLoanEscalation.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
       },
       (error: any) => {
         console.error('Error fetching Loan Approval level permissions:', error);
@@ -6993,6 +7073,16 @@ loadpermissionsAssetEscalation(): void {
         });
 
         this.GrouppermissionsAssetEscalation = Array.from(uniqueMap.values());
+          const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsAssetEscalation.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
       },
       (error: any) => {
         console.error('Error fetching Asset Escalation permissions:', error);
@@ -7565,6 +7655,16 @@ loadpermissionsAirTicketEsc(): void {
         });
 
         this.GrouppermissionsAirTicketEsc = Array.from(uniqueMap.values());
+                              const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsAirTicketEsc.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
       },
       (error: any) => {
         console.error('Error fetching Aieticket Escalation permissions:', error);
@@ -8547,6 +8647,17 @@ getDisplayNameOverTimeRule(permissionCodename: string): string {
         });
 
         this.GrouppermissionsEmpEarlygoing = Array.from(uniqueMap.values());
+
+              const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsEmpEarlygoing.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
       },
       (error: any) => {
         console.error('Error fetching Employee Early Going permissions:', error);
@@ -8680,6 +8791,7 @@ loadpermissionsManualentry(): void {
           'change_attendance_manual',
           'delete_attendance_manual',
           'view_attendance_manual',
+          'export_attendance_manual'
         ];
 
         const uniqueMap = new Map();
@@ -8691,6 +8803,16 @@ loadpermissionsManualentry(): void {
         });
 
         this.GrouppermissionsManualentry = Array.from(uniqueMap.values());
+                    const order = ['add', 'change', 'delete', 'view', 'import', 'export'];
+
+this.GrouppermissionsManualentry.sort((a, b) => {
+  const getPriority = (code: string) => {
+    const key = order.find(o => code.includes(o));
+    return key ? order.indexOf(key) : 999;
+  };
+
+  return getPriority(a.codename.toLowerCase()) - getPriority(b.codename.toLowerCase());
+});
       },
       (error: any) => {
         console.error('Error fetching Asset Approvals permissions:', error);
@@ -8710,6 +8832,8 @@ getDisplayNameManualentry(permissionCodename: string): string {
       return 'Delete';
     case 'view_attendance_manual':
       return 'View';
+    case 'export_attendance_manual':
+      return 'Import';
     default:
       return permissionCodename;
   }
