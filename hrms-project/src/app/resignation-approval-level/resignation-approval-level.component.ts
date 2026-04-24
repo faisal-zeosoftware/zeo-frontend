@@ -206,33 +206,35 @@ private employeeService: EmployeeService,
   registerButtonClicked = false;
 
 
-  CreateLoanApproverLevel(): void {
-    this.registerButtonClicked = true;
-  
-  
-    const formData = new FormData();
-    formData.append('level', this.level);
-    formData.append('role', this.role);
-    formData.append('approver', this.approver);
-    formData.append('branch', this.branch);
-    formData.append('approval_type', this.approval_type)
+CreateLoanApproverLevel(): void {
+  this.registerButtonClicked = true;
 
+  const formattedLevels = this.levels.map((lvl, index) => ({
+    level: index + 1,
+    role: lvl.role || '',
+    approver: lvl.approver ? Number(lvl.approver) : null
+  }));
 
- 
+  const branchValue = Array.isArray(this.branch) ? this.branch : [this.branch];
 
-  
-    this.employeeService.registerResigantionApproverLevel(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert(' Approval Level has been added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
-        alert('Enter all required fields!');
-      }
-    );
-  }
+  const payload = {
+    branch: branchValue,
+    approval_type: this.approval_type,
+    total_levels: formattedLevels.length,
+    levels: formattedLevels
+  };
+
+  this.employeeService.registerResigantionApproverLevel(payload).subscribe(
+    (response) => {
+      console.log('Success', response);
+      alert('Approval Level has been added');
+      window.location.reload();
+    },
+    (error) => {
+      console.error(error);
+    }
+  );
+}
 
 
 
@@ -371,8 +373,31 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.isEditModalOpen = true;
+
+  this.loadDeparmentBranch(() => {
+    this.mapBranchesNameToId();
+  });
+
+  this.loadUsers();
+
+  // ✅ ensure levels exists
+  if (!this.editAsset.levels || !Array.isArray(this.editAsset.levels)) {
+    this.editAsset.levels = [];
+  }
+}
+
+addEditLevel() {
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
 }
 
 closeEditModal(): void {
@@ -484,33 +509,36 @@ mapBranchesNameToId() {
 
 updateAssetType(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema || !this.editAsset.id) {
     alert('Missing schema or asset ID');
     return;
   }
 
-  this.employeeService.updateResignationApprovaLevel(this.editAsset.id, this.editAsset).subscribe(
-    (response) => {
-      alert(' Approval Level  updated successfully!');
+  const formattedLevels = (this.editAsset.levels || []).map((lvl: any, index: number) => ({
+    level: index + 1,
+    role: lvl.role || '',
+    approver: lvl.approver ? Number(lvl.approver) : null
+  }));
+
+  const payload = {
+    ...this.editAsset,
+    branch: this.editAsset.branch,
+    approval_type: this.editAsset.approval_type,
+    total_levels: formattedLevels.length,
+    levels: formattedLevels
+  };
+
+  this.employeeService.updateResignationApprovaLevel(this.editAsset.id, payload).subscribe(
+    () => {
+      alert('Approval Level updated successfully!');
       this.closeEditModal();
       window.location.reload();
     },
-(error) => {
-  console.error('Error updating Approval Level:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
+    (error) => {
+      console.error(error);
+      alert('Update failed');
+    }
   );
 }
 
@@ -570,5 +598,40 @@ toggleAllApproverSelection(): void {
   );
 
 }
+
+
+
+
+
+   levels: any[] = [
+  {
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  }
+];
+
+addLevel() {
+  this.levels.push({
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  });
+}
+
+removeLevel(index: number) {
+  this.levels.splice(index, 1);
+}
+
+
+
 
 }

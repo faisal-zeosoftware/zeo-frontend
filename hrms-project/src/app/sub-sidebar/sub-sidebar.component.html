@@ -44,9 +44,9 @@
                   <li routerLink="/main-sidebar/sub-sidebar/general-request-escalation" *ngIf="hasViewPermissionGenReqEsc"><a ><mat-icon>peoples</mat-icon>General Request Escalation</a></li>
                  </ul>
                  
-                  <li routerLink="/main-sidebar/sub-sidebar/attendace-marking" *ngIf="hasViewPermissionAttd"><a ><mat-icon>peoples</mat-icon> Attendance Marking</a></li>
+                  <!-- <li routerLink="/main-sidebar/sub-sidebar/attendace-marking" *ngIf="hasViewPermissionAttd"><a ><mat-icon>peoples</mat-icon> Attendance Marking</a></li> -->
 
-                  <li routerLink="/main-sidebar/sub-sidebar/document-expired" *ngIf="hasViewExpDocNotification"><a ><mat-icon>peoples</mat-icon> Expired Documents</a></li>
+                 
 
                   <!-- <li routerLink="/main-sidebar/sub-sidebar/employee-overtime" *ngIf="hasViewEmpOverTime"><a><mat-icon>peoples</mat-icon> Employee Overtime</a></li> -->
 
@@ -78,6 +78,8 @@
                       <a>Gratuity</a>  
                     </li>
                   </ul>
+
+                   <li routerLink="/main-sidebar/sub-sidebar/document-expired" *ngIf="hasViewExpDocNotification"><a ><mat-icon>peoples</mat-icon> Expired Documents</a></li>
 
               </ul>
         </div>

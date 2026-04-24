@@ -4213,22 +4213,23 @@ registerEmployeeAttendenceCheckInNew(data: FormData): Observable<any> {
   }
 
 
-   registerAirticketApproverLevel(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError('No schema selected.');
-    }
-  
-    const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-levels/?schema=${selectedSchema}`;
-  
-    return this.http.post(apiUrl, formData).pipe(
-      catchError((error) => {
-        console.error('Error during leave type registration:', error);
-        return throwError(error);
-      })
-    );
+registerAirticketApproverLevel(data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => 'No schema selected.');
   }
+
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-approval-levels/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, data).pipe(
+    catchError((error) => {
+      console.error('Error during approval level creation:', error);
+      return throwError(() => error);
+    })
+  );
+}
 
 
 
@@ -6141,19 +6142,20 @@ registerAirTicketRequest(companyData: any): Observable<any> {
 // Resignation approval level
 
 
-registerResigantionApproverLevel(formData: FormData): Observable<any> {
+registerResigantionApproverLevel(data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema) {
     console.error('No schema selected.');
-    return throwError('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
   }
 
   const apiUrl = `${this.apiUrl}/employee/api/resign-approval-level/?schema=${selectedSchema}`;
 
-  return this.http.post(apiUrl, formData).pipe(
+  return this.http.post(apiUrl, data).pipe(
     catchError((error) => {
-      console.error('Error during leave type registration:', error);
-      return throwError(error);
+      console.error('Error during resignation approval level creation:', error);
+      return throwError(() => error);
     })
   );
 }

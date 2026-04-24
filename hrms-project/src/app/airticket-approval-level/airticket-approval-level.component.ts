@@ -17,6 +17,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
   templateUrl: './airticket-approval-level.component.html',
   styleUrl: './airticket-approval-level.component.css'
 })
+
 export class AirticketApprovalLevelComponent {
 
 
@@ -217,47 +218,37 @@ export class AirticketApprovalLevelComponent {
       registerButtonClicked = false;
     
     
-    CreateAirticketApproverLevel(): void {
-      this.registerButtonClicked = true;
-    
-      const formData = new FormData();
-      formData.append('level', this.level);
-      formData.append('role', this.role);
-      formData.append('approver', this.approver);
-      formData.append('approval_type', this.approval_type);
-      formData.append('branch', this.branch);
+CreateAirticketApproverLevel(): void {
+  this.registerButtonClicked = true;
 
+  // ✅ Ensure level numbering
+  const formattedLevels = this.levels.map((lvl, index) => ({
+    ...lvl,
+    level: index + 1,
+    approver: Number(lvl.approver),
+    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
+  }));
 
-      // formData.append('asset_type', this.asset_type);
-    
-      this.employeeService.registerAirticketApproverLevel(formData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-          alert('Airticket Approval Level has been added');
-          window.location.reload();
-        },
-        (error) => {
-          console.error('Added failed', error);
-    
-          let errorMessage = 'Enter all required fields!';
-    
-          // ✅ Handle backend validation or field-specific errors
-          if (error.error && typeof error.error === 'object') {
-            const messages: string[] = [];
-            for (const [key, value] of Object.entries(error.error)) {
-              if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-              else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-              else messages.push(`${key}: ${JSON.stringify(value)}`);
-            }
-            if (messages.length > 0) errorMessage = messages.join('\n');
-          } else if (error.error?.detail) {
-            errorMessage = error.error.detail;
-          }
-    
-          alert(errorMessage);
-        }
-      );
+  const payload = {
+    branch: this.branch,
+    approval_type: this.approval_type,
+
+    // IMPORTANT (same as working component)
+    level: formattedLevels.length,
+
+    levels: formattedLevels
+  };
+
+  this.employeeService.registerAirticketApproverLevel(payload).subscribe(
+    (response) => {
+      alert('Airticket Approval Level has been added');
+      window.location.reload();
+    },
+    (error) => {
+      console.error(error);
     }
+  );
+}
     
     
     
@@ -463,15 +454,40 @@ export class AirticketApprovalLevelComponent {
     isEditModalOpen: boolean = false;
     editAsset: any = {}; // holds the asset being edited
     
-    openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
-    
-    this.mapLoanAprNameToId();
-    this.mapLoanTypeNameToId();
-    
-    }
-    
+openEditModal(asset: any): void {
+  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.isEditModalOpen = true;
+
+  this.loadDeparmentBranch(() => {
+    this.mapBranchesNameToId();
+  });
+
+  this.loadUsers();
+
+  // ✅ IMPORTANT
+  if (!this.editAsset.levels || !Array.isArray(this.editAsset.levels)) {
+    this.editAsset.levels = [];
+  }
+}
+
+addEditLevel() {
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
+
+  // ✅ FIX: reorder levels
+  this.editAsset.levels.forEach((lvl: any, i: number) => {
+    lvl.level = i + 1;
+  });
+}
+
+
     closeEditModal(): void {
     this.isEditModalOpen = false;
     this.editAsset = {};
@@ -519,37 +535,46 @@ export class AirticketApprovalLevelComponent {
     }
     
     
-    updateAirticketType(): void {
-      const selectedSchema = localStorage.getItem('selectedSchema');
-      if (!selectedSchema || !this.editAsset.id) {
-        alert('Missing schema or asset ID');
-        return;
-      }
-    
-      this.employeeService.updateAirticketApprovalLevel(this.editAsset.id, this.editAsset).subscribe(
-        (response) => {
-          alert(' Airticket Approval Level  updated successfully!');
-          this.closeEditModal();
-          window.location.reload();
-        },
+updateAirticketType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  const formattedLevels = (this.editAsset.levels || []).map((lvl: any, index: number) => ({
+    level: index + 1,
+    role: lvl.role || '',
+    approver: lvl.approver ? Number(lvl.approver) : null
+  }));
+
+  const payload = {
+    branch: this.editAsset.branch,
+    approval_type: this.editAsset.approval_type,
+    level: formattedLevels.length,   // 🔥 important (your API uses this)
+    levels: formattedLevels
+  };
+
+  console.log("FINAL PAYLOAD:", payload); // debug
+
+  this.employeeService.updateAirticketApprovalLevel(this.editAsset.id, payload).subscribe(
+    () => {
+      alert('Updated successfully!');
+      this.closeEditModal();
+
+      // ✅ better than reload
+this.fetchEmployees(
+  this.authService.getSelectedSchema()!, // ✅ force non-null
+  JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+);
+    },
     (error) => {
-      console.error('Error updating Loan Approval level:', error);
-    
-      let errorMsg = 'Update failed';
-    
-      const backendError = error?.error;
-    
-      if (backendError && typeof backendError === 'object') {
-        // Convert the object into a readable string
-        errorMsg = Object.keys(backendError)
-          .map(key => `${key}: ${backendError[key].join(', ')}`)
-          .join('\n');
-      }
-    
-      alert(errorMsg);
+      console.error(error);
+      alert('Update failed');
     }
-      );
-    }
+  );
+}
     
 
     loadDeparmentBranch(callback?: Function): void {
@@ -638,6 +663,32 @@ mapBranchesNameToId() {
 
 }   
   
-  
+    levels: any[] = [
+  {
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  }
+];
+
+addLevel() {
+  this.levels.push({
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  });
+}
+
+removeLevel(index: number) {
+  this.levels.splice(index, 1);
+}  
 
 }

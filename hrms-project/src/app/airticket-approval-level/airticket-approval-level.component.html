@@ -71,49 +71,8 @@
     
           <form (ngSubmit)="CreateAirticketApproverLevel()" enctype="multipart/form-data">
             <div class="row">
-              <div class="col-md-6">
-                <label>Level</label>
-                <input type="number" class="form-control" required [(ngModel)]="level" placeholder="Enter Level"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-          
-              <div class="col-md-6">
-                <label>Role</label>
-                <input type="text" class="form-control" required [(ngModel)]="role" placeholder="Enter Role"
-                       [ngModelOptions]="{standalone: true}">
-              
-              </div>
 
-          
-
-                              <!-- non-ess users  -->
-                            <div class="col-md-6">
-            <div class="custom-sel">
-                <label>Approver</label>
-                <select class="form-control" id="approver" required [(ngModel)]="approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
-                    <option value="" >Select</option>
-                    <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
-                </select>
-                <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
-            </div>
-        </div>
-
-
-     <div class="col-md-6">
-    <label>Approval type</label>
-    <div class="custom-sel">
-      <select
-        class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }">
-        <option value="no_approval">No Approval</option>
-        <option value="reporting_manager">Reporting Manager</option>
-        <option value="multi_approval">Multi Approval</option>
-      </select>
-    </div>
-  </div>
-    
-    
-                    
-      <div class="col-md-6">
+               <div class="col-md-4">
         <label>Branch</label>
     
     
@@ -157,7 +116,74 @@
           </div>
                     
     
+    </div> 
+
+          
+
+
+
+     <div class="col-md-4">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
     </div>
+  </div>
+
+
+                      <div *ngIf="approval_type === 'multi_approval'" class="col-md-12 mt-3">
+
+              <h4>Approval Levels</h4>
+            
+              <div *ngFor="let lvl of levels; let i = index" class="row level-box mb-3">
+            
+                <div class="col-md-2">
+                  <label>Level</label>
+                  <input type="number" class="form-control"
+                    [(ngModel)]="lvl.level"
+                    [ngModelOptions]="{standalone: true}">
+                </div>
+            
+                <div class="col-md-3">
+                  <label>Role</label>
+                  <input type="text" class="form-control"
+                    [(ngModel)]="lvl.role"
+                    [ngModelOptions]="{standalone: true}">
+                </div>
+            
+                <div class="col-md-3">
+                  <label>Approver</label>
+                  <select class="form-control"
+                    [(ngModel)]="lvl.approver"
+                    [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let user of Users" [value]="user.id">
+                      {{ user.username }}
+                    </option>
+                  </select>
+                </div>
+            
+                <div class="col-md-2 d-flex align-items-end">
+                  <button class="btn btn-danger w-100" (click)="removeLevel(i)">
+                    Remove
+                  </button>
+                </div>
+            
+              </div>
+            
+              <!-- Add Button -->
+              <button class="btn btn-primary mt-2" (click)="addLevel()">
+                + Add Level
+              </button>
+            
+            </div>
+    
+    
+                    
+
          
           
              
@@ -212,54 +238,9 @@
 
 <form >
   <div class="row">
-    <div class="col-md-6">
-      <label>Level</label>
-      <input type="number" class="form-control" required [(ngModel)]="editAsset.level" placeholder="Enter Level"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
-
-    <div class="col-md-6">
-      <label>Role</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.role" placeholder="Enter Role"
-             [ngModelOptions]="{standalone: true}">
-    
-    </div>
 
 
-
-    <div class="col-md-6" >
-      <label>Approver</label>
-      <div class="custom-sel">
-        <select
-          class="form-control"
-          id="approver"
-          name="approver"
-          [(ngModel)]="editAsset.approver"
-          [ngModelOptions]="{ standalone: true }"
-        >
-          <option *ngFor="let employees of Approvers" [value]="employees.id">
-            {{ employees.username }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-
-  <div class="col-md-6">
-    <label>Approval type</label>
-    <div class="custom-sel">
-      <select
-        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
-        <option value="no_approval">No Approval</option>
-        <option value="reporting_manager">Reporting Manager</option>
-        <option value="multi_approval">Multi Approval</option>
-      </select>
-    </div>
-  </div>
-    
-    
-                    
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label>Branch</label>
     
     
@@ -304,6 +285,73 @@
                     
     
     </div>
+
+
+
+  <div class="col-md-4">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
+    </div>
+  </div>
+
+
+  <div *ngIf="editAsset.approval_type === 'multi_approval'" class="col-md-12 mt-3">
+
+  <h4>Edit Approval Levels</h4>
+
+  <div *ngFor="let lvl of editAsset.levels; let i = index" class="row level-box mb-3">
+
+    <div class="col-md-2">
+      <label>Level</label>
+      <input type="number" class="form-control"
+             [(ngModel)]="lvl.level"
+             [ngModelOptions]="{standalone: true}">
+    </div>
+
+    <div class="col-md-3">
+      <label>Role</label>
+      <input type="text" class="form-control"
+             [(ngModel)]="lvl.role"
+             [ngModelOptions]="{standalone: true}">
+    </div>
+
+    <div class="col-md-4">
+      <label>Approver</label>
+      <select class="form-control"
+              [(ngModel)]="lvl.approver"
+              [ngModelOptions]="{standalone: true}">
+        <option value="">Select</option>
+        <option *ngFor="let user of Users" [value]="user.id">
+          {{ user.username }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="button" class="btn btn-danger w-100"
+              (click)="removeEditLevel(i)">
+        Remove
+      </button>
+    </div>
+
+  </div>
+
+  <button type="button" class="btn btn-primary mt-2"
+          (click)="addEditLevel()">
+    + Add Level
+  </button>
+
+</div>
+    
+    
+                    
+
 
 
    
@@ -375,31 +423,41 @@
                     </thead>
                     <tbody>
                         
-                      <tr *ngFor="let docs of approvalLevels;let i = index">
-                        <td data-label="No">{{ i + 1 }}</td> 
-                        <td data-label="Level">{{ docs.level }}</td>
-                        <td data-label="Role">{{ docs.role }}</td> 
-                        <td data-label="Approver">{{ docs.approver }}</td>
-                        <!-- <td data-label="AssetType">{{ docs.asset_type }}</td> -->
+<tr *ngFor="let docs of approvalLevels; let i = index">
+  <td>{{ i + 1 }}</td>
 
-                        <td data-label="Action">
-                          <button
-                            mat-fab
-                            color="primary"
-                            aria-label="Edit icon"
-                            *ngIf="showEditBtn"
-          
-                            
-                            (click)="openEditModal(docs)"
-                          >
-                            <mat-icon style="color: white;">draw</mat-icon>
-                          </button>
-          
-                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-          
-                        </td>
-        
-                      </tr>
+  <td>
+    <div *ngFor="let lvl of docs.levels">
+      Level {{ lvl.level }}
+    </div>
+  </td>
+
+  <td>
+    <div *ngFor="let lvl of docs.levels">
+      {{ lvl.role }}
+    </div>
+  </td>
+
+  <td>
+    <div *ngFor="let lvl of docs.levels">
+      {{ lvl.approver }}
+    </div>
+  </td>
+
+  <td class="text-center">
+    <button
+      mat-fab
+      color="primary"
+      *ngIf="showEditBtn"
+      (click)="openEditModal(docs)"
+      style="transform: scale(0.7); margin-right: 6px;"
+    >
+      <mat-icon style="color: white;">draw</mat-icon>
+    </button>
+
+    <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+  </td>
+</tr>
                   
                     </tbody>
                   </table>

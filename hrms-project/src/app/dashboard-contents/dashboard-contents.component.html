@@ -101,10 +101,99 @@
         
     </div>
 
+
+
     <div class="content_sec_last">
+
+
+
+
 
     <div class="row mt-5">
         <div class="col-md-4">
+
+                                   
+
+
+    <div class="approval-main-card">
+
+      <!-- 🔹 Header (Clickable) -->
+      <div class="d-flex justify-content-between align-items-center"
+           (click)="toggleApprovals()"
+           style="cursor:pointer">
+
+        <div>
+          <div class="title">Pending Approvals</div>
+          <div class="value">{{ pendingApprovals.length }}</div>
+        </div>
+
+        <!-- 🔽 Toggle Icon -->
+        <mat-icon class="toggle-icon">
+          {{ showApprovals ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
+
+      </div>
+
+      <!-- 🔽 DROPDOWN CONTENT -->
+      <div *ngIf="showApprovals" class="approval-dropdown">
+
+        <!-- Filter -->
+        <select
+          class="form-control mb-3"
+          [(ngModel)]="approvalFilter"
+          (change)="filterApprovals()"
+        >
+          <option value="">All Approvals</option>
+          <option value="general">📢 General</option>
+          <option value="leave">🏖️ Leave</option>
+          <option value="resignation">📤 Resignation</option>
+          <option value="document">📄 Document</option>
+          <option value="loan">💰 Loan</option>
+          <option value="asset">🧰 Asset</option>
+          <option value="airticket">✈️ Airticket</option>
+          <option value="advance">💵 Advance Salary</option>
+        </select>
+
+        <!-- Empty -->
+        <div *ngIf="filteredApprovals.length === 0" class="text-center small no-data-msg">
+          No pending approvals
+        </div>
+
+        <!-- List -->
+        <div *ngFor="let item of filteredApprovals" class="approval-card-mini">
+
+          <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+              <small class="type">
+                <span *ngIf="item.type === 'general'">📢 General</span>
+                <span *ngIf="item.type === 'leave'">🏖️ Leave</span>
+                <span *ngIf="item.type === 'resignation'">📤 Resignation</span>
+                <span *ngIf="item.type === 'document'">📄 Document</span>
+                <span *ngIf="item.type === 'loan'">💰 Loan</span>
+                <span *ngIf="item.type === 'asset'">🧰 Asset</span>
+                <span *ngIf="item.type === 'airticket'">✈️ Airticket</span>
+                <span *ngIf="item.type === 'advance'">💵 Advance</span>
+              </small>
+
+              <p class="mb-0 employee">
+                {{ item.employee_id  || 'Employee' }}
+              </p>
+            </div>
+
+            <button class="btn btn-sm btn-light" (click)="goToApproval(item)">
+              View
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
             <div class="dash_holidays">
               <div class="row">
                 <div class="col-md-5">
@@ -182,8 +271,12 @@
                 </div>
               </div>
             </div>
+
+
             
           </div>
+
+
           
 
           <div class="col-md-8">
@@ -291,7 +384,6 @@
 
 </div>
 
-
         
                       <!-- ✅ Tasks -->
 <div *ngIf="project.tasks && project.tasks.length > 0" class="task-list mt-4">
@@ -365,6 +457,8 @@
                 </div>
               </div>
             </div>
+
+
 
 
             <div class="dash_holidays mt-4">
@@ -448,6 +542,9 @@
           </div>
           
     </div>
+
+
+
 
 <!-- Announcements Section -->
 <div class="row mt-5">

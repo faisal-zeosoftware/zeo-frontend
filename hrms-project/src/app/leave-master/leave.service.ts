@@ -1368,20 +1368,20 @@ getDocRequestType(selectedSchema: string): Observable<any> {
   
 }
 
-
-CreateDocRequestapprovalLevel(formData: FormData): Observable<any> {
+CreateDocRequestapprovalLevel(data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema) {
     console.error('No schema selected.');
-    return throwError('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
   }
 
   const apiUrl = `${this.apiUrl}/employee/api/Doc-request-approval-levels/?schema=${selectedSchema}`;
 
-  return this.http.post(apiUrl, formData).pipe(
+  return this.http.post(apiUrl, data).pipe(
     catchError((error) => {
-      console.error('Error during leave type registration:', error);
-      return throwError(error);
+      console.error('Error during approval level creation:', error);
+      return throwError(() => error);
     })
   );
 }

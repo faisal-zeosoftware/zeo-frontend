@@ -468,6 +468,13 @@ mapBranchesNameToId() {
 SetLeaveApprovaLevel(): void {
   this.registerButtonClicked = true;
 
+    const formattedLevels = this.levels.map((lvl, index) => ({
+    ...lvl,
+    level: index + 1,
+    approver: Number(lvl.approver),
+    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
+  }));
+
   const formData = new FormData();
 
   // 🔹 Always send strings in FormData
@@ -484,6 +491,12 @@ SetLeaveApprovaLevel(): void {
       formData.append('branch', id.toString());
     });
   }
+
+    // ✅ Append required fields properly
+  formData.append('total_levels', formattedLevels.length.toString());
+
+  // If backend expects JSON array
+  formData.append('levels', JSON.stringify(formattedLevels));
 
   this.leaveService.CreateLeaveapprovalLevel(formData).subscribe(
     (response) => {
@@ -683,6 +696,36 @@ filterEmployees() {
   );
 
 }
+
+    levels: any[] = [
+  {
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  }
+];
+
+addLevel() {
+  this.levels.push({
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  });
+}
+
+removeLevel(index: number) {
+  this.levels.splice(index, 1);
+}
+
+
 
 
 }

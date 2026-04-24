@@ -369,60 +369,42 @@ if (this.userId !== null) {
 
 
 
-    SetLeaveApprovaLevel(): void {
-      this.registerButtonClicked = true;
-      // if (!this.name || !this.code || !this.valid_to) {
-      //   return;
-      // }
-    
-      const formData = new FormData();
-      formData.append('level', this.level);
-      formData.append('role', this.role);
+SetLeaveApprovaLevel(): void {
+  this.registerButtonClicked = true;
 
+  // ✅ Ensure level numbering
+  const formattedLevels = this.levels.map((lvl, index) => ({
+    ...lvl,
+    level: index + 1,
+    approver: Number(lvl.approver),
+    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
+  }));
 
-  
-  
-      formData.append('approver', this.approver);
-      formData.append('request_type', this.request_type);
-      formData.append('approval_type', this.approval_type);
-    
-      formData.append('branch', this.branch);
+  // ✅ CLEAN JSON PAYLOAD (recommended over FormData for arrays)
+  const payload = {
+    role: this.role,
+    request_type: this.request_type,
+    approval_type: this.approval_type,
+    branch: this.branch,
+    // 🔥 IMPORTANT FIX
+    level: formattedLevels.length,   // ✅ REQUIRED FIELD
 
-     
-  
-      
-    
-    
-      this.leaveService.CreateDocRequestapprovalLevel(formData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-  
-  
-          alert('Document Request Approval Level has been Created');
-  
-          window.location.reload();
-        },  
-        (error) => {
-          console.error('Added failed', error);
-     let errorMessage = 'Enter all required fields!';
+    levels: formattedLevels
+  };
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
-      }
+  this.leaveService.CreateDocRequestapprovalLevel(payload).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
 
-      alert(errorMessage);
+      alert('Document Request Approval Level has been Created');
+
+      window.location.reload();
+    },
+    (error) => {
+      console.error(error);
     }
-      );
-    }
+  );
+}
 
 
 
@@ -480,8 +462,39 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.isEditModalOpen = true;
+
+  // ✅ ensure levels exist
+  if (!this.editAsset.levels) {
+    this.editAsset.levels = [];
+  }
+
+  // ✅ ensure branch is array (important for mat-select multiple)
+  if (!Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = [];
+  }
+}
+
+addEditLevel() {
+  if (!this.editAsset.levels) {
+    this.editAsset.levels = [];
+  }
+
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
+
+  // ✅ re-order levels after delete
+  this.editAsset.levels.forEach((lvl: any, i: number) => {
+    lvl.level = i + 1;
+  });
 }
 
 closeEditModal(): void {
@@ -527,37 +540,65 @@ selectedEmployeeIds.forEach(categoryId => {
 }
 }
 
+onEditApprovalTypeChange() {
+  if (this.editAsset.approval_type !== 'multi_approval') {
+    this.editAsset.levels = []; // clear levels
+  } else {
+    if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+      this.editAsset.levels = [
+        { level: 1, role: '', approver: null }
+      ];
+    }
+  }
+}
+
 
 updateAssetType(): void {
-const selectedSchema = localStorage.getItem('selectedSchema');
-if (!selectedSchema || !this.editAsset.id) {
-alert('Missing schema or asset ID');
-return;
-}
+  const selectedSchema = localStorage.getItem('selectedSchema');
 
-this.employeeService.updateDocReqApprovallevel(this.editAsset.id, this.editAsset).subscribe(
-(response) => {
-  alert(' Document Request Approvel Level  updated successfully!');
-  this.closeEditModal();
-  window.location.reload();
-},
-(error) => {
-  console.error('Error updating Document Request Level:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
   }
 
-  alert(errorMsg);
-}
-);
+  // ✅ ONLY process levels if multi approval
+  let formattedLevels: any[] = [];
+
+  if (this.editAsset.approval_type === 'multi_approval') {
+    formattedLevels = this.editAsset.levels.map((lvl: any, index: number) => ({
+      ...lvl,
+      level: index + 1, // ✅ FIX: auto sequence
+      approver: Number(lvl.approver)
+    }));
+  }
+
+  const payload = {
+    ...this.editAsset,
+    level: formattedLevels.length, // total levels
+    levels: formattedLevels
+  };
+
+  this.employeeService.updateDocReqApprovallevel(this.editAsset.id, payload).subscribe(
+    (response) => {
+      alert('Document Request Approval Level updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Error updating:', error);
+
+      let errorMsg = 'Update failed';
+      const backendError = error?.error;
+
+      if (backendError && typeof backendError === 'object') {
+        errorMsg = Object.keys(backendError)
+          .map(key => `${key}: ${backendError[key].join(', ')}`)
+          .join('\n');
+      }
+
+      alert(errorMsg);
+    }
+  );
 }
 
     branchSearch: string = '';
@@ -590,6 +631,32 @@ filterEmployees() {
 }
 
 
+  levels: any[] = [
+  {
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  }
+];
 
+addLevel() {
+  this.levels.push({
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  });
+}
+
+removeLevel(index: number) {
+  this.levels.splice(index, 1);
+}
 
 }

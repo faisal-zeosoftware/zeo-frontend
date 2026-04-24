@@ -221,14 +221,28 @@ export class AssetApprovelLevelComponent {
   
   CreateAssetApproverLevel(): void {
     this.registerButtonClicked = true;
+
+            // Ensure level numbering
+  const formattedLevels = this.levels.map((lvl, index) => ({
+    ...lvl,
+    level: index + 1,
+    approver: Number(lvl.approver),
+    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
+  }));
   
     const formData = new FormData();
     formData.append('level', this.level);
     formData.append('role', this.role);
     formData.append('approver', this.approver);
     formData.append('asset_type', this.asset_type);
-    formData.append('branch',this.branch)
-    formData.append('approval_type',this.approval_type)
+    formData.append('branch',this.branch);
+    formData.append('approval_type',this.approval_type);
+
+  // ✅ Append required fields properly
+  formData.append('total_levels', formattedLevels.length.toString());
+
+  // If backend expects JSON array
+  formData.append('levels', JSON.stringify(formattedLevels));
   
     this.employeeService.registerAssetApproverLevel(formData).subscribe(
       (response) => {
@@ -634,6 +648,35 @@ mapLoanTypeNameToId() {
     deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
   );
 
+}
+
+
+    levels: any[] = [
+  {
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  }
+];
+
+addLevel() {
+  this.levels.push({
+    level: '',
+    role: '',
+    approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
+  });
+}
+
+removeLevel(index: number) {
+  this.levels.splice(index, 1);
 }
   
 

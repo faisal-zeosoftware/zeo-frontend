@@ -802,12 +802,27 @@
       <div class="col-md-10">
         <h2>{{ viewAsset?.description }} - {{ viewAsset?.year }}</h2>
       </div>
-      <div class="col-md-2 text-end">
-        <span class="close" (click)="closeViewModal()">&times;</span>
-      </div>
+     <div class="col-md-2 text-end">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeViewModal()">
+      ×
+    </span>
+  </div>
     </div>
 
     <hr />
+
+  <div class="calendar-legend">
+  <div class="legend-item">
+    <span class="legend-color off-day"></span>
+    <span>Off Day</span>
+  </div>
+
+  <div class="legend-item">
+    <span class="legend-color working-day"></span>
+    <span>Working Day</span>
+  </div>
+</div>
 
     <div class="calendar-grid">
 
@@ -833,9 +848,9 @@
       <div class="col-md-10">
 
       </div>
-      <div class="col-md-2">
-        <button class="btn btn-danger btn-full" type=" button" (click)="closeViewModal()"></button> 
-      </div>
+              <div class="col-md-2">
+                <button type="button" (click)="closeViewModal()" class="btn btn-danger btn-full mt-5">Close</button>
+              </div>
 
   </div>
 </div>

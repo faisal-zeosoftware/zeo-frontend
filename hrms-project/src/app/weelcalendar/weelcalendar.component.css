@@ -51,6 +51,53 @@ margin-right: 10px;
 }
 
 
+ .close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #ff0000;
+  color: #f9f9f9;
+  font-size: 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #dee2e6;
+}
+
+.calendar-legend {
+  display: flex;
+  gap: 20px;
+  margin: 10px 0 20px 0;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+/* Match your calendar colors */
+.off-day {
+  background-color: red;
+}
+
+.working-day {
+  background-color: green;
+}
+
+
+
 
 .list_company_sec{
   padding: 25px;

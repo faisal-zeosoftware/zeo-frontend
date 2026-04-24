@@ -316,6 +316,10 @@ input:focus-visible {
     margin-top: -25px;
 }
 
+.col-md-4 .card {
+  margin-bottom: 20px;
+}
+
 .comapny_section h2{
     color: white;
     font-size: 20px;
@@ -745,6 +749,134 @@ background: #fbc17b;
   background: #ef6c00;
 }
 
+/* Main Card Fix */
+.approval-main-card {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  width: 100%;
+  position: relative; /* FIX overlap */
+  margin-bottom: 20px;
+}
+
+.approval-main-card .title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+}
+
+
+.approval-main-card .value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #000;
+}
+
+/* Toggle icon */
+.approval-main-card .toggle-icon {
+  color: #000000;
+  font-size: 26px;
+}
+
+/* Dropdown */
+.approval-dropdown {
+  margin-top: 12px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #5c5c5c;
+}
+
+/* Filter */
+.approval-dropdown select {
+  border-radius: 8px;
+  border: 1px solid #5c5c5c;
+  font-size: 13px;
+}
+
+/* Mini Cards */
+.approval-card-mini {
+  background: #ffffff;
+  border: 1px solid #5c5c5c;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+
+
+/* Button */
+.approval-card-mini button {
+  background: #000;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+.approval-card-mini button:hover {
+  background: #5c5c5c;
+}
+
+/* Dropdown section */
+.approval-dropdown {
+  margin-top: 15px;
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Mini approval items */
+.approval-card-mini {
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 8px;
+  margin-bottom: 8px;
+  transition: 0.2s;
+}
+
+.approval-card-mini:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Text styles */
+.approval-card-mini .employee {
+  font-size: 12px;
+  color: #000000;
+}
+
+.approval-card-mini .type {
+  font-size: 11px;
+  color: #000000;
+}
+
+.no-data-msg {
+  color: #000000;
+}
+
+
+/* Toggle icon */
+.toggle-icon {
+  font-size: 28px;
+  transition: 0.3s;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 768px) {
   .announcement-card {
@@ -960,6 +1092,19 @@ background: #fbc17b;
 .policy-card .mat-icon{
   color: #5c1e81 ;
   margin-top: 5px;
+}
+
+.approval-card {
+  background: #f9fafc;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  transition: 0.3s;
+}
+
+.approval-card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
 

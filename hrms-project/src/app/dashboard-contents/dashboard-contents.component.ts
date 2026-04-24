@@ -6,6 +6,11 @@ import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorRes
 import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { Subscription } from 'rxjs';
+import { combineLatest } from 'rxjs';
+import { LeaveService } from '../leave-master/leave.service';
+import { forkJoin } from 'rxjs';
+
 
 
 @Component({
@@ -43,14 +48,21 @@ export class DashboardContentsComponent {
   categoriesCount: number = 0;
 
   currentGreeting: string = '';
+
+
+pendingApprovals: any[] = [];
+filteredApprovals: any[] = [];
+approvalFilter: string = '';
   
 
 
-  constructor(private authService: AuthenticationService,
-    private router: Router,
+  constructor(
+   private authService: AuthenticationService,
+   private router: Router,
    private EmployeeService: EmployeeService,
    private route: ActivatedRoute,
    private sessionService: SessionService,
+      private leaveService: LeaveService,
    private DepartmentServiceService: DepartmentServiceService ,
    ) { this.router.events.subscribe(event => {
     if (event instanceof NavigationEnd) {
@@ -58,7 +70,18 @@ export class DashboardContentsComponent {
     }
   }); }
 
+  dataSubscription?: Subscription;
+
    ngOnInit(): void {
+
+      this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
 
   // Update the greeting every minute
   setInterval(() => {
@@ -268,6 +291,139 @@ setDynamicGreeting(): void {
     const date = new Date(dateStr);
     return date.toLocaleString('default', { weekday: 'long' });
   }
+
+filterApprovals() {
+  if (!this.approvalFilter) {
+    // Show all
+    this.filteredApprovals = [...this.pendingApprovals];
+  } else {
+    // Filter by type
+    this.filteredApprovals = this.pendingApprovals.filter((a: any) =>
+      a.type === this.approvalFilter
+    );
+  }
+}
+
+goToApproval(item: any) {
+  let route = '';
+
+  switch (item.type) {
+    case 'general':
+      route = '/main-sidebar/sub-sidebar/approvals';
+      break;
+
+    case 'resignation':
+      route = '/main-sidebar/sub-sidebar/resignation-approvals';
+      break;
+
+    case 'leave':
+      route = '/main-sidebar/leave-options/leave-approvals';
+      break;
+
+    case 'advance':
+      route = '/main-sidebar/salary-options/advance-salary-approvals';
+      break;
+
+    case 'loan':
+      route = '/main-sidebar/loan-sidebar/loan-approval';
+      break;
+
+    case 'asset':
+      route = '/main-sidebar/asset-options/asset-approval';
+      break;
+
+    case 'airticket':
+      route = '/main-sidebar/air-ticket-options/airticket-approvals';
+      break;
+
+    case 'document':
+      route = '/main-sidebar/settings/document-request-approval';
+      break;
+
+    default:
+      route = '/main-sidebar/sub-sidebar/approvals';
+  }
+
+  this.router.navigate([route]);
+}
+
+
+
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+
+  forkJoin({
+    general: this.EmployeeService.getGeneralRequestApprovalsMasterNew(schema, branchIds),
+    leave: this.leaveService.getApprovalslistLeaveNew(schema, branchIds),
+    loan: this.EmployeeService.getApprovalslistLoanNew(schema, branchIds),
+    airticket: this.EmployeeService.getApprovalslistAirticketNew(schema, branchIds),
+    asset: this.EmployeeService.getApprovalslistAssetNew(schema, branchIds),
+    advance: this.EmployeeService.getApprovalslistadvSalaryNew(schema, branchIds),
+
+    // ⚠️ FIX HERE
+    document: this.leaveService.getApprovalslistDocrequest(schema, branchIds[0]),
+
+    resignation: this.EmployeeService.getGeneralResignApprovalsMasterNew(schema, branchIds)
+  }).subscribe({
+    next: (res: any) => {
+
+      const allData = [
+        ...this.mapType(res.general, 'general'),
+        ...this.mapType(res.leave, 'leave'),
+        ...this.mapType(res.loan, 'loan'),
+        ...this.mapType(res.airticket, 'airticket'),
+        ...this.mapType(res.asset, 'asset'),
+        ...this.mapType(res.advance, 'advance'),
+        ...this.mapType(res.document, 'document'),
+        ...this.mapType(res.resignation, 'resignation')
+      ];
+
+      const pending = allData.filter(item =>
+        item.status?.toLowerCase() === 'pending'
+      );
+
+      this.pendingApprovals = pending;
+      this.filteredApprovals = [...pending];
+
+      this.isLoading = false;
+    },
+    error: (err: any) => {
+      console.error(err);
+      this.isLoading = false;
+    }
+  });
+}
+
+
+mapType(data: any[], type: string): any[] {
+  if (!Array.isArray(data)) return [];
+
+  return data.map((item: any) => ({
+    id: item.id,
+    type: type,
+    status: item.status,
+    employee_id: item.employee_id || item.employee || 'Employee',
+    raw: item
+  }));
+}
+
+showApprovals: boolean = false;
+
+
+
+toggleApprovals() {
+  this.showApprovals = !this.showApprovals;
+}
+
+
+
+
+scrollToApprovals(): void {
+  const element = document.getElementById('approvalSection');
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+}
 
 
 

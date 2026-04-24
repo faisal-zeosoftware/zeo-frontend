@@ -566,16 +566,37 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
+  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
   this.isEditModalOpen = true;
 
-  // Load branches first, then convert names → ids
   this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
   });
 
-  this.mapApproverNameToId();
-  this.mapReqTypeNameToId();
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
+
+  this.loadRequestType(() => {
+    this.mapReqTypeNameToId();
+  });
+
+  // ✅ IMPORTANT FIX: ensure levels exist
+  if (!this.editAsset.levels) {
+    this.editAsset.levels = [];
+  }
+}
+
+addEditLevel() {
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
 }
 
 closeEditModal(): void {
@@ -617,34 +638,29 @@ deleteSelectedAssetType() {
 
 updateAssetType(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema || !this.editAsset.id) {
     alert('Missing schema or asset ID');
     return;
   }
 
-  this.employeeService.updateGenreqApprovalLevel(this.editAsset.id, this.editAsset).subscribe(
-    (response) => {
-      alert(' Approval Level updated successfully!');
-      window.location.reload();
+  const payload = {
+    ...this.editAsset,
+    request_type: Number(this.editAsset.request_type),
+    branch: this.editAsset.branch,
+    levels: this.editAsset.levels
+  };
+
+  this.employeeService.updateGenreqApprovalLevel(this.editAsset.id, payload).subscribe(
+    () => {
+      alert('Approval Level updated successfully!');
       this.closeEditModal();
-      this.loadApprovalLevelGen(); // reload updated list
+      this.loadApprovalLevelGen();
     },
-(error) => {
-  console.error('Error updating Approval Level:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
+    (error) => {
+      console.error(error);
+      alert('Update failed');
+    }
   );
 }
 
