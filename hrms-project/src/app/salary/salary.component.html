@@ -566,8 +566,13 @@
       <tr>
         <th>No</th>
         <th>Amount</th>
-        <th>Employee</th>
+        <th>Employee Code</th>
+        <th>Employee Name</th>
+        <th>Department</th>
+        <th>Designation</th>
         <th>Component</th>
+        <th>Amount </th>
+        <th>Component Type  </th>
         <th>Action</th>
       </tr>
     </thead>
@@ -576,7 +581,16 @@
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Amount">{{ docs.amount }}</td>
         <td data-label="Employee">{{ docs.employee }}</td>
+        <td data-label="Employee Name">{{ docs.emp_name }}</td>
+        <td data-label="Department">{{ docs.department }}</td>
+
+        <td data-label="Designation">{{ docs.designation }}</td>
+
         <td data-label="Component">{{ docs.component }}</td>
+        <td data-label="Amount">{{ docs.amount }}</td>
+
+        <td data-label="Component Type">{{ docs.component_type }}</td>
+
         <td data-label="Action">
           <i *ngIf="hasEditPermission" class="fa-solid fa-edit" style="cursor:pointer;"
              (click)="editSalaryComponentEmp(docs)"></i>

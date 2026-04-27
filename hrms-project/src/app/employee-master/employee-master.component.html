@@ -112,8 +112,7 @@
 
 
         <div class="row mt-4" *ngIf="!isTableView">
-         
-          <div class="col-md-4" *ngFor="let employeesec of filteredEmployees">
+          <div class="col-md-4 col-sm-6" *ngFor="let employeesec of filteredEmployees">
             <div class="emp-card-modern mt-3" [ngClass]="{ 'selected-card': employeesec.selected }">
               
               <mat-checkbox *ngIf="Delete" class="card-selection-check" 
@@ -121,38 +120,38 @@
                             (change)="onCheckboxChange(employeesec.id)">
               </mat-checkbox>
           
-              <div class="card-content">
-                <div class="row align-items-center">
-                  
-                  <div class="col-4">
-                    <div class="profile-wrapper">
-                      <img [src]="employeesec.emp_profile_pic || 'assets/default-avatar.png'" 
-                           alt="Employee" class="emp-avatar">
-                      
-                      <button mat-mini-fab color="primary" class="edit-overlay-btn" 
-                              (click)="openEditEmpPopuss(employeesec.id)" *ngIf="showEditBtn">
-                        <mat-icon>edit</mat-icon>
-                      </button>
-                    </div>
-                  </div>
+              <div class="card-banner-bg">
+                 <span class="points-badge" *ngIf="employeesec.points">{{employeesec.points}} Pts</span>
+              </div>
           
-                  <div class="col-8" (click)="showEmployeeDetails(employeesec.id)" style="cursor: pointer;">
-                    <div class="emp-info">
-                      <h2 class="emp-name">{{ employeesec.emp_first_name }} {{ employeesec.emp_last_name }}</h2>
-                      <div class="emp-badge">
-                         <span class="label">ID:</span>
-                         <span class="value">{{ employeesec.emp_code }}</span>
-                      </div>
-                    </div>
+              <div class="card-body-content" (click)="showEmployeeDetails(employeesec.id)">
+                <div class="profile-container">
+                  <div class="avatar-wrapper">
+                    <img [src]="employeesec.emp_profile_pic || 'assets/default-avatar.png'" 
+                         alt="Employee" class="emp-avatar-main">
+                    <button mat-icon-button class="edit-btn-floating" 
+                            (click)="openEditEmpPopuss(employeesec.id); $event.stopPropagation()" 
+                            *ngIf="showEditBtn">
+                      <mat-icon>edit</mat-icon>
+                    </button>
                   </div>
+                </div>
           
+                <div class="info-stack">
+                  <h2 class="emp-name-main">
+                    {{ employeesec.emp_first_name || 'N/A' }} {{ employeesec.emp_last_name }}
+                  </h2>
+                  <p class="emp-email">{{ employeesec.emp_code }}</p>
+                  <div class="emp-meta">
+                    <span class="dept-tag">{{ employeesec.emp_dept_id || 'General' }}</span>
+                    <span class="dot-separator">•</span>
+                    <span class="branch-tag">{{ employeesec.emp_branch_id }}</span>
+                  </div>
                 </div>
               </div>
+          
             </div>
           </div>
-
-
-            
 
         </div>
       
