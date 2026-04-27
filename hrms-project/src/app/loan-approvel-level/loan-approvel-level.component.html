@@ -226,52 +226,25 @@
 
 <form >
   <div class="row">
-    <div class="col-md-6">
-      <label>Level</label>
-      <input type="number" class="form-control" required [(ngModel)]="editAsset.level" placeholder="Enter Level"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
 
-    <div class="col-md-6">
-      <label>Role</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.role" placeholder="Enter Role"
-             [ngModelOptions]="{standalone: true}">
-    
-    </div>
-
-
-
-    <div class="col-md-6" >
-      <label>Approver</label>
+    <div class="col-md-4" >
+      <label>Loan Type</label>
       <div class="custom-sel">
         <select
           class="form-control"
-          id="approver"
-          name="approver"
-          [(ngModel)]="editAsset.approver"
+          id="loan_type"
+          name="loan_type"
+          [(ngModel)]="editAsset.loan_type"
           [ngModelOptions]="{ standalone: true }"
         >
-          <option *ngFor="let employees of Approvers" [value]="employees.id">
-            {{ employees.username }}
+          <option *ngFor="let employees of LoanTypes" [value]="employees.id">
+            {{ employees.loan_type }}
           </option>
         </select>
       </div>
     </div>
 
-
-    <div class="col-md-6">
-    <label>Approval type</label>
-    <div class="custom-sel">
-      <select
-        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
-        <option value="no_approval">No Approval</option>
-        <option value="reporting_manager">Reporting Manager</option>
-        <option value="multi_approval">Multi Approval</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="col-md-6">
+  <div class="col-md-4">
       <label>Branch</label>
 
       <div class="custom-sel">
@@ -315,24 +288,59 @@
   </div>
 
 
+    <div class="col-md-4">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
+    </div>
+  </div>
+
+
+
    
 
-    <div class="col-md-6" >
-      <label>Loan Type</label>
-      <div class="custom-sel">
-        <select
-          class="form-control"
-          id="loan_type"
-          name="loan_type"
-          [(ngModel)]="editAsset.loan_type"
-          [ngModelOptions]="{ standalone: true }"
-        >
-          <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-            {{ employees.loan_type }}
-          </option>
-        </select>
-      </div>
+
+
+    <div *ngIf="editAsset.approval_type === 'multi_approval'" class="col-md-12 mt-3">
+
+  <h4>Edit Approval Levels</h4>
+
+  <div *ngFor="let lvl of editAsset.levels; let i = index" class="row mb-2">
+
+    <div class="col-md-2">
+      <input type="number" [(ngModel)]="lvl.level" [ngModelOptions]="{standalone: true}" class="form-control">
     </div>
+
+    <div class="col-md-3">
+      <input type="text" [(ngModel)]="lvl.role" [ngModelOptions]="{standalone: true}" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <select [(ngModel)]="lvl.approver" [ngModelOptions]="{standalone: true}" class="form-control">
+        <option *ngFor="let user of Users" [value]="user.id">
+          {{ user.username }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <button type="button" class="btn btn-danger w-100" (click)="removeLevel(i)">
+        Remove
+      </button>
+    </div>
+
+  </div>
+
+  <button type="button" class="btn btn-primary mt-2" (click)="addLevel()">
+    + Add Level
+  </button>
+
+</div>
 
 
   </div>

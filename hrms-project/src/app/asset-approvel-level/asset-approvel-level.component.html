@@ -228,61 +228,24 @@
 </div>
 <hr />
 
-<form >
+<form>
+
   <div class="row">
-    <div class="col-md-6">
-      <label>Level</label>
-      <input type="number" class="form-control" required [(ngModel)]="editAsset.level" placeholder="Enter Level"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
 
-    <div class="col-md-6">
-      <label>Role</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.role" placeholder="Enter Role"
-             [ngModelOptions]="{standalone: true}">
-    
-    </div>
-
-
-
-    <div class="col-md-6" >
-      <label>Approver</label>
-      <div class="custom-sel">
-        <select
-          class="form-control"
-          id="approver"
-          name="approver"
-          [(ngModel)]="editAsset.approver"
-          [ngModelOptions]="{ standalone: true }"
-        >
-          <option *ngFor="let employees of Approvers" [value]="employees.id">
-            {{ employees.username }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-
-   
-
-    <div class="col-md-6" >
+    <!-- Asset Type -->
+    <div class="col-md-4">
       <label>Asset Type</label>
-      <div class="custom-sel">
-        <select
-          class="form-control"
-          id="asset_type"
-          name="asset_type"
-          [(ngModel)]="editAsset.asset_type"
-          [ngModelOptions]="{ standalone: true }"
-        >
-          <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-            {{ employees.name }}
-          </option>
-        </select>
-      </div>
+      <select class="form-control"
+              [(ngModel)]="editAsset.asset_type"
+              [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let item of LoanTypes" [value]="item.id">
+          {{ item.name }}
+        </option>
+      </select>
     </div>
 
-      <div class="col-md-6">
+    <!-- Approval Type -->
+   <div class="col-md-4">
     <label>Approval type</label>
     <div class="custom-sel">
       <select
@@ -294,56 +257,130 @@
     </div>
   </div>
 
-    <div class="col-md-6">
-<label>Branch</label>
 
-
-
-
-<div class="custom-sel">
-    <div class="form-control-wrapper">
-  
-
-      <mat-form-field>
-        <!-- <mat-label>Favorite food</mat-label> -->
-        <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #select multiple>
-          <div class="select-all">
-            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
-              Select All
-            </mat-checkbox>
-          </div>
-          <input type="text" placeholder="serach" class="form-control">
-
-          <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
-            {{ deparmentsec.branch_name }} 
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      
-    </div>
-<div *ngIf="registerButtonClicked && (!editAsset.branch || editAsset.branch.length === 0)"
-     class="error-message">
-     Please Select Your Branch
-</div>
-
-  </div>
+    <!-- Branch -->
+              <div class="col-md-4">
+        <label>Branch</label>
+    
+    
+    
+    
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+          
+    
+              <mat-form-field>
+                <!-- <mat-label>Favorite food</mat-label> -->
+                        <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #select multiple>
+                          <div class="select-all">
+                            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                              Select All
+                            </mat-checkbox>
+                          </div>
+                              <input type="text" placeholder="Search Employee"
+                                     class="form-control"
+                                     [(ngModel)]="branchSearch"
+                                     [ngModelOptions]="{standalone: true}"
+                                     (click)="$event.stopPropagation()">
             
+                          <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
+                            {{ deparmentsec.branch_name }} 
+                          </mat-option> -->
+                <mat-option
+          *ngFor="let deparmentsec of filterEmployees()"
+          [value]="deparmentsec.id">
 
-</div>
+          {{ deparmentsec.branch_name }}
 
+        </mat-option>
+                        </mat-select>
+              </mat-form-field>
+              
+            </div>
+            <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
+              Please Select Your branch
+            </div>
+          </div>
+                    
+    
+    </div>
+  </div>
+
+  <!-- 🔥 MULTI APPROVAL LEVELS -->
+  <div *ngIf="editAsset.approval_type === 'multi_approval'" class="mt-3">
+
+    <h4>Edit Approval Levels</h4>
+
+    <div *ngFor="let lvl of editAsset.levels; let i = index"
+         class="row mb-3">
+
+      <div class="col-md-2">
+        <label>Level</label>
+        <input type="number"
+               class="form-control"
+               [(ngModel)]="lvl.level"
+               [ngModelOptions]="{standalone: true}">
+      </div>
+
+      <div class="col-md-3">
+        <label>Role</label>
+        <input type="text"
+               class="form-control"
+               [(ngModel)]="lvl.role"
+               [ngModelOptions]="{standalone: true}">
+      </div>
+
+      <div class="col-md-3">
+        <label>Approver</label>
+        <select class="form-control"
+                [(ngModel)]="lvl.approver"
+                [ngModelOptions]="{standalone: true}">
+          <option value="">Select</option>
+          <option *ngFor="let user of Approvers" [value]="user.id">
+            {{ user.username }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="button"
+                class="btn btn-danger w-100"
+                (click)="removeEditLevel(i)">
+          Remove
+        </button>
+      </div>
+
+    </div>
+
+    <button type="button"
+            class="btn btn-primary"
+            (click)="addEditLevel()">
+      + Add Level
+    </button>
 
   </div>
 
-  <div class="row" >
+  <!-- BUTTONS -->
+  <div class="row mt-3">
     <div class="col-md-8"></div>
-    <div class="col-md-2">
-      <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-4">Close</button>
 
-    </div>
     <div class="col-md-2">
-      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+      <button type="button"
+              (click)="closeEditModal()"
+              class="btn btn-danger w-100">
+        Close
+      </button>
+    </div>
+
+    <div class="col-md-2">
+      <button type="button"
+              (click)="updateAssetType()"
+              class="btn btn-success w-100">
+        Update
+      </button>
     </div>
   </div>
+
 </form>
 
 

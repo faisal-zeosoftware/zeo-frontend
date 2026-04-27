@@ -239,38 +239,11 @@
 
 <form >
   <div class="row">
-    <div class="col-md-6">
-      <label>Level</label>
-      <input type="number" class="form-control" required [(ngModel)]="editAsset.level" placeholder="Enter level"
-             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !level}">
-      <div *ngIf="registerButtonClicked && !level" class="error-message">Level field is required.</div>
-    </div>
 
-    <!-- <div class="col-md-6">
-      <label>Role</label>
-      <input type="text" class="form-control" required [(ngModel)]="role" placeholder="Enter role"
-             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !role}">
-      <div *ngIf="registerButtonClicked && !role" class="error-message">role field is required.</div>
-    </div> -->
-
-  
-
-
-
-
-    <div class="col-md-6">
-      <label></label>
-      <div class="check-box-selection-sec form-control mt-3">
-        <div class="mat-set">
-          <mat-checkbox [(ngModel)]="editAsset.is_compensatory" [ngModelOptions]="{standalone: true}">Is Compensatory</mat-checkbox>
-        </div>
-      </div>
-    </div>
-    
 
 
     <!-- Conditionally hide this section based on the is_compensatory value -->
-<div class="col-md-6" *ngIf="!is_compensatory">
+<div class="col-md-4" *ngIf="!is_compensatory">
 <label>Leave Type</label>
 <div class="custom-sel">
 <select
@@ -287,31 +260,7 @@ name="request_type"
 </div>
 </div>
 
-    <div class="col-md-6">
-    <label>Approval type</label>
-    <div class="custom-sel">
-      <select
-        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
-        <option value="no_approval">No Approval</option>
-        <option value="reporting_manager">Reporting Manager</option>
-        <option value="multi_approval">Multi Approval</option>
-      </select>
-    </div>
-  </div>
-
-
-
-
-    <div class="col-md-6">
-      <label>Approver</label>
-      <div class="custom-sel">
-        <select class="form-control" id="approver" name="approver" [(ngModel)]="editAsset.approver" [ngModelOptions]="{standalone: true}">
-          <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.username }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="col-md-6">
+    <div class="col-md-4">
       <label>Branch</label>
   
   
@@ -356,6 +305,76 @@ name="request_type"
                   
   
   </div>
+
+    <div class="col-md-4">
+    <label>Approval type</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
+        <option value="no_approval">No Approval</option>
+        <option value="reporting_manager">Reporting Manager</option>
+        <option value="multi_approval">Multi Approval</option>
+      </select>
+    </div>
+  </div>
+
+      <div class="col-md-4">
+      <label></label>
+      <div class="check-box-selection-sec form-control mt-3">
+        <div class="mat-set">
+          <mat-checkbox [(ngModel)]="editAsset.is_compensatory" [ngModelOptions]="{standalone: true}">Is Compensatory</mat-checkbox>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+  <div *ngIf="editAsset.approval_type === 'multi_approval'" class="col-md-12 mt-3">
+
+  <h4>Approval Levels</h4>
+
+  <div *ngFor="let lvl of editAsset.levels; let i = index" class="row mb-3">
+
+    <div class="col-md-2">
+      <label>Level</label>
+      <input type="number" class="form-control"
+        [(ngModel)]="lvl.level"
+        [ngModelOptions]="{standalone: true}">
+    </div>
+
+    <div class="col-md-3">
+      <label>Role</label>
+      <input type="text" class="form-control"
+        [(ngModel)]="lvl.role"
+        [ngModelOptions]="{standalone: true}">
+    </div>
+
+    <div class="col-md-3">
+      <label>Approver</label>
+      <select class="form-control"
+        [(ngModel)]="lvl.approver"
+        [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let user of Users" [value]="user.id">
+          {{ user.username }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+      <button class="btn btn-danger w-100" (click)="removeEditLevel(i)">
+        Remove
+      </button>
+    </div>
+
+  </div>
+
+  <button class="btn btn-primary mt-2" (click)="addEditLevel()">
+    + Add Level
+  </button>
+
+</div>
      
 
 
@@ -388,36 +407,55 @@ name="request_type"
       <tr>
               <th>No</th>
               <th>Level  </th>
-              <th>Branch</th>
               <th>Leave Type</th>
+              <th>Branch</th>
               <th>Approver</th>
               <th>Is compensatory</th>
                <th>Action</th>
       </tr>
     </thead>
     <tbody>
-       <tr *ngFor="let docs of LeaveapprovalLevels;let i = index">
-              <td data-label="No">{{ i + 1 }}</td> 
-              <td data-label="Level">{{ docs.level }}</td>
-              <td data-label="Branch">{{ docs.branch }}</td>
-              <td data-label="Leave Type">{{ docs.request_type }}</td> 
-              <td data-label="Approver">{{ docs.approver }}</td>
-              <td data-label="Is Compensatory">{{ docs.is_compensatory }}</td>
-              <td data-label="Action">
-          <button
-            mat-fab
-            color="primary"
-            aria-label="Edit"
-            *ngIf="showEditBtn"
-            (click)="openEditModal(docs)"
-            style="transform: scale(0.7); margin-right: 6px;"
-          >
-            <mat-icon style="color: white;">draw</mat-icon>
-          </button>
 
-<mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-        </td>
-      </tr>
+
+           <tr *ngFor="let docs of LeaveapprovalLevels; let i = index">
+  <td>{{ i + 1 }}</td>
+  <td>
+    <div *ngFor="let lvl of docs.levels">
+      Level {{ lvl.level }}
+    </div>
+  </td>
+      <td data-label="Leave Type">{{ docs.request_type }}</td> 
+  <td>
+    <span *ngFor="let b of docs.branch; let last = last">
+      {{ b }}<span *ngIf="!last">, </span>
+    </span>
+  </td>
+
+    <td>
+    <div *ngFor="let lvl of docs.levels">
+      {{ lvl.approver }}
+    </div>
+  </td>
+
+
+
+  <td data-label="Is Compensatory">{{ docs.is_compensatory }}</td>
+
+  <td class="text-center">
+    <button
+      mat-fab
+      color="primary"
+      *ngIf="showEditBtn"
+      (click)="openEditModal(docs)"
+      style="transform: scale(0.7); margin-right: 6px;"
+    >
+      <mat-icon style="color: white;">draw</mat-icon>
+    </button>
+
+    <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+  </td>
+</tr>
+  
     </tbody>
   </table>
 </div>

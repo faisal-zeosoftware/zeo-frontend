@@ -217,50 +217,89 @@ private employeeService: EmployeeService,
 CreateLoanApproverLevel(): void {
   this.registerButtonClicked = true;
 
-      // Ensure level numbering
-  const formattedLevels = this.levels.map((lvl, index) => ({
-    ...lvl,
-    level: index + 1,
-    approver: Number(lvl.approver),
-    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
-  }));
+  /* -------------------------
+     ✅ VALIDATION
+  ------------------------- */
 
-  const formData = new FormData();
-  formData.append('level', this.level);
-  formData.append('role', this.role);
-  formData.append('approver', this.approver);
-  formData.append('loan_type', this.loan_type);
-  formData.append('branch', this.branch);
-  formData.append('approval_type',this.approval_type);
+  if (!this.loan_type) {
+    alert('Please select loan type');
+    return;
+  }
 
-      // ✅ Append required fields properly
-  formData.append('total_levels', formattedLevels.length.toString());
+  if (!this.approval_type) {
+    alert('Please select approval type');
+    return;
+  }
 
-  // If backend expects JSON array
-  formData.append('levels', JSON.stringify(formattedLevels));
+  if (!this.branch || this.branch.length === 0) {
+    alert('Please select at least one branch');
+    return;
+  }
 
-  this.employeeService.registerLoanApproverLevel(formData).subscribe(
-    (response) => {
-      console.log('Registration successful', response);
-      alert('Loan Approval Level has been added');
+  let formattedLevels: any[] = [];
+
+  /* -------------------------
+     ✅ MULTI APPROVAL LOGIC
+  ------------------------- */
+
+  if (this.approval_type === 'multi_approval') {
+
+    if (!this.levels || this.levels.length === 0) {
+      alert('Please add at least one level');
+      return;
+    }
+
+    const invalid = this.levels.find(l => !l.role || !l.approver);
+
+    if (invalid) {
+      alert('Please fill all level fields');
+      return;
+    }
+
+    formattedLevels = this.levels.map((lvl, index) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver),
+      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
+      escalate_after_days: lvl.escalate_after_days || 0,
+      escalate_after_hours: lvl.escalate_after_hours || 0,
+      escalate_after_minutes: lvl.escalate_after_minutes || 0
+    }));
+  }
+
+  /* -------------------------
+     ✅ FINAL JSON PAYLOAD
+  ------------------------- */
+
+  const payload = {
+    loan_type: this.loan_type,
+    approval_type: this.approval_type,
+    branch: this.branch, // ✅ array
+    total_levels: formattedLevels.length,
+    levels: formattedLevels
+  };
+
+  console.log('FINAL PAYLOAD:', payload);
+
+  /* -------------------------
+     🚀 API CALL
+  ------------------------- */
+
+  this.employeeService.registerLoanApproverLevel(payload).subscribe(
+    () => {
+      alert('Loan Approval Level created successfully');
+      this.closeapplicationModal();
       window.location.reload();
     },
     (error) => {
-      console.error('Added failed', error);
+      console.error(error);
 
-      let errorMessage = 'Enter all required fields!';
+      let errorMessage = 'Creation failed';
 
-      // ✅ Handle backend validation or field-specific errors
       if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
+        errorMessage = Object.keys(error.error)
+          .map(key => `${key}: ${error.error[key]}`)
+          .join('\n');
       }
 
       alert(errorMessage);
@@ -422,25 +461,22 @@ CreateLoanApproverLevel(): void {
 
         // non-ess-users usermaster services
 
- loadUsers(): void {
-    
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+loadUsers(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
 
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
   if (selectedSchema) {
     this.userService.getApprover(selectedSchema).subscribe(
       (result: any) => {
         this.Users = result;
-        console.log(' fetching Companies:');
 
+        if (callback) callback(); // ✅ important
       },
       (error) => {
-        console.error('Error fetching Companies:', error);
+        console.error('Error fetching users:', error);
       }
     );
   }
-  }
+}
 
     mapApproverNameToId() {
   if (!this.Users || !this.editAsset?.approver) return;
@@ -574,13 +610,20 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = { ...asset };
+  this.isEditModalOpen = true;
 
-// this.mapLoanAprNameToId();
-this.mapLoanTypeNameToId();
-this.mapApproverNameToId();
+  this.loadLoanTypes(() => {
+    this.mapLoanTypeNameToId();
+  });
 
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
+
+  this.loadDeparmentBranch(() => {
+    this.mapBranchesNameToId();
+  });
 }
 
 closeEditModal(): void {
@@ -631,34 +674,97 @@ deleteSelectedLoanAprlvl() {
 
 
 updateAssetType(): void {
+
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema || !this.editAsset.id) {
     alert('Missing schema or asset ID');
     return;
   }
 
-  this.employeeService.updateLoanApprovalLevel(this.editAsset.id, this.editAsset).subscribe(
-    (response) => {
-      alert(' Loan Approval Level  updated successfully!');
+  if (!this.editAsset.loan_type) {
+    alert('Loan type required');
+    return;
+  }
+
+  if (!this.editAsset.approval_type) {
+    alert('Approval type required');
+    return;
+  }
+
+  if (!this.editAsset.branch || this.editAsset.branch.length === 0) {
+    alert('Select at least one branch');
+    return;
+  }
+
+  let formattedLevels: any[] = [];
+
+  /* -------------------------
+     ✅ MULTI APPROVAL
+  ------------------------- */
+
+  if (this.editAsset.approval_type === 'multi_approval') {
+
+    if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+      alert('Add at least one level');
+      return;
+    }
+
+    const invalid = this.editAsset.levels.find((l: any) => !l.role || !l.approver);
+
+    if (invalid) {
+      alert('Fill all level fields');
+      return;
+    }
+
+    formattedLevels = this.editAsset.levels.map((lvl: any, index: number) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver),
+      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
+      escalate_after_days: lvl.escalate_after_days || 0,
+      escalate_after_hours: lvl.escalate_after_hours || 0,
+      escalate_after_minutes: lvl.escalate_after_minutes || 0
+    }));
+  }
+
+  /* -------------------------
+     ✅ FINAL PAYLOAD
+  ------------------------- */
+
+  const payload = {
+    loan_type: this.editAsset.loan_type,
+    approval_type: this.editAsset.approval_type,
+    branch: this.editAsset.branch, // ✅ array
+    total_levels: formattedLevels.length,
+    levels: formattedLevels
+  };
+
+  console.log('UPDATE PAYLOAD:', payload);
+
+  /* -------------------------
+     🚀 API CALL
+  ------------------------- */
+
+  this.employeeService.updateLoanApprovalLevel(this.editAsset.id, payload).subscribe(
+    () => {
+      alert('Loan Approval Level updated successfully!');
       this.closeEditModal();
       window.location.reload();
     },
-(error) => {
-  console.error('Error updating Loan Approval level:', error);
+    (error) => {
+      console.error(error);
 
-  let errorMsg = 'Update failed';
+      let errorMsg = 'Update failed';
 
-  const backendError = error?.error;
+      if (error.error && typeof error.error === 'object') {
+        errorMsg = Object.keys(error.error)
+          .map(key => `${key}: ${error.error[key]}`)
+          .join('\n');
+      }
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
+      alert(errorMsg);
+    }
   );
 }
 

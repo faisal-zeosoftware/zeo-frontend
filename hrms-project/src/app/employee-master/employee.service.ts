@@ -4178,39 +4178,41 @@ registerEmployeeAttendenceCheckInNew(data: FormData): Observable<any> {
 
 
 
-  registerLoanApproverLevel(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError('No schema selected.');
-    }
-  
-    const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-levels/?schema=${selectedSchema}`;
-  
-    return this.http.post(apiUrl, formData).pipe(
-      catchError((error) => {
-        console.error('Error during leave type registration:', error);
-        return throwError(error);
-      })
-    );
+registerLoanApproverLevel(payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
   }
 
-    registerAssetApproverLevel(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError('No schema selected.');
-    }
-  
-    const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/?schema=${selectedSchema}`;
-  
-    return this.http.post(apiUrl, formData).pipe(
-      catchError((error) => {
-        console.error('Error during leave type registration:', error);
-        return throwError(error);
-      })
-    );
+  const apiUrl = `${this.apiUrl}/payroll/api/loan-approval-levels/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, payload).pipe(
+    catchError((error) => {
+      console.error('Error during loan approval level creation:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+registerAssetApproverLevel(payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => 'No schema selected.');
   }
+
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-request-approvals-levels/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, payload).pipe(
+    catchError((error) => {
+      console.error('Error during asset approval creation:', error);
+      return throwError(() => error);
+    })
+  );
+}
 
 
 registerAirticketApproverLevel(data: any): Observable<any> {
@@ -5907,19 +5909,20 @@ deleteProjectTimsesheet(categoryId: number): Observable<any> {
 
 
 // advance salary approval level
-registeradvSalaryApproverLevel(formData: FormData): Observable<any> {
+registeradvSalaryApproverLevel(data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema) {
     console.error('No schema selected.');
-    return throwError('No schema selected.');
+    return throwError(() => 'No schema selected.');
   }
 
   const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-approval-levels/?schema=${selectedSchema}`;
 
-  return this.http.post(apiUrl, formData).pipe(
+  return this.http.post(apiUrl, data).pipe(
     catchError((error) => {
-      console.error('Error during leave type registration:', error);
-      return throwError(error);
+      console.error('Error during approval level creation:', error);
+      return throwError(() => error);
     })
   );
 }

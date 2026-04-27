@@ -203,47 +203,92 @@ private employeeService: EmployeeService,
   registerButtonClicked = false;
 
 
-  CreateLoanApproverLevel(): void {
-    this.registerButtonClicked = true;
+CreateLoanApproverLevel(): void {
+  this.registerButtonClicked = true;
 
-        // Ensure level numbering
-  const formattedLevels = this.levels.map((lvl, index) => ({
-    ...lvl,
-    level: index + 1,
-    approver: Number(lvl.approver),
-    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
-  }));
-  
-  
-    const formData = new FormData();
-    formData.append('level', this.level);
-    formData.append('role', this.role);
-    formData.append('approver', this.approver);
-    formData.append('branch', this.branch);
-    formData.append('approval_type',this.approval_type);
+  /* -------------------------
+     ✅ VALIDATION
+  ------------------------- */
 
-        // ✅ Append required fields properly
-  formData.append('total_levels', formattedLevels.length.toString());
-
-  // If backend expects JSON array
-  formData.append('levels', JSON.stringify(formattedLevels));
-
-
- 
-
-  
-    this.employeeService.registeradvSalaryApproverLevel(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert(' Approval Level has been added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
-        alert('Enter all required fields!');
-      }
-    );
+  if (!this.approval_type) {
+    alert('Please select approval type');
+    return;
   }
+
+  if (!this.branch || this.branch.length === 0) {
+    alert('Please select at least one branch');
+    return;
+  }
+
+  /* -------------------------
+     ✅ MULTI APPROVAL LEVELS
+  ------------------------- */
+
+  let formattedLevels: any[] = [];
+
+  if (this.approval_type === 'multi_approval') {
+
+    if (!this.levels || this.levels.length === 0) {
+      alert('Please add at least one approval level');
+      return;
+    }
+
+    const invalid = this.levels.find(l => !l.role || !l.approver);
+    if (invalid) {
+      alert('Please fill all level fields');
+      return;
+    }
+
+    formattedLevels = this.levels.map((lvl, index) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver),
+      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
+      escalate_after_days: lvl.escalate_after_days || 0,
+      escalate_after_hours: lvl.escalate_after_hours || 0,
+      escalate_after_minutes: lvl.escalate_after_minutes || 0
+    }));
+  }
+
+  /* -------------------------
+     ✅ FINAL JSON PAYLOAD
+  ------------------------- */
+
+  const payload: any = {
+    approval_type: this.approval_type,
+    branch: Array.isArray(this.branch) ? this.branch : [this.branch],
+  };
+
+  if (this.approval_type === 'multi_approval') {
+    payload.levels = formattedLevels;
+    payload.level = formattedLevels.length; // 🔥 IMPORTANT (same as working module)
+  }
+
+  if (this.approval_type === 'reporting_manager') {
+    payload.use_reporting_manager = true;
+  }
+
+  console.log("🚀 Sending Payload:", payload);
+
+  /* -------------------------
+     🚀 API CALL
+  ------------------------- */
+
+  this.employeeService.registeradvSalaryApproverLevel(payload).subscribe(
+    () => {
+      alert('Approval Level has been added');
+      this.closeapplicationModal();
+
+      const schema = this.authService.getSelectedSchema();
+      const branches = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+      this.fetchEmployees(schema!, branches);
+    },
+    (error) => {
+      console.error(error);
+    }
+  );
+}
 
 
 
@@ -448,10 +493,34 @@ mapBranchesNameToId() {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
+openEditModal(asset: any): void {
+  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+
+  // ✅ IMPORTANT FIX
+  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+    this.editAsset.levels = [
+      {
+        level: 1,
+        role: '',
+        approver: null
+      }
+    ];
   }
+
+  this.isEditModalOpen = true;
+}
+
+addEditLevel() {
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;
@@ -499,37 +568,45 @@ mapBranchesNameToId() {
   }
 
 
-  updateAssetType(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
-      return;
-    }
+updateAssetType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
 
-    this.employeeService.updatepayrollAdvApprovallevel(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
-        alert(' Approval Level Setting  updated successfully!');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  const payload = {
+    approval_type: this.editAsset.approval_type,
+    branch: this.editAsset.branch,
+
+    levels: this.editAsset.levels.map((lvl: any, index: number) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver),
+      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
+      escalate_after_days: lvl.escalate_after_days || 0,
+      escalate_after_hours: lvl.escalate_after_hours || 0,
+      escalate_after_minutes: lvl.escalate_after_minutes || 0
+    }))
+  };
+
+  this.employeeService.updatepayrollAdvApprovallevel(this.editAsset.id, payload)
+    .subscribe(
+      () => {
+        alert('Updated successfully');
         this.closeEditModal();
-        window.location.reload();
+        this.fetchEmployees(
+          this.authService.getSelectedSchema()!,
+          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+        );
       },
-(error) => {
-  console.error('Error updating Adv Sal Apr lvl:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
-
-  alert(errorMsg);
-}
+      (error) => {
+        console.error(error);
+        alert('Update failed');
+      }
     );
-  }
+}
 
     toggleAllSelection(): void {
       if (this.select) {

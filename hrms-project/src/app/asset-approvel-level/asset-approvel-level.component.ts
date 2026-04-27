@@ -219,59 +219,89 @@ export class AssetApprovelLevelComponent {
     registerButtonClicked = false;
   
   
-  CreateAssetApproverLevel(): void {
-    this.registerButtonClicked = true;
+CreateAssetApproverLevel(): void {
 
-            // Ensure level numbering
-  const formattedLevels = this.levels.map((lvl, index) => ({
-    ...lvl,
-    level: index + 1,
-    approver: Number(lvl.approver),
-    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
-  }));
-  
-    const formData = new FormData();
-    formData.append('level', this.level);
-    formData.append('role', this.role);
-    formData.append('approver', this.approver);
-    formData.append('asset_type', this.asset_type);
-    formData.append('branch',this.branch);
-    formData.append('approval_type',this.approval_type);
+  this.registerButtonClicked = true;
 
-  // ✅ Append required fields properly
-  formData.append('total_levels', formattedLevels.length.toString());
-
-  // If backend expects JSON array
-  formData.append('levels', JSON.stringify(formattedLevels));
-  
-    this.employeeService.registerAssetApproverLevel(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Asset Approval Level has been added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Added failed', error);
-  
-        let errorMessage = 'Enter all required fields!';
-  
-        // ✅ Handle backend validation or field-specific errors
-        if (error.error && typeof error.error === 'object') {
-          const messages: string[] = [];
-          for (const [key, value] of Object.entries(error.error)) {
-            if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-            else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-            else messages.push(`${key}: ${JSON.stringify(value)}`);
-          }
-          if (messages.length > 0) errorMessage = messages.join('\n');
-        } else if (error.error?.detail) {
-          errorMessage = error.error.detail;
-        }
-  
-        alert(errorMessage);
-      }
-    );
+  if (!this.asset_type) {
+    alert('Please select asset type');
+    return;
   }
+
+  if (!this.approval_type) {
+    alert('Please select approval type');
+    return;
+  }
+
+  if (!this.branch || this.branch.length === 0) {
+    alert('Please select at least one branch');
+    return;
+  }
+
+  let formattedLevels: any[] = [];
+
+  if (this.approval_type === 'multi_approval') {
+
+    if (!this.levels || this.levels.length === 0) {
+      alert('Please add at least one level');
+      return;
+    }
+
+    const invalid = this.levels.find(l => !l.role || !l.approver);
+
+    if (invalid) {
+      alert('Please fill all level fields');
+      return;
+    }
+
+    formattedLevels = this.levels.map((lvl, index) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver),
+      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
+      escalate_after_days: lvl.escalate_after_days || 0,
+      escalate_after_hours: lvl.escalate_after_hours || 0,
+      escalate_after_minutes: lvl.escalate_after_minutes || 0
+    }));
+  }
+
+  const payload = {
+    asset_type: this.asset_type,
+    approval_type: this.approval_type,
+    branch: Array.isArray(this.branch) ? this.branch : [this.branch],
+    total_levels: formattedLevels.length,
+    levels: formattedLevels
+  };
+
+  console.log('FINAL PAYLOAD:', payload);
+
+  this.employeeService.registerAssetApproverLevel(payload).subscribe(
+    () => {
+      alert('Asset Approval Level created successfully');
+      this.closeapplicationModal();
+
+      const schema = this.authService.getSelectedSchema();
+      const branches = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+      if (schema) {
+        this.fetchEmployees(schema, branches); // ✅ FIXED
+      }
+    },
+    (error) => {
+      console.error(error);
+
+      let msg = 'Creation failed';
+
+      if (error.error && typeof error.error === 'object') {
+        msg = Object.keys(error.error)
+          .map(key => `${key}: ${error.error[key]}`)
+          .join('\n');
+      }
+
+      alert(msg);
+    }
+  );
+}
   
   
   
@@ -544,18 +574,47 @@ mapLoanTypeNameToId() {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
   
-  openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
+openEditModal(asset: any): void {
 
-    this.LoadBranch(() => {
+  this.editAsset = JSON.parse(JSON.stringify(asset));
+
+  // ✅ ensure branch is array
+  if (!Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = this.editAsset.branch ? [this.editAsset.branch] : [];
+  }
+
+  // ✅ ensure levels exist
+  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+    this.editAsset.levels = [
+      { level: 1, role: '', approver: null }
+    ];
+  }
+
+  this.LoadBranch(() => {
     this.mapBranchesNameToId();
   });
-  
+
   this.mapLoanAprNameToId();
   this.mapLoanTypeNameToId();
-  
+
+  this.isEditModalOpen = true;
+}
+
+  addEditLevel() {
+  if (!this.editAsset.levels) {
+    this.editAsset.levels = [];
   }
+
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
+}
   
   closeEditModal(): void {
   this.isEditModalOpen = false;
@@ -604,37 +663,54 @@ mapLoanTypeNameToId() {
   }
   
   
-  updateAssetType(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
-      return;
-    }
-  
-    this.employeeService.updateAssetApprovalLevel(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
-        alert(' Asset Approval Level  updated successfully!');
-        this.closeEditModal();
-        window.location.reload();
-      },
-  (error) => {
-    console.error('Error updating Loan Approval level:', error);
-  
-    let errorMsg = 'Update failed';
-  
-    const backendError = error?.error;
-  
-    if (backendError && typeof backendError === 'object') {
-      // Convert the object into a readable string
-      errorMsg = Object.keys(backendError)
-        .map(key => `${key}: ${backendError[key].join(', ')}`)
-        .join('\n');
-    }
-  
-    alert(errorMsg);
+updateAssetType(): void {
+
+  if (!this.editAsset.id) {
+    alert('Missing ID');
+    return;
   }
-    );
+
+  let formattedLevels: any[] = [];
+
+  if (this.editAsset.approval_type === 'multi_approval') {
+
+    formattedLevels = this.editAsset.levels.map((lvl: any, index: number) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver),
+      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
+      escalate_after_days: lvl.escalate_after_days || 0,
+      escalate_after_hours: lvl.escalate_after_hours || 0,
+      escalate_after_minutes: lvl.escalate_after_minutes || 0
+    }));
   }
+
+  const payload = {
+    asset_type: this.editAsset.asset_type,
+    approval_type: this.editAsset.approval_type,
+    branch: this.editAsset.branch,
+    total_levels: formattedLevels.length,
+    levels: formattedLevels
+  };
+
+  this.employeeService.updateAssetApprovalLevel(this.editAsset.id, payload).subscribe(
+    () => {
+      alert('Updated successfully');
+      this.closeEditModal();
+
+      const schema = this.authService.getSelectedSchema();
+      const branches = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+      if (schema) {
+        this.fetchEmployees(schema, branches);
+      }
+    },
+    (error) => {
+      console.error(error);
+      alert('Update failed');
+    }
+  );
+}
   
   branchSearch: string = '';
   
