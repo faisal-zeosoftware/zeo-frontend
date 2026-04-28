@@ -323,18 +323,7 @@ if (selectedSchema) {
     }
 
     
-    // LoadBranch(selectedSchema: string) {
-    //   this.leaveService.getBranches(selectedSchema).subscribe(
-    //     (data: any) => {
-    //       this.Branches = data;
-        
-    //       console.log('employee:', this.Branches);
-    //     },
-    //     (error: any) => {
-    //       console.error('Error fetching categories:', error);
-    //     }
-    //   );
-    // }
+   
 
     
 

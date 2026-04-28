@@ -124,7 +124,7 @@ export class UserEditComponent {
   
     this.UserMasterService.updateEmp(this.data.employeeId, updateData).subscribe(
       (response) => {
-        console.log('USER updated successfully:', response);
+        console.log('User updated successfully:', response);
         alert('User has been updated successfully!');
        const createdUserId = response.id; // Assume backend returns new user ID
   

@@ -9,7 +9,7 @@ declare var $: any;
 import 'summernote'; // Ensure you have summernote imported
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
-import {combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 @Component({
   selector: 'app-salary',
@@ -18,18 +18,18 @@ import { DepartmentServiceService } from '../department-master/department-servic
 })
 export class SalaryComponent {
 
-  
+
   private dataSubscription?: Subscription;
 
-   private apiUrl = `${environment.apiBaseUrl}`;
+  private apiUrl = `${environment.apiBaseUrl}`;
 
 
-  name:any='';
-  component_type:any='';
-  code:any='';
-  description:any='';
-  reason:any='';
-  branch:any='';
+  name: any = '';
+  component_type: any = '';
+  code: any = '';
+  description: any = '';
+  reason: any = '';
+  branch: any = '';
 
   is_fixed: boolean = true;
   deduct_leave: boolean = false;
@@ -47,9 +47,9 @@ export class SalaryComponent {
 
 
 
-  amount:any='';
-  employee:any='';
-  component:any='';
+  amount: any = '';
+  employee: any = '';
+  component: any = '';
   is_active: boolean = false;
 
   showAmountField: boolean = false;
@@ -61,34 +61,34 @@ export class SalaryComponent {
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
-  hasViewPermission: boolean =false;
+  hasViewPermission: boolean = false;
   hasEditPermission: boolean = false;
   hasImportPermission: boolean = false;
 
   userId: number | null | undefined;
-userDetails: any;
-userDetailss: any;
-schemas: string[] = []; // Array to store schema names
+  userDetails: any;
+  userDetailss: any;
+  schemas: string[] = []; // Array to store schema names
 
-employees: any[] = [];
-Salarycomponent: any[] = [];
-EmployeeSalarycomponent: any[] = [];
-
-
-filteredEmployees: any[] = [];
-Branches: any[] = [];
+  employees: any[] = [];
+  Salarycomponent: any[] = [];
+  EmployeeSalarycomponent: any[] = [];
 
 
-// edit salary component
-
-editingComponent: any = null;
-isEditMode: boolean = false;
-updateId: number | null = null;
+  filteredEmployees: any[] = [];
+  Branches: any[] = [];
 
 
-editingComponentEmp: any = null;
-isEditModeEmp: boolean = false;
-updateIdEmp: number | null = null;
+  // edit salary component
+
+  editingComponent: any = null;
+  isEditMode: boolean = false;
+  updateId: number | null = null;
+
+
+  editingComponentEmp: any = null;
+  isEditModeEmp: boolean = false;
+  updateIdEmp: number | null = null;
 
 
 
@@ -98,923 +98,817 @@ updateIdEmp: number | null = null;
     private http: HttpClient,
     private authService: AuthenticationService,
     private sessionService: SessionService,
-    private leaveService:LeaveService,
+    private leaveService: LeaveService,
     private DesignationService: DesignationService,
-    private EmployeeService:EmployeeService,
-    private el:ElementRef,
-    private companyRegistrationService: CompanyRegistrationService, 
-    private DepartmentServiceService: DepartmentServiceService, 
-
-    
-    ) {}
-
-    ngOnInit(): void {
+    private EmployeeService: EmployeeService,
+    private el: ElementRef,
+    private companyRegistrationService: CompanyRegistrationService,
+    private DepartmentServiceService: DepartmentServiceService,
 
 
- // combineLatest waits for both Schema and Branches to have a value
- this.dataSubscription = combineLatest([
-  this.EmployeeService.selectedSchema$,
-  this.EmployeeService.selectedBranches$
-]).subscribe(([schema, branchIds]) => {
-  if (schema) {
-    this.fetchEmployees(schema, branchIds);  
-    
-    this.fetchEmployeesSalaryCom(schema, branchIds);  
+  ) { }
 
-  }
-});
-
-  // Listen for sidebar changes so the dropdown updates instantly
-  this.EmployeeService.selectedBranches$.subscribe(ids => {
-    this.loadDeparmentBranch();
-    this.loadEmp(); 
- 
-  });
-  
+  ngOnInit(): void {
 
 
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.EmployeeService.selectedSchema$,
+      this.EmployeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
 
-      const selectedSchema = this.authService.getSelectedSchema();
-      if (selectedSchema) {
+        // this.fetchEmployeesSalaryCom(schema, branchIds);  
+
+      }
+    });
+
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.EmployeeService.selectedBranches$.subscribe(ids => {
+      this.loadDeparmentBranch();
+      this.loadEmp();
+
+    });
+
+
+
+
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (selectedSchema) {
 
 
       // this.LoadEmployee(selectedSchema);
-      // this.LoadSalaryCom(selectedSchema);
+      // this.LoadSalaryCom(selectedSchema); 
       // this.LoadBranch(selectedSchema);
 
       // this.LoadEmployeeSalaryCom(selectedSchema);
 
-      
-      }
+
+    }
 
 
-      this.userId = this.sessionService.getUserId();
-if (this.userId !== null) {
-  this.authService.getUserData(this.userId).subscribe(
-    async (userData: any) => {
-      this.userDetails = userData; // Store user details in userDetails property
+    this.userId = this.sessionService.getUserId();
+    if (this.userId !== null) {
+      this.authService.getUserData(this.userId).subscribe(
+        async (userData: any) => {
+          this.userDetails = userData; // Store user details in userDetails property
 
 
-      console.log('User ID:', this.userId); // Log user ID
-      console.log('User Details:', this.userDetails); // Log user details
+          console.log('User ID:', this.userId); // Log user ID
+          console.log('User Details:', this.userDetails); // Log user details
 
-      // Check if user is_superuser is true or false
-      let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
-      const selectedSchema = this.authService.getSelectedSchema();
-      if (!selectedSchema) {
-        console.error('No schema selected.');
-        return;
-      }
-    
-    
-      if (isSuperuser) {
-        console.log('User is superuser or ESS user');
-        
-        // Grant all permissions
-        this.hasViewPermission = true;
-        this.hasAddPermission = true;
-        this.hasDeletePermission = true;
-        this.hasEditPermission = true;
-        this.hasImportPermission = true;
-    
-        // Fetch designations without checking permissions
-        // this.fetchDesignations(selectedSchema);
-      } else {
-        console.log('User is not superuser');
-
-        const selectedSchema = this.authService.getSelectedSchema();
-        if (selectedSchema) {
-         
-          
-          
-          try {
-            const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
-            console.log('Permissions data:', permissionsData);
-
-            if (Array.isArray(permissionsData) && permissionsData.length > 0) {
-              const firstItem = permissionsData[0];
-
-              if (firstItem.is_superuser) {
-                console.log('User is superuser according to permissions API');
-                // Grant all permissions
-                this.hasViewPermission = true;
-                this.hasAddPermission = true;
-                this.hasDeletePermission = true;
-                this.hasEditPermission = true;
-                this.hasImportPermission = true;
-
-              } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
-                console.log('Group Permissions:', groupPermissions);
-
-               
-                this.hasAddPermission = this.checkGroupPermission('add_salarycomponent', groupPermissions);
-                console.log('Has add permission:', this.hasAddPermission);
-                
-                this.hasEditPermission = this.checkGroupPermission('change_salarycomponent', groupPermissions);
-                console.log('Has edit permission:', this.hasEditPermission);
-  
-               this.hasDeletePermission = this.checkGroupPermission('delete_salarycomponent', groupPermissions);
-               console.log('Has delete permission:', this.hasDeletePermission);
-
-                this.hasViewPermission = this.checkGroupPermission('view_salarycomponent', groupPermissions);
-                console.log('Has view permission:', this.hasViewPermission);
-
-                this.hasImportPermission = this.checkGroupPermission('import_salarycomponent', groupPermissions);
-                console.log('Has import permission:', this.hasImportPermission);
+          // Check if user is_superuser is true or false
+          let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
+          const selectedSchema = this.authService.getSelectedSchema();
+          if (!selectedSchema) {
+            console.error('No schema selected.');
+            return;
+          }
 
 
-              } else {
-                console.error('No groups found in data or groups array is empty.', firstItem);
+          if (isSuperuser) {
+            console.log('User is superuser or ESS user');
+
+            // Grant all permissions
+            this.hasViewPermission = true;
+            this.hasAddPermission = true;
+            this.hasDeletePermission = true;
+            this.hasEditPermission = true;
+
+            // Fetch designations without checking permissions
+            // this.fetchDesignations(selectedSchema);
+          } else {
+            console.log('User is not superuser');
+
+            const selectedSchema = this.authService.getSelectedSchema();
+            if (selectedSchema) {
+
+
+
+              try {
+                const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
+                console.log('Permissions data:', permissionsData);
+
+                if (Array.isArray(permissionsData) && permissionsData.length > 0) {
+                  const firstItem = permissionsData[0];
+
+                  if (firstItem.is_superuser) {
+                    console.log('User is superuser according to permissions API');
+                    // Grant all permissions
+                    this.hasViewPermission = true;
+                    this.hasAddPermission = true;
+                    this.hasDeletePermission = true;
+                    this.hasEditPermission = true;
+                  } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
+                    const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
+                    console.log('Group Permissions:', groupPermissions);
+
+
+                    this.hasAddPermission = this.checkGroupPermission('add_salarycomponent', groupPermissions);
+                    console.log('Has add permission:', this.hasAddPermission);
+
+                    this.hasEditPermission = this.checkGroupPermission('change_salarycomponent', groupPermissions);
+                    console.log('Has edit permission:', this.hasEditPermission);
+
+                    this.hasDeletePermission = this.checkGroupPermission('delete_salarycomponent', groupPermissions);
+                    console.log('Has delete permission:', this.hasDeletePermission);
+
+
+                    this.hasViewPermission = this.checkGroupPermission('view_salarycomponent', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermission);
+
+
+                  } else {
+                    console.error('No groups found in data or groups array is empty.', firstItem);
+                  }
+                } else {
+                  console.error('Permissions data is not an array or is empty.', permissionsData);
+                }
+
+                // Fetching designations after checking permissions
+                // this.fetchDesignations(selectedSchema);
+              }
+
+              catch (error) {
+                console.error('Error fetching permissions:', error);
               }
             } else {
-              console.error('Permissions data is not an array or is empty.', permissionsData);
+              console.error('No schema selected.');
             }
 
-            // Fetching designations after checking permissions
-            // this.fetchDesignations(selectedSchema);
           }
-          
-          catch (error) {
-            console.error('Error fetching permissions:', error);
-          }
-        } else {
-          console.error('No schema selected.');
-        }
-          
-      }
-    },
-    (error) => {
-      console.error('Failed to fetch user details:', error);
-    }
-  );
-
-    // this.fetchingApprovals();
-
-
-    this.authService.getUserSchema(this.userId).subscribe(
-        (userData: any) => {
-            this.userDetailss = userData;
-            this.schemas = userData.map((schema: any) => schema.schema_name);
-            console.log('scehmas-de',userData)
         },
         (error) => {
-            console.error('Failed to fetch user schemas:', error);
+          console.error('Failed to fetch user details:', error);
         }
-    );
-} else {
-    console.error('User ID is null.');
-}
+      );
 
-   
-    }
-
-    checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-      return groupPermissions.some(permission => permission.codename === codeName);
-      }
-
-    // RegisterSalaryComponent(): void {
-    //   this.registerButtonClicked = true;
+      // this.fetchingApprovals();
 
 
-    //   if (!this.name || !this.component_type || !this.code) {
-    //     return;
-    //   }
-    
-    //   const formData = new FormData();
-    //   formData.append('name', this.name);
-    //   formData.append('component_type', this.component_type);
-    //   formData.append('code', this.code);
-    //   formData.append('description', this.description);
-    //   formData.append('formula', this.formula);
-
-      
-    //   formData.append('is_fixed', this.is_fixed.toString());
-    //   formData.append('unpaid_leave', this.unpaid_leave.toString());
-
-    //   formData.append('affected_by_halfpaid_leave', this.affected_by_halfpaid_leave.toString());
-
-    //   formData.append('prorata_calculation', this.prorata_calculation.toString());
-
-    //   formData.append('is_emi_deduction', this.is_emi_deduction.toString());
-
-    //   this.leaveService.registerSalaryComponent(formData).subscribe(
-    //     (response) => {
-    //       console.log('Registration successful', response);
-    //       alert('Salary Component has been added');
-    //       window.location.reload();
-    //     },
-    //     (error) => {
-    //       console.error('Added failed', error);
-    //       alert('Enter all required fields!');
-    //     }
-    //   );
-    // }
-
-    saveOrUpdateSalaryComponent(): void {
-      this.registerButtonClicked = true;
-    
-      if (!this.name || !this.component_type || !this.code) {
-        alert('Please fill in all required fields!');
-        return;
-      }
-    
-      const formData = new FormData();
-      formData.append('name', this.name);
-      formData.append('component_type', this.component_type);
-      formData.append('code', this.code);
-      formData.append('branch', this.branch);
-
-      formData.append('description', this.description || '');
-      formData.append('formula', this.formula || '');
-    
-      formData.append('is_fixed', (this.is_fixed ?? false).toString());
-      formData.append('deduct_leave', (this.deduct_leave ?? false).toString());
-      formData.append('is_loan_component', (this.is_loan_component ?? false).toString());
-
-      formData.append('show_in_payslip', (this.show_in_payslip ?? false).toString());
-
-      formData.append('affected_by_halfpaid_leave', (this.affected_by_halfpaid_leave ?? false).toString());
-      formData.append('prorata_calculation', (this.prorata_calculation ?? false).toString());
-      formData.append('is_emi_deduction', (this.is_emi_deduction ?? false).toString());
-
-      formData.append('is_advance_salary', (this.is_advance_salary ?? false).toString());
-      formData.append('is_air_ticket', (this.is_air_ticket ?? false).toString());
-      formData.append('is_gratuity', (this.is_gratuity ?? false).toString());
-    
-      if (this.isEditMode && this.updateId !== null) {
-        this.leaveService.updateSalaryComponent(this.updateId, formData).subscribe(
-          (response) => {
-            alert('Salary Component updated successfully');
-            window.location.reload();
-            this.resetForm();
-            this.dataSubscription = combineLatest([
-              this.EmployeeService.selectedSchema$,
-              this.EmployeeService.selectedBranches$
-            ]).subscribe(([schema, branchIds]) => {
-              if (schema) {
-                this.fetchEmployees(schema, branchIds);  
-                
-      
-              }
-            });
-            // this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
-          },
-          (error) => {
-            console.error('Update failed', error);
-            this.displayBackendErrors(error);
-          }
-        );
-      } else {
-        this.leaveService.registerSalaryComponent(formData).subscribe(
-          (response) => {
-            alert('Salary Component has been added');
-            this.resetForm();
-             // combineLatest waits for both Schema and Branches to have a value
-       this.dataSubscription = combineLatest([
-        this.EmployeeService.selectedSchema$,
-        this.EmployeeService.selectedBranches$
-      ]).subscribe(([schema, branchIds]) => {
-        if (schema) {
-          this.fetchEmployees(schema, branchIds);  
-          
-
-        }
-      });
-
-            // this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
-          },
-          (error) => {
-            console.error('Add failed', error);
-            this.displayBackendErrors(error);
-          }
-        );
-      }
-    }
-    
-    
-
-    resetForm(): void {
-      this.name = '';
-      this.component_type = '';
-      this.code = '';
-      this.description = '';
-      this.formula = '';
-      this.is_fixed = true;
-      this.deduct_leave = false;
-      this.affected_by_halfpaid_leave = false;
-      this.prorata_calculation = false;
-      this.is_emi_deduction = false;
-      this.updateId = null;
-      this.isEditMode = false;
-      this.registerButtonClicked = false;
-    }
-    
-
-
-    editSalaryComponent(component: any): void {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-      this.name = component.name;
-      this.component_type = component.component_type;
-      this.code = component.code;
-      this.description = component.description;
-      this.formula = component.formula;
-    
-      this.is_fixed = component.is_fixed;
-      this.deduct_leave = component.deduct_leave;
-      this.affected_by_halfpaid_leave = component.affected_by_halfpaid_leave;
-      this.prorata_calculation = component.prorata_calculation;
-      this.is_emi_deduction = component.is_emi_deduction;
-    
-      this.is_advance_salary = component.is_advance_salary;
-      this.is_air_ticket = component.is_air_ticket;
-      this.is_gratuity = component.is_gratuity;
-
-      this.updateId = component.id;
-      this.isEditMode = true;
-    }
-    
-    
-    // requestEmployeeSalary(): void {
-      
-    //   this.registerButtonClicked = true;
-
-
-  
-    
-    //   const formData = new FormData();
-    //   formData.append('amount', this.amount);
-    //   formData.append('employee', this.employee);
-    //   formData.append('component', this.component);
-      
-    //   formData.append('is_active', this.is_active.toString());
-   
-
-    //   this.leaveService.registerEmpSalary(formData).subscribe(
-    //     (response) => {
-    //       console.log('Registration successful', response);
-    //       alert('Employee Salary  has been added');
-    //       window.location.reload();
-    //     },
-    //     (error) => {
-    //       console.error('Added failed', error);
-    //       alert('Enter all required fields!');
-    //     }
-    //   );
-    // }
-    saveOrUpdateSalaryComponentEmp(): void {
-      this.registerButtonClicked = true;
-    
-      if ( !this.employee || !this.component) {
-        alert('Please fill in all required fields!');
-        return;
-      }
-    
-      const formData = new FormData();
-      formData.append('amount', this.amount);
-      formData.append('employee', this.employee);
-      formData.append('component', this.component);
-      formData.append('is_active', (this.is_active ?? false).toString());
-    
-      if (this.isEditModeEmp && this.updateIdEmp !== null) {
-        this.leaveService.updateSalaryComponentEmp(this.updateIdEmp, formData).subscribe(
-          (response) => {
-            alert('Employee Salary updated successfully');
-            this.resetFormEmp();
-             // combineLatest waits for both Schema and Branches to have a value
-       this.dataSubscription = combineLatest([
-        this.EmployeeService.selectedSchema$,
-        this.EmployeeService.selectedBranches$
-      ]).subscribe(([schema, branchIds]) => {
-        if (schema) {
-          this.fetchEmployees(schema, branchIds);  
-          
-
-        }
-      });
-            // this.LoadEmployeeSalaryCom(localStorage.getItem('selectedSchema') || '');
-          },
-          (error) => {
-            console.error('Update failed', error);
-            this.displayBackendErrors(error);
-          }
-        );
-      } else {
-        this.leaveService.registerEmpSalary(formData).subscribe(
-          (response) => {
-            alert('Salary Component has been added');
-            this.resetFormEmp();
-            
- // combineLatest waits for both Schema and Branches to have a value
-       this.dataSubscription = combineLatest([
-        this.EmployeeService.selectedSchema$,
-        this.EmployeeService.selectedBranches$
-      ]).subscribe(([schema, branchIds]) => {
-        if (schema) {
-          this.fetchEmployees(schema, branchIds);  
-          
-
-        }
-      });
-
-            // this.LoadEmployeeSalaryCom(localStorage.getItem('selectedSchema') || '');
-            window.location.reload();
-          },
-          (error) => {
-            console.error('Add failed', error);
-            this.displayBackendErrors(error);
-          }
-        );
-      }
-    }
-    
-
-    displayBackendErrors(error: any): void {
-      if (error.error) {
-        const backendErrors = error.error;
-        let errorMsg = '';
-    
-        // If the backend returns a dictionary of field-specific errors
-        if (typeof backendErrors === 'object') {
-          for (const key in backendErrors) {
-            if (backendErrors.hasOwnProperty(key)) {
-              const fieldErrors = backendErrors[key];
-              if (Array.isArray(fieldErrors)) {
-                fieldErrors.forEach((msg: string) => {
-                  errorMsg += `${key}: ${msg}\n`;
-                });
-              } else {
-                errorMsg += `${key}: ${fieldErrors}\n`;
-              }
-            }
-          }
-        } else {
-          // Fallback for generic error message
-          errorMsg = backendErrors;
-        }
-    
-        alert(errorMsg || 'An unknown error occurred!');
-      } else {
-        alert('An error occurred while processing your request.');
-      }
-    }
-
-
-
-    resetFormEmp(): void {
-      this.amount = '';
-      this.employee = '';
-      this.component = '';
- 
-      this.is_active = true;
-      this.isEditModeEmp = false;
-
-    }
-    
-
-
-  
-
-    editSalaryComponentEmp(component: any): void {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-      this.amount = component.amount;
-      this.employee = component.employee;
-      this.component = component.component;
-      this.is_active = component.is_active;
-     
-    
-      this.updateIdEmp = component.id;
-      this.isEditModeEmp = true;
-    }
-    
-
-    // LoadEmployee(selectedSchema: string) {
-    //   this.EmployeeService.getemployeesMaster(selectedSchema).subscribe(
-    //     (data: any) => {
-    //       // Filtering employees where is_active is null or true
-    //       this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-    //       this.filteredEmployees = this.employees;
-    
-    
-    //       console.log('Filtered Employees:', this.filteredEmployees);
-    //     },
-    //     (error: any) => {
-    
-    //       console.error('Error fetching employees:', error);
-    //     }
-    //   );
-    // }
-
-    loadEmp(callback?: Function): void {
-      const selectedSchema = this.authService.getSelectedSchema();
-      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-    
-    
-      if (selectedSchema) {
-        this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-          (data: any) => {
-           // Filtering employees where is_active is null or true
-           this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-           this.filteredEmployees = this.employees;
-            
-            if (callback) callback();
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
-      }
-    }
-    
-
-
-    // LoadSalaryCom(selectedSchema: string) {
-    //   this.leaveService.getSalaryCom(selectedSchema).subscribe(
-    //     (data: any) => {
-    //       this.Salarycomponent = data;
-        
-    //       console.log('employee:', this.Salarycomponent);
-    //     },
-    //     (error: any) => {
-    //       console.error('Error fetching categories:', error);
-    //     }
-    //   );
-    // }
-
-
-    isLoading: boolean = false;
-
-    fetchEmployees(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.leaveService.getSalaryComNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.Salarycomponent = data;
-  
-          this.isLoading = false;
+      this.authService.getUserSchema(this.userId).subscribe(
+        (userData: any) => {
+          this.userDetailss = userData;
+          this.schemas = userData.map((schema: any) => schema.schema_name);
+          console.log('scehmas-de', userData)
         },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
+        (error) => {
+          console.error('Failed to fetch user schemas:', error);
         }
-      });
-    }
-  
-
-
-
-
-    // LoadBranch(selectedSchema: string) {
-    //   this.leaveService.getBranches(selectedSchema).subscribe(
-    //     (data: any) => {
-    //       this.Branches = data;
-        
-    //       console.log('employee:', this.Salarycomponent);
-    //     },
-    //     (error: any) => {
-    //       console.error('Error fetching categories:', error);
-    //     }
-    //   );
-    // }
-
-    loadDeparmentBranch(callback?: Function): void {
-      const selectedSchema = this.authService.getSelectedSchema();
-      
-      if (selectedSchema) {
-        this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-          (result: any[]) => {
-            // 1. Get the sidebar selected IDs from localStorage
-            const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-    
-            // 2. Filter the API result to only include branches selected in the sidebar
-            // If sidebar is empty, you might want to show all, or show none. 
-            // Usually, we show only the selected ones:
-            if (sidebarSelectedIds.length > 0) {
-              this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-            } else {
-              this.Branches = result; // Fallback: show all if nothing is selected in sidebar
-            }
-            // Inside the subscribe block of loadDeparmentBranch
-            if (this.Branches.length === 1) {
-              this.Branches = this.Branches[0].id;
-            }
-    
-            console.log('Filtered branches for selection:', this.Branches);
-            if (callback) callback();
-          },
-          (error) => {
-            console.error('Error fetching branches:', error);
-          }
-        );
-      }
+      );
+    } else {
+      console.error('User ID is null.');
     }
 
 
-    // LoadEmployeeSalaryCom(selectedSchema: string) {
-    //   this.leaveService.getEmployeeSalaryCom(selectedSchema).subscribe(
-    //     (data: any) => {
-    //       this.EmployeeSalarycomponent = data;
-        
-    //       console.log('employee:', this.Salarycomponent);
-    //     },
-    //     (error: any) => {
-    //       console.error('Error fetching categories:', error);
-    //     }
-    //   );
-    // }
-
-
-    
-
-    fetchEmployeesSalaryCom(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.leaveService.getEmployeeSalaryComNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.EmployeeSalarycomponent = data;
-  
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
-    }
-
-
-    numbers: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-
-    formula: string = ''; // Initialize empty
-    
-    insertIntoTextarea(componentName: string): void {
-      if (this.formula) {
-        this.formula += ' ' + componentName; // Append new name
-      } else {
-        this.formula = componentName; // First entry
-      }
-    }
-
-    clearTextarea(): void {
-      this.formula = ''; // Clear the textarea
-    }
-
-    deleteLastCharacter(): void {
-      this.formula = this.formula.trim().slice(0, -1); // Remove last character
-    }
-
-
-
-
-    selectedComponent: any = null;
-
-    // selectedComponentId: number | null = null;
-
-
-onComponentChange() {
-  this.selectedComponent = this.Salarycomponent.find(
-    comp => comp.id === Number(this.component)
-  );
-
-  if (!this.selectedComponent) {
-    this.showAmountField = false;
-    return;
   }
 
-  // ✅ Show amount if:
-  // 1. Fixed component
-  // 2. Petty Cash component
-  const componentName = (this.selectedComponent.name || '').toLowerCase();
-  const componentCode = (this.selectedComponent.code || '').toLowerCase();
-
-  this.showAmountField =
-    this.selectedComponent.is_fixed === true ||
-    componentName.includes('petty') ||
-    componentCode.includes('petty');
-
-  // Clear amount only if field should not show
-  if (!this.showAmountField) {
-    this.amount = '';
+  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+    return groupPermissions.some(permission => permission.codename === codeName);
   }
-}
 
 
 
+  // saveOrUpdateSalaryComponent(): void {
+  //   this.registerButtonClicked = true;
+
+  //   if (!this.name || !this.component_type || !this.code) {
+  //     alert('Please fill in all required fields!');
+  //     return;
+  //   }
+
+  //   const formData = new FormData();
+  //   formData.append('name', this.name);
+  //   formData.append('component_type', this.component_type);
+  //   formData.append('code', this.code);
+  //   formData.append('branch', this.branch);
+
+  //   formData.append('description', this.description || '');
+  //   formData.append('formula', this.formula || '');
+
+  //   formData.append('is_fixed', (this.is_fixed ?? false).toString());
+  //   formData.append('deduct_leave', (this.deduct_leave ?? false).toString());
+  //   formData.append('is_loan_component', (this.is_loan_component ?? false).toString());
+
+  //   formData.append('show_in_payslip', (this.show_in_payslip ?? false).toString());
+
+  //   formData.append('affected_by_halfpaid_leave', (this.affected_by_halfpaid_leave ?? false).toString());
+  //   formData.append('prorata_calculation', (this.prorata_calculation ?? false).toString());
+  //   formData.append('is_emi_deduction', (this.is_emi_deduction ?? false).toString());
+
+  //   formData.append('is_advance_salary', (this.is_advance_salary ?? false).toString());
+  //   formData.append('is_air_ticket', (this.is_air_ticket ?? false).toString());
+  //   formData.append('is_gratuity', (this.is_gratuity ?? false).toString());
+
+  //   if (this.isEditMode && this.updateId !== null) {
+  //     this.leaveService.updateSalaryComponent(this.updateId, formData).subscribe(
+  //       (response) => {
+  //         alert('Salary Component updated successfully');
+  //         // this.resetForm();
+  //         this.dataSubscription = combineLatest([
+  //           this.EmployeeService.selectedSchema$,
+  //           this.EmployeeService.selectedBranches$
+  //         ]).subscribe(([schema, branchIds]) => {
+  //           if (schema) {
+  //             this.fetchEmployees(schema, branchIds);  
 
 
-    insertComponentToFormula(code: string, textarea: HTMLTextAreaElement): void {
-      const placeholder = `${code}`;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-    
-      this.formula = 
-        this.formula.substring(0, start) + 
-        placeholder + 
-        this.formula.substring(end);
-    
-      setTimeout(() => {
-        textarea.focus();
-        textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
-      }, 0);
-    
-      // Close dropdowns after selection
-      this.dropdownOpen = false;
-      this.operatorDropdownOpen = false;
-      this.arithmeticDropdownOpen = false; // close the salary component dropdown if open
-
-    }
-
-isAddFieldsModalOpen: boolean = false;
+  //           }
+  //         });
+  //         // this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
+  //       },
+  //       (error) => {
+  //         console.error('Update failed', error);
+  //         this.displayBackendErrors(error);
+  //       }
+  //     );
+  //   } else {
+  //     this.leaveService.registerSalaryComponent(formData).subscribe(
+  //       (response) => {
+  //         alert('Salary Component has been added');
+  //         // this.resetForm();
+  //          // combineLatest waits for both Schema and Branches to have a value
+  //    this.dataSubscription = combineLatest([
+  //     this.EmployeeService.selectedSchema$,
+  //     this.EmployeeService.selectedBranches$
+  //   ]).subscribe(([schema, branchIds]) => {
+  //     if (schema) {
+  //       this.fetchEmployees(schema, branchIds);  
 
 
-// Triggered when the checkbox is changed
-onFixedChange() {
-  if (!this.is_fixed) {
-    this.isAddFieldsModalOpen = true;
-  }
-}
+  //     }
+  //   });
 
-closemarketModal(){
-  this.isAddFieldsModalOpen=false;
-}
-
-
-
-
-dropdownOpen: boolean = false;
-
-operatorDropdownOpen: boolean = false;
-arithmeticDropdownOpen: boolean = false;
-FunctionsdropdownOpen: boolean = false;
-
-VariablesdropdownOpen: boolean = false;
+  //         // this.LoadSalaryCom(localStorage.getItem('selectedSchema') || '');
+  //       },
+  //       (error) => {
+  //         console.error('Add failed', error);
+  //         this.displayBackendErrors(error);
+  //       }
+  //     );
+  //   }
+  // }
 
 
-logicalOperators: string[] = ['<', '>', '>=', '<=', '==', '!=', 'AND','OR','NOT']; // Add more if needed
 
-arithmeticOperators: string[] = ['+', '-', '*', '/', '%'];
+  CreateSalaryComponent(): void {
+    this.registerButtonClicked = true;
 
-FunctionsOperators: string[] = ['WORKHOURS()','MAX()', 'MIN()', 'ROUND()', 'SUM()', 'AVG()','ABS()','INT()',];
+    const formData = new FormData();
+    formData.append('name', this.name);
+    formData.append('component_type', this.component_type);
+    formData.append('code', this.code);
+    formData.append('branch', this.branch);
 
-VariablesOperators: string[] = ['calendar_days','working_days','fixed_days','standard_hours','ot_hours','years_of_service','normal_ot_hours','weekend_ot_hours',
-  'holiday_ot_hours','ot_normal_rate','ot_weekend_rate','ot_holiday_rate','encashed_days'];
+    formData.append('description', this.description || '');
+    formData.append('formula', this.formula || '');
 
+    formData.append('is_fixed', (this.is_fixed ?? false).toString());
+    formData.append('deduct_leave', (this.deduct_leave ?? false).toString());
+    formData.append('is_loan_component', (this.is_loan_component ?? false).toString());
 
-toggleDropdown() {
-  this.dropdownOpen = !this.dropdownOpen;
-  this.operatorDropdownOpen = false; // close the other dropdown if open
-  this.arithmeticDropdownOpen = false; // close the salary component dropdown if open
-  this.FunctionsdropdownOpen = false;
-  this.VariablesdropdownOpen = false;
+    formData.append('show_in_payslip', (this.show_in_payslip ?? false).toString());
 
-}
+    formData.append('affected_by_halfpaid_leave', (this.affected_by_halfpaid_leave ?? false).toString());
+    formData.append('prorata_calculation', (this.prorata_calculation ?? false).toString());
+    formData.append('is_emi_deduction', (this.is_emi_deduction ?? false).toString());
 
-toggleOperatorDropdown() {
-  this.operatorDropdownOpen = !this.operatorDropdownOpen;
-  this.dropdownOpen = false; // close the salary component dropdown if open
-  this.arithmeticDropdownOpen = false; // close the salary component dropdown if open
-  this.FunctionsdropdownOpen = false;
-  this.VariablesdropdownOpen = false;
-
-}
-
-
-toggleArithmeticDropdown() {
-  this.arithmeticDropdownOpen = !this.arithmeticDropdownOpen;
-
-  // Close the other dropdowns
-  this.dropdownOpen = false;
-  this.operatorDropdownOpen = false;
-  this.FunctionsdropdownOpen = false;
-  this.VariablesdropdownOpen = false;
-
-}
-
-toggleFunctionsDropdown() {
-  this.FunctionsdropdownOpen = !this.FunctionsdropdownOpen;
-
-  // Close the other dropdowns
-  this.dropdownOpen = false;
-  this.operatorDropdownOpen = false;
-  this.arithmeticDropdownOpen = false;
-
-  this.VariablesdropdownOpen = false;
-
-}
+    formData.append('is_advance_salary', (this.is_advance_salary ?? false).toString());
+    formData.append('is_air_ticket', (this.is_air_ticket ?? false).toString());
+    formData.append('is_gratuity', (this.is_gratuity ?? false).toString());
 
 
-toggleVariablesDropdown() {
-  this.VariablesdropdownOpen = !this.VariablesdropdownOpen;
 
-  // Close the other dropdowns
-  this.dropdownOpen = false;
-  this.operatorDropdownOpen = false;
-  this.arithmeticDropdownOpen = false;
-  this.FunctionsdropdownOpen = false;
-
-}
-
-
-deletePayroll(payrollId: number): void {
-  if (confirm('Are you sure you want to delete this Component?')) {
-    this.leaveService.deleteSalary(payrollId).subscribe(
-      () => {
-        // Filter out the deleted payroll from the list
-        this.Salarycomponent = this.Salarycomponent.filter(p => p.id !== payrollId);
-        console.log('Payroll deleted successfully');
-        alert('salary Component deleted succesfull');
+    this.leaveService.registerSalaryComponent(formData).subscribe(
+      (response) => {
+        console.log('Registration successful', response);
+        alert(' salary component has been added');
+        window.location.reload();
       },
       (error) => {
-        console.error('Failed to delete payroll', error);
+        console.error('Added failed', error);
+
+        let errorMessage = 'Enter all required fields!';
+
+        // ✅ Handle backend validation or field-specific errors
+        if (error.error && typeof error.error === 'object') {
+          const messages: string[] = [];
+          for (const [key, value] of Object.entries(error.error)) {
+            if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+            else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+            else messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+          if (messages.length > 0) errorMessage = messages.join('\n');
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
+        }
+
+        alert(errorMessage);
       }
     );
   }
-}
 
 
-isBulkuploadDepartmentModalOpen = false;
-showUploadForm = false;
-selectedFile!: File;
 
-/* Open / Close Modal */
-OpenBulkuploadModal(): void {
-  this.isBulkuploadDepartmentModalOpen = true;
-}
 
-closeBulkuploadModal(): void {
-  this.isBulkuploadDepartmentModalOpen = false;
-  this.showUploadForm = false;
-}
 
-toggleUploadForm(): void {
-  this.showUploadForm = !this.showUploadForm;
-}
 
-closeUploadForm(): void {
-  this.showUploadForm = false;
-}
 
-/* File Select */
-onFileSelected(event: any): void {
-  this.selectedFile = event.target.files[0];
-}
+  loadEmp(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-bulkUploadEmployeeSalary(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-  if (!selectedSchema || !this.selectedFile) return;
 
-  const formData = new FormData();
-  formData.append('file', this.selectedFile);
+    if (selectedSchema) {
+      this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+        (data: any) => {
+          // Filtering employees where is_active is null or true
+          this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
+          this.filteredEmployees = this.employees;
 
-  this.http.post(
-    `${this.apiUrl}/payroll/api/bulk-upload-salary/bulk_upload/?schema=${selectedSchema}`,
-    formData
-  ).subscribe({
-    next: () => {
-      alert('Employee Salary uploaded successfully');
-      window.location.reload();
-    },
-    error: () => {
-      alert('Upload failed');
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
     }
-  });
-}
+  }
 
-downloadEmployeeSalaryCsv(): void {
-  const schema = this.authService.getSelectedSchema();
-  if (!schema) return;
 
-  this.companyRegistrationService
-    .downloadSalaryCsv(schema)
-    .subscribe((blob: Blob) => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Employee_Salary_Template.csv';
-      a.click();
-      window.URL.revokeObjectURL(url);
+
+  // LoadSalaryCom(selectedSchema: string) {
+  //   this.leaveService.getSalaryCom(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.Salarycomponent = data;
+
+  //       console.log('employee:', this.Salarycomponent);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.leaveService.getSalaryComNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Salarycomponent = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
     });
-}
+  }
 
 
-downloadEmployeeSalaryExcel(): void {
-  const schema = this.authService.getSelectedSchema();
-  if (!schema) return;
 
-  this.companyRegistrationService
-    .downloadSalaryExcel(schema)
-    .subscribe((blob: Blob) => {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Employee_Salary_Template.xlsx';
-      a.click();
-      window.URL.revokeObjectURL(url);
+
+  loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.Branches.length === 1) {
+            this.Branches = this.Branches[0].id;
+          }
+
+          console.log('Filtered branches for selection:', this.Branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+
+
+
+  filteredSalaryComponents: any[] = [];
+
+  selectedFixedFilter: string = 'all';
+
+
+
+  numbers: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+  formula: string = ''; // Initialize empty
+
+  insertIntoTextarea(componentName: string): void {
+    if (this.formula) {
+      this.formula += ' ' + componentName; // Append new name
+    } else {
+      this.formula = componentName; // First entry
+    }
+  }
+
+  clearTextarea(): void {
+    this.formula = ''; // Clear the textarea
+  }
+
+  deleteLastCharacter(): void {
+    this.formula = this.formula.trim().slice(0, -1); // Remove last character
+  }
+
+
+
+
+
+
+
+
+
+  insertComponentToFormula(code: string, textarea: HTMLTextAreaElement): void {
+    const placeholder = `${code}`;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    this.formula =
+      this.formula.substring(0, start) +
+      placeholder +
+      this.formula.substring(end);
+
+    setTimeout(() => {
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
+    }, 0);
+
+    // Close dropdowns after selection
+    this.dropdownOpen = false;
+    this.operatorDropdownOpen = false;
+    this.arithmeticDropdownOpen = false; // close the salary component dropdown if open
+
+  }
+
+  isAddFieldsModalOpen: boolean = false;
+
+
+  // Triggered when the checkbox is changed
+  onFixedChange() {
+    if (!this.is_fixed) {
+      this.isAddFieldsModalOpen = true;
+    }
+  }
+
+
+  
+  // Triggered when the checkbox is changed
+  onFixedChangeEdit() {
+    if (!this.editAsset.is_fixed) {
+      this.isAddFieldsModalOpen = true;
+    }
+  }
+
+
+  closemarketModal() {
+    this.isAddFieldsModalOpen = false;
+  }
+
+
+
+
+  dropdownOpen: boolean = false;
+
+  operatorDropdownOpen: boolean = false;
+  arithmeticDropdownOpen: boolean = false;
+  FunctionsdropdownOpen: boolean = false;
+
+  VariablesdropdownOpen: boolean = false;
+
+
+  logicalOperators: string[] = ['<', '>', '>=', '<=', '==', '!=', 'AND', 'OR', 'NOT']; // Add more if needed
+
+  arithmeticOperators: string[] = ['+', '-', '*', '/', '%'];
+
+  FunctionsOperators: string[] = ['WORKHOURS()', 'MAX()', 'MIN()', 'ROUND()', 'SUM()', 'AVG()', 'ABS()', 'INT()',];
+
+  VariablesOperators: string[] = ['calendar_days', 'working_days', 'fixed_days', 'standard_hours', 'ot_hours', 'years_of_service', 'normal_ot_hours', 'weekend_ot_hours',
+    'holiday_ot_hours', 'ot_normal_rate', 'ot_weekend_rate', 'ot_holiday_rate', 'encashed_days'];
+
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+    this.operatorDropdownOpen = false; // close the other dropdown if open
+    this.arithmeticDropdownOpen = false; // close the salary component dropdown if open
+    this.FunctionsdropdownOpen = false;
+    this.VariablesdropdownOpen = false;
+
+  }
+
+  toggleOperatorDropdown() {
+    this.operatorDropdownOpen = !this.operatorDropdownOpen;
+    this.dropdownOpen = false; // close the salary component dropdown if open
+    this.arithmeticDropdownOpen = false; // close the salary component dropdown if open
+    this.FunctionsdropdownOpen = false;
+    this.VariablesdropdownOpen = false;
+
+  }
+
+
+  toggleArithmeticDropdown() {
+    this.arithmeticDropdownOpen = !this.arithmeticDropdownOpen;
+
+    // Close the other dropdowns
+    this.dropdownOpen = false;
+    this.operatorDropdownOpen = false;
+    this.FunctionsdropdownOpen = false;
+    this.VariablesdropdownOpen = false;
+
+  }
+
+  toggleFunctionsDropdown() {
+    this.FunctionsdropdownOpen = !this.FunctionsdropdownOpen;
+
+    // Close the other dropdowns
+    this.dropdownOpen = false;
+    this.operatorDropdownOpen = false;
+    this.arithmeticDropdownOpen = false;
+
+    this.VariablesdropdownOpen = false;
+
+  }
+
+
+  toggleVariablesDropdown() {
+    this.VariablesdropdownOpen = !this.VariablesdropdownOpen;
+
+    // Close the other dropdowns
+    this.dropdownOpen = false;
+    this.operatorDropdownOpen = false;
+    this.arithmeticDropdownOpen = false;
+    this.FunctionsdropdownOpen = false;
+
+  }
+
+
+  deletePayroll(payrollId: number): void {
+    if (confirm('Are you sure you want to delete this Component?')) {
+      this.leaveService.deleteSalary(payrollId).subscribe(
+        () => {
+          // Filter out the deleted payroll from the list
+          this.Salarycomponent = this.Salarycomponent.filter(p => p.id !== payrollId);
+          console.log('Payroll deleted successfully');
+          alert('salary Component deleted succesfull');
+        },
+        (error) => {
+          console.error('Failed to delete payroll', error);
+        }
+      );
+    }
+  }
+
+
+  isBulkuploadDepartmentModalOpen = false;
+  showUploadForm = false;
+  selectedFile!: File;
+
+  /* Open / Close Modal */
+  OpenBulkuploadModal(): void {
+    this.isBulkuploadDepartmentModalOpen = true;
+  }
+
+  closeBulkuploadModal(): void {
+    this.isBulkuploadDepartmentModalOpen = false;
+    this.showUploadForm = false;
+  }
+
+  toggleUploadForm(): void {
+    this.showUploadForm = !this.showUploadForm;
+  }
+
+  closeUploadForm(): void {
+    this.showUploadForm = false;
+  }
+
+  /* File Select */
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  bulkUploadEmployeeSalary(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (!selectedSchema || !this.selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    this.http.post(
+      `${this.apiUrl}/payroll/api/bulk-upload-salary/bulk_upload/?schema=${selectedSchema}`,
+      formData
+    ).subscribe({
+      next: () => {
+        alert('Employee Salary uploaded successfully');
+        window.location.reload();
+      },
+      error: () => {
+        alert('Upload failed');
+      }
     });
-}
+  }
 
+  downloadEmployeeSalaryCsv(): void {
+    const schema = this.authService.getSelectedSchema();
+    if (!schema) return;
+
+    this.companyRegistrationService
+      .downloadSalaryCsv(schema)
+      .subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Employee_Salary_Template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+  }
+
+
+  downloadEmployeeSalaryExcel(): void {
+    const schema = this.authService.getSelectedSchema();
+    if (!schema) return;
+
+    this.companyRegistrationService
+      .downloadSalaryExcel(schema)
+      .subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Employee_Salary_Template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+  }
+
+
+
+
+
+
+
+
+
+  iscreateLoanApp: boolean = false;
+
+
+
+
+  openPopus(): void {
+    this.iscreateLoanApp = true;
+
+  }
+
+  closeapplicationModal(): void {
+    this.iscreateLoanApp = false;
+
+  }
+
+
+
+
+  openEditPopuss(categoryId: number): void {
+
+  }
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelected: boolean = false;
+
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
+  }
+
+  toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+    this.Salarycomponent.forEach(employee => employee.selected = this.allSelected);
+
+  }
+
+  onCheckboxChange(employee: number) {
+    // No need to implement any logic here if you just want to change the style.
+    // You can add any additional logic if needed.
+  }
+
+
+
+  isEditModalOpen: boolean = false;
+  editAsset: any = {}; // holds the asset being edited
+
+  openEditModal(asset: any): void {
+    this.editAsset = { ...asset }; // copy asset data
+    this.isEditModalOpen = true;
+
+    // this.mapLAssetNameToId();
+  }
+
+  closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.editAsset = {};
+  }
+
+
+  updateAssetType(): void {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema || !this.editAsset.id) {
+      alert('Missing schema or asset ID');
+      return;
+    }
+
+    this.EmployeeService.updatesalaryComponent(this.editAsset.id, this.editAsset).subscribe(
+      (response) => {
+        alert('Salary component  updated successfully!');
+        this.closeEditModal();
+        // this.loadLAsset(); 
+        window.location.reload();
+      },
+      (error) => {
+        console.error('Error updating asset:', error);
+
+        let errorMsg = 'Update failed';
+
+        const backendError = error?.error;
+
+        if (backendError && typeof backendError === 'object') {
+          // Convert the object into a readable string
+          errorMsg = Object.keys(backendError)
+            .map(key => `${key}: ${backendError[key].join(', ')}`)
+            .join('\n');
+        }
+
+        alert(errorMsg);
+      }
+    );
+  }
+
+
+  deleteSelectedAssetMaster() {
+    const selectedEmployeeIds = this.Salarycomponent
+      .filter(employee => employee.selected)
+      .map(employee => employee.id);
+
+    if (selectedEmployeeIds.length === 0) {
+      alert('No Salary component selected for deletion.');
+      return;
+    }
+
+    if (confirm('Are you sure you want to delete the selected Salary component ?')) {
+
+      let total = selectedEmployeeIds.length;
+      let completed = 0;
+
+      selectedEmployeeIds.forEach(categoryId => {
+        this.EmployeeService.deleteSalaryComponent(categoryId).subscribe(
+          () => {
+            console.log('Salary component deleted successfully:', categoryId);
+            // Remove the deleted employee from the local list
+            this.Salarycomponent = this.Salarycomponent.filter(employee => employee.id !== categoryId);
+
+            completed++;
+
+            if (completed === total) {
+              alert(' Salary component deleted successfully');
+              window.location.reload();
+            }
+
+          },
+          (error) => {
+            console.error('Error deleting Salary component:', error);
+            alert('Error deleting Salary component: ' + error.statusText);
+          }
+        );
+      });
+    }
+  }
 
 
 

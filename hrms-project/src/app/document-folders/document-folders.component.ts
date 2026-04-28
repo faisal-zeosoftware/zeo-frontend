@@ -244,7 +244,8 @@ export class DocumentFoldersComponent {
     }
     
     Documentfolders:any []=[];
-
+ 
+    
 // ✅ Fetch document folders from backend
 // loadDocumentfolders(): void {
 //   const selectedSchema = this.authService.getSelectedSchema();

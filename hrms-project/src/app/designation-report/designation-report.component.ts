@@ -69,7 +69,7 @@ this.dataSubscription = combineLatest([
   }
 });
 
-    this.getDepartmentReport();
+    // this.getDepartmentReport();
 
       this.userId = this.sessionService.getUserId();
 

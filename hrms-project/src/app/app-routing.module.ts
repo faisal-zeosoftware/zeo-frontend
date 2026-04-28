@@ -168,6 +168,7 @@ import { AttendanceRequestComponent } from './attendance-request/attendance-requ
 import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval-level/latein-earlyout-approval-level.component';
 import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/latein-earlyout-approvals.component';
 import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-template/latein-earlyout-email-template.component';
+import { EmployeeSalaryComponent } from './employee-salary/employee-salary.component';
 
 
 const routes: Routes = [
@@ -565,6 +566,11 @@ const routes: Routes = [
     {
       path:'salary',
       component:SalaryComponent,
+    },
+
+    {
+      path:'employee-salary',
+      component:EmployeeSalaryComponent,
     },
 
     {

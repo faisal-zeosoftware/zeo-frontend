@@ -250,6 +250,7 @@ import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval
 import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/latein-earlyout-approvals.component';
 import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-template/latein-earlyout-email-template.component';
 import { LateinEarlyoutEmailTemplateEditComponent } from './latein-earlyout-email-template-edit/latein-earlyout-email-template-edit.component';
+import { EmployeeSalaryComponent } from './employee-salary/employee-salary.component';
 // import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
@@ -458,6 +459,7 @@ import { LateinEarlyoutEmailTemplateEditComponent } from './latein-earlyout-emai
      LateinEarlyoutApprovalsComponent,
      LateinEarlyoutEmailTemplateComponent,
      LateinEarlyoutEmailTemplateEditComponent,
+     EmployeeSalaryComponent,
      
      
 
