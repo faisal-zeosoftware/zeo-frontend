@@ -572,9 +572,30 @@ background-color:#8e44ad;
     background-color: #f8f9ff;
   }
   
-  .card-selection-check {
+  .card-selection-check {   
     position: absolute;
     top: 10px;
     left: 10px;
     z-index: 2;
   }
+
+
+  /* Center the icon inside the circle */
+.placeholder-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f2f5; /* Light grey background */
+  color: #9ca3af;            /* Grey icon color */
+  border: 4px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 90px;               /* Match your .avatar-wrapper size */
+  height: 90px;
+}
+
+.placeholder-avatar mat-icon {
+  font-size: 48px;           /* Large person icon */
+  width: 48px;
+  height: 48px;
+}

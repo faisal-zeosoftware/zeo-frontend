@@ -127,11 +127,16 @@
               <div class="card-body-content" (click)="showEmployeeDetails(employeesec.id)">
                 <div class="profile-container">
                   <div class="avatar-wrapper">
-                    <img [src]="employeesec.emp_profile_pic || 'assets/default-avatar.png'" 
+  
+                    <img *ngIf="employeesec.emp_profile_pic" 
+                         [src]="employeesec.emp_profile_pic" 
                          alt="Employee" class="emp-avatar-main">
-                    <button mat-icon-button class="edit-btn-floating" 
-                            (click)="openEditEmpPopuss(employeesec.id); $event.stopPropagation()" 
-                            *ngIf="showEditBtn">
+                  
+                    <div *ngIf="!employeesec.emp_profile_pic" class="emp-avatar-main placeholder-avatar">
+                      <mat-icon>person</mat-icon>
+                    </div>
+                  
+                    <button mat-icon-button class="edit-btn-floating" (click)="openEditEmpPopuss(employeesec.id); $event.stopPropagation()" *ngIf="showEditBtn">
                       <mat-icon>edit</mat-icon>
                     </button>
                   </div>
