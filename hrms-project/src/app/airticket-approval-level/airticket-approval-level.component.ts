@@ -377,29 +377,47 @@ CreateAirticketApproverLevel(): void {
     
     
             // non-ess-users usermaster services
-    
-      loadUsers(): void {
-        
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.userService.getApprover(selectedSchema).subscribe(
-          (result: any) => {
-            this.Users = result;
-            console.log(' fetching Companies:');
-    
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
+  
+loadUsers(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+
+        // ✅ RUN CALLBACK AFTER DATA LOAD
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
       }
-      }
-    
-    
-    
+    );
+  }
+}
+
+    mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.levels) return;
+
+  this.editAsset.levels = this.editAsset.levels.map((lvl: any) => {
+
+    // already ID → keep
+    if (typeof lvl.approver === 'number') return lvl;
+
+    // username → convert to ID
+    const found = this.Users.find(
+      (u: any) => u.username === lvl.approver
+    );
+
+    return {
+      ...lvl,
+      approver: found ? found.id : null
+    };
+  });
+
+  console.log('Mapped Approvers:', this.editAsset.levels);
+}
+  
     
             
           iscreateLoanApp: boolean = false;
@@ -455,19 +473,25 @@ CreateAirticketApproverLevel(): void {
     editAsset: any = {}; // holds the asset being edited
     
 openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.editAsset = JSON.parse(JSON.stringify(asset));
   this.isEditModalOpen = true;
+
+  // ✅ ALWAYS initialize first
+  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+    this.editAsset.levels = [
+      { level: 1, role: '', approver: null }
+    ];
+  }
+
+  // ✅ Load Users first → map approvers
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
+
 
   this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
   });
-
-  this.loadUsers();
-
-  // ✅ IMPORTANT
-  if (!this.editAsset.levels || !Array.isArray(this.editAsset.levels)) {
-    this.editAsset.levels = [];
-  }
 }
 
 addEditLevel() {
@@ -613,27 +637,21 @@ this.fetchEmployees(
 mapBranchesNameToId() {
   if (!this.Branches || !this.editAsset?.branch) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch === 'number') {
-    this.editAsset.branch = [this.editAsset.branch];
-    return;
-  }
+  this.editAsset.branch = this.editAsset.branch.map((b: any) => {
 
-  // Case B: backend returns single NAME
-  if (typeof this.editAsset.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-    this.editAsset.branch = found ? [found.id] : [];
-    return;
-  }
+    // already ID
+    if (typeof b === 'number') return b;
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = this.Branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+    // object → take id
+    if (typeof b === 'object' && b.id) return b.id;
 
-  console.log("Mapped branch IDs:", this.editAsset.branch);
+    // name → find id
+    const found = this.Branches.find(br => br.branch_name === b);
+    return found ? found.id : null;
+
+  }).filter((v: any) => v !== null);
+
+  console.log('✅ Mapped branch:', this.editAsset.branch);
 }
 
  
@@ -668,10 +686,6 @@ mapBranchesNameToId() {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   }
 ];
 
@@ -680,10 +694,6 @@ addLevel() {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   });
 }
 

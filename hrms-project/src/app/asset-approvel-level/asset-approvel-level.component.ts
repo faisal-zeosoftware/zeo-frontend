@@ -41,6 +41,7 @@ export class AssetApprovelLevelComponent {
   
     
     Branches: any[] = [];
+    
   
     LoanTypes:any []=[];
     approvalLevels:any []=[];
@@ -93,18 +94,12 @@ export class AssetApprovelLevelComponent {
         });
 
          
-  this.employeeService.selectedBranches$.subscribe(ids => {
- 
-    this.loadAssetTypes();    
-
-    this.LoadBranch();    
-
-
-  });
-      // this.loadAssetTypes();
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadDeparmentBranch(); 
+    });
+      this.loadAssetTypes();
       // this.loadAssetApprovalLevels();
       this.loadAssetapprover();
-      this.LoadBranch();
 
   
        this.loadUsers();
@@ -223,6 +218,10 @@ CreateAssetApproverLevel(): void {
 
   this.registerButtonClicked = true;
 
+  /* -------------------------
+     VALIDATION
+  ------------------------- */
+
   if (!this.asset_type) {
     alert('Please select asset type');
     return;
@@ -240,6 +239,10 @@ CreateAssetApproverLevel(): void {
 
   let formattedLevels: any[] = [];
 
+  /* -------------------------
+     MULTI APPROVAL
+  ------------------------- */
+
   if (this.approval_type === 'multi_approval') {
 
     if (!this.levels || this.levels.length === 0) {
@@ -255,18 +258,18 @@ CreateAssetApproverLevel(): void {
     }
 
     formattedLevels = this.levels.map((lvl, index) => ({
-      level: index + 1,
+      level: index + 1, // auto numbering
       role: lvl.role,
-      approver: Number(lvl.approver),
-      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
-      escalate_after_days: lvl.escalate_after_days || 0,
-      escalate_after_hours: lvl.escalate_after_hours || 0,
-      escalate_after_minutes: lvl.escalate_after_minutes || 0
+      approver: Number(lvl.approver)
     }));
   }
 
+  /* -------------------------
+     FINAL PAYLOAD
+  ------------------------- */
+
   const payload = {
-    asset_type: this.asset_type,
+    asset_type: Number(this.asset_type),
     approval_type: this.approval_type,
     branch: Array.isArray(this.branch) ? this.branch : [this.branch],
     total_levels: formattedLevels.length,
@@ -275,16 +278,33 @@ CreateAssetApproverLevel(): void {
 
   console.log('FINAL PAYLOAD:', payload);
 
+  /* -------------------------
+     API CALL
+  ------------------------- */
+
   this.employeeService.registerAssetApproverLevel(payload).subscribe(
     () => {
+
       alert('Asset Approval Level created successfully');
+
+      /* RESET FORM */
+      this.asset_type = '';
+      this.approval_type = '';
+      this.branch = [];
+      this.levels = [{
+        level: '',
+        role: '',
+        approver: ''
+      }];
+
       this.closeapplicationModal();
 
+      /* REFRESH DATA */
       const schema = this.authService.getSelectedSchema();
       const branches = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
       if (schema) {
-        this.fetchEmployees(schema, branches); // ✅ FIXED
+        this.fetchEmployees(schema, branches);
       }
     },
     (error) => {
@@ -292,7 +312,7 @@ CreateAssetApproverLevel(): void {
 
       let msg = 'Creation failed';
 
-      if (error.error && typeof error.error === 'object') {
+      if (error?.error && typeof error.error === 'object') {
         msg = Object.keys(error.error)
           .map(key => `${key}: ${error.error[key]}`)
           .join('\n');
@@ -316,63 +336,65 @@ CreateAssetApproverLevel(): void {
         }
       }
 
-  LoadBranch(callback?: Function) {
-    const selectedSchema = this.authService.getSelectedSchema();
-    
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any[]) => {
-          // 1. Get the sidebar selected IDs from localStorage
-          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
   
-          // 2. Filter the API result to only include branches selected in the sidebar
-          // If sidebar is empty, you might want to show all, or show none. 
-          // Usually, we show only the selected ones:
-          if (sidebarSelectedIds.length > 0) {
-            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-          } else {
-            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
-          }
-          // Inside the subscribe block of loadDeparmentBranch
-          if (this.Branches.length === 1) {
-            this.branch = this.Branches[0].id;
-          }
-  
-          console.log('Filtered branches for selection:', this.Branches);
-          if (callback) callback();
-        },
-        (error) => {
-          console.error('Error fetching branches:', error);
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.Branches = result; // Fallback: show all if nothing is selected in sidebar
         }
-      );
-    }
+        // Inside the subscribe block of loadDeparmentBranch
+        if (this.Branches.length === 1) {
+          this.branch = this.Branches[0].id;
+        }
+
+        console.log('Filtered branches for selection:', this.Branches);
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
+  }
 }
+
 
 mapBranchesNameToId() {
   if (!this.Branches || !this.editAsset?.branch) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch === 'number') {
+  // Always convert to array
+  if (!Array.isArray(this.editAsset.branch)) {
     this.editAsset.branch = [this.editAsset.branch];
-    return;
   }
 
-  // Case B: backend returns single NAME
-  if (typeof this.editAsset.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-    this.editAsset.branch = found ? [found.id] : [];
-    return;
-  }
+  this.editAsset.branch = this.editAsset.branch.map((b: any) => {
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = this.Branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+    // already ID → keep
+    if (typeof b === 'number') return b;
 
-  console.log("Mapped branch IDs:", this.editAsset.branch);
+    // name → convert to ID
+    const found = this.Branches.find(x => x.branch_name === b);
+    return found ? found.id : null;
+
+  }).filter((id: any) => id !== null);
+
+  console.log('Mapped Branch IDs:', this.editAsset.branch);
 }
+
+
+
+
+
   
   
     
@@ -498,25 +520,45 @@ mapLoanTypeNameToId() {
   
           // non-ess-users usermaster services
   
-    loadUsers(): void {
-      
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.userService.getApprover(selectedSchema).subscribe(
-        (result: any) => {
-          this.Users = result;
-          console.log(' fetching Companies:');
-  
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-    }
+loadUsers(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+
+        // ✅ RUN CALLBACK AFTER DATA LOAD
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
+  }
+}
+
+    mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.levels) return;
+
+  this.editAsset.levels = this.editAsset.levels.map((lvl: any) => {
+
+    // already ID → keep
+    if (typeof lvl.approver === 'number') return lvl;
+
+    // username → convert to ID
+    const found = this.Users.find(
+      (u: any) => u.username === lvl.approver
+    );
+
+    return {
+      ...lvl,
+      approver: found ? found.id : null
+    };
+  });
+
+  console.log('Mapped Approvers:', this.editAsset.levels);
+}
   
   
   
@@ -575,29 +617,35 @@ mapLoanTypeNameToId() {
   editAsset: any = {}; // holds the asset being edited
   
 openEditModal(asset: any): void {
-
   this.editAsset = JSON.parse(JSON.stringify(asset));
 
-  // ✅ ensure branch is array
+  this.isEditModalOpen = true;
+
+  // 🔥 FORCE ARRAY FORMAT FIRST
   if (!Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = this.editAsset.branch ? [this.editAsset.branch] : [];
+    this.editAsset.branch = this.editAsset.branch
+      ? [this.editAsset.branch]
+      : [];
   }
 
-  // ✅ ensure levels exist
+  // ✅ Load Users first → map approvers
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
+
+  // ✅ Load Branches → THEN map
+  this.loadDeparmentBranch(() => {
+    this.mapBranchesNameToId();
+
+    console.log('FINAL BRANCH VALUE:', this.editAsset.branch);
+  });
+
+  // ✅ Ensure levels exist
   if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
     this.editAsset.levels = [
       { level: 1, role: '', approver: null }
     ];
   }
-
-  this.LoadBranch(() => {
-    this.mapBranchesNameToId();
-  });
-
-  this.mapLoanAprNameToId();
-  this.mapLoanTypeNameToId();
-
-  this.isEditModalOpen = true;
 }
 
   addEditLevel() {
@@ -678,10 +726,6 @@ updateAssetType(): void {
       level: index + 1,
       role: lvl.role,
       approver: Number(lvl.approver),
-      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
-      escalate_after_days: lvl.escalate_after_days || 0,
-      escalate_after_hours: lvl.escalate_after_hours || 0,
-      escalate_after_minutes: lvl.escalate_after_minutes || 0
     }));
   }
 
@@ -732,10 +776,6 @@ updateAssetType(): void {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   }
 ];
 
@@ -744,10 +784,6 @@ addLevel() {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   });
 }
 

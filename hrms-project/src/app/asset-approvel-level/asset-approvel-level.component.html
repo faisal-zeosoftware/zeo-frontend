@@ -414,36 +414,67 @@
                        
                       </tr>
                     </thead>
-                    <tbody>
-                        
-                      <tr *ngFor="let docs of approvalLevels;let i = index">
-                        <td data-label="No">{{ i + 1 }}</td> 
-                        <td data-label="Level">{{ docs.level }}</td>
-                        <td data-label="Role">{{ docs.role }}</td> 
-                        <td data-label="Approver">{{ docs.approver }}</td>
-                        <td data-label="AssetType">{{ docs.asset_type }}</td>
-                          <td data-label="Branch">{{ docs.branch }}</td>
+<tbody>
 
-                        <td data-label="Action">
-                          <button
-                            mat-fab
-                            color="primary"
-                            aria-label="Edit icon"
-                            *ngIf="showEditBtn"
-          
-                            
-                            (click)="openEditModal(docs)"
-                          >
-                            <mat-icon style="color: white;">draw</mat-icon>
-                          </button>
-          
-                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-          
-                        </td>
-        
-                      </tr>
-                  
-                    </tbody>
+  <tr *ngFor="let docs of approvalLevels; let i = index">
+    
+ <td>{{ i + 1 }}</td>
+
+  <!-- Levels -->
+  <td>
+    <ng-container *ngIf="docs.levels?.length > 0; else noLevel">
+      <div *ngFor="let lvl of docs.levels">
+        Level {{ lvl.level }}
+      </div>
+    </ng-container>
+    <ng-template #noLevel>-</ng-template>
+  </td>
+
+  <!-- Role -->
+  <td>
+    <ng-container *ngIf="docs.levels?.length > 0">
+      <div *ngFor="let lvl of docs.levels">
+        {{ lvl.role }}
+      </div>
+    </ng-container>
+  </td>
+
+  <!-- Approver (USERNAME FIX) -->
+  <td>
+    <div *ngFor="let lvl of docs.levels">
+      {{ lvl.approver }}
+    </div>
+  </td>
+
+    <td>{{ docs.asset_type }}</td>
+
+
+
+    <!-- BRANCH -->
+  <td>
+    <span *ngFor="let b of docs.branch; let last = last">
+      {{ b }}<span *ngIf="!last">, </span>
+    </span>
+  </td>
+
+    <!-- ACTION -->
+      <td>
+        <button
+          mat-fab
+          color="primary"
+          *ngIf="showEditBtn"
+          (click)="openEditModal(docs)"
+          style="transform: scale(0.7); margin-right: 6px;"
+        >
+          <mat-icon style="color: white;">draw</mat-icon>
+        </button>
+
+        <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+      </td>
+
+  </tr>
+
+</tbody>
                   </table>
     
                   </div>

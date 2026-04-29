@@ -66,6 +66,7 @@ schemas: string[] = []; // Array to store schema names
     private DesignationService: DesignationService,
   private DepartmentServiceService: DepartmentServiceService,
 private sessionService: SessionService,
+private CountryService: CountryService,
 private employeeService: EmployeeService,
 
   ) {}
@@ -206,55 +207,75 @@ private employeeService: EmployeeService,
 
 
 CreateLoanApproverLevel(): void {
+
   this.registerButtonClicked = true;
 
-    // Ensure level numbering
-  const formattedLevels = this.levels.map((lvl, index) => ({
-    ...lvl,
-    level: index + 1,
-    approver: Number(lvl.approver),
-    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
-  }));
+  /* -------------------------
+     ✅ VALIDATION
+  ------------------------- */
 
-  const formData = new FormData();
-  formData.append('level', this.level);
-  formData.append('role', this.role);
-  formData.append('approver', this.approver);
-  formData.append('approver', this.approver);
-  formData.append('branch', this.branch);
-  formData.append('approval_type',this.approval_type);
+  if (!this.branch || this.branch.length === 0) {
+    alert('Please select branch');
+    return;
+  }
 
-    // ✅ Append required fields properly
-  formData.append('total_levels', formattedLevels.length.toString());
+  if (!this.approval_type) {
+    alert('Please select approval type');
+    return;
+  }
 
-  // If backend expects JSON array
-  formData.append('levels', JSON.stringify(formattedLevels));
+  let formattedLevels: any[] = [];
 
-  this.employeeService.registerPayrollApproverLevel(formData).subscribe(
-    (response) => {
-      console.log('Registration successful', response);
-      alert('Approval Level has been added');
+  /* -------------------------
+     ✅ MULTI APPROVAL
+  ------------------------- */
+
+  if (this.approval_type === 'multi_approval') {
+
+    if (!this.levels || this.levels.length === 0) {
+      alert('Please add at least one level');
+      return;
+    }
+
+    const invalid = this.levels.find(l => !l.role || !l.approver);
+
+    if (invalid) {
+      alert('Fill all level fields');
+      return;
+    }
+
+    formattedLevels = this.levels.map((lvl, index) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver)
+    }));
+  }
+
+  /* -------------------------
+     ✅ FINAL PAYLOAD (IMPORTANT)
+  ------------------------- */
+
+  const payload = {
+    branch: this.branch,               // ✅ array
+    approval_type: this.approval_type,
+    total_levels: formattedLevels.length,
+    levels: formattedLevels           // ✅ REAL ARRAY (NOT string)
+  };
+
+  console.log('FINAL PAYLOAD:', payload);
+
+  /* -------------------------
+     🚀 API CALL
+  ------------------------- */
+
+  this.CountryService.RegisterPayrollApproverLevel(payload).subscribe(
+    () => {
+      alert('Approval Level Created');
+      this.closeapplicationModal();
       window.location.reload();
     },
     (error) => {
-      console.error('Added failed', error);
-
-      let errorMessage = 'Enter all required fields!';
-
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
-      }
-
-      alert(errorMessage);
+      console.error(error);
     }
   );
 }
@@ -348,19 +369,26 @@ CreateLoanApproverLevel(): void {
   }
   }
 
-     mapUsersNameToId() {
+mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.levels) return;
 
-  if (!this.Users || !this.editAsset?.approver) return;
+  this.editAsset.levels = this.editAsset.levels.map((lvl: any) => {
 
-  const emp = this.Users.find(
-    (e: any) => e.username === this.editAsset.approver
-  );
+    // already ID → keep
+    if (typeof lvl.approver === 'number') return lvl;
 
-  if (emp) {
-    this.editAsset.approver = emp.id;  // convert to ID for dropdown
-  }
+    // username → convert to ID
+    const found = this.Users.find(
+      (u: any) => u.username === lvl.approver
+    );
 
-  console.log("Mapped employee_id:", this.editAsset.approver);
+    return {
+      ...lvl,
+      approver: found ? found.id : null
+    };
+  });
+
+  console.log('Mapped Approvers:', this.editAsset.levels);
 }
 
 
@@ -398,30 +426,33 @@ loadDeparmentBranch(callback?: Function): void {
 
 
 mapBranchesNameToId() {
-  if (!this.Branches || !this.editAsset?.branch) return;
+  if (!this.Branches || !this.editAsset) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch === 'number') {
-    this.editAsset.branch = [this.editAsset.branch];
-    return;
+  let branchData = this.editAsset.branch;
+
+  if (!branchData) return;
+
+  // ✅ Always convert to array first
+  if (!Array.isArray(branchData)) {
+    branchData = [branchData];
   }
 
-  // Case B: backend returns single NAME
-  if (typeof this.editAsset.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-    this.editAsset.branch = found ? [found.id] : [];
-    return;
-  }
+  this.editAsset.branch = branchData.map((b: any) => {
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = this.Branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+    // Case 1: already ID
+    if (typeof b === 'number') return b;
 
-  console.log("Mapped branch IDs:", this.editAsset.branch);
+    // Case 2: string name → convert to ID
+    const found = this.Branches.find(
+      (branch: any) => branch.branch_name === b
+    );
+
+    return found ? found.id : null;
+  }).filter((id: any) => id !== null);
+
+  console.log('✅ Final Branch IDs:', this.editAsset.branch);
 }
+
 
     
 
@@ -480,12 +511,49 @@ mapBranchesNameToId() {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
+openEditModal(asset: any): void {
+  this.editAsset = JSON.parse(JSON.stringify(asset));
+  this.isEditModalOpen = true;
 
-    this.mapUsersNameToId();
+  // ✅ Load branches FIRST
+  this.loadDeparmentBranch(() => {
+    this.mapBranchesNameToId();   // 🔥 AFTER branches loaded
+  });
+
+  // ✅ Load users AFTER
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
+
+  // ✅ Ensure levels exist
+  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+    this.editAsset.levels = [
+      { level: 1, role: '', approver: null }
+    ];
   }
+}
+
+
+addEditLevel() {
+  if (!this.editAsset.levels) {
+    this.editAsset.levels = [];
+  }
+
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: ''
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
+
+  // ✅ Reorder levels
+  this.editAsset.levels.forEach((lvl: any, i: number) => {
+    lvl.level = i + 1;
+  });
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;
@@ -533,37 +601,93 @@ mapBranchesNameToId() {
   }
 
 
-  updateAssetType(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
+updateAssetType(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or ID');
+    return;
+  }
+
+  /* -------------------------
+     ✅ VALIDATION
+  ------------------------- */
+
+  if (!this.editAsset.branch || this.editAsset.branch.length === 0) {
+    alert('Please select branch');
+    return;
+  }
+
+  if (!this.editAsset.approval_type) {
+    alert('Please select approval type');
+    return;
+  }
+
+  let formattedLevels: any[] = [];
+
+  /* -------------------------
+     ✅ MULTI APPROVAL FIX
+  ------------------------- */
+
+  if (this.editAsset.approval_type === 'multi_approval') {
+
+    if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+      alert('Please add at least one level');
       return;
     }
 
-    this.employeeService.updatepayrollApprovallevel(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
-        alert(' Approval Level Setting  updated successfully!');
-        this.closeEditModal();
-        window.location.reload();
-      },
-(error) => {
-  console.error('Error updating PayRoll:', error);
+    const invalid = this.editAsset.levels.find((l: any) => !l.role || !l.approver);
 
-  let errorMsg = 'Update failed';
+    if (invalid) {
+      alert('Fill all level fields');
+      return;
+    }
 
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+    formattedLevels = this.editAsset.levels.map((lvl: any, index: number) => ({
+      level: index + 1,
+      role: lvl.role,
+      approver: Number(lvl.approver)
+    }));
   }
 
-  alert(errorMsg);
+  /* -------------------------
+     ✅ FINAL PAYLOAD
+  ------------------------- */
+
+  const payload = {
+    branch: this.editAsset.branch,
+    approval_type: this.editAsset.approval_type,
+    total_levels: formattedLevels.length,
+    levels: formattedLevels
+  };
+
+  console.log('UPDATE PAYLOAD:', payload);
+
+  /* -------------------------
+     🚀 API CALL
+  ------------------------- */
+
+  this.employeeService.updatepayrollApprovallevel(this.editAsset.id, payload).subscribe(
+    () => {
+      alert('Updated successfully');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error(error);
+
+      let errorMsg = 'Update failed';
+
+      if (error?.error && typeof error.error === 'object') {
+        errorMsg = Object.keys(error.error)
+          .map(key => `${key}: ${error.error[key]}`)
+          .join('\n');
+      }
+
+      alert(errorMsg);
+    }
+  );
 }
-    );
-  }
 
     toggleAllSelection(): void {
       if (this.select) {
@@ -597,10 +721,6 @@ mapBranchesNameToId() {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   }
 ];
 
@@ -609,10 +729,6 @@ addLevel() {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   });
 }
 

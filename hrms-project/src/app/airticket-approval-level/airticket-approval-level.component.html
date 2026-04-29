@@ -412,6 +412,7 @@
                         <th>Level</th>
                         <th>Role</th>
                         <th>Approver</th>
+                        <th>Branch</th>
 
                         <!-- <th>Airticket Type</th> -->
                        
@@ -443,6 +444,13 @@
       {{ lvl.approver }}
     </div>
   </td>
+
+  <td>
+    <span *ngFor="let b of docs.branch; let last = last">
+      {{ b }}<span *ngIf="!last">, </span>
+    </span>
+  </td>
+
 
   <td class="text-center">
     <button

@@ -244,16 +244,19 @@
       </div>
     </div>
 
-  <div class="col-md-4">
-      <label>Branch</label>
-
-      <div class="custom-sel">
-          <div class="form-control-wrapper">
-        
-  
-            <mat-form-field>
-              <!-- <mat-label>Favorite food</mat-label> -->
-                        <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #select multiple>
+      <div class="col-md-4">
+        <label>Branch</label>
+    
+    
+    
+    
+        <div class="custom-sel">
+            <div class="form-control-wrapper">
+          
+    
+              <mat-form-field>
+                <!-- <mat-label>Favorite food</mat-label> -->
+                        <mat-select placeholder="Select" [(ngModel)]="editAsset.branch"  [ngModelOptions]="{standalone: true}" #select multiple>
                           <div class="select-all">
                             <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
                               Select All
@@ -276,16 +279,16 @@
 
         </mat-option>
                         </mat-select>
-            </mat-form-field>
-            
+              </mat-form-field>
+              
+            </div>
+            <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
+              Please Select Your branch
+            </div>
           </div>
-          <div *ngIf="registerButtonClicked && (!branch || branch.length === 0)" class="error-message">
-            Please Select Your branch
-          </div>
-        </div>
-                  
-  
-  </div>
+                    
+    
+    </div>
 
 
     <div class="col-md-4">
@@ -381,6 +384,7 @@
                         <th>Level</th>
                         <th>Role</th>
                         <th>Approver</th>
+                        <th>Branch</th>
 
                         <th>Loan Type</th>
                        
@@ -392,33 +396,64 @@
                     </thead>
                     <tbody>
                         
-                      <tr *ngFor="let docs of approvalLevels;let i = index">
-                        <td data-label="No">{{ i + 1 }}</td> 
-                        <td data-label="Level">{{ docs.level }}</td>
-                        <td data-label="Role">{{ docs.role }}</td> 
-                        <td data-label="Approver">{{ docs.approver }}</td>
-                        <td data-label="Loan Type">{{ docs.loan_type }}</td>
+<tbody>
 
-                        <td data-label="Action">
-                          <button
-                            mat-fab
-                            color="primary"
-                            aria-label="Edit icon"
-                            *ngIf="showEditBtn"
-          
-                            
-                            (click)="openEditModal(docs)"
-                          >
-                            <mat-icon style="color: white;">draw</mat-icon>
-                          </button>
-          
-                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-          
-                        </td>
-        
-                      </tr>
+  <tr *ngFor="let docs of approvalLevels; let i = index">
+  <td>{{ i + 1 }}</td>
+
+  <!-- Levels -->
+  <td>
+    <ng-container *ngIf="docs.levels?.length > 0; else noLevel">
+      <div *ngFor="let lvl of docs.levels">
+        Level {{ lvl.level }}
+      </div>
+    </ng-container>
+    <ng-template #noLevel>-</ng-template>
+  </td>
+
+  <!-- Role -->
+  <td>
+    <ng-container *ngIf="docs.levels?.length > 0">
+      <div *ngFor="let lvl of docs.levels">
+        {{ lvl.role }}
+      </div>
+    </ng-container>
+  </td>
+
+  <!-- Approver (USERNAME FIX) -->
+  <td>
+    <div *ngFor="let lvl of docs.levels">
+      {{ lvl.approver }}
+    </div>
+  </td>
+
+  <td>
+    <span *ngFor="let b of docs.branch; let last = last">
+      {{ b }}<span *ngIf="!last">, </span>
+    </span>
+  </td>
+
+      <td>{{ docs.loan_type || '-' }}</td>
+      
+     <td>
+        <button
+          mat-fab
+          color="primary"
+          *ngIf="showEditBtn"
+          (click)="openEditModal(docs)"
+          style="transform: scale(0.7); margin-right: 6px;"
+        >
+          <mat-icon style="color: white;">draw</mat-icon>
+        </button>
+
+        <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+      </td>
+
+  </tr>
+
+</tbody>
                   
-                    </tbody>
+                  
                   </table>
     
                   </div>

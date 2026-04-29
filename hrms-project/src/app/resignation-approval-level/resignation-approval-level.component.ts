@@ -302,25 +302,43 @@ CreateLoanApproverLevel(): void {
 
 // non-ess-users usermaster services
 
-      loadUsers(): void {
-    
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+loadUsers(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
 
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
   if (selectedSchema) {
     this.userService.getApprover(selectedSchema).subscribe(
       (result: any) => {
         this.Users = result;
-        console.log(' fetching Companies:');
 
+        if (callback) callback(); // ✅ IMPORTANT
       },
       (error) => {
-        console.error('Error fetching Companies:', error);
+        console.error('Error fetching Users:', error);
       }
     );
   }
-  }
+}
+
+  mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.levels) return;
+
+  this.editAsset.levels.forEach((lvl: any) => {
+    if (!lvl.approver) return;
+
+    // If backend sends username instead of ID
+    if (typeof lvl.approver === 'string') {
+      const found = this.Users.find(
+        (u: any) => u.username === lvl.approver
+      );
+
+      if (found) {
+        lvl.approver = found.id;
+      }
+    }
+  });
+
+  console.log('Mapped approvers:', this.editAsset.levels);
+}
 
 
       
@@ -373,18 +391,28 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.editAsset = JSON.parse(JSON.stringify(asset));
   this.isEditModalOpen = true;
 
+  // ✅ Load branches FIRST → then map
   this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
   });
 
-  this.loadUsers();
+  // ✅ Load users → then map approver
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
 
-  // ✅ ensure levels exists
+  // ✅ Ensure levels exist
   if (!this.editAsset.levels || !Array.isArray(this.editAsset.levels)) {
-    this.editAsset.levels = [];
+    this.editAsset.levels = [
+      {
+        level: 1,
+        role: '',
+        approver: null
+      }
+    ];
   }
 }
 
@@ -481,29 +509,38 @@ loadDeparmentBranch(callback?: Function): void {
 
 
 mapBranchesNameToId() {
-  if (!this.Branches || !this.editAsset?.branch) return;
+  if (!this.Branches || !this.editAsset) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch === 'number') {
-    this.editAsset.branch = [this.editAsset.branch];
+  let branchData = this.editAsset.branch;
+
+  if (!branchData) return;
+
+  // ✅ Case 1: already array of IDs
+  if (Array.isArray(branchData) && typeof branchData[0] === 'number') {
     return;
   }
 
-  // Case B: backend returns single NAME
-  if (typeof this.editAsset.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
+  // ✅ Case 2: single ID → convert to array
+  if (typeof branchData === 'number') {
+    this.editAsset.branch = [branchData];
+    return;
+  }
+
+  // ✅ Case 3: single NAME
+  if (typeof branchData === 'string') {
+    const found = this.Branches.find(b => b.branch_name === branchData);
     this.editAsset.branch = found ? [found.id] : [];
     return;
   }
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch)) {
+  // ✅ Case 4: array of names
+  if (Array.isArray(branchData)) {
     this.editAsset.branch = this.Branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
+      .filter(b => branchData.includes(b.branch_name))
       .map(b => b.id);
   }
 
-  console.log("Mapped branch IDs:", this.editAsset.branch);
+  console.log('Mapped Branch IDs:', this.editAsset.branch);
 }
 
 

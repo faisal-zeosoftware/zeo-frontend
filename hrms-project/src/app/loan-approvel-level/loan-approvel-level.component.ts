@@ -493,7 +493,7 @@ loadUsers(callback?: Function): void {
 }
 
 
-  loadDeparmentBranch(callback?: Function): void {
+    loadDeparmentBranch(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   
   if (selectedSchema) {
@@ -527,29 +527,32 @@ loadUsers(callback?: Function): void {
 
 
 mapBranchesNameToId() {
-  if (!this.Branches || !this.editAsset?.branch) return;
+  if (!this.Branches || !this.editAsset) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch === 'number') {
-    this.editAsset.branch = [this.editAsset.branch];
-    return;
+  let branchData = this.editAsset.branch;
+
+  if (!branchData) return;
+
+  // ✅ Normalize to array
+  if (!Array.isArray(branchData)) {
+    branchData = [branchData];
   }
 
-  // Case B: backend returns single NAME
-  if (typeof this.editAsset.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-    this.editAsset.branch = found ? [found.id] : [];
-    return;
-  }
+  this.editAsset.branch = branchData.map((b: any) => {
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = this.Branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+    // ✅ Already ID
+    if (typeof b === 'number') return b;
 
-  console.log("Mapped branch IDs:", this.editAsset.branch);
+    // ✅ Name → ID
+    const found = this.Branches.find(
+      (branch: any) => branch.branch_name === b
+    );
+
+    return found ? found.id : null;
+
+  }).filter((id: any) => id !== null);
+
+  console.log('✅ Final Branch IDs:', this.editAsset.branch);
 }
 
 
@@ -610,22 +613,37 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
+  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
   this.isEditModalOpen = true;
-
-  this.loadLoanTypes(() => {
-    this.mapLoanTypeNameToId();
-  });
-
-  this.loadUsers(() => {
-    this.mapApproverNameToId();
-  });
 
   this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
   });
+
+  this.loadUsers();
+
+  // ✅ IMPORTANT
+  if (!this.editAsset.levels || !Array.isArray(this.editAsset.levels)) {
+    this.editAsset.levels = [];
+  }
 }
 
+addEditLevel() {
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
+
+  // ✅ FIX: reorder levels
+  this.editAsset.levels.forEach((lvl: any, i: number) => {
+    lvl.level = i + 1;
+  });
+}
 closeEditModal(): void {
 this.isEditModalOpen = false;
 this.editAsset = {};
@@ -721,10 +739,6 @@ updateAssetType(): void {
       level: index + 1,
       role: lvl.role,
       approver: Number(lvl.approver),
-      escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null,
-      escalate_after_days: lvl.escalate_after_days || 0,
-      escalate_after_hours: lvl.escalate_after_hours || 0,
-      escalate_after_minutes: lvl.escalate_after_minutes || 0
     }));
   }
 
@@ -735,7 +749,7 @@ updateAssetType(): void {
   const payload = {
     loan_type: this.editAsset.loan_type,
     approval_type: this.editAsset.approval_type,
-    branch: this.editAsset.branch, // ✅ array
+    branch: this.editAsset.branch,
     total_levels: formattedLevels.length,
     levels: formattedLevels
   };

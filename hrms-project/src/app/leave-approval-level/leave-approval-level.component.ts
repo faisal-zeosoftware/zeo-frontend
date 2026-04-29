@@ -9,6 +9,7 @@ import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 @Component({
@@ -64,6 +65,7 @@ schemas: string[] = []; // Array to store schema names
     private leaveService:LeaveService,
     private employeeService:EmployeeService,
     private userService: UserMasterService,
+    private DepartmentServiceService: DepartmentServiceService,
 
     private DesignationService: DesignationService,
   
@@ -72,9 +74,9 @@ schemas: string[] = []; // Array to store schema names
     ngOnInit(): void {
 
         // Listen for sidebar changes so the dropdown updates instantly
-  this.employeeService.selectedBranches$.subscribe(ids => {
-    this.LoadBranch(); 
-  });
+   this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadDeparmentBranch(); 
+    });
 
 
   // combineLatest waits for both Schema and Branches to have a value
@@ -94,7 +96,6 @@ schemas: string[] = []; // Array to store schema names
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
 
-        this.LoadBranch();
 
         
       // this.LoadUsers(selectedSchema);
@@ -271,12 +272,11 @@ if (this.userId !== null) {
 //   }
 // }
 
-
-LoadBranch(callback?: Function) {
+loadDeparmentBranch(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   
   if (selectedSchema) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
       (result: any[]) => {
         // 1. Get the sidebar selected IDs from localStorage
         const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
@@ -303,31 +303,33 @@ LoadBranch(callback?: Function) {
     );
   }
 }
- 
-mapBranchesNameToId() {
-  if (!this.Branches || !this.editAsset?.branch) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch === 'number') {
-    this.editAsset.branch = [this.editAsset.branch];
-    return;
+
+normalizeBranch() {
+  if (!this.editAsset?.branch) return;
+
+  // always convert to array
+  let branches = this.editAsset.branch;
+
+  if (!Array.isArray(branches)) {
+    branches = [branches];
   }
 
-  // Case B: backend returns single NAME
-  if (typeof this.editAsset.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-    this.editAsset.branch = found ? [found.id] : [];
-    return;
-  }
+  this.editAsset.branch = branches.map((b: any) => {
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = this.Branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+    // case: already number
+    if (typeof b === 'number') return b;
 
-  console.log("Mapped branch IDs:", this.editAsset.branch);
+    // case: string name → convert
+    const found = this.Branches.find(
+      br => br.branch_name === b
+    );
+
+    return found ? found.id : null;
+
+  }).filter((id: any) => id !== null);
+
+  console.log('✅ Normalized Branch:', this.editAsset.branch);
 }
 
 
@@ -445,20 +447,32 @@ mapBranchesNameToId() {
   }
 
   
-  mapApproverNameToId() {
+mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.levels) return;
 
-  if (!this.Users || !this.editAsset?.approver) return;
+  this.editAsset.levels.forEach((lvl: any) => {
 
-  const use = this.Users.find(
-    (u: any) => u.username === this.editAsset.approver
-  );
+    if (!lvl.approver) return;
 
-  if (use) {
-    this.editAsset.approver = use.id;  // convert to ID for dropdown
-  }
+    // backend gives username → convert to ID
+    if (typeof lvl.approver === 'string') {
+      const found = this.Users.find(
+        (u: any) => u.username === lvl.approver
+      );
 
-  console.log("Mapped employee_id:", this.editAsset.approver);
+      if (found) {
+        lvl.approver = found.id;
+      }
+    }
+
+  });
+
+  console.log('Mapped Approvers:', this.editAsset.levels);
 }
+
+
+
+
 
   
 
@@ -610,20 +624,33 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.editAsset = JSON.parse(JSON.stringify(asset));
   this.isEditModalOpen = true;
 
-  // 🔥 Ensure levels exist
-  if (!this.editAsset.levels) {
-    this.editAsset.levels = [];
+  // ✅ Compensatory fix
+  this.editAsset.is_compensatory = !!this.editAsset.is_compensatory;
+
+  // ✅ Levels fix
+  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+    this.editAsset.levels = [
+      { level: 1, role: '', approver: null }
+    ];
   }
 
-  this.LoadBranch(() => {
-    this.mapBranchesNameToId();
+  this.editAsset.levels.forEach((lvl: any, index: number) => {
+    lvl.level = index + 1;
+    lvl.role = lvl.role || '';
   });
 
-  this.mapLeaveTypeNameToId();
-  this.mapApproverNameToId();
+  // ✅ Load users → map approver
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
+
+  // ✅ Load branches → normalize
+  this.loadDeparmentBranch(() => {
+    this.normalizeBranch();
+  });
 }
 
 addEditLevel() {
@@ -635,10 +662,6 @@ addEditLevel() {
     level: this.editAsset.levels.length + 1,
     role: '',
     approver: '',
-    escalate_to: null,
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   });
 }
 

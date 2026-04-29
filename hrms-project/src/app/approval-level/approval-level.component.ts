@@ -229,18 +229,26 @@ loadUsers(callback?: Function): void {
   }
   }
 
-    mapApproverNameToId() {
-  if (!this.Users || !this.editAsset?.approver) return;
+mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.levels) return;
 
-  const apr = this.Users.find(
-    (a: any) => a.username === this.editAsset.approver
-  );
+  this.editAsset.levels = this.editAsset.levels.map((lvl: any) => {
 
-  if (apr) {
-    this.editAsset.approver = apr.id;  // convert to ID for dropdown
-  }
+    // already ID → keep
+    if (typeof lvl.approver === 'number') return lvl;
 
-  console.log("Mapped employee_id:", this.editAsset.approver);
+    // username → convert to ID
+    const found = this.Users.find(
+      (u: any) => u.username === lvl.approver
+    );
+
+    return {
+      ...lvl,
+      approver: found ? found.id : null
+    };
+  });
+
+  console.log('Mapped Approvers:', this.editAsset.levels);
 }
 
   loadRequestType(callback?: Function): void {
@@ -566,24 +574,25 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.editAsset = JSON.parse(JSON.stringify(asset));
   this.isEditModalOpen = true;
+
+  this.loadUsers(() => {
+    this.mapApproverNameToId();   // 🔥 IMPORTANT
+  });
 
   this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
-  });
-
-  this.loadUsers(() => {
-    this.mapApproverNameToId();
   });
 
   this.loadRequestType(() => {
     this.mapReqTypeNameToId();
   });
 
-  // ✅ IMPORTANT FIX: ensure levels exist
-  if (!this.editAsset.levels) {
-    this.editAsset.levels = [];
+  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+    this.editAsset.levels = [
+      { level: 1, role: '', approver: null }
+    ];
   }
 }
 

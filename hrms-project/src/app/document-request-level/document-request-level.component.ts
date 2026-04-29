@@ -321,19 +321,24 @@ if (this.userId !== null) {
   }
   }
 
-    mapBranchNameToId() {
-    
-  if (!this.Users || !this.editAsset?.approver) return;
+mapBranchesNameToId() {
+  if (!this.Branches || !this.editAsset?.branch) return;
 
-  const use = this.Users.find(
-    (u: any) => u.username === this.editAsset.approver
-  );
+  this.editAsset.branch = this.editAsset.branch.map((b: any) => {
 
-  if (use) {
-    this.editAsset.approver = use.id;  // convert to ID for dropdown
-  }
+    // already ID
+    if (typeof b === 'number') return b;
 
-  console.log("Mapped employee_id:", this.editAsset.approver);
+    // object → take id
+    if (typeof b === 'object' && b.id) return b.id;
+
+    // name → find id
+    const found = this.Branches.find(br => br.branch_name === b);
+    return found ? found.id : null;
+
+  }).filter((v: any) => v !== null);
+
+  console.log('✅ Mapped branch:', this.editAsset.branch);
 }
 
   
@@ -377,7 +382,6 @@ SetLeaveApprovaLevel(): void {
     ...lvl,
     level: index + 1,
     approver: Number(lvl.approver),
-    escalate_to: lvl.escalate_to ? Number(lvl.escalate_to) : null
   }));
 
   // ✅ CLEAN JSON PAYLOAD (recommended over FormData for arrays)
@@ -462,17 +466,26 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.editAsset = JSON.parse(JSON.stringify(asset));
   this.isEditModalOpen = true;
 
-  // ✅ ensure levels exist
   if (!this.editAsset.levels) {
     this.editAsset.levels = [];
   }
 
-  // ✅ ensure branch is array (important for mat-select multiple)
+  // 🔥 IMPORTANT: ensure branch is array
   if (!Array.isArray(this.editAsset.branch)) {
     this.editAsset.branch = [];
+  }
+
+  // 🔥 LOAD BRANCHES FIRST → THEN MAP
+  const selectedSchema = this.authService.getSelectedSchema();
+  if (selectedSchema) {
+    this.LoadBranch(selectedSchema);
+
+    setTimeout(() => {
+      this.mapBranchesNameToId();   // ✅ THIS FIXES DISPLAY
+    }, 300); // small delay to wait API
   }
 }
 
@@ -636,10 +649,6 @@ filterEmployees() {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   }
 ];
 
@@ -648,10 +657,6 @@ addLevel() {
     level: '',
     role: '',
     approver: '',
-    escalate_to: '',
-    escalate_after_days: 0,
-    escalate_after_hours: 0,
-    escalate_after_minutes: 0
   });
 }
 
