@@ -396,26 +396,21 @@ loadUsers(callback?: Function): void {
   }
 }
 
-    mapApproverNameToId() {
+mapApproverNameToId() {
   if (!this.Users || !this.editAsset?.levels) return;
 
-  this.editAsset.levels = this.editAsset.levels.map((lvl: any) => {
+  this.editAsset.levels.forEach((lvl: any) => {
 
-    // already ID → keep
-    if (typeof lvl.approver === 'number') return lvl;
+    if (typeof lvl.approver === 'number') return;
 
-    // username → convert to ID
     const found = this.Users.find(
       (u: any) => u.username === lvl.approver
     );
 
-    return {
-      ...lvl,
-      approver: found ? found.id : null
-    };
+    if (found) {
+      lvl.approver = Number(found.id); // 🔥 force number
+    }
   });
-
-  console.log('Mapped Approvers:', this.editAsset.levels);
 }
   
     

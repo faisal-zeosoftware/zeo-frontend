@@ -323,14 +323,17 @@
 
     <div class="col-md-4">
       <label>Approver</label>
-      <select class="form-control"
-              [(ngModel)]="lvl.approver"
-              [ngModelOptions]="{standalone: true}">
-        <option value="">Select</option>
-        <option *ngFor="let user of Users" [value]="user.id">
-          {{ user.username }}
-        </option>
-      </select>
+<select class="form-control"
+        [(ngModel)]="lvl.approver"
+        [ngModelOptions]="{standalone: true}">
+
+  <option [ngValue]="null">Select</option>
+
+  <option *ngFor="let user of Users" [ngValue]="user.id">
+    {{ user.username }}
+  </option>
+
+</select>
     </div>
 
     <div class="col-md-2 d-flex align-items-end">
