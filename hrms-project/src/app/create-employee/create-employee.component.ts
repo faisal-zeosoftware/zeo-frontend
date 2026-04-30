@@ -1781,39 +1781,52 @@ export class CreateEmployeeComponent implements OnInit {
           this.isLoading = false;
           console.error('Upload error:', error);
         
-          const errorMessages: string[] = [];
+          let finalMessages: string[] = [];
         
-          if (error.error) {
-            if (typeof error.error === 'string') {
-              // Simple string error message
-              alert(error.error);
-            } else if (typeof error.error === 'object') {
-              // Iterate through error object keys
-              Object.entries(error.error).forEach(([sheetKey, errors]) => {
-                if (Array.isArray(errors)) {
-                  errors.forEach((errObj: any) => {
-                    if (errObj.row !== undefined && errObj.error) {
-                      errorMessages.push(`${sheetKey} - Row ${errObj.row}: ${errObj.error}`);
-                    } else {
-                      // Fallback if row or error message is missing
-                      errorMessages.push(`${sheetKey}: ${JSON.stringify(errObj)}`);
+          if (error.error && typeof error.error === 'object') {
+        
+            Object.keys(error.error).forEach((sheetKey) => {
+              const sheetErrors = error.error[sheetKey];
+        
+              if (Array.isArray(sheetErrors)) {
+        
+                sheetErrors.forEach((errObj: any) => {
+                  let message = '';
+        
+                  // 🔥 HANDLE STRINGIFIED ARRAY ERROR
+                  if (errObj.error) {
+                    try {
+                      const parsed = JSON.parse(errObj.error); // convert string to array
+                      message = Array.isArray(parsed) ? parsed.join(', ') : parsed;
+                    } catch {
+                      message = errObj.error; // fallback
                     }
-                  });
-                } else if (typeof errors === 'string') {
-                  errorMessages.push(`${sheetKey}: ${errors}`);
-                }
-              });
+                  }
         
-              if (errorMessages.length > 0) {
-                alert(errorMessages.join('\n'));
-              } else {
-                alert('An unexpected error occurred. Please try again.');
+                  // ✅ FORMAT MESSAGE
+                  if (errObj.row !== undefined) {
+                    finalMessages.push(`${sheetKey} → Row ${errObj.row}: ${message}`);
+                  } else {
+                    finalMessages.push(`${sheetKey}: ${message}`);
+                  }
+                });
+        
+              } else if (typeof sheetErrors === 'string') {
+                finalMessages.push(`${sheetKey}: ${sheetErrors}`);
               }
+            });
+        
+            // ✅ SHOW ALL ERRORS
+            if (finalMessages.length > 0) {
+              alert(finalMessages.join('\n'));
             } else {
-              alert('An unexpected error format was received.');
+              alert('Unknown error occurred');
             }
+        
+          } else if (typeof error.error === 'string') {
+            alert(error.error);
           } else {
-            alert('Something went wrong. Please check your connection or try again later.');
+            alert('Something went wrong. Please try again.');
           }
         }
       );
