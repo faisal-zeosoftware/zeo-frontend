@@ -406,6 +406,7 @@
         <th>No</th>
         <th>Level</th>
         <th>Request Type</th>
+        <th>Approver Type</th>
         <th>Approver</th>
         <th>Branch</th>
         <th>Action</th>
@@ -445,6 +446,7 @@
     </div>
   </td>
   <td>{{ docs.request_type }}</td>
+  <td>{{ docs.approval_type }}</td>
   <td>
     <div *ngFor="let lvl of docs.levels">
       {{ lvl.approver }}

@@ -14,6 +14,7 @@ import { throwError } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EmployeeAddMoreFieldComponent } from '../employee-add-more-field/employee-add-more-field.component';
 import { environment } from '../../environments/environment';
+import { UserMasterService } from '../user-master/user-master.service';
 
 @Component({
   selector: 'app-create-employee',
@@ -267,6 +268,7 @@ export class CreateEmployeeComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthenticationService,
+    private userService: UserMasterService,
     private ref: MatDialogRef<CreateEmployeeComponent>) { }
 
 
@@ -400,6 +402,7 @@ export class CreateEmployeeComponent implements OnInit {
     this.loadCountries();
     this.loadReligoin();
     this.loadNationality();
+    this.loadUsers();
 
     this.loadCompanies();
     this.loadbranches();
@@ -605,6 +608,7 @@ export class CreateEmployeeComponent implements OnInit {
         formData.append('person_id', this.person_id);
     formData.append('work_location', this.work_location);
     formData.append('visa_location', this.visa_location);
+    formData.append('approver', this.approver);
 
     formData.append('emp_desgntn_id', this.emp_desgntn_id);
     formData.append('emp_ctgry_id', this.emp_ctgry_id);
@@ -1881,6 +1885,32 @@ export class CreateEmployeeComponent implements OnInit {
     this.Delete = !this.Delete;
 
   }
+
+approver:any='';
+
+ Users:any []=[];
+
+ loadUsers(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+
+        // ✅ RUN CALLBACK AFTER DATA LOAD
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
+  }
+}
+
+
+
+
 
 
 

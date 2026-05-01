@@ -14,6 +14,7 @@ import {combineLatest, Subscription } from 'rxjs';
   templateUrl: './attendance-request.component.html',
   styleUrl: './attendance-request.component.css'
 })
+
 export class AttendanceRequestComponent {
 
        
@@ -287,6 +288,33 @@ export class AttendanceRequestComponent {
           }
         });
       }
+
+
+mapEmployeeToId() {
+  if (!this.Employee || this.Employee.length === 0 || !this.editAsset?.employee) return;
+
+  let value = this.editAsset.employee;
+
+  if (!Array.isArray(value)) {
+    value = [value];
+  }
+
+  this.editAsset.employee = value.map((item: any) => {
+
+    // already ID
+    if (!isNaN(item)) return Number(item);
+
+    // map from emp_code → id
+    const found = this.Employee.find(
+      (e: any) => e.emp_code === item
+    );
+
+    return found ? found.id : null;
+
+  }).filter((id: any) => id !== null);
+
+  console.log('Mapped Employee IDs:', this.editAsset.employee);
+}
     
     
     
@@ -442,10 +470,24 @@ export class AttendanceRequestComponent {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
   
-  openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
+openEditModal(asset: any): void {
+  this.editAsset = { ...asset };
+
+  // ✅ normalize employee → always number[]
+  let value = this.editAsset.employee;
+
+  if (!value) {
+    this.editAsset.employee = [];
+  } else if (!Array.isArray(value)) {
+    this.editAsset.employee = [Number(value)];
+  } else {
+    this.editAsset.employee = value.map((v: any) => Number(v));
   }
+
+  console.log('Preselected employees:', this.editAsset.employee);
+
+  this.isEditModalOpen = true;
+}
   
   closeEditModal(): void {
   this.isEditModalOpen = false;
@@ -492,37 +534,37 @@ export class AttendanceRequestComponent {
   }
   
   
-  updateLateInEarlyOut(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
-      return;
-    }
-  
-    this.employeeService.updateLateInEarlyOutReq(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
-        alert(' Request updated successfully!');
-        this.closeEditModal();
-        window.location.reload();
-      },
-  (error) => {
-    console.error('Error updating Request:', error);
-  
-    let errorMsg = 'Update failed';
-  
-    const backendError = error?.error;
-  
-    if (backendError && typeof backendError === 'object') {
-      // Convert the object into a readable string
-      errorMsg = Object.keys(backendError)
-        .map(key => `${key}: ${backendError[key].join(', ')}`)
-        .join('\n');
-    }
-  
-    alert(errorMsg);
+ updateLateInEarlyOut(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
   }
-    );
-  }
+
+  const formData = new FormData();
+
+  formData.append('date', this.editAsset.date);
+  formData.append('request_type', this.editAsset.request_type);
+  formData.append('reason', this.editAsset.reason);
+
+  // ✅ send multiple employees properly
+  this.editAsset.employee.forEach((id: number) => {
+    formData.append('employee', id.toString());
+  });
+
+  this.employeeService.updateLateInEarlyOutReq(this.editAsset.id, formData).subscribe(
+    () => {
+      alert('Request updated successfully!');
+      this.closeEditModal();
+      window.location.reload();
+    },
+    (error) => {
+      console.error(error);
+      alert('Update failed');
+    }
+  );
+}
   
   
       employeeSearch: string = '';

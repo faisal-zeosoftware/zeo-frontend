@@ -374,12 +374,13 @@ CreatePayStructure(): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
+  this.editAsset = { ...asset };
   this.isEditModalOpen = true;
 
-  // this.mapLAssetNameToId();
-}
+  this.mapComponentToId();   // ✅ FIX
+  this.mapEmployeeToId();    // ✅ FIX
 
+}
   
 
 
@@ -490,6 +491,22 @@ updateEmployeeSalary(): void {
       );
     }
   }
+
+  mapEmployeeToId() {
+  if (!this.employees || !this.editAsset?.employee) return;
+
+  const emp = this.employees.find(
+    (e: any) =>
+      e.emp_code === this.editAsset.employee || // from backend
+      e.id === this.editAsset.employee          // already ID
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;
+  }
+
+  console.log('Mapped Employee ID:', this.editAsset.employee);
+}
   
     
           
@@ -553,6 +570,22 @@ updateEmployeeSalary(): void {
         }
       });
     }
+
+    mapComponentToId() {
+  if (!this.Salarycomponent || !this.editAsset?.component) return;
+
+  const comp = this.Salarycomponent.find(
+    (c: any) =>
+      c.name === this.editAsset.component ||   // from backend
+      c.id === this.editAsset.component        // already ID
+  );
+
+  if (comp) {
+    this.editAsset.component = comp.id;
+  }
+
+  console.log('Mapped Component ID:', this.editAsset.component);
+}
   
 
     selectedComponent: any = null;

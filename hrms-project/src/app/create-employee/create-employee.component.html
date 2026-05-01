@@ -798,6 +798,24 @@
 
     </div>
 
+
+        <div class="col-md-6">
+    
+    
+<div class="custom-sel">
+  <label>Reporting Manager</label>
+  <select class="form-control"
+    [(ngModel)]="approver"
+    [ngModelOptions]="{standalone: true}">
+    <option *ngFor="let user of Users" [value]="user.id">
+      {{ user.username }}
+    </option>
+  </select>
+</div>
+                    
+
+    </div>
+
    
  
     <div class="col-md-6">

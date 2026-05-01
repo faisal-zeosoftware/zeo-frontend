@@ -387,10 +387,22 @@ if (this.userId !== null) {
   
           window.location.reload();
         },  
-        (error) => {
-          console.error('Added failed', error);
-          alert('Enter all required fields!');
-        }
+(error) => {
+  console.error('Error updating Request:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
       );
     }
 
@@ -457,8 +469,35 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.isEditModalOpen = true;
+
+  console.log("EDIT DATA:", this.editAsset);
+
+  // ✅ FIX EMPLOYEE MAPPING
+  if (this.editAsset.employee) {
+
+    // case 1: object
+    if (typeof this.editAsset.employee === 'object') {
+      this.editAsset.employee = this.editAsset.employee.id;
+    }
+
+    // case 2: emp_code string → find ID
+    else if (typeof this.editAsset.employee === 'string') {
+      const found = this.Employee.find(
+        (e: any) => e.emp_code === this.editAsset.employee
+      );
+
+      this.editAsset.employee = found ? found.id : null;
+    }
+  }
+
+  // ✅ FIX REASON FIELD NAME
+  if (!this.editAsset.reason_for_leaving && this.editAsset.reason) {
+    this.editAsset.reason_for_leaving = this.editAsset.reason;
+  }
+
+  console.log("AFTER MAPPING:", this.editAsset);
 }
 
 closeEditModal(): void {

@@ -65,6 +65,7 @@ export class LateinEarlyoutApprovalLevelComponent {
   
       private http: HttpClient,
       private DesignationService: DesignationService,
+      private CountryService: CountryService,
   private sessionService: SessionService,
   private employeeService: EmployeeService,
   
@@ -206,33 +207,55 @@ export class LateinEarlyoutApprovalLevelComponent {
     registerButtonClicked = false;
   
   
-    CreateLateInEarlyOutApproverLevel(): void {
-      this.registerButtonClicked = true;
-    
-    
-      const formData = new FormData();
-      formData.append('level', this.level);
-      formData.append('role', this.role);
-      formData.append('approver', this.approver);
-      formData.append('branch', this.branch);
-      formData.append('approval_type', this.approval_type)
-  
-  
-   
-  
-    
-      this.employeeService.registerLateInEarlyOutApproverLevel(formData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-          alert(' Approval Level has been added');
-          window.location.reload();
-        },
-        (error) => {
-          console.error('Added failed', error);
-          alert('Enter all required fields!');
-        }
-      );
+CreateLateInEarlyOutApproverLevel(): void {
+  this.registerButtonClicked = true;
+
+  // ✅ VALIDATION
+  if (!this.branch || this.branch.length === 0) {
+    alert('Please select branch');
+    return;
+  }
+
+  if (this.approval_type === 'multi_approval') {
+    for (let i = 0; i < this.levels.length; i++) {
+      const lvl = this.levels[i];
+
+      if (!lvl.level || !lvl.role || !lvl.approver) {
+        alert(`Level ${i + 1}: All fields required`);
+        return;
+      }
     }
+  }
+
+  // ✅ BUILD JSON PAYLOAD
+  const payload: any = {
+    approval_type: this.approval_type,
+    branch: this.branch, // already array ✅
+  };
+
+  // ✅ ADD LEVELS ONLY IF NEEDED
+  if (this.approval_type === 'multi_approval') {
+    payload.levels = this.levels.map(lvl => ({
+      level: Number(lvl.level),
+      role: lvl.role,
+      approver: Number(lvl.approver)
+    }));
+  }
+
+  console.log('FINAL JSON:', payload); // 🔍 DEBUG
+
+  // ✅ SEND JSON (NO FormData)
+  this.CountryService.RegisterLateInEarlyOutApproverLevel(payload).subscribe(
+    () => {
+      alert('Approval Level added');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('ERROR:', error);
+      alert('Failed to add');
+    }
+  );
+}
   
   
   
@@ -369,11 +392,52 @@ export class LateinEarlyoutApprovalLevelComponent {
   
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
-  
-  openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
+   
+openEditModal(asset: any): void {
+  this.editAsset = JSON.parse(JSON.stringify(asset));
+
+  // ✅ FIX branch always array
+  if (typeof this.editAsset.branch === 'number') {
+    this.editAsset.branch = [this.editAsset.branch];
   }
+
+  // ✅ FIX levels
+  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
+    this.editAsset.levels = [
+      { level: 1, role: '', approver: null }
+    ];
+  } else {
+    this.editAsset.levels = this.editAsset.levels.map((lvl: any, i: number) => ({
+      level: Number(lvl.level) || i + 1,
+      role: lvl.role || '',
+      approver: lvl.approver ? Number(lvl.approver) : null
+    }));
+  }
+
+  this.isEditModalOpen = true;
+
+  this.loadDeparmentBranch(() => {
+    this.mapBranchesNameToId();
+  });
+}
+
+addEditLevel() {
+  this.editAsset.levels.push({
+    level: this.editAsset.levels.length + 1,
+    role: '',
+    approver: null
+  });
+}
+
+removeEditLevel(index: number) {
+  this.editAsset.levels.splice(index, 1);
+
+  // ✅ FIX: reorder levels
+  this.editAsset.levels.forEach((lvl: any, i: number) => {
+    lvl.level = i + 1;
+  });
+}
+
   
   closeEditModal(): void {
   this.isEditModalOpen = false;
@@ -455,64 +519,88 @@ export class LateinEarlyoutApprovalLevelComponent {
   }
   
   
-  mapBranchesNameToId() {
-    if (!this.Branches || !this.editAsset?.branch) return;
-  
-    // Case A: backend returns single ID
-    if (typeof this.editAsset.branch === 'number') {
-      this.editAsset.branch = [this.editAsset.branch];
-      return;
-    }
-  
-    // Case B: backend returns single NAME
-    if (typeof this.editAsset.branch === 'string') {
-      const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-      this.editAsset.branch = found ? [found.id] : [];
-      return;
-    }
-  
-    // Case C: backend returns an array of names
-    if (Array.isArray(this.editAsset.branch)) {
-      this.editAsset.branch = this.Branches
-        .filter(b => this.editAsset.branch.includes(b.branch_name))
-        .map(b => b.id);
-    }
-  
-    console.log("Mapped branch IDs:", this.editAsset.branch);
+mapBranchesNameToId() {
+  if (!this.Branches || !this.editAsset) return;
+
+  let value = this.editAsset.branch;
+
+  if (!value) {
+    this.editAsset.branch = [];
+    return;
   }
-  
-  
-  updateAssetType(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
-      return;
-    }
-  
-    this.employeeService.updateLateInEarlyOutApprovaLevel(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
-        alert(' Approval Level  updated successfully!');
-        this.closeEditModal();
-        window.location.reload();
-      },
-  (error) => {
-    console.error('Error updating Approval Level:', error);
-  
-    let errorMsg = 'Update failed';
-  
-    const backendError = error?.error;
-  
-    if (backendError && typeof backendError === 'object') {
-      // Convert the object into a readable string
-      errorMsg = Object.keys(backendError)
-        .map(key => `${key}: ${backendError[key].join(', ')}`)
-        .join('\n');
-    }
-  
-    alert(errorMsg);
+
+  // already array of numbers
+  if (Array.isArray(value) && typeof value[0] === 'number') {
+    return;
   }
-    );
+
+  // single number
+  if (typeof value === 'number') {
+    this.editAsset.branch = [value];
+    return;
   }
+
+  // single string (branch name)
+  if (typeof value === 'string') {
+    const found = this.Branches.find(b => b.branch_name === value);
+    this.editAsset.branch = found ? [found.id] : [];
+    return;
+  }
+
+  // array of names
+  if (Array.isArray(value)) {
+    this.editAsset.branch = this.Branches
+      .filter(b => value.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log('✅ Final mapped branch:', this.editAsset.branch);
+}
+  
+  
+updateAssetType(): void {
+  if (!this.editAsset.id) {
+    alert('Missing ID');
+    return;
+  }
+
+  const payload: any = {
+    ...this.editAsset,
+    branch: this.editAsset.branch.map((b: any) => Number(b))
+  };
+
+  if (this.editAsset.approval_type === 'multi_approval') {
+    payload.levels = this.editAsset.levels.map((lvl: any) => ({
+      level: Number(lvl.level),
+      role: lvl.role,
+      approver: lvl.approver ? Number(lvl.approver) : null
+    }));
+  }
+
+  console.log('🚀 FINAL PAYLOAD:', payload);
+
+  this.employeeService.updateLateInEarlyOutApprovaLevel(
+    this.editAsset.id,
+    payload
+  ).subscribe(
+    (res) => {
+      console.log('✅ API RESPONSE:', res);
+
+      // 🔥 verify fresh data
+      this.fetchEmployees(
+        this.authService.getSelectedSchema()!,
+        JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+      );
+
+      alert('Updated successfully!');
+      this.closeEditModal();
+    },
+    (error) => {
+      console.error('❌ ERROR:', error);
+      alert('Update failed');
+    }
+  );
+}
   
   
   allApproverSelected = false;
@@ -570,6 +658,27 @@ export class LateinEarlyoutApprovalLevelComponent {
     );
   
   }
+
+
+      levels: any[] = [
+  {
+    level: '',
+    role: '',
+    approver: '',
+  }
+];
+
+addLevel() {
+  this.levels.push({
+    level: '',
+    role: '',
+    approver: '',
+  });
+}
+
+removeLevel(index: number) {
+  this.levels.splice(index, 1);
+}  
   
   }
 

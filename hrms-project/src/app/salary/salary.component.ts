@@ -505,6 +505,22 @@ export class SalaryComponent {
     }
   }
 
+  mapBranchNameToId() {
+  if (!this.Branches || !this.editAsset?.branch) return;
+
+  const branch = this.Branches.find(
+    (b: any) =>
+      b.branch_name === this.editAsset.branch ||  // match name
+      b.id === this.editAsset.branch              // OR already ID
+  );
+
+  if (branch) {
+    this.editAsset.branch = branch.id; // ✅ convert to ID
+  }
+
+  console.log('Mapped Branch ID:', this.editAsset.branch);
+}
+
 
 
 
@@ -824,12 +840,12 @@ export class SalaryComponent {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
+openEditModal(asset: any): void {
+  this.editAsset = { ...asset };
+  this.isEditModalOpen = true;
 
-    // this.mapLAssetNameToId();
-  }
+  this.mapBranchNameToId(); // ✅ FIX
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;

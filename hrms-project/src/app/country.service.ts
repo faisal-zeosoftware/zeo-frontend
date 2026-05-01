@@ -825,5 +825,23 @@ deleteAirReq(categoryId: number): Observable<any> {
   );
 }
 
+RegisterLateInEarlyOutApproverLevel(data: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => 'No schema selected.');
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval-level/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, data).pipe(
+    catchError((error) => {
+      console.error('Error during LateIn EarlyOut:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
   
 }

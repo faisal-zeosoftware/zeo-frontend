@@ -15,6 +15,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { SuccesModalComponent } from '../succes-modal/succes-modal.component';
 import { EmployeeAddMoreFieldComponent } from '../employee-add-more-field/employee-add-more-field.component';
 import { catchError, Observable, of, switchMap, tap } from 'rxjs';
+import { UserMasterService } from '../user-master/user-master.service';
 
 @Component({
   selector: 'app-employee-edit',
@@ -141,6 +142,7 @@ export class EmployeeEditComponent {
     private EmployeeService: EmployeeService,
     private CountryService: CountryService,
     private CompanyRegistrationService: CompanyRegistrationService,
+    private userService: UserMasterService,
 
 
     private renderer: Renderer2,
@@ -171,6 +173,7 @@ ngOnInit(): void {
   this.loadLanguages();
   this.loadReligoin();
   this.loadNationality();
+  this.loadUsers();
 
   // 🔹 Load employee data
   this.EmployeeService.getEmpById(this.data.employeeId).subscribe(
@@ -274,6 +277,22 @@ ngOnInit(): void {
     }
   );
 
+this.loadUsers(() => {
+
+  // Employee already loaded earlier → use existing this.Emp
+  if (!this.Emp || !this.Users.length) return;
+
+  // 🔥 Handle BOTH cases (id OR username from backend)
+  const selectedUser = this.Users.find(
+    u => u.id == this.Emp.approver || u.username == this.Emp.approver
+  );
+
+  if (selectedUser) {
+    this.Emp.approver = selectedUser.id; // ✅ always store ID
+  }
+
+});
+
 }
 
 
@@ -365,6 +384,7 @@ updateEmp(): void {
   safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));
   safeAppend('work_location', this.Emp.work_location);
   safeAppend('visa_location', this.Emp.visa_location);
+  safeAppend('approver', Number(this.Emp.approver));
   safeAppend('person_id', this.Emp.person_id);
 
   // ✅ Boolean values as 1/0
@@ -1045,6 +1065,28 @@ loadEmployee(): void {
       );
     }
     }
+
+    approver:any='';
+
+ Users:any []=[];
+
+ loadUsers(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+
+        // ✅ RUN CALLBACK AFTER DATA LOAD
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
+  }
+}
 
   
   

@@ -112,6 +112,7 @@ private DepartmentServiceService:DepartmentServiceService,
 
   ngOnInit(): void {
 
+      this.loadDeparmentBranch();
     
  // combineLatest waits for both Schema and Branches to have a value
  this.dataSubscription = combineLatest([
@@ -652,9 +653,9 @@ updatePayStr(): void {
             this.branches = result; // Fallback: show all if nothing is selected in sidebar
           }
           // Inside the subscribe block of loadDeparmentBranch
-          if (this.branches.length === 1) {
-            this.branch = this.branches[0].id;
-          }
+if (this.branches.length === 1 && !this.branch) {
+  this.branch = this.branches[0].id;
+}
   
           console.log('Filtered branches for selection:', this.branches);
           if (callback) callback();

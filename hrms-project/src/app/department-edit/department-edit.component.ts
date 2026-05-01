@@ -67,6 +67,7 @@ ngOnInit(): void {
 
       // 2. Load branches and map correctly
       this.loadDeparmentBranch(() => {
+        this.mapBranchesNameToId();
 
         // ✅ Use Branches (not Departments)
         const branch = this.Branches?.find(
@@ -151,27 +152,28 @@ loadDeparmentBranch(callback?: () => void): void {
 
 
 mapBranchesNameToId() {
-  if (!this.Branches || !this.department?.branch) return;
+  if (!this.Branches || this.Branches.length === 0 || !this.department) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.department.branch === 'number') {
-    this.department.branch = [this.department.branch];
-    return;
+  let value = this.department.branch || this.department.branch_id;
+
+  if (!value) return;
+
+  // Always normalize to array
+  if (!Array.isArray(value)) {
+    value = [value];
   }
 
-  // Case B: backend returns single NAME
-  if (typeof this.department.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.department.branch);
-    this.department.branch = found ? [found.id] : [];
-    return;
-  }
+  this.department.branch = value.map((item: any) => {
+    // If already ID → keep it
+    if (typeof item === 'number') return item;
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.department.branch)) {
-    this.department.branch = this.Branches
-      .filter(b => this.department.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+    // If name → convert to ID
+    const found = this.Branches.find(
+      (b: any) => b.branch_name === item
+    );
+
+    return found ? found.id : null;
+  }).filter((id: any) => id !== null);
 
   console.log("Mapped branch IDs:", this.department.branch);
 }

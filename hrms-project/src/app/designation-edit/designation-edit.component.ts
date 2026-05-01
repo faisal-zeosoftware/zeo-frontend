@@ -64,18 +64,20 @@ ngOnInit(): void {
     (designation) => {
       this.designation = designation;
 
-      // ✅ ensure branch is array for multi-select
+      // ensure array
       if (!this.designation.branch) {
         this.designation.branch = [];
       }
+
+      // ✅ Load branches AFTER designation
+      this.loadDeparmentBranch(() => {
+        this.mapBranchesNameToId();   // ✅ NOW it works
+      });
     },
     (error) => {
       console.error('Error fetching designation:', error);
     }
   );
-
-  // ✅ This will now work properly
-  this.loadDeparmentBranch();
 }
 
   
@@ -100,6 +102,34 @@ loadDeparmentBranch(callback?: () => void): void {
       }
     );
   }
+}
+
+
+mapBranchesNameToId() {
+  if (!this.Branches || this.Branches.length === 0 || !this.designation) return;
+
+  let value = this.designation.branch || this.designation.branch_id;
+
+  if (!value) return;
+
+  if (!Array.isArray(value)) {
+    value = [value];
+  }
+
+  this.designation.branch = value.map((item: any) => {
+
+    // ✅ handle number or numeric string
+    if (!isNaN(item)) return Number(item);
+
+    const found = this.Branches.find(
+      (b: any) => b.branch_name === item
+    );
+
+    return found ? found.id : null;
+
+  }).filter((id: any) => id !== null);
+
+  console.log("Mapped branch IDs:", this.designation.branch);
 }
   
           toggleAllSelection(): void {

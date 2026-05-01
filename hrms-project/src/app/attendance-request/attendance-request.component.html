@@ -258,7 +258,7 @@
 
               <div class="col-md-12">
                 <label>Reason</label>
-                <textarea class="form-control" [(ngModel)]="editAsset.reason" placeholder="Enter reason"></textarea>
+                <textarea class="form-control" [(ngModel)]="editAsset.reason" [ngModelOptions]="{standalone: true}" placeholder="Enter reason"></textarea>
               </div>
 
 
