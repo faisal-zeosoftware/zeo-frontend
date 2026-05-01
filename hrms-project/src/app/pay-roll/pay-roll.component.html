@@ -166,7 +166,28 @@
           <mat-tab label="Trail Pay Sheet">
   
             <div class="tab_boddy mt-4" style="padding: 10px;">
-         
+              <div class="d-flex justify-content-end mb-2">
+
+                <!-- Save Icon -->
+                <button class="icon-btn"
+                (click)="saveAllEdited()"
+                [disabled]="editedRows.length === 0 || isSaving"
+                title="Save Changes">
+        
+          <i *ngIf="!isSaving" class="fa-solid fa-floppy-disk"></i>
+          <i *ngIf="isSaving" class="fa-solid fa-spinner fa-spin"></i>
+        
+        </button>
+              
+                <!-- Reset Icon (optional but recommended) -->
+                <button class="icon-btn ms-2"
+                        (click)="resetChanges()"
+                        [disabled]="editedRows.length === 0"
+                        title="Reset Changes">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+              
+              </div>
               <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
 
               <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
@@ -195,7 +216,8 @@
               
 <tbody class="text-table-body">
   
-  <tr *ngFor="let payslip of PaySlips; let i = index">
+  <tr *ngFor="let payslip of PaySlips; let i = index"
+    [ngClass]="{'edited-row': editedRows.includes(payslip)}">
     <!-- Checkbox -->
     <td data-label="Select">
       <mat-checkbox [(ngModel)]="payslip.selected" (change)="checkIfAllSelected()"></mat-checkbox>
@@ -206,10 +228,30 @@
     <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
     <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
     <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
-    <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
-    <td data-label="Total Additions">{{ payslip.total_additions }}</td>
-    <td data-label="Total Deductions">{{ payslip.total_deductions }}</td>
-    <td data-label="Net Salary">{{ payslip.net_salary }}</td>
+    <td>
+      <input type="number" placeholder="{{ payslip.gross_salary }}"
+             [(ngModel)]="payslip.gross_salary"
+             (ngModelChange)="markAsEdited(payslip)"
+             class="form-control">
+    </td>
+    <td>
+      <input type="number" placeholder="{{ payslip.total_additions }}"
+             [(ngModel)]="payslip.total_additions"
+             (ngModelChange)="markAsEdited(payslip)"
+             class="form-control">
+    </td>
+    <td>
+      <input type="number" placeholder="{{ payslip.total_deductions }}"
+             [(ngModel)]="payslip.total_deductions"
+             (ngModelChange)="markAsEdited(payslip)"
+             class="form-control">
+    </td>
+    <td>
+      <input type="number" placeholder="{{ payslip.net_salary }}"
+             [(ngModel)]="payslip.net_salary"
+             (ngModelChange)="markAsEdited(payslip)"
+             class="form-control">
+    </td>
     <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
     <td data-label="Working Days">{{ payslip.total_working_days }}</td>
     <td data-label="Days Worked">{{ payslip.days_worked }}</td>
@@ -243,6 +285,7 @@
               </div>
 
               <div class="row">
+                
                 <div class="col-md-2" *ngIf="hasAddPermission">
                   <button  type="button" class="btn btn-success mt-2 btn-full" (click)="confirmSelectedPayslips()">Confirm</button>
 

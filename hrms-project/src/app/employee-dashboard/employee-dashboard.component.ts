@@ -3821,7 +3821,7 @@ confirmDocRejection(approvalId: number): void {
             }
 
 
-
+// Face punching section 
 
             punchMode: 'face' | 'barcode' = 'face';
             capturedImage: string | null = null;
@@ -3839,28 +3839,39 @@ ngAfterViewInit() {
 
 // 2. Add a null check in initCamera
 initCamera() {
-  // Security Check: Ensure the element actually exists
   if (!this.videoElement) {
     console.error("Video element not found in DOM yet.");
     return;
   }
 
+  // 🔴 CHECK FOR SECURE CONTEXT / API SUPPORT
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Camera access is only available over HTTPS or localhost. Please check your connection security.");
+    console.error("MediaDevices API not available. Are you on HTTPS?");
+    return;
+  }
+
   const constraints = {
-    video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" }
+    video: { 
+      width: { ideal: 640 }, 
+      height: { ideal: 480 }, 
+      facingMode: "user" 
+    }
   };
 
   navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => {
       this.cameraStream = stream;
-      const video = this.videoElement.nativeElement; // This won't be undefined now
+      const video = this.videoElement.nativeElement;
       video.srcObject = stream;
       video.onloadedmetadata = () => video.play();
     })
     .catch(err => {
-      console.error("Camera access denied:", err);
+      // Handles permission denied or hardware in use
+      console.error("Camera access denied or error:", err);
+      alert("Could not access camera: " + err.name);
     });
 }
-
 // 3. Helper to stop camera
 stopCamera() {
   if (this.cameraStream) {

@@ -9,7 +9,7 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 import { Route, Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
-import {combineLatest, Subscription } from 'rxjs';
+import {combineLatest, forkJoin, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
@@ -910,6 +910,73 @@ confirmSelectedPayslips() {
       alert('Failed to confirm payslips.');
     }
   );
+}
+
+
+
+editedRows: any[] = [];
+
+markAsEdited(row: any) {
+  if (!this.editedRows.includes(row)) {
+    this.editedRows.push(row);
+  }
+
+  // Auto calculation
+  row.net_salary =
+    (row.gross_salary || 0) +
+    (row.total_additions || 0) -
+    (row.total_deductions || 0);
+}
+
+isSaving: boolean = false;
+
+saveAllEdited(): void {
+
+  if (this.editedRows.length === 0) return;
+
+  this.isSaving = true;
+
+  const updateCalls = this.editedRows.map(row => {
+    const payload = {
+      gross_salary: row.gross_salary,
+      total_additions: row.total_additions,
+      total_deductions: row.total_deductions,
+      net_salary: row.net_salary
+    };
+    return this.leaveService.updatePayslipnew(row.id, payload);
+  });
+
+  forkJoin(updateCalls).subscribe({
+    next: () => {
+      this.isSaving = false;
+      alert('Saved successfully!');
+      this.editedRows = [];
+    },
+    error: () => {
+      this.isSaving = false;
+      alert('Save failed');
+    }
+  });
+}
+
+
+resetChanges(): void {
+
+
+  // this.dataSubscription = combineLatest([
+  //   this.EmployeeService.selectedSchema$,
+  //   this.EmployeeService.selectedBranches$
+  // ]).subscribe(([schema, branchIds]) => {
+  //   if (schema) {
+   
+  //     this.fetchLoadPaySlip(schema, branchIds);  
+     
+  
+  
+  //   }
+  // });
+  // this.fetchLoadPaySlip(this.selectedSchema, this.selectedBranchIds);
+  // this.editedRows = [];
 }
 
 

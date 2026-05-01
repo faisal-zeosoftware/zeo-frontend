@@ -1204,7 +1204,15 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     return this.http.put(apiUrl, payload);
   }
 
+  updatePayslipnew(id: number, data: any): Observable<any> {
 
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+    return this.http.patch(`${this.apiUrl}/payroll/api/payslip/${id}/?schema=${selectedSchema}`, data);
+  }
 
 
   getAllAttendance(schema: string): Observable<any> {
