@@ -172,6 +172,12 @@ export class AuthenticationService {
     return selectedSchemaId ? parseInt(selectedSchemaId) : null;
   }
   
+
+   getSelectedSchemaName(): number | null {
+    const selectedSchemaname = localStorage.getItem('selectedSchemname');
+    return selectedSchemaname ? parseInt(selectedSchemaname) : null;
+  }
+  
   getEmployee(): Observable<any> {
     const url = `${this.apiUrl}/api/user/`;
     return this.http.get(url);

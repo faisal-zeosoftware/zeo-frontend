@@ -254,59 +254,56 @@ ngOnInit(): void {
           }
           }
 
+          showSalaryDropdown: boolean = false;
 
-
-registerGeneralreq(): void {
-  this.registerButtonClicked = true;
-
-  const companyData = {
-    name: this.name,
-    description: this.description,
-    branch: this.branch,
-    salary_component: this.salary_component,
-    created_by: this.created_by,
-    // use_common_workflow: this.use_common_workflow,
-  };
-
-  this.employeeService.registerReqType(companyData).subscribe(
-    (response) => {
-      console.log('Registration successful', response);
-      alert('Request Type has been added successfully!');
-      window.location.reload();
-    },
-    (error) => {
-      console.error('Request Type addition failed:', error);
-
-      let errorMessage = 'Something went wrong.';
-
-      // ✅ Handle backend validation or field-level errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) {
-            messages.push(`${key}: ${value.join(', ')}`);
-          } else if (typeof value === 'string') {
-            messages.push(`${key}: ${value}`);
-          } else {
-            messages.push(`${key}: ${JSON.stringify(value)}`);
+          registerGeneralreq(): void {
+            this.registerButtonClicked = true;
+          
+            // ✅ Basic validation
+            if (!this.name || !this.description || !this.branch) {
+              alert('Please fill all required fields');
+              return;
+            }
+          
+            // ✅ FIRST TIME → Ask question
+            if (!this.showSalaryDropdown && !this.salary_component) {
+              const confirmAction = confirm(
+                'Do you want to select Salary Component?'
+              );
+          
+              if (confirmAction) {
+                // 👉 Show dropdown and STOP save
+                this.showSalaryDropdown = true;
+                return;
+              }
+              // 👉 If NO → continue save without salary_component
+            }
+          
+            // ✅ If dropdown shown but not selected
+            if (this.showSalaryDropdown && !this.salary_component) {
+              alert('Please select Salary Component');
+              return;
+            }
+          
+            const companyData = {
+              name: this.name,
+              description: this.description,
+              branch: this.branch,
+              salary_component: this.salary_component || null,
+              created_by: this.created_by,
+            };
+          
+            this.employeeService.registerReqType(companyData).subscribe(
+              () => {
+                alert('Request Type added successfully!');
+                this.closeapplicationModal();
+              },
+              (error) => {
+                console.error(error);
+                alert('Error occurred');
+              }
+            );
           }
-        }
-
-        if (messages.length > 0) {
-          errorMessage = messages.join('\n');
-        }
-      } else if (error.error?.detail) {
-        // Handles backend messages like { "detail": "Invalid data" }
-        errorMessage = error.error.detail;
-      }
-
-      alert(`Registration failed!\n\n${errorMessage}`);
-    }
-  );
-}
-
-
 
           loadReqTypes(): void {
     

@@ -651,3 +651,28 @@ table.styled-table td {
     overflow-x: hidden !important;
   }
 }
+.edited-row {
+  background-color: #fff3cd;
+}
+
+.icon-btn {
+  border: none;
+  background: #f1f3f5;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.icon-btn i {
+  font-size: 16px;
+}
+
+.icon-btn:hover {
+  background: #dbe4ff;
+}
+
+.icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
