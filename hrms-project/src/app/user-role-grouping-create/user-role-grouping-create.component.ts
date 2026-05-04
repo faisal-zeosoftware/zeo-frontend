@@ -114,6 +114,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsPayrollrun:any[] =[];
   GrouppermissionsPayStructure:any[] =[];
   GrouppermissionsSalarycomponent:any[] =[];
+  GrouppermissionsEmployeesalary:any[] =[];
   GrouppermissionsPayslipAprv: any[] = [];
   GrouppermissionsPayrollaprlvl:any[] =[];
   GrouppermissionsAdvanceSalaryAprvlst:any[] =[];
@@ -332,6 +333,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     PayrollrunInderminate= false;
     PayStructureInderminate= false;
     SalarycomponentInderminate= false;
+    EmployeesalaryInderminate= false;
     PayslipAprvInderminate= false;
     PayrollaprlvlInderminate= false;
     AdvanceSalaryAprvlstInderminate= false;
@@ -540,6 +542,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     PayrollrunChecked:boolean= false;
     PayStructureChecked:boolean= false;
     SalarycomponentChecked:boolean= false;
+    EmployeeSalaryChecked:boolean= false;
     PayslipAprvChecked: boolean = false;
     PayrollaprlvlChecked:boolean= false;
     AdvanceSalaryAprvlstChecked:boolean= false;
@@ -1235,6 +1238,7 @@ isPayrollManagementMasterChecked():boolean{
   return this.PayrollrunChecked &&
   this.PayStructureChecked &&
   this.SalarycomponentChecked &&
+  this.EmployeeSalaryChecked &&
   this.PayslipAprvChecked &&
   this.PayrollaprlvlChecked &&
   this.AdvanceSalaryAprvlstChecked &&
@@ -1268,6 +1272,14 @@ isSalarycomponentIndeterminate(): boolean {
   );
   return selectedSalaryPermissions.length > 0 &&
          selectedSalaryPermissions.length < this.GrouppermissionsSalarycomponent.length;
+}
+
+isEmployeesalaryIndeterminate(): boolean {
+  const selectedEmpSalaryPermissions = this.selectedPermissions.filter(permission =>
+    this.GrouppermissionsEmployeesalary.map(p => p.id).includes(permission)
+  );
+  return selectedEmpSalaryPermissions.length > 0 &&
+         selectedEmpSalaryPermissions.length < this.GrouppermissionsEmployeesalary.length;
 }
 
 isPayslipAprvIndeterminate(): boolean {
@@ -2017,6 +2029,7 @@ updateInderminatePayroll():void{
   this.isPayrollrunIndeterminate();
   this.isPayStructureIndeterminate();
   this.isSalarycomponentIndeterminate();
+  this.isEmployeesalaryIndeterminate();
   this.isPayslipAprvIndeterminate();
   this.isPayrollaprlvlIndeterminate();
   this.isAdvanceSalaryAprvlstIndeterminate();
@@ -2288,6 +2301,7 @@ updateInderminateAttendance():void{
   this.loadpermissionsPayrollrun();
   this.loadpermissionsPayStructure();
   this.loadpermissionsSalarycomponent();
+  this.loadpermissionsEmployeesalary();
   this.loadpermissionsPayslipAprv();
   this.loadpermissionsPayrollaprlvl();
   this.loadpermissionsAdvanceSalaryAprvlst();
@@ -5885,8 +5899,8 @@ loadpermissionsSalarycomponent(): void {
           'add_salarycomponent',
           'change_salarycomponent',
           'delete_salarycomponent',
-          'view_salarycomponent',
-          'import_salarycomponent'
+          'view_salarycomponent'
+          // 'import_salarycomponent'
         ];
 
         const uniquePermissionsMap = new Map();
@@ -5917,6 +5931,57 @@ getDisplayNameSalarycomponent(permissionCodename: string): string {
     case 'delete_salarycomponent':
       return 'Delete';
     case 'view_salarycomponent':
+      return 'View';
+    // case 'import_salarycomponent':
+    //   return 'Import';
+    default:
+      return permissionCodename;
+  }
+}
+
+
+loadpermissionsEmployeesalary(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+      (result: any[]) => {
+        const requiredCodenames = [
+          'add_employeesalarystructure',
+          'change_employeesalarystructure',
+          'delete_employeesalarystructure',
+          'view_employeesalarystructure',
+          'import_salarycomponent'
+        ];
+
+        const uniquePermissionsMap = new Map();
+        result.forEach(permission => {
+          const codename = permission.codename.trim().toLowerCase();
+          if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+            uniquePermissionsMap.set(codename, permission);
+          }
+        });
+
+        this.GrouppermissionsEmployeesalary = Array.from(uniquePermissionsMap.values());
+      },
+      (error: any) => {
+        console.error('Error fetching Employee Salary permissions:', error);
+      }
+    );
+  }
+}
+
+
+// === Display readable names for Payroll salarycomponent permissions ===
+getDisplayNameEmployeesalary(permissionCodename: string): string {
+  switch (permissionCodename.trim().toLowerCase()) {
+    case 'add_employeesalarystructure':
+      return 'Add';
+    case 'change_employeesalarystructure':
+      return 'Edit';
+    case 'delete_employeesalarystructure':
+      return 'Delete';
+    case 'view_employeesalarystructure':
       return 'View';
     case 'import_salarycomponent':
       return 'Import';
@@ -10350,6 +10415,25 @@ updateSalarycomponentCheckbox(): void {
   this.SalarycomponentChecked = allPermissionsSelected;
 }
 
+ onCheckboxChangesEmployeesalary(permission: string): void {
+  if (this.selectedPermissions.includes(permission)) {
+    this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+  } else {
+    this.selectedPermissions.push(permission);
+  }
+
+  this.updateEmployeesalaryCheckbox();
+  this.updatePayroll();
+}
+
+
+updateEmployeesalaryCheckbox(): void {
+  const allPermissionsSelected = this.GrouppermissionsEmployeesalary.every(permission =>
+    this.selectedPermissions.includes(permission.id)
+  );
+  this.EmployeeSalaryChecked = allPermissionsSelected;
+}
+
 
 onCheckboxChangesPayslipAprv(permissionId: number): void {
   if (this.selectedPermissions.includes(permissionId)) {
@@ -11858,6 +11942,7 @@ isPayrolls(): boolean {
   const PayrollrunIndeterminate = this.isPayrollrunIndeterminate();
   const PayStructureIndeterminate = this.isPayStructureIndeterminate();
   const SalarycomponentIndeterminate = this.isSalarycomponentIndeterminate();
+  const EmployeesalaryIndeterminate = this.isEmployeesalaryIndeterminate();
   const PayslipAprvIndeterminate = this.isPayslipAprvIndeterminate();
   const isPayrollaprlvlIndeterminate = this.isPayrollaprlvlIndeterminate();
   const AdvanceSalaryAprvlstIndeterminate = this.isAdvanceSalaryAprvlstIndeterminate();
@@ -11868,7 +11953,7 @@ isPayrolls(): boolean {
 
   const otherGroupIndeterminate = false;
 
-  return PayrollrunIndeterminate || PayStructureIndeterminate || AdvanceSalaryEscalationInderminate || SalarycomponentIndeterminate || PayslipAprvIndeterminate || isPayrollaprlvlIndeterminate || AdvanceSalaryAprvlstIndeterminate || AdvanceSalaryReqInderminate || AdvanceSalaryAprlvlInderminate || WpsInderminate || otherGroupIndeterminate;
+  return PayrollrunIndeterminate || PayStructureIndeterminate || AdvanceSalaryEscalationInderminate || SalarycomponentIndeterminate || EmployeesalaryIndeterminate || PayslipAprvIndeterminate || isPayrollaprlvlIndeterminate || AdvanceSalaryAprvlstIndeterminate || AdvanceSalaryReqInderminate || AdvanceSalaryAprlvlInderminate || WpsInderminate || otherGroupIndeterminate;
 }
 
 
@@ -12828,6 +12913,19 @@ onSalarycomponentChange(): void {
   } else {
     this.selectedPermissions = this.selectedPermissions.filter(
       permission => !this.GrouppermissionsSalarycomponent.map(p => p.id).includes(permission)
+    );
+  }
+  this.updatePayrollCheckbox();
+}
+
+onEmployeesalaryChange(): void {
+  if (this.EmployeeSalaryChecked) {
+    this.selectedPermissions = this.selectedPermissions.concat(
+      this.GrouppermissionsEmployeesalary.map(permission => permission.id)
+    );
+  } else {
+    this.selectedPermissions = this.selectedPermissions.filter(
+      permission => !this.GrouppermissionsEmployeesalary.map(p => p.id).includes(permission)
     );
   }
   this.updatePayrollCheckbox();
@@ -13942,6 +14040,7 @@ selectPayroll(): void {
     ...this.GrouppermissionsPayrollrun,
     ...this.GrouppermissionsPayStructure,
     ...this.GrouppermissionsSalarycomponent,
+    ...this.GrouppermissionsEmployeesalary,
     ...this.GrouppermissionsPayslipAprv,
     ...this.GrouppermissionsPayrollaprlvl,
     ...this.GrouppermissionsAdvanceSalaryAprvlst,
@@ -13962,6 +14061,7 @@ selectPayroll(): void {
   this.updatePayrollrunCheckbox();
   this.updatePayStructureCheckbox();
   this.updateSalarycomponentCheckbox();
+  this.updateEmployeesalaryCheckbox();
   this.updatePayslipAprvCheckbox();
   this.updatePayrollaprlvlCheckbox();
   this.updateAdvanceSalaryAprvlstCheckbox();
@@ -14375,6 +14475,7 @@ updatePayroll():void{
   this.updatePayrollrunCheckbox();
   this.updatePayStructureCheckbox();
   this.updateSalarycomponentCheckbox();
+  this.updateEmployeesalaryCheckbox();
   this.updatePayslipAprvCheckbox();
   this.updatePayrollaprlvlCheckbox();
   this.updateAdvanceSalaryAprvlstCheckbox();
@@ -14601,6 +14702,7 @@ isPayrollInderminate(): boolean {
     ...this.GrouppermissionsPayrollrun,
     ...this.GrouppermissionsPayStructure,
     ...this.GrouppermissionsSalarycomponent,
+    ...this.GrouppermissionsEmployeesalary,
     ...this.GrouppermissionsPayslipAprv,
     ...this.GrouppermissionsPayrollaprlvl,
     ...this.GrouppermissionsAdvanceSalaryAprvlst,
@@ -14785,7 +14887,7 @@ isAttendanceInderminate(): boolean {
 // Show Sections
 
 showexpandable(): void {
-  this.expandedMasters = !this.expandedMasters;
+  this.expandedMastersvalue = !this.expandedMastersvalue;
 }
 
 showsettings(): void {

@@ -87,6 +87,7 @@ export class CreateEmployeeComponent implements OnInit {
   person_id: any = '';
   work_location: any = '';
   visa_location: any = '';
+  approver: number | null = null;
   emp_profile_pic: string | undefined;
 
   is_ess: boolean = false;
@@ -605,10 +606,12 @@ export class CreateEmployeeComponent implements OnInit {
     formData.append('emp_dept_id', this.emp_dept_id);
 
 
-        formData.append('person_id', this.person_id);
+    formData.append('person_id', this.person_id);
     formData.append('work_location', this.work_location);
     formData.append('visa_location', this.visa_location);
-    formData.append('approver', this.approver);
+     if (this.approver !== null) {
+      formData.append('emp_reporting_manager', this.approver.toString());
+       }
 
     formData.append('emp_desgntn_id', this.emp_desgntn_id);
     formData.append('emp_ctgry_id', this.emp_ctgry_id);
@@ -1685,6 +1688,26 @@ export class CreateEmployeeComponent implements OnInit {
     }
   }
 
+   Users:any []=[];
+
+   loadUsers(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+
+        // ✅ RUN CALLBACK AFTER DATA LOAD
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
+  }
+}
+
 
   ClosePopup() {
     this.ref.close('Closed using function')
@@ -1898,34 +1921,6 @@ export class CreateEmployeeComponent implements OnInit {
     this.Delete = !this.Delete;
 
   }
-
-approver:any='';
-
- Users:any []=[];
-
- loadUsers(callback?: Function): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (selectedSchema) {
-    this.userService.getApprover(selectedSchema).subscribe(
-      (result: any) => {
-        this.Users = result;
-
-        // ✅ RUN CALLBACK AFTER DATA LOAD
-        if (callback) callback();
-      },
-      (error) => {
-        console.error('Error fetching users:', error);
-      }
-    );
-  }
-}
-
-
-
-
-
-
 
 
 

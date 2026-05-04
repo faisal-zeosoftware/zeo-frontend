@@ -1,7 +1,13 @@
 <div mat-dialog-content class="">
 
     <div class="cpm-sec" *ngIf="department" >
-        <span class="close pull-right" (click)="ClosePopup()">&times;</span>
+
+ <div class="pull-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="ClosePopup()">
+      ×
+    </span>
+  </div>
 
         <h1>Edit Group Permissions</h1><hr>
 
@@ -2383,6 +2389,38 @@
                 (change)="onCheckboxChangesSalarycomponent(permission.id)"
                 [checked]="selectedPermissions.includes(permission.id)">
                 {{ getDisplayNameSalarycomponent(permission.codename) }}
+              </mat-checkbox>
+            </span>
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-3">
+  <span class="">
+    <mat-checkbox [(ngModel)]="EmployeeSalaryChecked"
+      [indeterminate]="isEmployeesalaryIndeterminate()"
+      (change)="onEmployeesalaryChange()"
+      [ngModelOptions]="{standalone: true}">
+      Employee Salary
+    </mat-checkbox>
+  </span><br>
+</div>
+
+<div class="col-md-9">
+  <div class="selection_checkmark_sec">
+    <div class="all_selection_Sec">
+      <div class="row">
+        <div class="col-md-2" *ngFor="let permission of GrouppermissionsEmployeesalary">
+          <h2>
+            <span>
+              <mat-checkbox
+                [value]="permission.id"
+                (change)="onCheckboxChangesEmployeesalary(permission.id)"
+                [checked]="selectedPermissions.includes(permission.id)">
+                {{ getDisplayNameEmployeesalary(permission.codename) }}
               </mat-checkbox>
             </span>
           </h2>

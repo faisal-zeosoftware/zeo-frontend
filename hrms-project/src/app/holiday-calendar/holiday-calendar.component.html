@@ -61,9 +61,12 @@
             <div class="col-md-10">
               <h2> Create  Holiday Calendar</h2>
             </div>
-            <div class="col-md-2">
-              <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
-            </div>
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeapplicationModal()">
+      ×
+    </span>
+  </div>
           </div>
           <hr />
       
@@ -232,9 +235,12 @@
       <div class="col-md-10">
         <h2>Edit Holiday calendar</h2>
       </div>
-      <div class="col-md-2">
-        <span class="close pull-right" (click)="closeEditModalCal()">&times;</span>
-      </div>
+ <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeEditModalCal()">
+      ×
+    </span>
+  </div>
     </div>
     <hr />
 
@@ -508,6 +514,13 @@
 <!-- ================= EDIT HOLIDAY ================= -->
 <div *ngIf="isEditHolidayModal" class="modal">
   <div class="modal-content">
+
+     <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeEditHolidayModal()">
+      ×
+    </span>
+  </div>
 
     <h3>Edit Holiday</h3>
     <hr>

@@ -296,6 +296,7 @@ ngOnInit(): void {
             this.employeeService.registerReqType(companyData).subscribe(
               () => {
                 alert('Request Type added successfully!');
+                window.location.reload();
                 this.closeapplicationModal();
               },
               (error) => {

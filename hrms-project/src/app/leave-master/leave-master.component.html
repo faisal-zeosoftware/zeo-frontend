@@ -170,7 +170,12 @@
             <h2>Edit Leave Type</h2>
           </div>
           <div class="col-md-2">
-            <span class="close pull-right" (click)="closeEditLeaveTypeModal()">&times;</span>
+ <div class="pull-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeEditLeaveTypeModal()">
+      ×
+    </span>
+  </div>
           </div>
         </div>
         <hr />
@@ -339,7 +344,12 @@
     <div *ngIf="isLeavetypeCreationModalOpen" class="modal">
       <div class="modal-content">
 
-        <span class="close pull-right" (click)="ClosePopup()">&times;</span>
+      <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="ClosePopup()">
+      ×
+    </span>
+  </div>
 
         <mat-horizontal-stepper class="mt-4" [linear]="isLinear" #stepper>
 

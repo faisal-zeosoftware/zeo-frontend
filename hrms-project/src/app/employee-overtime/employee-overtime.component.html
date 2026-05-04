@@ -65,9 +65,12 @@
           <div class="col-md-10">
             <h2> Create Employee Overtime</h2>
           </div>
-          <div class="col-md-2">
-            <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
-          </div>
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeapplicationModal()">
+      ×
+    </span>
+  </div>  
         </div>
         <hr />
         <form (ngSubmit)="EmployeeOvertime()" enctype="multipart/form-data">
@@ -181,9 +184,12 @@
           <div class="col-md-10">
             <h2>Edit Employee Overtime </h2>
           </div>
-          <div class="col-md-2">
-            <span class="close pull-right" (click)="closeEditModal()">&times;</span>
-          </div>
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeEditModal()">
+      ×
+    </span>
+  </div>  
         </div>
         <hr />
 

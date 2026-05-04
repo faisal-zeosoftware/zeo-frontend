@@ -411,7 +411,14 @@
     </div>
   </td>
 
-  <td>{{ docs.approval_type }}</td>
+<td>
+  {{
+    docs.approval_type === 'no_approval' ? 'No Approval' :
+    docs.approval_type === 'reporting_manager' ? 'Reporting Manager' :
+    docs.approval_type === 'multi_approval' ? 'Multi Approval' :
+    docs.approval_type
+  }}
+</td>
 
   <!-- Branch -->
   <td>

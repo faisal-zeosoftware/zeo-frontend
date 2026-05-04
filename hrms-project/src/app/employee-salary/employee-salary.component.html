@@ -4,11 +4,11 @@
     <div class="header_section">
 
       <div class="row">
-        <div class="col-md-7">
+        <div class="col-md-6">
           <h1>Assign Salary component for employee</h1>
         </div>
        
-        <div class="col-md-5">
+        <div class="col-md-6">
           <div class="button-group pull-right">
             <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
             </mat-icon></span> Create</button>
@@ -27,6 +27,11 @@
                 </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
 
             <span *ngIf="!hasDeletePermission"></span>
+
+          <button type="button" class="btn-Edit btn-secondary  btn"  (click)="OpenBulkuploadModal()" *ngIf="hasImportPermission">
+                <span class="header-btn-icon">
+                <mat-icon>system_update_alt
+             </mat-icon></span> Import</button>
           </div>
         </div>
       </div>
@@ -58,9 +63,12 @@
                 <div class="col-md-10">
                   <h2> Create Pay Structure</h2>
                 </div>
-                <div class="col-md-2">
-                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
-                </div>
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeapplicationModal()">
+      ×
+    </span>
+  </div>      
               </div>
               <hr />
           
@@ -148,9 +156,12 @@ placeholder="Enter amount"
                     <div class="col-md-10">
                       <h2>Edit Pay Structure</h2>
                     </div>
-                    <div class="col-md-2">
-                      <span class="close pull-right" (click)="closeEditModal()">&times;</span>
-                    </div>
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeEditModal()">
+      ×
+    </span>
+  </div>  
                   </div>
                   <hr />
               
@@ -172,13 +183,13 @@ placeholder="Enter amount"
                         <!-- Amount Field (Only Visible if is_fixed === true) -->
         <div class="col-md-6" *ngIf="showAmountField">
           <label>Amount</label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="amount"
-            placeholder="Enter amount"
-            [ngModelOptions]="{standalone: true}"
-          />
+<input
+  type="text"
+  class="form-control"
+  [(ngModel)]="editAsset.amount"
+  placeholder="Enter amount"
+  [ngModelOptions]="{standalone: true}"
+/>
         </div>
         
         
@@ -223,6 +234,82 @@ placeholder="Enter amount"
                   </form>
                 </div>
               </div>  
+
+              <div *ngIf="isBulkuploadDepartmentModalOpen" class="modal">
+
+    <div class="modal-content">
+
+       
+
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Salary Bulk Upload & Download Details</h2> 
+            </div>
+<div class="col-md-4 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeBulkuploadModal()">
+      ×
+    </span>
+  </div>
+        </div><hr>
+
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="vn-wisteria" >
+                    <a  class="btn-wrap" (click)="downloadSalaryExcel()">DOWNLOAD EXCEL FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="vn-wisteria vn-green" >
+                        <a  class="btn-wrap"  (click)="downloadSalaryCsv()">DOWNLOAD CSV FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="vn-wisteria  vn-blue" >
+                            <a class="btn-wrap" (click)="toggleUploadForm()">
+                                SALARY BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
+                              </a>                            </div>
+                        </div>
+            </div>
+
+
+            <div *ngIf="showUploadForm">
+    <form (ngSubmit)="bulkuploaddocument()" #documentForm="ngForm">
+      <div class="row">
+        <div class="col-md-12">
+          <label for="emp_profile_pic">Upload Salary Details:</label>
+          <input type="file" name="files" id="file" class="form-control" (change)="onFileChange($event);">
+        </div>
+      </div>
+  
+      <div class="row mt-3">
+        <div class="col-md-8"></div>
+        <div class="col-md-2 col-6">
+            <button type="button" mat-raised-button color="warn"   class="pull-right btn-danger btn-full"  (click)="closeUploadForm()">
+              close
+            </button>
+          </div>
+        
+        <div class="col-md-2 col-6">
+          <button type="submit" mat-raised-button color="primary" class="pull-right btn-full">
+            Save
+          </button>
+        </div>
+
+        
+      </div>
+    </form>
+  </div>
+
+
+  
+    
+
+    </div>
+  </div>
 
 
 

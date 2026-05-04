@@ -57,9 +57,12 @@
                 <div class="col-md-10">
                   <h2> Create Resignation Approval level </h2>
                 </div>
-                <div class="col-md-2">
-                  <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
-                </div>
+<div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeapplicationModal()">
+      ×
+    </span>
+  </div>  
               </div>
               <hr />
           
@@ -212,9 +215,13 @@
       <div class="col-md-10">
         <h2>Edit  Request Type</h2>
       </div>
-      <div class="col-md-2">
-        <span class="close pull-right" (click)="closeEditModal()">&times;</span>
-      </div>
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeEditModal()">
+      ×
+    </span>
+  </div> 
+  
     </div>
     <hr />
   
@@ -413,7 +420,14 @@
     </span>
   </td>
 
-            <td>{{ docs.approval_type }}</td>
+<td>
+  {{
+    docs.approval_type === 'no_approval' ? 'No Approval' :
+    docs.approval_type === 'reporting_manager' ? 'Reporting Manager' :
+    docs.approval_type === 'multi_approval' ? 'Multi Approval' :
+    docs.approval_type
+  }}
+</td>
 
             <!-- APPROVERS -->
           <td>

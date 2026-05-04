@@ -13,6 +13,8 @@ import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { CompanyRegistrationService } from '../company-registration.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-employee-salary',
@@ -21,6 +23,7 @@ import {combineLatest, Subscription } from 'rxjs';
 })
 export class EmployeeSalaryComponent {
 
+  private apiUrl = `${environment.apiBaseUrl}`;
   
   
   private dataSubscription?: Subscription;
@@ -59,10 +62,14 @@ branch:any='';
 
 selectedFile!: File | null;
 
+   selectedFiles! : File;
+  file:any ='';
+
 hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
+hasImportPermission:boolean = false;
 
 
   Branchs:any []=[];
@@ -106,6 +113,7 @@ schemas: string[] = []; // Array to store schema names
 private sessionService: SessionService,
 private employeeService: EmployeeService,
 private DepartmentServiceService:DepartmentServiceService,
+ private companyRegistrationService: CompanyRegistrationService, 
    private categoryService: CatogaryService,
 
   ) {}
@@ -162,6 +170,7 @@ this.loadEmp();
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
+            this.hasImportPermission = true;
         
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
@@ -187,23 +196,27 @@ this.loadEmp();
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
                     this.hasEditPermission = true;
+                    this.hasImportPermission = true;
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
     
                    
-                    this.hasAddPermission = this.checkGroupPermission('add_paystructure', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_employeesalarystructure', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
                     
-                    this.hasEditPermission = this.checkGroupPermission('change_paystructure', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_employeesalarystructure', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
       
-                   this.hasDeletePermission = this.checkGroupPermission('delete_paystructure', groupPermissions);
+                   this.hasDeletePermission = this.checkGroupPermission('delete_employeesalarystructure', groupPermissions);
                    console.log('Has delete permission:', this.hasDeletePermission);
       
     
-                    this.hasViewPermission = this.checkGroupPermission('view_paystructure', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_employeesalarystructure', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
+
+                    this.hasImportPermission = this.checkGroupPermission('import_salarycomponent', groupPermissions);
+                    console.log('Has view permission:', this.hasImportPermission);
     
     
                   } else {
@@ -311,14 +324,120 @@ CreatePayStructure(): void {
     //     }
     //   });
     // }
-  
 
+
+    onFileChange(event: any){
+    this.file = event.target.files[0];
+    console.log(this.file);
+    
+  }
+   onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  
+     bulkuploaddocument(): void {
+      
+     const formData = new FormData();
+    formData.append('file',this.selectedFiles);
+  
+    formData.append('file',this.file)
+    
+    formData.append('amount', this.amount);
+  
+    formData.append('employee', this.employee);
+    
+    formData.append('component', this.component);
+    
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      // return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+      /** 🔥 START LOADER */
+  this.isLoading = true;
+   
+   
+    // return this.http.put(apiUrl, formData);
+
+  
+    this.http.post(`${this.apiUrl}/payroll/api/bulk-upload-salary/bulk_upload/?schema=${selectedSchema}`, formData)
+      .subscribe((response) => {
+        // Handle successful upload
+        console.log('bulkupload upload successful', response);
+        alert('bulkupload upload successful');
+        window.location.reload();
+
+      }, (error) => {
+        this.isLoading = false;
+        console.error('Salary upload failed', error);
+        alert('Salary upload failed!');
+      });
+      }
 
  
 
   
+ isBulkuploadDepartmentModalOpen :boolean=false;
 
 
+OpenBulkuploadModal():void{
+  this.isBulkuploadDepartmentModalOpen = true;
+}
+
+
+
+
+closeBulkuploadModal():void{
+  this.isBulkuploadDepartmentModalOpen = false;
+
+}
+
+   showUploadForm: boolean = false;
+
+toggleUploadForm(): void {
+  this.showUploadForm = !this.showUploadForm;
+}
+
+
+
+
+closeUploadForm(): void {
+  this.showUploadForm = false;
+}
+
+
+      downloadSalaryCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadSalaryCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Salary_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+     
+    downloadSalaryExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadSalaryExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Salary_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
 
       
       iscreateovertimepolicy: boolean = false;
@@ -377,9 +496,10 @@ openEditModal(asset: any): void {
   this.editAsset = { ...asset };
   this.isEditModalOpen = true;
 
-  this.mapComponentToId();   // ✅ FIX
-  this.mapEmployeeToId();    // ✅ FIX
+  this.mapComponentToId();
+  this.mapEmployeeToId();
 
+  this.onComponentChange(); // ✅ ADD THIS LINE
 }
   
 
@@ -594,8 +714,12 @@ updateEmployeeSalary(): void {
 
 
 onComponentChange() {
+  const selectedId = this.isEditModalOpen
+    ? Number(this.editAsset.component)
+    : Number(this.component);
+
   this.selectedComponent = this.Salarycomponent.find(
-    comp => comp.id === Number(this.component)
+    comp => comp.id === selectedId
   );
 
   if (!this.selectedComponent) {
@@ -603,9 +727,6 @@ onComponentChange() {
     return;
   }
 
-  // ✅ Show amount if:
-  // 1. Fixed component
-  // 2. Petty Cash component
   const componentName = (this.selectedComponent.name || '').toLowerCase();
   const componentCode = (this.selectedComponent.code || '').toLowerCase();
 
@@ -614,7 +735,6 @@ onComponentChange() {
     componentName.includes('petty') ||
     componentCode.includes('petty');
 
-  // Clear amount only if field should not show
   if (!this.showAmountField) {
     this.amount = '';
   }

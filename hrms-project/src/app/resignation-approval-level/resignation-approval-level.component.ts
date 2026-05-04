@@ -18,6 +18,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
   templateUrl: './resignation-approval-level.component.html',
   styleUrl: './resignation-approval-level.component.css'
 })
+
 export class ResignationApprovalLevelComponent {
 
   
@@ -209,11 +210,39 @@ private employeeService: EmployeeService,
 CreateLoanApproverLevel(): void {
   this.registerButtonClicked = true;
 
-  const formattedLevels = this.levels.map((lvl, index) => ({
-    level: index + 1,
-    role: lvl.role || '',
-    approver: lvl.approver ? Number(lvl.approver) : null
-  }));
+  // ✅ Branch validation
+  if (!this.branch || (Array.isArray(this.branch) && this.branch.length === 0)) {
+    alert('Please select at least one branch');
+    return;
+  }
+
+  // ✅ Approval type validation
+  if (!this.approval_type) {
+    alert('Please select approval type');
+    return;
+  }
+
+  let formattedLevels: any[] = [];
+
+  // ✅ Handle approval types properly
+  if (this.approval_type === 'multi_approval') {
+
+    if (!this.levels || this.levels.length === 0) {
+      alert('Please add at least one approval level');
+      return;
+    }
+
+    for (let i = 0; i < this.levels.length; i++) {
+      const lvl = this.levels[i];
+
+
+      formattedLevels.push({
+        level: i + 1,
+        role: lvl.role,
+        approver: Number(lvl.approver)
+      });
+    }
+  }
 
   const branchValue = Array.isArray(this.branch) ? this.branch : [this.branch];
 
@@ -224,9 +253,10 @@ CreateLoanApproverLevel(): void {
     levels: formattedLevels
   };
 
+  console.log('Payload:', payload);
+
   this.employeeService.registerResigantionApproverLevel(payload).subscribe(
-    (response) => {
-      console.log('Success', response);
+    () => {
       alert('Approval Level has been added');
       window.location.reload();
     },
@@ -235,6 +265,8 @@ CreateLoanApproverLevel(): void {
     }
   );
 }
+
+
 
 
 

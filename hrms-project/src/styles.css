@@ -233,6 +233,21 @@ option { width: 200px; }
   animation: spin 2s linear infinite;
 }
 
+ .close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #ff0000;
+  color: #f9f9f9;
+  font-size: 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #dee2e6;
+}
+
 
 
 @keyframes spin {

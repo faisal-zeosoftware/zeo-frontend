@@ -15,6 +15,8 @@ export class SalaryOptionsComponent {
 
 
   hasViewPermissionSalary: boolean = false;
+  hasViewPermissionEmployeeSalary: boolean = false;
+  hasViewPermissionPayStructure: boolean = false;
   hasViewPermissionPayroll: boolean = false;
   hasViewPermissionPayslipApprovals: boolean = false;
   hasViewPermissionPayrollApprovalLevel: boolean = false;
@@ -83,6 +85,8 @@ export class SalaryOptionsComponent {
           // Grant all permissions
           this.hasViewPermissionPayroll = true;
           this.hasViewPermissionSalary = true;
+          this.hasViewPermissionEmployeeSalary = true;
+          this.hasViewPermissionPayStructure = true;
           this.hasViewPermissionPayslipApprovals = true;
           this.hasViewPermissionPayrollApprovalLevel = true;
 
@@ -117,6 +121,8 @@ export class SalaryOptionsComponent {
                   // Grant all permissions
                   this.hasViewPermissionPayroll = true;
                    this.hasViewPermissionSalary = true;
+                    this.hasViewPermissionEmployeeSalary = true;
+                     this.hasViewPermissionPayStructure = true;
                    this.hasViewPermissionPayslipApprovals = true;
                   this.hasViewPermissionPayrollApprovalLevel = true;
 
@@ -140,6 +146,13 @@ export class SalaryOptionsComponent {
                       
                        this.hasViewPermissionPayroll = this.checkGroupPermission('view_payrollrun', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionPayroll);
+
+                                              
+                       this.hasViewPermissionEmployeeSalary = this.checkGroupPermission('view_employeesalarystructure', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionEmployeeSalary);
+                      
+                       this.hasViewPermissionPayStructure = this.checkGroupPermission('view_paystructure', groupPermissions);
+                       console.log('Has view permission:', this.hasViewPermissionPayStructure);
 
                         this.hasViewPermissionPayslipApprovals = this.checkGroupPermission('view_payslipapproval', groupPermissions);
                        console.log('Has view permission:', this.hasViewPermissionPayslipApprovals);

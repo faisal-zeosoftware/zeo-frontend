@@ -173,7 +173,9 @@ ngOnInit(): void {
   this.loadLanguages();
   this.loadReligoin();
   this.loadNationality();
-  this.loadUsers();
+  this.loadUsers(() => {
+  this.mapApprover();
+});
 
   // 🔹 Load employee data
   this.EmployeeService.getEmpById(this.data.employeeId).subscribe(
@@ -196,6 +198,7 @@ ngOnInit(): void {
         if (this.Emp.custom_fields.length > 0) {
           this.selectedCustomField = this.Emp.custom_fields[0];
         }
+            // 👇 IMPORTANT: wait for users then map
       }
 
       /**
@@ -277,21 +280,8 @@ ngOnInit(): void {
     }
   );
 
-this.loadUsers(() => {
 
-  // Employee already loaded earlier → use existing this.Emp
-  if (!this.Emp || !this.Users.length) return;
 
-  // 🔥 Handle BOTH cases (id OR username from backend)
-  const selectedUser = this.Users.find(
-    u => u.id == this.Emp.approver || u.username == this.Emp.approver
-  );
-
-  if (selectedUser) {
-    this.Emp.approver = selectedUser.id; // ✅ always store ID
-  }
-
-});
 
 }
 
@@ -384,7 +374,7 @@ updateEmp(): void {
   safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));
   safeAppend('work_location', this.Emp.work_location);
   safeAppend('visa_location', this.Emp.visa_location);
-  safeAppend('approver', Number(this.Emp.approver));
+  safeAppend('emp_reporting_manager', this.Emp.approver);
   safeAppend('person_id', this.Emp.person_id);
 
   // ✅ Boolean values as 1/0
@@ -1066,7 +1056,7 @@ loadEmployee(): void {
     }
     }
 
-    approver:any='';
+   approver: number | null = null;
 
  Users:any []=[];
 
@@ -1085,6 +1075,27 @@ loadEmployee(): void {
         console.error('Error fetching users:', error);
       }
     );
+  }
+}
+
+
+mapApprover(): void {
+  if (!this.Emp || !this.Users?.length) return;
+
+  // Case 1: backend returns ID already
+  if (typeof this.Emp.approver === 'number') {
+    return;
+  }
+
+  // Case 2: backend returns username → map to ID
+  const user = this.Users.find(
+    u => u.username === this.Emp.approver
+  );
+
+  if (user) {
+    this.Emp.approver = user.id;
+  } else {
+    this.Emp.approver = null;
   }
 }
 

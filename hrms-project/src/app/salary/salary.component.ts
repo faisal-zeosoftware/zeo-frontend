@@ -76,7 +76,7 @@ export class SalaryComponent {
 
 
   filteredEmployees: any[] = [];
-  Branches: any[] = [];
+
 
 
   // edit salary component
@@ -110,6 +110,7 @@ export class SalaryComponent {
 
   ngOnInit(): void {
 
+this.loadDeparmentBranch();
 
     // combineLatest waits for both Schema and Branches to have a value
     this.dataSubscription = combineLatest([
@@ -471,51 +472,53 @@ export class SalaryComponent {
   }
 
 
+branches:any []=[];
 
+loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
 
-  loadDeparmentBranch(callback?: Function): void {
-    const selectedSchema = this.authService.getSelectedSchema();
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
 
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any[]) => {
-          // 1. Get the sidebar selected IDs from localStorage
-          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+        const sidebarSelectedIds: number[] =
+          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-          // 2. Filter the API result to only include branches selected in the sidebar
-          // If sidebar is empty, you might want to show all, or show none. 
-          // Usually, we show only the selected ones:
-          if (sidebarSelectedIds.length > 0) {
-            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-          } else {
-            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+        this.branches = sidebarSelectedIds.length > 0
+          ? result.filter(branch => sidebarSelectedIds.includes(branch.id))
+          : result;
+
+        // ✅ Always ensure valid selection
+        if (this.branches.length > 0) {
+          const exists = this.branches.find(b => b.id === this.branch);
+
+          if (!exists) {
+            this.branch = this.branches[0].id;
           }
-          // Inside the subscribe block of loadDeparmentBranch
-          if (this.Branches.length === 1) {
-            this.Branches = this.Branches[0].id;
-          }
-
-          console.log('Filtered branches for selection:', this.Branches);
-          if (callback) callback();
-        },
-        (error) => {
-          console.error('Error fetching branches:', error);
         }
-      );
-    }
+
+        console.log('Filtered branches:', this.branches);
+
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
   }
+}
 
-  mapBranchNameToId() {
-  if (!this.Branches || !this.editAsset?.branch) return;
+mapBranchNameToId() {
+  if (!this.branches || !this.editAsset?.branch) return;
 
-  const branch = this.Branches.find(
+  const branch = this.branches.find(
     (b: any) =>
-      b.branch_name === this.editAsset.branch ||  // match name
-      b.id === this.editAsset.branch              // OR already ID
+      b.id === this.editAsset.branch ||
+      b.branch_name === this.editAsset.branch
   );
 
   if (branch) {
-    this.editAsset.branch = branch.id; // ✅ convert to ID
+    this.editAsset.branch = branch.id; // always ID
   }
 
   console.log('Mapped Branch ID:', this.editAsset.branch);
