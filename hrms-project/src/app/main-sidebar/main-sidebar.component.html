@@ -217,7 +217,8 @@
     
     <div class="cmp_drop">
       <mat-icon>business</mat-icon>
-      <h1>{{ selectedSchema || 'Select Company' }}</h1>
+      <!-- <h1>{{ selectedSchema || 'Select Company' }}</h1> -->
+      <h1>{{ selectedSchemaNameDisplay || 'Select Company' }}</h1>
       <mat-icon [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">
         expand_more
       </mat-icon>
