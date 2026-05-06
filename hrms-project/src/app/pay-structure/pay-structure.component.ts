@@ -271,6 +271,12 @@ isDaySelected(dayKey: string): boolean {
 
   registerButtonClicked = false;
 
+  onSalaryTypeChange() {
+  if (this.salary_calculation_type === 'CALENDAR_DAYS') {
+    this.fixed_working_days = null;
+  }
+}
+
 
 CreatePayStructure(): void {
   this.registerButtonClicked = true;
@@ -287,8 +293,8 @@ CreatePayStructure(): void {
   formData.append('cycle_start_day', this.cycle_start_day);
 
   formData.append('cycle_end_day', this.cycle_end_day);
-  formData.append('payday_type', this.payday_type);
-  formData.append('payday', this.payday);
+  // formData.append('payday_type', this.payday_type);
+  // formData.append('payday', this.payday);
 let formattedDate = '';
 
 if (this.payroll_start_month) {
