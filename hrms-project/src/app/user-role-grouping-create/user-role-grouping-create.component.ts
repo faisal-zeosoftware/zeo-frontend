@@ -319,6 +319,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   LeavemasterInderminate=false;
   LeavereqInderminate=false;
   LeavecomInderminate=false;
+  LeaveTransInderminate=false;
   LeaveaprvlvlInderminate=false;
   // LeaveaprvlvltempInderminate=false;
   LeaveBalanceInderminate=false;
@@ -1145,6 +1146,7 @@ isLeaveMangementMasterChecked():boolean{
     this.LeavemasterChecked &&
     this.LeavereqChecked &&
     this.LeavecomChecked &&
+    this.LeavecomTransChecked&&
     this.LeaveaprvlvlChecked &&
     this.LeaveBalanceChecked &&
     this.LeaveCancelChecked &&
@@ -2019,6 +2021,7 @@ updateInderminateLeave():void{
   this.isLeavemasterIndeterminate();
   this.isLeavereqIndeterminate();
   this.isLeavecomIndeterminate();
+  this.isLeaveTransIndeterminate();
   this.isLeaveaprvlvlIndeterminate();
   // this.isLeaveaprvlvltempIndeterminate();
   this.isLeaveBalanceIndeterminate();
@@ -2293,6 +2296,7 @@ updateInderminateAttendance():void{
     this.loadpermissionsLeavemaster();
     this.loadpermissionsLeavereq();
     this.loadpermissionsLeavecom();
+    this.loadpermissionsLeaveTrans();
     this.loadpermissionsLeaveaprvlvl();
     this.loadpermissionsLeaveBalance();
     this.loadpermissionsLeaveCancel();
@@ -5486,7 +5490,7 @@ this.GrouppermissionsLeaveEscalation.sort((a, b) => {
                             this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                               (result: any[]) => {
                                 // Specify the codenames you want to filter
-                                const requiredCodenames = ['add_compensatoryleaverequest', 'change_compensatoryleaverequest', 'delete_compensatoryleaverequest', 'view_compensatoryleavetransaction'];
+                                const requiredCodenames = ['add_compensatoryleaverequest', 'change_compensatoryleaverequest', 'delete_compensatoryleaverequest', 'view_compensatoryleaverequest'];
                         
                                 // Filter and remove duplicates based on codename
                                 const uniquePermissionsMap = new Map();
@@ -5520,6 +5524,55 @@ this.GrouppermissionsLeaveEscalation.sort((a, b) => {
                               case 'delete_compensatoryleaverequest':
                                 return 'Delete';
                               case 'view_compensatoryleaverequest':
+                                return 'View';
+                              default:
+                                return permissionCodename;
+                            }
+                          }
+
+              loadpermissionsLeaveTrans(): void {
+                          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+                          console.log('schemastore', selectedSchema);
+                        
+                          if (selectedSchema) {
+                            this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
+                              (result: any[]) => {
+                                // Specify the codenames you want to filter
+                                const requiredCodenames = ['add_compensatoryleavetransaction', 'change_compensatoryleavetransaction', 'delete_compensatoryleavetransaction', 'view_compensatoryleavetransaction'];
+                        
+                                // Filter and remove duplicates based on codename
+                                const uniquePermissionsMap = new Map();
+                                result.forEach(permission => {
+                                  const codename = permission.codename.trim().toLowerCase();
+                                  if (requiredCodenames.includes(codename) && !uniquePermissionsMap.has(codename)) {
+                                    uniquePermissionsMap.set(codename, permission);
+                                  }
+                                });
+                        
+                                // Convert map values to an array
+                                this.GrouppermissionsLeavecomTrans = Array.from(uniquePermissionsMap.values());
+                        
+                                console.log('Filtered Unique Permissions:', this.GrouppermissionsLeavecomTrans);
+                              },
+                              (error: any) => {
+                                console.error('Error fetching permissions:', error);
+                              }
+                            );
+                          }
+                        }
+                      
+                          //Display Name add view delte code for emplotee master-------
+                      
+                          getDisplayNameLeaveTrans(permissionCodename: string): string {
+                            switch (permissionCodename.trim().toLowerCase()) {
+                              case 'add_compensatoryleavetransaction':
+                                return 'Add';
+                              case 'change_compensatoryleavetransaction':
+                                return 'Edit';
+                              case 'delete_compensatoryleavetransaction':
+                                return 'Delete';
+                              case 'view_compensatoryleavetransaction':
                                 return 'View';
                               default:
                                 return permissionCodename;
@@ -10258,6 +10311,29 @@ updateLeaveAprRepCheckbox(): void {
     this.LeavecomInderminate = this.isLeavecomIndeterminate();
   }
 
+
+    onCheckboxChangesLeaveTrans(permission: string): void {
+    if (this.selectedPermissions.includes(permission)) {
+      this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
+    } else {
+      this.selectedPermissions.push(permission);
+    }
+  
+   
+    // Update selectAll checkbox status
+    this.updateLeaveTransCheckbox();
+    this.updateLeave();
+
+  }
+
+  updateLeaveTransCheckbox(): void {
+    const allPermissionsSelected = this.GrouppermissionsLeavecomTrans.every(permission => 
+      this.selectedPermissions.includes(permission.id)
+    );
+    this.LeavecomTransChecked = allPermissionsSelected;
+    this.LeaveTransInderminate = this.isLeaveTransIndeterminate();
+  }
+
   onCheckboxChangesLeaveaprvlvl(permission: string): void {
     if (this.selectedPermissions.includes(permission)) {
       this.selectedPermissions = this.selectedPermissions.filter(p => p !== permission);
@@ -11932,6 +12008,7 @@ isLeaves(): boolean {
   const LeavemasterInderminate = this.isLeavemasterIndeterminate();
   const LeavereqInderminate = this.isLeavereqIndeterminate();
   const LeavecomInderminate = this.isLeavecomIndeterminate();
+  const LeaveTransInderminate = this.isLeaveTransIndeterminate();
   const LeaveaprvlvlInderminate = this.isLeaveaprvlvlIndeterminate();
   // const LeaveaprvlvltempInderminate = this.isLeaveaprvlvltempIndeterminate();
   const LeaveBalanceInderminate = this.isLeaveBalanceIndeterminate();
@@ -11943,7 +12020,7 @@ isLeaves(): boolean {
 
 
   const otherGroupIndeterminate = false;
-  return LeaveaprvInderminate || LeavetypeInderminate || LeaveEscalationInderminate || LeavemasterInderminate || LeavereqInderminate ||  LeavecomInderminate ||
+  return LeaveaprvInderminate || LeavetypeInderminate || LeaveEscalationInderminate || LeavemasterInderminate || LeavereqInderminate ||  LeavecomInderminate || LeaveTransInderminate ||
    LeaveaprvlvlInderminate || LeaveRejoinInderminate || LeaveAccrualInderminate || LeaveBalanceInderminate || LeaveCancelInderminate || otherGroupIndeterminate;
 } 
 
@@ -12826,10 +12903,10 @@ isAttend(): boolean {
   }
 
     onLeaveTransChange(): void {
-    if (this.LeavecomChecked) {
-      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeavecom.map(permission => permission.id));
+    if (this.LeavecomTransChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeavecomTrans.map(permission => permission.id));
     } else {
-      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeavecom.map(p => p.id).includes(permission));
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeavecomTrans.map(p => p.id).includes(permission));
     }
     this.updateLeaveCheckbox();
     // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
@@ -14020,6 +14097,7 @@ selectLeave(): void {
     ...this.GrouppermissionsLeavemaster,
     ...this.GrouppermissionsLeavereq,
     ...this.GrouppermissionsLeavecom,
+    ...this.GrouppermissionsLeavecomTrans,
     ...this.GrouppermissionsLeaveaprvlvl,
     // ...this.GrouppermissionsLeaveaprvlvltemp,
     ...this.GrouppermissionsLeaveBalance,
@@ -14045,6 +14123,7 @@ selectLeave(): void {
   this.updateLeavemasterCheckbox();
   this.updateLeavereqCheckbox();
   this.updateLeavecomCheckbox();
+  this.updateLeaveTransCheckbox();
   this.updateLeaveaprvlvlCheckbox();
   // this.updateLeaveaprvlvltempCheckbox();
   this.updateLeaveBalanceCheckbox();
@@ -14480,6 +14559,7 @@ updateLeave():void{
   this.updateLeavemasterCheckbox();
   this.updateLeavereqCheckbox();
   this.updateLeavecomCheckbox();
+  this.updateLeaveTransCheckbox();
   this.updateLeaveaprvlvlCheckbox();
   // this.updateLeaveaprvlvltempCheckbox();
   this.updateInderminateLeave();
@@ -14704,6 +14784,7 @@ isLeaveInderminate(): boolean {
     ...this.GrouppermissionsLeavemaster,
     ...this.GrouppermissionsLeavereq,
     ...this.GrouppermissionsLeavecom,
+    ...this.GrouppermissionsLeavecomTrans,
     ...this.GrouppermissionsLeaveaprvlvl,
     // ...this.GrouppermissionsLeaveaprvlvltemp,
     ...this.GrouppermissionsLeaveBalance,
@@ -14914,7 +14995,8 @@ showexpandable(): void {
 
 showsettings(): void {
     this.settingsMastersvalue = !this.settingsMastersvalue;
-  }
+}
+
 showreports(): void {
   this.reportMastersvalue =!this.reportMastersvalue;
 }

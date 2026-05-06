@@ -492,29 +492,42 @@ background-color:#8e44ad;
 
 
 
-  .emp-card-modern {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    border: 1px solid #f0f0f0;
-    text-align: center;
-    cursor: pointer;
-  }
+.emp-card-modern {
+  background: linear-gradient(135deg, #e7eaf6, #ffffff);
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.emp-card-modern::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1px;
+  background: linear-gradient(135deg, #e7eaf6, #38598b,  #113f67);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0.4;
+}
   
-  .emp-card-modern:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  }
+.emp-card-modern:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
+}
   
   /* Top colored banner area */
-  .card-banner-bg {
-    height: 80px;
-    background: linear-gradient(to right, #ece9e6, #ffffff); /* Or a light image */
-    position: relative;
-  }
+.card-banner-bg {
+  height: 90px;
+  background: linear-gradient(135deg,  #5c5470, #352f44,   #2a2438);
+  position: relative;
+}
   
   .points-badge {
     position: absolute;
@@ -555,10 +568,10 @@ background-color:#8e44ad;
     position: absolute;
     bottom: 0;
     right: -5px;
-    background: #fff !important;
+    background: #5c5470 !important;
     color: #666;
-    width: 32px !important;
-    height: 32px !important;
+    width: 44px !important;
+    height: 46px !important;
     line-height: 32px !important;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   }
@@ -581,8 +594,8 @@ background-color:#8e44ad;
   }
   
   .emp-email {
-    color: #888;
-    font-size: 0.85rem;
+    color: #222222;
+    font-size: 0.90rem;
     margin-bottom: 12px;
   }
   
@@ -597,9 +610,14 @@ background-color:#8e44ad;
   }
   
   .dept-tag {
-    background: #f3f4f6;
+    background: #352f44;
+    color: #ffffff;
     padding: 2px 8px;
     border-radius: 4px;
+  }
+
+  .branch-tag{
+    color: #100f11;
   }
   
   .dot-separator {
