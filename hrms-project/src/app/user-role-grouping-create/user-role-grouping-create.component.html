@@ -2106,6 +2106,39 @@
           </div>
 
 
+        <div class="col-md-3">
+              <span class="">
+                  <mat-checkbox [(ngModel)]="LeavecomTransChecked" 
+                  [indeterminate]="isLeaveTransIndeterminate()" 
+                  (change)="onLeaveTransChange()" 
+                  [ngModelOptions]="{standalone: true}">
+                  Compansatory Transactions
+                  </mat-checkbox>
+              </span><br>
+          </div>
+          
+          <div class="col-md-9">
+              <div class="selection_checkmark_sec">
+                  <div class="all_selection_Sec">
+                      <div class="row">
+                    
+                          <div class="col-md-2" *ngFor="let permission of GrouppermissionsLeavecomTrans">
+                              <h2> 
+                                  <span> 
+                                      <mat-checkbox [value]="permission.id" 
+                                      (change)="onCheckboxChangesLeavecom(permission.id)"
+                                       [checked]="selectedPermissions.includes(permission.id)">
+                                          {{ getDisplayNameLeavecom(permission.codename) }}
+                                      </mat-checkbox> 
+                                  </span> 
+                              </h2>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+
        
 
                    

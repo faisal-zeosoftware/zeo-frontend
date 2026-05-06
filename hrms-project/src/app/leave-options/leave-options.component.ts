@@ -39,6 +39,7 @@ export class LeaveOptionsComponent {
   hasViewPermissionLeaveApr: boolean =false;
   hasViewPermissionLeaveMas: boolean = false;
   hasViewPermissioncmpL: boolean = false;
+  hasViewPermissioncmpTrans :boolean = false;
   hasViewPermissionLeaveAprvlvl: boolean = false;
   hasViewPermissionLeavetemp: boolean = false;
 
@@ -101,6 +102,7 @@ if (this.userId !== null) {
         this.hasViewPermissiondesg = true;
         this.hasViewPermissionLeaveMas = true;
         this.hasViewPermissioncmpL = true;
+        this.hasViewPermissioncmpTrans = true;
         this.hasViewPermissionLeaveAprvlvl = true;
         this.hasViewPermissionLeavetemp = true;
  
@@ -175,6 +177,7 @@ if (this.userId !== null) {
                 this.hasViewPermissiondesg = true;
                 this.hasViewPermissionLeaveMas = true;
                 this.hasViewPermissioncmpL = true;
+                this.hasViewPermissioncmpTrans = true;
                 this.hasViewPermissionLeaveAprvlvl = true;
                 this.hasViewPermissionLeavetemp = true;
 
@@ -203,8 +206,11 @@ if (this.userId !== null) {
                      this.hasViewPermissionEmpLeaveReq = this.checkGroupPermission('view_employee_leave_request', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionEmpLeaveReq);
                     
-                     this.hasViewPermissioncmpL = this.checkGroupPermission('view_compensatoryleavetransaction', groupPermissions);
+                     this.hasViewPermissioncmpL = this.checkGroupPermission('view_compensatoryleaverequest', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissioncmpL);
+
+                     this.hasViewPermissioncmpTrans = this.checkGroupPermission('view_compensatoryleavetransaction', groupPermissions);
+                     console.log('Has view permission:', this.hasViewPermissioncmpTrans);
                      
                      this.hasViewPermissionLeaveAprvlvl = this.checkGroupPermission('view_leaveapprovallevels', groupPermissions);
                      console.log('Has view permission:', this.hasViewPermissionLeaveAprvlvl);
@@ -300,6 +306,13 @@ if (this.userId !== null) {
   clickedOutside(): void {
     this.isMenuOpened = false;
   }
+
+
+      showAdvanceSalary = false;
+
+    toggleAdvanceSalary() {
+      this.showAdvanceSalary = !this.showAdvanceSalary;
+    }
   
 
 }

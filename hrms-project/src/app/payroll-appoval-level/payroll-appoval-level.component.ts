@@ -240,7 +240,7 @@ CreateLoanApproverLevel(): void {
     const invalid = this.levels.find(l => !l.role || !l.approver);
 
     if (invalid) {
-      alert('Fill all level fields');
+      alert('New Level Added');
       return;
     }
 

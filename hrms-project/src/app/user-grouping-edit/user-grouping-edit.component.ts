@@ -5543,7 +5543,7 @@ this.GrouppermissionsLeaveEscalation.sort((a, b) => {
                             this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                               (result: any[]) => {
                                 // Specify the codenames you want to filter
-                                const requiredCodenames = ['add_compensatoryleavetransaction', 'change_compensatoryleavetransaction', 'delete_compensatoryleavetransaction', 'view_compensatoryleavetransaction'];
+                                const requiredCodenames = ['add_compensatoryleaverequest', 'change_compensatoryleaverequest', 'delete_compensatoryleaverequest', 'view_compensatoryleaverequest'];
                         
                                 // Filter and remove duplicates based on codename
                                 const uniquePermissionsMap = new Map();
@@ -5570,13 +5570,13 @@ this.GrouppermissionsLeaveEscalation.sort((a, b) => {
                       
                           getDisplayNameLeavecom(permissionCodename: string): string {
                             switch (permissionCodename.trim().toLowerCase()) {
-                              case 'add_compensatoryleavetransaction':
+                              case 'add_compensatoryleaverequest':
                                 return 'Add';
-                              case 'change_compensatoryleavetransaction':
+                              case 'change_compensatoryleaverequest':
                                 return 'Edit';
-                              case 'delete_compensatoryleavetransaction':
+                              case 'delete_compensatoryleaverequest':
                                 return 'Delete';
-                              case 'view_compensatoryleavetransaction':
+                              case 'view_compensatoryleaverequest':
                                 return 'View';
                               default:
                                 return permissionCodename;

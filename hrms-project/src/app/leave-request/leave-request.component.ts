@@ -572,11 +572,51 @@ openEditModal(asset: any): void {
 
   this.isEditModalOpen = true;
 
-  // 🔥 Convert backend string values → IDs
-  this.mapEmpNameToId();
-  this.mapLeaveTypeNameToId();
+  // ----------------------------
+  // 🔥 FIX EMPLOYEE
+  // ----------------------------
+  if (this.editAsset.employee) {
 
-  // 🔥 Calculate days immediately
+    // Case 1: object
+    if (typeof this.editAsset.employee === 'object') {
+      this.editAsset.selectedEmployee = this.editAsset.employee.id;
+    }
+
+    // Case 2: string (emp_code)
+    else if (typeof this.editAsset.employee === 'string') {
+      const emp = this.Employees.find(
+        (e: any) => e.emp_code === this.editAsset.employee
+      );
+      this.editAsset.selectedEmployee = emp ? emp.id : null;
+    }
+
+    // Case 3: already id
+    else {
+      this.editAsset.selectedEmployee = this.editAsset.employee;
+    }
+  }
+
+  // ----------------------------
+  // 🔥 FIX LEAVE TYPE
+  // ----------------------------
+  if (this.editAsset.leave_type) {
+
+    // Case 1: object
+    if (typeof this.editAsset.leave_type === 'object') {
+      this.editAsset.leave_type = this.editAsset.leave_type.id;
+    }
+
+    // Case 2: string name
+    else if (typeof this.editAsset.leave_type === 'string') {
+      const lt = this.LeaveTypes.find(
+        (l: any) => l.name === this.editAsset.leave_type
+      );
+      this.editAsset.leave_type = lt ? lt.id : null;
+    }
+
+    // Case 3: already id → keep as is
+  }
+
   this.calculateEditTotalDays();
 }
 

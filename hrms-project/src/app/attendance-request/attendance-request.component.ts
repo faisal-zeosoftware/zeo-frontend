@@ -534,7 +534,7 @@ openEditModal(asset: any): void {
   }
   
   
- updateLateInEarlyOut(): void {
+updateLateInEarlyOut(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
 
   if (!selectedSchema || !this.editAsset.id) {
@@ -542,18 +542,14 @@ openEditModal(asset: any): void {
     return;
   }
 
-  const formData = new FormData();
+  const payload = {
+    date: this.editAsset.date,
+    request_type: this.editAsset.request_type,
+    reason: this.editAsset.reason,
+    employee: this.editAsset.employee
+  };
 
-  formData.append('date', this.editAsset.date);
-  formData.append('request_type', this.editAsset.request_type);
-  formData.append('reason', this.editAsset.reason);
-
-  // ✅ send multiple employees properly
-  this.editAsset.employee.forEach((id: number) => {
-    formData.append('employee', id.toString());
-  });
-
-  this.employeeService.updateLateInEarlyOutReq(this.editAsset.id, formData).subscribe(
+  this.employeeService.updateLateInEarlyOutReq(this.editAsset.id, payload).subscribe(
     () => {
       alert('Request updated successfully!');
       this.closeEditModal();

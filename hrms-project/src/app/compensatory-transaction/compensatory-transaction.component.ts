@@ -1,60 +1,85 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
+import { EmployeeService } from '../employee-master/employee.service';
+import { UserMasterService } from '../user-master/user-master.service';
 import { SessionService } from '../login/session.service';
-import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
+declare var $: any;
 
 import {combineLatest, Subscription } from 'rxjs';
-import { EmployeeService } from '../employee-master/employee.service';
+import { MatSelect } from '@angular/material/select';
+import { DepartmentServiceService } from '../department-master/department-service.service';
+import { MatOption } from '@angular/material/core';
+import { LeaveService } from '../leave-master/leave.service';
 
 @Component({
-  selector: 'app-compensatory-leave',
-  templateUrl: './compensatory-leave.component.html',
-  styleUrl: './compensatory-leave.component.css'
+  selector: 'app-compensatory-transaction',
+  templateUrl: './compensatory-transaction.component.html',
+  styleUrl: './compensatory-transaction.component.css'
 })
-export class CompensatoryLeaveComponent {
+export class CompensatoryTransactionComponent {
 
-    private dataSubscription?: Subscription;
-
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
   
-  request_type:any='';
-  employee:any='';
-  request_date:any='';
-  work_date:any='';
-
-  reason:any='';
-
-  transaction_type:any='';
-  days:any='';
-
-  registerButtonClicked = false;
-  Employees: any[] = [];
-
+    private dataSubscription?: Subscription;
+  
+    hasAddPermission: boolean = false;
+    hasDeletePermission: boolean = false;
+    hasViewPermission: boolean =false;
+    hasEditPermission: boolean = false;
+  
+    
+  
+    created_by: any = '';
+   
+    
   compTransactions: any[] = [];
 
 
-  hasAddPermission: boolean = false;
-  hasDeletePermission: boolean = false;
-  hasViewPermission: boolean =false;
-  hasEditPermission: boolean = false;
+
+  reason:any='';
+  employee:any='';
+  transaction_type:any='';
+  days:any='';
+
+
+  Employees: any[] = [];
   
-  userId: number | null | undefined;
-  userDetails: any;
-  userDetailss: any;
-  schemas: string[] = []; // Array to store schema names
-
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthenticationService,
-    private sessionService: SessionService,
-    private leaveService:LeaveService,
-    private employeeService: EmployeeService,
-    private DesignationService: DesignationService,
-    
-    ) {}
-
+  
+  
+  
+    userId: number | null | undefined;
+    userDetails: any;
+    userDetailss: any[] = [];
+    username: any;
+  
+    schemas: string[] = []; // Array to store schema names
+  
+    use_common_workflow:  boolean = false;
+  
+  
+  
+    registerButtonClicked = false;
+  
+  
+    constructor(
+      private http: HttpClient,
+      private authService: AuthenticationService,
+      private employeeService: EmployeeService,
+      private leaveService:LeaveService,
+      private userService: UserMasterService,
+      private el: ElementRef,
+      private sessionService: SessionService,
+      private DesignationService: DesignationService,
+      private DepartmentServiceService: DepartmentServiceService 
+  
+  
+      
+  
+  
+  ) {}
+  
     ngOnInit(): void {
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
@@ -62,10 +87,9 @@ export class CompensatoryLeaveComponent {
 
       this.LoadEmployee(selectedSchema);
    
-      
       }
 
-            // combineLatest waits for both Schema and Branches to have a value
+                  // combineLatest waits for both Schema and Branches to have a value
     this.dataSubscription = combineLatest([
       this.employeeService.selectedSchema$,
       this.employeeService.selectedBranches$
@@ -134,17 +158,17 @@ if (this.userId !== null) {
                 console.log('Group Permissions:', groupPermissions);
 
                
-                this.hasAddPermission = this.checkGroupPermission('add_compensatoryleaverequest', groupPermissions);
+                this.hasAddPermission = this.checkGroupPermission('add_compensatoryleavetransaction', groupPermissions);
                 console.log('Has add permission:', this.hasAddPermission);
                 
-                this.hasEditPermission = this.checkGroupPermission('change_compensatoryleaverequest', groupPermissions);
+                this.hasEditPermission = this.checkGroupPermission('change_compensatoryleavetransaction', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
   
-               this.hasDeletePermission = this.checkGroupPermission('delete_compensatoryleaverequest', groupPermissions);
+               this.hasDeletePermission = this.checkGroupPermission('delete_compensatoryleavetransaction', groupPermissions);
                console.log('Has delete permission:', this.hasDeletePermission);
   
 
-                this.hasViewPermission = this.checkGroupPermission('view_compensatoryleaverequest', groupPermissions);
+                this.hasViewPermission = this.checkGroupPermission('view_compensatoryleavetransaction', groupPermissions);
                 console.log('Has view permission:', this.hasViewPermission);
 
 
@@ -193,32 +217,15 @@ if (this.userId !== null) {
 
    
     }
-
-
-    // checkViewPermission(permissions: any[]): boolean {
-    //   const requiredPermission = 'add_compensatoryleavetransaction' ||'change_compensatoryleavetransaction' 
-    //   ||'delete_compensatoryleavetransaction' ||'view_compensatoryleavetransaction';
-      
-      
-    //   // Check user permissions
-    //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-    //     return true;
-    //   }
-      
-    //   // Check group permissions (if applicable)
-    //   // Replace `// TODO: Implement group permission check`
-    //   // with your logic to retrieve and check group permissions
-    //   // (consider using a separate service or approach)
-    //   return false; // Replace with actual group permission check
-    //   }
-      
-      
-      
-      
-      checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-      return groupPermissions.some(permission => permission.codename === codeName);
-      }
-      
+  
+  
+    
+    
+    
+    checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+    return groupPermissions.some(permission => permission.codename === codeName);
+    }
+    
 
     LoadEmployee(selectedSchema: string) {
       this.leaveService.getemployeesMaster(selectedSchema).subscribe(
@@ -233,12 +240,13 @@ if (this.userId !== null) {
       );
     }
 
-              isLoading: boolean = false;
+
+          isLoading: boolean = false;
 
 
           fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
             this.isLoading = true;
-            this.leaveService.getCompLeave(schema, branchIds).subscribe({
+            this.leaveService.getCompTransLeave(schema, branchIds).subscribe({
               next: (data: any) => {
                 // Filter active employees
                      this.compTransactions = data;
@@ -252,18 +260,17 @@ if (this.userId !== null) {
             });
           }
 
-    
 
-    requestCompansatoryLeave(): void {
+   requestCompansatoryTransLeave(): void {
       this.registerButtonClicked = true;
       // if (!this.name || !this.code || !this.valid_to) {
       //   return;
       // }
     
       const formData = new FormData();
-      formData.append('request_type', this.request_type);
+      formData.append('transaction_type', this.transaction_type);
       formData.append('employee', this.employee);
-      formData.append('work_date', this.work_date);
+      formData.append('days', this.days);
       formData.append('reason', this.reason);
      
   
@@ -272,12 +279,12 @@ if (this.userId !== null) {
       
     
     
-      this.leaveService.requestCompLeaveAdmin(formData).subscribe(
+      this.leaveService.requestCompTransLeaveAdmin(formData).subscribe(
         (response) => {
           console.log('Registration successful', response);
   
   
-          alert('Leave Request   has been Sent');
+          alert('Leave Transaction has been Sent');
   
           window.location.reload();
         },  
@@ -287,19 +294,36 @@ if (this.userId !== null) {
         }
       );
     }
+  
+          
+  
+  
 
-
-      iscreateLoanApp: boolean = false;
-
+               
+  
+  
+                 iscreateLoanApp: boolean = false;
+  
+  
+  
+  
         openPopus():void{
           this.iscreateLoanApp = true;
+  
         }
       
         closeapplicationModal():void{
           this.iscreateLoanApp = false;
+  
         }
-
-        
+  
+  
+  
+  
+    
+  
+         
+  
   showEditBtn: boolean = false;
     
   EditShowButtons() {
@@ -319,8 +343,15 @@ if (this.userId !== null) {
   this.compTransactions.forEach(employee => employee.selected = this.allSelecteds);
   
   }
-
-    isEditModalOpen: boolean = false;
+  
+  onCheckboxChange(employee:number) {
+  // No need to implement any logic here if you just want to change the style.
+  // You can add any additional logic if needed.
+  }
+  
+  
+  
+  isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
   
   openEditModal(asset: any): void {
@@ -332,10 +363,9 @@ if (this.userId !== null) {
   this.isEditModalOpen = false;
   this.editAsset = {};
   }
-
-
-    
-  deleteSelectedCombLeave() { 
+  
+  
+  deleteSelectedCombTrans() { 
     const selectedEmployeeIds = this.compTransactions
       .filter(employee => employee.selected)
       .map(employee => employee.id);
@@ -351,7 +381,7 @@ if (this.userId !== null) {
       let completed = 0;
   
       selectedEmployeeIds.forEach(categoryId => {
-        this.leaveService.deleteCompLeave(categoryId).subscribe(
+        this.leaveService.deleteCompTransLeave(categoryId).subscribe(
           () => {
             console.log('Compensatory transaction deleted successfully:', categoryId);
             // Remove the deleted employee from the local list
@@ -374,14 +404,14 @@ if (this.userId !== null) {
   }
   
   
-  updateCombLeave(): void {
+  updateCombTrans(): void {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema || !this.editAsset.id) {
       alert('Missing schema or asset ID');
       return;
     }
   
-    this.leaveService.updateCompLeave(this.editAsset.id, this.editAsset).subscribe(
+    this.leaveService.updateCompTransLeave(this.editAsset.id, this.editAsset).subscribe(
       (response) => {
         alert(' Loan Types  updated successfully!');
         this.closeEditModal();
@@ -406,6 +436,6 @@ if (this.userId !== null) {
     );
   }
   
-  
-  
+         
+
 }

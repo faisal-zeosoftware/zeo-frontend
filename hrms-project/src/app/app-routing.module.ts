@@ -169,6 +169,7 @@ import { LateinEarlyoutApprovalLevelComponent } from './latein-earlyout-approval
 import { LateinEarlyoutApprovalsComponent } from './latein-earlyout-approvals/latein-earlyout-approvals.component';
 import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-template/latein-earlyout-email-template.component';
 import { EmployeeSalaryComponent } from './employee-salary/employee-salary.component';
+import { CompensatoryTransactionComponent } from './compensatory-transaction/compensatory-transaction.component';
 
 
 const routes: Routes = [
@@ -537,6 +538,11 @@ const routes: Routes = [
     {
       path:'compensatory-leave',
       component:CompensatoryLeaveComponent,
+    },
+
+    {
+      path:'compensatory-transaction',
+      component:CompensatoryTransactionComponent,
     },
 
     {

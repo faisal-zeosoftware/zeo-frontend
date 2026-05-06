@@ -180,6 +180,89 @@ export class LeaveService {
     );
   }
 
+  deleteCompTransLeave(categoryId: number): Observable<any> {
+    // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+    // return this.http.delete(url);
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+    const apiUrl = `${this.apiUrl}/calendars/api/emp-cmpnstry-lv-transaction/${categoryId}/?schema=${selectedSchema}`;
+   
+    return this.http.delete(apiUrl);
+  }
+
+  updateCompTransLeave(id: number, data: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/emp-cmpnstry-lv-transaction/${id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.put(apiUrl, data, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating asset:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  getCompTransLeave(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/emp-cmpnstry-lv-transaction/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+
+  deleteCompLeave(categoryId: number): Observable<any> {
+    // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+    // return this.http.delete(url);
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+    const apiUrl = `${this.apiUrl}/calendars/api/compensatory-leave-request/${categoryId}/?schema=${selectedSchema}`;
+   
+    return this.http.delete(apiUrl);
+  }
+
+
+  updateCompLeave(id: number, data: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/compensatory-leave-request/${id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.put(apiUrl, data, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating asset:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+    getCompLeave(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/compensatory-leave-request/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+
 
 
   

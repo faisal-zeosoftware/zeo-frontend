@@ -101,6 +101,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsLeavemaster:any[] =[];
   GrouppermissionsLeavereq:any[] =[];
   GrouppermissionsLeavecom:any[] =[];
+  GrouppermissionsLeavecomTrans:any[] =[];
   GrouppermissionsLeaveaprvlvl:any[] =[];
   // GrouppermissionsLeaveaprvlvltemp:any[] =[];
   GrouppermissionsLeaveBalance:any[] =[];
@@ -528,6 +529,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     LeavemasterChecked:boolean= false;
     LeavereqChecked:boolean= false;
     LeavecomChecked:boolean= false;
+    LeavecomTransChecked:boolean= false;
     LeaveaprvlvlChecked:boolean= false;
     LeaveBalanceChecked:boolean= false;
     LeaveCancelChecked:boolean= false;
@@ -1193,6 +1195,13 @@ isLeavecomIndeterminate(): boolean {
       this.GrouppermissionsLeavecom.map(p => p.id).includes(permission)
     );
     return selectedLeavecomPermissions.length > 0 && selectedLeavecomPermissions.length < this.GrouppermissionsLeavecom.length;
+}
+
+isLeaveTransIndeterminate(): boolean {
+    const selectedLeaveTransPermissions = this.selectedPermissions.filter(permission =>
+      this.GrouppermissionsLeavecomTrans.map(p => p.id).includes(permission)
+    );
+    return selectedLeaveTransPermissions.length > 0 && selectedLeaveTransPermissions.length < this.GrouppermissionsLeavecomTrans.length;
 }
 
 isLeaveaprvlvlIndeterminate(): boolean {
@@ -5477,7 +5486,7 @@ this.GrouppermissionsLeaveEscalation.sort((a, b) => {
                             this.UserMasterService.getPermissionByRoleGrouping(selectedSchema).subscribe(
                               (result: any[]) => {
                                 // Specify the codenames you want to filter
-                                const requiredCodenames = ['add_compensatoryleavetransaction', 'change_compensatoryleavetransaction', 'delete_compensatoryleavetransaction', 'view_compensatoryleavetransaction'];
+                                const requiredCodenames = ['add_compensatoryleaverequest', 'change_compensatoryleaverequest', 'delete_compensatoryleaverequest', 'view_compensatoryleavetransaction'];
                         
                                 // Filter and remove duplicates based on codename
                                 const uniquePermissionsMap = new Map();
@@ -5504,13 +5513,13 @@ this.GrouppermissionsLeaveEscalation.sort((a, b) => {
                       
                           getDisplayNameLeavecom(permissionCodename: string): string {
                             switch (permissionCodename.trim().toLowerCase()) {
-                              case 'add_compensatoryleavetransaction':
+                              case 'add_compensatoryleaverequest':
                                 return 'Add';
-                              case 'change_compensatoryleavetransaction':
+                              case 'change_compensatoryleaverequest':
                                 return 'Edit';
-                              case 'delete_compensatoryleavetransaction':
+                              case 'delete_compensatoryleaverequest':
                                 return 'Delete';
-                              case 'view_compensatoryleavetransaction':
+                              case 'view_compensatoryleaverequest':
                                 return 'View';
                               default:
                                 return permissionCodename;
@@ -12804,6 +12813,19 @@ isAttend(): boolean {
 
 
   onLeavecomChange(): void {
+    if (this.LeavecomChecked) {
+      this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeavecom.map(permission => permission.id));
+    } else {
+      this.selectedPermissions = this.selectedPermissions.filter(permission => !this.GrouppermissionsLeavecom.map(p => p.id).includes(permission));
+    }
+    this.updateLeaveCheckbox();
+    // this.updateSelectedPermissions(this.locationMasterChecked, this.GrouppermissionslocationMaster);
+    // this.settingsChecked = this.locationMasterChecked;
+
+
+  }
+
+    onLeaveTransChange(): void {
     if (this.LeavecomChecked) {
       this.selectedPermissions = this.selectedPermissions.concat(this.GrouppermissionsLeavecom.map(permission => permission.id));
     } else {

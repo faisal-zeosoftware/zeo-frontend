@@ -15,6 +15,7 @@ import {combineLatest, Subscription } from 'rxjs';
   templateUrl: './resignation-request.component.html',
   styleUrl: './resignation-request.component.css'
 })
+
 export class ResignationRequestComponent {
 
 
@@ -52,6 +53,8 @@ export class ResignationRequestComponent {
 
   Users: any[] = [];
   DocType: any[] = [];
+
+    filteredEmployees: any[] = [];
 
 
 hasAddPermission: boolean = false;
@@ -278,21 +281,23 @@ if (this.userId !== null) {
 
     isLoading: boolean = false;
 
-    fetchEmployees(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.employeeService.getemployeesMasterNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-               this.Employee = data;
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getemployeesMasterNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.Employee = data;
 
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
+      // ✅ THIS LINE IS MISSING
+      this.filteredEmployees = data;
+
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
     }
+  });
+}
   
   
   
@@ -469,35 +474,37 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.editAsset = JSON.parse(JSON.stringify(asset));
+
   this.isEditModalOpen = true;
 
   console.log("EDIT DATA:", this.editAsset);
 
-  // ✅ FIX EMPLOYEE MAPPING
+  // 🔥 FIX EMPLOYEE PRE-SELECT
   if (this.editAsset.employee) {
 
-    // case 1: object
+    // Case 1: object
     if (typeof this.editAsset.employee === 'object') {
-      this.editAsset.employee = this.editAsset.employee.id;
+      this.editAsset.selectedEmployee = this.editAsset.employee.id;
     }
 
-    // case 2: emp_code string → find ID
+    // Case 2: string or emp_code
     else if (typeof this.editAsset.employee === 'string') {
+
       const found = this.Employee.find(
         (e: any) => e.emp_code === this.editAsset.employee
       );
 
-      this.editAsset.employee = found ? found.id : null;
+      this.editAsset.selectedEmployee = found ? found.id : null;
+    }
+
+    // Case 3: already ID
+    else {
+      this.editAsset.selectedEmployee = this.editAsset.employee;
     }
   }
 
-  // ✅ FIX REASON FIELD NAME
-  if (!this.editAsset.reason_for_leaving && this.editAsset.reason) {
-    this.editAsset.reason_for_leaving = this.editAsset.reason;
-  }
-
-  console.log("AFTER MAPPING:", this.editAsset);
+  console.log("Mapped Employee:", this.editAsset.selectedEmployee);
 }
 
 closeEditModal(): void {
@@ -606,10 +613,30 @@ filterEmployees() {
   );
 
 }
+
+
+filterEmployeeList() {
+  if (!this.employeeSearch) {
+    this.filteredEmployees = this.Employee;
+  } else {
+    this.filteredEmployees = this.Employee.filter((emp: any) =>
+      emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
+    );
+  }
+}
   
 
 
+  selectedEmployee: number | null = null;
 
+onEmployeeChange() {
+  if (this.selectedEmployee) {
+    this.employee = [this.selectedEmployee]; // ✅ store selected employee ID
+  } else {
+    this.employee = [];
+  }
 
+  console.log('Selected Employee:', this.employee);
+}
 
 }

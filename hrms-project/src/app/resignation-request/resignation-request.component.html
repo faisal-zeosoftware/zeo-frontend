@@ -74,44 +74,24 @@
       
           <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
             <div class="row">
-<div class="col-md-6">
 
-  <div class="custom-sel">
-            <div class="form-control-wrapper">
-
-      <label placeholder="Select Employee">Employees</label>
-       <mat-form-field  appearance="outline" style="width:100%">
-
-    <!-- Employee Dropdown -->
-<mat-select 
-  placeholder="Select Employee"
-  [(ngModel)]="employee"
-  [ngModelOptions]="{standalone: true}"
-  multiple>
-              <input type="text" placeholder="Search Employee"
-            class="form-control"
-            [(ngModel)]="employeeSearch"
-            [ngModelOptions]="{standalone: true}"
-            (click)="$event.stopPropagation()">
-
-
-        <!-- Employee List -->
-        <mat-option
-          *ngFor="let emp of filterEmployees()"
-          [value]="emp.id">
-
-          {{ emp.emp_code }}
-
-        </mat-option>
-
-      </mat-select>
-          </mat-form-field>
-</div>
-         
-
-  </div>
-
-</div>
+                   <div class="col-md-6">
+                
+                
+                    <div class="custom-sel">
+                        <label>Employee</label>
+                    
+                    <select class="form-control" placeholder="Select Employee"
+                      [(ngModel)]="selectedEmployee"
+                      (change)="onEmployeeChange()"
+                      [ngModelOptions]="{standalone: true}">
+                          <option *ngFor="let emp of Employee" [value]="emp.id">
+                           {{ emp.emp_code }}
+                          </option>
+                        </select>
+                       
+                    </div>
+                    </div>
 
               <div class="col-md-6">
                 <label>Document date</label>
@@ -220,14 +200,23 @@
   <form >
     <div class="row">
 
-      <div class="col-md-6">
-          <label>Employee</label>
-          <div class="custom-sel">
-            <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee" [ngModelOptions]="{standalone: true}">
-              <option *ngFor="let approver of Employee" [value]="approver.id">{{ approver.emp_code }}</option>
-            </select>
-          </div>
-        </div>
+                   <div class="col-md-6">
+                
+                
+                    <div class="custom-sel">
+                        <label>Employee</label>
+                    
+                    <select class="form-control"
+                      [(ngModel)]="editAsset.selectedEmployee"
+                      (change)="onEmployeeChange()"
+                      [ngModelOptions]="{standalone: true}">
+                          <option *ngFor="let emp of Employee" [value]="emp.id">
+                           {{ emp.emp_code }}
+                          </option>
+                        </select>
+                       
+                    </div>
+                    </div>
 
     <div class="col-md-6">
       <label>Document date</label>

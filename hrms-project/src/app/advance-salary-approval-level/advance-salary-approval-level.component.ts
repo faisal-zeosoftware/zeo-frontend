@@ -18,6 +18,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
   templateUrl: './advance-salary-approval-level.component.html',
   styleUrl: './advance-salary-approval-level.component.css'
 })
+
 export class AdvanceSalaryApprovalLevelComponent {
 
   private dataSubscription?: Subscription;
@@ -235,7 +236,7 @@ CreateLoanApproverLevel(): void {
 
     const invalid = this.levels.find(l => !l.role || !l.approver);
     if (invalid) {
-      alert('Please fill all level fields');
+      alert('Next Level Added');
       return;
     }
 
@@ -494,9 +495,9 @@ mapBranchesNameToId() {
   editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset)); // deep copy
+  this.editAsset = JSON.parse(JSON.stringify(asset));
 
-  // ✅ IMPORTANT FIX
+  // ✅ FIX: Ensure levels exist
   if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
     this.editAsset.levels = [
       {
@@ -506,6 +507,33 @@ openEditModal(asset: any): void {
       }
     ];
   }
+
+  // ✅ 🔥 FIX APPROVER MAPPING
+  this.editAsset.levels.forEach((lvl: any) => {
+
+    if (!lvl.approver) return;
+
+    // Case 1: object → extract id
+    if (typeof lvl.approver === 'object') {
+      lvl.approver = lvl.approver.id;
+    }
+
+    // Case 2: string username → find ID
+    else if (typeof lvl.approver === 'string') {
+      const found = this.Users.find(
+        (u: any) => u.username === lvl.approver
+      );
+      lvl.approver = found ? found.id : null;
+    }
+
+    // Case 3: string number → convert to number
+    else if (typeof lvl.approver === 'string' && !isNaN(lvl.approver)) {
+      lvl.approver = Number(lvl.approver);
+    }
+
+  });
+
+  console.log("AFTER APPROVER FIX:", this.editAsset);
 
   this.isEditModalOpen = true;
 }
