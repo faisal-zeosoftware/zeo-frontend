@@ -91,11 +91,21 @@
 
 
 
-          <div class="custom-sel">
+          <!-- <div class="custom-sel">
             <label>Select Company</label>
             <select class="form-control" [(ngModel)]="selectedSchema" (change)="selectSchema($event)">
               <option value="">select</option>
               <option *ngFor="let schema of schemas" [value]="schema">{{ schema }}</option>
+            </select>
+          </div> -->
+
+          <div class="custom-sel">
+            <label>Select Company</label>
+            <select class="form-control" [(ngModel)]="selectedSchema" (change)="selectSchema($event)">
+              <option value="">select</option>
+              <option *ngFor="let schema of schemas" [value]="schema.schema_name">
+                {{ schema.name }}
+              </option>
             </select>
           </div>
           

@@ -23,7 +23,7 @@ import { environment } from '../../environments/environment';
 })
 export class SchemaSelectionComponent {
 
-  schemas: string[] = []; // Array to store schema names
+  schemas: any[] = []; // Array to store schema names
 
   
   userId: number | null | undefined;
@@ -73,7 +73,10 @@ export class SchemaSelectionComponent {
           (userData: any) => {
             this.userDetailss = userData; // Store user schemas in userDetailss
 
-            this.schemas = userData.map((schema: any) => schema.schema_name);
+            // this.schemas = userData.map((schema: any) => schema.schema_name);
+            this.schemas = userData; // store full object
+
+            
           },
           (error) => {
             console.error('Failed to fetch user schemas:', error);

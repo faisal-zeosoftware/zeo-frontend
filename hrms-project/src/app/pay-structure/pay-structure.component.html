@@ -95,25 +95,46 @@
                 
 
   
+ 
+      <div class="col-md-6" >
+        <label>Select Branch</label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="branch"
+            name="branch"
+            [(ngModel)]="branch"
+            [ngModelOptions]="{ standalone: true }"
+          >
+          <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+
+          </select>
+        </div>
+      </div>
 
         
       <div class="col-md-6">
         <label>Salary calculation type</label>
         <div class="custom-sel">
-          <select class="form-control" [(ngModel)]="salary_calculation_type" [ngModelOptions]="{standalone: true}">
-            <option value="CALENDAR">Actual days in month</option>
-            <option value="FIXED">Organisation working days</option>
+          <select class="form-control"  [(ngModel)]="salary_calculation_type" (ngModelChange)="onSalaryTypeChange()" [ngModelOptions]="{standalone: true}">
+            <option value="CALENDAR_DAYS">Actual days in month</option>
+            <option value="ORGANIZATION_DAYS">Organisation working days</option>
+            <option value="FIXED_DAYS">Fixed Days</option>
+
           </select>
         </div>
       </div>
 
       <div class="col-md-6" >
-                   
-        <label>Fixed working days</label>
-       <input type="number"  class="form-control" [(ngModel)]="fixed_working_days"  placeholder="Enter threshold hours"
-        [ngModelOptions]="{standalone: true}" >
-       
-  </div>
+        <label>Days</label>
+        <input type="number"
+               class="form-control"
+               [disabled]="salary_calculation_type === 'CALENDAR_DAYS'"
+               [(ngModel)]="fixed_working_days"
+               placeholder="Enter day"
+               [ngModelOptions]="{standalone: true}">
+      </div>
+      
   <div class="col-md-6">
     <label>Attendance cycle type</label>
     <div class="custom-sel">
@@ -125,42 +146,31 @@
   </div>
 
   <div class="col-md-6" >
-                   
-    <label>Cycle start day</label>
-   <input type="number"  class="form-control" [(ngModel)]="cycle_start_day"  placeholder="Enter cycle start day "
-    [ngModelOptions]="{standalone: true}" >
-   
-</div>
 
-
-
-<div class="col-md-6" >
-                   
-    <label>Cycle end day</label>
-   <input type="number"  class="form-control" [(ngModel)]="cycle_end_day"  placeholder="Enter cycle end day"
-    [ngModelOptions]="{standalone: true}" >
-   
-</div>
-
-
-<div class="col-md-6">
-    <label>Payday type</label>
-    <div class="custom-sel">
-      <select class="form-control" [(ngModel)]="payday_type" [ngModelOptions]="{standalone: true}">
-        <option value="FIXED_DAY">Fixed day</option>
-        <option value="LAST_WORKING_DAY">Last working day</option>
-      </select>
+    <div class="row">
+      <div class="col-md-6">
+                  
+        <label>Cycle start day</label>
+        <input type="number"  class="form-control" [(ngModel)]="cycle_start_day"  placeholder="Enter cycle start day "
+         [ngModelOptions]="{standalone: true}" >
     </div>
-  </div>
+    <div class="col-md-6">
+      <label>Cycle end day</label>
+      <input type="number"  class="form-control" [(ngModel)]="cycle_end_day"  placeholder="Enter cycle end day"
+       [ngModelOptions]="{standalone: true}" >
 
+      </div>
 
-  <div class="col-md-6" >
-                   
-    <label>Payday</label>
-   <input type="number"  class="form-control" [(ngModel)]="payday"  placeholder="Enter payday"
-    [ngModelOptions]="{standalone: true}" >
+    </div>
+ 
    
 </div>
+
+
+
+
+
+
 
 
 <!-- <div class="col-md-6" >
@@ -189,23 +199,7 @@
      
 
    
-    
-      <div class="col-md-6" >
-        <label>Select Branch</label>
-        <div class="custom-sel">
-          <select
-            class="form-control"
-            id="branch"
-            name="branch"
-            [(ngModel)]="branch"
-            [ngModelOptions]="{ standalone: true }"
-          >
-          <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-
-          </select>
-        </div>
-      </div>
-
+   
 
 
 
@@ -221,7 +215,7 @@
             </div>
                 
                     <div class="col-md-2">
-                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreatePayStructure()">Create</button>  
+                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreatePayStructure()">Save</button>  
                      </div>
                 </div>
                 </form>
@@ -268,13 +262,15 @@
                       <div class="col-md-6">
                         <label>Salary calculation type</label>
                         <select class="form-control" [(ngModel)]="editAsset.salary_calculation_type" name="calc_type">
-                          <option value="CALENDAR">Actual days in month</option>
-                          <option value="FIXED">Organisation working days</option>
+                          <option value="CALENDAR_DAYS">Actual days in month</option>
+                          <option value="ORGANIZATION_DAYS">Organisation working days</option>
+                          <option value="FIXED_DAYS">Fixed Days</option>
+
                         </select>
                       </div>
               
                       <div class="col-md-6" *ngIf="editAsset.salary_calculation_type === 'FIXED'">
-                        <label>Fixed working days</label>
+                        <label> days</label>
                         <input type="number" class="form-control" [(ngModel)]="editAsset.fixed_working_days" name="fixed_days">
                       </div>
               
@@ -295,13 +291,7 @@
                         <input type="number" class="form-control" [(ngModel)]="editAsset.cycle_end_day" name="c_end">
                       </div>
               
-                      <div class="col-md-6">
-                        <label>Payday type</label>
-                        <select class="form-control" [(ngModel)]="editAsset.payday_type" name="p_type">
-                          <option value="FIXED_DAY">Fixed day</option>
-                          <option value="LAST_WORKING_DAY">Last working day</option>
-                        </select>
-                      </div>
+                   
               
                       <div class="col-md-6" *ngIf="editAsset.payday_type === 'FIXED_DAY'">
                         <label>Payday</label>

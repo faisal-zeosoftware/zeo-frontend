@@ -41,6 +41,7 @@ export class MainSidebarComponent {
   // constructor(public authService: AuthService) {}
 
   schemas: string[] = []; // Array to store schema names
+  
 
   userId: number | null | undefined;
   userDetails: any;
@@ -48,6 +49,8 @@ export class MainSidebarComponent {
   username: any;
   selectedSchema: string | null = null;
   isLoading: boolean = false;
+
+  selectedSchemaNameDisplay: string = '';
 
   selectedCompany: any; // Define this in your component to hold selected company details
 
@@ -130,7 +133,15 @@ export class MainSidebarComponent {
             (userData: any) => {
                 this.userDetailss = userData;
                 this.schemas = userData.map((schema: any) => schema.schema_name);
-                console.log('scehmas-de',userData)
+                console.log('scehmas-de',userData);
+
+                  // ✅ Set display name from stored schema
+    if (this.selectedSchema) {
+      const selectedObj = userData.find(
+        (s: any) => s.schema_name === this.selectedSchema
+      );
+      this.selectedSchemaNameDisplay = selectedObj ? selectedObj.name : '';
+    }
             },
             (error) => {
                 console.error('Failed to fetch user schemas:', error);
@@ -667,6 +678,7 @@ selectBranch(schemaName: string, branch: any, event: Event): void {
   event.stopPropagation();
   
   const selectedSchema = this.userDetailss.find((s: any) => s.schema_name === schemaName);
+  this.selectedSchemaNameDisplay = selectedSchema.name; // ✅ ADD THIS
   
   if (selectedSchema && branch) {
     this.isLoading = true;
