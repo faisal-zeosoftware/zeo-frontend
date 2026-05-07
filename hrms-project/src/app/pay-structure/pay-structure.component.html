@@ -125,7 +125,7 @@
         </div>
       </div>
 
-      <div class="col-md-6" >
+      <div class="col-md-6"  >
         <label>Days</label>
         <input type="number"
                class="form-control"
@@ -145,7 +145,7 @@
     </div>
   </div>
 
-  <div class="col-md-6" >
+  <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
 
     <div class="row">
       <div class="col-md-6">
@@ -282,11 +282,11 @@
                         </select>
                       </div>
               
-                      <div class="col-md-3">
+                      <div class="col-md-3" *ngIf="editAsset.attendance_cycle_type !== 'MONTH'">
                         <label>Cycle Start</label>
                         <input type="number" class="form-control" [(ngModel)]="editAsset.cycle_start_day" name="c_start">
                       </div>
-                      <div class="col-md-3">
+                      <div class="col-md-3" *ngIf="editAsset.attendance_cycle_type !== 'MONTH'">
                         <label>Cycle End</label>
                         <input type="number" class="form-control" [(ngModel)]="editAsset.cycle_end_day" name="c_end">
                       </div>
