@@ -413,12 +413,12 @@ if (this.userId !== null) {
   
     this.leaveService.updateCompTransLeave(this.editAsset.id, this.editAsset).subscribe(
       (response) => {
-        alert(' Loan Types  updated successfully!');
+        alert('Compensatory transaction updated successfully!');
         this.closeEditModal();
         window.location.reload();
       },
   (error) => {
-    console.error('Error updating Loan Type:', error);
+    console.error('Error updating Compensatory transaction:', error);
   
     let errorMsg = 'Update failed';
   

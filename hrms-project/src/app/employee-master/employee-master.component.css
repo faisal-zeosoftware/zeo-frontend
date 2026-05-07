@@ -294,6 +294,10 @@ margin-right: 10px;
     padding: 25px;
   }
 
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: #5b1e83 !important;
+}
+
   ::ng-deep .custom-branch-select .mat-select-trigger {
     font-size: 12px !important;        /* smaller font in input field */
     min-height: 28px !important;       /* reduce height of the field */
@@ -525,7 +529,7 @@ background-color:#8e44ad;
   /* Top colored banner area */
 .card-banner-bg {
   height: 90px;
-  background: linear-gradient(135deg,  #5c5470, #352f44,   #2a2438);
+  background: linear-gradient(135deg,  #5b1e83, #ac6ace,  #5b1e83);
   position: relative;
 }
   
@@ -568,7 +572,7 @@ background-color:#8e44ad;
     position: absolute;
     bottom: 0;
     right: -5px;
-    background: #5c5470 !important;
+    background: #5b1e83 !important;
     color: #666;
     width: 44px !important;
     height: 46px !important;
@@ -610,7 +614,7 @@ background-color:#8e44ad;
   }
   
   .dept-tag {
-    background: #352f44;
+    background: #5b1e83;
     color: #ffffff;
     padding: 2px 8px;
     border-radius: 4px;

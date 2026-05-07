@@ -963,16 +963,26 @@
                     </div>
 
                     <div class="mt-3" *ngIf="hasAddPermission">
-                      <button class="btn btn-primary" (click)="submitPayRule()">
+                      
+                      <button class="btn btn-success me-2" (click)="submitPayRule()">
                         Save Pay Rule
                       </button>
+                      
+                        <button
+                       class="btn btn-primary"
+                       (click)="updatePayRule()"
+                       *ngIf="editingPayRuleId">
+
+                         Update Pay Rule
+
+                         </button>
                     </div>
 
                   </div>
 
 
 
-                  <div class="table-container mt-5" *ngIf="leavePayRules  && leavePayRules.length > 0">
+                  <div class="table-container mt-5">
                     <h5 class="mb-3">Leave Pay Rule</h5>
 
                     <table class="table table-bordered table-hover preview-table" width="100%">
@@ -982,6 +992,7 @@
                           <th>Sequence</th>
                           <th>Days</th>
                           <th>Pay %</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -990,8 +1001,29 @@
                           <td>{{ rule.sequence }}</td>
                           <td>{{ rule.days }}</td>
                           <td>{{ rule.pay_percentage }}</td>
+                          <td>
+                            <button
+                             class="btn btn-primary btn-sm me-2"
+                             (click)="editPayRule(rule)">
+                              Edit
+                            </button>
+                            <button
+                            class="btn btn-danger btn-sm"
+                            (click)="deletePayRule(rule.id)">
+                             Delete
+                            </button>
+                          </td>
                         </tr>
                       </tbody>
+                      <tbody *ngIf="leavePayRules.length === 0">
+
+  <tr>
+    <td colspan="5" class="text-center text-muted">
+      No Leave Pay Rules Found
+    </td>
+  </tr>
+
+</tbody>
                     </table>
                   </div>
                 </div>
@@ -1010,7 +1042,7 @@
           <mat-step [stepControl]="ThridFormGroup">
             <ng-template matStepLabel>Appicable To</ng-template>
             <form (ngSubmit)="registerleaveApplicable()" enctype="multipart/form-data">
-              <div class="row">
+              <div class="row" #applicableFormSection>
                 <div class="col-md-4">
                   <label>Gender</label>
                   <div class="custom-sel">
@@ -1148,6 +1180,61 @@
 
                 </div>
               </div>
+
+              <div class="table-container mt-4" *ngIf="leaveApplicableList && leaveApplicableList.length > 0">
+
+  <h5 class="mb-3">Leave Applicable List</h5>
+
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Gender</th>
+        <th>Branch</th>
+        <th>Department</th>
+        <th>Designation</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of leaveApplicableList; let i = index">
+
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.gender || 'All' }}</td>
+
+        <td>
+          <span *ngFor="let b of item.branch">{{ b }} </span>
+        </td>
+
+        <td>
+          <span *ngFor="let d of item.department">{{ d }} </span>
+        </td>
+
+        <td>
+          <span *ngFor="let des of item.designation">{{ des }} </span>
+        </td>
+
+        <td>
+          <span *ngFor="let r of item.role">{{ r }} </span>
+        </td>
+
+        <td>
+          <button type="button" class="btn btn-sm btn-primary me-2" (click)="editLeaveApplicable(item)">
+            Edit
+          </button>
+        
+          <button type="button" class="btn btn-sm btn-danger" (click)="deleteLeaveApplicable(item.id)">
+            Delete
+          </button>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+
+</div>
             </form>
 
 

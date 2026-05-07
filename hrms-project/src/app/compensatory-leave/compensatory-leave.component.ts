@@ -277,7 +277,7 @@ if (this.userId !== null) {
           console.log('Registration successful', response);
   
   
-          alert('Leave Request   has been Sent');
+          alert('Compensatory Leave has been Sent');
   
           window.location.reload();
         },  
@@ -341,11 +341,11 @@ if (this.userId !== null) {
       .map(employee => employee.id);
   
     if (selectedEmployeeIds.length === 0) {
-      alert('No Compensatory transaction selected for deletion.');
+      alert('No Compensatory Leave selected for deletion.');
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected Compensatory transaction ?')) {
+    if (confirm('Are you sure you want to delete the selected Compensatory Leave ?')) {
   
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -353,20 +353,20 @@ if (this.userId !== null) {
       selectedEmployeeIds.forEach(categoryId => {
         this.leaveService.deleteCompLeave(categoryId).subscribe(
           () => {
-            console.log('Compensatory transaction deleted successfully:', categoryId);
+            console.log('Compensatory Leave deleted successfully:', categoryId);
             // Remove the deleted employee from the local list
             this.compTransactions = this.compTransactions.filter(employee => employee.id !== categoryId);
   
              completed++;
             if (completed === total) { 
-            alert(' Compensatory transaction deleted successfully');
+            alert(' Compensatory Leave deleted successfully');
             window.location.reload();
             }
   
           },
           (error) => {
-            console.error('Error deleting Compensatory transaction :', error);
-             alert('Error deleting Compensatory transaction : ' + error.statusText);
+            console.error('Error deleting Compensatory Leave :', error);
+             alert('Error deleting Compensatory Leave : ' + error.statusText);
           }
         );
       });
@@ -383,12 +383,12 @@ if (this.userId !== null) {
   
     this.leaveService.updateCompLeave(this.editAsset.id, this.editAsset).subscribe(
       (response) => {
-        alert(' Loan Types  updated successfully!');
+        alert('Compensatory Leave updated successfully!');
         this.closeEditModal();
         window.location.reload();
       },
   (error) => {
-    console.error('Error updating Loan Type:', error);
+    console.error('Error updating Compensatory Leave:', error);
   
     let errorMsg = 'Update failed';
   

@@ -107,6 +107,37 @@ export class LeaveService {
     );
   }
 
+  updateLeaveApplicable(id: number, data: any): Observable<any> {
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  return this.http.put(
+    `${this.apiUrl}/calendars/api/applicable_to/${id}/?schema=${selectedSchema}`,
+    data
+  );
+}
+
+deleteLeaveApplicable(id: number): Observable<any> {
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  return this.http.delete(
+    `${this.apiUrl}/calendars/api/applicable_to/${id}/?schema=${selectedSchema}`
+  );
+}
+
+  getLeaveApplicable(leaveTypeId: number, schema: string): Observable<any> {
+
+  const apiUrl = `${this.apiUrl}/calendars/api/applicable_to/?schema=${schema}&leave_type=${leaveTypeId}`;
+
+  return this.http.get<any>(apiUrl).pipe(
+    catchError((error) => {
+      console.error('Error fetching leave applicable:', error);
+      return throwError(error);
+    })
+  );
+}
+
 
   // requestLeaveAdmin(formData: FormData): Observable<any> {
   //   const selectedSchema = localStorage.getItem('selectedSchema');

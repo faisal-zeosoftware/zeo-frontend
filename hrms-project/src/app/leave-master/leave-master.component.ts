@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from './leave.service';
@@ -19,12 +19,16 @@ import { environment } from '../../environments/environment';
 
 
 
+
 @Component({
   selector: 'app-leave-master',
   templateUrl: './leave-master.component.html',
   styleUrl: './leave-master.component.css'
 })
 export class LeaveMasterComponent {
+
+  @ViewChild('applicableFormSection')
+applicableFormSection!: ElementRef;
 
     private apiUrl = environment.apiBaseUrl;
 
@@ -246,6 +250,8 @@ export class LeaveMasterComponent {
 
       this.loadLeaveEntitlements();
       this.loadLeaveRestValues();
+      this.loadLeavePayRules();
+      this.loadLeaveApplicable();
 
 
       this.LoadEmployee(selectedSchema);
@@ -660,25 +666,37 @@ submitPayRule(): void {
 }
 
 loadLeavePayRules(): void {
+
   const selectedSchema = this.authService.getSelectedSchema();
 
   this.http.get<any[]>(
     `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`
   ).subscribe({
+
     next: (res: any[]) => {
+
       console.log('All Pay Rules:', res);
 
-      // 🔥 FILTER BY CURRENT LEAVE TYPE
+      const leaveTypeId = this.selectedLeaveTypeForModal?.id;
+
+      if (!leaveTypeId) {
+        this.leavePayRules = res; // show all if no filter
+        return;
+      }
+
       this.leavePayRules = res.filter(rule =>
-        rule.leave_type === this.selectedLeaveTypeForModal.id
+        rule.leave_type === leaveTypeId
       );
 
       console.log('Filtered Pay Rules:', this.leavePayRules);
     },
+
     error: (err: any) => {
       console.error(err);
     }
+
   });
+
 }
 
 
@@ -1049,10 +1067,10 @@ loadLeaveEntitlements(): void {
 
 
 
-  registerleaveApplicable(): void {
-      this.registerButtonClicked = true;
+registerleaveApplicable(): void {
 
-  // ✅ STEP 1: Frontend validation (REQUIRED)
+  this.registerButtonClicked = true;
+
   const hasSelection =
     (this.branch && this.branch.length > 0) ||
     (this.department && this.department.length > 0) ||
@@ -1061,42 +1079,217 @@ loadLeaveEntitlements(): void {
 
   if (!hasSelection) {
     alert('Please select at least one: Branch, Department, Designation, or Role');
-    return; // ⛔ STOP API CALL
+    return;
   }
-  
-    const formData: any = {
-      gender: this.gender === 'B' ? null : this.gender,
-      leave_type: this.selectedLeaveTypeForModal.id,
-      branch: this.branch && this.branch.length > 0 ? this.branch.map((b: any) => Number(b)) : [], // Send [] if empty
-      department: this.department && this.department.length > 0 ? this.department.map((d: any) => Number(d)) : [],
-      designation: this.designation && this.designation.length > 0 ? this.designation.map((des: any) => Number(des)) : [],
-      role: this.role && this.role.length > 0 ? this.role.map((r: any) => Number(r)) : [],
-    };
-  
-    this.leaveService.registerLeaveapplicable(formData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Leave Applicable has been added');
-        window.location.reload();
+
+const formData: any = {
+
+  gender: this.gender === 'B' ? null : this.gender,
+
+  leave_type: this.selectedLeaveTypeForModal.id,
+
+  branch: (this.branch || [])
+    .filter((b: any) => b && b !== 'None')
+    .map((b: any) => Number(b)),
+
+  department: (this.department || [])
+    .filter((d: any) => d && d !== 'None')
+    .map((d: any) => Number(d)),
+
+  designation: (this.designation || [])
+    .filter((des: any) => des && des !== 'None')
+    .map((des: any) => Number(des)),
+
+  role: (this.role || [])
+    .filter((r: any) => r && r !== 'None')
+    .map((r: any) => Number(r)),
+};
+
+  // ================= EDIT =================
+  if (this.isApplicableEditMode && this.selectedApplicableId) {
+
+    this.leaveService.updateLeaveApplicable(
+      this.selectedApplicableId,
+      formData
+    ).subscribe({
+
+      next: () => {
+
+        alert('Leave Applicable Updated ✅');
+
+        this.loadLeaveApplicable();
+
+        this.resetApplicableForm();
       },
-      (error) => {
-        console.error('Added failed', error);
-  
-        // Extract backend validation error messages
-        if (error.error) {
-          let errorMessage = '';
-          for (const key in error.error) {
-            if (error.error.hasOwnProperty(key)) {
-              errorMessage += `${key}: ${error.error[key].join(', ')}\n`;
-            }
-          }
-          alert(errorMessage);
-        } else {
-          alert('An error occurred. Please try again.');
-        }
+
+      error: (error) => {
+        console.error(error);
+        alert('Update failed');
       }
-    );
+
+    });
+
   }
+
+  // ================= CREATE =================
+  else {
+
+    this.leaveService.registerLeaveapplicable(formData).subscribe({
+
+      next: () => {
+
+        alert('Leave Applicable Added ✅');
+
+        this.loadLeaveApplicable();
+
+        this.resetApplicableForm();
+      },
+
+      error: (error) => {
+
+        console.error(error);
+
+        let errorMessage = '';
+
+        if (error.error) {
+          for (const key in error.error) {
+            errorMessage += `${key}: ${error.error[key].join(', ')}\n`;
+          }
+        }
+
+        alert(errorMessage || 'Error occurred');
+      }
+
+    });
+
+  }
+}
+
+  leaveApplicableList: any[] = [];
+  
+loadLeaveApplicable(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  const leaveTypeId =
+    this.selectedLeaveTypeForModal?.id ||
+    Number(localStorage.getItem('leaveTypeId'));
+
+  if (!selectedSchema || !leaveTypeId) {
+    console.warn('Schema or Leave Type missing');
+    return;
+  }
+
+  this.leaveService.getLeaveApplicable(
+    leaveTypeId,
+    selectedSchema
+  ).subscribe({
+    next: (res: any) => {
+      this.leaveApplicableList = res;
+    },
+    error: (err: any) => {
+      console.error(err);
+    }
+  });
+
+}
+
+
+isApplicableEditMode: boolean = false;
+selectedApplicableId: number | null = null;
+
+editLeaveApplicable(item: any): void {
+
+  // ✅ If same item clicked again → CLOSE EDIT
+  if (
+    this.isApplicableEditMode &&
+    this.selectedApplicableId === item.id
+  ) {
+
+    this.resetApplicableForm();
+
+    return;
+  }
+
+  // ✅ OPEN EDIT MODE
+  this.isApplicableEditMode = true;
+  this.selectedApplicableId = item.id;
+
+  this.gender = item.gender || 'B';
+
+  this.branch = this.branches
+    .filter(branch =>
+      (item.branch || []).includes(branch.branch_name)
+    )
+    .map(branch => branch.id);
+
+  this.department = this.Departments
+    .filter(dept =>
+      (item.department || []).includes(dept.dept_name)
+    )
+    .map(dept => dept.id);
+
+  this.designation = this.Designation
+    .filter(des =>
+      (item.designation || []).includes(des.desgntn_job_title)
+    )
+    .map(des => des.id);
+
+  this.role = this.Category
+    .filter(role =>
+      (item.role || []).includes(role.ctgry_title)
+    )
+    .map(role => role.id);
+
+  // ✅ Scroll to form
+  setTimeout(() => {
+
+    this.applicableFormSection.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+
+  }, 100);
+}
+
+resetApplicableForm(): void {
+
+  this.isApplicableEditMode = false;
+
+  this.selectedApplicableId = null;
+
+  this.gender = '';
+
+  this.branch = [];
+  this.department = [];
+  this.designation = [];
+  this.role = [];
+}
+
+deleteLeaveApplicable(id: number): void {
+
+  if (!confirm('Are you sure you want to delete this applicable rule?')) {
+    return;
+  }
+
+  this.leaveService.deleteLeaveApplicable(id).subscribe({
+
+    next: () => {
+
+      alert('Leave Applicable Deleted ✅');
+
+      this.loadLeaveApplicable();
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      alert('Delete failed');
+    }
+
+  });
+}
   
   
   
@@ -1263,6 +1456,91 @@ openLeaveConfigurationModal(leavetype: any): void {
   );
 
   console.log('Filtered Reset Values for:', leavetype.name, this.filteredLeaveRests);
+}
+
+
+deletePayRule(id: number): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!confirm('Are you sure you want to delete this pay rule?')) {
+    return;
+  }
+
+  this.http.delete(
+    `${this.apiUrl}/calendars/api/leave-pay-rule/${id}/?schema=${selectedSchema}`
+  ).subscribe({
+    next: () => {
+
+      alert('Pay Rule Deleted ✅');
+
+      // Reload table
+      this.loadLeavePayRules();
+
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Error deleting pay rule');
+    }
+  });
+}
+
+editingPayRuleId: number | null = null;
+
+editPayRule(rule: any): void {
+
+  this.editingPayRuleId = rule.id;
+
+  this.payRuleData = {
+    sequence: rule.sequence,
+    days: rule.days,
+    pay_percentage: rule.pay_percentage
+  };
+
+}
+
+updatePayRule(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  const payload = {
+    sequence: this.payRuleData.sequence,
+    days: this.payRuleData.days,
+    pay_percentage: this.payRuleData.pay_percentage,
+    leave_type: this.selectedLeaveTypeForModal.id,
+    created_by: this.userId
+  };
+
+  this.http.put(
+    `${this.apiUrl}/calendars/api/leave-pay-rule/${this.editingPayRuleId}/?schema=${selectedSchema}`,
+    payload
+  ).subscribe({
+
+    next: () => {
+
+      alert('Pay Rule Updated ✅');
+
+      this.loadLeavePayRules();
+
+      // reset form
+      this.payRuleData = {
+        sequence: null,
+        days: null,
+        pay_percentage: null
+      };
+
+      // hide update button
+      this.editingPayRuleId = null;
+
+    },
+
+    error: (err) => {
+      console.error(err);
+      alert('Error updating pay rule');
+    }
+
+  });
+
 }
 
 
