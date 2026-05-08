@@ -646,8 +646,72 @@ export class UserRoleGroupingCreateComponent implements OnInit {
 
        
 
+get allPermissions(): number[] {
+  return [
+    ...this.GrouppermissionsEmp,
+    ...this.GrouppermissionsDept,
+    ...this.GrouppermissionsDis,
+    ...this.GrouppermissionsCat,
+    ...this.GrouppermissionsGen,
+    ...this.GrouppermissionsReqtype,
+    ...this.GrouppermissionsApr,
+    ...this.GrouppermissionsAprlvl,
+    ...this.GrouppermissionsGenReqEsc,
+    ...this.GrouppermissionsExpDocument,
+    ...this.GrouppermissionsEmpAprList,
+    ...this.GrouppermissionsEmpRegAprList,
+    ...this.GrouppermissionsEndofSer,
+    ...this.GrouppermissionsRegReq,
+    ...this.GrouppermissionsRegAprlvl,
+    ...this.GrouppermissionsGratuity,
+    ...this.GrouppermissionsBrch,
+    ...this.GrouppermissionsUser,
+    ...this.GrouppermissionsUsergroup,
+    ...this.GrouppermissionsassigneddUser,
+    ...this.GrouppermissionsBranchUser,
+    ...this.GrouppermissionsstateMaster,
+    ...this.Grouppermissionsdocumentype,
+    ...this.GrouppermissionslocationMaster,
+    ...this.GrouppermissionsDnMaster,
+    ...this.GrouppermissionsCpMaster,
+    ...this.GrouppermissionsConfigMaster,
+    ...this.GrouppermissionsAnnounceMaster,
+    ...this.GrouppermissionsNotify,
+  ].map(p => p.id);
+}
 
+onSelectAllPermissions(event: any): void {
+  const checked = event.checked;
 
+  this.selectAllPermissions = checked;
+
+  this.selectedPermissions = checked
+    ? [...this.allPermissions]
+    : [];
+
+  this.syncAllUIStates();
+}
+
+onSelectAllChange(event: any) {
+  const checked = event.checked;
+
+  this.selectAllPermissions = checked;
+
+  if (checked) {
+    this.selectedPermissions = [...this.allPermissions];
+  } else {
+    this.selectedPermissions = [];
+  }
+
+  this.syncAllUIStates();
+}
+
+syncAllUIStates() {
+  const total = this.allPermissions.length;
+  const selected = this.selectedPermissions.length;
+
+  this.selectAllPermissions = selected === total;
+}
 
 
 
@@ -702,6 +766,9 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   EmailTemplateMastersvalue:boolean =true;
   ShiftMastersvalue:boolean =true;
   AttendanceMastersvalue:boolean =true;
+
+
+  selectAllPermissions: boolean = false;
 
 
   // Add this property
