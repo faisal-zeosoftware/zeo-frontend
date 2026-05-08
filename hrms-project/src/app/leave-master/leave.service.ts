@@ -61,6 +61,26 @@ export class LeaveService {
     );
   }
 
+  updateLeaveResetPolicy(id: number, formData: FormData): Observable<any> {
+
+  const schema = localStorage.getItem('selectedSchema');
+
+  return this.http.put(
+    `${this.apiUrl}/calendars/api/leave-reset-policy/${id}/?schema=${schema}`,
+    formData
+  );
+}
+
+deleteLeaveEntitlement(id: number): Observable<any> {
+
+  const schema = localStorage.getItem('selectedSchema');
+
+  return this.http.delete(
+    `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${schema}`
+  );
+
+}
+
   requestLeaveResetPolicy(formData: FormData): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
