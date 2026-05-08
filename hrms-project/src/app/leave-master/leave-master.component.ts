@@ -707,231 +707,6 @@ loadLeavePayRules(): void {
 
 
 
-
-// ─────────────────────────────────────────────────────────────────
-// ADD THESE NEW PROPERTIES to your existing component class
-// ─────────────────────────────────────────────────────────────────
-
-// Section accordion state
-sections = {
-  entitlement: true,   // open by default
-  reset: false
-};
-
-// Table expand/search
-expandedRowId: number | null = null;
-searchQuery: string = '';
-allEntitlements: any[] = [];   // full list from API
-filteredEntitlements: any[] = [];
-
-// Delete dialog
-showDeleteDialog: boolean = false;
-entitlementToDelete: any = null;
-
-// Edit / create mode
-isEditMode: boolean = false;
-selectedEntitlementId: number | null = null;
-
-
-
-// ─────────────────────────────────────────────────────────────────
-// ACCORDION TOGGLE
-// ─────────────────────────────────────────────────────────────────
-toggleSection(key: 'entitlement' | 'reset'): void {
-  this.sections[key] = !this.sections[key];
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// TABLE: EXPAND ROW
-// ─────────────────────────────────────────────────────────────────
-toggleExpandRow(id: number): void {
-  this.expandedRowId = this.expandedRowId === id ? null : id;
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// TABLE: SEARCH FILTER
-// ─────────────────────────────────────────────────────────────────
-applySearch(): void {
-  const q = this.searchQuery.toLowerCase().trim();
-  if (!q) {
-    this.filteredEntitlements = [...this.allEntitlements];
-    return;
-  }
-  this.filteredEntitlements = this.allEntitlements.filter(ent =>
-    (ent.leave_type_name || ent.leave_type || '').toLowerCase().includes(q) ||
-    String(ent.min_experience).includes(q) ||
-    (ent.effective_after_unit || '').toLowerCase().includes(q) ||
-    (ent.dept_names || []).some((d: string) => d.toLowerCase().includes(q)) ||
-    (ent.branch_names || []).some((b: string) => b.toLowerCase().includes(q))
-  );
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// EDIT ENTITLEMENT  (replaces your old editEntitlement method)
-// ─────────────────────────────────────────────────────────────────
-editEntitlement(ent: any): void {
-  this.isEditMode = true;
-  this.selectedEntitlementId = ent.id;
-
-  // Populate form fields
-  this.min_experience      = ent.min_experience;
-  this.effective_after_unit = ent.effective_after_unit;
-  this.effective_after_from = ent.effective_after_from;
-
-  this.accrual           = ent.accrual;
-  this.accrual_rate      = ent.accrual_rate;
-  this.accrual_frequency = ent.accrual_frequency;
-  this.accrual_month     = ent.accrual_month;
-  this.accrual_day       = ent.accrual_day;
-  this.prorate_accrual   = ent.prorate_accrual;
-
-  this.branch       = ent.branches    || [];
-  this.departments  = ent.departments || [];
-  this.designations = ent.designations || [];
-  this.categories   = ent.categories  || [];
-
-  this.leave_entitlement   = ent.id;
-  this.isEntitlementCreated = true;
-
-  // Sync accrual visibility flags
-  this.onAccrualFrequencyChange();
-
-  // Open entitlement section and scroll up
-  this.sections.entitlement = true;
-  this.sections.reset = true;
-
-  this.loadResetByEntitlement(ent.id);
-
-  // Scroll to top of tab smoothly
-  setTimeout(() => {
-    const banner = document.querySelector('.edit-banner');
-    if (banner) banner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// CANCEL EDIT
-// ─────────────────────────────────────────────────────────────────
-cancelEdit(): void {
-  this.isEditMode = false;
-  this.selectedEntitlementId = null;
-  this.resetForm();
-}
-
-
-
-
-// ─────────────────────────────────────────────────────────────────
-// OPEN / CLOSE DELETE DIALOG
-// ─────────────────────────────────────────────────────────────────
-openDeleteDialog(ent: any): void {
-  this.entitlementToDelete = ent;
-  this.showDeleteDialog    = true;
-}
-
-closeDeleteDialog(): void {
-  this.showDeleteDialog    = false;
-  this.entitlementToDelete = null;
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// CONFIRM DELETE
-// ─────────────────────────────────────────────────────────────────
-confirmDelete(): void {
-  if (!this.entitlementToDelete) return;
-  const id = this.entitlementToDelete.id;
-
-  this.leaveService.deleteLeaveEntitlement(id).subscribe({
-    next: () => {
-      this.allEntitlements    = this.allEntitlements.filter(e => e.id !== id);
-      this.filteredEntitlements = this.filteredEntitlements.filter(e => e.id !== id);
-
-      if (this.allEntitlements.length === 0) {
-        this.isEntitlementCreated = false;
-      }
-
-      this.closeDeleteDialog();
-      // Optional: show a snackbar instead of alert
-      alert('Entitlement deleted successfully.');
-    },
-    error: (err) => {
-      console.error('Delete failed:', err);
-      alert('Failed to delete. Please try again.');
-    }
-  });
-}
-
-
-
-
-// ─────────────────────────────────────────────────────────────────
-// HELPER: NAME RESOLVERS  (add these small helpers)
-// ─────────────────────────────────────────────────────────────────
-getLeaveTypeName(id: number): string {
-  const lt = this.LeaveTypes?.find((l: any) => l.id === id);
-  return lt ? lt.name : String(id);
-}
-
-getBranchNames(ids: number[]): string[] {
-  if (!ids?.length) return [];
-  return ids.map(id => {
-    const b = this.branches?.find((br: any) => br.id === id);
-    return b ? b.branch_name : String(id);
-  });
-}
-
-getDeptNames(ids: number[]): string[] {
-  if (!ids?.length) return [];
-  return ids.map(id => {
-    const d = this.Departments?.find((dep: any) => dep.id === id);
-    return d ? d.dept_name : String(id);
-  });
-}
-
-getDesigNames(ids: number[]): string[] {
-  if (!ids?.length) return [];
-  return ids.map(id => {
-    const des = this.Designation?.find((d: any) => d.id === id);
-    return des ? des.desgntn_job_title : String(id);
-  });
-}
-
-getRoleNames(ids: number[]): string[] {
-  if (!ids?.length) return [];
-  return ids.map(id => {
-    const r = this.Category?.find((c: any) => c.id === id);
-    return r ? r.ctgry_title : String(id);
-  });
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// ACCRUAL CHANGE HANDLER (add this alongside your existing one)
-// ─────────────────────────────────────────────────────────────────
-onAccrualChange(): void {
-  if (this.accrual) {
-    this.onAccrualFrequencyChange();
-  }
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// ADD TO YOUR leaveService  (service method for delete)
-// In your leave.service.ts add:
-//
-//   deleteLeaveEntitlement(id: number): Observable<any> {
-//     return this.http.delete(`${this.apiUrl}/leave-entitlement/${id}/`);
-//   }
-// ─────────────────────────────────────────────────────────────────
-
-
-
-
 isEntitlementCreated: boolean = false;
 createdEntitlementId: number | null = null;
 
@@ -941,115 +716,48 @@ currentEntitlementId: number | null = null;
 
 
 registerleaveEntitlement(): void {
-
   this.registerButtonClicked = true;
 
-  if (!this.min_experience) {
-    return;
-  }
-
   const payload = {
-
     min_experience: this.min_experience,
-
     effective_after_from: this.effective_after_from,
-
     effective_after_unit: this.effective_after_unit,
-
     accrual_rate: this.accrual_rate,
-
     accrual_frequency: this.accrual_frequency,
-
     accrual_month: this.accrual_month,
-
     accrual_day: this.accrual_day,
-
     prorate_type: this.prorate_type,
-
     leave_type: this.selectedLeaveTypeForModal.id,
-
     created_by: this.created_by,
-
     branches: this.branch || [],
-
     categories: this.categories || [],
-
     departments: this.departments || [],
-
     designations: this.designations || [],
-
     prorate_accrual: this.prorate_accrual,
-
     accrual: this.accrual,
-
   };
 
-  // UPDATE
   if (this.isEditMode && this.selectedEntitlementId) {
 
-    this.leaveService
-      .updateLeaveEntitlement(this.selectedEntitlementId, payload)
-      .subscribe({
-
-        next: (res: any) => {
-
-          alert('✅ Entitlement Updated');
-
-          this.isEditMode = false;
-
-          this.selectedEntitlementId = null;
-
-          this.loadLeaveEntitlements();
-
-          this.loadResetByEntitlement(this.selectedEntitlementId!);
-
-        },
-
-        error: (err) => {
-
-          console.error(err);
-
-          alert('❌ Failed to update entitlement');
-
-        }
-
+    // 🔥 UPDATE API
+    this.leaveService.updateLeaveEntitlement(this.selectedEntitlementId, payload)
+      .subscribe(() => {
+        alert("✅ Entitlement Updated");
+    
       });
 
-  }
+  } else {
 
-  // CREATE
-  else {
+    // 🔥 CREATE API
+    this.leaveService.registerLeaveEntitlement(payload)
+      .subscribe((res: any) => {
+        alert("✅ Entitlement Added");
+ 
+        this.isEntitlementCreated = true;
+        this.createdEntitlementId = res.id;
 
-    this.leaveService
-      .registerLeaveEntitlement(payload)
-      .subscribe({
-
-        next: (res: any) => {
-
-          alert('✅ Entitlement Added');
-
-          this.isEntitlementCreated = true;
-
-          this.createdEntitlementId = res.id;
-
-          this.leave_entitlement = res.id;
-
-          this.loadLeaveEntitlements();
-
-          this.resetForm();
-
-        },
-
-        error: (err) => {
-
-          console.error(err);
-
-          alert('❌ Failed to create entitlement');
-
-        }
-
+        this.loadLeaveEntitlements();
       });
-
   }
 }
 
@@ -1088,8 +796,43 @@ registerleaveReset(): void {
 }
 
 
+  isEditMode: boolean = false;
+selectedEntitlementId: number | null = null;
 
 
+
+editEntitlement(ent: any) {
+  console.log("Editing entitlement:", ent);
+
+  this.isEditMode = true;
+  this.selectedEntitlementId = ent.id;
+
+  // 🔥 Populate form fields
+  this.min_experience = ent.min_experience;
+  this.effective_after_unit = ent.effective_after_unit;
+  this.effective_after_from = ent.effective_after_from;
+
+  this.accrual = ent.accrual;
+  this.accrual_rate = ent.accrual_rate;
+  this.accrual_frequency = ent.accrual_frequency;
+  this.accrual_month = ent.accrual_month;
+  this.accrual_day = ent.accrual_day;
+
+  this.prorate_accrual = ent.prorate_accrual;
+
+  this.branch = ent.branches || [];
+  this.departments = ent.departments || [];
+  this.designations = ent.designations || [];
+  this.categories = ent.categories || [];
+
+  this.leave_entitlement = ent.id;
+
+  // ✅ Enable reset form
+  this.isEntitlementCreated = true;
+
+  // 🔥 Load reset data for this entitlement
+  this.loadResetByEntitlement(ent.id);
+}
 
 
 loadResetByEntitlement(entitlementId: number) {
@@ -1136,43 +879,19 @@ loadResetByEntitlement(entitlementId: number) {
 
 
 
-resetForm(): void {
-
+resetForm() {
   this.isEditMode = false;
-
   this.selectedEntitlementId = null;
 
-  this.registerButtonClicked = false;
-
   this.min_experience = '';
-
-  this.effective_after_unit = 'years';
-
-  this.effective_after_from = 'date_of_joining';
-
-  this.accrual = false;
-
   this.accrual_rate = '';
-
-  this.accrual_frequency = 'months';
-
-  this.accrual_month = '';
-
-  this.accrual_day = '';
-
+  this.accrual = false;
   this.prorate_accrual = false;
 
   this.branch = [];
-
   this.departments = [];
-
   this.designations = [];
-
   this.categories = [];
-
-  this.showMonth = false;
-
-  this.showDay = false;
 }
 
 
@@ -1183,61 +902,33 @@ resetForm(): void {
   }
   
   
+  // Add this variable to your component
+filteredEntitlements: any[] = [];
 
 
-
+  // Call this method to load all leave entitlement records (e.g., after registration or on init)
 loadLeaveEntitlements(): void {
-
   const selectedSchema = localStorage.getItem('selectedSchema');
-
   if (!selectedSchema) {
     console.error('No schema selected.');
     return;
   }
-
-  this.leaveService.getAllLeaveEntitlements(selectedSchema).subscribe({
-
-    next: (result: any[]) => {
-
+  
+  this.leaveService.getAllLeaveEntitlements(selectedSchema).subscribe(
+    (result: any) => {
       console.log('Fetched leave entitlements:', result);
+      this.leaveEntitlements = result; // Assuming your API returns an array of records
 
-      // ADD DISPLAY NAMES
-      this.allEntitlements = result.map((ent: any) => ({
-
-        ...ent,
-
-        leave_type_name: this.getLeaveTypeName(ent.leave_type),
-
-        branch_names: this.getBranchNames(ent.branches),
-
-        dept_names: this.getDeptNames(ent.departments),
-
-        desig_names: this.getDesigNames(ent.designations),
-
-        role_names: this.getRoleNames(ent.categories),
-
-      }));
-
-      // TABLE DATA
-      this.filteredEntitlements = [...this.allEntitlements];
-
-      // AUTO SELECT LATEST
-      if (result.length > 0) {
-
-        const latest = result[result.length - 1];
-
-        this.leave_entitlement = latest.id;
-
-        this.isEntitlementCreated = true;
-      }
-
+          // ✅ Auto select latest entitlement
+    if (result.length > 0) {
+      const latest = result[result.length - 1];
+      this.leave_entitlement = latest.id;
+    }
     },
-
-    error: (error) => {
+    (error) => {
       console.error('Error fetching leave entitlements:', error);
     }
-
-  });
+  );
 }
 
 
