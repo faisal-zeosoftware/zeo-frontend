@@ -1,0 +1,101 @@
+<div class="container-fluid" *ngIf="hasViewPermission">
+
+    <div class="comapny_section">
+  
+      <!-- Header -->
+      <div class="header_section">
+        <h1>Employee Attendance Calendar</h1>
+      </div>
+  
+      <!-- Filter Section -->
+      <div class="com_list">
+  
+        <div class="row">
+  
+          <!-- Employee -->
+          <div class="col-md-4">
+  
+            <label>Select Employee</label>
+  
+            <select class="form-control"
+                    [(ngModel)]="selectedEmployeeId">
+  
+              <option value="">Select Employee</option>
+  
+              <option *ngFor="let emp of Employees"
+                      [value]="emp.id">
+  
+                {{ emp.emp_code }} 
+  
+              </option>
+  
+            </select>
+  
+          </div>
+  
+          <!-- From Date -->
+          <div class="col-md-3">
+  
+            <label>From Date</label>
+  
+            <input type="date"
+                   class="form-control"
+                   [(ngModel)]="fromDate">
+  
+          </div>
+  
+          <!-- To Date -->
+          <div class="col-md-3">
+  
+            <label>To Date</label>
+  
+            <input type="date"
+                   class="form-control"
+                   [(ngModel)]="toDate">
+  
+          </div>
+  
+          <!-- Button -->
+          <div class="col-md-2 d-flex align-items-end">
+  
+            <button class="btn btn-primary w-100"
+                    (click)="loadAttendanceCalendar()">
+  
+              View Calendar
+  
+            </button>
+  
+          </div>
+  
+        </div>
+  
+      </div>
+  
+  
+  
+  
+  
+      <!-- Employee Details -->
+      <div class="com_list" *ngIf="attendanceData">
+  
+        <div class="employee-header">
+  
+          <h2>
+            {{ attendanceData.employee_name }}
+            ({{ attendanceData.employee_code }})
+          </h2>
+  
+        </div>
+  
+  
+  
+        <!-- Full Calendar -->
+        <full-calendar [options]="calendarOptions">
+  
+        </full-calendar>
+  
+      </div>
+  
+    </div>
+  
+  </div>

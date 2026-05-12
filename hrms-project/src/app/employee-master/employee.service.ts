@@ -117,6 +117,25 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
     
     return this.http.get(url);
   }
+
+
+  getAttendanceCalendar(
+    employeeId: number,
+    startDate: string,
+    endDate: string,
+    schema: string
+  ): Observable<any> {
+  
+    const url =
+      `${this.apiUrl}/calendars/api/attendance-calendar/calendar_view/` +
+      `?employee_id=${employeeId}` +
+      `&start_date=${startDate}` +
+      `&end_date=${endDate}` +
+      `&schema=${schema}`;
+  
+    return this.http.get(url);
+  
+  }
     
 
   getemployeesResignationMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {

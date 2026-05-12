@@ -252,7 +252,8 @@ import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-te
 import { LateinEarlyoutEmailTemplateEditComponent } from './latein-earlyout-email-template-edit/latein-earlyout-email-template-edit.component';
 import { EmployeeSalaryComponent } from './employee-salary/employee-salary.component';
 import { CompensatoryTransactionComponent } from './compensatory-transaction/compensatory-transaction.component';
-// import { FullCalendarModule } from '@fullcalendar/angular';
+import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 @NgModule({
   declarations: [
@@ -462,6 +463,7 @@ import { CompensatoryTransactionComponent } from './compensatory-transaction/com
      LateinEarlyoutEmailTemplateEditComponent,
      EmployeeSalaryComponent,
      CompensatoryTransactionComponent,
+     EmployeeFullAttendanceComponent,
      
      
 
@@ -503,6 +505,7 @@ import { CompensatoryTransactionComponent } from './compensatory-transaction/com
     MatTabsModule,
     MatSortModule,
     MatStepperModule,
+    FullCalendarModule
    
     
     

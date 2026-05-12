@@ -1,0 +1,113 @@
+.comapny_section {
+
+    margin-top: 100px;
+  
+    margin-left: 40px;
+  
+    margin-right: 20px;
+  
+  }
+  
+  .header_section {
+  
+    background: white;
+  
+    padding: 20px;
+  
+    border-bottom: 3px solid navy;
+  
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  
+    margin-bottom: 20px;
+  
+  }
+
+  .header_section h1{
+    font-size: 16px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+  
+  }
+  
+  
+  .com_list {
+  
+    background: white;
+  
+    padding: 20px;
+  
+    margin-bottom: 20px;
+  
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  
+    border-radius: 10px;
+  
+  }
+  
+  .employee-header {
+  
+    margin-bottom: 20px;
+  
+  }
+  
+  .employee-header h2 {
+  
+    font-size: 18px;
+  
+    font-weight: 600;
+  
+  }
+  
+ 
+  
+  .form-control {
+  
+    height: 42px;
+  
+  }
+  
+  .btn-primary {
+  
+    height: 42px;
+  
+  }
+  
+  
+  
+  /* FullCalendar Custom */
+  
+  ::ng-deep .fc-toolbar-title {
+  
+    font-size: 22px !important;
+  
+    font-weight: 600;
+  
+  }
+  
+  ::ng-deep .fc-daygrid-event {
+  
+    border-radius: 5px;
+  
+    border: none;
+  
+    padding: 3px;
+  
+    font-size: 12px;
+  
+  }
+  
+  ::ng-deep .fc-day-today {
+  
+    background: #f3f8ff !important;
+  
+  }
+  
+  ::ng-deep .fc-button {
+  
+    background: navy !important;
+  
+    border: none !important;
+  
+  }
