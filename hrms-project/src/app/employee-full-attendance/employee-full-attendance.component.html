@@ -48,10 +48,11 @@
           <div class="col-md-3">
   
             <label>To Date</label>
-  
             <input type="date"
-                   class="form-control"
-                   [(ngModel)]="toDate">
+            class="form-control"
+            [(ngModel)]="toDate"
+            [min]="fromDate"
+            [max]="todayDate">
   
           </div>
   

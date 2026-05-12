@@ -88,6 +88,7 @@ hasEditPermission: boolean = false;
 
 schemas: string[] = []; // Array to store schema names
 
+todayDate: string = '';
 
   constructor(
     private http: HttpClient,
@@ -106,6 +107,15 @@ private sessionService: SessionService,
 ) {}
 
 ngOnInit(): void {
+
+
+  this.todayDate = new Date()
+    .toISOString()
+    .split('T')[0];
+
+  this.fromDate = this.todayDate;
+
+  this.toDate = this.todayDate;
 
    // combineLatest waits for both Schema and Branches to have a value
    this.dataSubscription = combineLatest([
