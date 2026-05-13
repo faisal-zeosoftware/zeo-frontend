@@ -11,8 +11,6 @@ import { environment } from '../../environments/environment';
 import {combineLatest, Observable, Subscription } from 'rxjs';
 import JsBarcode from 'jsbarcode';
 
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
 
 @Component({
   selector: 'app-employee-full-attendance',
@@ -23,239 +21,239 @@ export class EmployeeFullAttendanceComponent {
 
   
 
-  private dataSubscription?: Subscription;
+//   private dataSubscription?: Subscription;
 
-    private apiUrl = `${environment.apiBaseUrl}`;
+//     private apiUrl = `${environment.apiBaseUrl}`;
 
 
-  isLoading: boolean = false;
+//   isLoading: boolean = false;
 
-  Employees: any[] = [];
+//   Employees: any[] = [];
 
-  selectedEmployeeId: any = '';
+//   selectedEmployeeId: any = '';
 
-  fromDate: string = '';
+//   fromDate: string = '';
 
-  toDate: string = '';
+//   toDate: string = '';
 
-  attendanceData: any = null;
+//   attendanceData: any = null;
 
-  calendarOptions: any = {
+//   calendarOptions: any = {
 
-    initialView: 'dayGridMonth',
+//     initialView: 'dayGridMonth',
   
-    plugins: [
-      dayGridPlugin,
-      interactionPlugin
-    ],
+//     plugins: [
+//       dayGridPlugin,
+//       interactionPlugin
+//     ],
   
-    height: 700,
+//     height: 700,
   
-    events: [],
+//     events: [],
   
-    selectable: false,
+//     selectable: false,
   
-    editable: false,
+//     editable: false,
   
-    fixedWeekCount: false,
+//     fixedWeekCount: false,
   
-    showNonCurrentDates: false,
+//     showNonCurrentDates: false,
   
-    dayMaxEvents: true,
+//     dayMaxEvents: true,
   
-    eventClick: this.handleEventClick.bind(this),
+//     eventClick: this.handleEventClick.bind(this),
   
-    validRange: {
+//     validRange: {
   
-      start: '',
+//       start: '',
   
-      end: ''
+//       end: ''
   
-    }
+//     }
   
-  };
+//   };
 
 
-userId: number | null | undefined;
-userDetails: any;
-userDetailss: any;
+// userId: number | null | undefined;
+// userDetails: any;
+// userDetailss: any;
 
-hasAddPermission: boolean = false;
-hasDeletePermission: boolean = false;
-hasViewPermission: boolean =false;
-hasEditPermission: boolean = false;
+// hasAddPermission: boolean = false;
+// hasDeletePermission: boolean = false;
+// hasViewPermission: boolean =false;
+// hasEditPermission: boolean = false;
 
 
-schemas: string[] = []; // Array to store schema names
+// schemas: string[] = []; // Array to store schema names
 
-todayDate: string = '';
+// todayDate: string = '';
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthenticationService,
-    private employeeService: EmployeeService,
-    private userService: UserMasterService,
-    private DepartmentServiceService: DepartmentServiceService,
-    private companyRegistrationService: CompanyRegistrationService, 
+//   constructor(
+//     private http: HttpClient,
+//     private authService: AuthenticationService,
+//     private employeeService: EmployeeService,
+//     private userService: UserMasterService,
+//     private DepartmentServiceService: DepartmentServiceService,
+//     private companyRegistrationService: CompanyRegistrationService, 
     
-private DesignationService: DesignationService,
-private sessionService: SessionService,
+// private DesignationService: DesignationService,
+// private sessionService: SessionService,
 
     
 
 
-) {}
+// ) {}
 
-ngOnInit(): void {
+// ngOnInit(): void {
 
 
-  this.todayDate = new Date()
-    .toISOString()
-    .split('T')[0];
+//   this.todayDate = new Date()
+//     .toISOString()
+//     .split('T')[0];
 
-  this.fromDate = this.todayDate;
+//   this.fromDate = this.todayDate;
 
-  this.toDate = this.todayDate;
+//   this.toDate = this.todayDate;
 
-   // combineLatest waits for both Schema and Branches to have a value
-   this.dataSubscription = combineLatest([
-    this.employeeService.selectedSchema$,
-    this.employeeService.selectedBranches$
-  ]).subscribe(([schema, branchIds]) => {
-    if (schema) {
+//    // combineLatest waits for both Schema and Branches to have a value
+//    this.dataSubscription = combineLatest([
+//     this.employeeService.selectedSchema$,
+//     this.employeeService.selectedBranches$
+//   ]).subscribe(([schema, branchIds]) => {
+//     if (schema) {
       
 
-    }
-  });
+//     }
+//   });
 
-   // Listen for sidebar changes so the dropdown updates instantly
-   this.employeeService.selectedBranches$.subscribe(ids => {
+//    // Listen for sidebar changes so the dropdown updates instantly
+//    this.employeeService.selectedBranches$.subscribe(ids => {
  
-    this.LoadEmployee(); 
+//     this.LoadEmployee(); 
    
 
-  });
+//   });
  
-  // this.LoadEmployee();
-  // this.LoadEmployeePunching();
+//   // this.LoadEmployee();
+//   // this.LoadEmployeePunching();
   
-  this.userId = this.sessionService.getUserId();
-  if (this.userId !== null) {
-    this.authService.getUserData(this.userId).subscribe(
-      async (userData: any) => {
-        this.userDetails = userData; // Store user details in userDetails property
-        // this.username = this.userDetails.username;
+//   this.userId = this.sessionService.getUserId();
+//   if (this.userId !== null) {
+//     this.authService.getUserData(this.userId).subscribe(
+//       async (userData: any) => {
+//         this.userDetails = userData; // Store user details in userDetails property
+//         // this.username = this.userDetails.username;
      
   
-        console.log('User ID:', this.userId); // Log user ID
-        console.log('User Details:', this.userDetails); // Log user details
+//         console.log('User ID:', this.userId); // Log user ID
+//         console.log('User Details:', this.userDetails); // Log user details
   
-        // Check if user is_superuser is true or false
-        let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
-        const selectedSchema = this.authService.getSelectedSchema();
-        if (!selectedSchema) {
-          console.error('No schema selected.');
-          return;
-        }
+//         // Check if user is_superuser is true or false
+//         let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
+//         const selectedSchema = this.authService.getSelectedSchema();
+//         if (!selectedSchema) {
+//           console.error('No schema selected.');
+//           return;
+//         }
       
       
-        if (isSuperuser) {
-          console.log('User is superuser or ESS user');
+//         if (isSuperuser) {
+//           console.log('User is superuser or ESS user');
           
-          // Grant all permissions
-          this.hasViewPermission = true;
-          this.hasAddPermission = true;
-          this.hasDeletePermission = true;
-          this.hasEditPermission = true;
+//           // Grant all permissions
+//           this.hasViewPermission = true;
+//           this.hasAddPermission = true;
+//           this.hasDeletePermission = true;
+//           this.hasEditPermission = true;
       
-          // Fetch designations without checking permissions
-          // this.fetchDesignations(selectedSchema);
-        } else {
-          console.log('User is not superuser');
+//           // Fetch designations without checking permissions
+//           // this.fetchDesignations(selectedSchema);
+//         } else {
+//           console.log('User is not superuser');
   
-          const selectedSchema = this.authService.getSelectedSchema();
-          if (selectedSchema) {
+//           const selectedSchema = this.authService.getSelectedSchema();
+//           if (selectedSchema) {
            
             
             
-            try {
-              const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
-              console.log('Permissions data:', permissionsData);
+//             try {
+//               const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
+//               console.log('Permissions data:', permissionsData);
   
-              if (Array.isArray(permissionsData) && permissionsData.length > 0) {
-                const firstItem = permissionsData[0];
+//               if (Array.isArray(permissionsData) && permissionsData.length > 0) {
+//                 const firstItem = permissionsData[0];
   
-                if (firstItem.is_superuser) {
-                  console.log('User is superuser according to permissions API');
-                  // Grant all permissions
-                  this.hasViewPermission = true;
-                  this.hasAddPermission = true;
-                  this.hasDeletePermission = true;
-                  this.hasEditPermission = true;
-                } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                  const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
-                  console.log('Group Permissions:', groupPermissions);
+//                 if (firstItem.is_superuser) {
+//                   console.log('User is superuser according to permissions API');
+//                   // Grant all permissions
+//                   this.hasViewPermission = true;
+//                   this.hasAddPermission = true;
+//                   this.hasDeletePermission = true;
+//                   this.hasEditPermission = true;
+//                 } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
+//                   const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
+//                   console.log('Group Permissions:', groupPermissions);
   
                  
-                  this.hasAddPermission = this.checkGroupPermission('add_attendance_faceregister', groupPermissions);
-                  console.log('Has add permission:', this.hasAddPermission);
+//                   this.hasAddPermission = this.checkGroupPermission('add_attendance_faceregister', groupPermissions);
+//                   console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_attendance_faceregister', groupPermissions);
-                  console.log('Has edit permission:', this.hasEditPermission);
+//                   this.hasEditPermission = this.checkGroupPermission('change_attendance_faceregister', groupPermissions);
+//                   console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_attendance_faceregister', groupPermissions);
-                 console.log('Has delete permission:', this.hasDeletePermission);
+//                  this.hasDeletePermission = this.checkGroupPermission('delete_attendance_faceregister', groupPermissions);
+//                  console.log('Has delete permission:', this.hasDeletePermission);
     
   
-                  this.hasViewPermission = this.checkGroupPermission('view_attendance_faceregister', groupPermissions);
-                  console.log('Has view permission:', this.hasViewPermission);
+//                   this.hasViewPermission = this.checkGroupPermission('view_attendance_faceregister', groupPermissions);
+//                   console.log('Has view permission:', this.hasViewPermission);
   
   
-                } else {
-                  console.error('No groups found in data or groups array is empty.', firstItem);
-                }
-              } else {
-                console.error('Permissions data is not an array or is empty.', permissionsData);
-              }
+//                 } else {
+//                   console.error('No groups found in data or groups array is empty.', firstItem);
+//                 }
+//               } else {
+//                 console.error('Permissions data is not an array or is empty.', permissionsData);
+//               }
   
-              // Fetching designations after checking permissions
-              // this.fetchDesignations(selectedSchema);
-            }
+//               // Fetching designations after checking permissions
+//               // this.fetchDesignations(selectedSchema);
+//             }
             
-            catch (error) {
-              console.error('Error fetching permissions:', error);
-            }
-          } else {
-            console.error('No schema selected.');
-          }
+//             catch (error) {
+//               console.error('Error fetching permissions:', error);
+//             }
+//           } else {
+//             console.error('No schema selected.');
+//           }
             
-        }
-      },
-      (error) => {
-        console.error('Failed to fetch user details:', error);
-      }
-    );
+//         }
+//       },
+//       (error) => {
+//         console.error('Failed to fetch user details:', error);
+//       }
+//     );
   
-      // this.fetchingApprovals();
+//       // this.fetchingApprovals();
 
 
-      this.authService.getUserSchema(this.userId).subscribe(
-          (userData: any) => {
-              this.userDetailss = userData;
-              this.schemas = userData.map((schema: any) => schema.schema_name);
-              console.log('scehmas-de',userData)
-          },
-          (error) => {
-              console.error('Failed to fetch user schemas:', error);
-          }
-      );
-  } else {
-      console.error('User ID is null.');
-  }
+//       this.authService.getUserSchema(this.userId).subscribe(
+//           (userData: any) => {
+//               this.userDetailss = userData;
+//               this.schemas = userData.map((schema: any) => schema.schema_name);
+//               console.log('scehmas-de',userData)
+//           },
+//           (error) => {
+//               console.error('Failed to fetch user schemas:', error);
+//           }
+//       );
+//   } else {
+//       console.error('User ID is null.');
+//   }
   
 
  
-}
+// }
 
 
 
@@ -266,9 +264,9 @@ ngOnInit(): void {
 
 
   
-checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-  return groupPermissions.some(permission => permission.codename === codeName);
-  }
+// checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+//   return groupPermissions.some(permission => permission.codename === codeName);
+//   }
   
   
 
@@ -282,239 +280,239 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
 
 
 
-  LoadEmployee(callback?: Function) {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+//   LoadEmployee(callback?: Function) {
+//     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+//     const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
-        (result: any) => {
-          this.Employees = result;
-          console.log(' fetching Employees:');
-          if (callback) callback();
-        },
-        (error) => {
-          console.error('Error fetching Employees:', error);
-        }
-      );
-    }
+//     console.log('schemastore',selectedSchema )
+//     // Check if selectedSchema is available
+//     if (selectedSchema) {
+//       this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
+//         (result: any) => {
+//           this.Employees = result;
+//           console.log(' fetching Employees:');
+//           if (callback) callback();
+//         },
+//         (error) => {
+//           console.error('Error fetching Employees:', error);
+//         }
+//       );
+//     }
 
-  }
+//   }
 
 
 
- // =====================================
-  // Load Attendance Calendar
-  // =====================================
+//  // =====================================
+//   // Load Attendance Calendar
+//   // =====================================
 
-  loadAttendanceCalendar() {
+//   loadAttendanceCalendar() {
 
-    if (!this.selectedEmployeeId) {
+//     if (!this.selectedEmployeeId) {
   
-      alert('Please select employee');
+//       alert('Please select employee');
   
-      return;
+//       return;
   
-    }
+//     }
   
-    if (!this.fromDate || !this.toDate) {
+//     if (!this.fromDate || !this.toDate) {
   
-      alert('Please select dates');
+//       alert('Please select dates');
   
-      return;
+//       return;
   
-    }
+//     }
   
-    const selectedSchema =
-      this.authService.getSelectedSchema();
+//     const selectedSchema =
+//       this.authService.getSelectedSchema();
   
-    if (!selectedSchema) {
+//     if (!selectedSchema) {
   
-      alert('Schema not found');
+//       alert('Schema not found');
   
-      return;
+//       return;
   
-    }
-  
-  
-  
-    this.employeeService
-      .getAttendanceCalendar(
-        this.selectedEmployeeId,
-        this.fromDate,
-        this.toDate,
-        selectedSchema
-      )
-      .subscribe(
-  
-        (response: any) => {
-  
-          console.log(response);
-  
-          this.attendanceData = response;
+//     }
   
   
   
-          // Generate Events
-          this.generateCalendarEvents(
-            response.calendar
-          );
+//     this.employeeService
+//       .getAttendanceCalendar(
+//         this.selectedEmployeeId,
+//         this.fromDate,
+//         this.toDate,
+//         selectedSchema
+//       )
+//       .subscribe(
+  
+//         (response: any) => {
+  
+//           console.log(response);
+  
+//           this.attendanceData = response;
   
   
   
-          // IMPORTANT
-          // ONLY selected dates visible
+//           // Generate Events
+//           this.generateCalendarEvents(
+//             response.calendar
+//           );
   
-          this.calendarOptions = {
   
-            ...this.calendarOptions,
   
-            validRange: {
+//           // IMPORTANT
+//           // ONLY selected dates visible
   
-              start: this.fromDate,
+//           this.calendarOptions = {
   
-              end: this.getNextDate(this.toDate)
+//             ...this.calendarOptions,
   
-            }
+//             validRange: {
   
-          };
+//               start: this.fromDate,
   
-        },
+//               end: this.getNextDate(this.toDate)
   
-        (error) => {
+//             }
   
-          console.error(error);
+//           };
   
-        }
+//         },
   
-      );
+//         (error) => {
   
-  }
+//           console.error(error);
+  
+//         }
+  
+//       );
+  
+//   }
 
 
 
-  // =====================================
-  // Generate Calendar Events
-  // =====================================
+//   // =====================================
+//   // Generate Calendar Events
+//   // =====================================
 
-  generateCalendarEvents(calendarData: any[]) {
+//   generateCalendarEvents(calendarData: any[]) {
 
-    const events: any[] = [];
-
-
-
-    calendarData.forEach((item: any) => {
-
-      let color = '';
+//     const events: any[] = [];
 
 
 
-      switch (item.status) {
+//     calendarData.forEach((item: any) => {
 
-        case 'Present':
-          color = '#28a745';
-          break;
-
-        case 'Leave':
-          color = '#ff9800';
-          break;
-
-        case 'Absent':
-          color = '#dc3545';
-          break;
-
-        case 'Half Day':
-          color = '#17a2b8';
-          break;
-
-        case 'Holiday':
-          color = '#6f42c1';
-          break;
-
-        default:
-          color = '#6c757d';
-      }
+//       let color = '';
 
 
 
-      events.push({
+//       switch (item.status) {
 
-        title:
-          item.leave_type
-            ? `${item.display_status} (${item.leave_type})`
-            : item.display_status,
+//         case 'Present':
+//           color = '#28a745';
+//           break;
 
-        date: item.date,
+//         case 'Leave':
+//           color = '#ff9800';
+//           break;
 
-        color: color,
+//         case 'Absent':
+//           color = '#dc3545';
+//           break;
 
-        extendedProps: {
+//         case 'Half Day':
+//           color = '#17a2b8';
+//           break;
 
-          remarks: item.remarks,
+//         case 'Holiday':
+//           color = '#6f42c1';
+//           break;
 
-          status: item.status,
-
-          leave_type: item.leave_type,
-
-          is_half_day: item.is_half_day
-
-        }
-
-      });
-
-    });
-
+//         default:
+//           color = '#6c757d';
+//       }
 
 
-    this.calendarOptions = {
 
-      ...this.calendarOptions,
+//       events.push({
 
-      events: events
+//         title:
+//           item.leave_type
+//             ? `${item.display_status} (${item.leave_type})`
+//             : item.display_status,
 
-    };
+//         date: item.date,
 
-  }
+//         color: color,
+
+//         extendedProps: {
+
+//           remarks: item.remarks,
+
+//           status: item.status,
+
+//           leave_type: item.leave_type,
+
+//           is_half_day: item.is_half_day
+
+//         }
+
+//       });
+
+//     });
+
+
+
+//     this.calendarOptions = {
+
+//       ...this.calendarOptions,
+
+//       events: events
+
+//     };
+
+//   }
 
   
-  getNextDate(dateString: string): string {
+//   getNextDate(dateString: string): string {
 
-    const date = new Date(dateString);
+//     const date = new Date(dateString);
   
-    // Add one day
-    date.setDate(date.getDate() + 1);
+//     // Add one day
+//     date.setDate(date.getDate() + 1);
   
-    // Convert to yyyy-mm-dd
-    return date.toISOString().split('T')[0];
+//     // Convert to yyyy-mm-dd
+//     return date.toISOString().split('T')[0];
   
-  }
+//   }
 
-  // =====================================
-  // Event Click
-  // =====================================
+//   // =====================================
+//   // Event Click
+//   // =====================================
 
-  handleEventClick(clickInfo: any) {
+//   handleEventClick(clickInfo: any) {
 
-    const props =
-      clickInfo.event.extendedProps;
+//     const props =
+//       clickInfo.event.extendedProps;
 
 
 
-    alert(
+//     alert(
 
-      'Status: ' + props.status + '\n' +
+//       'Status: ' + props.status + '\n' +
 
-      'Leave Type: ' +
-      (props.leave_type || 'N/A') + '\n' +
+//       'Leave Type: ' +
+//       (props.leave_type || 'N/A') + '\n' +
 
-      'Remarks: ' +
-      props.remarks
+//       'Remarks: ' +
+//       props.remarks
 
-    );
+//     );
 
-  }
+//   }
 
   
 
