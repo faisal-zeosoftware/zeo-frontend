@@ -361,7 +361,7 @@
               <mat-tab label="Entitlement">
                 <div class="tab_boddy mt-2">
                   <form (ngSubmit)="registerleaveEntitlement()" enctype="multipart/form-data">
-                    <div class="row">
+                    <div class="row"  #leaveApplicableTopSection>
 
                       <div class="col-md-4" style="display: none;">
                         <label>Leave Type</label>
@@ -874,55 +874,133 @@
                       </div>
                     </fieldset>
                   </form>
+                </div>
 
-
-
-
-                  <!-- Table View for Leave Entitlements -->
-
+                
                   <div class="table-container mt-5">
 
 
 
 
-                    <div class="entitlement-preview mt-3" *ngIf="filteredEntitlements.length > 0">
-                      <h5 style="font-size: 16px; text-transform: capitalize; ">Entitlement Details for {{ selectedLeaveTypeForModal?.name }}</h5>
+<div class="entitlement-preview mt-3">
+  
+  <h5 style="font-size: 16px; text-transform: capitalize;">
+    Entitlement Details for {{ selectedLeaveTypeForModal?.name }}
+  </h5>
 
-                      <table class="table table-bordered table-hover preview-table" width="100%">
-                        <thead>
-                          <tr>
-                            <th>No</th>
-                            <th>Leave Type</th>
-                            <th>Effective after</th>
-                            <th>Accrual Rate</th>
-                            <th>Accrual Frequency</th>
-                            <th>Prorate Type</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let ent of filteredEntitlements; let i = index" (click)="editEntitlement(ent)"
-                            style="cursor: pointer;">
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ ent.leave_type }}</td>
-                            <td>{{ ent.min_experience }} {{ ent.effective_after_unit }}</td>
-                            <td>{{ ent.accrual_rate }}</td>
-                            <td>{{ ent.accrual_frequency }}</td>
-                            <td>{{ ent.prorate_type }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+<div class="table-wrapper">
 
-                    <div class="alert alert-info"
-                      *ngIf="isLeavetypeCreationModalOpen && filteredEntitlements.length === 0">
-                      No entitlement configuration found for {{ selectedLeaveTypeForModal?.name }}.
-                    </div>
+  <table class="table table-bordered table-hover sticky-preview-table">
 
+    <thead>
+      <tr>
+        <th class="sticky-left">No</th>
+
+        <th>Leave Type</th>
+        <th>Min Experience</th>
+        <th>Effective After From</th>
+        <th>Effective After Unit</th>
+        <th>Accrual</th>
+        <th>Accrual Rate</th>
+        <th>Accrual Frequency</th>
+        <th>Accrual Day</th>
+        <th>Accrual Month</th>
+        <th>Prorate Accrual</th>
+        <th>Enable Leave Pay Rule</th>
+        <th>Branches</th>
+        <th>Categories</th>
+        <th>Departments</th>
+        <th>Designations</th>
+        <th>Reset Policy</th>
+        <th>Created At</th>
+        <th>Created By</th>
+        <th>Reset Frequency</th>
+        <th>Reset Month</th>
+        <th>Reset Day</th>
+        <th>Allow CF</th>
+        <th>Allow Encashment</th>
+        <th>Opening Balance</th>
+        <th class="sticky-right">Action</th>
+      </tr>
+
+    </thead>
+<tbody>
+
+  <!-- DATA ROWS -->
+  <tr *ngFor="let ent of filteredEntitlements; let i = index">
+
+    <td class="sticky-left">
+      {{ i + 1 }}
+    </td>
+
+    <td>{{ ent.leave_type }}</td>
+    <td>{{ ent.min_experience }}</td>
+    <td>{{ ent.effective_after_from }}</td>
+    <td>{{ ent.effective_after_unit }}</td>
+    <td>{{ ent.accrual ? 'Yes' : 'No' }}</td>
+    <td>{{ ent.accrual_rate }}</td>
+    <td>{{ ent.accrual_frequency }}</td>
+    <td>{{ ent.accrual_day }}</td>
+    <td>{{ ent.accrual_month }}</td>
+    <td>{{ ent.prorate_accrual ? 'Yes' : 'No' }}</td>
+    <td>{{ ent.enable_leave_pay_rule ? 'Yes' : 'No' }}</td>
+    <td>{{ ent.branches?.join(', ') }}</td>
+    <td>{{ ent.categories?.join(', ') }}</td>
+    <td>{{ ent.departments?.join(', ') }}</td>
+    <td>{{ ent.designations?.join(', ') }}</td>
+    <td>{{ ent.reset_policy || 'N/A' }}</td>
+    <td>{{ ent.created_at | date:'medium' }}</td>
+    <td>{{ ent.created_by }}</td>
+   <td>{{ ent.reset_policy?.frequency || 'N/A' }}</td>
+
+<td>{{ ent.reset_policy?.month || 'N/A' }}</td>
+
+<td>{{ ent.reset_policy?.day || 'N/A' }}</td>
+
+<td>
+  {{ ent.reset_policy?.allow_cf ? 'Yes' : 'No' }}
+</td>
+
+<td>
+  {{ ent.reset_policy?.allow_encashment ? 'Yes' : 'No' }}
+</td>
+
+<td>
+  {{ ent.reset_policy?.opening_balance || 0 }}
+</td>
+
+    <td class="sticky-right">
+
+      <button
+        class="btn btn-primary btn-sm me-2"
+        (click)="editFullConfiguration(ent)">
+        Edit
+      </button>
+
+      <button
+        class="btn btn-danger btn-sm"
+        (click)="deleteFullConfiguration(ent)">
+        Delete
+      </button>
+
+    </td>
+
+  </tr>
+
+  <!-- EMPTY MESSAGE -->
+  <tr *ngIf="filteredEntitlements.length === 0">
+    <td colspan="24" class="text-center text-muted">
+      No entitlement configuration found for
+      {{ selectedLeaveTypeForModal?.name }}
+    </td>
+  </tr>
+
+</tbody>
+
+  </table>
+</div>
+</div>
                   </div>
-
-
-
-                </div>
               </mat-tab>
              
               <mat-tab *ngIf="showPayRuleForm" label="Leave Pay Rule">
@@ -940,7 +1018,7 @@
 
                     <h5>Enter Leave Pay Rule</h5>
 
-                    <div class="row"  #applicableFormSection>
+                    <div class="row">
 
                       <div class="col-md-4">
                         <label>Sequence</label>
@@ -1040,7 +1118,7 @@
           </mat-step>
 
           <mat-step [stepControl]="ThridFormGroup">
-            <ng-template matStepLabel>Appicable To</ng-template>
+            <ng-template matStepLabel>Applicable To</ng-template>
             <form (ngSubmit)="registerleaveApplicable()" enctype="multipart/form-data">
               <div class="row" #applicableFormSection>
                 <div class="col-md-4">

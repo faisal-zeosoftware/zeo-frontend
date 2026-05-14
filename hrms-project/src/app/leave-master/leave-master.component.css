@@ -441,6 +441,50 @@ label{
   height: 40px;
 }
 
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.sticky-preview-table {
+  min-width: 2000px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sticky-preview-table th,
+.sticky-preview-table td {
+  white-space: nowrap;
+  background: white;
+}
+
+.sticky-left {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: white;
+}
+
+.sticky-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: white;
+}
+
+.sticky-preview-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #f8f9fa;
+}
+
+.sticky-preview-table thead .sticky-left,
+.sticky-preview-table thead .sticky-right {
+  z-index: 4;
+}
+
+
 
 
 

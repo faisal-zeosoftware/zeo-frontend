@@ -81,6 +81,16 @@ deleteLeaveEntitlement(id: number): Observable<any> {
 
 }
 
+deleteLeaveReset(id: number): Observable<any> {
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  return this.http.delete(
+    `${this.apiUrl}/calendars/api/leave-reset-policy/${id}/?schema=${selectedSchema}`
+  );
+
+}
+
   requestLeaveResetPolicy(formData: FormData): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {

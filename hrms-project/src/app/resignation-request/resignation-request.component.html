@@ -75,23 +75,53 @@
           <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
             <div class="row">
 
-                   <div class="col-md-6">
+             <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
+             <div class="col-md-6">
                 
                 
                     <div class="custom-sel">
                         <label>Employee</label>
-                    
-                    <select class="form-control" placeholder="Select Employee"
-                      [(ngModel)]="selectedEmployee"
-                      (change)="onEmployeeChange()"
-                      [ngModelOptions]="{standalone: true}">
-                          <option *ngFor="let emp of Employee" [value]="emp.id">
-                           {{ emp.emp_code }}
-                          </option>
+                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"  >
+                            <option value="" >Select</option>
+                            <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
                         </select>
                        
                     </div>
-                    </div>
+                                
+                
+                
+                       
+                       
+                    
+                </div> 
+
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
 
               <div class="col-md-6">
                 <label>Document date</label>

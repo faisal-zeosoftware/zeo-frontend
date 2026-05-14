@@ -8,6 +8,8 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 @Component({
@@ -17,6 +19,8 @@ import {combineLatest, Subscription } from 'rxjs';
 })
 
 export class ResignationRequestComponent {
+
+   private apiUrl = `${environment.apiBaseUrl}`;
 
 
   
@@ -36,7 +40,10 @@ export class ResignationRequestComponent {
   termination_type: any = '';
   reason_for_leaving: any = '';
 
-  employee: number[] = [];
+
+    employee:any='';
+
+    Employees:any[]=[];
 
   
   created_by:any='';
@@ -53,6 +60,16 @@ export class ResignationRequestComponent {
 
   Users: any[] = [];
   DocType: any[] = [];
+
+
+
+      document_number: number | string | null = null;
+
+    automaticNumbering: boolean = false;
+
+    branch: any = '';
+
+     branches:any []=[];
 
     filteredEmployees: any[] = [];
 
@@ -74,6 +91,7 @@ schemas: string[] = []; // Array to store schema names
     private leaveService:LeaveService,
     private DesignationService: DesignationService,
     private employeeService: EmployeeService,
+    private DepartmentServiceService: DepartmentServiceService 
 
     ) {}
 
@@ -97,6 +115,8 @@ schemas: string[] = []; // Array to store schema names
      
       this.LoadUsers(selectedSchema);
       this.LoadLeaveApprovalLevel(selectedSchema);
+      this.loadDeparmentBranch();
+      this.loademployee();
 
       this.LoadDocType(selectedSchema);
       // this.LoadEmployee(selectedSchema);
@@ -279,26 +299,65 @@ if (this.userId !== null) {
     //   );
     // }
 
-    isLoading: boolean = false;
+    loademployee(callback?: Function): void {
 
-fetchEmployees(schema: string, branchIds: number[]): void {
-  this.isLoading = true;
-  this.employeeService.getemployeesMasterNew(schema, branchIds).subscribe({
-    next: (data: any) => {
-      this.Employee = data;
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-      // ✅ THIS LINE IS MISSING
-      this.filteredEmployees = data;
+  if (selectedSchema) {
+    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+      (result: any) => {
 
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error('Fetch error:', err);
-      this.isLoading = false;
-    }
-  });
+        // ✅ keep only active
+        this.Employees = result.filter(
+          (employee: any) => employee.is_active === true || employee.is_active === null
+        );
+
+        // ✅ initialize dropdown correctly
+        this.filteredEmployees = this.Employees;
+
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching Employees:', error);
+      }
+    );
+  }
 }
-  
+
+ mapEmployeeNameToId() {
+
+  if (!this.Employees || !this.editAsset?.employee) return;
+
+  const emp = this.Employees.find(
+    (e: any) => e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.employee);
+}
+
+ Requests:any[]=[];
+
+ isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.employeeService.getairticketrequestNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Requests = data;
+
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
   
   
 
@@ -434,6 +493,10 @@ selectedLoanId: number | null = null;
 openPopus():void{
   this.iscreateLoanApp = true;
 
+      this.document_number = null;
+      this.automaticNumbering = false;
+      this.branch = ''; 
+
 }
 
 closeapplicationModal():void{
@@ -474,6 +537,9 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+
+    this.mapEmployeeNameToId();
+
   this.editAsset = JSON.parse(JSON.stringify(asset));
 
   this.isEditModalOpen = true;
@@ -637,6 +703,111 @@ onEmployeeChange() {
   }
 
   console.log('Selected Employee:', this.employee);
+}
+
+onBranchChange(event: any): void {
+
+  const selectedBranchId = event.target.value;
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  this.branch = selectedBranchId;
+
+  /* ------------------ FILTER EMPLOYEES ------------------ */
+  if (!selectedBranchId) {
+    this.filteredEmployees = this.Employees;
+    this.employee = '';
+  } else {
+
+    const selectedBranch = this.branches.find(
+      b => Number(b.id) === Number(selectedBranchId)
+    );
+
+    if (selectedBranch) {
+      this.filteredEmployees = this.Employees.filter(emp =>
+        emp.emp_branch_id == selectedBranch.id ||
+        emp.emp_branch_id == selectedBranch.branch_name
+      );
+    } else {
+      this.filteredEmployees = [];
+    }
+
+    this.employee = '';
+  }
+
+  /* ------------------ DOCUMENT NUMBERING ------------------ */
+  if (!selectedBranchId || !selectedSchema) {
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'air_ticket_request'; // ✅ FIXED
+
+  const apiUrl =
+    `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+
+  this.http.get<any>(apiUrl).subscribe({
+    next: (response) => {
+
+      const data = Array.isArray(response) && response.length > 0
+        ? response[0]
+        : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+      this.document_number = this.automaticNumbering ? null : '';
+    },
+    error: () => {
+      this.automaticNumbering = false;
+      this.document_number = '';
+    }
+  });
+}
+
+  loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+    }
+
+    
+  mapBranchesNameToId() {
+  if (!this.branches || !this.editAsset?.branch) return;
+
+  const Bran = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (Bran) {
+    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  }
+
+  console.log("Mapped employee_id:", this.editAsset.branch);
 }
 
 }
