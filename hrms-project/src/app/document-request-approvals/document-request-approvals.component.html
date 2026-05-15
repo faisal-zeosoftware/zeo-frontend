@@ -28,8 +28,8 @@
                 <h6>Document Request Approvals</h6><hr>
                 <div class="row ">
                     <div class="col-md-2">
-                      <h4>General Request</h4>
-                      <h5>{{apr.general_request}}</h5>
+                      <h4>Document Request</h4>
+                      <h5>{{apr.document_request}}</h5>
                     </div>
                        <div class="col-md-2">
                       <h4>Approver</h4>
@@ -80,7 +80,7 @@
       <div *ngIf="selectedApproval">
         <h6>Document Request Approvals</h6>
         <hr>
-        <h6>Document Request - {{ selectedApproval.general_request }}</h6>
+        <h6>Document Request - {{ selectedApproval.document_request }}</h6>
         <h6>Status - {{ selectedApproval.status }}</h6>
         <h6>Level - {{ selectedApproval.level }}</h6>
         <h6>Reason - {{ selectedApproval.note }}</h6>

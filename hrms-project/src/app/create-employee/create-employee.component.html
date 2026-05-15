@@ -135,7 +135,8 @@
 <div class="col-md-6"  *ngIf="!isEmailNameFieldHidden">
                
     <label>{{emailFieldName}}</label>
-    <input type="text"  class="form-control" required  [(ngModel)]="emp_personal_email"  placeholder="Enter {{emailFieldName}}"
+    <input type="text"  class="form-control" required  [(ngModel)]="emp_company_email"  placeholder="Enter Company
+     {{emailFieldName}}"
     [ngModelOptions]="{standalone: true}" [required]="isEmailMandatory" 
 [ngClass]="{'error-field': registerButtonClicked && isEmailMandatory && !emp_personal_email}" >
 
@@ -145,6 +146,16 @@
    
    <!-- <div *ngIf="registerButtonClicked && !emp_personal_email" class="error-message">Description is required.</div> -->
 </div>
+
+    <div class="col-md-6" >
+                   
+        <label>Personal Email ID</label>
+       <input type="email"  class="form-control"   [(ngModel)]="emp_personal_email"  placeholder="Enter Personal email"
+       [ngModelOptions]="{standalone: true}">
+   
+       
+       <!-- <div *ngIf="registerButtonClicked && !emp_personal_email" class="error-message">Description is required.</div> -->
+    </div>
 
 
 

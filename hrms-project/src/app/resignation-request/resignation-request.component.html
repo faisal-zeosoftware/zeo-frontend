@@ -171,11 +171,22 @@
                   </select>
                 </div>
               </div>
+
+          <div class="col-md-6">
+            <label>Request Attachment</label>
+            <input type="file" class="form-control" (change)="onFileChange($event)">
+          </div>
               
       
               <div class="col-md-12">
                 <label>Reason</label>
-                <textarea class="form-control" [(ngModel)]="reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
+                <textarea
+  class="form-control"
+  [(ngModel)]="reason_for_leaving"
+  name="reason_for_leaving"
+  [ngModelOptions]="{standalone: true}"
+  placeholder="Enter reason for leaving">
+</textarea>
               </div>
 
  
@@ -230,23 +241,55 @@
   <form >
     <div class="row">
 
-                   <div class="col-md-6">
+                   <div class="col-md-3">
+                <div class="custom-sel">
+                    <label>Select Branches</label>
+                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
+
+             <div class="col-md-6">
                 
                 
                     <div class="custom-sel">
                         <label>Employee</label>
-                    
-                    <select class="form-control"
-                      [(ngModel)]="editAsset.selectedEmployee"
-                      (change)="onEmployeeChange()"
-                      [ngModelOptions]="{standalone: true}">
-                          <option *ngFor="let emp of Employee" [value]="emp.id">
-                           {{ emp.emp_code }}
-                          </option>
+                        <select class="form-control" id="employee" required [(ngModel)]="editAsset.employee"  [ngModelOptions]="{standalone: true}"  >
+                            <option value="" >Select</option>
+                            <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
                         </select>
                        
                     </div>
-                    </div>
+                                
+                
+                
+                       
+                       
+                    
+                </div> 
+
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="editAsset.document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
+
+
 
     <div class="col-md-6">
       <label>Document date</label>
@@ -296,13 +339,23 @@
         </select>
       </div>
     </div>
+
+              <div class="col-md-6">
+            <label>Request Attachment</label>
+            <input type="file" class="form-control" (change)="onFileChange($event)">
+          </div>
     
 
-    <div class="col-md-12">
-      <label>Reason</label>
-      <textarea class="form-control" [(ngModel)]="editAsset.reason_for_leaving" placeholder="Enter reason for leaving"></textarea>
-    </div>
-
+              <div class="col-md-12">
+                <label>Reason</label>
+                <textarea
+  class="form-control"
+  [(ngModel)]="editAsset.reason_for_leaving"
+  name="reason_for_leaving"
+  [ngModelOptions]="{standalone: true}"
+  placeholder="Enter reason for leaving">
+</textarea>
+              </div>
 
 
 
@@ -347,7 +400,8 @@
           <thead class="thead-dark">
             <tr>
               <th>No</th>
-
+              <th> Document number  </th>
+              <th>Branch</th>
               <th> Document date  </th>
               <th> Resigned on</th>
               <th>Notice period</th>
@@ -369,6 +423,8 @@
       
           
         <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Document number">{{ docs.document_number }}</td>
+        <td>{{ docs.branch }}</td>
         <td data-label="Document Date">{{ docs.document_date }}</td>
         <td data-label="Resigned On">{{ docs.resigned_on }}</td>
         <td data-label="Notice Period">{{ docs.notice_period }}</td>

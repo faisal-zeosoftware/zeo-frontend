@@ -54,7 +54,6 @@ export class ResignationRequestComponent {
 
   LeaveapprovalLevels: any[] = [];
 
-  Employee: any[] = [];
 
   DocRequest: any[] = [];
 
@@ -72,6 +71,8 @@ export class ResignationRequestComponent {
      branches:any []=[];
 
     filteredEmployees: any[] = [];
+
+      attachment: File | null = null;
 
 
 hasAddPermission: boolean = false;
@@ -409,68 +410,100 @@ if (this.userId !== null) {
   
 
 
-    SetLeaveApprovaLevel(): void {
-      this.registerButtonClicked = true;
-      // if (!this.name || !this.code || !this.valid_to) {
-      //   return;
-      // }
-    
-      const formData = new FormData();
-      formData.append('document_date', this.document_date);
-      formData.append('resigned_on', this.resigned_on);
+SetLeaveApprovaLevel(): void {
 
+  this.registerButtonClicked = true;
 
-  
-  
-      formData.append('notice_period', this.notice_period);
-    
-      formData.append('last_working_date', this.last_working_date);
-      formData.append('location', this.location);
-      formData.append('termination_type', this.termination_type);
-
-      formData.append('reason_for_leaving', this.reason_for_leaving);
-    
-      // formData.append('employee', this.employee);
-
-       this.employee.forEach((id: number) =>
-    formData.append('employee', id.toString())
-  );
-  
-
-
-  
-      
-    
-    
-      this.leaveService.CreateEmpResignationRequest(formData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-  
-  
-          alert('Resignation Request  has been Sent');
-  
-          window.location.reload();
-        },  
-(error) => {
-  console.error('Error updating Request:', error);
-
-  let errorMsg = 'Update failed';
-
-  const backendError = error?.error;
-
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+  // VALIDATION
+  if (
+    !this.branch ||
+    !this.employee ||
+    !this.document_date ||
+    !this.resigned_on ||
+    !this.notice_period ||
+    !this.last_working_date ||
+    !this.location ||
+    !this.termination_type
+  ) {
+    alert('Please fill all required fields');
+    return;
   }
 
-  alert(errorMsg);
-}
-      );
+  const formData = new FormData();
+
+  // APPEND DATA
+  formData.append('branch', this.branch);
+
+  formData.append('employee', this.employee.toString());
+
+  formData.append('document_number', String(this.document_number ?? ''));
+
+  formData.append('document_date', this.document_date);
+
+  formData.append('resigned_on', this.resigned_on);
+
+  formData.append('notice_period', this.notice_period.toString());
+
+  formData.append('last_working_date', this.last_working_date);
+
+  formData.append('location', this.location);
+
+  formData.append('termination_type', this.termination_type);
+
+  formData.append('reason_for_leaving', this.reason_for_leaving || '');
+
+    if (this.attachment) {
+    formData.append('attachment', this.attachment);
+  }
+
+  this.leaveService.CreateEmpResignationRequest(formData).subscribe({
+
+    next: (response) => {
+
+      console.log('Registration successful', response);
+
+      alert('Resignation Request has been Sent');
+
+      this.closeapplicationModal();
+
+      window.location.reload();
+    },
+
+    error: (error) => {
+
+      console.error('API ERROR:', error);
+
+      let errorMsg = 'Request failed';
+
+      if (error?.error) {
+
+        if (typeof error.error === 'string') {
+
+          errorMsg = error.error;
+
+        } else if (typeof error.error === 'object') {
+
+          errorMsg = Object.keys(error.error)
+            .map(key => `${key}: ${error.error[key]}`)
+            .join('\n');
+        }
+      }
+
+      alert(errorMsg);
     }
 
+  });
 
+}
+
+            onFileChange(event: any) {
+              const file = event.target.files[0];
+              if (file) {
+                this.attachment = file;
+              }
+            }
+
+    
 
 
 
@@ -538,44 +571,59 @@ editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
 
-    this.mapEmployeeNameToId();
-
   this.editAsset = JSON.parse(JSON.stringify(asset));
 
-  this.isEditModalOpen = true;
+  // ===== PRESELECT BRANCH =====
+  this.mapBranchesNameToId();
 
-  console.log("EDIT DATA:", this.editAsset);
-
-  // 🔥 FIX EMPLOYEE PRE-SELECT
+  // ===== PRESELECT EMPLOYEE =====
   if (this.editAsset.employee) {
 
-    // Case 1: object
+    // employee object
     if (typeof this.editAsset.employee === 'object') {
-      this.editAsset.selectedEmployee = this.editAsset.employee.id;
+
+      this.editAsset.employee = this.editAsset.employee.id;
     }
 
-    // Case 2: string or emp_code
+    // employee emp_code/name
     else if (typeof this.editAsset.employee === 'string') {
 
-      const found = this.Employee.find(
-        (e: any) => e.emp_code === this.editAsset.employee
+      const foundEmployee = this.Employees.find(
+        (e: any) =>
+          e.emp_code === this.editAsset.employee ||
+          e.id == this.editAsset.employee
       );
 
-      this.editAsset.selectedEmployee = found ? found.id : null;
-    }
-
-    // Case 3: already ID
-    else {
-      this.editAsset.selectedEmployee = this.editAsset.employee;
+      if (foundEmployee) {
+        this.editAsset.employee = foundEmployee.id;
+      }
     }
   }
 
-  console.log("Mapped Employee:", this.editAsset.selectedEmployee);
+  // ===== PREVIEW ATTACHMENT =====
+  if (this.editAsset.attachment) {
+
+    // full url if needed
+    if (!this.editAsset.attachment.startsWith('http')) {
+
+      this.editAsset.attachmentUrl =
+        `${this.apiUrl}${this.editAsset.attachment}`;
+    } else {
+
+      this.editAsset.attachmentUrl =
+        this.editAsset.attachment;
+    }
+  }
+
+  console.log('EDIT ASSET:', this.editAsset);
+
+  this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
 this.isEditModalOpen = false;
 this.editAsset = {};
+this.attachment = null;
 }
 
 
@@ -617,37 +665,100 @@ deleteSelectedAssetType() {
   }
 }
 
-
 updateAssetType(): void {
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema || !this.editAsset.id) {
-    alert('Missing schema or asset ID');
+
+  if (!this.editAsset.id) {
+    alert('Missing Request ID');
     return;
   }
 
-  this.employeeService.updateResignationReq(this.editAsset.id, this.editAsset).subscribe(
-    (response) => {
-      alert(' Request  updated successfully!');
-      this.closeEditModal();
-      window.location.reload();
-    },
-(error) => {
-  console.error('Error updating Request:', error);
+  const formData = new FormData();
 
-  let errorMsg = 'Update failed';
+  formData.append(
+    'document_number',
+    this.editAsset.document_number || ''
+  );
 
-  const backendError = error?.error;
+  formData.append(
+    'document_date',
+    this.editAsset.document_date || ''
+  );
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
+  formData.append(
+    'resigned_on',
+    this.editAsset.resigned_on || ''
+  );
+
+  formData.append(
+    'notice_period',
+    String(this.editAsset.notice_period || '')
+  );
+
+  formData.append(
+    'last_working_date',
+    this.editAsset.last_working_date || ''
+  );
+
+  formData.append(
+    'location',
+    this.editAsset.location || ''
+  );
+
+  formData.append(
+    'termination_type',
+    this.editAsset.termination_type || ''
+  );
+
+  formData.append(
+    'reason_for_leaving',
+    this.editAsset.reason_for_leaving || ''
+  );
+
+  formData.append(
+    'employee',
+    String(this.editAsset.employee || '')
+  );
+
+  formData.append(
+    'branch',
+    String(this.editAsset.branch || '')
+  );
+
+  // FILE
+  if (this.attachment instanceof File) {
+    formData.append('attachment', this.attachment);
   }
 
-  alert(errorMsg);
-}
-  );
+  console.log('FORMDATA VALUES');
+
+  formData.forEach((value, key) => {
+    console.log(key, value);
+  });
+
+  this.employeeService
+    .updateResignationReq(this.editAsset.id, formData)
+    .subscribe({
+
+      next: (response) => {
+
+        console.log('UPDATED:', response);
+
+        alert('Request updated successfully');
+
+        this.closeEditModal();
+
+        window.location.reload();
+      },
+
+      error: (error) => {
+
+        console.error('UPDATE ERROR:', error);
+
+        console.log(error.error);
+
+        alert('Update failed');
+      }
+    });
 }
 
 
@@ -658,7 +769,7 @@ toggleAllEmployees() {
 
   if (this.allEmployeesSelected) {
 
-    this.employee = this.Employee.map((emp: any) => emp.id);
+    this.employee = this.Employees.map((emp: any) => emp.id);
 
   } else {
 
@@ -671,10 +782,10 @@ toggleAllEmployees() {
 filterEmployees() {
 
   if (!this.employeeSearch) {
-    return this.Employee;
+    return this.Employees;
   }
 
-  return this.Employee.filter((emp: any) =>
+  return this.Employees.filter((emp: any) =>
     emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
   );
 
@@ -683,9 +794,9 @@ filterEmployees() {
 
 filterEmployeeList() {
   if (!this.employeeSearch) {
-    this.filteredEmployees = this.Employee;
+    this.filteredEmployees = this.Employees;
   } else {
-    this.filteredEmployees = this.Employee.filter((emp: any) =>
+    this.filteredEmployees = this.Employees.filter((emp: any) =>
       emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
     );
   }
@@ -741,7 +852,7 @@ onBranchChange(event: any): void {
     return;
   }
 
-  const type = 'air_ticket_request'; // ✅ FIXED
+  const type = 'employee_resignation'; // ✅ FIXED
 
   const apiUrl =
     `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;

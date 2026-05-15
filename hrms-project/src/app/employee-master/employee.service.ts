@@ -717,16 +717,23 @@ deleteLateInEarlyOutReq(categoryId: number): Observable<any> {
 }
 
 
-updateResignationReq(id: number, data: any): Observable<any> {
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  const apiUrl = `${this.apiUrl}/employee/api/employee-resignation/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+updateResignationReq(id: number, data: FormData): Observable<any> {
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  const apiUrl =
+    `${this.apiUrl}/employee/api/employee-resignation/${id}/?schema=${selectedSchema}`;
+
+  return this.http.put(apiUrl, data).pipe(
+
     catchError((error) => {
+
       console.error('Error updating asset:', error);
-      return throwError(error);
+
+      return throwError(() => error);
+
     })
+
   );
 }
 

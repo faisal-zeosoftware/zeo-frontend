@@ -15155,6 +15155,10 @@ isAttendanceInderminate(): boolean {
 
 // Show Sections
 
+showallexpandable(): void {
+  this.expandedMasters = !this.expandedMasters;
+}
+
 showexpandable(): void {
   this.expandedMastersvalue = !this.expandedMastersvalue;
 }
