@@ -16,6 +16,8 @@
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul>
                 <li  routerLink="/main-sidebar/leave-options/leave-master" *ngIf="hasViewPermissionLeaveMas"><a ><mat-icon>switch_account</mat-icon> Leave Type</a></li>
+                <li  routerLink="/main-sidebar/leave-options/leave-request" *ngIf="hasViewPermissionEmpLeaveReq"><a ><mat-icon>switch_account</mat-icon> Leave Request</a></li>
+
                   <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
                     <a>
                       <mat-icon>switch_account</mat-icon> Leave Approve
@@ -24,7 +26,6 @@
                   </li>
               <ul *ngIf="showAdvanceSalary" style="padding-left: 20px;">
                 <li routerLink="/main-sidebar/leave-options/leave-approvals" *ngIf="hasViewPermissionLeaveApr"><a ><mat-icon>switch_account</mat-icon> Leave Approvals</a></li>
-                <li  routerLink="/main-sidebar/leave-options/leave-request" *ngIf="hasViewPermissionEmpLeaveReq"><a ><mat-icon>switch_account</mat-icon> Leave Request</a></li>
                 <li  routerLink="/main-sidebar/leave-options/leave-approval-level" *ngIf="hasViewPermissionLeaveAprvlvl"  ><a ><mat-icon>switch_account</mat-icon> Leave Approval Level</a></li>
                 <li  routerLink="/main-sidebar/leave-options/leave-escalation" *ngIf="hasViewPermissionLvEsc"><a ><mat-icon>switch_account</mat-icon>Leave Escalation</a></li>
               </ul>
