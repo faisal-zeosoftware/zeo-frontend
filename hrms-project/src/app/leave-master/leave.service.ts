@@ -224,6 +224,25 @@ deleteLeaveApplicable(id: number): Observable<any> {
 
 
 
+    CompLeaveAllocation(formData: FormData): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.');
+    }
+  
+    const apiUrl = `${this.apiUrl}/calendars/api/compensatory-leave-request/?schema=${selectedSchema}`;
+  
+    return this.http.post(apiUrl, formData).pipe(
+      catchError((error) => {
+        console.error('Error during leave type registration:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+
+
   requestCompTransLeaveAdmin(formData: FormData): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');
     if (!selectedSchema) {
@@ -334,6 +353,20 @@ deleteLeaveApplicable(id: number): Observable<any> {
     }
     
     return this.http.get(url);
+  }
+
+  allocateCompLeave(
+    id: number,
+    schema: string,
+    formData: FormData
+  ): Observable<any> {
+  
+    const url =
+      `${this.apiUrl}/calendars/api/compensatory-leave-allocation/` +
+      `${id}/allocate/?schema=${schema}`;
+  
+    return this.http.post(url, formData);
+  
   }
 
   
@@ -830,6 +863,13 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
       const url = `${this.apiUrl}/employee/api/emplist/?schema=${selectedSchema}`;
       return this.http.get(url);
     }
+
+
+    getCompAttendance(selectedSchema: string): Observable<any> {
+      const url = `${this.apiUrl}/calendars/api/attendance/?schema=${selectedSchema}`;
+      return this.http.get(url);
+    }
+
   
   getUsers(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/users/api/user/?schema=${selectedSchema}`;

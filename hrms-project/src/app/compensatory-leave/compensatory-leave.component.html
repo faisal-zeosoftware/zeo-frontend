@@ -6,7 +6,7 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <h1>Compensatory Leave Request</h1>
+                    <h1>Compensatory Leave Allocation</h1>
                 </div>
                 <div class="col-md-3">
                     
@@ -15,17 +15,17 @@
                 </div>
                 <div class="col-md-5">
                   <div class="button-group pull-right">
-                      <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission" ><span class="header-btn-icon"><mat-icon>add_circle
+                      <button type="button" (click)="openPopus()"  disabled class="btn-Create btn btn-success" *ngIf="hasAddPermission" ><span class="header-btn-icon"><mat-icon>add_circle
                       </mat-icon></span>Create</button>
                       <span *ngIf="!hasAddPermission"></span>
 
-                      <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                      <button type="button" class="btn-Edit btn-info btn" disabled (click)="EditShowButtons()" *ngIf="hasEditPermission">
                           <span class="header-btn-icon">
                            <mat-icon>draw
                       </mat-icon></span> Edit</button>
                       <span *ngIf="hasEditPermission"></span>
 
-                      <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                      <button type="button" class="btn-Delete btn btn-danger" disabled (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
                           <span class="header-btn-icon">
                               <mat-icon> delete
                          </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
@@ -57,7 +57,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>Create Compensatory Leave</h2>
+                  <h2> Compensatory Leave Allocation</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -72,7 +72,7 @@
 
                         <div class="row">
 
-                      <div class="col-md-6">
+                      <div class="col-md-4">
                         <label>Employee</label>
                         <div class="custom-sel">
                           <select class="form-control" id="employee" name="employee" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}">
@@ -81,25 +81,61 @@
                         </div>
                       </div>
 
-                            <div class="col-md-6" >
-                                <label>Request type</label>
-                                <div class="custom-sel">
-                                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
-                                    <option value="work_request">work Request</option>
-                                    <option value="leave_request">Compansatory Leave Request</option>
-                                  </select>
-                                </div>
-                              </div>
+
+                      <div class="col-md-4" >
+                        <label>Branch</label>
+                        <div class="custom-sel">
+                          <div class="form-control-wrapper">
+                          
+                
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-select
+                    placeholder="Select attendances"
+                    [(ngModel)]="attendances"
+                    name="attendances"
+                    multiple
+                    #selectBrach
+                  >
+                
+                    <mat-checkbox
+                      class="px-2"
+                      [(ngModel)]="allSelectedBrach"
+                      [ngModelOptions]="{ standalone: true }"
+                      (change)="toggleAllSelectionBrach()"
+                    >
+                      Select All
+                    </mat-checkbox>
+                
+                    <mat-option *ngFor="let b of compAttendance"
+                    [value]="b.id">
+        
+          Attendance -
+          {{ b.employee }}
+          -
+          {{ b.date | date:'dd-MM-yyyy' }}
+        
+        </mat-option>
+                
+                  </mat-select>
+                </mat-form-field>
+                            
+                          </div>
+                         
+                        </div>
+                
+                      </div>
+                
+
+                        
 
                                   
-                      <div class="col-md-6">
-                        <label>Work Date</label>
-                        <input type="date" class="form-control" required [(ngModel)]="work_date" placeholder="Enter work Date"
-                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !work_date}">
-                        <div *ngIf="registerButtonClicked && !work_date" class="error-message">work Date is required.</div>
+                      <div class="col-md-4">
+                        <label>Accrued Date</label>
+                        <input type="number" class="form-control" required [(ngModel)]="credited_days" placeholder="Enter Accrued Date"
+                               [ngModelOptions]="{standalone: true}" >
                       </div>
                   
-                      <div class="col-md-6">
+                      <div class="col-md-12">
                         <label>Reason</label>
                         <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}"></textarea>
                       </div>
@@ -312,11 +348,12 @@
                 <!-- Action -->
                 <td data-label="Action">
           
-                  <button class="btn btn-primary btn-sm">
+                  <button class="btn btn-primary btn-sm"
+                  (click)="openAllocateModal(docs)">
           
-                    View
+            Allocate
           
-                  </button>
+          </button>
           
                 </td>
           

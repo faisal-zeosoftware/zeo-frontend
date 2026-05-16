@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -7,6 +7,7 @@ import { DesignationService } from '../designation-master/designation.service';
 
 import {combineLatest, Subscription } from 'rxjs';
 import { EmployeeService } from '../employee-master/employee.service';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-compensatory-leave',
@@ -17,6 +18,13 @@ export class CompensatoryLeaveComponent {
 
     private dataSubscription?: Subscription;
 
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
+
+
+    @ViewChild('selectEdit') selectEdit: MatSelect | undefined;
+  
+   
+selectedCompLeaveId: any = ''
   
   request_type:any='';
   employee:any='';
@@ -27,9 +35,14 @@ export class CompensatoryLeaveComponent {
 
   transaction_type:any='';
   days:any='';
+  credited_days:any='';
+
+  attendances: any[] = [];
+
 
   registerButtonClicked = false;
   Employees: any[] = [];
+  compAttendance: any[] = [];
 
   compTransactions: any[] = [];
 
@@ -61,7 +74,8 @@ export class CompensatoryLeaveComponent {
 
 
       this.LoadEmployee(selectedSchema);
-   
+      this.LoadComattendance(selectedSchema);
+
       
       }
 
@@ -233,6 +247,21 @@ if (this.userId !== null) {
       );
     }
 
+    LoadComattendance(selectedSchema: string) {
+      this.leaveService.getCompAttendance(selectedSchema).subscribe(
+        (data: any) => {
+          this.compAttendance = data;
+        
+          console.log('employee:', this.Employees);
+        },
+        (error: any) => {
+          console.error('Error fetching categories:', error);
+        }
+      );
+    }
+
+
+
               isLoading: boolean = false;
 
 
@@ -270,40 +299,85 @@ if (this.userId !== null) {
               }
     
 
-    requestCompansatoryLeave(): void {
-      this.registerButtonClicked = true;
-      // if (!this.name || !this.code || !this.valid_to) {
-      //   return;
-      // }
-    
-      const formData = new FormData();
-      formData.append('request_type', this.request_type);
-      formData.append('employee', this.employee);
-      formData.append('work_date', this.work_date);
-      formData.append('reason', this.reason);
-     
-  
-     
-  
-      
-    
-    
-      this.leaveService.requestCompLeaveAdmin(formData).subscribe(
-        (response) => {
-          console.log('Registration successful', response);
-  
-  
-          alert('Compensatory Leave has been Sent');
-  
-          window.location.reload();
-        },  
-        (error) => {
-          console.error('Added failed', error);
-          alert('Enter all required fields!');
-        }
-      );
-    }
+              requestCompansatoryLeave(): void {
 
+                const selectedSchema =
+                  this.authService.getSelectedSchema();
+              
+                if (!selectedSchema) {
+              
+                  alert('Schema not found');
+              
+                  return;
+              
+                }
+              
+                const formData = new FormData();
+              
+                formData.append('employee', this.employee);
+              
+                formData.append(
+                  'credited_days',
+                  this.credited_days
+                );
+              
+                formData.append(
+                  'reason',
+                  this.reason
+                );
+              
+              
+              
+                // Attendance IDs
+                this.attendances.forEach((id: any) => {
+              
+                  formData.append('attendances', id);
+              
+                });
+              
+              
+              
+                this.leaveService
+                  .allocateCompLeave(
+                    this.selectedCompLeaveId,
+                    selectedSchema,
+                    formData
+                  )
+                  .subscribe(
+              
+                    (response: any) => {
+              
+                      console.log(response);
+              
+                      alert(
+                        'Compensatory Leave Allocated Successfully'
+                      );
+              
+                      this.closeapplicationModal();
+              
+                      // Reload list
+                      const savedIds = JSON.parse(
+                        localStorage.getItem('selectedBranchIds') || '[]'
+                      );
+              
+                      this.fetchEmployeesLeaveApprovalLevel(
+                        selectedSchema,
+                        savedIds
+                      );
+              
+                    },
+              
+                    (error) => {
+              
+                      console.error(error);
+              
+                      alert('Allocation Failed');
+              
+                    }
+              
+                  );
+              
+              }
 
       iscreateLoanApp: boolean = false;
 
@@ -422,6 +496,48 @@ if (this.userId !== null) {
     );
   }
   
+
+
+  allSelectedBrach=false;
+
+
+  toggleAllSelectionBrach(): void {
+    if (!this.selectBrach) return;
+  
+    this.allSelectedBrach
+      ? this.selectBrach.options.forEach(o => o.select())
+      : this.selectBrach.options.forEach(o => o.deselect());
+  }
+  
+
+
+  openAllocateModal(data: any): void {
+
+  console.log('Selected Row:', data);
+
+  this.iscreateLoanApp = true;
+
+  // Store allocation ID
+  this.selectedCompLeaveId = data.id;
+
+  // Set form values
+  this.employee = data.employee;
+
+  this.credited_days = data.credited_days;
+
+  this.reason = data.reason;
+
+  // Attendance IDs
+  this.attendances =
+    data.attendances.map((x: any) => x.id);
+
+  // Attendance list for dropdown
+  this.compAttendance = data.attendances;
+
+}
+
+
+
   
   
 }
