@@ -236,22 +236,38 @@ if (this.userId !== null) {
               isLoading: boolean = false;
 
 
-          fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
-            this.isLoading = true;
-            this.leaveService.getCompLeave(schema, branchIds).subscribe({
-              next: (data: any) => {
-                // Filter active employees
-                     this.compTransactions = data;
-          
-                this.isLoading = false;
-              },
-              error: (err) => {
-                console.error('Fetch error:', err);
-                this.isLoading = false;
+              fetchEmployeesLeaveApprovalLevel(
+                schema: string,
+                branchIds: number[]
+              ): void {
+              
+                this.isLoading = true;
+              
+                this.leaveService
+                  .getCompanLeave(schema, branchIds)
+                  .subscribe({
+              
+                    next: (data: any) => {
+              
+                      this.compTransactions = data;
+              
+                      console.log('Comp Leave:', data);
+              
+                      this.isLoading = false;
+              
+                    },
+              
+                    error: (err) => {
+              
+                      console.error('Fetch error:', err);
+              
+                      this.isLoading = false;
+              
+                    }
+              
+                  });
+              
               }
-            });
-          }
-
     
 
     requestCompansatoryLeave(): void {

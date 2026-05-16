@@ -207,49 +207,137 @@
 
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
+          <table width="100%" *ngIf="hasViewPermission">
 
-            <table width="100%" *ngIf="hasViewPermission">
-                <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Employee</th>
-                    <th>Request type</th>
-                    <th>Work Date</th>
-                    <th>Reason</th>
-                    <th>Action</th>
-        
-                   
-                  </tr>
-                </thead>
-                <tbody>
-                    
-                  <tr *ngFor="let docs of compTransactions;let i = index">
-                    <td data-label="No">{{ i + 1 }}</td> 
-                    <td data-label="Employee">{{ docs.employee }}</td>
-                    <td data-label="Request type">{{ docs.request_type }}</td>
-                    <td data-label="Work Date">{{ docs.work_date }}</td> 
-                    <td data-label="Reason">{{ docs.reason }}</td>
-                    <td data-label="Action">
-                      <button
-                        mat-fab
-                        color="primary"
-                        aria-label="Edit icon"
-                        *ngIf="showEditBtn"
-      
-                        
-                        (click)="openEditModal(docs)"
-                      >
-                        <mat-icon style="color: white;">draw</mat-icon>
-                      </button>
-      
-                      <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-      
-                    </td>
-                  </tr>
-              
-                </tbody>
-              </table>
-
+            <thead>
+          
+              <tr>
+          
+                <th>No</th>
+          
+                <th>Employee</th>
+          
+                <th>Attendance Date</th>
+          
+                <th>Reason</th>
+          
+                <th>Credited Days</th>
+          
+                <th>Status</th>
+          
+                <th>Action</th>
+          
+              </tr>
+          
+            </thead>
+          
+            <tbody>
+          
+              <tr *ngFor="let docs of compTransactions; let i = index">
+          
+                <!-- No -->
+                <td data-label="No">
+                  {{ i + 1 }}
+                </td>
+          
+          
+          
+                <!-- Employee -->
+                <td data-label="Employee">
+                  {{ docs.employee }}
+                </td>
+          
+          
+          
+                <!-- Attendance Date -->
+                <td data-label="Attendance Date">
+          
+                  <!-- Take only first attendance date -->
+          
+                  <span *ngIf="docs.attendances?.length > 0">
+          
+                    {{ docs.attendances[0].date }}
+          
+                  </span>
+          
+                  <span *ngIf="docs.attendances?.length == 0">
+          
+                    -
+          
+                  </span>
+          
+                </td>
+          
+          
+          
+                <!-- Reason -->
+                <td data-label="Reason">
+          
+                  {{ docs.reason }}
+          
+                </td>
+          
+          
+          
+                <!-- Credited Days -->
+                <td data-label="Credited Days">
+          
+                  {{ docs.credited_days }}
+          
+                </td>
+          
+          
+          
+                <!-- Status -->
+                <td data-label="Status">
+          
+                  <span class="badge bg-success"
+                        *ngIf="docs.is_allocated">
+          
+                    Allocated
+          
+                  </span>
+          
+                  <span class="badge bg-warning"
+                        *ngIf="!docs.is_allocated">
+          
+                    Pending
+          
+                  </span>
+          
+                </td>
+          
+          
+          
+                <!-- Action -->
+                <td data-label="Action">
+          
+                  <button class="btn btn-primary btn-sm">
+          
+                    View
+          
+                  </button>
+          
+                </td>
+          
+              </tr>
+          
+          
+          
+              <!-- No Data -->
+              <tr *ngIf="compTransactions.length == 0">
+          
+                <td colspan="7" class="text-center">
+          
+                  No compensatory leave records found
+          
+                </td>
+          
+              </tr>
+          
+            </tbody>
+          
+          </table>
         </div>
         </div>
         </div>
