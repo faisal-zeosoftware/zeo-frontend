@@ -676,11 +676,17 @@ mapBranchesNameToId() {
 
 }   
   
+
+
     levels: any[] = [
   {
     level: '',
     role: '',
     approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
   }
 ];
 
@@ -689,11 +695,15 @@ addLevel() {
     level: '',
     role: '',
     approver: '',
+    escalate_to: '',
+    escalate_after_days: 0,
+    escalate_after_hours: 0,
+    escalate_after_minutes: 0
   });
 }
 
 removeLevel(index: number) {
   this.levels.splice(index, 1);
-}  
+}
 
 }

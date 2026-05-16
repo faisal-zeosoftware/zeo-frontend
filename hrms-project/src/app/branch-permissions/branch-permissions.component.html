@@ -17,7 +17,6 @@
   required
   [(ngModel)]="user"
   name="user"
-  [ngClass]="{'error-field': registerButtonClicked && !user}"
 >
   <option [ngValue]="null">-- Select User --</option>
   <option *ngFor="let u of users" [ngValue]="u.id">

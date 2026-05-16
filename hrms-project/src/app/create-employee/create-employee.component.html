@@ -135,8 +135,7 @@
 <div class="col-md-6"  *ngIf="!isEmailNameFieldHidden">
                
     <label>{{emailFieldName}}</label>
-    <input type="text"  class="form-control" required  [(ngModel)]="emp_company_email"  placeholder="Enter Company
-     {{emailFieldName}}"
+    <input type="text"  class="form-control" required  [(ngModel)]="emp_company_email"  placeholder="Enter Company {{emailFieldName}}"
     [ngModelOptions]="{standalone: true}" [required]="isEmailMandatory" 
 [ngClass]="{'error-field': registerButtonClicked && isEmailMandatory && !emp_personal_email}" >
 

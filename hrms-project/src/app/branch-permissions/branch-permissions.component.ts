@@ -280,6 +280,7 @@ registerUserAssignedPermission(): void {
         this.branch = [];
         this.allSelectedBrach = false;
         this.loadAssignedPermissionsForUser(); 
+        window.location.reload();
       },
       (error) => {
         console.error(error);

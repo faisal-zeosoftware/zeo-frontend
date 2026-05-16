@@ -459,7 +459,7 @@ ngOnInit(): void {
         if (selectedSchema) {
           this.countryService.getShiftsEmployeeNew(selectedSchema , savedIds).subscribe(
             (result: any) => {
-              this.ShiftsPattern = result;
+             this.EmployeeShifts = result;
               console.log(' fetching Companies:');
       
             },

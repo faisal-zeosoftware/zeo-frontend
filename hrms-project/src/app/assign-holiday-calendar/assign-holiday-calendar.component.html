@@ -224,7 +224,7 @@
   
               <div class="col-md-6" >
                 <div class="custom-sel">
-                    <label>Weekend Calendar</label>
+                    <label>Holiday Calendar</label>
                     <select class="form-control" id="holiday_model" required [(ngModel)]="holiday_model"  [ngModelOptions]="{standalone: true}" >
                         <option value="" >Select</option>
                         <option *ngFor="let deparmentsec of WeekCalendar" [value]="deparmentsec.id">{{ deparmentsec.calendar_title     }}  ( {{ deparmentsec.year}} )</option>
@@ -417,7 +417,7 @@
              
      <div class="col-md-6" >
       <div class="custom-sel">
-          <label>Weekend Calendar</label>
+          <label>Holiday Calendar</label>
           <select class="form-control" id="holiday_model" required [(ngModel)]="editAsset.holiday_model"  [ngModelOptions]="{standalone: true}" >
               <option value="" >Select</option>
               <option *ngFor="let deparmentsec of WeekCalendar" [value]="deparmentsec.id">{{ deparmentsec.calendar_title     }}  ( {{ deparmentsec.year}} )</option>
@@ -465,7 +465,7 @@
             <thead>
               <tr>
                 <th>No</th>
-                <th>Weekend Calendar</th>
+                <th>Holiday Calendar</th>
                 <th>Branch</th>
                 <th>Department</th>
                 <th>Category</th>

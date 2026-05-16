@@ -646,154 +646,171 @@ export class UserRoleGroupingCreateComponent implements OnInit {
 
        
 
-  get allPermissions(): number[] {
-    return [
-      ...this.GrouppermissionsEmp,
-      ...this.GrouppermissionsDept,
-      ...this.GrouppermissionsDis,
-      ...this.GrouppermissionsCat,
-      ...this.GrouppermissionsGen,
-      ...this.GrouppermissionsReqtype,
-      ...this.GrouppermissionsApr,
-      ...this.GrouppermissionsAprlvl,
-      ...this.GrouppermissionsGenReqEsc,
-      ...this.GrouppermissionsExpDocument,
-      ...this.GrouppermissionsEmpAprList,
-      ...this.GrouppermissionsEmpRegAprList,
-      ...this.GrouppermissionsEndofSer,
-      ...this.GrouppermissionsRegReq,
-      ...this.GrouppermissionsRegAprlvl,
-      ...this.GrouppermissionsGratuity,
-      ...this.GrouppermissionsBrch,
-      ...this.GrouppermissionsUser,
-      ...this.GrouppermissionsUsergroup,
-      ...this.GrouppermissionsassigneddUser,
-      ...this.GrouppermissionsstateMaster,
-      ...this.Grouppermissionsdocumentype,
-      ...this.GrouppermissionslocationMaster,
-      ...this.GrouppermissionsDnMaster,
-      ...this.GrouppermissionsCpMaster,
-      ...this.GrouppermissionsConfigMaster,
-      ...this.GrouppermissionsAnnounceMaster,
-      ...this.GrouppermissionsNotify,
-      ...this.GrouppermissionsBranchUser,
-      ...this.GrouppermissionsemployeeReport,
-      ...this.GrouppermissionsdocumnetReport,
-      ...this.GrouppermissiionsgeneralReport,
-      ...this.GrouppermissiionsDeptReport,
-      ...this.GrouppermissiionsDesReport,
-      ...this.GrouppermissiionsLeaveReport,
-      ...this.GrouppermissiionsLeaveAprRep,
-      ...this.GrouppermissionsLeaveBalReport,
-      ...this.GrouppermissionsAttendReport,
-      ...this.GrouppermissionsAssetReport,
-      ...this.GrouppermissionsAssetTransReport,
-      ...this.GrouppermissionsEmpform,
-      ...this.GrouppermissionsAssetform,
-      ...this.Grouppermissionsaddweek,
-      ...this.Grouppermisionsassignweek,
-      ...this.Grouppermissionsaddholiday,
-      ...this.Grouppermissionsassisgnholiday,
-      ...this.GrouppermissionsLeaveaprv,
-      ...this.GrouppermissionsLeavetype,
-      ...this.GrouppermissionsLeavemaster,
-      ...this.GrouppermissionsLeavereq,
-      ...this.GrouppermissionsLeavecom,
-      ...this.GrouppermissionsLeavecomTrans,
-      ...this.GrouppermissionsLeavecomTrans,
-      ...this.GrouppermissionsLeaveaprvlvl,
-      ...this.GrouppermissionsLeaveBalance,
-      ...this.GrouppermissionsLeaveCancel,
-      ...this.GrouppermissionsLeaveAccrual,
-      ...this.GrouppermissionsLeaveRejoin,
-      ...this.GrouppermissionsLeaveEscalation,
-      ...this.GrouppermissionsPayrollrun,
-      ...this.GrouppermissionsPayStructure,
-      ...this.GrouppermissionsSalarycomponent,
-      ...this.GrouppermissionsEmployeesalary,
-      ...this.GrouppermissionsPayslipAprv,
-      ...this.GrouppermissionsPayrollaprlvl,
-      ...this.GrouppermissionsAdvanceSalaryAprvlst,
-      ...this.GrouppermissionsAdvanceSalaryReq,
-      ...this.GrouppermissionsAdvanceSalaryAprlvl,
-      ...this.GrouppermissionsWps,
-      ...this.GrouppermissionsAdvanceSalaryEscalation,
-      ...this.GrouppermissionsLoanApproval,
-      ...this.GrouppermissionsLoanType,
-      ...this.GrouppermissionsLoanAprvlvl,
-      ...this.GrouppermissionsLoanApp,
-      ...this.GrouppermissionsLoanRepay,
-      ...this.GrouppermissionsLoanEscalation,
-      ...this.GrouppermissionsAssetType,
-      ...this.GrouppermissionsAssetmaster,
-      ...this.GrouppermissionsAssetAlon,
-      ...this.GrouppermissionsAssetReq,
-      ...this.GrouppermissionsAssetApprovals,
-      ...this.GrouppermissionsAssetApprovallvl,
-      ...this.GrouppermissionsAssetEscalation,
-      ...this.GrouppermissionsDocumentAddFol,
-      ...this.GrouppermissionsProjects,
-      ...this.GrouppermissionsProjectStages,
-      ...this.GrouppermissionsProjectTask,
-      ...this.GrouppermissionsProjectTime,
-      ...this.GrouppermissionsAirTicketPol,
-      ...this.GrouppermissionsAirTicketAlon,
-      ...this.GrouppermissionsAirTicketReq,
-      ...this.GrouppermissionsAirTicketRule,
-      ...this.GrouppermissionsAirTicketApr,
-      ...this.GrouppermissionsAirTicketAprlvl,
-      ...this.GrouppermissionsAirTicketEsc,
-      ...this.GrouppermissionsDocumentAprlvl,
-      ...this.GrouppermissionsDocumentApr,
-      ...this.GrouppermissionsDocumentReq,
-      ...this.GrouppermissionsDocumentType,
-      ...this.GrouppermissionsGeneralReqTemp,
-      ...this.GrouppermissionsLeaveEmTemp,
-      ...this.GrouppermissionsDocExpTemp,
-      ...this.GrouppermissionsDocReqTemp,
-      ...this.GrouppermissionsAdvSalReqTemp,
-      ...this.GrouppermissionsLoanReqTemp,
-      ...this.GrouppermissionsAssetReqTemp,
-      ...this.GrouppermissionsAirticketReqTemp,
-      ...this.GrouppermissionsResignationReqTemp,
-      ...this.GrouppermissionsLinEoutReqTemp,
-      ...this.GrouppermissionsShifts,
-      ...this.GrouppermissionsShiftPattern,
-      ...this.GrouppermissionsShiftEmployee,
-      ...this.GrouppermissionsShiftOverRide,
-      ...this.GrouppermissionsOverTimePolicy,
-      ...this.GrouppermissionsOvertimeRule,
-      ...this.GrouppermissionsEmpOver,
-      ...this.GrouppermissionsAtd,
-      ...this.GrouppermissionsFaceRegister,
-      ...this.GrouppermissionsEmpEarlygoing,
-      ...this.GrouppermissionsEmpRecheck,
-      ...this.GrouppermissionsPuncinglist,
-      ...this.GrouppermissionsPunching,
-      ...this.GrouppermissionsGeoFence,
-      ...this.GrouppermissionsManualentry,
-      ...this.GrouppermissionsLateinEarlyout,
-      ...this.GrouppermissionsLinEoutAprlvl,
-      ...this.GrouppermissionsLinEoutApr,
+get allPermissions(): number[] {
+  return [
+    // Employee Management
+    ...this.GrouppermissionsEmp,
+    ...this.GrouppermissionsDept,
+    ...this.GrouppermissionsDis,
+    ...this.GrouppermissionsCat,
+    ...this.GrouppermissionsGen,
+    ...this.GrouppermissionsReqtype,
+    ...this.GrouppermissionsApr,
+    ...this.GrouppermissionsAprlvl,
+    ...this.GrouppermissionsGenReqEsc,
+    ...this.GrouppermissionsExpDocument,
+    ...this.GrouppermissionsEmpAprList,
+    ...this.GrouppermissionsEmpRegAprList,
+    ...this.GrouppermissionsEndofSer,
+    ...this.GrouppermissionsRegReq,
+    ...this.GrouppermissionsRegAprlvl,
+    ...this.GrouppermissionsGratuity,
 
-    ].map(p => p.id);
-  }
+    // Settings
+    ...this.GrouppermissionsBrch,
+    ...this.GrouppermissionsUser,
+    ...this.GrouppermissionsUsergroup,
+    ...this.GrouppermissionsassigneddUser,
+    ...this.GrouppermissionsBranchUser,
+    ...this.GrouppermissionsstateMaster,
+    ...this.Grouppermissionsdocumentype,
+    ...this.GrouppermissionslocationMaster,
+    ...this.GrouppermissionsDnMaster,
+    ...this.GrouppermissionsCpMaster,
+    ...this.GrouppermissionsConfigMaster,
+    ...this.GrouppermissionsAnnounceMaster,
+    ...this.GrouppermissionsNotify,
+
+    // Reports
+    ...this.GrouppermissionsemployeeReport,
+    ...this.GrouppermissionsdocumnetReport,
+    ...this.GrouppermissiionsgeneralReport,
+    ...this.GrouppermissiionsDeptReport,
+    ...this.GrouppermissiionsDesReport,
+    ...this.GrouppermissiionsLeaveReport,
+    ...this.GrouppermissiionsLeaveAprRep,
+    ...this.GrouppermissionsLeaveBalReport,
+    ...this.GrouppermissionsAttendReport,
+    ...this.GrouppermissionsAssetReport,
+    ...this.GrouppermissionsAssetTransReport,
+
+    // Customization
+    ...this.GrouppermissionsEmpform,
+    ...this.GrouppermissionsAssetform,
+
+    // Calender
+    ...this.Grouppermissionsaddweek,
+    ...this.Grouppermisionsassignweek,
+    ...this.Grouppermissionsaddholiday,
+    ...this.Grouppermissionsassisgnholiday,
+
+    // Leave
+    ...this.GrouppermissionsLeaveaprv,
+    ...this.GrouppermissionsLeavetype,
+    ...this.GrouppermissionsLeavemaster,
+    ...this.GrouppermissionsLeavereq,
+    ...this.GrouppermissionsLeavecom,
+    ...this.GrouppermissionsLeavecomTrans,
+    ...this.GrouppermissionsLeaveaprvlvl,
+    ...this.GrouppermissionsLeaveBalance,
+    ...this.GrouppermissionsLeaveCancel,
+    ...this.GrouppermissionsLeaveAccrual,
+    ...this.GrouppermissionsLeaveRejoin,
+    ...this.GrouppermissionsLeaveEscalation,
+
+    // Payroll
+    ...this.GrouppermissionsPayrollrun,
+    ...this.GrouppermissionsPayStructure,
+    ...this.GrouppermissionsSalarycomponent,
+    ...this.GrouppermissionsEmployeesalary,
+    ...this.GrouppermissionsPayslipAprv,
+    ...this.GrouppermissionsPayrollaprlvl,
+    ...this.GrouppermissionsAdvanceSalaryAprvlst,
+    ...this.GrouppermissionsAdvanceSalaryReq,
+    ...this.GrouppermissionsAdvanceSalaryAprlvl,
+    ...this.GrouppermissionsWps,
+    ...this.GrouppermissionsAdvanceSalaryEscalation,
+
+    // Loan
+    ...this.GrouppermissionsLoanApproval,
+    ...this.GrouppermissionsLoanType,
+    ...this.GrouppermissionsLoanAprvlvl,
+    ...this.GrouppermissionsLoanApp,
+    ...this.GrouppermissionsLoanRepay,
+    ...this.GrouppermissionsLoanEscalation,
+
+    // Asset
+    ...this.GrouppermissionsAssetType,
+    ...this.GrouppermissionsAssetmaster,
+    ...this.GrouppermissionsAssetAlon,
+    ...this.GrouppermissionsAssetReq,
+    ...this.GrouppermissionsAssetApprovals,
+    ...this.GrouppermissionsAssetApprovallvl,
+    ...this.GrouppermissionsAssetEscalation,
+
+    // Document Management
+    ...this.GrouppermissionsDocumentAddFol,
+
+    // Project Management
+    ...this.GrouppermissionsProjects,
+    ...this.GrouppermissionsProjectStages,
+    ...this.GrouppermissionsProjectTask,
+    ...this.GrouppermissionsProjectTime,
+
+    // AirTicket Management
+    ...this.GrouppermissionsAirTicketPol,
+    ...this.GrouppermissionsAirTicketAlon,
+    ...this.GrouppermissionsAirTicketReq,
+    ...this.GrouppermissionsAirTicketRule,
+    ...this.GrouppermissionsAirTicketApr,
+    ...this.GrouppermissionsAirTicketAprlvl,
+    ...this.GrouppermissionsAirTicketEsc,
+
+    // Document Request
+    ...this.GrouppermissionsDocumentAprlvl,
+    ...this.GrouppermissionsDocumentApr,
+    ...this.GrouppermissionsDocumentReq,
+    ...this.GrouppermissionsDocumentType,
+
+    // Email Templates
+    ...this.GrouppermissionsGeneralReqTemp,
+    ...this.GrouppermissionsLeaveEmTemp,
+    ...this.GrouppermissionsDocExpTemp,
+    ...this.GrouppermissionsDocReqTemp,
+    ...this.GrouppermissionsAdvSalReqTemp,
+    ...this.GrouppermissionsLoanReqTemp,
+    ...this.GrouppermissionsAssetReqTemp,
+    ...this.GrouppermissionsAirticketReqTemp,
+    ...this.GrouppermissionsResignationReqTemp,
+    ...this.GrouppermissionsLinEoutReqTemp,
+
+    // Shift Management
+    ...this.GrouppermissionsShifts,
+    ...this.GrouppermissionsShiftPattern,
+    ...this.GrouppermissionsShiftEmployee,
+    ...this.GrouppermissionsShiftOverRide,
+    ...this.GrouppermissionsOverTimePolicy,
+    ...this.GrouppermissionsOvertimeRule,
+    ...this.GrouppermissionsEmpOver,
+
+    // Attendance Management
+    ...this.GrouppermissionsAtd,
+    ...this.GrouppermissionsPunching,
+    ...this.GrouppermissionsFaceRegister,
+    ...this.GrouppermissionsEmpEarlygoing,
+    ...this.GrouppermissionsEmpRecheck,
+    ...this.GrouppermissionsPuncinglist,
+    ...this.GrouppermissionsGeoFence,
+    ...this.GrouppermissionsManualentry,
+    ...this.GrouppermissionsLateinEarlyout,
+    ...this.GrouppermissionsLinEoutAprlvl,
+    ...this.GrouppermissionsLinEoutApr,
+
+  ].map(p => p.id);
+}
 
 onSelectAllPermissions(event: any): void {
   const checked = event.checked;
-
-  this.selectAllPermissions = checked;
-
-  this.selectedPermissions = checked
-    ? [...this.allPermissions]
-    : [];
-
-  this.syncAllUIStates();
-}
-
-onSelectAllChange(event: any) {
-  const checked = event.checked;
-
   this.selectAllPermissions = checked;
 
   if (checked) {
@@ -803,6 +820,678 @@ onSelectAllChange(event: any) {
   }
 
   this.syncAllUIStates();
+  this.updateAllMasterCheckboxes();   // This will tick all section headers too
+}
+updateAllMasterCheckboxes(): void {
+
+
+  // =========================
+  // Employee Management
+  // =========================
+
+  this.employeeMasterChecked =
+    this.GrouppermissionsEmp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.departmentMasterChecked =
+    this.GrouppermissionsDept.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.designationMasterChecked =
+    this.GrouppermissionsDis.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.categoryMasterChecked =
+    this.GrouppermissionsCat.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.GenMasterChecked =
+    this.GrouppermissionsGen.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ReqtypeMasterChecked =
+    this.GrouppermissionsReqtype.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AprMasterChecked =
+    this.GrouppermissionsApr.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AprlvlMasterChecked =
+    this.GrouppermissionsAprlvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.GenReqEscMasterChecked =
+    this.GrouppermissionsGenReqEsc.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ExpDocumentChecked =
+    this.GrouppermissionsExpDocument.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.EmpAprListChecked =
+    this.GrouppermissionsEmpAprList.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.EmpRegAprListChecked =
+    this.GrouppermissionsEmpRegAprList.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.EndofSerChecked =
+    this.GrouppermissionsEndofSer.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.RegReqChecked =
+    this.GrouppermissionsRegReq.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.RegAprlvlChecked =
+    this.GrouppermissionsRegAprlvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.GratuityChecked =
+    this.GrouppermissionsGratuity.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+
+
+  // =========================
+  // Settings
+  // =========================
+
+  this.branchMasterChecked =
+    this.GrouppermissionsBrch.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.userMasterChecked =
+    this.GrouppermissionsUser.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.usergroupingMasterChecked =
+    this.GrouppermissionsUsergroup.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.assignpermissionMasterChecked =
+    this.GrouppermissionsassigneddUser.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.BranchpermissionMasterChecked =
+    this.GrouppermissionsBranchUser.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.stationMasterChecked =
+    this.GrouppermissionsstateMaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.documenttypeMasterChecked =
+    this.Grouppermissionsdocumentype.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.locationMasterChecked =
+    this.GrouppermissionslocationMaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.DnMasterChecked =
+    this.GrouppermissionsDnMaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.CpMasterChecked =
+    this.GrouppermissionsCpMaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ConfigMasterChecked =
+    this.GrouppermissionsConfigMaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AnnounceMasterChecked =
+    this.GrouppermissionsAnnounceMaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.NotefyChecked =
+    this.GrouppermissionsNotify.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== REPORT MANAGEMENT =====================
+
+  this.emportReportChecked =
+    this.GrouppermissionsemployeeReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.documentReportChecked =
+    this.GrouppermissionsdocumnetReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.generelReportChecked =
+    this.GrouppermissiionsgeneralReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.DeptReportChecked =
+    this.GrouppermissiionsDeptReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.DesReportChecked =
+    this.GrouppermissiionsDesReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveReportChecked =
+    this.GrouppermissiionsLeaveReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveAprRepChecked =
+    this.GrouppermissiionsLeaveAprRep.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveBalReportChecked =
+    this.GrouppermissionsLeaveBalReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AttendReportChecked =
+    this.GrouppermissionsAttendReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetReportChecked =
+    this.GrouppermissionsAssetReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetTransReportChecked =
+    this.GrouppermissionsAssetTransReport.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== CUSTOMIZATION MANAGEMENT =====================
+
+  this.EmpformChecked =
+    this.GrouppermissionsEmpform.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetformChecked =
+    this.GrouppermissionsAssetform.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== CALENDER MANAGEMENT =====================
+
+  this.addweekChecked =
+    this.Grouppermissionsaddweek.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.assignweekChecked =
+    this.Grouppermisionsassignweek.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.addholidayChecked =
+    this.Grouppermissionsaddholiday.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.assignholidayChecked =
+    this.Grouppermissionsassisgnholiday.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== EMAIL TEMPLATE MANAGEMENT =====================
+
+  this.GeneralReqTempChecked =
+    this.GrouppermissionsGeneralReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveEmTempChecked =
+    this.GrouppermissionsLeaveEmTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.DocExpTempChecked =
+    this.GrouppermissionsDocExpTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.DocReqTempChecked =
+    this.GrouppermissionsDocReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AdvSalReqTempChecked =
+    this.GrouppermissionsAdvSalReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LoanReqTempChecked =
+    this.GrouppermissionsLoanReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetReqTempChecked =
+    this.GrouppermissionsAssetReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AirticketReqTempChecked =
+    this.GrouppermissionsAirticketReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ResignationReqTempChecked =
+    this.GrouppermissionsResignationReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LinEoutReqTempChecked =
+    this.GrouppermissionsLinEoutReqTemp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== LEAVE MANAGEMENT =====================
+
+  this.LeaveaprvChecked =
+    this.GrouppermissionsLeaveaprv.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeavetypeChecked =
+    this.GrouppermissionsLeavetype.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveEscalationChecked =
+    this.GrouppermissionsLeaveEscalation.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeavemasterChecked =
+    this.GrouppermissionsLeavemaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeavereqChecked =
+    this.GrouppermissionsLeavereq.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeavecomChecked =
+    this.GrouppermissionsLeavecom.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeavecomTransChecked =
+    this.GrouppermissionsLeavecomTrans.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveaprvlvlChecked =
+    this.GrouppermissionsLeaveaprvlvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveBalanceChecked =
+    this.GrouppermissionsLeaveBalance.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveCancelChecked =
+    this.GrouppermissionsLeaveCancel.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveAccrualChecked =
+    this.GrouppermissionsLeaveAccrual.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LeaveRejoinChecked =
+    this.GrouppermissionsLeaveRejoin.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== PAYROLL MANAGEMENT =====================
+
+  this.PayrollrunChecked =
+    this.GrouppermissionsPayrollrun.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.PayStructureChecked =
+    this.GrouppermissionsPayStructure.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.SalarycomponentChecked =
+    this.GrouppermissionsSalarycomponent.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.EmployeeSalaryChecked =
+    this.GrouppermissionsEmployeesalary.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.PayslipAprvChecked =
+    this.GrouppermissionsPayslipAprv.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.PayrollaprlvlChecked =
+    this.GrouppermissionsPayrollaprlvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AdvanceSalaryAprvlstChecked =
+    this.GrouppermissionsAdvanceSalaryAprvlst.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AdvanceSalaryReqChecked =
+    this.GrouppermissionsAdvanceSalaryReq.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AdvanceSalaryEscalationChecked =
+    this.GrouppermissionsAdvanceSalaryEscalation.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AdvanceSalaryAprlvlChecked =
+    this.GrouppermissionsAdvanceSalaryAprlvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.WpsChecked =
+    this.GrouppermissionsWps.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== LOAN MANAGEMENT =====================
+
+  this.LoanApprovalChecked =
+    this.GrouppermissionsLoanApproval.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LoanTypeChecked =
+    this.GrouppermissionsLoanType.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LoanEscalationChecked =
+    this.GrouppermissionsLoanEscalation.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LoanRepayChecked =
+    this.GrouppermissionsLoanRepay.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LoanAprvlvlChecked =
+    this.GrouppermissionsLoanAprvlvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LoanAppChecked =
+    this.GrouppermissionsLoanApp.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== ASSET MANAGEMENT =====================
+
+  this.AssetTypeChecked =
+    this.GrouppermissionsAssetType.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetmasterChecked =
+    this.GrouppermissionsAssetmaster.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetEscalationChecked =
+    this.GrouppermissionsAssetEscalation.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetApprovalsChecked =
+    this.GrouppermissionsAssetApprovals.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetAlonChecked =
+    this.GrouppermissionsAssetAlon.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetApprovallvlChecked =
+    this.GrouppermissionsAssetApprovallvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.AssetReqChecked =
+    this.GrouppermissionsAssetReq.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== ATTENDANCE MANAGEMENT =====================
+
+  this.AtdMasterChecked =
+    this.GrouppermissionsAtd.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.PunchingChecked =
+    this.GrouppermissionsPunching.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.FaceRegisterChecked =
+    this.GrouppermissionsFaceRegister.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.EmpEarlygoingChecked =
+    this.GrouppermissionsEmpEarlygoing.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.EmpRecheckChecked =
+    this.GrouppermissionsEmpRecheck.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.PuncinglistChecked =
+    this.GrouppermissionsPuncinglist.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ManualentryChecked =
+    this.GrouppermissionsManualentry.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.GeoFenceChecked =
+    this.GrouppermissionsGeoFence.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LateinEarlyoutChecked =
+    this.GrouppermissionsLateinEarlyout.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LinEoutAprlvlChecked =
+    this.GrouppermissionsLinEoutAprlvl.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.LinEoutAprChecked =
+    this.GrouppermissionsLinEoutApr.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== DOCUMENT MANAGEMENT =====================
+
+  this.DocumentAddFolChecked =
+    this.GrouppermissionsDocumentAddFol.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  // ===================== PROJECT MANAGEMENT =====================
+
+  this.ProjectsChecked =
+    this.GrouppermissionsProjects.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ProjectStagesChecked =
+    this.GrouppermissionsProjectStages.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ProjectTaskChecked =
+    this.GrouppermissionsProjectTask.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+  this.ProjectTimeChecked =
+    this.GrouppermissionsProjectTime.every((p: any) =>
+      this.selectedPermissions.includes(p.id)
+    );
+
+    // ===================== AIR TICKET MANAGEMENT =====================
+
+this.AirTicketPolChecked =
+  this.GrouppermissionsAirTicketPol.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.AirTicketAprChecked =
+  this.GrouppermissionsAirTicketApr.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.AirTicketAlonChecked =
+  this.GrouppermissionsAirTicketAlon.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.AirTicketEscChecked =
+  this.GrouppermissionsAirTicketEsc.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.AirTicketReqChecked =
+  this.GrouppermissionsAirTicketReq.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.AirTicketAprlvlChecked =
+  this.GrouppermissionsAirTicketAprlvl.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.AirTicketRuleChecked =
+  this.GrouppermissionsAirTicketRule.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+// ===================== DOCUMENT REQUEST MANAGEMENT =====================
+
+this.DocumentAprlvlChecked =
+  this.GrouppermissionsDocumentAprlvl.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.DocumentAprChecked =
+  this.GrouppermissionsDocumentApr.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.DocumentReqChecked =
+  this.GrouppermissionsDocumentReq.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.DocumentTypeChecked =
+  this.GrouppermissionsDocumentType.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+// ===================== SHIFT MANAGEMENT =====================
+
+this.ShiftsChecked =
+  this.GrouppermissionsShifts.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.ShiftPatternChecked =
+  this.GrouppermissionsShiftPattern.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.ShiftEmployeeChecked =
+  this.GrouppermissionsShiftEmployee.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.ShiftOverRideChecked =
+  this.GrouppermissionsShiftOverRide.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.EmpOverChecked =
+  this.GrouppermissionsEmpOver.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.OvertimePolicyChecked =
+  this.GrouppermissionsOverTimePolicy.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
+
+this.OvertimeRuleChecked =
+  this.GrouppermissionsOvertimeRule.every((p: any) =>
+    this.selectedPermissions.includes(p.id)
+  );
 }
 
 syncAllUIStates() {

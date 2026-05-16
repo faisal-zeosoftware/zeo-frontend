@@ -376,6 +376,7 @@ note: string = '';  // To hold the note entered by the user
 
         // Close the modal after successful approval
         this.isAddFieldsModalOpen = false;
+        window.location.reload();
       },
       (error) => {
         console.error('Error approving the approval request:', error);
