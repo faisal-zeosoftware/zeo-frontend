@@ -405,8 +405,8 @@ if (this.userId !== null) {
   }
   
   toggleSelectAllEmployees() {
-    this.allSelecteds = !this.allSelecteds;
-  this.compTransactions.forEach(employee => employee.selected = this.allSelecteds);
+    this.allSelectedBrach = !this.allSelectedBrach;
+  this.compTransactions.forEach(employee => employee.selected = this.allSelectedBrach);
   
   }
 
@@ -527,12 +527,12 @@ if (this.userId !== null) {
 
   this.reason = data.reason;
 
-  // Attendance IDs
-  this.attendances =
-    data.attendances.map((x: any) => x.id);
+  // // Attendance IDs
+  // this.attendances =
+  //   data.attendances.map((x: any) => x.id);
 
-  // Attendance list for dropdown
-  this.compAttendance = data.attendances;
+  // // Attendance list for dropdown
+  // this.compAttendance = data.attendances;
 
 }
 
