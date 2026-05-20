@@ -6,6 +6,8 @@ import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
+import { combineLatest, Subscription } from 'rxjs';
+import { EmployeeService } from '../employee-master/employee.service';
 
 @Component({
   selector: 'app-branch-permissions',
@@ -13,6 +15,8 @@ import { MatSelect } from '@angular/material/select';
   styleUrl: './branch-permissions.component.css'
 })
 export class BranchPermissionsComponent {
+
+    private dataSubscription?: Subscription;
 
   @ViewChild('select') select: MatSelect | undefined;
 
@@ -64,6 +68,7 @@ selectedUserPermission: any = { user: '', groups: [] };
     private authService: AuthenticationService,
     private DesignationService: DesignationService,
 private sessionService: SessionService,
+private employeeService: EmployeeService,
  ) {}
 
 
@@ -328,6 +333,7 @@ loadAssignedPermissionsForUser(): void {
           console.log('Permission deleted successfully', response);
           alert('Permission deleted successfully');
           this.loadAssignedPermissionsForUser();
+          window.location.reload();
         },
         (error) => {
           console.error('Error deleting permission:', error);
@@ -339,18 +345,69 @@ loadAssignedPermissionsForUser(): void {
   }
 
 
+  deleteSelectedPermissions(): void {
+
+  const selectedPermissions = this.UserPermissions.filter(
+    (permission: any) => permission.selected
+  );
+
+  if (selectedPermissions.length === 0) {
+    alert('Please select at least one permission');
+    return;
+  }
+
+  if (!confirm('Are you sure you want to delete selected permissions?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
+
+  selectedPermissions.forEach((permission: any) => {
+
+    this.DepartmentServiceService
+      .deleteBranchPermission(permission.id, selectedSchema)
+      .subscribe({
+        next: () => {
+          console.log('Deleted:', permission.id);
+           window.location.reload();
+        },
+
+        error: (error) => {
+          console.error('Delete failed:', error);
+        }
+      });
+
+  });
+
+  alert('Selected permissions deleted');
+
+  this.loadAssignedPermissionsForUser();
+}
+
+
 
 
 
   // Open modal and set selected permission details
 openEditPerModal(permission: any): void {
-  this.isUserPereditModalOpen = true;
 
   this.selectedUserPermission = permission;
 
-  // SET EDIT VALUES
-  this.user = permission.user_id;
- this.branch = permission.branch.map((b: any) => b.id);
+  this.isUserPereditModalOpen = true;
+
+  setTimeout(() => {
+
+    this.user = Number(permission.user);
+
+    this.branch = permission.branch.map(
+      (b: any) => Number(b.id)
+    );
+
+  });
 
 }
 
@@ -360,9 +417,39 @@ closeEditPerModal(): void {
   this.selectedUserPermission = { user: '', groups: [] };
 }
 
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.DepartmentServiceService.getassignedPermissionsForUserNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.UserPermissions = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
 updateUserPermission(): void {
+
+  this.registerButtonClickededit = true;
+
   if (!this.user || this.branch.length === 0) {
-    alert('Select User and Branch');
+    alert('Please select User and Branch');
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    console.error('No schema selected');
     return;
   }
 
@@ -371,20 +458,42 @@ updateUserPermission(): void {
     branch: this.branch
   };
 
-  const schema = this.authService.getSelectedSchema();
-  if (!schema) return;
-
   this.DepartmentServiceService
-    .updateBranchPermission(schema, this.selectedUserPermission.id, payload)
+    .updateBranchPermission(
+      selectedSchema,
+      this.selectedUserPermission.id,
+      payload
+    )
     .subscribe(
-      () => {
-        alert('Permission Updated Successfully');
+      (response) => {
+
+        console.log('Permission updated successfully', response);
+
+        alert('Permission updated successfully');
+
         this.closeEditPerModal();
+
         this.loadAssignedPermissionsForUser();
+
+        window.location.reload();
       },
-      (err) => {
-        console.error(err);
-        alert('Update failed');
+
+      (error) => {
+
+        console.error('Error updating Permissions:', error);
+
+        let errorMsg = 'Update failed';
+
+        const backendError = error?.error;
+
+        if (backendError && typeof backendError === 'object') {
+
+          errorMsg = Object.keys(backendError)
+            .map(key => `${key}: ${backendError[key].join(', ')}`)
+            .join('\n');
+        }
+
+        alert(errorMsg);
       }
     );
 }
@@ -447,6 +556,56 @@ toggleAllSelectionBrach(): void {
     ? this.selectBrach.options.forEach(o => o.select())
     : this.selectBrach.options.forEach(o => o.deselect());
 }
+
+
+               iscreateLoanApp: boolean = false;
+
+
+
+
+      openPopus():void{
+        this.iscreateLoanApp = true;
+
+      }
+    
+      closeapplicationModal():void{
+        this.iscreateLoanApp = false;
+
+      }
+
+
+
+
+      openEditPopuss(categoryId: number):void{
+        
+      }
+  
+  
+      showEditBtn: boolean = false;
+  
+      EditShowButtons() {
+        this.showEditBtn = !this.showEditBtn;
+      }
+  
+  
+      Delete: boolean = false;
+  
+    toggleCheckboxes() {
+      this.Delete = !this.Delete;
+    }
+  
+    toggleSelectAllEmployees() {
+        this.allSelected = !this.allSelected;
+   this.UserPermissions.forEach((permission: any) => {
+  permission.selected = this.allSelected;
+});
+
+    }
+  
+    onCheckboxChange(employee:number) {
+      // No need to implement any logic here if you just want to change the style.
+      // You can add any additional logic if needed.
+    }
 
 
 

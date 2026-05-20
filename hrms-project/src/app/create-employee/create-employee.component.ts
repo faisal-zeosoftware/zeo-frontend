@@ -1755,6 +1755,7 @@ export class CreateEmployeeComponent implements OnInit {
     formData.append('emp_gender', this.emp_gender);
     formData.append('emp_date_of_birth', this.emp_date_of_birth);
     formData.append('emp_personal_email', this.emp_personal_email);
+    formData.append('emp_company_email', this.emp_company_email);
     formData.append('emp_mobile_number_1', this.emp_mobile_number_1);
     formData.append('emp_mobile_number_2', this.emp_mobile_number_2);
     formData.append('emp_city', this.emp_city);

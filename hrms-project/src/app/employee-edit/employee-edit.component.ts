@@ -173,9 +173,7 @@ ngOnInit(): void {
   this.loadLanguages();
   this.loadReligoin();
   this.loadNationality();
-  this.loadUsers(() => {
-  this.mapApprover();
-});
+  this.loadUsers();
 
   // 🔹 Load employee data
   this.EmployeeService.getEmpById(this.data.employeeId).subscribe(
@@ -273,6 +271,11 @@ ngOnInit(): void {
         }
 
       }, 500); // wait for dropdown data
+
+      // ✅ wait slightly until users loaded
+setTimeout(() => {
+  this.mapApprover();
+}, 300);
 
     },
     (error) => {
@@ -374,7 +377,7 @@ updateEmp(): void {
   safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));
   safeAppend('work_location', this.Emp.work_location);
   safeAppend('visa_location', this.Emp.visa_location);
-  safeAppend('emp_reporting_manager', this.Emp.approver);
+  safeAppend('emp_reporting_manager', this.Emp.emp_reporting_manager);
   safeAppend('person_id', this.Emp.person_id);
 
   // ✅ Boolean values as 1/0
@@ -388,6 +391,7 @@ updateEmp(): void {
     (response) => {
       console.log('Employee updated successfully:', response);
       alert('Employee Details Edited');
+      window.location.reload();
 
       this.updateCustomFieldValues();
       this.dialogRef.close();
@@ -1080,25 +1084,34 @@ loadEmployee(): void {
 
 
 mapApprover(): void {
-  if (!this.Emp || !this.Users?.length) return;
 
-  // Case 1: backend returns ID already
-  if (typeof this.Emp.approver === 'number') {
+  if (!this.Emp || !this.Users || this.Users.length === 0) {
     return;
   }
 
-  // Case 2: backend returns username → map to ID
+  console.log('EMP MANAGER:', this.Emp.emp_reporting_manager);
+  console.log('USERS:', this.Users);
+
+  // already numeric id
+  if (!isNaN(this.Emp.emp_reporting_manager)) {
+    this.Emp.emp_reporting_manager =
+      Number(this.Emp.emp_reporting_manager);
+    return;
+  }
+
+  // backend sends username/string
   const user = this.Users.find(
-    u => u.username === this.Emp.approver
+    u =>
+      u.username?.trim().toLowerCase() ===
+      this.Emp.emp_reporting_manager?.trim().toLowerCase()
   );
 
   if (user) {
-    this.Emp.approver = user.id;
+    this.Emp.emp_reporting_manager = user.id;
   } else {
-    this.Emp.approver = null;
+    this.Emp.emp_reporting_manager = null;
   }
 }
-
   
   
 

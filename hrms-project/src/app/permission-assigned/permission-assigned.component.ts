@@ -376,6 +376,7 @@ if (this.userId !== null) {
         (response) => {
           console.log('Permission deleted successfully', response);
           alert('Permission deleted successfully');
+          window.location.reload();
 // combineLatest waits for both Schema and Branches to have a value
 this.dataSubscription = combineLatest([
   this.employeeService.selectedSchema$,
@@ -396,6 +397,56 @@ this.dataSubscription = combineLatest([
     }
     }
   }
+
+
+  deleteSelectedPermissions(): void {
+
+  const selectedPermissions = this.UserPermissions.filter(
+    (permission: any) => permission.selected
+  );
+
+  if (selectedPermissions.length === 0) {
+    alert('Please select at least one permission');
+    return;
+  }
+
+  if (!confirm('Are you sure you want to delete selected permissions?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
+
+  selectedPermissions.forEach((permission: any) => {
+
+    this.DepartmentServiceService
+      .deleteAssignedPermission(permission.id, selectedSchema)
+      .subscribe({
+
+        next: () => {
+          console.log('Deleted:', permission.id);
+           window.location.reload();
+        },
+
+        error: (error) => {
+          console.error('Delete failed:', error);
+        }
+
+      });
+
+  });
+
+  alert('Selected permissions deleted');
+
+  this.fetchEmployees(
+    selectedSchema,
+    JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+  );
+
+}
 
 
 
@@ -434,6 +485,7 @@ updateUserPermission(): void {
       (response) => {
         console.log('Permission updated successfully', response);
         alert('Permission updated successfully');
+        window.location.reload();
 // combineLatest waits for both Schema and Branches to have a value
 this.dataSubscription = combineLatest([
   this.employeeService.selectedSchema$,
@@ -491,6 +543,72 @@ toggleAllSelectionEdit(): void {
       this.selectEdit.options.forEach((item: MatOption) => item.deselect());
     }
   }
+}
+
+
+
+               iscreateLoanApp: boolean = false;
+
+
+
+
+      openPopus():void{
+        this.iscreateLoanApp = true;
+
+      }
+    
+      closeapplicationModal():void{
+        this.iscreateLoanApp = false;
+
+      }
+
+
+
+
+      openEditPopuss(categoryId: number):void{
+        
+      }
+  
+  
+      showEditBtn: boolean = false;
+  
+      EditShowButtons() {
+        this.showEditBtn = !this.showEditBtn;
+      }
+  
+  
+      Delete: boolean = false;
+  
+    toggleCheckboxes() {
+      this.Delete = !this.Delete;
+    }
+  
+    toggleSelectAllEmployees() {
+        this.allSelected = !this.allSelected;
+   this.UserPermissions.forEach((permission: any) => {
+  permission.selected = this.allSelected;
+});
+
+    }
+  
+    onCheckboxChange(employee:number) {
+      // No need to implement any logic here if you just want to change the style.
+      // You can add any additional logic if needed.
+    }
+
+
+
+    isEditModalOpen: boolean = false;
+editAsset: any = {}; // holds the asset being edited
+
+openEditModal(asset: any): void {
+  this.editAsset = { ...asset }; // copy asset data
+  this.isEditModalOpen = true;
+}
+
+closeEditModal(): void {
+  this.isEditModalOpen = false;
+  this.editAsset = {};
 }
 
 }
