@@ -112,7 +112,7 @@
 
 
         <div class="row mt-4" *ngIf="!isTableView">
-          <div class="col-md-4 col-sm-6" *ngFor="let employeesec of filteredEmployees" (click)="showEmployeeDetails(employeesec.id)">
+          <div class="col-md-4 col-sm-6" *ngFor="let employeesec of filteredEmployees">
             <div class="emp-card-modern mt-3" [ngClass]="{ 'selected-card': employeesec.selected }">
               
               <mat-checkbox *ngIf="Delete" class="card-selection-check" 
@@ -120,11 +120,11 @@
                             (change)="onCheckboxChange(employeesec.id)">
               </mat-checkbox>
           
-              <div class="card-banner-bg">
+              <div class="card-banner-bg" (click)="showEmployeeDetails(employeesec.id)">
                  <span class="points-badge" *ngIf="employeesec.points">{{employeesec.points}} Pts</span>
               </div>
           
-              <div class="card-body-content">
+              <div class="card-body-content" (click)="showEmployeeDetails(employeesec.id)">
                 <div class="profile-container">
                   <div class="avatar-wrapper">
   

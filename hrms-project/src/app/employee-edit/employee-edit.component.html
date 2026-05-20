@@ -443,7 +443,7 @@
   [(ngModel)]="Emp.emp_reporting_manager"
   [ngModelOptions]="{standalone: true}">
 
-  <option [ngValue]="null">-- Select Manager --</option>
+  <option [ngValue]="''">-- Select Manager --</option>
 
   <option *ngFor="let user of Users" [ngValue]="user.id">
     {{ user.username }}

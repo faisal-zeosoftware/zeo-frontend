@@ -377,7 +377,14 @@ updateEmp(): void {
   safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));
   safeAppend('work_location', this.Emp.work_location);
   safeAppend('visa_location', this.Emp.visa_location);
+ if (
+  this.Emp.emp_reporting_manager === 0 ||
+  this.Emp.emp_reporting_manager === '0'
+) {
+  formData.append('emp_reporting_manager', '');
+} else {
   safeAppend('emp_reporting_manager', this.Emp.emp_reporting_manager);
+}
   safeAppend('person_id', this.Emp.person_id);
 
   // ✅ Boolean values as 1/0
