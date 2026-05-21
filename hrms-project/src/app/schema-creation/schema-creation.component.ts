@@ -28,6 +28,8 @@ export class SchemaCreationComponent {
   address_line1 : string = '';
   address_line2 : string = '';
   financial_year_start_month : string = '';
+  financial_year : any = '';
+
   financial_year_start_day : string = '';
   state: any | undefined;
 
@@ -154,9 +156,11 @@ export class SchemaCreationComponent {
     companyData.append('address_line1', this.address_line1);
 
     companyData.append('address_line2', this.address_line2);
+    companyData.append('financial_year', this.financial_year);
 
-    companyData.append('financial_year_start_month', this.financial_year_start_month);
-    companyData.append('financial_year_start_day', this.financial_year_start_day);
+
+    // companyData.append('financial_year_start_month', this.financial_year_start_month);
+    // companyData.append('financial_year_start_day', this.financial_year_start_day);
 
   // ✅ Only append state if selected
   if (this.state) {
