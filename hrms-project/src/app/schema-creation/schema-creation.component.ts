@@ -36,6 +36,8 @@ export class SchemaCreationComponent {
   state_label: string = ''; // For dynamically storing state_label
 
   timezone: string = '';
+  city: string = '';
+
 
   users:any[]=[];
   countries:any[]=[];
@@ -161,6 +163,7 @@ export class SchemaCreationComponent {
     companyData.append('address_line2', this.address_line2);
     companyData.append('financial_year', this.financial_year);
 
+    companyData.append('city', this.city);
 
   
 

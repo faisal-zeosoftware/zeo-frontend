@@ -70,6 +70,8 @@
                 <th>Country</th>
                 <th>State</th>
                 <th>Timezone</th>
+                <th>City</th>
+
                 <th>Industry Type</th>
                 <th>Address line 1</th>
                 <th>Address line 2</th>
@@ -91,6 +93,7 @@
                   {{ schema.states?.length ? schema.states[0].state_name : 'N/A' }}
                 </td>
                 <td>{{ schema.timezone }}</td>
+                <td>{{ schema.city }}</td>
 
                 <td>{{ schema.industry_type }}</td>
                 <td>{{ schema.address_line1 }}</td>
@@ -198,6 +201,19 @@
             </div>
           </div>
           
+
+          
+        <div class="col-md-6">
+
+          <label>City</label>
+      
+          <input type="text"
+                 class="form-control"
+                 [(ngModel)]="editAsset.city"
+                 [ngModelOptions]="{standalone: true}"
+                 readonly>
+      
+      </div>
         
         <div class="col-md-6">
         
@@ -240,6 +256,9 @@
         
             </textarea>
         </div>
+
+
+
 
         <!-- <div class="col-md-6">
 
