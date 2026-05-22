@@ -99,8 +99,8 @@ export class FromDesignerComponent {
    fatherFieldName: string = 'Father Name';
    motherFieldName: string = 'mother Name';
 
-   hiredFieldName: string = 'Hired Date';
-   joinFieldName: string = 'joining Date';
+   hiredFieldName: string = 'Joining  Date';
+   joinFieldName: string = 'Comfirmation Date';
 
 
 

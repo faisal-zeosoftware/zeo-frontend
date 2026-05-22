@@ -283,32 +283,7 @@
     
     
     
-    <div class="col-md-6">
 
-
-        <div class="custom-sel">
-            <label>{{cntryFieldName}}</label>
-            <select class="form-control" id="emp_country_id" name="emp_country_id" required [(ngModel)]="Emp.emp_country_id" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}" >
-                <option value="" >Select</option>
-                <option *ngFor="let emp_country_id of countries" [value]="emp_country_id.id">{{ emp_country_id.country_name }}</option>
-            </select>
-            <!-- <div *ngIf="registerButtonClicked && !emp_country_id" class="error-message">Please Select Your Country</div> -->
-        </div>
-                    
-
-    </div>
-
-       <!-- Dynamic State Section -->
-       <div class="col-md-6" *ngIf="states && states.length > 0">
-        <div class="custom-sel">
-          <!-- Dynamically displaying the state_label from the API response -->
-          <label>{{ state_label }}</label>
-          <select class="form-control" id="state" required [(ngModel)]="Emp.emp_state_id" [ngModelOptions]="{standalone:true}">
-            <option *ngFor="let state of states" [value]="state.id">{{ state.state_name }}</option>
-          </select>
-        </div>
-      </div>
-    
     
     
     

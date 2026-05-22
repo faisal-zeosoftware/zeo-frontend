@@ -123,9 +123,9 @@ export class CreateEmployeeComponent implements OnInit {
   fatherFieldName: string = 'Father Name';
   motherFieldName: string = 'Mother Name';
 
-  hiredFieldName: string = 'Hired Date';
+  hiredFieldName: string = 'Joining Date';
 
-  joinFieldName: string = 'Joining Date';
+  joinFieldName: string = 'Confirmation Date';
 
 
 
@@ -217,7 +217,7 @@ export class CreateEmployeeComponent implements OnInit {
   desDataType: string = 'Dropdown';   // Default data type for Gender
 
 
-  catFieldName: string = 'Catogory';
+  catFieldName: string = 'Category';
   temp_emp_cat: string | null = null;
   catDropdownOptions: string[] = [];
   catDataType: string = 'Dropdown';   // Default data type for Gender
@@ -597,8 +597,8 @@ export class CreateEmployeeComponent implements OnInit {
     formData.append('emp_mother_name', this.emp_mother_name);
     formData.append('emp_posting_location', this.emp_posting_location);
 
-    formData.append('emp_country_id', this.emp_country_id);
-    formData.append('emp_state_id', this.emp_state_id);
+    // formData.append('emp_country_id', this.emp_country_id);
+    // formData.append('emp_state_id', this.emp_state_id);
 
 
     formData.append('emp_company_id', this.emp_company_id);

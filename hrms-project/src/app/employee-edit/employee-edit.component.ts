@@ -65,11 +65,11 @@ export class EmployeeEditComponent {
   brchFieldName: string = 'Branch';
   deptFieldName: string = 'Department';
   desFieldName: string = 'Designation';
-  catFieldName: string = 'Catogory';
+  catFieldName: string = 'Category';
 
-  hiredFieldName: string = 'Hired Date';
+  hiredFieldName: string = 'Joining Date';
 
-  joinFieldName: string = 'Joining Date';
+  joinFieldName: string = 'Confirmation Date';
 
   // nationFieldName: string = 'Joining Date';
 
@@ -361,8 +361,8 @@ updateEmp(): void {
   safeAppend('emp_mother_name', this.Emp.emp_mother_name);
   safeAppend('emp_posting_location', this.Emp.emp_posting_location);
 
-  safeAppend('emp_country_id', this.Emp.emp_country_id);
-  safeAppend('emp_state_id', this.Emp.emp_state_id);
+  // safeAppend('emp_country_id', this.Emp.emp_country_id);
+  // safeAppend('emp_state_id', this.Emp.emp_state_id);
   safeAppend('emp_company_id', this.Emp.emp_company_id);
   safeAppend('emp_branch_id', this.Emp.emp_branch_id);
 
