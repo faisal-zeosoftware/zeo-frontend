@@ -241,9 +241,22 @@ this.Schemas.forEach(employee => employee.selected = this.allSelecteds);
 }
 
 
+// openEditModal(asset: any): void {
+// this.editAsset = { ...asset }; // copy asset data
+// this.isEditModalOpen = true;
+// }
+
+
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+
+  this.editAsset = { ...asset };
+
+  // Load states for selected country
+  if (this.editAsset.country) {
+    this.loadStatesByCountry();
+  }
+
+  this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
@@ -265,68 +278,70 @@ closeEditModal(): void {
        isLoading: boolean = false;
     
 
-   registerCategory(): void {
-    this.registerButtonClicked = true;
+  //  registerCategory(): void {
+  //   this.registerButtonClicked = true;
   
-    if (!this.schema_name || !this.name || !this.logo || !this.country ) {
-      let errorMessage = '';
-      if (!this.schema_name) errorMessage += 'Location Name field is blank. ';
-      if (!this.name) errorMessage += 'Name field is blank. ';
-      if (!this.logo) errorMessage += 'Company Logo is blank. ';
-      alert(errorMessage.trim());
-      return; // Exit the function if validation fails
-    }
+  //   if (!this.schema_name || !this.name || !this.logo || !this.country ) {
+  //     let errorMessage = '';
+  //     if (!this.schema_name) errorMessage += 'Location Name field is blank. ';
+  //     if (!this.name) errorMessage += 'Name field is blank. ';
+  //     if (!this.logo) errorMessage += 'Company Logo is blank. ';
+  //     alert(errorMessage.trim());
+  //     return; // Exit the function if validation fails
+  //   }
   
-    // Validation for spaces in the schema_name field
-    const schemaNameHasSpaces = /\s/.test(this.schema_name);
-    if (schemaNameHasSpaces) {
-      alert('Schema name should not contain spaces.');
-      return; // Exit the function if validation fails
-    }
+  //   // Validation for spaces in the schema_name field
+  //   const schemaNameHasSpaces = /\s/.test(this.schema_name);
+  //   if (schemaNameHasSpaces) {
+  //     alert('Schema name should not contain spaces.');
+  //     return; // Exit the function if validation fails
+  //   }
   
-    // Prepare FormData
-    const formData = new FormData();
-    formData.append('schema_name', this.schema_name);
-    formData.append('name', this.name);
-    formData.append('owner', this.owner);
-    formData.append('country', this.country);
+  //   // Prepare FormData
+  //   const formData = new FormData();
+  //   formData.append('schema_name', this.schema_name);
+  //   formData.append('name', this.name);
+  //   formData.append('owner', this.owner);
+  //   formData.append('country', this.country);
 
-    if (this.logo) {
-      formData.append('logo', this.logo, this.logo.name);
-    }
+  //   if (this.logo) {
+  //     formData.append('logo', this.logo, this.logo.name);
+  //   }
 
-            this.isLoading = true;
+  //           this.isLoading = true;
   
-    // Make API call
-    this.userService.getSchema(formData).subscribe(
-      (response) => {
-         this.isLoading = false;
-        console.log('Registration successful', response);
-        alert('Location has been Registered!');
-        window.location.reload();
-      },
-      (error) => {
-                 this.isLoading = false;
-        console.error('Registration failed', error);
-  let errorMessage = 'Enter all required fields!';
+  //   // Make API call
+  //   this.userService.getSchema(formData).subscribe(
+  //     (response) => {
+  //        this.isLoading = false;
+  //       console.log('Registration successful', response);
+  //       alert('Location has been Registered!');
+  //       window.location.reload();
+  //     },
+  //     (error) => {
+  //                this.isLoading = false;
+  //       console.error('Registration failed', error);
+  // let errorMessage = 'Enter all required fields!';
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
-      }
+  //     // ✅ Handle backend validation or field-specific errors
+  //     if (error.error && typeof error.error === 'object') {
+  //       const messages: string[] = [];
+  //       for (const [key, value] of Object.entries(error.error)) {
+  //         if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+  //         else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+  //         else messages.push(`${key}: ${JSON.stringify(value)}`);
+  //       }
+  //       if (messages.length > 0) errorMessage = messages.join('\n');
+  //     } else if (error.error?.detail) {
+  //       errorMessage = error.error.detail;
+  //     }
 
-      alert(errorMessage);
-    }
-    );
-  }
+  //     alert(errorMessage);
+  //   }
+  //   );
+  // }
+
+
 
 
   deleteSelectedLocationmaster() { 
@@ -428,7 +443,57 @@ closeEditModal(): void {
     this.selectedFile = event.target.files.length > 0 ? event.target.files[0] : null;
   }
 
+  // updateCompany(): void {
+  //   const selectedSchema = localStorage.getItem('selectedSchema');
+  
+  //   if (!selectedSchema || !this.editAsset.id) {
+  //     alert('Missing schema or asset ID');
+  //     return;
+  //   }
+  
+  //   const formData = new FormData();
+  
+  //   formData.append('name', this.editAsset.name);
+  //   formData.append('country', this.editAsset.country);
+  //   formData.append('state', this.editAsset.state);
+  //   formData.append('industry_type', this.editAsset.industry_type || '');
+  //   formData.append('address_line1', this.editAsset.address_line1 || '');
+  //   formData.append('address_line2', this.editAsset.address_line2 || '');
+  //   formData.append('financial_year_start_month', this.editAsset.financial_year_start_month);
+  //   formData.append('financial_year_start_day', this.editAsset.financial_year_start_day);
+  
+  //   // ✅ Append file ONLY if selected
+  //   if (this.selectedFile) {
+  //     formData.append('logo', this.selectedFile);
+  //   }
+  
+  //   this.employeeService.updateCompany(this.editAsset.id, formData).subscribe(
+  //     (response) => {
+  //       alert('Company updated successfully!');
+  //       window.location.reload();
+  //       this.closeEditModal();
+  //     },
+  //     (error) => {
+  //       console.error('Error updating Company:', error);
+  
+  //       let errorMsg = '';
+  
+  //       if (error.error && typeof error.error === 'object') {
+  //         errorMsg = Object.keys(error.error)
+  //           .map(key => `${key}: ${error.error[key].join(', ')}`)
+  //           .join('\n');
+  //       } else {
+  //         errorMsg = error.message || 'Update failed';
+  //       }
+  
+  //       alert(errorMsg);
+  //     }
+  //   );
+  // }
+
+
   updateCompany(): void {
+
     const selectedSchema = localStorage.getItem('selectedSchema');
   
     if (!selectedSchema || !this.editAsset.id) {
@@ -440,35 +505,51 @@ closeEditModal(): void {
   
     formData.append('name', this.editAsset.name);
     formData.append('country', this.editAsset.country);
-    formData.append('state', this.editAsset.state);
-    formData.append('industry_type', this.editAsset.industry_type || '');
-    formData.append('address_line1', this.editAsset.address_line1 || '');
-    formData.append('address_line2', this.editAsset.address_line2 || '');
-    formData.append('financial_year_start_month', this.editAsset.financial_year_start_month);
-    formData.append('financial_year_start_day', this.editAsset.financial_year_start_day);
+    formData.append('state', this.editAsset.state || '');
   
-    // ✅ Append file ONLY if selected
+    formData.append('timezone', this.editAsset.timezone || '');
+  
+    formData.append('industry_type', this.editAsset.industry_type || '');
+  
+    formData.append('address_line1', this.editAsset.address_line1 || '');
+  
+    formData.append('address_line2', this.editAsset.address_line2 || '');
+  
+    formData.append('financial_year', this.editAsset.financial_year || '');
+  
+    // Upload logo only if selected
     if (this.selectedFile) {
       formData.append('logo', this.selectedFile);
     }
   
     this.employeeService.updateCompany(this.editAsset.id, formData).subscribe(
+  
       (response) => {
+  
         alert('Company updated successfully!');
+  
         window.location.reload();
+  
         this.closeEditModal();
+  
       },
+  
       (error) => {
+  
         console.error('Error updating Company:', error);
   
         let errorMsg = '';
   
         if (error.error && typeof error.error === 'object') {
+  
           errorMsg = Object.keys(error.error)
             .map(key => `${key}: ${error.error[key].join(', ')}`)
             .join('\n');
+  
         } else {
+  
           errorMsg = error.message || 'Update failed';
+  
         }
   
         alert(errorMsg);
@@ -476,14 +557,31 @@ closeEditModal(): void {
     );
   }
 
+// onCountryChange(): void {
+//   if (this.editAsset.country !== undefined) {
+//     this.loadStatesByCountry();
+//   }
+// }
 
 onCountryChange(): void {
+
   if (this.editAsset.country !== undefined) {
+
     this.loadStatesByCountry();
+
+    // Find selected country
+    const selectedCountry = this.countries.find(
+      (c: any) => c.id == this.editAsset.country
+    );
+
+    // Set timezone automatically
+    if (selectedCountry) {
+      this.editAsset.timezone = selectedCountry.timezone;
+    } else {
+      this.editAsset.timezone = '';
+    }
   }
 }
-
-
 
 states: any[] = [];
 state_label: string = ''; // For dynamically storing state_label

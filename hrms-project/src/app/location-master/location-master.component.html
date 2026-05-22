@@ -69,13 +69,13 @@
                 <th> Company</th>
                 <th>Country</th>
                 <th>State</th>
+                <th>Timezone</th>
                 <th>Industry Type</th>
                 <th>Address line 1</th>
                 <th>Address line 2</th>
                 <th>Currency</th>
-                <th>financial year start month</th>
-                <th>
-                financial year start Day </th>
+                <th>financial year Start Date</th>
+               
 
                 <th>Action</th>
 
@@ -90,6 +90,8 @@
                 <td>
                   {{ schema.states?.length ? schema.states[0].state_name : 'N/A' }}
                 </td>
+                <td>{{ schema.timezone }}</td>
+
                 <td>{{ schema.industry_type }}</td>
                 <td>{{ schema.address_line1 }}</td>
                 <td>{{ schema.address_line2 }}</td>
@@ -98,8 +100,8 @@
                 </td>
            
 
-                <td>{{ schema.financial_year_start_month }}</td>
-                <td>{{ schema.financial_year_start_day }}</td>
+                <td>{{ schema.financial_year }}</td>
+              
 
                 
                 <td class="text-center">
@@ -170,6 +172,19 @@
                
             
         </div>
+
+
+        <div class="col-md-6">
+
+          <label>Timezone</label>
+      
+          <input type="text"
+                 class="form-control"
+                 [(ngModel)]="editAsset.timezone"
+                 [ngModelOptions]="{standalone: true}"
+                 readonly>
+      
+      </div>
 
            <!-- Dynamic State Section -->
            <div class="col-md-6" *ngIf="states && states.length > 0">
@@ -246,15 +261,14 @@
       </div> -->
       
         
-        <div class="col-md-6">
-            <label>financial year start month</label>
-            <input type="number" class="form-control" [(ngModel)]="editAsset.financial_year_start_month"  [ngModelOptions]="{standalone: true}"  placeholder="enter start month"  >
-        </div>
-        
-        <div class="col-md-6">
-            <label>financial year start day</label>
-            <input type="number" class="form-control" [(ngModel)]="editAsset.financial_year_start_day"  [ngModelOptions]="{standalone: true}"  placeholder="enter start month"  >
-        </div>
+      <div class="col-md-6">
+        <label>Financial Year Start Date</label>
+    
+        <input type="date"
+               class="form-control"
+               [(ngModel)]="editAsset.financial_year"
+               [ngModelOptions]="{standalone: true}">
+    </div>
         
         <div class="col-md-6">
             <label for="logo">Company Logo:</label>

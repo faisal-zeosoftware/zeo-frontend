@@ -35,6 +35,7 @@ export class SchemaCreationComponent {
 
   state_label: string = ''; // For dynamically storing state_label
 
+  timezone: string = '';
 
   users:any[]=[];
   countries:any[]=[];
@@ -143,6 +144,7 @@ export class SchemaCreationComponent {
     // }
   
     // Prepare FormData
+   
     const companyData = new FormData();
     // companyData.append('schema_name', this.schema_name);
     companyData.append('name', this.name);
@@ -150,6 +152,7 @@ export class SchemaCreationComponent {
     
     companyData.append('country', this.country);
     companyData.append('currency', this.currency);
+    companyData.append('timezone', this.timezone);
 
     companyData.append('industry_type', this.industry_type);
 
@@ -159,8 +162,7 @@ export class SchemaCreationComponent {
     companyData.append('financial_year', this.financial_year);
 
 
-    // companyData.append('financial_year_start_month', this.financial_year_start_month);
-    // companyData.append('financial_year_start_day', this.financial_year_start_day);
+  
 
   // ✅ Only append state if selected
   if (this.state) {
@@ -206,9 +208,30 @@ export class SchemaCreationComponent {
   
 
   
+// onCountryChange(): void {
+//   if (this.country !== undefined) {
+//     this.loadStatesByCountry();
+//   }
+// }
+
 onCountryChange(): void {
+
   if (this.country !== undefined) {
+
+    // Load states
     this.loadStatesByCountry();
+
+    // Find selected country object
+    const selectedCountry = this.countries.find(
+      (c: any) => c.id == this.country
+    );
+
+    // Set timezone automatically
+    if (selectedCountry) {
+      this.timezone = selectedCountry.timezone;
+    } else {
+      this.timezone = '';
+    }
   }
 }
 
