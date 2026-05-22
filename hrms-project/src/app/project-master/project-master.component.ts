@@ -506,6 +506,15 @@ export class ProjectMasterComponent {
   openPopus(): void {
     this.iscreateLoanApp = true;
 
+                      this.branches = [];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branches = [this.Branches[0].id];
+
+  }
+
   }
 
   closeapplicationModal(): void {

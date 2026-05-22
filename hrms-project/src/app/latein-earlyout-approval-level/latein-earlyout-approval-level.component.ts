@@ -221,7 +221,7 @@ CreateLateInEarlyOutApproverLevel(): void {
       const lvl = this.levels[i];
 
       if (!lvl.level || !lvl.role || !lvl.approver) {
-        alert(`Level ${i + 1}: All fields required`);
+        alert(`Level ${i + 1}: Level Added`);
         return;
       }
     }
@@ -352,6 +352,16 @@ CreateLateInEarlyOutApproverLevel(): void {
   
         openPopus():void{
           this.iscreateLoanApp = true;
+
+                            this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branch = [this.Branches[0].id];
+
+
+  }
   
         }
       

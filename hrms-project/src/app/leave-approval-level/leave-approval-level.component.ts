@@ -556,6 +556,7 @@ SetLeaveApprovaLevel(): void {
     next: () => {
       alert('Leave Approval Level created successfully!');
       this.closeapplicationModal();
+      window.location.reload();
 
       const schema = this.authService.getSelectedSchema();
       const branches = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
@@ -581,6 +582,16 @@ SetLeaveApprovaLevel(): void {
 
     openPopus():void{
       this.iscreateLoanApp = true;
+
+               this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branch = [this.Branches[0].id];
+
+  }
+
 
     }
   
@@ -758,6 +769,7 @@ updateAssetType(): void {
     () => {
       alert('Updated successfully!');
       this.closeEditModal();
+      window.location.reload();
 
       const schema = this.authService.getSelectedSchema();
       const branches = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');

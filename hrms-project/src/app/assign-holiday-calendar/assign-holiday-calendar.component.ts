@@ -689,6 +689,18 @@ loadBranches(callback?: Function): void {
   openPopus():void{
     this.iscreateLoanApp = true;
 
+      // reset branch
+  this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+
+    this.branch = [this.branches[0].id];
+
+        this.allSelectedBrach = false;
+
+  }
+
   }
 
   closeapplicationModal():void{

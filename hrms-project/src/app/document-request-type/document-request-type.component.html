@@ -87,7 +87,7 @@
 
               <mat-form-field>
              
-              <mat-select placeholder="Select" [(ngModel)]="editDocReqtype.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
                 <div class="select-all">
                   <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
                     Select All
@@ -373,3 +373,9 @@
     <!-- Message for users without permission -->
     <p class="text-center " style="margin-top: 150px;" >You don't have permission to view this component.</p>
   </div>
+
+
+      <!-- Loader -->
+    <div class="loader-container" [class.show]="isLoading">
+      <div class="loader"></div>
+    </div>

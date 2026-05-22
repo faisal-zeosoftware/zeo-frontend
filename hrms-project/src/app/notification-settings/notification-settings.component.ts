@@ -600,6 +600,12 @@ deleteSelectedDocNotify() {
       openPopus():void{
         this.iscreateLoanApp = true;
 
+this.branch = '';
+
+if (this.Branches && this.Branches.length > 0) {
+  this.branch = this.Branches[0].id;
+}
+
       }
     
       closeapplicationModal():void{

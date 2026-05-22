@@ -38,6 +38,9 @@ export class DocumentRequestTypeComponent {
   type_name: string = '';
   description:any ='';
 
+
+        isLoading: boolean = false;
+
   
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
@@ -197,45 +200,50 @@ if (this.userId !== null) {
       );
     }
   
-  registerDocumentRequestType(): void {
-    this.registerButtonClicked = true;
+registerDocumentRequestType(): void {
 
-    const companyData = {
-      type_name: this.type_name,
-      description: this.description,
-    };
+  this.registerButtonClicked = true;
 
-    this.countryService.registerDocumentReqType(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-        alert('Document Request Type has been Added');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Addition failed', error);
+  const companyData = {
+    type_name: this.type_name,
+    description: this.description,
+    branch: this.branch   // ✅ ADD THIS
+  };
 
-        // Check if the error response contains validation messages from the backend
-        if (error.error) {
-          let errorMessage = 'Error: ';
-          if (typeof error.error === 'string') {
-            // If backend returns a simple error message
-            errorMessage += error.error;
-          } else if (typeof error.error === 'object') {
-            // If backend returns an object with multiple field errors
-            for (const key in error.error) {
-              if (error.error.hasOwnProperty(key)) {
-                errorMessage += `\n${key}: ${error.error[key]}`;
-              }
+  console.log('Sending Data:', companyData);
+
+  this.countryService.registerDocumentReqType(companyData).subscribe(
+    (response) => {
+      console.log('Registration successful', response);
+      alert('Document Request Type has been Added');
+      window.location.reload();
+    },
+    (error) => {
+      console.error('Addition failed', error);
+
+      if (error.error) {
+        let errorMessage = 'Error: ';
+
+        if (typeof error.error === 'string') {
+          errorMessage += error.error;
+
+        } else if (typeof error.error === 'object') {
+
+          for (const key in error.error) {
+            if (error.error.hasOwnProperty(key)) {
+              errorMessage += `\n${key}: ${error.error[key]}`;
             }
           }
-          alert(errorMessage);
-        } else {
-          alert('An unknown error occurred. Please try again.');
         }
-      }
-    );
-}
 
+        alert(errorMessage);
+
+      } else {
+        alert('An unknown error occurred. Please try again.');
+      }
+    }
+  );
+}
 
   // Variable to hold the selected document for editing
   selectedDoc: any = {};
@@ -349,10 +357,26 @@ updateDocumentNumber(): void {
 
 
 
-  openPopus():void{
-    this.iscreateLoanApp = true;
+openPopus(): void {
 
+  this.iscreateLoanApp = true;
+
+  // Reset form values
+  this.type_name = '';
+  this.description = '';
+
+  // reset branch
+  this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+
+    this.branch = [this.branches[0].id];
+
+    // optional
+    this.allSelectedBrach = false;
   }
+}
 
   closeapplicationModal():void{
     this.iscreateLoanApp = false;

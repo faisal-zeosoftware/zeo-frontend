@@ -443,6 +443,18 @@ editAsset: any = {}; // holds the asset being edited
           this.automaticNumbering = false;
           this.branch = '';  
 
+            // Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+    this.branch = this.branches[0].id;
+
+    // Trigger employee filtering + document numbering
+    this.onBranchChange({
+      target: { value: this.branch }
+    });
+  } else {
+    this.branch = '';
+  }
+
       }
 
       openEditModal(asset: any): void {
@@ -630,16 +642,18 @@ updateAssetType(): void {
 }
 
 onBranchChange(event: any): void {
+
   const selectedBranchId = event.target.value;
   const selectedSchema = localStorage.getItem('selectedSchema');
 
   this.branch = selectedBranchId;
 
-  /* ------------------ FILTER EMPLOYEES ------------------ */
+   /* ------------------ FILTER EMPLOYEES ------------------ */
   if (!selectedBranchId) {
     this.filteredEmployees = this.Employees;
     this.employee = '';
   } else {
+
     const selectedBranch = this.branches.find(
       b => Number(b.id) === Number(selectedBranchId)
     );
@@ -656,26 +670,75 @@ onBranchChange(event: any): void {
     this.employee = '';
   }
 
+
   /* ------------------ DOCUMENT NUMBERING ------------------ */
+
   if (!selectedBranchId || !selectedSchema) {
     this.automaticNumbering = false;
-    this.document_number = null;
+    this.document_number = '';
     return;
   }
 
-  const type = 'advance_salary';
+  const type = 'loan_request';
 
   const apiUrl =
     `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
 
   this.http.get<any>(apiUrl).subscribe({
-    next: (response) => {
-      const data = Array.isArray(response) && response.length > 0 ? response[0] : response;
 
-      this.automaticNumbering = !!data?.automatic_numbering;
-      this.document_number = this.automaticNumbering ? null : '';
+    next: (response) => {
+
+      console.log('Document numbering response:', response);
+
+      // FIX HERE
+      let data: any = null;
+
+      if (Array.isArray(response)) {
+
+        data = response.find(
+          (item: any) =>
+            item.type === 'loan_request'
+        );
+
+      } else if (typeof response === 'object') {
+
+        // Handle object with numeric keys
+        const values = Object.values(response);
+
+        data = values.find(
+          (item: any) =>
+            item.type === 'loan_request'
+        );
+      }
+
+      console.log('Matched numbering data:', data);
+
+      if (data) {
+
+        this.automaticNumbering = !!data.automatic_numbering;
+
+        if (this.automaticNumbering) {
+
+          // AUTO MODE
+          this.document_number = '';
+
+        } else {
+
+          // MANUAL MODE
+          this.document_number = '';
+        }
+
+      } else {
+
+        this.automaticNumbering = false;
+        this.document_number = '';
+      }
     },
-    error: () => {
+
+    error: (err) => {
+
+      console.error('Document numbering error:', err);
+
       this.automaticNumbering = false;
       this.document_number = '';
     }

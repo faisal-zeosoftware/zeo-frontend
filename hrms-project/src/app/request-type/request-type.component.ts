@@ -51,7 +51,7 @@ export class RequestTypeComponent    {
   ReqTypes:any []=[];
   Salarycomponent:any []=[];
 
-
+isLoading: boolean = false;
 
 
   userId: number | null | undefined;
@@ -296,8 +296,8 @@ ngOnInit(): void {
             this.employeeService.registerReqType(companyData).subscribe(
               () => {
                 alert('Request Type added successfully!');
-                window.location.reload();
                 this.closeapplicationModal();
+                 window.location.reload();
               },
               (error) => {
                 console.error(error);
@@ -408,6 +408,16 @@ iscreateLoanApp: boolean = false;
 
 openPopus():void{
   this.iscreateLoanApp = true;
+
+                    this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+
+    this.branch = [this.branches[0].id];
+
+  }
+
 
 }
 

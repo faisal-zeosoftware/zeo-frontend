@@ -418,6 +418,18 @@ this.category.forEach((id: number) =>
       openPopus():void{
         this.iscreateovertimepolicy = true;
 
+                  this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branch = [this.Branches[0].id];
+
+        this.allSelectedBrach = false;
+
+  }
+
+
       }
     
       closeapplicationModal():void{

@@ -16,6 +16,7 @@ import {UserMasterService} from '../user-master/user-master.service';
   templateUrl: './document-request-level.component.html',
   styleUrl: './document-request-level.component.css'
 })
+
 export class DocumentRequestLevelComponent {
 
       
@@ -51,6 +52,8 @@ export class DocumentRequestLevelComponent {
   DocType: any[] = [];
 
     DocRequest: any[] = [];
+
+      isLoading: boolean = false;
 
 
   hasAddPermission: boolean = false;
@@ -418,10 +421,32 @@ SetLeaveApprovaLevel(): void {
 
 
 
-  openPopus():void{
-    this.iscreateLoanApp = true;
+openPopus(): void {
 
+  this.iscreateLoanApp = true;
+
+  // Reset form values
+  this.request_type = '';
+  this.approval_type = '';
+  this.branch = [];
+  this.levels = [
+    {
+      level: '',
+      role: '',
+      approver: '',
+    }
+  ];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branch = [this.Branches[0].id];
+
+    // optional: update select-all checkbox
+    this.allSelected = false;
   }
+
+}
 
   closeapplicationModal():void{
     this.iscreateLoanApp = false;

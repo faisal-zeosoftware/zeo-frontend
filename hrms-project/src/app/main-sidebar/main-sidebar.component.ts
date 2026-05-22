@@ -81,75 +81,98 @@ export class MainSidebarComponent {
   //   this.marginLeftValue = this.isMenuOpen ? '200px' : '0px';
   // }
 
-  ngOnInit(): void {
+ngOnInit(): void {
 
-    // this.loadAllNotifications();
-    this.selectedBranchIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  this.selectedBranchIds = JSON.parse(
+    localStorage.getItem('selectedBranchIds') || '[]'
+  );
 
-        this.selectedSchema = this.sessionService.getSelectedSchema();
+  this.selectedSchema = this.sessionService.getSelectedSchema();
 
-    this.hideButton = this.EmployeeService.getHideButton();
+  // ✅ Listen for schema changes instantly
+  this.EmployeeService.selectedSchema$.subscribe(schema => {
 
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        // Perform any actions on navigation end if needed
-      }
-    });
-    // this.loadExpiredDocuments();
+    this.selectedSchema = schema;
 
-    const selectedSchema = this.authService.getSelectedSchema();
-    const selectedSchemaId = this.authService.getSelectedSchemaId();
-
-    const selectedStateLabel = localStorage.getItem('selectedSchemaStateLabel');
-    console.log("Retrieved state label:", selectedStateLabel);
-    
-    if (selectedSchema) {
-      this.loadAllNotifications(selectedSchema);
-    }
-
-    if (selectedSchema && selectedSchemaId) {
-        this.selectedSchema = selectedSchema;
-        console.log('Selected schema from localStorage:', selectedSchema);
-        console.log('Selected schema ID from localStorage:', selectedSchemaId);
-    } else {
-        console.error("No schema selected.");
-    }
-
-    this.userId = this.sessionService.getUserId();
-    if (this.userId !== null) {
-        this.authService.getUserData(this.userId).subscribe(
-            (userData: any) => {
-                this.userDetails = userData;
-                this.username = this.userDetails.username;
-                const isSuperuser = this.userDetails.is_superuser || false;
-                const isEssUser = this.userDetails.is_ess || false;
-            },
-            (error) => {
-                console.error('Failed to fetch user details:', error);
-            }
-        );
-
-        this.authService.getUserSchema(this.userId).subscribe(
-            (userData: any) => {
-                this.userDetailss = userData;
-                this.schemas = userData.map((schema: any) => schema.schema_name);
-                console.log('scehmas-de',userData);
-
-                  // ✅ Set display name from stored schema
-    if (this.selectedSchema) {
-      const selectedObj = userData.find(
-        (s: any) => s.schema_name === this.selectedSchema
+    // Update display company name
+    if (this.userDetailss?.length) {
+      const selectedObj = this.userDetailss.find(
+        (s: any) => s.schema_name === schema
       );
-      this.selectedSchemaNameDisplay = selectedObj ? selectedObj.name : '';
+
+      this.selectedSchemaNameDisplay = selectedObj
+        ? selectedObj.name
+        : '';
     }
-            },
-            (error) => {
-                console.error('Failed to fetch user schemas:', error);
-            }
+
+    // Reload notifications or other schema-based data
+    if (schema) {
+      this.loadAllNotifications(schema);
+    }
+  });
+
+  // ✅ Listen for branch changes instantly
+  this.EmployeeService.selectedBranches$.subscribe(branches => {
+    this.selectedBranchIds = branches;
+  });
+
+  this.hideButton = this.EmployeeService.getHideButton();
+
+  this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+    }
+  });
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const selectedSchemaId = this.authService.getSelectedSchemaId();
+
+  if (selectedSchema && selectedSchemaId) {
+    this.selectedSchema = selectedSchema;
+  }
+
+  this.userId = this.sessionService.getUserId();
+
+  if (this.userId !== null) {
+
+    this.authService.getUserData(this.userId).subscribe(
+      (userData: any) => {
+        this.userDetails = userData;
+        this.username = this.userDetails.username;
+      },
+      (error) => {
+        console.error('Failed to fetch user details:', error);
+      }
+    );
+
+    this.authService.getUserSchema(this.userId).subscribe(
+      (userData: any) => {
+
+        this.userDetailss = userData;
+
+        this.schemas = userData.map(
+          (schema: any) => schema.schema_name
         );
-    } else {
-        console.error('User ID is null.');
-    }
+
+        // ✅ Set company display name initially
+        if (this.selectedSchema) {
+
+          const selectedObj = userData.find(
+            (s: any) => s.schema_name === this.selectedSchema
+          );
+
+          this.selectedSchemaNameDisplay =
+            selectedObj ? selectedObj.name : '';
+        }
+
+      },
+      (error) => {
+        console.error('Failed to fetch user schemas:', error);
+      }
+    );
+
+  } else {
+    console.error('User ID is null.');
+  }
 }
 
 
@@ -732,9 +755,10 @@ toggleBranchSelection(data: any, branch: any, event: Event): void {
 applySelection(): void {
   if (!this.selectedSchema) return;
 
-  // Broadcast both Schema and Branches to the service
-  // We add a new method in the service to handle the schema change too
-  this.EmployeeService.updateSchemaAndBranches(this.selectedSchema, this.selectedBranchIds);
+  this.EmployeeService.updateSchemaAndBranches(
+    this.selectedSchema,
+    this.selectedBranchIds
+  );
 
   this.isCompanyDropdownOpen = false;
 }

@@ -530,6 +530,18 @@ openPopus():void{
       this.automaticNumbering = false;
       this.branch = ''; 
 
+    // Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+    this.branch = this.branches[0].id;
+
+    // Trigger employee filtering + document numbering
+    this.onBranchChange({
+      target: { value: this.branch }
+    });
+  } else {
+    this.branch = '';
+  }
+
 }
 
 closeapplicationModal():void{

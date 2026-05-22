@@ -32,7 +32,7 @@ export class CatogaryCrationComponent {
   ctgry_code:string ='';
   branch_id:any ='';
 
-  branch:any='';
+branch: any[] = [];
 
   Branches: any[] = [];
 
@@ -165,9 +165,10 @@ registerCatogary(): void {
           this.Branches = result; // Fallback: show all if nothing is selected in sidebar
         }
         // Inside the subscribe block of loadDeparmentBranch
-        if (this.Branches.length === 1) {
-          this.branch = this.Branches[0].id;
-        }
+// ✅ Auto select first branch
+if (this.Branches.length > 0) {
+  this.branch = [this.Branches[0].id];
+}
 
         console.log('Filtered branches for selection:', this.Branches);
         if (callback) callback();

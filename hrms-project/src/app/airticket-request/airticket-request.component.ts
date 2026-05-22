@@ -356,7 +356,7 @@ onBranchChange(event: any): void {
 
   this.branch = selectedBranchId;
 
-  /* ------------------ FILTER EMPLOYEES ------------------ */
+   /* ------------------ FILTER EMPLOYEES ------------------ */
   if (!selectedBranchId) {
     this.filteredEmployees = this.Employees;
     this.employee = '';
@@ -378,29 +378,75 @@ onBranchChange(event: any): void {
     this.employee = '';
   }
 
+
   /* ------------------ DOCUMENT NUMBERING ------------------ */
+
   if (!selectedBranchId || !selectedSchema) {
     this.automaticNumbering = false;
-    this.document_number = null;
+    this.document_number = '';
     return;
   }
 
-  const type = 'air_ticket_request'; // ✅ FIXED
+  const type = 'document_request';
 
   const apiUrl =
     `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
 
   this.http.get<any>(apiUrl).subscribe({
+
     next: (response) => {
 
-      const data = Array.isArray(response) && response.length > 0
-        ? response[0]
-        : response;
+      console.log('Document numbering response:', response);
 
-      this.automaticNumbering = !!data?.automatic_numbering;
-      this.document_number = this.automaticNumbering ? null : '';
+      // FIX HERE
+      let data: any = null;
+
+      if (Array.isArray(response)) {
+
+        data = response.find(
+          (item: any) =>
+            item.type === 'document_request'
+        );
+
+      } else if (typeof response === 'object') {
+
+        // Handle object with numeric keys
+        const values = Object.values(response);
+
+        data = values.find(
+          (item: any) =>
+            item.type === 'document_request'
+        );
+      }
+
+      console.log('Matched numbering data:', data);
+
+      if (data) {
+
+        this.automaticNumbering = !!data.automatic_numbering;
+
+        if (this.automaticNumbering) {
+
+          // AUTO MODE
+          this.document_number = '';
+
+        } else {
+
+          // MANUAL MODE
+          this.document_number = '';
+        }
+
+      } else {
+
+        this.automaticNumbering = false;
+        this.document_number = '';
+      }
     },
-    error: () => {
+
+    error: (err) => {
+
+      console.error('Document numbering error:', err);
+
       this.automaticNumbering = false;
       this.document_number = '';
     }
@@ -442,6 +488,18 @@ onBranchChange(event: any): void {
       this.document_number = null;
       this.automaticNumbering = false;
       this.branch = ''; 
+
+        // Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+    this.branch = this.branches[0].id;
+
+    // Trigger employee filtering + document numbering
+    this.onBranchChange({
+      target: { value: this.branch }
+    });
+  } else {
+    this.branch = '';
+  }
 
 
       }
@@ -670,6 +728,7 @@ mapAllocationNameToId() {
       next: (data: any) => {
         // Filter active employees
         this.Requests = data;
+         this.isLoading = false;
 
       },
       error: (err) => {

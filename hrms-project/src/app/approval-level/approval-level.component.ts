@@ -40,6 +40,9 @@ export class ApprovalLevelComponent {
   ApprovalLEvel:any []=[];
 
 
+    isLoading: boolean = false;
+
+
   registerButtonClicked = false;
   userId: number | null | undefined;
   userDetails: any;
@@ -533,6 +536,15 @@ iscreateLoanApp: boolean = false;
 
 openPopus():void{
   this.iscreateLoanApp = true;
+
+                      this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branch = [this.Branches[0].id];
+
+  }
 
 }
 

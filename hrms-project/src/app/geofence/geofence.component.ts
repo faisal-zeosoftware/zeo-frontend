@@ -744,7 +744,14 @@ closePreview() {
         openPopus():void{
           this.isgeofence = true;
 
-          this
+            this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branch = [this.Branches[0].id];
+
+  }
   
         }
       

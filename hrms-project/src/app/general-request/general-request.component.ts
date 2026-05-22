@@ -66,6 +66,9 @@ document_number: number | string | null = null;
   GeneralReq:any []=[];
 
 
+      isLoading: boolean = false;
+
+
   schemas: string[] = []; // Array to store schema names
 
   
@@ -263,13 +266,22 @@ iscreateLoanApp: boolean = false;
 
 
 
-openPopus():void{
+openPopus(): void {
   this.iscreateLoanApp = true;
 
   this.document_number = null;
   this.automaticNumbering = false;
   this.branch = '';  
 
+  // Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+    this.branch = this.branches[0].id;
+
+    // Trigger employee filtering + document numbering
+    this.onBranchChange();
+  } else {
+    this.branch = '';
+  }
 }
 
 closeapplicationModal():void{
@@ -365,8 +377,6 @@ deleteSelectedGeneralReq() {
     });
   }
 }
-
-
 
 
 updateAssetType(): void {

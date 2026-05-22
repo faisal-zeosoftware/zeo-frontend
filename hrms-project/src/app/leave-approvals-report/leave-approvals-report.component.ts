@@ -520,7 +520,8 @@ loadDeparmentBranch(callback?: Function): void {
             this.branches = result; // Fallback: show all if nothing is selected in sidebar
           }
           // Inside the subscribe block of loadDeparmentBranch
-if (this.branches.length === 1) {
+// Auto select first branch
+if (this.branches.length > 0) {
   this.branch = [this.branches[0].id];
 }
   

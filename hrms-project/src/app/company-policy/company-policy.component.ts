@@ -254,7 +254,7 @@ if (this.userId !== null) {
         (response) => {
           console.log('Registration successful', response);
           alert('Company Policy has been added');
-          // window.location.reload();
+          window.location.reload();
         },
         (error) => {
           console.error('Added failed', error);
@@ -476,6 +476,16 @@ if (this.userId !== null) {
 
     openPopus():void{
       this.iscreateLoanApp = true;
+
+        // reset branch
+  this.branch = [];
+
+  // ✅ Auto select first branch
+  if (this.Branches && this.Branches.length > 0) {
+
+    this.branch = [this.Branches[0].id];
+
+  }
 
     }
   
