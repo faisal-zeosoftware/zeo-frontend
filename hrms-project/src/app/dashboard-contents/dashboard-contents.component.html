@@ -238,9 +238,28 @@
                 
               </div>
         
-              <div *ngIf="selectedBranchAnnouncement.length === 0" class="no-announcements">
-                <p>No announcements available for this branch.</p>
+              <div
+              *ngIf="selectedBranchAnnouncement.length === 0"
+              class="empty-state animated-empty text-center"
+            >
+            
+              <div class="floating-icon">
+                📢
               </div>
+            
+              <img
+                src="assets/no-announcement.svg"
+                width="220"
+                class="empty-img"
+              />
+            
+              <h4 class="mt-1">No Announcements</h4>
+            
+              <p>
+                There are no announcements available for this branch right now.
+              </p>
+            
+            </div>
         
               <div class="row">
                 <div class="col-md-12 mb-4" *ngFor="let announcement of selectedBranchAnnouncement">
@@ -286,11 +305,28 @@
               </div>
         
               <!-- Empty State -->
-              <div *ngIf="selectedBranchProjects.length === 0" class="empty-state text-center">
+              <!-- <div *ngIf="selectedBranchProjects.length === 0" class="empty-state text-center">
                 <img src="assets/images/no-data.svg" width="150" alt="No projects" class="mb-3" />
                 <h5>No active projects available for this branch.</h5>
               </div>
-        
+         -->
+
+         <div *ngIf="selectedBranchProjects.length === 0"
+     class="empty-state modern-empty-state text-center">
+
+  <div class="empty-animation">
+    <img src="assets/no-projects.svg"
+         alt="No Projects">
+  </div>
+
+  <h4>No Active Projects</h4>
+
+  <p>
+    There are currently no active projects available
+    for this branch.
+  </p>
+
+</div>
               <!-- Project Cards -->
               <div class="row">
                 <div class="col-md-6 col-lg-6 mb-4" *ngFor="let project of selectedBranchProjects">
@@ -470,7 +506,7 @@
               </div>
             
               <!-- ✅ Policy Cards -->
-              <div class="row g-4">
+              <div class="row mt-2 g-4">
                 <div
                   class="col-md-12 col-lg-12"
                   *ngFor="let policy of selectedBranchPolicies"
@@ -528,13 +564,22 @@
               </div>
             
               <!-- 🚫 No Policies -->
-              <div
-                class="text-center text-muted py-5"
-                *ngIf="selectedBranchPolicies.length === 0"
-              >
-                <mat-icon style="font-size: 40px; color: #aaa;">policy</mat-icon>
-                <h6 class="mt-2">No policies available for the selected branch.</h6>
-              </div>
+              <div *ngIf="selectedBranchPolicies.length === 0"
+              class="empty-state modern-empty-state text-center">
+         
+           <div class="empty-animation">
+             <img src="assets/no-policy.svg"
+                  alt="No Policies">
+           </div>
+         
+           <h4>No Company Policies</h4>
+         
+           <p>
+             No policies are currently assigned
+             to this branch.
+           </p>
+         
+         </div>
             </div>
             
 

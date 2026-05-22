@@ -1127,4 +1127,25 @@ mapApprover(): void {
     this.ref.close('Closed using function')
   }
 
+
+  
+  basicSectionOpen: boolean = true;
+personalSectionOpen: boolean = false;
+
+
+// =========================
+// ACCORDION TOGGLE
+// =========================
+toggleSection(section: string): void {
+
+  if (section === 'basic') {
+    this.basicSectionOpen = !this.basicSectionOpen;
+  }
+
+  if (section === 'personal') {
+    this.personalSectionOpen = !this.personalSectionOpen;
+  }
+
+}
+
 }

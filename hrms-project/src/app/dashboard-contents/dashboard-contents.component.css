@@ -1174,3 +1174,62 @@ div[class*='segment']:before {
     0 0 calc(var(--size) * 0.4) var(--neon),
     0 0 calc(var(--size) * 0.5) var(--neon);
 }
+
+
+
+
+
+.modern-empty-state{
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 50px 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  border: 1px solid #f1f1f1;
+  transition: 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.modern-empty-state:hover{
+  transform: translateY(-4px);
+}
+
+.empty-animation{
+  margin-bottom: 20px;
+  animation: floatAnimation 3s ease-in-out infinite;
+}
+
+.empty-animation img{
+  width: 220px;
+  max-width: 100%;
+}
+
+.modern-empty-state h4{
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.modern-empty-state p{
+  color: #718096;
+  font-size: 15px;
+  max-width: 400px;
+  margin: auto;
+  line-height: 1.6;
+}
+
+@keyframes floatAnimation{
+
+  0%{
+      transform: translateY(0px);
+  }
+
+  50%{
+      transform: translateY(-12px);
+  }
+
+  100%{
+      transform: translateY(0px);
+  }
+}
