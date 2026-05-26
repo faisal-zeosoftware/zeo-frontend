@@ -77,15 +77,18 @@
     <div class="row">
 
         <div class="col-md-6">
-          <label>Salary Component</label>
+          <label>Salary Component
+            <span class="required-star">*</span>
+          </label>
           <div class="custom-sel">
             <select class="form-control" id="component" name="component" [(ngModel)]="component"
-              [ngModelOptions]="{standalone: true}" (change)="onComponentChange()">
+              [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !component}" (change)="onComponentChange()">
               <option *ngFor="let component of Salarycomponent" [value]="component.id">
                 {{ component.name }}
               </option>
             </select>
           </div>
+           <div *ngIf="registerButtonClicked && !component" class="error-message">Component is required.</div>
         </div>
 
         <!-- Amount Field (Only Visible if is_fixed === true) -->
@@ -103,13 +106,16 @@ placeholder="Enter amount"
 
 
         <div class="col-md-6">
-          <label>Employee</label>
+          <label>Employee
+            <span class="required-star">*</span>
+          </label>
           <div class="custom-sel">
             <select class="form-control" id="employee" name="employee" [(ngModel)]="employee"
-              [ngModelOptions]="{standalone: true}">
+              [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !employee}">
               <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.emp_code }}</option>
             </select>
           </div>
+          <div *ngIf="registerButtonClicked && !employee" class="error-message">Employee is required.</div>
         </div>
 
 

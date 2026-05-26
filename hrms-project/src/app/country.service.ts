@@ -526,19 +526,26 @@ export class CountryService {
     
     return this.http.get(url);
   }
-  
-
-    getDocumentReqType(selectedSchema:string): Observable<any> {
-    // const url = `${this.baseUrl}/Group/`;
-    // return this.http.get(url);
-
-    const Url = `${this.apiUrl}/employee/api/Doc-request-Type/?schema=${selectedSchema}`;
-  
-    // Fetch employees from the API
-    return this.http.get(Url);
 
 
+  getDocumentReqType(selectedSchema: string, branchIds: number[] = []): Observable<any> {
+
+  // Convert [1,2,3] → "[1,2,3]"
+  const branchParam =
+    branchIds.length > 0
+      ? `[${branchIds.join(',')}]`
+      : '';
+
+  let apiUrl =
+    `${this.apiUrl}/employee/api/Doc-request-Type/?schema=${selectedSchema}`;
+
+  // Append branch filter
+  if (branchParam) {
+    apiUrl += `&branch_id=${branchParam}`;
   }
+
+  return this.http.get(apiUrl);
+}
 
 
   getShifts(selectedSchema: string): Observable<any> {

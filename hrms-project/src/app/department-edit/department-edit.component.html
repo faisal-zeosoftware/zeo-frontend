@@ -27,18 +27,16 @@
                
                 <label>Department code</label>
                <input type="text"  class="form-control" required  [(ngModel)]="department.dept_code"  placeholder="Enter Department code"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !dept_code}">
+                [ngModelOptions]="{standalone: true}">
                
-               <div *ngIf="registerButtonClicked && !dept_code" class="error-message">Department code is required.</div>
             </div>
 
 <div class="col-md-6" >
                
     <label>Description</label>
    <input type="text"  class="form-control" required id="dept_description" name="department.dept_description"  [(ngModel)]="department.dept_description"  placeholder="Enter Description "
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !dept_description}">
+    [ngModelOptions]="{standalone: true}">
    
-   <div *ngIf="registerButtonClicked && !dept_description" class="error-message">Description is required.</div>
 </div>
 
 

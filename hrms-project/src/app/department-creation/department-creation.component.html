@@ -102,7 +102,9 @@
         <div class="row">
             <div class="col-md-6" >
                
-      <label>Department Name</label>
+      <label>Department Name
+         <span class="required-star">*</span>
+      </label>
      <input type="text"  class="form-control" required  [(ngModel)]="dept_name"  placeholder="Enter Department Name"
       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !dept_name}">
      
@@ -113,9 +115,7 @@
                
     <label>Department Code</label>
    <input type="text"  class="form-control" required  [(ngModel)]="dept_code"  placeholder="Enter code"
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !dept_code}">
-   
-   <div *ngIf="registerButtonClicked && !dept_code" class="error-message">code is required.</div>
+    [ngModelOptions]="{standalone: true}" >
 </div>
        
 
@@ -124,9 +124,8 @@
                
     <label>Description</label>
    <input type="text"  class="form-control" required  [(ngModel)]="dept_description"  placeholder="Enter Description"
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !dept_description}">
-   
-   <div *ngIf="registerButtonClicked && !dept_description" class="error-message">Description is required.</div>
+    [ngModelOptions]="{standalone: true}" >
+
 </div>
        
 
@@ -153,7 +152,9 @@
         </div> -->
 
       <div class="col-md-6">
-      <label>Branch</label>
+      <label>Branch
+         <span class="required-star">*</span>
+      </label>
 
       <div class="custom-sel">
           <div class="form-control-wrapper">

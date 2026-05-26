@@ -76,19 +76,23 @@
               <div class="col-md-4">
     
                 <div class="custom-sel">
-                    <label>Select Request Type</label>
-                    <select class="form-control" id="request_type" required [(ngModel)]="request_type"  [ngModelOptions]="{standalone: true}" >
+                    <label>Select Request Type
+                      <span class="required-star">*</span>
+                    </label>
+                    <select class="form-control" id="request_type" required [(ngModel)]="request_type"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}">
                         <option value="" >Select</option>
                         <option *ngFor="let deparmentsec of RequestType" [value]="deparmentsec.id">{{ deparmentsec.name     }} </option>
                     </select>
                 </div>  
-        
+        <div *ngIf="registerButtonClicked && !request_type" class="error-message">Request type is required.</div>
             </div>
 
              
                 
               <div class="col-md-4">
-                <label>Branch</label>
+                <label>Branch
+                  <span class="required-star">*</span>
+                </label>
             
             
             
@@ -99,9 +103,9 @@
             
                       <mat-form-field>
                         <!-- <mat-label>Favorite food</mat-label> -->
-                                <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #select multiple>
+                                <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}" #select multiple>
                                   <div class="select-all">
-                                    <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                                    <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"  (change)="toggleAllSelection()">
                                       Select All
                                     </mat-checkbox>
                                   </div>
@@ -128,19 +132,21 @@
                  
                   </div>
                             
-            
+            <div *ngIf="registerButtonClicked && !branch" class="error-message">Branch is required.</div>
             </div>
                
             <div class="col-md-4">
               <label>Approval type</label>
+              <span class="required-star">*</span>
               <div class="custom-sel">
                 <select
-                  class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }">
+                  class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !approval_type}">
                   <option value="no_approval">No Approval</option>
                   <option value="reporting_manager">Reporting Manager</option>
                   <option value="multi_approval">Multi Approval</option>
                 </select>
               </div>
+            <div *ngIf="registerButtonClicked && !approval_type" class="error-message">Approval Type is required.</div>
             </div>
 
     

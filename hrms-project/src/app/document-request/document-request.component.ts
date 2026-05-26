@@ -9,6 +9,7 @@ import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import { environment } from '../../environments/environment';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-document-request',
@@ -19,6 +20,8 @@ import { DepartmentServiceService } from '../department-master/department-servic
 export class DocumentRequestComponent {
 
   private apiUrl = `${environment.apiBaseUrl}`;
+
+    private dataSubscription?: Subscription;
       
 
   allSelected=false;
@@ -85,20 +88,39 @@ schemas: string[] = []; // Array to store schema names
     ) {}
 
     ngOnInit(): void {
-      const selectedSchema = this.authService.getSelectedSchema();
-      if (selectedSchema) {
 
-     
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.employeeService.selectedSchema$,
+    this.employeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.LoadDocRequest(schema, branchIds);
+
+    }
+  });
+
+// Listen for sidebar branch changes
+this.employeeService.selectedBranches$.subscribe(ids => {
+
+  this.loadDeparmentBranch();
+
+  this.LoadEmployee();
+
+  this.LoadDocType();
+
+});
+      const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+
       this.LoadUsers(selectedSchema);
+
       this.LoadLeaveApprovalLevel(selectedSchema);
 
-      this.LoadDocType();
-      this.LoadEmployee();
-      this.LoadDocRequest(selectedSchema);
-      this.loadDeparmentBranch();
+    }
 
-      
-      }
+
 
       this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
@@ -253,26 +275,42 @@ schemas: string[] = []; // Array to store schema names
     }
 
     
-    LoadEmployee(callback?: Function) {
-      
-     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.leaveService.getemployeesMaster(selectedSchema).subscribe(
+LoadEmployee(callback?: Function): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  const savedIds = JSON.parse(
+    localStorage.getItem('selectedBranchIds') || '[]'
+  );
+
+  if (selectedSchema) {
+
+    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds)
+      .subscribe(
+
         (data: any) => {
+
           this.Employee = data;
-             this.filteredEmployees = data; // ✅ IMPORTANT
-         if (callback) callback();
+
+          this.filteredEmployees = data;
+
+          if (callback) callback();
+
           console.log('employee:', this.Employee);
+
         },
+
         (error: any) => {
+
           console.error('Error fetching Employee:', error);
+
         }
+
       );
-    }
+
   }
+
+}
   
     mapLoadEmpNameToId() {
     
@@ -327,20 +365,31 @@ schemas: string[] = []; // Array to store schema names
 
   
 
+isLoading: boolean = false;
 
-    
-    LoadDocRequest(selectedSchema: string) {
-      this.leaveService.getDocRequest(selectedSchema).subscribe(
-        (data: any) => {
-          this.DocRequest = data;
-        
-          console.log('DocRequest:', this.DocRequest);
-        },
-        (error: any) => {
-          console.error('Error fetching DocType:', error);
-        }
-      );
+LoadDocRequest(selectedSchema: string, branchIds: number[] = []) {
+
+  this.isLoading = true;
+
+  this.leaveService.getDocRequest(selectedSchema, branchIds).subscribe(
+
+    (data: any) => {
+
+      this.DocRequest = data;
+
+      this.isLoading = false;
+
+      console.log('DocRequest:', this.DocRequest);
+    },
+
+    (error: any) => {
+
+      console.error('Error fetching DocRequest:', error);
+
+      this.isLoading = false;
     }
+  );
+}
   
 
 
@@ -658,26 +707,61 @@ onBranchChange(event: any): void {
   });
 }
 
-  loadDeparmentBranch(callback?: Function): void {
-    
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-          console.log(' fetching Companies:');
-            if (callback) callback();
+loadDeparmentBranch(callback?: Function): void {
 
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+
+      (result: any[]) => {
+
+        // Get sidebar selected branch IDs
+        const sidebarSelectedIds: number[] =
+          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        // Filter branches based on sidebar selection
+        if (sidebarSelectedIds.length > 0) {
+
+          this.branches = result.filter(branch =>
+            sidebarSelectedIds.includes(branch.id)
+          );
+
+        } else {
+
+          // fallback → show all branches
+          this.branches = result;
         }
-      );
-    }
-    }
+
+        // Auto select first branch if only one branch exists
+        if (this.branches.length === 1) {
+
+          this.branch = this.branches[0].id;
+
+          // Trigger employee filtering + document numbering
+          this.onBranchChange({
+            target: { value: this.branch }
+          });
+        }
+
+        console.log('Filtered branches:', this.branches);
+
+        if (callback) callback();
+
+      },
+
+      (error) => {
+
+        console.error('Error fetching branches:', error);
+
+      }
+
+    );
+
+  }
+
+}
 
     
   mapBranchesNameToId() {

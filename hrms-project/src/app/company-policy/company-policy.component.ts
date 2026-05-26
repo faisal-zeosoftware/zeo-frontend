@@ -7,6 +7,7 @@ import { BranchServiceService } from '../branch-master/branch-service.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
+import { combineLatest, Subscription } from 'rxjs';
 
 
 @Component({
@@ -17,6 +18,8 @@ import { UserMasterService } from '../user-master/user-master.service';
 export class CompanyPolicyComponent {
 
   @ViewChild('fileInput') fileInput!: ElementRef;
+
+   private dataSubscription?: Subscription;
 
   title:any='';
   description:any='';
@@ -71,12 +74,22 @@ policies: any[] = [];
     ) {}
 
     ngOnInit(): void {
+
+                         // combineLatest waits for both Schema and Branches to have a value
+      this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.getCompanyPolicies(schema, branchIds);
+        }
+      });
  
       this.LoadBranches();
       this.LoadCats();
       this.LoadDepts();
       this.loadUsers();
-      this.getCompanyPolicies();
+      // this.getCompanyPolicies();
       
 
 
@@ -279,27 +292,37 @@ if (this.userId !== null) {
     }
   
 
-   
+    isLoading: boolean = false;
 
-    getCompanyPolicies() {
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.branchService.getplo(selectedSchema).subscribe(
-          (result: any) => {
-            this.policies = result;
-            console.log(' fetching Employees:');
-    
-          },
-          (error) => {
-            console.error('Error fetching Employees:', error);
-          }
-        );
-      }
-  
+
+getCompanyPolicies(
+  selectedSchema: string,
+  branchIds: number[] = []
+): void {
+
+  this.isLoading = true;
+
+  this.branchService.getplo(selectedSchema, branchIds).subscribe(
+
+    (result: any) => {
+
+      this.policies = result;
+
+      this.isLoading = false;
+
+      console.log('Policies:', this.policies);
+    },
+
+    (error) => {
+
+      console.error('Error fetching policies:', error);
+
+      this.isLoading = false;
     }
+  );
+}
+
+    
 
 
 

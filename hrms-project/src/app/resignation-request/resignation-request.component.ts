@@ -415,19 +415,19 @@ SetLeaveApprovaLevel(): void {
   this.registerButtonClicked = true;
 
   // VALIDATION
-  if (
-    !this.branch ||
-    !this.employee ||
-    !this.document_date ||
-    !this.resigned_on ||
-    !this.notice_period ||
-    !this.last_working_date ||
-    !this.location ||
-    !this.termination_type
-  ) {
-    alert('Please fill all required fields');
-    return;
-  }
+  // if (
+  //   !this.branch ||
+  //   !this.employee ||
+  //   !this.document_date ||
+  //   !this.resigned_on ||
+  //   !this.notice_period ||
+  //   !this.last_working_date ||
+  //   !this.location ||
+  //   !this.termination_type
+  // ) {
+  //   alert('Please fill all required fields');
+  //   return;
+  // }
 
   const formData = new FormData();
 

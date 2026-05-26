@@ -248,6 +248,10 @@ option { width: 200px; }
   border: 1px solid #dee2e6;
 }
 
+.required-star {
+  color: red;
+}
+
 
 
 @keyframes spin {

@@ -76,7 +76,9 @@
 
              <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select Branches
+                      <span class="required-star">*</span>
+                    </label>
                     <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange()" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                         <option value="">Select</option>
                         <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
@@ -86,20 +88,23 @@
             </div>
 
                   <div class="col-md-6" >
-                    <label>Employee</label>
+                    <label>Employee
+                      <span class="required-star">*</span>
+                    </label>
                     <div class="custom-sel">
                       <select
                         class="form-control"
                         id="employee"
                         name="employee"
                         [(ngModel)]="employee"
-                        [ngModelOptions]="{ standalone: true }"
+                        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !employee}"
                       >
                         <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
                           {{ deparmentsec.emp_code }}
                         </option>
                       </select>
                     </div>
+                     <div *ngIf="registerButtonClicked && !employee" class="error-message">Employee is required.</div>
                   </div>
 
     
@@ -125,7 +130,9 @@
     
                   <div class="col-md-6" >
                    
-                    <label>Reason</label>
+                    <label>Reason
+                      <span class="required-star">*</span>
+                    </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter Reason"
                     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !reason}">
                    
@@ -141,7 +148,9 @@
         
               <div class="col-md-6">
                 <div class="custom-sel">
-                  <label>Select Request Type</label>
+                  <label>Select Request Type
+                    <span class="required-star">*</span>
+                  </label>
                   <select class="form-control"
                           id="request_type"
                           required

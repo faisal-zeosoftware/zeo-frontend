@@ -77,7 +77,9 @@
 
              <div class="col-md-3">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select Branches
+                       <span class="required-star">*</span>
+                    </label>
                     <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                         <option value="">Select</option>
                         <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
@@ -90,12 +92,14 @@
                 
                 
                     <div class="custom-sel">
-                        <label>Employee</label>
-                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"  >
+                        <label>Employee
+                           <span class="required-star">*</span>
+                        </label>
+                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}">
                             <option value="" >Select</option>
                             <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
                         </select>
-                       
+                        <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Your employee</div>
                     </div>
                                 
                 
@@ -124,15 +128,23 @@
 </div>
 
               <div class="col-md-6">
-                <label>Document date</label>
+                <label>Document date
+                  <span class="required-star">*</span>
+                </label>
                 <input type="date" class="form-control" required [(ngModel)]="document_date" placeholder="Enter document date"
-                       [ngModelOptions]="{standalone: true}" >
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !document_date}" >
+
+              <div *ngIf="registerButtonClicked && !document_date" class="error-message">Document Date Required</div>
               </div>
 
               <div class="col-md-6">
-                <label> resigned on</label>
+                <label> resigned on
+                  <span class="required-star">*</span>
+                </label>
                 <input type="date" class="form-control" required [(ngModel)]="resigned_on" placeholder="Enter resigned on"
-                       [ngModelOptions]="{standalone: true}" >
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !resigned_on}" >
+
+                   <div *ngIf="registerButtonClicked && !resigned_on" class="error-message">Resigned date Required</div>
               </div>
           
               <div class="col-md-6">
@@ -143,24 +155,32 @@
 
             
               <div class="col-md-6">
-                <label>last working date</label>
+                <label>last working date
+                  <span class="required-star">*</span>
+                </label>
                 <input type="date" class="form-control" required [(ngModel)]="last_working_date" placeholder="Enter last working date"
-                       [ngModelOptions]="{standalone: true}" >
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !last_working_date}">
+                  <div *ngIf="registerButtonClicked && !last_working_date" class="error-message">Last Working date Required</div>
               </div>
             
 
               <div class="col-md-6">
-                <label>location</label>
+                <label>location
+                  <span class="required-star">*</span>
+                </label>
                 <input type="text" class="form-control" required [(ngModel)]="location" placeholder="Enter location"
-                       [ngModelOptions]="{standalone: true}" >
+                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location}">
+                  <div *ngIf="registerButtonClicked && !location" class="error-message">location Required</div>
               </div>
             
 
             
               <div class="col-md-6">
-                <label>Type</label>
+                <label>Type
+                  <span class="required-star">*</span>
+                </label>
                 <div class="custom-sel">
-                  <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}">
+                  <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location}">
                     <option  value="resignation" >Resignation</option>
                     <option  value="termination" >Termination</option>
 
@@ -170,6 +190,7 @@
                     
                   </select>
                 </div>
+                 <div *ngIf="registerButtonClicked && !termination_type" class="error-message">Termination Type Required</div>
               </div>
 
           <div class="col-md-6">

@@ -75,37 +75,44 @@
 
           <div class="row">
             <div class="col-md-6">
-              <label> Component Name</label>
+              <label> Component Name
+                 <span class="required-star">*</span>
+              </label>
               <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter  name"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
               <div *ngIf="registerButtonClicked && !name" class="error-message"> name is required.</div>
             </div>
             <div class="col-md-6">
-              <label>Component Type</label>
+              <label>Component Type
+                 <span class="required-star">*</span>
+              </label>
               <div class="custom-sel">
                 <select class="form-control" id="component_type" name="component_type" [(ngModel)]="component_type"
-                  [ngModelOptions]="{standalone: true}">
+                  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !component_type}">
                   <option value="deduction">Deduction</option>
                   <option value="addition">Addition</option>
                   <option value="others">Others</option>
                 </select>
               </div>
+               <div *ngIf="registerButtonClicked && !component_type" class="error-message">Component Type is required.</div>
             </div>
 
             <div class="col-md-6">
               <label>Code</label>
               <input type="text" class="form-control" required [(ngModel)]="code" placeholder="Enter code "
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !code}">
-              <div *ngIf="registerButtonClicked && !code" class="error-message">code is required.</div>
+                [ngModelOptions]="{standalone: true}">
             </div>
             <div class="col-md-6">
-              <label>Select Branch</label>
+              <label>Select Branch
+                 <span class="required-star">*</span>
+              </label>
               <div class="custom-sel">
                 <select class="form-control" id="branch" name="branch" [(ngModel)]="branch"
-                  [ngModelOptions]="{standalone: true}">
+                  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                   <option *ngFor="let employee of branches" [value]="employee.id">{{ employee.branch_name }}</option>
                 </select>
               </div>
+              <div *ngIf="registerButtonClicked && !branch" class="error-message">Branch is required.</div>
             </div>
 
             <div class="col-md-12">

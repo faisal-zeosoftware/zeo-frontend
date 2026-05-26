@@ -102,7 +102,9 @@
         <div class="row">
             <div class="col-md-6" >
                
-      <label>Job Tittle</label>
+      <label>Job Tittle
+        <span class="required-star">*</span>
+      </label>
      <input type="text"  class="form-control" required  [(ngModel)]="desgntn_job_title"  placeholder="Enter Job Name"
       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !desgntn_job_title}">
      
@@ -113,22 +115,22 @@
                
     <label>Designation Code</label>
    <input type="text"  class="form-control" required  [(ngModel)]="desgntn_code"  placeholder="Enter Code"
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !desgntn_code}">
+    [ngModelOptions]="{standalone: true}">
    
-   <div *ngIf="registerButtonClicked && !desgntn_code" class="error-message">code is required.</div>
 </div>
 
 <div class="col-md-6" >
                
     <label>Description</label>
    <input type="text"  class="form-control" required  [(ngModel)]="desgntn_description"  placeholder="Enter Description "
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !desgntn_description}">
+    [ngModelOptions]="{standalone: true}">
    
-   <div *ngIf="registerButtonClicked && !desgntn_description" class="error-message">Description is required.</div>
 </div>
 
     <div class="col-md-6">
-      <label>Branch</label>
+      <label>Branch
+        <span class="required-star">*</span>
+      </label>
 
       <div class="custom-sel">
           <div class="form-control-wrapper">

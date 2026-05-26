@@ -114,37 +114,45 @@
             <div class="row">
                 <div class="col-md-6" >
                
-                    <label>Minimum value</label>
+                    <label>Minimum value
+                      <span class="required-star">*</span>
+                    </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="minimum_value"  placeholder="Enter minimum value"
-                    [ngModelOptions]="{standalone: true}" >
-                   
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !minimum_value}"  >
+                   <div *ngIf="registerButtonClicked && !minimum_value" class="error-message">Please Select Minimum Value</div>
               </div>
               
 
               <div class="col-md-6" >
                
-                <label>Maximum value</label>
+                <label>Maximum value
+                  <span class="required-star">*</span>
+                </label>
                <input type="text"  class="form-control" required  [(ngModel)]="maximum_value"  placeholder="Enter Maximum value"
-                [ngModelOptions]="{standalone: true}" >
-               
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !maximum_value}" >
+               <div *ngIf="registerButtonClicked && !maximum_value" class="error-message">Please Select Maximum Value</div>
           </div>
 
           
           <div class="col-md-6" >
                
-            <label>Resignation days</label>
+            <label>Resignation days
+               <span class="required-star">*</span>
+            </label>
            <input type="number"  class="form-control" required  [(ngModel)]="resignation_days"  placeholder="Enter Repayment period"
-            [ngModelOptions]="{standalone: true}" >
-           
+            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !resignation_days}" >
+             <div *ngIf="registerButtonClicked && !resignation_days" class="error-message">Please Select Resignation Days</div>
       </div>
 
       
       <div class="col-md-6" >
                
-        <label>Termination days</label>
-       <input type="number"  class="form-control" required  [(ngModel)]="termination_days"  placeholder="Enter Repayment period"
-        [ngModelOptions]="{standalone: true}" >
-       
+        <label>Termination days
+           <span class="required-star">*</span>
+        </label>
+       <input type="number"  class="form-control" required  [(ngModel)]="termination_days"   placeholder="Enter Repayment period"
+        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !termination_days}" >
+       <div *ngIf="registerButtonClicked && !termination_days" class="error-message">Please Select Termination Days</div>
   </div>
 
         

@@ -258,13 +258,7 @@ ngOnInit(): void {
 
           registerGeneralreq(): void {
             this.registerButtonClicked = true;
-          
-            // ✅ Basic validation
-            if (!this.name || !this.description || !this.branch) {
-              alert('Please fill all required fields');
-              return;
-            }
-          
+               
             // ✅ FIRST TIME → Ask question
             if (!this.showSalaryDropdown && !this.salary_component) {
               const confirmAction = confirm(
@@ -299,10 +293,35 @@ ngOnInit(): void {
                 this.closeapplicationModal();
                  window.location.reload();
               },
-              (error) => {
-                console.error(error);
-                alert('Error occurred');
-              }
+    (error) => {
+      console.error('Request Type registration failed:', error);
+
+      let errorMessage = 'Something went wrong.';
+
+      // ✅ Handle backend validation or field-level errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+        }
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error.error?.detail) {
+        // Handle general error message like { "detail": "Invalid data" }
+        errorMessage = error.error.detail;
+      }
+
+      alert(`Registration failed!\n\n${errorMessage}`);
+    }
             );
           }
 

@@ -580,7 +580,7 @@ updateAssetType(): void {
 
           registerGeneralreq() {
             if (!this.selectedLevel) {
-              alert("Please select a level");
+              alert("Enter All feilds");
               return;
             }
           

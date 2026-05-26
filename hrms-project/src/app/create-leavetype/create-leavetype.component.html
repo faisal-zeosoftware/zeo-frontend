@@ -14,37 +14,47 @@
         <form (ngSubmit)="registerleaveType()" enctype="multipart/form-data">
             <div class="row">
               <div class="col-md-4">
-                <label>Name</label>
+                <label>Name
+                    <span class="required-star">*</span>
+                </label>
                 <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter name"
                        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
-                <div *ngIf="registerButtonClicked && !name" class="error-message">name is required.</div>
+                <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div>
               </div>
           
               <div class="col-md-4">
-                <label>Code</label>
+                <label>Code
+                    <span class="required-star">*</span>
+                </label>
                 <input type="text" class="form-control" required [(ngModel)]="code" placeholder="Enter code"
                        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !code}">
-                <div *ngIf="registerButtonClicked && !code" class="error-message">code is required.</div>
+                <div *ngIf="registerButtonClicked && !code" class="error-message">Code is required.</div>
               </div>
           
               <div class="col-md-4">
-                <label>Leave Type</label>
+                <label>Leave Type
+                    <span class="required-star">*</span>
+                </label>
                 <div class="custom-sel">
-                  <select class="form-control" id="type" name="type" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
+                  <select class="form-control" id="type" name="type" [(ngModel)]="type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !type}">
                     <option>paid</option>
                     <option>unpaid</option>
                   </select>
                 </div>
+                  <div *ngIf="registerButtonClicked && !type" class="error-message">Leave type is required.</div>
               </div>
               
               <div class="col-md-4">
-                <label>Leave Unit</label>
+                <label>Leave Unit
+                    <span class="required-star">*</span>
+                </label>
                 <div class="custom-sel">
-                  <select class="form-control" id="unit" name="unit" [(ngModel)]="unit" [ngModelOptions]="{standalone: true}">
+                  <select class="form-control" id="unit" name="unit" [(ngModel)]="unit" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !unit}">
                     <option>days</option>
                     <option>hours</option>
                   </select>
                 </div>
+                <div *ngIf="registerButtonClicked && !unit" class="error-message">Leave Unit is required.</div>
               </div>
           
               <div class="col-md-4">
@@ -60,13 +70,16 @@
               </div>
 
               <div class="col-md-4">
-                <label>Branch</label>
+                <label>Branch
+                  <span class="required-star">*</span>
+                </label>
                 <div class="custom-sel">
-                  <select class="form-control" id="branch" name="branch" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}">
+                  <select class="form-control" id="branch" name="branch" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                     <option *ngFor="let designation of Branches" [value]="designation.id">{{ designation.branch_name }}</option>
                  
                   </select>
                 </div>
+                <div *ngIf="registerButtonClicked && !branch" class="error-message">Branch is required.</div>
               </div>
 
               

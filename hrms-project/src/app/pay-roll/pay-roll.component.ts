@@ -396,10 +396,10 @@ if (this.userId !== null) {
         this.registerButtonClicked = true;
       
         // Frontend validation
-        if (!this.name || !this.year ) {
-          alert('Please fill in all required fields.');
-          return;
-        }
+        // if (!this.name || !this.year ) {
+        //   alert('Please fill in all required fields.');
+        //   return;
+        // }
       
         const formData = new FormData();
         formData.append('name', this.name);

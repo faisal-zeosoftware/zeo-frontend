@@ -103,11 +103,6 @@ currentEntitlementId: number | null = null;
    registerleaveType(): void {
     this.registerButtonClicked = true;
   
-    if (!this.name || !this.code) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-  
     // Convert valid_from and valid_to to 'YYYY-MM-DD'
     const formattedValidFrom = this.valid_from ? formatDate(this.valid_from, 'yyyy-MM-dd', 'en-US') : '';
     const formattedValidTo = this.valid_to ? formatDate(this.valid_to, 'yyyy-MM-dd', 'en-US') : '';

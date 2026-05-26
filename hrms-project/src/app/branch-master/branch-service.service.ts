@@ -98,12 +98,24 @@ updateBranch(employeeId: number, empData: FormData): Observable<any> {
   }
   
 
+  getplo(selectedSchema: string, branchIds: number[] = []): Observable<any> {
 
-  
-  getplo(selectedSchema: string): Observable<any> {
-    const url = `${this.apiUrl}/organisation/api/policies/?schema=${selectedSchema}`;
-    return this.http.get(url);
+  // Convert [1,2,3] → "[1,2,3]"
+  const branchParam =
+    branchIds.length > 0
+      ? `[${branchIds.join(',')}]`
+      : '';
+
+  let apiUrl =
+    `${this.apiUrl}/organisation/api/policies/?schema=${selectedSchema}`;
+
+  // Append branch filter
+  if (branchParam) {
+    apiUrl += `&branch_id=${branchParam}`;
   }
+
+  return this.http.get(apiUrl);
+}
 
 
 

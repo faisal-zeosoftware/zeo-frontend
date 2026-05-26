@@ -10,6 +10,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { MatSelect } from '@angular/material/select';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MatOption } from '@angular/material/core';
+import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-document-request-type',
@@ -19,6 +20,8 @@ import { MatOption } from '@angular/material/core';
 export class DocumentRequestTypeComponent {
 
     @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
+
+    private dataSubscription?: Subscription;
   
 
   selectedDeparmentsecId:any | undefined;
@@ -69,6 +72,16 @@ export class DocumentRequestTypeComponent {
 
 
   ngOnInit(): void {
+
+                   // combineLatest waits for both Schema and Branches to have a value
+this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchDesignations(schema, branchIds);
+  }
+});
   
      this.loadDeparmentBranch();
 // Retrieve user ID
@@ -178,19 +191,31 @@ if (this.userId !== null) {
 
 
   
-  fetchDesignations(selectedSchema: string) {
-    this.countryService.getDocumentReqType(selectedSchema).subscribe(
-      (data: any) => {
-        this.Documents = data;
-        this.filteredDocuments = data;  // Initialize filtered data
 
-        console.log('employee:', this.Documents);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
-  }
+  fetchDesignations(selectedSchema: string, branchIds: number[] = []) {
+
+  this.isLoading = true;
+
+  this.countryService.getDocumentReqType(selectedSchema, branchIds).subscribe(
+
+    (data: any) => {
+
+      this.Documents = data;
+       this.filteredDocuments = data;
+
+      this.isLoading = false;
+
+       console.log('employee:', this.Documents);
+    },
+
+    (error: any) => {
+
+      console.error('Error fetching DocRequest:', error);
+
+      this.isLoading = false;
+    }
+  );
+}
 
     // Filter documents based on searchQuery
     filterDocuments() {

@@ -1590,12 +1590,23 @@ CreateDocRequestapprovalLevel(data: any): Observable<any> {
 
 
 
-getDocReqApprovalLevel(selectedSchema: string): Observable<any> {
-  const apiUrl = `${this.apiUrl}/employee/api/Doc-request-approval-levels/?schema=${selectedSchema}`;
+getDocReqApprovalLevel(selectedSchema: string, branchIds: number[] = []): Observable<any> {
 
-  // Fetch employees from the API
+  // Convert [1,2,3] → "[1,2,3]"
+  const branchParam =
+    branchIds.length > 0
+      ? `[${branchIds.join(',')}]`
+      : '';
+
+  let apiUrl =
+    `${this.apiUrl}/employee/api/Doc-request-approval-levels/?schema=${selectedSchema}`;
+
+  // Append branch filter
+  if (branchParam) {
+    apiUrl += `&branch_id=${branchParam}`;
+  }
+
   return this.http.get(apiUrl);
-
 }
 
 
@@ -1619,12 +1630,23 @@ CreateDocRequest(formData: FormData): Observable<any> {
 }
 
 
-  getDocRequest(selectedSchema: string): Observable<any> {
-  const apiUrl = `${this.apiUrl}/employee/api/Doc-request/?schema=${selectedSchema}`;
+getDocRequest(selectedSchema: string, branchIds: number[] = []): Observable<any> {
 
-  // Fetch employees from the API
+  // Convert [1,2,3] → "[1,2,3]"
+  const branchParam =
+    branchIds.length > 0
+      ? `[${branchIds.join(',')}]`
+      : '';
+
+  let apiUrl =
+    `${this.apiUrl}/employee/api/Doc-request/?schema=${selectedSchema}`;
+
+  // Append branch filter
+  if (branchParam) {
+    apiUrl += `&branch_id=${branchParam}`;
+  }
+
   return this.http.get(apiUrl);
-
 }
 
 

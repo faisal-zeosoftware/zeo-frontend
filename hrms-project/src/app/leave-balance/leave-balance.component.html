@@ -77,71 +77,60 @@
                    
                    
                     <div class="row">
-    
-    
-                      <div class="col-md-6">
-                        <label>Balance</label>
-                        <input type="number" class="form-control" required [(ngModel)]="balance" placeholder="Enter balance"
-                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !balance}">
-                        <div *ngIf="registerButtonClicked && !balance" class="error-message">balance field is required.</div>
-                      </div>
-                  
-                      <div class="col-md-6">
-                        <label>openings</label>
-                        <input type="number" class="form-control" required [(ngModel)]="openings" placeholder="Enter openings"
-                               [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !openings}">
-                        <div *ngIf="registerButtonClicked && !openings" class="error-message">openings field is required.</div>
-                      </div>
-                  
-                    
-    
-                 
-    
-                 
-              
-    
-    <div class="col-md-6" >
-        <label>Leave Type</label>
+
+        <div class="col-md-6" >
+        <label>Leave Type
+          <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <select
             class="form-control"
             id="leave_type"
             name="leave_type"
             [(ngModel)]="leave_type"
-            [ngModelOptions]="{ standalone: true }"
+            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !leave_type}"
           >
             <option *ngFor="let leavetypes of LeaveTypes" [value]="leavetypes.id">
               {{ leavetypes.name }}
             </option>
           </select>
         </div>
+        <div *ngIf="registerButtonClicked && !leave_type" class="error-message">Leave Type is required.</div>
       </div>
     
       
     <div class="col-md-6" >
-        <label>Employee</label>
+        <label>Employee
+          <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <select
             class="form-control"
             id="employee"
             name="employee"
             [(ngModel)]="employee"
-            [ngModelOptions]="{ standalone: true }"
+            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !employee}"
           >
             <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
               {{ leavetype.emp_code }}
             </option>
           </select>
         </div>
+        <div *ngIf="registerButtonClicked && !employee" class="error-message">Employee is required.</div>
       </div>
     
     
-    
-                
-
-    
+                      <div class="col-md-6">
+                        <label>Balance</label>
+                        <input type="number" class="form-control" required [(ngModel)]="balance" placeholder="Enter balance"
+                               [ngModelOptions]="{standalone: true}">
+                      </div>
                   
-                 
+                      <div class="col-md-6">
+                        <label>openings</label>
+                        <input type="number" class="form-control" required [(ngModel)]="openings" placeholder="Enter openings"
+                               [ngModelOptions]="{standalone: true}">
+                      </div>
                   
                  
                     </div>

@@ -13,6 +13,44 @@
   text-align: right;
 }
 
+.required-star {
+  color: red;
+}
+
+/* INPUT */
+.form-control {
+  margin-bottom: 14px;
+  border-radius: 8px;
+  height: 40px;
+  border: 1px solid #cbd5e1;
+  box-shadow: none;
+  transition: 0.3s;
+  font-size: 13px;
+}
+
+
+/* FOCUS */
+.form-control:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
+}
+
+
+/* TEXTAREA */
+textarea.form-control {
+  height: auto;
+  min-height: 80px;
+}
+
+/* LABEL */
+label {
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 5px;
+  display: block;
+  font-size: 13px;
+}
+
 
   
   .form-control-wrapper {

@@ -270,11 +270,28 @@ ngOnInit(): void {
                
         
               },
-              (error) => {
-                console.error('Added failed', error);
-                alert('enter all field!')
-                // Handle the error appropriately, e.g., show a user-friendly error message.
-              }
+     (error) => {
+
+      console.error('API ERROR:', error);
+
+      let errorMsg = 'Request failed';
+
+      if (error?.error) {
+
+        if (typeof error.error === 'string') {
+
+          errorMsg = error.error;
+
+        } else if (typeof error.error === 'object') {
+
+          errorMsg = Object.keys(error.error)
+            .map(key => `${key}: ${error.error[key]}`)
+            .join('\n');
+        }
+      }
+
+      alert(errorMsg);
+    }
             );
           }
 
