@@ -9,7 +9,7 @@
   <div class="position-sticky">
     <div class="list-group list-group-flush  mt-5">
       <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple"
-      aria-current="true" routerLink="/main-sidebar/dashboard-contents" (click)="onToolbarMenuToggle()">
+      aria-current="true" routerLink="/main-sidebar/dashboard-contents">
       <span><mat-icon>home</mat-icon> <span class="sidenav-opt"> Dashboard</span></span>
     </a>
       <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple"
@@ -113,19 +113,13 @@
 </nav>
 
 
-<!-- ------------------------------------desktop view------------------------------------ -->
+
 
 <!-- Navbar -->
 <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
   <!-- Container wrapper -->
   <div class="container-fluid lap_view">
 
-  <!-- button close and open  -->
-
-     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-          <span *ngIf="!isMenuOpen">☰</span>
-          <span *ngIf="isMenuOpen">X</span>
-    </button>
 
     <!-- logo -->
     <div class="nav_mov">
@@ -309,6 +303,16 @@
   </div>
 
 
+
+
+
+
+
+
+
+
+
+  
 
   <!-- ------------------------------------------ Mobile view ------------------------------------------------ -->
 
