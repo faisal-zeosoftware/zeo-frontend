@@ -18,7 +18,9 @@
         <div class="row">
             <div class="col-md-6" >
                
-                <label>Branch Name</label>
+                <label>Branch Name
+                     <span class="required-star">*</span>
+                </label>
                <input type="text"  class="form-control" required  [(ngModel)]="branch_name"  placeholder="Enter Branch Name" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_name}">
                
                <div *ngIf="registerButtonClicked && !branch_name" class="error-message">Branch Name is required.</div>
@@ -27,7 +29,9 @@
     
     <div class="col-md-6" >
                
-        <label>Branch Code</label>
+        <label>Branch Code
+             <span class="required-star">*</span>
+        </label>
        <input type="text"  class="form-control" required  [(ngModel)]="branch_code"  placeholder="Enter Branch Code" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_code}">
        
        <div *ngIf="registerButtonClicked && !branch_code" class="error-message">Branch Code is required.</div>
@@ -60,7 +64,9 @@
               <div class="col-md-6">
                          
                   
-                      <label>City</label>
+                      <label>City
+                         <span class="required-star">*</span>
+                      </label>
                       <input type="text" [(ngModel)]="br_city" required [ngModelOptions]="{standalone: true}" class="form-control" placeholder="enter city" 
                       [ngClass]="{'error-field': registerButtonClicked && !br_city}" >
                       <div *ngIf="registerButtonClicked && !br_city" class="error-message">Please Select your City.</div>
@@ -70,7 +76,9 @@
           <div class="col-md-6">
                          
                   
-              <label>pincode</label>
+              <label>pincode
+                 <span class="required-star">*</span>
+              </label>
               <input type="text" [(ngModel)]="br_pincode" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Branch pincode"
               [ngClass]="{'error-field': registerButtonClicked && !br_pincode}" >
               <div *ngIf="registerButtonClicked && !br_pincode" class="error-message">Please enter your pincode</div>
@@ -80,7 +88,9 @@
           <div class="col-md-6">
                          
                   
-              <label>Email</label>
+              <label>Email
+                 <span class="required-star">*</span>
+              </label>
               <input type="text" [(ngModel)]="br_branch_mail" required [ngModelOptions]="{standalone: true}" class="form-control" placeholder="enter email id"
               [ngClass]="{'error-field': registerButtonClicked && !br_branch_mail}" >
               <div *ngIf="registerButtonClicked && !br_branch_mail" class="error-message">Please enter your email.</div>
@@ -92,7 +102,9 @@
     <div class="col-md-6">
                          
                   
-      <label>Company number 1</label>
+      <label>Company number 1
+         <span class="required-star">*</span>
+      </label>
       <input type="text" [(ngModel)]="br_branch_nmbr_1" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Contact number"
       [ngClass]="{'error-field': registerButtonClicked && !br_branch_nmbr_1}" >
       <div *ngIf="registerButtonClicked && !br_branch_nmbr_1" class="error-message">Please enter your contact.</div>

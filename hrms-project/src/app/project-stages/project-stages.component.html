@@ -75,9 +75,14 @@
 
               <div class="col-md-6" >
                
-                <label> Title</label>
-               <input type="text"  class="form-control" required  [(ngModel)]="title"  placeholder="Enter title"
+                <label> Title
+                   <span class="required-star">*</span>
+                </label>
+               <input type="text"  class="form-control" required  [(ngModel)]="title" [ngClass]="{'error-field': registerButtonClicked && !title}" placeholder="Enter title"
                 [ngModelOptions]="{standalone: true}" >
+                          <div *ngIf="registerButtonClicked && !title" class="error-message">
+    Please Enter Title
+  </div>
                
           </div>
 
@@ -93,20 +98,25 @@
 
 
       <div class="col-md-6" >
-        <label>Select Projects</label>
+        <label>Select Projects
+           <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <select
             class="form-control"
             id="project"
             name="project"
             [(ngModel)]="project"
-            [ngModelOptions]="{ standalone: true }"
+            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !project}"
           >
             <option *ngFor="let employees of Employees" [value]="employees.id">
               {{ employees.title }}
             </option>
           </select>
         </div>
+          <div *ngIf="registerButtonClicked && !project" class="error-message">
+    Please Select Projects
+  </div>
       </div>
       
       

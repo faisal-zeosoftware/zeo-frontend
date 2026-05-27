@@ -71,7 +71,9 @@
   <div class="row">
     <div class="col-md-6" >
                      
-      <label>Date</label>
+      <label>Date
+         <span class="required-star">*</span>
+      </label>
      <input type="date"  class="form-control" required  [(ngModel)]="date"  placeholder="Enter Date "
       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !date}">
      
@@ -81,20 +83,18 @@
   
 
 <div class="col-md-6" >
-  <label>Employee</label>
+  <label>Employee
+     <span class="required-star">*</span>
+  </label>
   <div class="custom-sel">
 
-      <select class="form-control" id="employee_override" required [(ngModel)]="employee_override"   [ngModelOptions]="{standalone: true}" >
+      <select class="form-control" id="employee_override" required [(ngModel)]="employee_override" [ngClass]="{'error-field': registerButtonClicked && !employee_override}"  [ngModelOptions]="{standalone: true}" >
           <option value="" >Select</option>
           <option *ngFor="let emp of Employee" [value]="emp.id">
             {{ emp.emp_first_name }}   {{ emp.emp_last_name }}  </option>
-      </select>
-      
-      
-     
-
-    
+      </select> 
   </div>
+  <div *ngIf="registerButtonClicked && !employee_override" class="error-message">employee is required.</div>
 </div>
   
 <div class="col-md-6" >

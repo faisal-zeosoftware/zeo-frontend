@@ -76,11 +76,13 @@
                     
                   <div class="col-md-6" >
                    
-                    <label>Name</label>
+                    <label>Name
+                      <span class="required-star">*</span>
+                    </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter Name"
                     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
                    
-                   <!-- <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div> -->
+                   <div *ngIf="registerButtonClicked && !name" class="error-message">Name is required.</div>
               </div>
 
 
@@ -100,10 +102,12 @@
 
           <div class="col-md-6" >
                    
-            <label>Rate multiplier</label>
+            <label>Rate multiplier
+              <span class="required-star">*</span>
+            </label>
            <input type="number"  class="form-control" [(ngModel)]="rate_multiplier"  placeholder="Enter rate multiplier"
-            [ngModelOptions]="{standalone: true}" >
-           
+            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !rate_multiplier}">
+           <div *ngIf="registerButtonClicked && !rate_multiplier" class="error-message">Rate multiplier is required.</div>
       </div>
 
       
@@ -120,14 +124,16 @@
 </div>
 
       <div class="col-md-6" >
-        <label>Branch</label>
+        <label>Branch
+          <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <div class="form-control-wrapper">
           
 
             <mat-form-field>
               <!-- <mat-label>Favorite food</mat-label> -->
-              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}" #selectBrach multiple>
                 <div class="select-all">
                   <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
                     Select All
@@ -141,7 +147,7 @@
             </mat-form-field>
             
           </div>
-         
+          <div *ngIf="registerButtonClicked && !branch" class="error-message">branch is required.</div>
         </div>
 
       </div>

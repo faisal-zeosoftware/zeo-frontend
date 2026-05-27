@@ -74,18 +74,22 @@
 
               <div class="col-md-6" >
                
-                <label>Asset Name</label>
+                <label>Asset Name
+                   <span class="required-star">*</span>
+                </label>
                <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter name"
-                [ngModelOptions]="{standalone: true}" >
-               
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
+             <div *ngIf="registerButtonClicked && !name" class="error-message">Please Select Name</div>  
           </div>
 
            <div class="col-md-6" >
                
-                <label>Serial No</label>
+                <label>Serial No
+                   <span class="required-star">*</span>
+                </label>
                <input type="text"  class="form-control" required  [(ngModel)]="serial_number"  placeholder="Enter Serial no"
-                [ngModelOptions]="{standalone: true}" >
-               
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !serial_number}" >
+                <div *ngIf="registerButtonClicked && !serial_number" class="error-message">Please Select Serial No</div>
           </div>
           <div class="col-md-6" >
                
@@ -139,20 +143,23 @@
 
 
   <div class="col-md-6" >
-    <label>Select Asset Type</label>
+    <label>Select Asset Type
+      <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <select
         class="form-control"
         id="asset_type"
         name="asset_type"
         [(ngModel)]="asset_type"
-        [ngModelOptions]="{ standalone: true }"
+        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !asset_type}"
       >
         <option *ngFor="let employees of LoanTypes" [value]="employees.id">
           {{ employees.name }}
         </option>
       </select>
     </div>
+    <div *ngIf="registerButtonClicked && !asset_type" class="error-message">Please Select Asset type</div>
   </div>
 
      

@@ -78,19 +78,23 @@
   <div class="custom-sel">
             <div class="form-control-wrapper">
 
-      <label>Select Employee</label>
+      <label>Select Employee
+         <span class="required-star">*</span>
+      </label>
        <mat-form-field appearance="outline" style="width:100%">
 
     <!-- Employee Dropdown -->
   <mat-select [(ngModel)]="employee"
-              [ngModelOptions]="{standalone: true}"
-              multiple>
+              [ngModelOptions]="{standalone: true}" 
+              multiple [ngClass]="{'error-field': registerButtonClicked && !employeeSearch}">
+
+              
 
     <input type="text"
            placeholder="Search Employee"
            class="form-control"
            [(ngModel)]="employeeSearch"
-           [ngModelOptions]="{standalone: true}"
+           [ngModelOptions]="{standalone: true}" 
            (click)="$event.stopPropagation()">
 
 
@@ -102,11 +106,13 @@
 
       </mat-select>
           </mat-form-field>
-</div>
          
+</div>
 
   </div>
 
+    <div *ngIf="registerButtonClicked && !employeeSearch" class="error-message">Please Select Employee</div>
+  
 </div>
 
 
@@ -117,13 +123,16 @@
               </div>
 
            <div class="col-md-6">
-                <label>Request Type</label>
+                <label>Request Type
+                  <span class="required-star">*</span>
+                </label>
                 <div class="custom-sel">
-                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}">
                     <option  value="LATE_IN">Late Check In</option>
                     <option  value="EARLY_OUT">Early Check Out</option>          
                   </select>
                 </div>
+                <div *ngIf="registerButtonClicked && !request_type" class="error-message">Please Select Request type</div>
               </div>
 
             <!-- <div class="col-md-6">

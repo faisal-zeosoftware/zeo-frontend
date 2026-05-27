@@ -76,11 +76,13 @@
 
           
               <div class="col-md-6" >
-                            <label>Employee</label>
+                            <label>Employee
+                                 <span class="required-star">*</span>
+                            </label>
                             <div class="custom-sel">
                                 <div class="form-control-wrapper">
                                   <mat-form-field>
-                                    <mat-select  placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
+                                    <mat-select  placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}" #selectEmp multiple>
                                       <div class="select-all">
                                         <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
                                           Select All
@@ -112,13 +114,15 @@
                                     </mat-select>
                                   </mat-form-field>
                                 </div>
-                                
+                                <div *ngIf="registerButtonClicked && !shift_type" class="error-message">employee is required.</div>
                               </div>
                         </div>
                     
                   <div class="col-md-6" >
                    
-                    <label>Start Date</label>
+                    <label>Start Date
+                         <span class="required-star">*</span>
+                    </label>
                    <input type="date"  class="form-control" required  [(ngModel)]="start_date"  placeholder="Enter start date "
                     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
                    
@@ -130,9 +134,8 @@
                    
                     <label>End Date</label>
                    <input type="date"  class="form-control" required  [(ngModel)]="end_date"  placeholder="Enter end date "
-                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
-                   
-                   <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
+                    [ngModelOptions]="{standalone: true}">
+                  
               </div>
 
         
@@ -142,20 +145,23 @@
                    
             <label>Schedule name</label>
            <input type="text"  class="form-control" required  [(ngModel)]="schedule_name"  placeholder="Enter schedule name  "
-            [ngModelOptions]="{standalone: true}" >
+            [ngModelOptions]="{standalone: true}"  >
            
       </div>
 
       
 
       <div class="col-md-6">
-        <label>Shift type</label>
+        <label>Shift type
+             <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
-          <select class="form-control" [(ngModel)]="shift_type" [ngModelOptions]="{standalone: true}">
+          <select class="form-control" [(ngModel)]="shift_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !shift_type}">
             <option value="rotating">Rotating Shift</option>
             <option value="fixed">Fixed Shift</option>
           </select>
         </div>
+         <div *ngIf="registerButtonClicked && !shift_type" class="error-message">Shift type is required.</div>
       </div>
       
       <!-- Only display Rotation Cycle Weeks when shift_type is "rotating" -->

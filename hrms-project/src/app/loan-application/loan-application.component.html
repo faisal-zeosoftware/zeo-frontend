@@ -158,7 +158,9 @@
 
               <div class="col-md-3">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select Branches
+                      <span class="required-star">*</span>
+                    </label>
                     <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                         <option value="">Select</option>
                         <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
@@ -168,20 +170,23 @@
             </div>
 
              <div class="col-md-6" >
-                    <label>Employee</label>
+                    <label>Employee
+                      <span class="required-star">*</span>
+                    </label>
                     <div class="custom-sel">
                       <select
                         class="form-control"
                         id="employee"
                         name="employee"
                         [(ngModel)]="employee"
-                        [ngModelOptions]="{ standalone: true }"
+                        [ngModelOptions]="{ standalone: true }" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}"
                       >
                         <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
                           {{ deparmentsec.emp_code }}
                         </option>
                       </select>
                     </div>
+                     <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Employee</div>
                   </div>
 
 <div class="col-md-6">
@@ -205,16 +210,21 @@
 
 
                   <div class="col-md-4">
-                    <label>Amount requested</label>
+                    <label>Amount requested
+                      <span class="required-star">*</span>
+                    </label>
                     <input type="text" class="form-control" required [(ngModel)]="amount_requested" placeholder="Enter Amount requested"
-                           [ngModelOptions]="{standalone: true}" >
+                           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !amount_requested}">
+                      <div *ngIf="registerButtonClicked && !amount_requested" class="error-message">Amount Required</div>
                   </div>
               
                   <div class="col-md-4">
-                    <label>Repayment period</label>
+                    <label>Repayment period
+                      <span class="required-star">*</span>
+                    </label>
                     <input type="number" class="form-control" required [(ngModel)]="repayment_period" placeholder="Enter Repayment period"
-                           [ngModelOptions]="{standalone: true}">
-                  
+                           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !repayment_period}">
+                  <div *ngIf="registerButtonClicked && !repayment_period" class="error-message">Repayment Period Required</div>
                   </div>
 
                   <div class="col-md-4">
@@ -238,20 +248,23 @@
 
 
                   <div class="col-md-6" >
-                    <label>Loan Type</label>
+                    <label>Loan Type
+                      <span class="required-star">*</span>
+                    </label>
                     <div class="custom-sel">
                       <select
                         class="form-control"
                         id="loan_type"
                         name="loan_type"
                         [(ngModel)]="loan_type"
-                        [ngModelOptions]="{ standalone: true }"
+                        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !loan_type}"
                       >
                         <option *ngFor="let employees of LoanTypes" [value]="employees.id">
                           {{ employees.loan_type }}
                         </option>
                       </select>
                     </div>
+                     <div *ngIf="registerButtonClicked && !loan_type" class="error-message">Loan Type Required</div>
                   </div>
 
 

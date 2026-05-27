@@ -76,22 +76,26 @@
 
               <div class="col-md-6" >
                
-                <label>Asset Type Name</label>
+                <label>Asset Type Name
+                    <span class="required-star">*</span>
+                </label>
                <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter name"
-                [ngModelOptions]="{standalone: true}" >
-               
+                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}" >
+                <div *ngIf="registerButtonClicked && !name" class="error-message">Please Select Asset Type Name</div>
           </div>
 
                      <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select Branches
+                      <span class="required-star">*</span>
+                    </label>
                      <div class="form-control-wrapper">
 
               <mat-form-field>
              
               <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
                 <div class="select-all">
-                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}" (change)="toggleAllSelectionBrach()">
                     Select All
                   </mat-checkbox>
                 </div>

@@ -136,10 +136,10 @@ loadBranch(): void {
 registerBranch(): void {
   this.registerButtonClicked = true;
 
-  if (!this.branch_name || !this.branch_code || !this.br_country  ) {
-    // Validation code
-    return;
-  }
+  // if (!this.branch_name || !this.branch_code || !this.br_country  ) {
+   
+  //   return;
+  // }
 
   const formData = new FormData();
 
@@ -178,11 +178,7 @@ registerBranch(): void {
         // return throwError('No schema selected.'); // Return an error observable if no schema is selected
       }
      
-     
       // return this.http.put(apiUrl, formData);
-  
-
-      // kopra
     
       this.http.post(`${this.apiUrl}/organisation/api/Branch/?schema=${selectedSchema}`, formData).subscribe(
   // this.http.post('http://abc.localhost:8000/organisation/api/Branch/', formData).subscribe(
@@ -191,9 +187,25 @@ registerBranch(): void {
       alert('Branch has been Registered successfully');
       window.location.reload();
     },
-    error => {
-      console.error('Registration failed', error);
-      alert('Registration failed. Please check all fields and try again.');
+    (error) => {
+      console.error('Added failed', error);
+
+      let errorMessage = 'Enter all required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
+      alert(errorMessage);
     }
   );
 }

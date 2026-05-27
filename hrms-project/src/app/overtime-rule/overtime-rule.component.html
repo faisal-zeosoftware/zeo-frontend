@@ -117,10 +117,12 @@
 
           <div class="col-md-6" >
                    
-            <label>Order </label>
+            <label>Order 
+               <span class="required-star">*</span>
+            </label>
            <input type="number"  class="form-control" [(ngModel)]="order"  placeholder="Enter order "
-            [ngModelOptions]="{standalone: true}" >
-           
+            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !order}">
+           <div *ngIf="registerButtonClicked && !order" class="error-message">order is required.</div> 
       </div>
 
       <div class="col-md-6">
@@ -133,20 +135,23 @@
       </div>
     
       <div class="col-md-6" >
-        <label>Select Policy</label>
+        <label>Select Policy
+           <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <select
             class="form-control"
             id="Policy"
             name="Policy"
             [(ngModel)]="policy"
-            [ngModelOptions]="{ standalone: true }"
+            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !policy}"
           >
             <option *ngFor="let employees of Policyget" [value]="employees.id">
               {{ employees.name }}
             </option>
           </select>
         </div>
+        <div *ngIf="registerButtonClicked && !policy" class="error-message">policy is required.</div> 
       </div>
 
 

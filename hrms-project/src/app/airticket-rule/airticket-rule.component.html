@@ -77,12 +77,14 @@
 
 
                     <div class="custom-sel">
-                        <label>Policy</label>
-                        <select class="form-control" id="policy" required [(ngModel)]="policy"  [ngModelOptions]="{standalone: true}"  >
+                        <label>Policy
+                           <span class="required-star">*</span>
+                        </label>
+                        <select class="form-control" id="policy" required [(ngModel)]="policy"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !policy}"  >
                             <option value="" >Select</option>
                             <option *ngFor="let user of Policies" [value]="user.id">{{ user.name }}</option>
                         </select>
-                       
+                           <div *ngIf="registerButtonClicked && !policy" class="error-message">Rule Type Required</div>
                     </div>
                                 
                 
@@ -93,28 +95,30 @@
                 </div> 
                 
 <div class="col-md-6" >
-    <label>Rule Type</label>
+    <label>Rule Type
+       <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <select
-        class="form-control" [(ngModel)]="rule_type" [ngModelOptions]="{ standalone: true }">
+        class="form-control" [(ngModel)]="rule_type" [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !rule_type}" >
         <option value="ONE_WAY">One Way Ticket </option>
         <option value="TWO_WAY">Two Way Ticket</option>
         <option value="ENCASHMENT">Encashment </option>
-  
-    
-  
       </select>
     </div>
+    <div *ngIf="registerButtonClicked && !rule_type" class="error-message">Rule Type Required</div>
   </div>
   
                       
 
               <div class="col-md-6" >
                
-                <label> required service years</label>
+                <label> required service years
+                   <span class="required-star">*</span>
+                </label>
                <input type="number"  class="form-control" required  [(ngModel)]="required_service_years"  placeholder="Enter required service years"
-                [ngModelOptions]="{standalone: true}" >
-               
+                [ngModelOptions]="{standalone: true}"[ngClass]="{'error-field': registerButtonClicked && !required_service_years}" >
+               <div *ngIf="registerButtonClicked && !required_service_years" class="error-message">Service Year Required</div>
           </div>
    
   

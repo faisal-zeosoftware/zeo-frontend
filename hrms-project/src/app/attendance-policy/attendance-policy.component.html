@@ -26,22 +26,28 @@
       <!-- ROW 1 -->
       <div class="row align-items-end">
         <div class="col-md-4">
-          <label class="form-label">Policy Name</label>
+          <label class="form-label">Policy Name
+            <span class="required-star">*</span>
+          </label>
           <input type="text" class="form-control"
             [(ngModel)]="policy.name"
-            [ngModelOptions]="{standalone: true}">
+            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !policy.name}">
+            <div *ngIf="registerButtonClicked && !policy.name" class="error-message">Please Select Policy Name</div>
         </div>
 
         <div class="col-md-4">
-          <label class="form-label">Select Branch</label>
+          <label class="form-label">Select Branch
+            <span class="required-star">*</span>
+          </label>
           <select class="form-control"
             [(ngModel)]="policy.branch"
-            [ngModelOptions]="{standalone: true}">
+            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !policy.branch}">
             <option value="">Select</option>
             <option *ngFor="let b of branches" [value]="b.id">
               {{ b.branch_name }}
             </option>
           </select>
+          <div *ngIf="registerButtonClicked && !policy.branch" class="error-message">Please Select Branch</div>
         </div>
 
         <div class="col-md-4 d-flex align-items-center mt-3">

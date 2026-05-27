@@ -76,12 +76,14 @@
 
 
                     <div class="custom-sel">
-                        <label>Employee</label>
-                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"  >
+                        <label>Employee
+                           <span class="required-star">*</span>
+                        </label>
+                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}" >
                             <option value="" >Select</option>
                             <option *ngFor="let user of Employee" [value]="user.id">{{ user.emp_code }}</option>
                         </select>
-                       
+                        <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Employee</div>
                     </div>
                                 
                 
@@ -96,12 +98,14 @@
 
 
                     <div class="custom-sel">
-                        <label>Policy</label>
-                        <select class="form-control" id="policy" required [(ngModel)]="policy"  [ngModelOptions]="{standalone: true}"  >
+                        <label>Policy
+                           <span class="required-star">*</span>
+                        </label>
+                        <select class="form-control" id="policy" required [(ngModel)]="policy"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !policy}" >
                             <option value="" >Select</option>
                             <option *ngFor="let user of Policies" [value]="user.id">{{ user.name }}</option>
                         </select>
-                       
+                        <div *ngIf="registerButtonClicked && !policy" class="error-message">Policy is Required</div>
                     </div>
                                 
                 
@@ -129,10 +133,12 @@
 
       <div class="col-md-6" >
                
-        <label> Expiry date</label>
+        <label> Expiry date
+           <span class="required-star">*</span>
+        </label>
        <input type="date"  class="form-control" required  [(ngModel)]="expiry_date"  placeholder="Enter Expiry date"
-        [ngModelOptions]="{standalone: true}" >
-       
+        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !expiry_date}" >
+        <div *ngIf="registerButtonClicked && !expiry_date" class="error-message">Expiry date Required</div>
   </div>
 
 

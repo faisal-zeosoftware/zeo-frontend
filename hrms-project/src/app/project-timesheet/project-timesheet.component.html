@@ -73,20 +73,25 @@
             <div class="row">
                
           <div class="col-md-6" >
-    <label>Select Employee</label>
+    <label>Select Employee
+       <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <select
         class="form-control"
         id="employee"
         name="employee"
         [(ngModel)]="employee"
-        [ngModelOptions]="{ standalone: true }"
+        [ngModelOptions]="{ standalone: true }"  [ngClass]="{'error-field': registerButtonClicked && !employee}"
       >
         <option *ngFor="let employees of Employees" [value]="employees.id">
           {{ employees.emp_code }}
         </option>
       </select>
     </div>
+              <div *ngIf="registerButtonClicked && !employee" class="error-message">
+    Please Select Employee
+  </div>
   </div>
 
               <div class="col-md-6" >
@@ -135,37 +140,47 @@
 
 
 <div class="col-md-6" >
-    <label>Select Projects</label>
+    <label>Select Projects
+       <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <select
         class="form-control"
         id="project"
         name="project"
         [(ngModel)]="project"
-        [ngModelOptions]="{ standalone: true }"
+        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !project}"
       >
         <option *ngFor="let employees of Projects" [value]="employees.id">
           {{ employees.title }}
         </option>
       </select>
     </div>
+          <div *ngIf="registerButtonClicked && !project" class="error-message">
+    Please Select Projects
+  </div>
   </div>
   
   <div class="col-md-6" >
-    <label>Select Task</label>
+    <label>Select Task
+       <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <select
         class="form-control"
         id="task"
         name="task"
         [(ngModel)]="task"
-        [ngModelOptions]="{ standalone: true }"
+        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !task}"
       >
         <option *ngFor="let employees of Tasks" [value]="employees.id">
           {{ employees.title }}
         </option>
       </select>
     </div>
+      <div *ngIf="registerButtonClicked && !task" class="error-message">
+    Please Select Task
+  </div>
   </div>
 
 

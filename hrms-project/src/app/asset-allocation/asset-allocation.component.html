@@ -71,7 +71,47 @@
         <form >
 
             <div class="row">
-               
+
+      <div class="col-md-6" >
+    <label>Select Employee 
+       <span class="required-star">*</span>
+    </label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="employee"
+        name="employee"
+        [(ngModel)]="employee"
+        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !employee}"
+      >
+        <option *ngFor="let employees of Employees" [value]="employees.id">
+          {{ employees.emp_code }}
+        </option>
+      </select>
+    </div>
+      <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Employee</div>
+  </div>
+
+        <div class="col-md-6" >
+    <label>Select Asset 
+       <span class="required-star">*</span>
+    </label>
+    <div class="custom-sel">
+      <select
+        class="form-control"
+        id="asset"
+        name="asset"
+        [(ngModel)]="asset"
+        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !asset}"
+      >
+        <option *ngFor="let employees of Assets" [value]="employees.id">
+          {{ employees.name }}
+        </option>
+      </select>
+    </div>
+      <div *ngIf="registerButtonClicked && !asset" class="error-message">Please Select Asset</div>
+  </div>
+           
 
               <div class="col-md-6" >
                
@@ -99,50 +139,6 @@
       </select>
     </div>
   </div>
-
-
-
-
-  <div class="col-md-6" >
-    <label>Select Asset </label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="asset"
-        name="asset"
-        [(ngModel)]="asset"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let employees of Assets" [value]="employees.id">
-          {{ employees.name }}
-        </option>
-      </select>
-    </div>
-  </div>
-
-     
-  <div class="col-md-6" >
-    <label>Select Employee </label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="employee"
-        name="employee"
-        [(ngModel)]="employee"
-        [ngModelOptions]="{ standalone: true }"
-      >
-        <option *ngFor="let employees of Employees" [value]="employees.id">
-          {{ employees.emp_code }}
-        </option>
-      </select>
-    </div>
-  </div>
-          
-      
-      
-   
-
-
 
     
             </div>
