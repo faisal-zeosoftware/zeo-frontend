@@ -38,11 +38,11 @@ export class SchemaCreationComponent {
   timezone: string = '';
   city: string = '';
 
-
   users:any[]=[];
   countries:any[]=[];
   states: any[] = [];
   Currencies:any[]=[];
+  
 
 
   logo: File | null = null;
@@ -117,6 +117,15 @@ export class SchemaCreationComponent {
 
     selectedFile!: File | null;
 
+   
+
+    onlyFirstDayFilter = (d: Date | null): boolean => {
+
+      const date = d || new Date();
+    
+      // Enable ONLY 1st day
+      return date.getDate() === 1;
+    };
 
   
   onFileSelected(event: any): void {
@@ -127,6 +136,19 @@ export class SchemaCreationComponent {
   registerCatogary(): void {
     this.registerButtonClicked = true;
 
+
+    // Financial year validation
+if (this.financial_year) {
+
+  const selectedDate = new Date(this.financial_year);
+
+  if (selectedDate.getDate() !== 1) {
+
+    alert('Financial year date must be the 1st day of a month.');
+
+    return;
+  }
+}
   
     if ( !this.name || !this.country) {
       let errorMessage = '';
@@ -161,7 +183,16 @@ export class SchemaCreationComponent {
     companyData.append('address_line1', this.address_line1);
 
     companyData.append('address_line2', this.address_line2);
-    companyData.append('financial_year', this.financial_year);
+   // Financial Year
+if (this.financial_year) {
+
+  const formattedDate = new Date(this.financial_year)
+    .toISOString()
+    .split('T')[0];
+
+  companyData.append('financial_year', formattedDate);
+
+}
 
     companyData.append('city', this.city);
 
@@ -217,6 +248,27 @@ export class SchemaCreationComponent {
 //   }
 // }
 
+// onCountryChange(): void {
+
+//   if (this.country !== undefined) {
+
+//     // Load states
+//     this.loadStatesByCountry();
+
+//     // Find selected country object
+//     const selectedCountry = this.countries.find(
+//       (c: any) => c.id == this.country
+//     );
+
+//     // Set timezone automatically
+//     if (selectedCountry) {
+//       this.timezone = selectedCountry.timezone;
+//     } else {
+//       this.timezone = '';
+//     }
+//   }
+// }
+
 onCountryChange(): void {
 
   if (this.country !== undefined) {
@@ -229,11 +281,31 @@ onCountryChange(): void {
       (c: any) => c.id == this.country
     );
 
-    // Set timezone automatically
     if (selectedCountry) {
+
+      // Set timezone
       this.timezone = selectedCountry.timezone;
+
+      // Set currencies
+      this.Currencies = selectedCountry.currency || [];
+
+      // Auto select first currency
+      if (this.Currencies.length > 0) {
+
+        this.currency = this.Currencies[0].id;
+
+      } else {
+
+        this.currency = '';
+
+      }
+
     } else {
+
       this.timezone = '';
+      this.Currencies = [];
+      this.currency = '';
+
     }
   }
 }

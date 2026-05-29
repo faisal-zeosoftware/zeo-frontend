@@ -154,6 +154,7 @@ export class CreateEmployeeComponent implements OnInit {
   isLDesignationMandatory: boolean = false; // New property to store the checkbox state
   isLCatogoryMandatory: boolean = false; // New property to store the checkbox state
   isHiringMandatory: boolean = false; // New property to store the checkbox state
+  isreportingMandatory: boolean = false; // New property to store the checkbox state
 
 
 
@@ -221,6 +222,11 @@ export class CreateEmployeeComponent implements OnInit {
   temp_emp_cat: string | null = null;
   catDropdownOptions: string[] = [];
   catDataType: string = 'Dropdown';   // Default data type for Gender
+
+  repoFieldName: string = 'Reporting Manager';
+  temp_emp_repo: string | null = null;
+  repoDropdownOptions: string[] = [];
+  repoDataType: string = 'Dropdown';   // Default data type for Gender
 
   // dialog: any;
 
@@ -388,6 +394,17 @@ export class CreateEmployeeComponent implements OnInit {
       const savedbrchDropdownValues = localStorage.getItem('brchDropdownValues');
       if (savedbrchDropdownValues) {
         this.brchDropdownOptions = savedbrchDropdownValues.split(',');
+      }
+    }
+
+
+
+    this.repoDataType = localStorage.getItem('repoDataType') || this.repoDataType;
+
+    if (this.repoDataType === 'Dropdown') {
+      const savedrepoDropdownValues = localStorage.getItem('repoDropdownValues');
+      if (savedrepoDropdownValues) {
+        this.repoDropdownOptions = savedrepoDropdownValues.split(',');
       }
     }
 
@@ -1267,6 +1284,9 @@ uploadEmployeeDocument(): void {
     }
 
 
+    
+
+
     // Load field names from localStorage
     const saveddeptFieldName = localStorage.getItem('deptFieldName');
     if (saveddeptFieldName) {
@@ -1287,6 +1307,11 @@ uploadEmployeeDocument(): void {
       this.catFieldName = savedcatFieldName;
     }
 
+     // Load field names from localStorage
+     const savedrepoFieldName = localStorage.getItem('repoFieldName');
+     if (savedrepoFieldName) {
+       this.repoFieldName = savedrepoFieldName;
+     }
 
     const savedhiredFieldName = localStorage.getItem('hiredFieldName');
     if (savedhiredFieldName) {
@@ -1415,6 +1440,11 @@ uploadEmployeeDocument(): void {
     const isLCatogoryMandatory = localStorage.getItem('isLCatogoryMandatory');
     if (isLCatogoryMandatory) {
       this.isLCatogoryMandatory = JSON.parse(isLCatogoryMandatory);
+    }
+
+    const isreportingMandatory = localStorage.getItem('isreportingMandatory');
+    if (isreportingMandatory) {
+      this.isreportingMandatory = JSON.parse(isreportingMandatory);
     }
 
 

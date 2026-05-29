@@ -1,6 +1,6 @@
-<div class="container" *ngIf="hasViewPermission">
+<div class="container" >
   <div class="comapny_section">
-      <div class="com_list ">
+      <div class="com_list " *ngIf="hasViewPermission">
   <div class="cpm-sec">
 
       <h2>Forms</h2><hr>
@@ -13,7 +13,7 @@
             <mat-expansion-panel-header>
          
                   <div class="col-md-12">
-                     {{empCodeFieldName}}
+                      Field name - {{empCodeFieldName}}
                   </div>
               <mat-panel-title>
         
@@ -39,7 +39,7 @@
       <label>Dropdown Values (comma separated)</label>
       <input type="text" class="form-control" [(ngModel)]="dropdownValues" placeholder="Enter Dropdown Values">
   </div>
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
 
             </div>    
       
@@ -85,7 +85,7 @@
   
              </div>
            
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
 
             </div>    
       
@@ -128,7 +128,7 @@
 
              </div>
            
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
 
             </div>    
       
@@ -140,8 +140,7 @@
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                      
-                    {{genderFieldName}}
+                      Field name - {{genderFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisabledGender()">{{ isGernderNameFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -183,7 +182,7 @@
               
                   
                   
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
@@ -212,7 +211,7 @@
                  
               </div>
          
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
             
@@ -255,7 +254,7 @@
               </div>
               </div>
               </div>
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -296,7 +295,7 @@
               </div>
               </div>
               </div>
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -338,7 +337,7 @@
               </div>
               </div>
               </div>
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -382,7 +381,7 @@
               </div>
               </div>
 
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -423,7 +422,7 @@
               </div>
               </div>
 
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -465,7 +464,7 @@
               </div>
               </div>
               </div>
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -478,7 +477,7 @@
             <mat-expansion-panel-header>
          
                   <div class="col-md-12">
-                     {{religionFieldName}}
+                      Field name - {{religionFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisabledReli()">{{ isReliFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -520,7 +519,7 @@
   </div>
   </div>
 
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
 
             </div>    
       
@@ -532,7 +531,7 @@
             <mat-expansion-panel-header>
          
                   <div class="col-md-12">
-                     {{bloodFieldName}}
+                      Field name - {{bloodFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisabledBlood()">{{ isBloodFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -574,7 +573,7 @@
   </div>
   </div>
 
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
 
             </div>    
       
@@ -615,7 +614,7 @@
               </div>
               </div>
 
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -626,7 +625,7 @@
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                      {{maritalFieldName}}
+                      Field name - {{maritalFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisablemarital()">{{ isMaritalFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -671,7 +670,7 @@
                       <input type="text" class="form-control" [(ngModel)]="genderDropdownValues" placeholder="Enter Dropdown Values">
                   </div> -->
                   
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
@@ -711,7 +710,7 @@
               </div>
              <!-- Collapsible panel content for editing the field -->
          
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -752,7 +751,7 @@
               </div>
               </div>
               </div>
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -764,7 +763,7 @@
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                     {{locationFieldName}}
+                      Field name - {{locationFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisableLocation()">{{ isLocationFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -804,7 +803,7 @@
                   </div>
       </div>
                   
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
@@ -814,7 +813,7 @@
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                      {{cntryFieldName}}
+                      Field name - {{cntryFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisableCountry()">{{ isCountryFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -852,8 +851,13 @@
                   </div>
                   </div>
       
+                  <!-- Gender Dropdown Values (if Dropdown is selected) -->
+                  <!-- <div class="col-md-6" *ngIf="genderDataType === 'Dropdown'">
+                      <label>Dropdown Values (comma separated)</label>
+                      <input type="text" class="form-control" [(ngModel)]="genderDropdownValues" placeholder="Enter Dropdown Values">
+                  </div> -->
                   
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
@@ -863,7 +867,7 @@
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                     {{brchFieldName}}
+                      Field name - {{brchFieldName}}
                       <!-- <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisableBranch()">{{ isBranchFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon>  -->
 
                   </div>
@@ -901,20 +905,25 @@
                       </div>
                   </div>
       </div>
-
+                  <!-- Gender Dropdown Values (if Dropdown is selected) -->
+                  <!-- <div class="col-md-6" *ngIf="genderDataType === 'Dropdown'">
+                      <label>Dropdown Values (comma separated)</label>
+                      <input type="text" class="form-control" [(ngModel)]="genderDropdownValues" placeholder="Enter Dropdown Values">
+                  </div> -->
                   
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
 
 
+   
 
       <mat-accordion class="mt-3">
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                     {{deptFieldName}}
+                      Field name - {{deptFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisableDepart()">{{ isDepartFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -956,7 +965,7 @@
       </div>
                 
                   
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
@@ -966,7 +975,7 @@
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                     {{desFieldName}}
+                      Field name - {{desFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisableDesignation()">{{ isDesignationFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -1008,7 +1017,7 @@
                   </div>
       
             </div>
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
@@ -1017,7 +1026,7 @@
           <mat-expansion-panel>
               <mat-expansion-panel-header>
                   <div class="col-md-12">
-                     {{catFieldName}}
+                      Field name - {{catFieldName}}
                       <mat-icon class="mat_eye_emp pull-right" (click)="toggleFieldDisableCat()">{{ isCatFieldHidden ? 'visibility_off' : 'visibility' }}</mat-icon> 
 
                   </div>
@@ -1062,12 +1071,62 @@
       
                  </div>
                   
-                  <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
               </div>    
           </mat-expansion-panel>
       </mat-accordion>
 
+      <mat-accordion class="mt-3">
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <div class="col-md-12">
+                    Field name - {{repoFieldName}}
 
+                </div>
+                <mat-panel-title>
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+    
+            <div class="inside_udf">
+                <div class="row">
+                <!-- Gender Field Name Input -->
+                <div class="col-md-6">
+                    <label for="repo_field_name"> Field Name:</label>
+                    <input type="text" id="repo_field_name" class="form-control" [(ngModel)]="repoFieldName">
+                </div>
+                <div class="col-md-6">
+                    <label></label>
+                    <div class="check-box-selection-sec mt-2">
+                        <div class="mat-set">
+                            <!-- <mat-checkbox [(ngModel)]="is_ess">Is_Ess User</mat-checkbox> -->
+                            <mat-checkbox [(ngModel)]="isrepoMandatory">Mandatory Field</mat-checkbox>
+                            <!-- <mat-checkbox [(ngModel)]="is_staff">Is_Staff</mat-checkbox> -->
+                        </div>
+                       
+                    </div>
+                    </div>
+    
+                <!-- Gender Data Type Selection -->
+                <div class="col-md-6">
+                    <label>Data type</label>
+                    <div class="custom-sel">
+                        <select class="form-control" [(ngModel)]="repoDataType">
+                            <option>Text Box</option>
+                            <option>Dropdown</option>
+                        </select>
+                    </div>
+                </div>
+    </div>
+                <!-- Gender Dropdown Values (if Dropdown is selected) -->
+                <!-- <div class="col-md-6" *ngIf="genderDataType === 'Dropdown'">
+                    <label>Dropdown Values (comma separated)</label>
+                    <input type="text" class="form-control" [(ngModel)]="genderDropdownValues" placeholder="Enter Dropdown Values">
+                </div> -->
+                
+                <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update Field Names</button>
+            </div>    
+        </mat-expansion-panel>
+    </mat-accordion>
    
       <mat-accordion class="mt-3">
           <mat-expansion-panel>
@@ -1106,7 +1165,7 @@
               </div>
               </div>
 
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -1131,7 +1190,7 @@
               <label for="joinFieldName_name"> Field Name:</label>
               <input type="text" id="joinFieldName_name" class="form-control" [(ngModel)]="joinFieldName">
           </div>
-          <button *ngIf="hasEditPermission" (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
+          <button (click)="updateFieldNames()" class="btn btn-primary mt-3">Update</button>
 
             </div>    
       
@@ -1146,10 +1205,10 @@
               <mat-expansion-panel>
                   <mat-expansion-panel-header>
                       <div class="col-md-6">
-                         {{field.emp_custom_field}}
+                          Field Name - {{field.emp_custom_field}}
                       </div>
                       <div class="col-md-5">
-                         {{field.data_type}}
+                          Data Type - {{field.data_type}}
                       </div>
                       <div class="col-md-1">
                           <mat-icon class="trash" (click)="deleteCustomField(field.id)">delete</mat-icon>
@@ -1203,7 +1262,7 @@
       
                       <!-- Update Button -->
                       <div class="row">
-                          <div class="col-md-12 text-right" *ngIf="hasEditPermission">
+                          <div class="col-md-12 text-right">
                               <button type="button" mat-raised-button color="primary" (click)="updateCustomField(field)">Update</button>
                           </div>
                       </div>
@@ -1214,7 +1273,7 @@
       
       
 
-      <button *ngIf="hasAddPermission" type=" button" class="btn d-block mx-auto mt-4" (click)="openMarketingModal()">  Add More Fields</button>
+      <button type=" button" class="btn d-block mx-auto mt-4" (click)="openMarketingModal()">  Add More Fields</button>
   
 
             <!-- Modal Popup for add marketing language skill -->
@@ -1346,7 +1405,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                {{empFamilynameFieldName}}
+                  Field name - {{empFamilynameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1360,7 +1419,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empFamilynameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission"  (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1374,7 +1433,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                 {{empRelationnameFieldName}}
+                  Field name - {{empRelationnameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1388,7 +1447,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empRelationnameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1403,7 +1462,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                   {{empExpencenameFieldName}}
+                  Field name - {{empExpencenameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1417,7 +1476,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empExpencenameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1432,7 +1491,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                {{empmemDobnameFieldName}}
+                  Field name - {{empmemDobnameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1446,7 +1505,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empmemDobnameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1459,10 +1518,10 @@
       <mat-expansion-panel>
           <mat-expansion-panel-header>
               <div class="col-md-6">
-               {{field.emp_custom_field}}
+                  Field Name - {{field.emp_custom_field}}
               </div>
               <div class="col-md-5">
-                {{field.data_type}}
+                  Data Type - {{field.data_type}}
               </div>
               <div class="col-md-1">
                   <mat-icon class="trash" (click)="deleteCustomFieldFam(field.id)">delete</mat-icon>
@@ -1518,7 +1577,7 @@
 
               <!-- Update Button -->
               <div class="row">
-                  <div class="col-md-12 text-right" *ngIf="hasEditPermission">
+                  <div class="col-md-12 text-right">
                       <button type="button"  class="btn btn-zeo mt-3" mat-raised-button color="primary" (click)="updateCustomField(field)">Update</button>
                   </div>
               </div>
@@ -1528,9 +1587,10 @@
 </div>
 
 
-<button *ngIf="hasAddPermission" class="d-block mx-auto btn " (click)="openFamFieldModal()">Add More Field</button>
+<button class="d-block mx-auto btn " (click)="openFamFieldModal()">Add More Field</button>
 
   <!-- Modal Popup for add marketing language skill -->
+
   <div *ngIf="isFamfieldModalOpen" class="modal">
     <div class="modal-content">
       <div class="row">
@@ -1647,6 +1707,8 @@
   <button mat-button matStepperPrevious>Back</button>
   <button mat-button matStepperNext>Next</button>
   </div>
+
+
 </mat-step>
 
 <mat-step >
@@ -1658,7 +1720,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                {{empQualificationnameFieldName}}
+                  Field name - {{empQualificationnameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1672,7 +1734,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empQualificationnameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1686,7 +1748,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                 {{empInstitutionnameFieldName}}
+                  Field name - {{empInstitutionnameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1700,7 +1762,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empInstitutionnameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1716,7 +1778,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                {{empQuaYearnameFieldName}}
+                  Field name - {{empQuaYearnameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1730,7 +1792,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empQuaYearnameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1746,7 +1808,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                 {{empQuaSubjectFieldName}}
+                  Field name - {{empQuaSubjectFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1760,7 +1822,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empQuaSubjectFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -1775,10 +1837,10 @@
       <mat-expansion-panel>
           <mat-expansion-panel-header>
               <div class="col-md-6">
-                 {{field.emp_custom_field}}
+                  Field Name - {{field.emp_custom_field}}
               </div>
               <div class="col-md-5">
-               {{field.data_type}}
+                  Data Type - {{field.data_type}}
               </div>
               <div class="col-md-1">
                   <mat-icon class="trash" (click)="deleteCustomFieldQual(field.id)">delete</mat-icon>
@@ -1834,7 +1896,7 @@
 
               <!-- Update Button -->
               <div class="row">
-                  <div class="col-md-12 text-right" *ngIf="hasEditPermission">
+                  <div class="col-md-12 text-right">
                       <button type="button"  class="btn btn-zeo mt-3" mat-raised-button color="primary" (click)="updateCustomField(field)">Update</button>
                   </div>
               </div>
@@ -1844,7 +1906,7 @@
 </div>
 
 
-<button *ngIf="hasAddPermission" class="d-block mx-auto btn " (click)="openQualFieldModal()">Add More Field</button>
+<button class="d-block mx-auto btn " (click)="openQualFieldModal()">Add More Field</button>
 
   <!-- Modal Popup for add marketing language skill -->
   <div *ngIf="isQualfieldModalOpen" class="modal">
@@ -1975,7 +2037,7 @@
         <mat-expansion-panel-header>
      
               <div class="col-md-12">
-                {{empJobFromDatenameFieldName}}
+                  Field name - {{empJobFromDatenameFieldName}}
               </div>
           <mat-panel-title>
     
@@ -1989,7 +2051,7 @@
 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empJobFromDatenameFieldName">
 </div>
 
-      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
 
         </div>    
   
@@ -2003,7 +2065,7 @@
             <mat-expansion-panel-header>
          
                   <div class="col-md-12">
-                     {{empJobendDatenameFieldName}}
+                      Field name - {{empJobendDatenameFieldName}}
                   </div>
               <mat-panel-title>
         
@@ -2017,7 +2079,7 @@
     <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empJobendDatenameFieldName">
   </div>
   
-          <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
   
             </div>    
       
@@ -2031,7 +2093,7 @@
                 <mat-expansion-panel-header>
              
                       <div class="col-md-12">
-                        {{empComapanyameFieldName}}
+                          Field name - {{empComapanyameFieldName}}
                       </div>
                   <mat-panel-title>
             
@@ -2045,7 +2107,7 @@
         <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empComapanyameFieldName">
       </div>
       
-              <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+              <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
       
                 </div>    
           
@@ -2060,7 +2122,7 @@
                     <mat-expansion-panel-header>
                  
                           <div class="col-md-12">
-                               {{empJobDesignationFieldName}}
+                              Field name - {{empJobDesignationFieldName}}
                           </div>
                       <mat-panel-title>
                 
@@ -2074,7 +2136,7 @@
             <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empJobDesignationFieldName">
           </div>
           
-                  <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
           
                     </div>    
               
@@ -2088,7 +2150,7 @@
                         <mat-expansion-panel-header>
                      
                               <div class="col-md-12">
-                                   {{empSalarypermonthFieldName}}
+                                  Field name - {{empSalarypermonthFieldName}}
                               </div>
                           <mat-panel-title>
                     
@@ -2102,7 +2164,7 @@
                 <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empSalarypermonthFieldName">
               </div>
               
-                      <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+                      <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
               
                         </div>    
                   
@@ -2117,7 +2179,7 @@
                             <mat-expansion-panel-header>
                          
                                   <div class="col-md-12">
-                                      {{empLeavingReasonFieldName}}
+                                      Field name - {{empLeavingReasonFieldName}}
                                   </div>
                               <mat-panel-title>
                         
@@ -2131,7 +2193,7 @@
                     <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empLeavingReasonFieldName">
                   </div>
                   
-                          <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+                          <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
                   
                             </div>    
                       
@@ -2145,7 +2207,7 @@
                                 <mat-expansion-panel-header>
                              
                                       <div class="col-md-12">
-                                         {{empWorkExpFieldName}}
+                                          Field name - {{empWorkExpFieldName}}
                                       </div>
                                   <mat-panel-title>
                             
@@ -2159,7 +2221,7 @@
                         <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empWorkExpFieldName">
                       </div>
                       
-                              <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+                              <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
                       
                                 </div>    
                           
@@ -2173,10 +2235,10 @@
                                 <mat-expansion-panel>
                                     <mat-expansion-panel-header>
                                         <div class="col-md-6">
-                                          {{field.emp_custom_field}}
+                                            Field Name - {{field.emp_custom_field}}
                                         </div>
                                         <div class="col-md-5">
-                                          {{field.data_type}}
+                                            Data Type - {{field.data_type}}
                                         </div>
                                         <div class="col-md-1">
                                             <mat-icon class="trash" (click)="deleteCustomFieldJob(field.id)">delete</mat-icon>
@@ -2232,7 +2294,7 @@
                           
                                         <!-- Update Button -->
                                         <div class="row">
-                                            <div class="col-md-12 text-right" *ngIf="hasEditPermission">
+                                            <div class="col-md-12 text-right">
                                                 <button type="button"  class="btn btn-zeo mt-3" mat-raised-button color="primary" (click)="updateCustomField(field)">Update</button>
                                             </div>
                                         </div>
@@ -2242,7 +2304,7 @@
                           </div>
                           
                           
-                          <button *ngIf="hasAddPermission" class="d-block mx-auto btn " (click)="openJobFieldModal()">Add More Field</button>
+                          <button class="d-block mx-auto btn " (click)="openJobFieldModal()">Add More Field</button>
                           
                             <!-- Modal Popup for add marketing language skill -->
                             <div *ngIf="isJobfieldModalOpen" class="modal">
@@ -2375,7 +2437,7 @@
             <mat-expansion-panel-header>
          
                   <div class="col-md-12">
-                      {{empDocmentNoFieldName}}
+                      Field name - {{empDocmentNoFieldName}}
                   </div>
               <mat-panel-title>
         
@@ -2389,7 +2451,7 @@
     <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empDocmentNoFieldName">
   </div>
   
-          <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
   
             </div>    
       
@@ -2405,7 +2467,7 @@
             <mat-expansion-panel-header>
          
                   <div class="col-md-12">
-                    {{empIssueDateFieldName}}
+                      Field name - {{empIssueDateFieldName}}
                   </div>
               <mat-panel-title>
         
@@ -2419,7 +2481,7 @@
     <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empIssueDateFieldName">
   </div>
   
-          <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+          <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
   
             </div>    
       
@@ -2434,7 +2496,7 @@
                 <mat-expansion-panel-header>
              
                       <div class="col-md-12">
-                        {{empExpDateFieldName}}
+                          Field name - {{empExpDateFieldName}}
                       </div>
                   <mat-panel-title>
             
@@ -2448,7 +2510,7 @@
         <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empExpDateFieldName">
       </div>
       
-              <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+              <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
       
                 </div>    
           
@@ -2463,7 +2525,7 @@
                     <mat-expansion-panel-header>
                  
                           <div class="col-md-12">
-                              {{empEmpdocumentFieldName}}
+                              Field name - {{empEmpdocumentFieldName}}
                           </div>
                       <mat-panel-title>
                 
@@ -2477,7 +2539,7 @@
             <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empEmpdocumentFieldName">
           </div>
           
-                  <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
           
                     </div>    
               
@@ -2492,7 +2554,7 @@
                     <mat-expansion-panel-header>
                  
                           <div class="col-md-12">
-                         {{empEmpdocumentDatatypeFieldName}}
+                              Field name - {{empEmpdocumentDatatypeFieldName}}
                           </div>
                       <mat-panel-title>
                 
@@ -2506,7 +2568,7 @@
             <input type="text" id="emp_code_name" class="form-control" [(ngModel)]="empEmpdocumentDatatypeFieldName">
           </div>
           
-                  <button *ngIf="hasEditPermission" (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
+                  <button (click)="updateEmployeeFamily()" class="btn btn-primary mt-3">Update Field Names</button>
           
                     </div>    
               
@@ -2519,7 +2581,7 @@
                     <mat-expansion-panel>
                         <mat-expansion-panel-header>
                             <div class="col-md-6">
-                                 {{field.emp_custom_field}}
+                                Field Name - {{field.emp_custom_field}}
                             </div>
                             <div class="col-md-5">
                                 Data Type - {{field.data_type}}
@@ -2576,7 +2638,7 @@
             
                             <!-- Update Button -->
                             <div class="row">
-                                <div class="col-md-12 text-right" *ngIf="hasEditPermission">
+                                <div class="col-md-12 text-right">
                                     <button type="button" mat-raised-button color="primary" (click)="updateCustomField(field)">Update</button>
                                 </div>
                             </div>
@@ -2587,7 +2649,7 @@
             
               </div>
 
-<button *ngIf="hasAddPermission" class="d-block mx-auto btn " (click)="openDocFieldModal()">Add More Field</button>
+<button class="d-block mx-auto btn " (click)="openDocFieldModal()">Add More Field</button>
 
   <!-- Modal Popup for add marketing language skill -->
   <div *ngIf="isDocumentfieldModalOpen" class="modal">

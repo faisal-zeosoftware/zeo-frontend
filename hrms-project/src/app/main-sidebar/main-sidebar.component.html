@@ -207,7 +207,9 @@
        <!-- select company -->
    
 <li class="nav-item dropdown" *ngIf="schemas.length > 0">
-  <div class="Company_pro company_bor" (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen">
+  <div class="Company_pro company_bor"
+  #dropdownContainer
+  (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen">
     
     <div class="cmp_drop">
       <mat-icon>business</mat-icon>

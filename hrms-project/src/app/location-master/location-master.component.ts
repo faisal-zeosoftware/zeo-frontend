@@ -201,6 +201,13 @@ if (this.userId !== null) {
      iscreateLoanApp: boolean = false;
 
 
+     onlyFirstDayFilter = (d: Date | null): boolean => {
+
+      const date = d || new Date();
+    
+      // Enable ONLY 1st day
+      return date.getDate() === 1;
+    };
 
 
      openPopus(){
@@ -254,6 +261,17 @@ openEditModal(asset: any): void {
   // Load states for selected country
   if (this.editAsset.country) {
     this.loadStatesByCountry();
+  }
+
+  // Load currencies for existing country
+  const selectedCountry = this.countries.find(
+    (c: any) => c.id == this.editAsset.country
+  );
+
+  if (selectedCountry) {
+
+    this.Currencies = selectedCountry.currency || [];
+
   }
 
   this.isEditModalOpen = true;
@@ -505,6 +523,7 @@ closeEditModal(): void {
   
     formData.append('name', this.editAsset.name);
     formData.append('country', this.editAsset.country);
+    formData.append('currency', this.editAsset.currency || '');
     formData.append('state', this.editAsset.state || '');
   
     formData.append('timezone', this.editAsset.timezone || '');
@@ -517,7 +536,18 @@ closeEditModal(): void {
   
     formData.append('address_line2', this.editAsset.address_line2 || '');
   
-    formData.append('financial_year', this.editAsset.financial_year || '');
+    // formData.append('financial_year', this.editAsset.financial_year || '');
+
+    if (this.editAsset.financial_year) {
+
+  const formattedDate = new Date(this.editAsset.financial_year)
+    .toISOString()
+    .split('T')[0];
+
+    formData.append('financial_year', formattedDate);
+
+}
+
   
     // Upload logo only if selected
     if (this.selectedFile) {
@@ -565,10 +595,32 @@ closeEditModal(): void {
 //   }
 // }
 
+// onCountryChange(): void {
+
+//   if (this.editAsset.country !== undefined) {
+
+//     this.loadStatesByCountry();
+
+//     // Find selected country
+//     const selectedCountry = this.countries.find(
+//       (c: any) => c.id == this.editAsset.country
+//     );
+
+//     // Set timezone automatically
+//     if (selectedCountry) {
+//       this.editAsset.timezone = selectedCountry.timezone;
+//     } else {
+//       this.editAsset.timezone = '';
+//     }
+//   }
+// }
+
+
 onCountryChange(): void {
 
   if (this.editAsset.country !== undefined) {
 
+    // Load states
     this.loadStatesByCountry();
 
     // Find selected country
@@ -576,11 +628,27 @@ onCountryChange(): void {
       (c: any) => c.id == this.editAsset.country
     );
 
-    // Set timezone automatically
     if (selectedCountry) {
+
+      // Set timezone
       this.editAsset.timezone = selectedCountry.timezone;
+
+      // Load currencies
+      this.Currencies = selectedCountry.currency || [];
+
+      // Auto select first currency if empty
+      if (!this.editAsset.currency && this.Currencies.length > 0) {
+
+        this.editAsset.currency = this.Currencies[0].id;
+
+      }
+
     } else {
+
       this.editAsset.timezone = '';
+      this.Currencies = [];
+      this.editAsset.currency = '';
+
     }
   }
 }

@@ -248,6 +248,8 @@
 
 
 
+
+
 <div class="col-md-6"  *ngIf="!isDepartFieldHidden">
     <label>{{deptFieldName}}
         <span class="required-star" >*</span>
@@ -382,6 +384,60 @@
     </ng-container>
 </div>
 
+<div class="col-md-6">
+            
+            
+    <div class="custom-sel">
+      <label> 
+        <span class="required-star" >*</span>
+
+        {{repoFieldName}}</label>
+
+   
+ 
+       <select class="form-control"  [(ngModel)]="approver"
+       [required]="isreportingMandatory" style="display: none;"
+     
+      [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && isreportingMandatory && !approver}">
+      
+  
+<!-- 
+    <option [ngValue]="null">-- Select  {{repoFieldName}} --</option>
+    <option *ngFor="let user of Users" [ngValue]="user.id">
+      {{ user.username }}
+    </option> -->
+    
+    </select>
+
+    <div *ngIf="registerButtonClicked && isreportingMandatory && !approver" class="error-message">
+        {{repoFieldName}} is required.
+    </div>
+
+    <ng-container [ngSwitch]="repoDataType">
+        <!-- Text Box for Gender -->
+        <input *ngSwitchCase="'Text Box'" type="text" class="form-control" 
+               required placeholder="{{repoFieldName}}" 
+               [(ngModel)]="approver" 
+               (ngModelChange)="syncbrch($event)" [ngModelOptions]="{standalone: true}">
+        
+        <!-- Dropdown for Gender -->
+        <div *ngSwitchCase="'Dropdown'" class="custom-sel">
+            <select class="form-control" [(ngModel)]="approver" (ngModelChange)="syncbrch($event)" [ngModelOptions]="{standalone: true}" >
+
+                <option *ngFor="let user of Users" [ngValue]="user.id">
+                    {{ user.username }}
+                  </option> 
+
+            </select>
+        </div>
+    </ng-container>
+
+    
+    </div>
+                        
+    
+    </div>
+
 
 
 <div class="col-md-6"  *ngIf="!isHireFieldHidden">
@@ -409,24 +465,6 @@
    <div *ngIf="registerButtonClicked && !emp_date_of_confirmation" class="error-message">Active date .</div>
 </div>
 
-<div class="col-md-6">
-            
-            
-    <div class="custom-sel">
-      <label>Reporting Manager</label>
-       <select class="form-control"
-      [(ngModel)]="approver"
-      [ngModelOptions]="{standalone: true}">
-      
-    <option [ngValue]="null">-- Select Manager --</option>
-    <option *ngFor="let user of Users" [ngValue]="user.id">
-      {{ user.username }}
-    </option>
-    </select>
-    </div>
-                        
-    
-    </div>
 
 
 

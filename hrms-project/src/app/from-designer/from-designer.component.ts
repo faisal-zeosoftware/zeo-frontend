@@ -125,6 +125,9 @@ export class FromDesignerComponent {
    isLCountryMandatory: boolean = false; // New property to store the checkbox state
    isLBranchMandatory: boolean = false; // New property to store the checkbox state
 
+   isrepoMandatory: boolean = false; // New property to store the checkbox state
+
+
    isLDepartmentMandatory: boolean = false; // New property to store the checkbox state
    isLDesignationMandatory: boolean = false; // New property to store the checkbox state
    isLCatogoryMandatory: boolean = false; // New property to store the checkbox state
@@ -182,6 +185,12 @@ bloodDropdownOptions: string[] = [];  // Property to store the dropdown options
       brchDataType: string = 'Dropdown'; // Default data type for Gender
       brchDropdownValues: string = '';   // Store gender dropdown values as a comma-separated string
       brchDropdownOptions: string[] = []; 
+
+       // Add new fields for country
+      repoFieldName: string = 'Reporting Manager';  // Initial Gender field name
+      repoDataType: string = 'Dropdown'; // Default data type for Gender
+      repoDropdownValues: string = '';   // Store gender dropdown values as a comma-separated string
+      repoDropdownOptions: string[] = []; 
 
 
        // Add new fields for country
@@ -888,6 +897,19 @@ if (this.userId !== null) {
             
       
 
+                // Save updated field names to localStorage marital status
+                localStorage.setItem('repoFieldName', this.repoFieldName);
+                localStorage.setItem('isrepoMandatory', JSON.stringify(this.isrepoMandatory)); // Convert boolean to string for storage
+ 
+                localStorage.setItem('repoDataType', this.repoDataType);
+             
+                if (this.repoDataType === 'Dropdown') {
+                    localStorage.setItem('repoDropdownValues', this.repoDropdownValues);
+                } else {
+                    localStorage.removeItem('repoDropdownValues');
+                }
+             
+
 
 
                        // Save updated field names to localStorage marital status
@@ -1245,6 +1267,12 @@ if (this.userId !== null) {
             const savedbrchFieldName = localStorage.getItem('brchFieldName');
             if (savedbrchFieldName) {
                 this.brchFieldName = savedbrchFieldName;
+            }
+
+            // Load field names from localStorage marital
+            const savedrepoFieldName = localStorage.getItem('repoFieldName');
+            if (savedrepoFieldName) {
+                this.repoFieldName = savedrepoFieldName;
             }
 
               // Load field names from localStorage marital

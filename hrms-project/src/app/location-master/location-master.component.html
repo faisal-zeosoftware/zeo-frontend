@@ -202,6 +202,35 @@
           </div>
           
 
+          <div class="col-md-6">
+
+            <div class="custom-sel">
+                <label>Currency</label>
+        
+                <select
+                    class="form-control"
+                    id="currency"
+                    [(ngModel)]="editAsset.currency"
+                    [ngModelOptions]="{standalone: true}">
+        
+                    <option value="">Select Currency</option>
+        
+                    <option
+                        *ngFor="let curr of Currencies"
+                        [value]="curr.id">
+        
+                        {{ curr.currency_name }}
+                        ({{ curr.currency_code }})
+                        - {{ curr.symbol }}
+        
+                    </option>
+        
+                </select>
+        
+            </div>
+        
+        </div>
+
           
         <div class="col-md-6">
 
@@ -280,13 +309,37 @@
       </div> -->
       
         
-      <div class="col-md-6">
+      <!-- <div class="col-md-6">
         <label>Financial Year Start Date</label>
     
         <input type="date"
                class="form-control"
                [(ngModel)]="editAsset.financial_year"
                [ngModelOptions]="{standalone: true}">
+    </div> -->
+
+
+    <div class="col-md-6">
+
+      <label class="mb-2">Financial Year Start Date</label>
+    
+      <mat-form-field appearance="outline" class="w-100">
+    
+        <input
+          matInput
+          [matDatepicker]="picker"
+          [(ngModel)]="editAsset.financial_year"
+          [ngModelOptions]="{standalone: true}"
+          [matDatepickerFilter]="onlyFirstDayFilter"
+          placeholder="Select Financial Year Date">
+    
+        <mat-datepicker-toggle matSuffix [for]="picker">
+        </mat-datepicker-toggle>
+    
+        <mat-datepicker #picker></mat-datepicker>
+    
+      </mat-form-field>
+    
     </div>
         
         <div class="col-md-6">

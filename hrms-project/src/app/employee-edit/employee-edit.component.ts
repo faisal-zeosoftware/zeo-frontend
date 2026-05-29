@@ -66,6 +66,7 @@ export class EmployeeEditComponent {
   deptFieldName: string = 'Department';
   desFieldName: string = 'Designation';
   catFieldName: string = 'Category';
+  repoFieldName: string = 'Reporting Manager';
 
   hiredFieldName: string = 'Joining Date';
 
@@ -951,6 +952,12 @@ loadFieldNames(): void {
        const savedbrchFieldName = localStorage.getItem('brchFieldName');
        if (savedbrchFieldName) {
            this.brchFieldName = savedbrchFieldName;
+       }
+
+         // Load field names from localStorage
+       const savedrepoFieldName = localStorage.getItem('repoFieldName');
+       if (savedrepoFieldName) {
+           this.repoFieldName = savedrepoFieldName;
        }
 
 

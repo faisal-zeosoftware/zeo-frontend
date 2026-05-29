@@ -193,3 +193,24 @@ margin-right: 10px;
 ::ng-deep .table-scroll thead th{
   white-space: nowrap;
 }
+
+
+
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-text-field-wrapper {
+  height: 48px !important;
+}
+
+.mat-mdc-form-field-flex {
+  height: 48px !important;
+  align-items: center !important;
+}
+
+::ng-deep .mat-calendar-content {
+  padding: 3px 10px 19px 10px !important;
+  font-size: 12px !important;
+}

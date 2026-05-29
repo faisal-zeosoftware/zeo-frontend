@@ -8,6 +8,10 @@ import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
 import { CompanyRegistrationService } from '../company-registration.service';
 
+import { ElementRef, ViewChild } from '@angular/core';
+
+import { HostListener } from '@angular/core';
+
 // import { DivControlService } from '../div-control.service';
 // import { AuthService } from '../auth/auth.service';
 
@@ -18,6 +22,8 @@ import { CompanyRegistrationService } from '../company-registration.service';
   styleUrl: './main-sidebar.component.css'
 })
 export class MainSidebarComponent {
+
+  @ViewChild('dropdownContainer') dropdownContainer!: ElementRef;
  
   expiredDocumentsCount: number = 0;
   expiredDocuments: any[] = []; // Assuming this array holds the list of expired documents
@@ -70,6 +76,23 @@ export class MainSidebarComponent {
     // this.updateMarginLeft();
   }
 
+
+  @HostListener('document:click', ['$event'])
+clickOutside(event: Event): void {
+
+  // Check dropdown exists
+  if (
+    this.dropdownContainer &&
+    !this.dropdownContainer.nativeElement.contains(event.target)
+  ) {
+
+    // Close dropdown
+    this.isCompanyDropdownOpen = false;
+
+    // Close expanded company branches
+    this.expandedSchemaIndex = -1;
+  }
+}
 
    isMenuOpen: boolean = true;
 

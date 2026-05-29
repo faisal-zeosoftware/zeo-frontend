@@ -772,5 +772,49 @@ closeViewModal() {
 }
 
 
+duplicateCalendar(calendar: any): void {
+
+  // Open Create Modal
+  this.iscreateLoanApp = true;
+
+  // Detect Calendar Type
+  this.selectedWeekOff = calendar.is_alternate
+    ? 'alternative'
+    : 'general';
+
+  // Copy Basic Details
+  this.description = calendar.description + ' Copy';
+
+  this.calendar_code = calendar.calendar_code + '_COPY';
+
+  this.year = calendar.year;
+
+  // =========================
+  // GENERAL WEEK OFF
+  // =========================
+  if (!calendar.is_alternate) {
+
+    this.monday = calendar.monday;
+    this.tuesday = calendar.tuesday;
+    this.wednesday = calendar.wednesday;
+    this.thursday = calendar.thursday;
+    this.friday = calendar.friday;
+    this.saturday = calendar.saturday;
+    this.sunday = calendar.sunday;
+  }
+
+  // =========================
+  // ALTERNATIVE WEEK OFF
+  // =========================
+  if (calendar.is_alternate) {
+
+    // Deep Copy
+    this.alternativeWeekOff = JSON.parse(
+      JSON.stringify(calendar.alternate_weekends)
+    );
+  }
+}
+
+
   
 }
