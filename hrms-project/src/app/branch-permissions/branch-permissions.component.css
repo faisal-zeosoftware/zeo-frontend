@@ -249,11 +249,44 @@ input:focus-visible {
   outline: none;
 }
 
-::ng-deep .mdc-text-field--no-label{
-  border:1px solid #ced4da;
+/* Branch field same style as Select User */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
+  border: 1px solid #ced4da !important;
+  border-radius: 4px !important;
+  background-color: #fff !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  display: flex;
+  align-items: center;
+  box-shadow: none !important;
 }
 
-::ng-deep .mat-mdc-form-field-flex {
-  padding: 4px 7px;
-  height: 35px;
+/* Remove material outline */
+::ng-deep .form-control-wrapper .mdc-notched-outline {
+  display: none !important;
 }
+
+/* Remove extra background */
+::ng-deep .form-control-wrapper .mdc-text-field--filled,
+::ng-deep .form-control-wrapper .mdc-text-field--outlined {
+  background: transparent !important;
+}
+
+/* Align text properly */
+::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
+  height: 38px !important;
+  display: flex;
+  align-items: end;
+}
+
+/* Remove focus blue outline */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
+  border-color: #80bdff !important;
+  box-shadow: 0 0 0 0.1rem rgba(0,123,255,.25) !important;
+}
+
+/* Error state */
+::ng-deep .error-field .mat-mdc-text-field-wrapper {
+  border: 1px solid red !important;
+}
+

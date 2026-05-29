@@ -72,7 +72,9 @@
             <div class="row">
                 <div class="col-md-6" >
                    
-          <label>Type Name</label>
+          <label>Type Name
+             <span class="required-star">*</span>
+          </label>
          <input type="text"  class="form-control" required  [(ngModel)]="type_name"  placeholder="Enter type Name"
           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !type_name}">
          
@@ -82,12 +84,14 @@
 
                <div class="col-md-3">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select Branches
+                       <span class="required-star">*</span>
+                    </label>
                      <div class="form-control-wrapper">
 
               <mat-form-field>
              
-              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}" #selectBrach multiple>
                 <div class="select-all">
                   <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
                     Select All
@@ -119,9 +123,8 @@
                    
         <label>Description</label>
        <input type="text"  class="form-control" required  [(ngModel)]="description"  placeholder="Enter Description"
-        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !description}">
+        [ngModelOptions]="{standalone: true}">
        
-       <div *ngIf="registerButtonClicked && !description" class="error-message">Description is required.</div>
     </div>
     
            

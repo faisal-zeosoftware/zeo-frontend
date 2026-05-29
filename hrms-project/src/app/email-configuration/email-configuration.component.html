@@ -73,7 +73,9 @@
                 <div class="row">
                     <div class="col-md-6" >
                    
-                        <label>Email host</label>
+                        <label>Email host
+                          <span class="required-star">*</span>
+                        </label>
                        <input type="text"  class="form-control" required  [(ngModel)]="email_host"  placeholder="Enter email host"
                         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !email_host}">
                        
@@ -84,9 +86,12 @@
         
                   <div class="col-md-6" >
                    
-                    <label>Email port</label>
+                    <label>Email port
+                      <span class="required-star">*</span>
+                    </label>
                    <input type="number"  class="form-control" required  [(ngModel)]="email_port"  placeholder="Enter email host"
-                    [ngModelOptions]="{standalone: true}" >
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !email_port}">
+                     <div *ngIf="registerButtonClicked && !email_host" class="error-message">email_port is required.</div>
                    
               </div>
               

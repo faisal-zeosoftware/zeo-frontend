@@ -21,28 +21,131 @@
               </select>
             </div>
 
-          <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches</label>
-                     <div class="form-control-wrapper">
-
-              <mat-form-field>
-             
-              <mat-select placeholder="Select" [(ngModel)]="templateData.branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
-                <div class="select-all">
-                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
-                    Select All
-                  </mat-checkbox>
+                            <div class="col-md-12">
+                    <label>Choose option</label><br>
+                    <mat-radio-group aria-label="Select an option" [(ngModel)]="templateData.related_to" [ngModelOptions]="{standalone: true}">
+                        <mat-radio-button  value="branch">branch</mat-radio-button>
+                        <mat-radio-button value="department"> department</mat-radio-button>
+                        <mat-radio-button value="category"> category</mat-radio-button>
+                        <mat-radio-button value="designation"> Designation </mat-radio-button>
+  
+  
+                      </mat-radio-group>
                 </div>
-                <input type="text" placeholder="serach" class="form-control">
-
-                <mat-option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            </div>
+  
+  
+               
+  
+                    <style>
+                        .mat-mdc-form-field-infix{
+                            margin-top: -14px;
+                        }
+  
+                        .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+                            background-color: wh;
+                        }
+                    </style>
+            
+                
+                <div class="col-md-12" *ngIf="related_to === 'branch'">
+                    <label>Select Branches </label>
+                    <div class="custom-sel">
+                      <div class="form-control-wrapper">
+                    
+  
+                        <mat-form-field>
+                          <!-- <mat-label>Favorite food</mat-label> -->
+                          <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #branchSelect multiple>
+                            <div class="select-all">
+                              <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
+                                Select All
+                              </mat-checkbox>
+                            </div>
+                            <input type="text" placeholder="serach" class="form-control">
+  
+                            <mat-option *ngFor="let food of branches" [value]="food.id">
+                              {{ food.branch_name }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        
+                      </div>
+                     
+                    </div>
+                  </div>
+                  
+                    
+                 
+                  <div class="col-md-12" *ngIf="related_to === 'department'">
+                    <label>Department
+                       <span class="required-star">*</span>
+                    </label>
+                    <div class="custom-sel">
+                        <div class="form-control-wrapper">
+                          <mat-form-field>
+                            <mat-select  placeholder="Select" [(ngModel)]="department" [ngModelOptions]="{standalone: true}" #select  multiple>
+                              <div class="select-all">
+                                <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
+                                  Select All
+                                </mat-checkbox>
+                              </div>
+                              <mat-option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">
+                                {{ deparmentsec.dept_name }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                     
+                      </div>
                 </div>
-            </div>
+  
+                <div class="col-md-12" *ngIf="related_to === 'category'">
+                    <label>Category
+                       <span class="required-star">*</span>
+                    </label>
+                    <div class="custom-sel">
+                        <div class="form-control-wrapper">
+                          <mat-form-field>
+                            <mat-select  placeholder="Select" [(ngModel)]="category" [ngModelOptions]="{standalone: true}" #select multiple>
+                              <div class="select-all">
+                                <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
+                                  Select All
+                                </mat-checkbox>
+                              </div>
+                             
+                              <mat-option *ngFor="let deparmentsec of Categories" [value]="deparmentsec.id">
+                                {{ deparmentsec.ctgry_title }}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                       
+                      </div>
+                </div>
+                
+                <div class="col-md-12" *ngIf="related_to === 'designation'">
+                  <label>Designation
+                     <span class="required-star">*</span> </label>
+                  <div class="custom-sel">
+                      <div class="form-control-wrapper">
+                        <mat-form-field>
+                          <mat-select  placeholder="Select" [(ngModel)]="designation" [ngModelOptions]="{standalone: true}" #selectdes multiple>
+                            <div class="select-all">
+                              <mat-checkbox [(ngModel)]="allSelecteddes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondes()">
+                                Select All
+                              </mat-checkbox>
+                            </div>
+                           
+                            <mat-option *ngFor="let deparmentsec of Designations" [value]="deparmentsec.id">
+                              {{ deparmentsec.desgntn_job_title }}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                     
+                    </div>
+              </div>
+
           
             <div class="form-group">
               <label>Subject</label>

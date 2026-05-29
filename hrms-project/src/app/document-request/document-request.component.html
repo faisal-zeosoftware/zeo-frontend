@@ -75,7 +75,9 @@
 
                <div class="col-md-3">
                 <div class="custom-sel">
-                    <label>Select Branches</label>
+                    <label>Select Branches
+                      <span class="required-star">*</span>
+                    </label>
                     <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                         <option value="">Select</option>
                         <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
@@ -88,12 +90,14 @@
                 
                 
                     <div class="custom-sel">
-                        <label>Employee</label>
-                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}"  >
+                        <label>Employee
+                          <span class="required-star">*</span>
+                        </label>
+                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}" >
                             <option value="" >Select</option>
                             <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
                         </select>
-                       
+                        <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Employee</div>
                     </div>
                                 
                 
@@ -120,6 +124,18 @@
     Document number will be auto-generated
   </small>
 </div>
+
+              <div class="col-md-6">
+                <label>Request Type
+                   <span class="required-star">*</span>
+                </label>
+                <div class="custom-sel">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}">
+                    <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
+                  </select>
+                </div>
+                 <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select request type</div>
+              </div> 
           
               <div class="col-md-6">
                 <label>reason</label>
@@ -138,16 +154,6 @@
                 <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
                        [ngModelOptions]="{standalone: true}" >
               </div>
-            
-
-              <div class="col-md-6">
-                <label>Request Type</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
-                  </select>
-                </div>
-              </div> 
               
          
             </div>

@@ -104,7 +104,9 @@
             
                 
                 <div class="col-md-6" *ngIf="related_to === 'branch'">
-                    <label>Select Branches</label>
+                    <label>Select Branches
+                       <span class="required-star">*</span>
+                    </label>
                     <div class="custom-sel">
                       <div class="form-control-wrapper">
                     
@@ -133,7 +135,9 @@
                     
                  
                   <div class="col-md-6" *ngIf="related_to === 'department'">
-                    <label>Department</label>
+                    <label>Department
+                       <span class="required-star">*</span>
+                    </label>
                     <div class="custom-sel">
                         <div class="form-control-wrapper">
                           <mat-form-field>
@@ -154,7 +158,9 @@
                 </div>
   
                 <div class="col-md-6" *ngIf="related_to === 'category'">
-                    <label>Category</label>
+                    <label>Category
+                       <span class="required-star">*</span>
+                    </label>
                     <div class="custom-sel">
                         <div class="form-control-wrapper">
                           <mat-form-field>
@@ -176,7 +182,9 @@
                 </div>
                 
                 <div class="col-md-6" *ngIf="related_to === 'designation'">
-                  <label>Designation </label>
+                  <label>Designation 
+                     <span class="required-star">*</span>
+                  </label>
                   <div class="custom-sel">
                       <div class="form-control-wrapper">
                         <mat-form-field>
@@ -198,7 +206,9 @@
               </div>
   
                 <div class="col-md-6" *ngIf="related_to === 'employee'">
-                  <label>Employee</label>
+                  <label>Employee
+                     <span class="required-star">*</span>
+                  </label>
                   <div class="custom-sel">
                       <div class="form-control-wrapper">
                         <mat-form-field>
@@ -224,12 +234,15 @@
   
               <div class="col-md-6" >
                 <div class="custom-sel">
-                    <label>Holiday Calendar</label>
-                    <select class="form-control" id="holiday_model" required [(ngModel)]="holiday_model"  [ngModelOptions]="{standalone: true}" >
+                    <label>Holiday Calendar
+                       <span class="required-star">*</span>
+                    </label>
+                    <select class="form-control" id="holiday_model" required [(ngModel)]="holiday_model"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !holiday_model}">
                         <option value="" >Select</option>
                         <option *ngFor="let deparmentsec of WeekCalendar" [value]="deparmentsec.id">{{ deparmentsec.calendar_title     }}  ( {{ deparmentsec.year}} )</option>
                     </select>
                 </div>
+                 <div *ngIf="registerButtonClicked && !holiday_model" class="error-message">Please select holiday calender</div> 
             </div>
   
   

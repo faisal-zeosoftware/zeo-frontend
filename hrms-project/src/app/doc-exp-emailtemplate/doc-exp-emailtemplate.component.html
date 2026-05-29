@@ -79,8 +79,10 @@
     
     
                         <div class="custom-sel">
-                            <label>Template Type</label>
-                            <select class="form-control" id="template_name" required [(ngModel)]="template_name"  [ngModelOptions]="{standalone: true}">
+                            <label>Template Type
+                                 <span class="required-star">*</span>
+                            </label>
+                            <select class="form-control" id="template_name" required [(ngModel)]="template_name"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !template_name}">
                                 <option value="" >Select</option>
                                 <option value="Employee Notification">Employee Notification</option>
                                 <option value="User Notification">User Notification</option>
@@ -88,7 +90,7 @@
     
                             </select>
                         </div>
-                                    
+                             <div *ngIf="registerButtonClicked && !template_name" class="error-message">Please Select Template Type</div>                  
                 
                     </div>
 

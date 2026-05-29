@@ -189,7 +189,6 @@ togglePassword() {
 
   ClosePopup(){
     this.ref.close('Closed using function');
-    window.location.reload();
 
   }
   

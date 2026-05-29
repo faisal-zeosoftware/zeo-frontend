@@ -76,10 +76,12 @@
             <div class="row">
                 <div class="col-md-4" >
    
-                    <label>year</label>
+                    <label>year
+                         <span class="required-star">*</span>
+                    </label>
                 
                     <div class="custom-sel">
-                        <select class="form-control" [(ngModel)]="year" [ngModelOptions]="{standalone: true}">
+                        <select class="form-control" [(ngModel)]="year" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !calendar_title}">
                             <option>2000</option>
                             <option>2001</option>
                             <option>2002</option>
@@ -183,16 +185,18 @@
                             <option>2100</option>
                         </select>
                     </div>
-                  
+                   <div *ngIf="registerButtonClicked && !calendar_title" class="error-message">Please select year</div> 
                 </div>
 
 
                 <div class="col-md-4" >
    
-                    <label>Calendar Title</label>
+                    <label>Calendar Title
+                         <span class="required-star">*</span>
+                    </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="calendar_title"  placeholder="Enter calendar title "
-                    [ngModelOptions]="{standalone: true}" >
-                   
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !calendar_title}" >
+                  <div *ngIf="registerButtonClicked && !calendar_title" class="error-message">Please enter title</div> 
               </div>
 
             

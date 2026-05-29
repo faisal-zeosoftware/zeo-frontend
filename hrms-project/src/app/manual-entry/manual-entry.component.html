@@ -66,13 +66,13 @@
 <mat-select
     placeholder="Select"
     [(ngModel)]="employee"
-    [ngModelOptions]="{standalone: true}">
+    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}">
 
     <input type="text"
         placeholder="Search Employee"
         class="form-control"
         [(ngModel)]="employeeSearch"
-        [ngModelOptions]="{standalone: true}"
+        [ngModelOptions]="{standalone: true}" 
         (click)="$event.stopPropagation()">
 
     <mat-option
@@ -86,7 +86,7 @@
 </mat-select>
           </mat-form-field>
 </div>
-         
+         <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select employee</div>
 
   </div>
 

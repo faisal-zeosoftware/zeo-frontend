@@ -120,8 +120,11 @@
                      
                 
                       <div class="col-md-6 mb-3">
-                        <label>Location Name</label>
-                        <input type="text" class="form-control" [(ngModel)]="location_name" name="locName">
+                        <label>Location Name
+                            <span class="required-star">*</span>
+                        </label>
+                        <input type="text" class="form-control" [(ngModel)]="location_name" [ngClass]="{'error-field': registerButtonClicked && !location_name}" name="locName">
+                        <div *ngIf="registerButtonClicked && !location_name" class="error-message">Please enter location name</div>
                       </div>
                 
                       <div class="col-md-3 mb-3">
@@ -141,14 +144,16 @@
 
                       
       <div class="col-md-6" >
-        <label>Branch</label>
+        <label>Branch
+            <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <div class="form-control-wrapper">
           
 
             <mat-form-field>
 
-              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
+              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}" #selectBrach multiple>
 
                 <input type="text" placeholder="serach" class="form-control">
 
@@ -158,16 +163,15 @@
             </mat-form-field>
             
           </div>
-         
+         <div *ngIf="registerButtonClicked && !branch" class="error-message">Select Your Branch</div>
         </div>
 
       </div>
 
       <div class="col-md-6">
-        <label>Employee</label>
-    
-    
-    
+        <label>Employee
+                <span class="required-star">*</span>
+        </label>
     
         <div class="custom-sel">
             <div class="form-control-wrapper">
@@ -175,7 +179,7 @@
     
               <mat-form-field>
                 <!-- <mat-label>Favorite food</mat-label> -->
-                <mat-select placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
+                <mat-select placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !allSelectedEmp}" #selectEmp multiple>
                   <div class="select-all">
                     <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
                       Select All
@@ -190,7 +194,7 @@
               </mat-form-field>
               
             </div>
-           
+           <div *ngIf="registerButtonClicked && !allSelectedEmp" class="error-message">Please Select Your Employee</div>
           </div>
                     
     

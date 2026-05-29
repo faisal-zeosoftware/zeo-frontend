@@ -72,16 +72,21 @@
             <div class="row">
             
               <div class="col-md-4">
-                <label>Request Type</label>
+                <label>Request Type
+                   <span class="required-star">*</span>
+                </label>
                 <div class="custom-sel">
-                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}">
                     <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
                   </select>
                 </div>
+                 <div *ngIf="registerButtonClicked && !request_type" class="error-message">Request type is required.</div>
               </div>
 
                <div class="col-md-4">
-                <label>Branch</label>
+                <label>Branch
+                   <span class="required-star">*</span>
+                </label>
             
             
             
@@ -128,15 +133,18 @@
 
 
   <div class="col-md-4">
-    <label>Approval type</label>
+    <label>Approval type
+       <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <select
-        class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }">
+        class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !approval_type}">
         <option value="no_approval">No Approval</option>
         <option value="reporting_manager">Reporting Manager</option>
         <option value="multi_approval">Multi Approval</option>
       </select>
     </div>
+     <div *ngIf="registerButtonClicked && !approval_type" class="error-message">Approval type is required.</div>
   </div>
 
 

@@ -4,6 +4,7 @@ import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription } from 'rxjs';
 
 
@@ -34,15 +35,31 @@ export class EmailTemplateComponent implements AfterViewInit {
   subject: any = '';
   body: string = '';
 
-
+  related_to: any = 'branch';
   request_type: any = '';
   registerButtonClicked = false;
 
+  Departments: any[] = [];
+  Categories: any[] = [];
+  Designations: any[] = [];
 
-   branch: number[] = [];
+  Employee: any[] = [];
+
+
    branches:any []=[];
+
+  allSelecteddept = false;
+  allSelectedcat = false;
+  allSelecteddes = false;
+  allSelectedEmp = false;
   allSelectedBrach=false;
 
+  department: number[] = [];
+  category: number[] = [];
+  designation: number[] = [];
+  branch: number[] = [];
+
+  employee: number[] = [];
 
 
   RequestType:any []=[];
@@ -62,6 +79,13 @@ userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
 
+  FilteredEmployees: any[] = [];
+
+
+  @ViewChild('branchSelect') branchSelect!: MatSelect;
+  @ViewChild('deptSelect') deptSelect!: MatSelect;
+  @ViewChild('catSelect') catSelect!: MatSelect;
+  @ViewChild('selectdes') selectdes!: MatSelect;
 
   constructor(
     private el:ElementRef,
@@ -70,6 +94,7 @@ schemas: string[] = []; // Array to store schema names
     private employeeService: EmployeeService,
     private userService: UserMasterService,
     private DepartmentServiceService: DepartmentServiceService,
+      private categoryService: CatogaryService,
     private dialog:MatDialog,
     private DesignationService: DesignationService,
 private sessionService: SessionService,
@@ -99,6 +124,9 @@ ngOnInit(): void {
     this.employeeService.selectedBranches$.subscribe(ids => {
       this.loadEmailPlaceholders(); 
       this.loadDeparmentBranch();
+      this.loadDEpartments();
+      this.loadCAtegory();
+      this.loadDesignations();
 
     });
     
@@ -266,17 +294,71 @@ if (this.userId !== null) {
     }
   }
 
-    
+    loadDEpartments(callback?: Function): void {
 
-                toggleAllSelectionBrach(): void {
-                if (this.selectBrach) {
-                  if (this.allSelectedBrach) {
-                    this.selectBrach.options.forEach((item: MatOption) => item.select());
-                  } else {
-                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
-                  }
-                }
-              }
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Departments = result;
+          console.log(' fetching Companies:');
+          if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  loadCAtegory(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.categoryService.getcatogarys(selectedSchema).subscribe(
+        (result: any) => {
+          this.Categories = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+
+  loadDesignations(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getDesignations(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Designations:', error);
+        }
+      );
+    }
+  }
+
+
+
 
   
   
@@ -394,21 +476,25 @@ getTextContent(): void {
 
       this.getTextContent();
       
-      const companyData = {
-        template_type: this.template_type,
-          branch: this.branch,
-      
-        subject:this.subject,
-        body: this.body,  // Use the captured Summernote content here
-  
-        request_type: this.request_type,
-      
-    
+const companyData = {
 
-     
-  
-        // Add other form field values to the companyData object
-      };
+  template_type: this.template_type,
+
+  branch: this.branch,
+
+  Department: this.department,
+
+  Category: this.category,
+
+  Designation: this.designation,
+
+  subject: this.subject,
+
+  body: this.body,
+
+  request_type: this.request_type,
+
+};
     
   
       this.employeeService.registerEmailTemplate(companyData).subscribe(
@@ -597,6 +683,66 @@ toggleSelectAllEmployees() {
 this.tempEmails.forEach(employee => employee.selected = this.allSelected);
 
 }
+
+
+  toggleAllSelectionBrach(): void {
+    if (this.branchSelect) {
+      this.branchSelect.options.forEach((item: MatOption) =>
+        this.allSelectedBrach ? item.select() : item.deselect()
+      );
+    }
+  }
+
+  toggleAllSelectiondept(): void {
+    if (this.deptSelect) {
+      this.deptSelect.options.forEach((item: MatOption) =>
+        this.allSelecteddept ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+    toggleAllSelectiondes(): void {
+
+     if (this.selectdes) {
+      this.selectdes.options.forEach((item: MatOption) =>
+        this.allSelecteddes ? item.select() : item.deselect()
+      );
+    }
+
+
+  }
+
+    toggleAllSelectioncat(): void {
+    if (this.catSelect) {
+      this.catSelect.options.forEach((item: MatOption) =>
+        this.allSelectedcat ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+  getDepartmentNames(ids: number[]): string {
+  return this.Departments
+    .filter(d => ids?.includes(d.id))
+    .map(d => d.dept_name)
+    .join(', ');
+}
+
+getCategoryNames(ids: number[]): string {
+  return this.Categories
+    .filter(c => ids?.includes(c.id))
+    .map(c => c.ctgry_title)
+    .join(', ');
+}
+
+getDesignationNames(ids: number[]): string {
+  return this.Designations
+    .filter(d => ids?.includes(d.id))
+    .map(d => d.desgntn_job_title)
+    .join(', ');
+}
+
 
 onCheckboxChange(employee:number) {
   // No need to implement any logic here if you just want to change the style.

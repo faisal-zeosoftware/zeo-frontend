@@ -5,6 +5,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CatogaryService } from '../catogary-master/catogary.service';
 
 
 declare var $: any;
@@ -25,16 +26,28 @@ export class EmailTemplateEditComponent {
 
   body: any;
   templateData: any;
-
+  related_to: any = 'branch';
   RequestType:any []=[];
 
-  
+  department: number[] = [];
+  category: number[] = [];
+  designation: number[] = [];
   branch: number[] = [];
-
   branches:any []=[];
+  Departments: any[] = [];
+  Categories: any[] = [];
+  Designations: any[] = [];
+
   allSelectedBrach=false;
+  allSelecteddept = false;
+  allSelectedcat = false;
+  allSelecteddes = false;
+  allSelectedEmp = false;
 
-
+  @ViewChild('branchSelect') branchSelect!: MatSelect;
+  @ViewChild('deptSelect') deptSelect!: MatSelect;
+  @ViewChild('catSelect') catSelect!: MatSelect;
+  @ViewChild('selectdes') selectdes!: MatSelect;
 
 
   constructor(
@@ -43,6 +56,7 @@ export class EmailTemplateEditComponent {
     private authService: AuthenticationService,
     private employeeService: EmployeeService,
     private userService: UserMasterService,
+    private categoryService: CatogaryService,
     private DepartmentServiceService: DepartmentServiceService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<EmailTemplateEditComponent>,
@@ -104,8 +118,8 @@ ngOnInit(): void {
     }
   }
 
-    
-mapBranchesNameToId() {
+
+  mapBranchesNameToId() {
   if (!this.branches || !Array.isArray(this.templateData?.branch)) return;
 
   this.templateData.branch = this.branches
@@ -114,6 +128,74 @@ mapBranchesNameToId() {
 
   console.log('Mapped branch IDs:', this.templateData.branch);
 }
+
+  
+
+    loadDEpartments(callback?: Function): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Departments = result;
+          console.log(' fetching Companies:');
+          if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  loadCAtegory(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.categoryService.getcatogarys(selectedSchema).subscribe(
+        (result: any) => {
+          this.Categories = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+
+  loadDesignations(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getDesignations(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Designations:', error);
+        }
+      );
+    }
+  }
+
+    
+
 
               toggleAllSelectionBrach(): void {
                 if (this.selectBrach) {
@@ -224,6 +306,10 @@ updateTemplate() {
   const payload = {
     template_type: this.templateData.template_type,
     subject: this.templateData.subject,
+    branch: this.templateData.branch,
+    Department: this.templateData.department,
+    Category: this.templateData.category,
+    Designation: this.templateData.designation,
     body: bodyContent
   };
 
@@ -282,5 +368,39 @@ updateTemplate() {
       );
     }
     }
+
+
+
+
+
+
+  toggleAllSelectiondept(): void {
+    if (this.deptSelect) {
+      this.deptSelect.options.forEach((item: MatOption) =>
+        this.allSelecteddept ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+    toggleAllSelectiondes(): void {
+
+     if (this.selectdes) {
+      this.selectdes.options.forEach((item: MatOption) =>
+        this.allSelecteddes ? item.select() : item.deselect()
+      );
+    }
+
+
+  }
+
+    toggleAllSelectioncat(): void {
+    if (this.catSelect) {
+      this.catSelect.options.forEach((item: MatOption) =>
+        this.allSelectedcat ? item.select() : item.deselect()
+      );
+    }
+  }
+
 
 }

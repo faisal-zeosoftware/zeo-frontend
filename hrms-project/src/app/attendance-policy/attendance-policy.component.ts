@@ -447,6 +447,7 @@ this.loadPolicies();   // ✅ FIX 2
   }
 
   saveAttendancePolicy(): void {
+     this.registerButtonClicked = true;
   const selectedSchema = this.authService.getSelectedSchema();
 
   if (!selectedSchema) {

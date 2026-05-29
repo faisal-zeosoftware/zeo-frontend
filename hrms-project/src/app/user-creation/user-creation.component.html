@@ -15,7 +15,9 @@
             <div class="row">
                 <div class="col-md-6">
 
-                    <label>User Name</label>
+                    <label>User Name
+                        <span class="required-star">*</span>
+                    </label>
                     <input type="text" class="form-control" required [(ngModel)]="username"
                         placeholder="Enter user Name" [ngModelOptions]="{standalone: true}"
                         [ngClass]="{'error-field': registerButtonClicked && !username}">
@@ -50,12 +52,14 @@
 
                 <div class="col-md-6">
 
-                    <label>email Id</label>
+                    <label>email Id
+                        <span class="required-star">*</span>
+                    </label>
                     <input type="text" class="form-control" required [(ngModel)]="email" placeholder="Enter Email "
                         [ngModelOptions]="{standalone: true}"
                         [ngClass]="{'error-field': registerButtonClicked && !email}">
 
-                    <div *ngIf="registerButtonClicked && !email" class="error-message">Description is required.</div>
+                    <div *ngIf="registerButtonClicked && !email" class="error-message">Email is required.</div>
                 </div>
 
 
@@ -88,7 +92,9 @@
 
 
                 <div class="col-md-6">
-                    <label>Password</label>
+                    <label>Password
+                        <span class="required-star">*</span>
+                    </label>
                   
                     <div class="position-relative">
                   
@@ -166,13 +172,15 @@
                 <div class="col-md-6">
 
                                  <div class="custom-sel">
-                                         <label>Select Company</label>
+                                         <label>Select Company
+                                            <span class="required-star">*</span>
+                                         </label>
                                 <div class="form-control-wrapper">
                                
           
-                                  <mat-form-field>
+                                <mat-form-field appearance="outline" class="w-100">
                                     <!-- <mat-label>Favorite food</mat-label> -->
-                                    <mat-select placeholder="Select" id="tenants" multiple required [(ngModel)]="tenants"  [ngModelOptions]="{standalone: true}" #select multiple>
+                                    <mat-select placeholder="Select" id="tenants" multiple required [(ngModel)]="tenants"  [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !tenants}" #select multiple>
                                       <div class="select-all">
                                         <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
                                           Select All

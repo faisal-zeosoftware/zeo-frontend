@@ -216,7 +216,6 @@ export class UserEditComponent {
 
 ClosePopup(){
   this.ref.close('Closed using function');
-  window.location.reload();
 }
  
 

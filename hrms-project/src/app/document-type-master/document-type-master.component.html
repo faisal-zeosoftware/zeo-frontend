@@ -71,7 +71,9 @@
             <div class="row">
                 <div class="col-md-6" >
                    
-          <label>Type Name</label>
+          <label>Type Name
+              <span class="required-star">*</span>
+          </label>
          <input type="text"  class="form-control" required  [(ngModel)]="type_name"  placeholder="Enter type Name"
           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !type_name}">
          
@@ -84,9 +86,8 @@
                    
         <label>Description</label>
        <input type="text"  class="form-control" required  [(ngModel)]="description"  placeholder="Enter Description"
-        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !description}">
+        [ngModelOptions]="{standalone: true}">
        
-       <div *ngIf="registerButtonClicked && !description" class="error-message">Description is required.</div>
     </div>
     
            

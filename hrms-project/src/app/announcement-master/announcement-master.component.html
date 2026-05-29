@@ -79,7 +79,9 @@
             <div class="row">
 
       <div class="col-md-6">
-    <label>Employee</label>
+    <label>Employee
+        <span class="required-star">*</span>
+    </label>
 
 
 
@@ -90,7 +92,7 @@
 
           <mat-form-field>
             <!-- <mat-label>Favorite food</mat-label> -->
-            <mat-select placeholder="Select" [(ngModel)]="specific_employees" [ngModelOptions]="{standalone: true}" #selectEmp multiple>
+            <mat-select placeholder="Select" [(ngModel)]="specific_employees" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !specific_employees}" #selectEmp multiple>
               <div class="select-all">
                 <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
                   Select All
@@ -113,23 +115,27 @@
           </mat-form-field>
           
         </div>
-       
+        <div *ngIf="registerButtonClicked && !specific_employees" class="error-message">Please select employee</div>
       </div>
                 
 
 </div>
                 <div class="col-md-6" >
                
-                    <label>Title</label>
+                    <label>Title
+                        <span class="required-star">*</span>
+                    </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="title"  placeholder="Enter title"
-                    [ngModelOptions]="{standalone: true}" >
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !title}">
+                    <div *ngIf="registerButtonClicked && !title" class="error-message">Please enter title</div>
                    
               </div>
               
 
               <div class="col-md-6" >
                
-                <label>Message</label>
+                <label>Message
+                </label>
              <textarea class="form-control" [(ngModel)]="message"  [ngModelOptions]="{standalone: true}"></textarea>
           </div>
 
@@ -153,7 +159,9 @@
 
 
   <div class="col-md-6">
-    <label>Branch</label>
+    <label>Branch
+        <span class="required-star">*</span>
+    </label>
 
 
 
@@ -164,7 +172,7 @@
 
           <mat-form-field>
             <!-- <mat-label>Favorite food</mat-label> -->
-            <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #select multiple>
+            <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branches}" #select multiple>
               <div class="select-all">
                 <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
                   Select All
@@ -179,7 +187,7 @@
           </mat-form-field>
           
         </div>
-        
+        <div *ngIf="registerButtonClicked && !branches" class="error-message">Please Select Your Branch</div>
       </div>
                 
 

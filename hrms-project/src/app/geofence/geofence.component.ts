@@ -307,7 +307,7 @@ private searchTimer: any;
   isLoading = false;
 
   CreateGeofence() {
-    this.isLoading = true;
+     this.registerButtonClicked = true;
     // 1. Validation
     if (!this.location_name || !this.latitude || !this.longitude) {
       alert('Please select a location and enter a name.');
@@ -339,11 +339,9 @@ private searchTimer: any;
         alert('Geofence created successfully!');
          window.location.reload();
         this.resetForm();
-        this.isLoading = false;
 
       },
       error: (err) => {
-            this.isLoading = false;
 
         console.error('Submission failed:', err);
         alert('Failed to save geofence. Please check console for details.');

@@ -74,7 +74,9 @@
 
                         <div class="col-md-6">
                             <div class="custom-sel">
-                                <label>Select User</label>
+                                <label>Select User
+                                  <span class="required-star">*</span>
+                                </label>
                                 <select class="form-control" id="profile" required [(ngModel)]="profile"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !profile}">
                                     <option *ngFor="let deparmentsec of users" [value]="deparmentsec.id">{{ deparmentsec.username }}</option>
                                 </select>
@@ -84,7 +86,9 @@
                         
 
                         <div class="col-md-6">
-                            <label>Select Group</label>
+                            <label>Select Group
+                              <span class="required-star">*</span>
+                            </label>
 
 
 
@@ -93,9 +97,9 @@
                                 <div class="form-control-wrapper">
                               
           
-                                  <mat-form-field>
+                                <mat-form-field appearance="outline">
                                     <!-- <mat-label>Favorite food</mat-label> -->
-                                    <mat-select placeholder="Select" [(ngModel)]="groups" [ngModelOptions]="{standalone: true}" #select multiple>
+                                    <mat-select placeholder="Select" [(ngModel)]="groups" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !groups}" #select multiple>
                                       <div class="select-all">
                                         <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
                                           Select All
@@ -177,7 +181,7 @@
                     <div class="form-control-wrapper">
                   
 
-                      <mat-form-field>
+                    <mat-form-field appearance="outline">
                         <mat-select placeholder="Select" [(ngModel)]="selectedUserPermission.groups" [ngModelOptions]="{standalone: true}" #selectEdit multiple>
                           <div class="select-all">
                             <mat-checkbox [(ngModel)]="allSelectedEdit" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEdit()">

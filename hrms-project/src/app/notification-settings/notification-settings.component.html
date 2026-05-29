@@ -78,14 +78,18 @@
 
 
               <div class="col-md-6">
-                <label>Days before expiry</label>
+                <label>Days before expiry
+                  <span class="required-star">*</span>
+                </label>
                 <input type="number" class="form-control" required [(ngModel)]="days_before_expiry" placeholder="Enter days before expiry"
                        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !days_before_expiry}">
                 <div *ngIf="registerButtonClicked && !days_before_expiry" class="error-message">days_before_expiry field is required.</div>
               </div>
           
               <div class="col-md-6">
-                <label>Days after expiry</label>
+                <label>Days after expiry
+                  <span class="required-star">*</span>
+                </label>
                 <input type="number" class="form-control" required [(ngModel)]="days_after_expiry" placeholder="Enter days after expiry"
                        [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !days_after_expiry}">
                 <div *ngIf="registerButtonClicked && !days_after_expiry" class="error-message">days_after_expiry field is required.</div>
@@ -100,7 +104,9 @@
 
               <div class="col-md-6">
                 <div class="custom-sel">
-                    <label>Select Branch</label>
+                    <label>Select Branch
+                      <span class="required-star">*</span>
+                    </label>
                     <select class="form-control" id="branch" required [(ngModel)]="branch"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
                         <option *ngFor="let deparmentsec of Branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
                     </select>
@@ -116,7 +122,9 @@
 
         
 <div class="col-md-6">
-<label>Notify users</label>
+<label>Notify users
+  <span class="required-star">*</span>
+</label>
 
 
 <!-- <div class="custom-sel">
@@ -133,7 +141,7 @@
     <div class="form-control-wrapper">
   
 
-      <mat-form-field>
+    <mat-form-field appearance="outline">
         <!-- <mat-label>Favorite food</mat-label> -->
         <mat-select placeholder="Select" [(ngModel)]="notify_users" [ngModelOptions]="{standalone: true}" #select multiple>
           <div class="select-all">
@@ -250,7 +258,7 @@
 <div class="form-control-wrapper">
 
 
-<mat-form-field>
+<mat-form-field appearance="outline">
 <!-- <mat-label>Favorite food</mat-label> -->
 <mat-select placeholder="Select" [(ngModel)]="editAsset.notify_users" [ngModelOptions]="{standalone: true}" #select multiple>
   <div class="select-all">

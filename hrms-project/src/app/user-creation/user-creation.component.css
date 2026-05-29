@@ -220,19 +220,64 @@
     width: 100%;
   }
   
-  ::ng-deep .form-control-wrapper .mat-form-field-wrapper {
-    padding: 0;
-    margin: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-flex {
-    background: none;
-    border: none;
-    box-shadow: none;
-  }
+  /* Make mat-select same as bootstrap form-control */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
+  border: 1px solid #ced4da !important;
+  border-radius: 0.25rem !important;
+  background-color: #fff !important;
+  min-height: 38px !important;
+  padding: 0 12px !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+}
 
-  
+/* Remove Angular Material default outline */
+::ng-deep .form-control-wrapper .mdc-notched-outline {
+  display: none !important;
+}
 
+/* Remove extra background */
+::ng-deep .form-control-wrapper .mdc-text-field--filled,
+::ng-deep .form-control-wrapper .mdc-text-field--outlined {
+  background: transparent !important;
+}
+
+/* Align selected text vertically */
+::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
+  height: 38px !important;
+  display: flex;
+  align-items: end;
+}
+
+/* Remove unwanted padding */
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix {
+  padding: 0 !important;
+  min-height: auto !important;
+  border-top: 0 !important;
+}
+
+/* Remove internal material padding */
+::ng-deep .form-control-wrapper .mdc-text-field {
+  padding: 0 !important;
+}
+
+/* Bootstrap-like focus effect */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
+  border-color: #80bdff !important;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25) !important;
+}
+
+/* Error border */
+::ng-deep .error-field .mat-mdc-text-field-wrapper {
+  border: 1px solid red !important;
+}
+
+::ng-deep .mat-mdc-select-arrow svg {
+  fill: black;
+  transform: translate(-50%, -50%);
+}
+  
   .position-relative {
     position: relative;
   }

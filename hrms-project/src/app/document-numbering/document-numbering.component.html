@@ -75,7 +75,9 @@
           <div class="row">
             <div class="col-md-3">
 
-              <label>Preffix</label>
+              <label>Preffix
+                   <span class="required-star">*</span>
+              </label>
               <input type="text" class="form-control" required [(ngModel)]="prefix" placeholder="Enter prefix
                    
                    " [ngModelOptions]="{standalone: true}"
@@ -89,68 +91,17 @@
 
               <label>Suffix</label>
               <input type="text" class="form-control" required [(ngModel)]="suffix" placeholder="Enter Suffix"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !suffix}">
+                [ngModelOptions]="{standalone: true}">
 
-              <div *ngIf="registerButtonClicked && !suffix" class="error-message">Suffix is required.</div>
             </div>
 
 
-
-
-
-
-
-
-
-
-
-            <div class="col-md-3">
-
-              <label>Current Number</label>
-              <input type="number" class="form-control" required [(ngModel)]="current_number"
-                placeholder="Enter current number" [ngModelOptions]="{standalone: true}"
-                [ngClass]="{'error-field': registerButtonClicked && !current_number}">
-
-              <div *ngIf="registerButtonClicked && !current_number" class="error-message">current number is required.
-              </div>
-            </div>
-
-
-            <div class="col-md-3">
-
-              <label>Total length</label>
-              <input type="number" class="form-control" required [(ngModel)]="total_length"
-                placeholder="Enter total length" [ngModelOptions]="{standalone: true}"
-                [ngClass]="{'error-field': registerButtonClicked && !total_length}">
-
-              <div *ngIf="registerButtonClicked && !total_length" class="error-message">total length is required.</div>
-            </div>
-
-
-            <div class="col-md-3">
-
-              <label>Start Date</label>
-              <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter start date"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
-
-              <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
-            </div>
-
-            <div class="col-md-3">
-
-              <label>End Date</label>
-              <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter end date"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
-
-              <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
-            </div>
-
-
-
-            <div class="col-md-3">
-              <label>Type</label>
+                        <div class="col-md-3">
+              <label>Type
+                   <span class="required-star">*</span>
+              </label>
               <div class="custom-sel">
-                <select class="form-control" [(ngModel)]="type" [ngModelOptions]="{standalone: true}">
+                <select class="form-control" [(ngModel)]="type" [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !type}">
                   <option value="general_request">General Request</option>
                   <option value="leave_request">Leave Request</option>
                   <option value="document_request">Document Request</option>
@@ -162,6 +113,7 @@
 
                 </select>
               </div>
+              <div *ngIf="registerButtonClicked && !type" class="error-message">type is required.</div>
             </div>
 
 
@@ -172,7 +124,9 @@
 
 
               <div class="custom-sel">
-                <label>Select Branches</label>
+                <label>Select Branches
+                     <span class="required-star">*</span>
+                </label>
                 <select class="form-control" id="branch_id" required [(ngModel)]="branch_id"
                   [ngModelOptions]="{standalone: true}"
                   [ngClass]="{'error-field': registerButtonClicked && !branch_id}">
@@ -185,6 +139,52 @@
 
 
             </div>
+
+
+            <div class="col-md-3">
+
+              <label>Current Number
+                   <span class="required-star">*</span>
+              </label>
+              <input type="number" class="form-control" required [(ngModel)]="current_number"
+                placeholder="Enter current number" [ngModelOptions]="{standalone: true}"
+                [ngClass]="{'error-field': registerButtonClicked && !current_number}">
+
+              <div *ngIf="registerButtonClicked && !current_number" class="error-message">current number is required.
+              </div>
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Total length
+              </label>
+              <input type="number" class="form-control" required [(ngModel)]="total_length"
+                placeholder="Enter total length" [ngModelOptions]="{standalone: true}">
+            </div>
+
+
+            <div class="col-md-3">
+
+              <label>Start Date
+              </label>
+              <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter start date"
+                [ngModelOptions]="{standalone: true}">
+
+            </div>
+
+            <div class="col-md-3">
+
+              <label>End Date
+              </label>
+              <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter end date"
+                [ngModelOptions]="{standalone: true}">
+
+            </div>
+
+
+
+
 
 
 
@@ -283,6 +283,45 @@
             </div>
 
 
+                        <div class="col-md-3">
+              <label>Type</label>
+              <div class="custom-sel">
+                <select class="form-control" [(ngModel)]="editAsset.type" [ngModelOptions]="{standalone: true}">
+                  <option value="general_request">General Request</option>
+                  <option value="leave_request">Leave Request</option>
+                  <option value="advance_salary_request">Advance Salary Request</option>
+                  <option value="document_request">Document Request</option>
+                  <option value="air_ticket_request">Air Ticket Request</option>
+                  <option value="loan_request">Loan Request</option>
+                  <option value="asset_request">Asset Request</option>
+
+                </select>
+              </div>
+            </div>
+
+
+            
+
+
+            <div class="col-md-3">
+
+
+              <div class="custom-sel">
+                <label>Select Branches</label>
+                <select class="form-control" id="branch_id" required [(ngModel)]="editAsset.branch_id"
+                  [ngModelOptions]="{standalone: true}"
+                  [ngClass]="{'error-field': registerButtonClicked && !branch_id}">
+                  <option value="">Select</option>
+                  <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                  </option>
+                </select>
+                <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Branch</div>
+              </div>
+
+
+            </div>
+
+
 
 
 
@@ -331,46 +370,6 @@
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
 
               <div *ngIf="registerButtonClicked && !end_date" class="error-message">end date is required.</div>
-            </div>
-
-
-
-            <div class="col-md-3">
-              <label>Type</label>
-              <div class="custom-sel">
-                <select class="form-control" [(ngModel)]="editAsset.type" [ngModelOptions]="{standalone: true}">
-                  <option value="general_request">General Request</option>
-                  <option value="leave_request">Leave Request</option>
-                  <option value="advance_salary_request">Advance Salary Request</option>
-                  <option value="document_request">Document Request</option>
-                  <option value="air_ticket_request">Air Ticket Request</option>
-                  <option value="loan_request">Loan Request</option>
-                  <option value="asset_request">Asset Request</option>
-
-                </select>
-              </div>
-            </div>
-
-
-            
-
-
-            <div class="col-md-3">
-
-
-              <div class="custom-sel">
-                <label>Select Branches</label>
-                <select class="form-control" id="branch_id" required [(ngModel)]="editAsset.branch_id"
-                  [ngModelOptions]="{standalone: true}"
-                  [ngClass]="{'error-field': registerButtonClicked && !branch_id}">
-                  <option value="">Select</option>
-                  <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
-                  </option>
-                </select>
-                <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Branch</div>
-              </div>
-
-
             </div>
 
 

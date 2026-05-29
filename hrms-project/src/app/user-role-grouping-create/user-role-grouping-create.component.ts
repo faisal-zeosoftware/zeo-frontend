@@ -15949,10 +15949,7 @@ createGroup(): void {
 }
 
   ClosePopup() {
-    this.ref.close('Closed using function');
-    (window as any).location.reload();
-  
-    
+    this.ref.close('Closed using function'); 
   }
 
 }

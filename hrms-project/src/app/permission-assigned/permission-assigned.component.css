@@ -204,11 +204,6 @@ margin-right: 10px;
     top: 50%;
   }
 
-
-  ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
-    margin-top: -14px;
-}
-
 ::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
 
   background-color: white;
@@ -250,11 +245,70 @@ input:focus-visible {
   outline: none;
 }
 
-::ng-deep .mdc-text-field--no-label{
-  border:1px solid #ced4da;
+/* Full width */
+::ng-deep .form-control-wrapper mat-form-field {
+  width: 100%;
 }
 
-::ng-deep .mat-mdc-form-field-flex {
-  padding: 4px 7px;
-  height: 35px;
+/* Main select box style */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
+  border: 1px solid #ced4da !important;
+  border-radius: 4px !important;
+  background: #fff !important;
+  min-height: 38px !important;
+  padding: 0 12px !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
 }
+
+/* Remove Angular Material outline */
+::ng-deep .form-control-wrapper .mdc-notched-outline {
+  display: none !important;
+}
+
+/* Remove filled background */
+::ng-deep .form-control-wrapper .mdc-text-field--filled,
+::ng-deep .form-control-wrapper .mdc-text-field--outlined {
+  background-color: transparent !important;
+}
+
+/* Align selected text */
+::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
+  height: 38px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* Remove unwanted spacing */
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix {
+  padding: 0 !important;
+  min-height: auto !important;
+  border-top: 0 !important;
+}
+
+/* Remove internal padding */
+::ng-deep .form-control-wrapper .mdc-text-field {
+  padding: 0 !important;
+}
+
+/* Focus style like Bootstrap */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
+  border-color: #80bdff !important;
+  box-shadow: 0 0 0 0.1rem rgba(0,123,255,.25) !important;
+}
+
+/* Error border */
+::ng-deep .error-field .mat-mdc-text-field-wrapper {
+  border: 1px solid red !important;
+}
+
+/* Remove default focus outline */
+input:focus,
+input:focus-visible,
+.mat-mdc-select:focus,
+.mat-mdc-select:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+

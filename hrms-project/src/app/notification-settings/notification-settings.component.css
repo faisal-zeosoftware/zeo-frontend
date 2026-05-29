@@ -243,7 +243,38 @@ margin-right: 10px;
 }
 
 
+/* Notify Users mat-select same style as form-control */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  min-height: 38px;
+  background: #fff;
+  padding: 4px 10px;
+  box-shadow: none !important;
+}
 
+/* Remove default Material outline */
+::ng-deep .form-control-wrapper .mdc-notched-outline {
+  display: none !important;
+}
+
+/* Align selected text properly */
+::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
+  min-height: 30px;
+  align-items: center;
+}
+
+/* Focus effect like bootstrap */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:hover,
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
+  border-color: #80bdff;
+}
+
+/* Search input inside dropdown */
+::ng-deep .mat-mdc-select-panel input.form-control {
+  margin: 10px;
+  width: calc(100% - 20px);
+}
 
 
 /* Phones */

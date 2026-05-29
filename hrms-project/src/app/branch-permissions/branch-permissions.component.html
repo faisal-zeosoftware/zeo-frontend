@@ -74,12 +74,14 @@
 
                         <div class="col-md-6">
                             <div class="custom-sel">
-                                <label>Select User</label>
+                                <label>Select User
+                                    <span class="required-star">*</span>
+                                </label>
 <select
   class="form-control"
   required
   [(ngModel)]="user"
-  name="user"
+  name="user" [ngClass]="{'error-field': registerButtonClicked && !user}"
 >
   <option [ngValue]="null">-- Select User --</option>
   <option *ngFor="let u of users" [ngValue]="u.id">
@@ -87,11 +89,14 @@
   </option>
 </select>
             </div>
+             <div *ngIf="registerButtonClicked && !user" class="error-message">Please Select User</div>
       </div>
                         
 
       <div class="col-md-6" >
-        <label>Branch</label>
+        <label>Branch
+            <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <div class="form-control-wrapper">
           
@@ -102,7 +107,7 @@
     [(ngModel)]="branch"
     name="branch"
     multiple
-    #selectBrach
+    #selectBrach [ngClass]="{'error-field': registerButtonClicked && !branch}"
   >
 
     <mat-checkbox
@@ -125,7 +130,7 @@
 </mat-form-field>
             
           </div>
-         
+          <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Branch</div>
         </div>
 
       </div>
