@@ -12,6 +12,8 @@ import { DepartmentEditComponent } from '../department-edit/department-edit.comp
 import { SessionService } from '../login/session.service';
 import { withModule } from '@angular/core/testing';
 import { environment } from '../../environments/environment';
+import { EmployeeService } from '../employee-master/employee.service';
+import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-department-master',
@@ -51,6 +53,8 @@ export class DepartmentMasterComponent {
   searchQuery: string = '';
 
     isLoading: boolean = false;
+    private dataSubscription?: Subscription;
+
 
   constructor(private DepartmentServiceService:DepartmentServiceService,
     private companyRegistrationService: CompanyRegistrationService, 
@@ -59,11 +63,24 @@ export class DepartmentMasterComponent {
     private sessionService: SessionService,
     private dialog:MatDialog,
     private renderer: Renderer2,
+    private EmployeeService: EmployeeService,
+
     ) {}
 
     ngOnInit(): void {
     
       // this.loadDepartment();
+
+   // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
+
 
 
       
@@ -97,7 +114,17 @@ if (this.userId !== null) {
         this.hasImportPermission = true;
     
         // Fetch designations without checking permissions
-        this.fetchDesignations(selectedSchema);
+        // this.fetchDesignations(selectedSchema);
+         // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
+
       } else {
         console.log('User is not superuser');
 
@@ -148,7 +175,17 @@ if (this.userId !== null) {
             }
 
             // Fetching designations after checking permissions
-            this.fetchDesignations(selectedSchema);
+            // this.fetchDesignations(selectedSchema);
+             // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
+
           }
           
           catch (error) {
@@ -241,22 +278,39 @@ if (this.userId !== null) {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
-  fetchDesignations(selectedSchema: string) {
+  // fetchDesignations(selectedSchema: string) {
 
-  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  // const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-    this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema ,savedIds).subscribe(
-      (data: any) => {
+  //   this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema ,savedIds).subscribe(
+  //     (data: any) => {
+  //       this.Departments = data;
+  //       this.filteredDepartment = this.Departments;
+  //       console.log('employee:', this.Departments);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
+        
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.DepartmentServiceService.getDepartmentsMasterNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
         this.Departments = data;
         this.filteredDepartment = this.Departments;
         console.log('employee:', this.Departments);
+        this.isLoading = false;
       },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
       }
-    );
+    });
   }
-        
 
 
     // loadDepartment(): void {
@@ -500,16 +554,6 @@ closeUploadForm(): void {
       });
     }
     
-
-
-
-
-
-
-
-
-
-
 
 
 

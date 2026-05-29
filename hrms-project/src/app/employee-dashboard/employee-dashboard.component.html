@@ -1519,47 +1519,201 @@
 
         <div class="white-outer-sec">
 
+          <div class="leave-tracking-container">
 
-          <div class="row">
-
-            <div class="col-md-12">
-              <div class="table-scroll">
-              
-              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
-                <thead>
-                  <tr>
-                    <th class="text-table-header" style="width: 0;">No</th>
-                    <!-- <th class="text-table-header">Employee</th> -->
-                    <th class="text-table-header">Document Number</th>
-                    <th class="text-table-header">Start Date</th>
-
-                    <th class="text-table-header">End Date</th>
-                    <th class="text-table-header">Leave Type</th>
-
-                    <th class="text-table-header">Reason</th>
-                    <th class="text-table-header">Status</th>
-
-                    <!-- <th class="text-table-header">Payslip Component</th> -->
-                  </tr>
-                </thead>
-                <tbody class="text-table-body">
-                  
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.document_number || '-' }}</td>
-                    <td>{{ leavereq.start_date }}</td>
-                    <td>{{ leavereq.end_date }}</td>
-                    <td>{{ leavereq.leave_type }}</td>
-                    <td>{{ leavereq.reason }}</td>
-                    <td>{{ leavereq.approvals?.[0]?.status || '-' }}</td>
-
-
-                  </tr>
-                </tbody>
-              </table>
+            <div class="leave-card"
+                 *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
+          
+              <!-- HEADER -->
+              <div class="leave-header">
+          
+                <div class="left-section">
+          
+                  <div class="leave-icon">
+                    <mat-icon>event_available</mat-icon>
+                  </div>
+          
+                  <div>
+                    <h4>{{ leavereq.leave_type }}</h4>
+          
+                    <span class="doc-number">
+                      {{ leavereq.document_number }}
+                    </span>
+                  </div>
+          
+                </div>
+          
+                <div class="right-section">
+          
+                  <span class="status-badge"
+                        [ngClass]="{
+                          'approved': leavereq.approvals?.[0]?.status === 'Approved',
+                          'rejected': leavereq.approvals?.[0]?.status === 'Rejected',
+                          'pending': !leavereq.approvals?.length
+                        }">
+          
+                    {{ leavereq.approvals?.[0]?.status || 'Pending' }}
+          
+                  </span>
+          
+                </div>
+          
               </div>
+          
+              <!-- DETAILS -->
+              <div class="leave-details">
+          
+                <div class="detail-box">
+                  <label>Start Date</label>
+                  <p>{{ leavereq.start_date }}</p>
+                </div>
+          
+                <div class="detail-box">
+                  <label>End Date</label>
+                  <p>{{ leavereq.end_date }}</p>
+                </div>
+          
+                <div class="detail-box">
+                  <label>Reason</label>
+                  <p>{{ leavereq.reason }}</p>
+                </div>
+          
+              </div>
+          
+              <!-- EXPAND BUTTON -->
+              <div class="expand-section">
+          
+                <button class="expand-btn"
+                        (click)="toggleApprovalExpand(i)">
+          
+                  <mat-icon>
+                    {{ expandedApprovalIndex === i
+                        ? 'expand_less'
+                        : 'expand_more' }}
+                  </mat-icon>
+          
+                  {{
+                    expandedApprovalIndex === i
+                    ? 'Hide Approval Tracking'
+                    : 'View Approval Tracking'
+                  }}
+          
+                </button>
+          
+              </div>
+          
+              <!-- TIMELINE -->
+              <div class="timeline-wrapper"
+                   [class.expand]="expandedApprovalIndex === i">
+          
+                <div class="timeline-section">
+          
+                  <div class="timeline"
+                       *ngFor="let approval of leavereq.approvals; let last = last; let levelIndex = index">
+          
+                    <!-- LEFT -->
+                    <div class="timeline-left">
+          
+                      <div class="timeline-dot"
+                           [ngClass]="{
+                             'dot-approved': approval.status === 'Approved',
+                             'dot-rejected': approval.status === 'Rejected',
+                             'dot-pending': approval.status === 'Pending'
+                           }">
+          
+                        <mat-icon>
+                          {{
+                            approval.status === 'Approved'
+                            ? 'check'
+                            : approval.status === 'Rejected'
+                            ? 'close'
+                            : 'schedule'
+                          }}
+                        </mat-icon>
+          
+                      </div>
+          
+                      <div class="timeline-line"
+                           *ngIf="!last">
+                      </div>
+          
+                    </div>
+          
+                    <!-- RIGHT -->
+                    <div class="timeline-content animated-card">
+          
+                      <div class="timeline-header">
+          
+                        <div>
+          
+                          <h6>
+                            Level {{ approval.level }}
+                          </h6>
+          
+                          <span class="approver-name">
+                            {{ approval.approver }}
+                          </span>
+          
+                        </div>
+          
+                        <span class="timeline-status"
+                              [ngClass]="{
+                                'approved-text': approval.status === 'Approved',
+                                'rejected-text': approval.status === 'Rejected',
+                                'pending-text': approval.status === 'Pending'
+                              }">
+          
+                          {{ approval.status }}
+          
+                        </span>
+          
+                      </div>
+          
+                      <div class="timeline-date">
+                        {{ approval.created_at | date:'medium' }}
+                      </div>
+          
+                      <div *ngIf="approval.note"
+                           class="timeline-note">
+          
+                        <mat-icon>notes</mat-icon>
+          
+                        {{ approval.note }}
+          
+                      </div>
+          
+                      <div *ngIf="approval.rejection_reason"
+                           class="timeline-reject">
+          
+                        <mat-icon>warning</mat-icon>
+          
+                        {{ approval.rejection_reason }}
+          
+                      </div>
+          
+                    </div>
+          
+                  </div>
+          
+                  <!-- NO APPROVAL -->
+                  <div *ngIf="!leavereq.approvals?.length"
+                       class="pending-box">
+          
+                    <mat-icon>hourglass_empty</mat-icon>
+          
+                    Waiting for approval process...
+          
+                  </div>
+          
+                </div>
+          
+              </div>
+          
             </div>
+          
           </div>
+
+
           </div>
 
       </section>

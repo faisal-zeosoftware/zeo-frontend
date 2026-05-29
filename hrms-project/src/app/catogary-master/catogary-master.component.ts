@@ -16,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { environment } from '../../environments/environment';
+import { combineLatest, Subscription } from 'rxjs';
 
 
 interface Permission {
@@ -58,12 +59,12 @@ export class CatogaryMasterComponent  implements OnInit{
   
   userPermissions: string[] = [];
   user_permissions: string[] = [];
-
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
   hasImportPermission: boolean = false;
+
 
   employee: any;
 
@@ -77,6 +78,7 @@ export class CatogaryMasterComponent  implements OnInit{
 
      isLoading: boolean = false;
 
+     private dataSubscription?: Subscription;
 
 
   constructor(private CatogaryService:CatogaryService,
@@ -100,6 +102,8 @@ export class CatogaryMasterComponent  implements OnInit{
     async ngOnInit(): Promise<void> {
 
       // this.loadcatogary();
+
+
 
 
 // Retrieve user ID
@@ -130,10 +134,19 @@ if (this.userId !== null) {
         this.hasAddPermission = true;
         this.hasDeletePermission = true;
         this.hasEditPermission = true;
-        this.hasImportPermission = true;
     
         // Fetch designations without checking permissions
-        this.fetchDesignations(selectedSchema);
+        // this.fetchDesignations(selectedSchema);
+
+                // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
       } else {
         console.log('User is not superuser');
 
@@ -156,8 +169,6 @@ if (this.userId !== null) {
                 this.hasAddPermission = true;
                 this.hasDeletePermission = true;
                 this.hasEditPermission = true;
-                this.hasImportPermission = true;
-
               } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                 const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                 console.log('Group Permissions:', groupPermissions);
@@ -174,10 +185,6 @@ if (this.userId !== null) {
   
                 this.hasEditPermission = this.checkGroupPermission('change_ctgry_master', groupPermissions);
                 console.log('Has edit permission:', this.hasEditPermission);
-              
-                this.hasImportPermission = this.checkGroupPermission('import_ctgry_master', groupPermissions);
-                console.log('Has import permission:', this.hasImportPermission);
-
               } else {
                 console.error('No groups found in data or groups array is empty.', firstItem);
               }
@@ -186,7 +193,17 @@ if (this.userId !== null) {
             }
 
             // Fetching designations after checking permissions
-            this.fetchDesignations(selectedSchema);
+            // this.fetchDesignations(selectedSchema);
+
+                    // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
           }
           
           catch (error) {
@@ -207,14 +224,6 @@ if (this.userId !== null) {
 }
 
 
-   
-   
-     
-
-    
-
-
-  
      
     }
 
@@ -223,19 +232,40 @@ if (this.userId !== null) {
       return groupPermissions.some(permission => permission.codename === codeName);
     }
   
-    fetchDesignations(selectedSchema: string) {
-      this.CatogaryService.getcatogarys(selectedSchema).subscribe(
-        (data: any) => {
-          this.Catogaries = data;
+    // fetchDesignations(selectedSchema: string) {
+    //   this.CatogaryService.getcatogarys(selectedSchema).subscribe(
+    //     (data: any) => {
+    //       this.Catogaries = data;
+    //       this.filteredEmployees = this.Catogaries;
+
+    //       console.log('employee:', this.Catogaries);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
+
+
+    
+     fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.CatogaryService.getcatogaryBranchchwise(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Catogaries = data;
           this.filteredEmployees = this.Catogaries;
 
           console.log('employee:', this.Catogaries);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
 
   user: any; // Define user object to hold user details
 
@@ -501,7 +531,7 @@ closeUploadForm(): void {
 
   
 
-
+  
     }
 
 

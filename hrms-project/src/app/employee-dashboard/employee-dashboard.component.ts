@@ -4245,7 +4245,47 @@ filterAttendance(): void {
 }
 
 
+getFinalStatus(leavereq: any): string {
 
+  if (!leavereq.approvals?.length) {
+    return 'Pending';
+  }
+
+  const rejected = leavereq.approvals.find(
+    (a: any) => a.status === 'Rejected'
+  );
+
+  if (rejected) {
+    return 'Rejected';
+  }
+
+  const pending = leavereq.approvals.find(
+    (a: any) => a.status === 'Pending'
+  );
+
+  if (pending) {
+    return 'Pending';
+  }
+
+  return 'Approved';
+}
+
+
+expandedApprovalIndex: number | null = null;
+
+toggleApprovalExpand(index: number): void {
+
+  if (this.expandedApprovalIndex === index) {
+
+    this.expandedApprovalIndex = null;
+
+  } else {
+
+    this.expandedApprovalIndex = index;
+
+  }
+
+}
 
 
 }

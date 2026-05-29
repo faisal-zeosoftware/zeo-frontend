@@ -11,6 +11,8 @@ import { DesignationCreationComponent } from '../designation-creation/designatio
 import { DesignationEditComponent } from '../designation-edit/designation-edit.component';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
+import { combineLatest, Subscription } from 'rxjs';
+import { EmployeeService } from '../employee-master/employee.service';
 
 
 @Component({
@@ -54,6 +56,8 @@ export class DesignationMasterComponent {
 
   filteredEmployees: any[] = [];
   searchQuery: string = '';
+  private dataSubscription?: Subscription;
+
 
 
      isLoading: boolean = false;
@@ -63,6 +67,8 @@ export class DesignationMasterComponent {
     private http: HttpClient,
     private authService: AuthenticationService,
     private sessionService : SessionService,
+        private EmployeeService : EmployeeService,
+
 
     private dialog:MatDialog,
     private renderer: Renderer2,
@@ -73,6 +79,19 @@ export class DesignationMasterComponent {
     async  ngOnInit(): Promise<void> {
     
       // this.loadDesignation();
+         // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
+
+
+
+
 
       
 // Retrieve user ID
@@ -105,7 +124,17 @@ if (this.userId !== null) {
         this.hasImportPermission = true;
     
         // Fetch designations without checking permissions
-        this.fetchDesignations(selectedSchema);
+        // this.fetchDesignations(selectedSchema);
+                // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
+
 
 
       } else {
@@ -159,7 +188,17 @@ if (this.userId !== null) {
             }
 
             // Fetching designations after checking permissions
-            this.fetchDesignations(selectedSchema);
+            // this.fetchDesignations(selectedSchema);
+                    // combineLatest waits for both Schema and Branches to have a value
+   this.dataSubscription = combineLatest([
+    this.EmployeeService.selectedSchema$,
+    this.EmployeeService.selectedBranches$
+  ]).subscribe(([schema, branchIds]) => {
+    if (schema) {
+      this.fetchEmployees(schema, branchIds);
+    }
+  });
+
           }
           
           
@@ -203,21 +242,40 @@ if (this.userId !== null) {
       return groupPermissions.some(permission => permission.codename === codeName);
     }
   
-    fetchDesignations(selectedSchema: string) {
-      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+    // fetchDesignations(selectedSchema: string) {
+    //   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-      this.DesignationService.getDesigantionMasterNew(selectedSchema , savedIds).subscribe(
-        (data: any) => {
-          this.Designations = data;
+    //   this.DesignationService.getDesigantionMasterNew(selectedSchema , savedIds).subscribe(
+    //     (data: any) => {
+    //       this.Designations = data;
+    //       this.filteredEmployees = this.Designations;
+
+    //       console.log('employee:', this.Designations);
+    //     },
+    //     (error: any) => {
+    //       console.error('Error fetching categories:', error);
+    //     }
+    //   );
+    // }
+
+
+     fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.DesignationService.getDesigantionMasterNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.Designations = data;
           this.filteredEmployees = this.Designations;
 
           console.log('employee:', this.Designations);
-        },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
-        }
-      );
-    }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
 
   
 
