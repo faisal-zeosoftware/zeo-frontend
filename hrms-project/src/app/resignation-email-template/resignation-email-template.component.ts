@@ -1,10 +1,11 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef,ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { CatogaryService } from '../catogary-master/catogary.service';
 
 declare var $: any;
 import 'summernote'; // Ensure you have summernote imported
@@ -14,7 +15,7 @@ import { SessionService } from '../login/session.service';
 import { ResignationEmailTemplateEditComponent } from '../resignation-email-template-edit/resignation-email-template-edit.component';
 import { CompanyRegistrationService } from '../company-registration.service';
 
-import {combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { MatOption, MatSelect } from '@angular/material/select';
 @Component({
   selector: 'app-resignation-email-template',
@@ -25,582 +26,767 @@ export class ResignationEmailTemplateComponent {
 
   private dataSubscription?: Subscription;
 
-        @ViewChild('summernoteEditor') summernoteEditor!: ElementRef;
-        @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
-      
-      
-        template_type: any = '';
-        subject: any = '';
-        body: string = '';
-      
-      
-        request_type: any = '';
-        registerButtonClicked = false;
+  @ViewChild('summernoteEditor') summernoteEditor!: ElementRef;
+  @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
 
+
+  template_type: any = '';
+  subject: any = '';
+  body: string = '';
+
+
+  request_type: any = '';
+  registerButtonClicked = false;
+
+  department: number[] = [];
+  category: number[] = [];
+  designation: number[] = [];
   branch: number[] = [];
-  branches:any []=[];
-  allSelectedBrach=false;
-      
-      
-      
-        RequestType:any []=[];
-        tempEmails:any []=[];
-      
-        EmailPlaceHolders: string[] = []; // Initialize as an empty array
-      
-        selectedPlaceholder: string | null = null; // To keep track of the selected placeholder
-      
-      hasAddPermission: boolean = false;
-      hasDeletePermission: boolean = false;
-      hasViewPermission: boolean =false;
-      hasEditPermission: boolean = false;
-      
-      userId: number | null | undefined;
-      userDetails: any;
-      userDetailss: any;
-      schemas: string[] = []; // Array to store schema names
-      
-      
-        constructor(
-          private el:ElementRef,
-          private http: HttpClient,
-          private authService: AuthenticationService,
-          private employeeService: EmployeeService,
-          private userService: UserMasterService,
-          private DepartmentServiceService: DepartmentServiceService,
-          private dialog:MatDialog,
-          private DesignationService: DesignationService,
-          private sessionService: SessionService,
-          private companyservice: CompanyRegistrationService,
+  branches: any[] = [];
+  Departments: any[] = [];
+  Categories: any[] = [];
+  Designations: any[] = [];
+  allSelectedBrach = false;
+  allSelecteddept = false;
+  allSelectedcat = false;
+  allSelecteddes = false;
+  allSelectedEmp = false;
 
-      
-      
-      ) {}
-      
-      ngOnInit(): void {
-       
-        this.loadRequestType();
-        this.loadEmailPlaceholders();
-        this.loadDeparmentBranch(); // Call the method on component init
-      
-        // this.loadtemp();
+  related_to: any = 'branch';
 
-         // combineLatest waits for both Schema and Branches to have a value
-       this.dataSubscription = combineLatest([
-        this.employeeService.selectedSchema$,
-        this.employeeService.selectedBranches$
-      ]).subscribe(([schema, branchIds]) => {
-        if (schema) {
-          this.fetchEmployees(schema, branchIds);  
-          
 
-        }
-      });
 
-      
-      // this.ngAfterViewInit();
-      
-      
-      this.userId = this.sessionService.getUserId();
-      if (this.userId !== null) {
-        this.authService.getUserData(this.userId).subscribe(
-          async (userData: any) => {
-            this.userDetails = userData; // Store user details in userDetails property
-         
-      
-            console.log('User ID:', this.userId); // Log user ID
-            console.log('User Details:', this.userDetails); // Log user details
-      
-            // Check if user is_superuser is true or false
-            let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
+  RequestType: any[] = [];
+  tempEmails: any[] = [];
+
+  EmailPlaceHolders: string[] = []; // Initialize as an empty array
+
+  selectedPlaceholder: string | null = null; // To keep track of the selected placeholder
+
+  hasAddPermission: boolean = false;
+  hasDeletePermission: boolean = false;
+  hasViewPermission: boolean = false;
+  hasEditPermission: boolean = false;
+
+  userId: number | null | undefined;
+  userDetails: any;
+  userDetailss: any;
+  schemas: string[] = []; // Array to store schema names
+
+  @ViewChild('branchSelect') branchSelect!: MatSelect;
+  @ViewChild('deptSelect') deptSelect!: MatSelect;
+  @ViewChild('catSelect') catSelect!: MatSelect;
+  @ViewChild('selectdes') selectdes!: MatSelect;
+
+
+  constructor(
+    private el: ElementRef,
+    private http: HttpClient,
+    private authService: AuthenticationService,
+    private employeeService: EmployeeService,
+    private userService: UserMasterService,
+    private DepartmentServiceService: DepartmentServiceService,
+    private categoryService: CatogaryService,
+    private dialog: MatDialog,
+    private DesignationService: DesignationService,
+    private sessionService: SessionService,
+    private companyservice: CompanyRegistrationService,
+
+
+
+  ) { }
+
+  ngOnInit(): void {
+
+    this.loadRequestType();
+    this.loadEmailPlaceholders();
+    this.loadDeparmentBranch();
+    this.loadDEpartments();
+    this.loadCAtegory();
+    this.loadDesignations(); // Call the method on component init
+
+    // this.loadtemp();
+
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
+
+
+      }
+    });
+
+
+    // this.ngAfterViewInit();
+
+
+    this.userId = this.sessionService.getUserId();
+    if (this.userId !== null) {
+      this.authService.getUserData(this.userId).subscribe(
+        async (userData: any) => {
+          this.userDetails = userData; // Store user details in userDetails property
+
+
+          console.log('User ID:', this.userId); // Log user ID
+          console.log('User Details:', this.userDetails); // Log user details
+
+          // Check if user is_superuser is true or false
+          let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
+          const selectedSchema = this.authService.getSelectedSchema();
+          if (!selectedSchema) {
+            console.error('No schema selected.');
+            return;
+          }
+
+
+          if (isSuperuser) {
+            console.log('User is superuser or ESS user');
+
+            // Grant all permissions
+            this.hasViewPermission = true;
+            this.hasAddPermission = true;
+            this.hasDeletePermission = true;
+            this.hasEditPermission = true;
+
+            // Fetch designations without checking permissions
+            // this.fetchDesignations(selectedSchema);
+          } else {
+            console.log('User is not superuser');
+
             const selectedSchema = this.authService.getSelectedSchema();
-            if (!selectedSchema) {
-              console.error('No schema selected.');
-              return;
-            }
-          
-          
-            if (isSuperuser) {
-              console.log('User is superuser or ESS user');
-              
-              // Grant all permissions
-              this.hasViewPermission = true;
-              this.hasAddPermission = true;
-              this.hasDeletePermission = true;
-              this.hasEditPermission = true;
-          
-              // Fetch designations without checking permissions
-              // this.fetchDesignations(selectedSchema);
-            } else {
-              console.log('User is not superuser');
-      
-              const selectedSchema = this.authService.getSelectedSchema();
-              if (selectedSchema) {
-               
-                
-                
-                try {
-                  const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
-                  console.log('Permissions data:', permissionsData);
-      
-                  if (Array.isArray(permissionsData) && permissionsData.length > 0) {
-                    const firstItem = permissionsData[0];
-      
-                    if (firstItem.is_superuser) {
-                      console.log('User is superuser according to permissions API');
-                      // Grant all permissions
-                      this.hasViewPermission = true;
-                      this.hasAddPermission = true;
-                      this.hasDeletePermission = true;
-                      this.hasEditPermission = true;
-                    } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                      const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
-                      console.log('Group Permissions:', groupPermissions);
-      
-                     
-                      this.hasAddPermission = this.checkGroupPermission('add_resignationemailtemplate', groupPermissions);
-                      console.log('Has add permission:', this.hasAddPermission);
-                      
-                      this.hasEditPermission = this.checkGroupPermission('change_resignationemailtemplate', groupPermissions);
-                      console.log('Has edit permission:', this.hasEditPermission);
-        
-                     this.hasDeletePermission = this.checkGroupPermission('delete_resignationemailtemplate', groupPermissions);
-                     console.log('Has delete permission:', this.hasDeletePermission);
-        
-      
-                      this.hasViewPermission = this.checkGroupPermission('view_resignationemailtemplate', groupPermissions);
-                      console.log('Has view permission:', this.hasViewPermission);
-      
-      
-                    } else {
-                      console.error('No groups found in data or groups array is empty.', firstItem);
-                    }
-                  } else {
-                    console.error('Permissions data is not an array or is empty.', permissionsData);
-                  }
-      
-                  // Fetching designations after checking permissions
-                  // this.fetchDesignations(selectedSchema);
-                }
-                
-                catch (error) {
-                  console.error('Error fetching permissions:', error);
-                }
-              } else {
-                console.error('No schema selected.');
-              }
-                
-            }
-          },
-          (error) => {
-            console.error('Failed to fetch user details:', error);
-          }
-        );
-      
-          // this.fetchingApprovals();
-      
-      
-          this.authService.getUserSchema(this.userId).subscribe(
-              (userData: any) => {
-                  this.userDetailss = userData;
-                  this.schemas = userData.map((schema: any) => schema.schema_name);
-                  console.log('scehmas-de',userData)
-              },
-              (error) => {
-                  console.error('Failed to fetch user schemas:', error);
-              }
-          );
-      } else {
-          console.error('User ID is null.');
-      }
-       
-      }
-      
-      
-  
-          
-        
-        checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-        return groupPermissions.some(permission => permission.codename === codeName);
-        }
-        
-        
-        
-      
-      
-       
-        loadRequestType(): void {
-          
-          const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-        
-          console.log('schemastore',selectedSchema )
-          // Check if selectedSchema is available
-          if (selectedSchema) {
-            this.DepartmentServiceService.getReqType(selectedSchema).subscribe(
-              (result: any) => {
-                this.RequestType = result;
-                console.log(' fetching Companies:');
-        
-              },
-              (error) => {
-                console.error('Error fetching Companies:', error);
-              }
-            );
-          }
-          }
-
-            loadDeparmentBranch(callback?: Function): void {
-              const selectedSchema = this.authService.getSelectedSchema();
-              
-              if (selectedSchema) {
-                this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-                  (result: any[]) => {
-                    // 1. Get the sidebar selected IDs from localStorage
-                    const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-            
-                    // 2. Filter the API result to only include branches selected in the sidebar
-                    // If sidebar is empty, you might want to show all, or show none. 
-                    // Usually, we show only the selected ones:
-                    if (sidebarSelectedIds.length > 0) {
-                      this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-                    } else {
-                      this.branches = result; // Fallback: show all if nothing is selected in sidebar
-                    }
-                    // Inside the subscribe block of loadDeparmentBranch
-                    if (this.branches.length === 1) {
-                      this.branch = this.branches[0].id;
-                    }
-            
-                    console.log('Filtered branches for selection:', this.branches);
-                    if (callback) callback();
-                  },
-                  (error) => {
-                    console.error('Error fetching branches:', error);
-                  }
-                );
-              }
-            }
-          
-                                toggleAllSelectionBrach(): void {
-                                if (this.selectBrach) {
-                                  if (this.allSelectedBrach) {
-                                    this.selectBrach.options.forEach((item: MatOption) => item.select());
-                                  } else {
-                                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
-                                  }
-                                }
-                              }
-      
-      
-      
-         
-        
-          loadEmailPlaceholders(): void {
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-            console.log('schemastore', selectedSchema);
-            // Check if selectedSchema is available
             if (selectedSchema) {
-              this.companyservice.getEmailPlaceholderResignation(selectedSchema).subscribe(
-                (result: any) => {
-                  this.EmailPlaceHolders = result.employee; // Assuming the response structure
-                  console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
-                },
-                (error) => {
-                  console.error('Error fetching EmailPlaceHolders:', error);
+
+
+
+              try {
+                const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
+                console.log('Permissions data:', permissionsData);
+
+                if (Array.isArray(permissionsData) && permissionsData.length > 0) {
+                  const firstItem = permissionsData[0];
+
+                  if (firstItem.is_superuser) {
+                    console.log('User is superuser according to permissions API');
+                    // Grant all permissions
+                    this.hasViewPermission = true;
+                    this.hasAddPermission = true;
+                    this.hasDeletePermission = true;
+                    this.hasEditPermission = true;
+                  } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
+                    const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
+                    console.log('Group Permissions:', groupPermissions);
+
+
+                    this.hasAddPermission = this.checkGroupPermission('add_resignationemailtemplate', groupPermissions);
+                    console.log('Has add permission:', this.hasAddPermission);
+
+                    this.hasEditPermission = this.checkGroupPermission('change_resignationemailtemplate', groupPermissions);
+                    console.log('Has edit permission:', this.hasEditPermission);
+
+                    this.hasDeletePermission = this.checkGroupPermission('delete_resignationemailtemplate', groupPermissions);
+                    console.log('Has delete permission:', this.hasDeletePermission);
+
+
+                    this.hasViewPermission = this.checkGroupPermission('view_resignationemailtemplate', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermission);
+
+
+                  } else {
+                    console.error('No groups found in data or groups array is empty.', firstItem);
+                  }
+                } else {
+                  console.error('Permissions data is not an array or is empty.', permissionsData);
                 }
-              );
-            }
-          }
-        
-          selectedPlaceholders: string[] = []; // Store multiple placeholders
-      
-      
-      
-      
-      
-        selectPlaceholder(placeholder: string): void {
-          const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
-          
-          const updatedContent = currentContent + ' ' + placeholder;
-          $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
-        
-          this.selectedPlaceholders.push(placeholder); // Allow duplicates
-        }
-        
-      
-        
-        
-        ngAfterViewInit(): void {
-          $(this.summernoteEditor.nativeElement).summernote({
-            height: 150,
-            placeholder: 'Type your text here...',
-            toolbar: [
-              ['style', ['bold', 'italic', 'underline']],
-              ['fontsize', ['fontsize']],
-              ['color', ['color']],
-              ['para', ['ul', 'ol', 'paragraph']],
-              ['insert', ['link', 'picture', 'video']],
-              ['view', ['fullscreen', 'codeview', 'help']]
-            ],
-            callbacks: {
-              onChange: (contents: string) => {
-                console.log('Editor content:', contents);
+
+                // Fetching designations after checking permissions
+                // this.fetchDesignations(selectedSchema);
               }
+
+              catch (error) {
+                console.error('Error fetching permissions:', error);
+              }
+            } else {
+              console.error('No schema selected.');
             }
-          });
+
+          }
+        },
+        (error) => {
+          console.error('Failed to fetch user details:', error);
         }
-        
-      // Method to update the selected placeholder whenever the content changes
-      onContentChange(): void {
-        const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
-        
-        // Check if the currently selected placeholder exists in the content
-        if (this.selectedPlaceholder && !currentContent.includes(this.selectedPlaceholder)) {
-          // If the selected placeholder is not found in the current content, reset it
-          this.selectedPlaceholder = null;
+      );
+
+      // this.fetchingApprovals();
+
+
+      this.authService.getUserSchema(this.userId).subscribe(
+        (userData: any) => {
+          this.userDetailss = userData;
+          this.schemas = userData.map((schema: any) => schema.schema_name);
+          console.log('scehmas-de', userData)
+        },
+        (error) => {
+          console.error('Failed to fetch user schemas:', error);
+        }
+      );
+    } else {
+      console.error('User ID is null.');
+    }
+
+  }
+
+
+
+
+
+  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+    return groupPermissions.some(permission => permission.codename === codeName);
+  }
+
+
+
+
+
+
+  loadRequestType(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getReqType(selectedSchema).subscribe(
+        (result: any) => {
+          this.RequestType = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+   loadDEpartments(callback?: Function): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Departments = result;
+          console.log(' fetching Companies:');
+          if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  loadCAtegory(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.categoryService.getcatogarys(selectedSchema).subscribe(
+        (result: any) => {
+          this.Categories = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+
+  loadDesignations(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getDesignations(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Designations:', error);
+        }
+      );
+    }
+  }
+
+
+  toggleAllSelectionBrach(): void {
+    if (this.selectBrach) {
+      if (this.allSelectedBrach) {
+        this.selectBrach.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+
+
+
+
+  loadEmailPlaceholders(): void {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    console.log('schemastore', selectedSchema);
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.companyservice.getEmailPlaceholderResignation(selectedSchema).subscribe(
+        (result: any) => {
+          this.EmailPlaceHolders = result.employee; // Assuming the response structure
+          console.log('EmailPlaceHolders:', this.EmailPlaceHolders);
+        },
+        (error) => {
+          console.error('Error fetching EmailPlaceHolders:', error);
+        }
+      );
+    }
+  }
+
+  selectedPlaceholders: string[] = []; // Store multiple placeholders
+
+
+
+
+
+  selectPlaceholder(placeholder: string): void {
+    const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
+
+    const updatedContent = currentContent + ' ' + placeholder;
+    $(this.el.nativeElement).find('#summernote').summernote('code', updatedContent);
+
+    this.selectedPlaceholders.push(placeholder); // Allow duplicates
+  }
+
+
+
+
+  ngAfterViewInit(): void {
+    $(this.summernoteEditor.nativeElement).summernote({
+      height: 150,
+      placeholder: 'Type your text here...',
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ],
+      callbacks: {
+        onChange: (contents: string) => {
+          console.log('Editor content:', contents);
         }
       }
-      
-      
-      
-      
-      getTextContent(): void {
-        this.body = $(this.el.nativeElement).find('#summernote').summernote('code');
-        console.log(this.body); // For debugging, to see what is captured
-      }
-      
-      
-          onclickEmailTemplate(): void {
-            this.registerButtonClicked = true;
-      
-            this.getTextContent();
-            
-            const companyData = {
-              template_type: this.template_type,
-            
-              subject:this.subject,
-              body: this.body,
-             branch: this.branch,   // Use the captured Summernote content here
-        
-              request_type: this.request_type,
-            
-          
-      
-           
-        
-              // Add other form field values to the companyData object
-            };
-          
-        
-            this.companyservice.registerEmailTemplateResignation(companyData).subscribe(
-              (response) => {
-                console.log('Registration successful', response);
-              
-                    alert('Email Template has been Added ');
-                    window.location.reload();
-               
-        
-              },
-              (error) => {
-                console.error('Added failed', error);
-       let errorMessage = 'Enter all required fields!';
-      
-            // ✅ Handle backend validation or field-specific errors
-            if (error.error && typeof error.error === 'object') {
-              const messages: string[] = [];
-              for (const [key, value] of Object.entries(error.error)) {
-                if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-                else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-                else messages.push(`${key}: ${JSON.stringify(value)}`);
-              }
-              if (messages.length > 0) errorMessage = messages.join('\n');
-            } else if (error.error?.detail) {
-              errorMessage = error.error.detail;
-            }
-      
-            alert(errorMessage);
-          }
-            );
-          }
-        
-      
-      
-          // loadtemp(): void {
-          
-          //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-          
-          //   console.log('schemastore',selectedSchema )
-          //   // Check if selectedSchema is available
-          //   if (selectedSchema) {
-          //     this.DepartmentServiceService.getEmailTemplatesResignation(selectedSchema).subscribe(
-          //       (result: any) => {
-          //         this.tempEmails = result;
-          //         console.log(' fetching Companies:');
-          
-          //       },
-          //       (error) => {
-          //         console.error('Error fetching Companies:', error);
-          //       }
-          //     );
-          //   }
-          //   }
+    });
+  }
 
-            isLoading: boolean = false;
+  // Method to update the selected placeholder whenever the content changes
+  onContentChange(): void {
+    const currentContent = $(this.el.nativeElement).find('#summernote').summernote('code');
 
-            fetchEmployees(schema: string, branchIds: number[]): void {
-              this.isLoading = true;
-              this.DepartmentServiceService.getEmailTemplatesResignationNew(schema, branchIds).subscribe({
-                next: (data: any) => {
-                  // Filter active employees
-                  this.tempEmails = data;
-          
-                  this.isLoading = false;
-                },
-                error: (err) => {
-                  console.error('Fetch error:', err);
-                  this.isLoading = false;
-                }
-              });
-            }
-        
+    // Check if the currently selected placeholder exists in the content
+    if (this.selectedPlaceholder && !currentContent.includes(this.selectedPlaceholder)) {
+      // If the selected placeholder is not found in the current content, reset it
+      this.selectedPlaceholder = null;
+    }
+  }
+
+
+
+
+  getTextContent(): void {
+    this.body = $(this.el.nativeElement).find('#summernote').summernote('code');
+    console.log(this.body); // For debugging, to see what is captured
+  }
+
+
+  onclickEmailTemplate(): void {
+    this.registerButtonClicked = true;
+
+    this.getTextContent();
+
+    const companyData = {
+      template_type: this.template_type,
+
+      subject: this.subject,
+      body: this.body,
+      branch: this.branch,
       
-            selectedTemplate: any = null; // Object to hold the selected template details
-      
-      
-            isAddFieldsModalOpen:boolean=false;
-      
-              
-              
-              
-                
-      
-      
-      
-        openEditPopuss(selectedTemplate: any): void {
-          this.dialog.open(ResignationEmailTemplateEditComponent, {
-            width: '80%',
-            height: '700px',
-            data: { template: selectedTemplate } // Passing the selected template data to the modal component
-          });
+      Department: this.department,
+
+      Category: this.category,
+
+      Designation: this.designation,// Use the captured Summernote content here
+
+      request_type: this.request_type,
+
+
+
+
+
+      // Add other form field values to the companyData object
+    };
+
+
+    this.companyservice.registerEmailTemplateResignation(companyData).subscribe(
+      (response) => {
+        console.log('Registration successful', response);
+
+        alert('Email Template has been Added ');
+        window.location.reload();
+
+
+      },
+      (error) => {
+        console.error('Added failed', error);
+        let errorMessage = 'Enter all required fields!';
+
+        // ✅ Handle backend validation or field-specific errors
+        if (error.error && typeof error.error === 'object') {
+          const messages: string[] = [];
+          for (const [key, value] of Object.entries(error.error)) {
+            if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+            else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+            else messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+          if (messages.length > 0) errorMessage = messages.join('\n');
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
         }
-             
-      
-      
-      
-        
-      
-        iscreateLoanApp: boolean = false;
-      
-      
-      
-      
-        openPopus():void{
-          this.iscreateLoanApp = true;
 
-                      // reset branch
+        alert(errorMessage);
+      }
+    );
+  }
+
+
+
+  // loadtemp(): void {
+
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.DepartmentServiceService.getEmailTemplatesResignation(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.tempEmails = result;
+  //         console.log(' fetching Companies:');
+
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
+
+  isLoading: boolean = false;
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.DepartmentServiceService.getEmailTemplatesResignationNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.tempEmails = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+  selectedTemplate: any = null; // Object to hold the selected template details
+
+
+  isAddFieldsModalOpen: boolean = false;
+
+
+
+
+
+
+
+
+  openEditPopuss(selectedTemplate: any): void {
+    this.dialog.open(ResignationEmailTemplateEditComponent, {
+      width: '80%',
+      height: '700px',
+      data: { template: selectedTemplate } // Passing the selected template data to the modal component
+    });
+  }
+
+
+
+
+
+
+  iscreateLoanApp: boolean = false;
+
+
+
+
+openPopus(): void {
+
+  this.iscreateLoanApp = true;
+
+  // reset fields
+  this.subject = '';
+  this.body = '';
+  this.template_type = '';
+  this.department = [];
+  this.category = [];
+  this.designation = [];
   this.branch = [];
 
-  // ✅ Auto select first branch
+  // Auto select first branch
   if (this.branches && this.branches.length > 0) {
-
     this.branch = [this.branches[0].id];
+    this.allSelectedBrach = false;
+  }
 
-        this.allSelectedBrach = false;
+  setTimeout(() => {
+
+    const editor = $(this.summernoteEditor.nativeElement);
+
+    // destroy existing instance
+    if (editor.next('.note-editor').length) {
+      editor.summernote('destroy');
+    }
+
+    editor.summernote({
+      height: 150,
+      placeholder: 'Type your text here...',
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ],
+      callbacks: {
+        onChange: (contents: string) => {
+          this.body = contents;
+        }
+      }
+    });
+
+    // set empty body initially
+    editor.summernote('code', this.body || '');
+
+  }, 200);
+}
+
+  closeapplicationModal(): void {
+    this.iscreateLoanApp = false;
 
   }
-      
-        }
-      
-        closeapplicationModal():void{
-          this.iscreateLoanApp = false;
-      
-        }
-      
-      
-      
-        showEditBtn: boolean = false;
-      
-        EditShowButtons() {
-          this.showEditBtn = !this.showEditBtn;
-        }
-      
-      
-        Delete: boolean = false;
-        allSelected: boolean = false;
-      
-      toggleCheckboxes() {
-        this.Delete = !this.Delete;
-      }
-      
-      toggleSelectAllEmployees() {
-          this.allSelected = !this.allSelected;
-      this.tempEmails.forEach(employee => employee.selected = this.allSelected);
-      
-      }
-      
-      onCheckboxChange(employee:number) {
-        // No need to implement any logic here if you just want to change the style.
-        // You can add any additional logic if needed.
-      }
-      
-      
-      
-         deleteSelectedAssetType() { 
-            const selectedEmployeeIds = this.tempEmails
-              .filter(employee => employee.selected)
-              .map(employee => employee.id);
-          
-            if (selectedEmployeeIds.length === 0) {
-              alert('No  Email Template selected for deletion.');
-              return;
+
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelected: boolean = false;
+
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
+  }
+
+  toggleSelectAllEmployees() {
+    this.allSelected = !this.allSelected;
+    this.tempEmails.forEach(employee => employee.selected = this.allSelected);
+
+  }
+
+  
+  toggleAllSelectiondept(): void {
+    if (this.deptSelect) {
+      this.deptSelect.options.forEach((item: MatOption) =>
+        this.allSelecteddept ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+    toggleAllSelectiondes(): void {
+
+     if (this.selectdes) {
+      this.selectdes.options.forEach((item: MatOption) =>
+        this.allSelecteddes ? item.select() : item.deselect()
+      );
+    }
+
+
+  }
+
+    toggleAllSelectioncat(): void {
+    if (this.catSelect) {
+      this.catSelect.options.forEach((item: MatOption) =>
+        this.allSelectedcat ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+  getBranchNames(branchIds: number[]): string {
+  return this.branches
+    .filter(b => branchIds.includes(b.id))
+    .map(b => b.branch_name)
+    .join(', ');
+}
+
+  
+  getDepartmentNames(ids: number[]): string {
+  return this.Departments
+    .filter(d => ids?.includes(d.id))
+    .map(d => d.dept_name)
+    .join(', ');
+}
+
+getCategoryNames(ids: number[]): string {
+  return this.Categories
+    .filter(c => ids?.includes(c.id))
+    .map(c => c.ctgry_title)
+    .join(', ');
+}
+
+getDesignationNames(ids: number[]): string {
+  return this.Designations
+    .filter(d => ids?.includes(d.id))
+    .map(d => d.desgntn_job_title)
+    .join(', ');
+}
+
+  onCheckboxChange(employee: number) {
+    // No need to implement any logic here if you just want to change the style.
+    // You can add any additional logic if needed.
+  }
+
+
+
+  deleteSelectedAssetType() {
+    const selectedEmployeeIds = this.tempEmails
+      .filter(employee => employee.selected)
+      .map(employee => employee.id);
+
+    if (selectedEmployeeIds.length === 0) {
+      alert('No  Email Template selected for deletion.');
+      return;
+    }
+
+    if (confirm('Are you sure you want to delete the selected Email Template?')) {
+
+      let total = selectedEmployeeIds.length;
+      let completed = 0;
+      selectedEmployeeIds.forEach(categoryId => {
+        this.companyservice.deleteEmailTemplateResignation(categoryId).subscribe(
+          () => {
+            console.log(' Email Template deleted successfully:', categoryId);
+            // Remove the deleted employee from the local list
+            this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
+            completed++;
+
+            if (completed === total) {
+              alert(' Email Template deleted successfully');
+              window.location.reload();
             }
-          
-            if (confirm('Are you sure you want to delete the selected Email Template?')) {
-              
-                  let total = selectedEmployeeIds.length;
-                  let completed = 0;
-              selectedEmployeeIds.forEach(categoryId => {
-                this.companyservice.deleteEmailTemplateResignation(categoryId).subscribe(
-                  () => {
-                    console.log(' Email Template deleted successfully:', categoryId);
-                    // Remove the deleted employee from the local list
-                    this.tempEmails = this.tempEmails.filter(employee => employee.id !== categoryId);
-                     completed++;
-      
-                  if (completed === total) {
-                    alert(' Email Template deleted successfully');
-                    window.location.reload();
-                     }
-          
-                  },
-                  (error) => {
-                    console.error('Error deleting  Email Template:', error);
-                      alert('Error deleting  Email Template: ' + error.statusText);
-                  }
-                );
-              });
-            }
+
+          },
+          (error) => {
+            console.error('Error deleting  Email Template:', error);
+            alert('Error deleting  Email Template: ' + error.statusText);
           }
-          
-      
-          branchSearch: string = '';
-allBranchSelected: boolean = false;             
-
- filterEmployees() {
-
-  if (!this.branchSearch) {
-    return this.branches;
+        );
+      });
+    }
   }
 
-  return this.branches.filter((deparmentsec: any) =>
-    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
-  );
 
-}       
-        
-    
-    
-  
-  
+  branchSearch: string = '';
+  allBranchSelected: boolean = false;
+
+  filterEmployees() {
+
+    if (!this.branchSearch) {
+      return this.branches;
+    }
+
+    return this.branches.filter((deparmentsec: any) =>
+      deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+    );
+
+  }
+
+
+
+
+
 
 }

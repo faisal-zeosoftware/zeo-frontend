@@ -640,22 +640,57 @@ const companyData = {
 
 
 
-  openPopus():void{
-    this.iscreateLoanApp = true;
+openPopus(): void {
 
-            // reset branch
+  this.iscreateLoanApp = true;
+
+  // reset fields
+  this.subject = '';
+  this.body = '';
+  this.template_type = '';
+  this.department = [];
+  this.category = [];
+  this.designation = [];
   this.branch = [];
 
-  // ✅ Auto select first branch
+  // Auto select first branch
   if (this.branches && this.branches.length > 0) {
-
     this.branch = [this.branches[0].id];
-
-        this.allSelectedBrach = false;
-
+    this.allSelectedBrach = false;
   }
 
-  }
+  setTimeout(() => {
+
+    const editor = $(this.summernoteEditor.nativeElement);
+
+    // destroy existing instance
+    if (editor.next('.note-editor').length) {
+      editor.summernote('destroy');
+    }
+
+    editor.summernote({
+      height: 150,
+      placeholder: 'Type your text here...',
+      toolbar: [
+        ['style', ['bold', 'italic', 'underline']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ],
+      callbacks: {
+        onChange: (contents: string) => {
+          this.body = contents;
+        }
+      }
+    });
+
+    // set empty body initially
+    editor.summernote('code', this.body || '');
+
+  }, 200);
+}
 
   closeapplicationModal():void{
     this.iscreateLoanApp = false;

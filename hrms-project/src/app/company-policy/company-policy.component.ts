@@ -240,10 +240,10 @@ if (this.userId !== null) {
   
 
     registerApproveLevel(): void {
-      this.registerButtonClicked = true;
-      if (!this.title || !this.description || !this.branch) {
-        return;
-      }
+      // this.registerButtonClicked = true;
+      // if (!this.title || !this.description || !this.branch) {
+      //   return;
+      // }
     
       const formData = new FormData();
       formData.append('title', this.title);

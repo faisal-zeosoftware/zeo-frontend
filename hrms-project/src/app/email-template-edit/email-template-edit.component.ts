@@ -78,7 +78,21 @@ ngOnInit(): void {
  
   this.loadRequestType();
   this.loadEmailPlaceholders(); 
-   this.loadDeparmentBranch();
+  this.loadDeparmentBranch();
+  this.loadDEpartments();
+  this.loadCAtegory();
+  this.loadDesignations();
+
+  // Detect related_to automatically
+  if (this.templateData.branch?.length) {
+    this.related_to = 'branch';
+  } else if (this.templateData.Department?.length) {
+    this.related_to = 'department';
+  } else if (this.templateData.Category?.length) {
+    this.related_to = 'category';
+  } else if (this.templateData.Designation?.length) {
+    this.related_to = 'designation';
+  }
 
 
 
@@ -303,15 +317,15 @@ updateTemplate() {
   // Get Summernote content
   const bodyContent = ($('#summernote') as any).summernote('code');
 
-  const payload = {
-    template_type: this.templateData.template_type,
-    subject: this.templateData.subject,
-    branch: this.templateData.branch,
-    Department: this.templateData.department,
-    Category: this.templateData.category,
-    Designation: this.templateData.designation,
-    body: bodyContent
-  };
+const payload = {
+  template_type: this.templateData.template_type,
+  subject: this.templateData.subject,
+  branch: this.templateData.branch || [],
+  Department: this.templateData.Department || [],
+  Category: this.templateData.Category || [],
+  Designation: this.templateData.Designation || [],
+  body: bodyContent
+};
 
   this.DepartmentServiceService.updateEmailTemplate(
     selectedSchema,               // now guaranteed string

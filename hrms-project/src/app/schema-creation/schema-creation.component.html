@@ -1,6 +1,13 @@
 <div mat-dialog-content class="">
     <div class="cpm-sec">
 
+ <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="ClosePopup()">
+      ×
+    </span>
+  </div> 
+
         <h1>Create Company</h1><hr>
 
         <form >
@@ -10,7 +17,9 @@
 
 <div class="col-md-6" >
                
-    <label>Company Name </label>
+    <label>Company Name 
+            <span class="required-star">*</span>
+    </label>
    <input type="text"  class="form-control" required  [(ngModel)]="name"  placeholder="Enter Company  Name "
     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
    
@@ -21,12 +30,14 @@
 
 
     <div class="custom-sel">
-        <label>Country</label>
-        <select class="form-control" id="country" (change)="onCountryChange()" required [(ngModel)]="country"  [ngModelOptions]="{standalone: true}"  >
+        <label>Country
+             <span class="required-star">*</span>
+        </label>
+        <select class="form-control" id="country" (change)="onCountryChange()" required [(ngModel)]="country"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !country}" >
             <option value="" >Select</option>
             <option *ngFor="let user of countries" [value]="user.id">{{ user.country_name }}</option>
         </select>
-       
+       <div *ngIf="registerButtonClicked && !country" class="error-message">Country is required.</div>
     </div>
                 
 

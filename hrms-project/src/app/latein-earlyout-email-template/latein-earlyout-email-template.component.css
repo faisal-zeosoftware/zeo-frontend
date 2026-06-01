@@ -1,104 +1,100 @@
 
 
-
-
 .comapny_section{
 
-    margin-top: 100px;
-    margin-left: 50px;
-    
-  }
+  margin-top: 100px;
+  margin-left: 50px;
   
-  .header_section{
-    background: white;
-    padding: 24px 20px 15px 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    width: 100%;
-    border-bottom: solid 3px navy;
-  }
-  
-  .header_section h1{
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
-  
-  }
-  
-  .btn-Create{
-     /* padding: 5px 15px; */
-     /* border: none; */
-  margin-right: 10px;     
-   
-  }
-  
-  .btn-Edit{
-    margin-right: 10px;
-  }
-  
-  .btn-Delete{
-    margin-right: 10px;
-  }
-  
-  .header-btn-icon{
-    vertical-align: middle;
-  }
-  
-  .btn-Create .mat-icon{
-    margin-top: 4px;
-  }
-  .btn-Create .mat-icon{
-    margin-top: 2px;
-  }
-  
-  
-  
-  .list_company_sec{
-    padding: 25px;
-    background: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    border-top: solid 3px navy;
-  
-  }
-  
-  .com_list{
-    padding: 20px;
-    width: 100%;
-    background: white;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    border-bottom: solid 3px navy;
-    margin-bottom: 20px;
-  
-  
-  }
-  
-  .com_list h2{
-    font-size: 16px;
-    margin-top: 15px;
-    font-weight: 500;
-  }
-  
-  .comp_logo{
-    width: 40px;
-    height: 50px;
-    overflow: hidden;
-  }
-  
-  .comapny_section p{
-    text-align: center;
-    color: grey;
-  }
-  
-  .com_list .mat-icon{
-    color: #FDCC0D;
-    height: 20px;
-    width: 25px;
-  }
-  
-  
-  
-  
+}
+
+.header_section{
+  background: white;
+  padding: 24px 20px 15px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  width: 100%;
+  border-bottom: solid 3px navy;
+}
+
+.header_section h1{
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+
+}
+
+.btn-Create{
+   /* padding: 5px 15px; */
+   /* border: none; */
+margin-right: 10px;     
+ 
+}
+
+.btn-Edit{
+  margin-right: 10px;
+}
+
+.btn-Delete{
+  margin-right: 10px;
+}
+
+.header-btn-icon{
+  vertical-align: middle;
+}
+
+.btn-Create .mat-icon{
+  margin-top: 4px;
+}
+.btn-Create .mat-icon{
+  margin-top: 2px;
+}
+
+
+
+.list_company_sec{
+  padding: 25px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  border-top: solid 3px navy;
+
+}
+
+.com_list{
+  padding: 20px;
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  border-bottom: solid 3px navy;
+  margin-bottom: 20px;
+
+
+}
+
+.com_list h2{
+  font-size: 16px;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.comp_logo{
+  width: 40px;
+  height: 50px;
+  overflow: hidden;
+}
+
+.comapny_section p{
+  text-align: center;
+  color: grey;
+}
+
+.com_list .mat-icon{
+  color: #FDCC0D;
+  height: 20px;
+  width: 25px;
+}
+
+
 
 /* Add your CSS styles here */
 .modal {
@@ -150,44 +146,195 @@
     font-family: math;
   }
 
-  
-  
-  .email_placeholdername{
-    /* margin-top: 50px; */
-    background: white;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    height: 200px;
-    overflow-y: scroll;
-  
-  }
-  
-  .on_by_placeholders{
-    background: whitesmoke;
-    padding: 10px;
-    margin-bottom: 10px;
-  
-  
-  }
-  
-  .on_by_placeholders h4{
-    font-size: 12px;
-    text-align: center;
-  }
-  
-  
-  .emailtep_det_{
-    background: whitesmoke;
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  
-  
-  .note-editable {
-    font-size: inherit !important; /* Ensure that the font size changes according to Summernote settings */
+
+.email_placeholdername{
+  /* margin-top: 50px; */
+  background: white;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  height: 200px;
+  overflow-y: scroll;
+
+}
+
+.on_by_placeholders{
+  background: whitesmoke;
+  padding: 10px;
+  margin-bottom: 10px;
+
+
+}
+
+.on_by_placeholders h4{
+  font-size: 12px;
+  text-align: center;
+}
+
+
+.emailtep_det_{
+  background: whitesmoke;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+
+.note-editable {
+  font-size: inherit !important; /* Ensure that the font size changes according to Summernote settings */
+}
+
+.emailtep_det_ h6 {
+  font-size: 13px;
+  line-height: 22px;
+  word-break: break-word;
+}
+
+.emailtep_det_ {
+  border-radius: 6px;
+}
+
+/* =========================
+   TABLE DESIGN
+========================= */
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.custom-table thead {
+  background: #0d1b52;
+}
+
+.custom-table thead th {
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 14px;
+  border: none;
+  white-space: nowrap;
+}
+
+.custom-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+  background: #f8f9fc;
+}
+
+.custom-table td {
+  padding: 14px;
+  vertical-align: middle;
+  font-size: 13px;
+  color: #444;
+}
+
+/* =========================
+   BADGE
+========================= */
+
+.badge-template {
+  background: #e8f0ff;
+  color: #0d47a1;
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+/* =========================
+   SUBJECT
+========================= */
+
+.subject-cell {
+  font-weight: 500;
+  color: #212529;
+  max-width: 200px;
+  word-break: break-word;
+}
+
+/* =========================
+   DATA TEXT
+========================= */
+
+.data-text {
+  display: inline-block;
+  line-height: 20px;
+  color: #555;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-buttons button {
+  transform: scale(0.85);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+  .custom-table thead {
+    display: none;
   }
 
-  
+  .custom-table,
+  .custom-table tbody,
+  .custom-table tr,
+  .custom-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .custom-table tr {
+    background: white;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  }
+
+  .custom-table td {
+    text-align: left;
+    padding: 10px;
+    border: none;
+    position: relative;
+  }
+
+  .custom-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+    color: #0d1b52;
+  }
+
+}
+
+css
+----
+
+
 .form-control-wrapper {
   display: flex;
   flex-direction: column;
@@ -328,17 +475,18 @@ input:focus-visible {
 }
 
 
-
-      /* Phones */
+    /* Phones */
 @media (max-width: 728px) {
 
-  .modal-content{
+  ::ng-deep.modal-content{
     
     margin-top: 200px;
+    margin-left: 15%;
+   
 
   }
 
-.header_section{
+   .header_section{
   background: white;
   padding: 24px 18px 15px 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
@@ -346,3 +494,4 @@ input:focus-visible {
   border-bottom: solid 3px navy;
 }
 }
+

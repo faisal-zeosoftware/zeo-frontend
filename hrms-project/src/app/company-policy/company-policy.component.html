@@ -76,7 +76,9 @@
                
                 <div class="col-md-6" >
                
-                    <label>Title</label>
+                    <label>Title
+                         <span class="required-star">*</span>
+                    </label>
                    <input type="text"  class="form-control" required  [(ngModel)]="title"  placeholder="Enter title"
                     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !title}">
                    
@@ -85,7 +87,9 @@
 
           <div class="col-md-6">
             <div class="custom-sel">
-                <label>Specific users</label>
+                <label>Specific users
+                     <span class="required-star">*</span>
+                </label>
                 <select class="form-control" id="approver" required [(ngModel)]="approver"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !approver}" >
                     <option value="" >Select</option>
                     <option *ngFor="let deparmentsec of Users" [value]="deparmentsec.id">{{ deparmentsec.username     }} </option>
@@ -93,26 +97,25 @@
                 <div *ngIf="registerButtonClicked && !approver" class="error-message">Please Select approver  </div>
             </div>
         </div>
-              
-    
-              <div class="col-md-12">
-                <label>Description</label>
-                <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
-              </div>
-    
-    
-    <div class="col-md-6">
-        <label>Branch</label>
+
+            <div class="col-md-6">
+        <label>Branch
+             <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
-          <select class="form-control" id="branch" name="branch" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}">
+          <select class="form-control" id="branch" name="branch" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
             <option *ngFor="let brch of Branches" [value]="brch.id">{{ brch.branch_name }}</option>
           </select>
         </div>
+        <div *ngIf="registerButtonClicked && !branch" class="error-message">branch is required.</div>
       </div>
        
       <div class="col-md-6">
-        <label for="policy_file">Policy File</label>
+        <label for="policy_file">Policy File
+          <span class="required-star">*</span>
+        </label>
         <input type="file" class="form-control" id="policy_file" name="policy_file" (change)="onFileSelected($event)">
+         <div *ngIf="registerButtonClicked && !policy_file" class="error-message">policyfile is required.</div>
       </div>
 
       <div class="col-md-6">
@@ -132,6 +135,15 @@
           </select>
         </div>
       </div>
+              
+    
+              <div class="col-md-12">
+                <label>Description</label>
+                <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
+              </div>
+    
+    
+
     
       
     

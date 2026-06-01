@@ -150,7 +150,7 @@
                     <div class="custom-sel">
                         <div class="form-control-wrapper">
                           <mat-form-field>
-                            <mat-select  placeholder="Select" [(ngModel)]="department" [ngModelOptions]="{standalone: true}" #select  multiple>
+                            <mat-select  placeholder="Select" [(ngModel)]="department" [ngModelOptions]="{standalone: true}" #deptSelect   multiple>
                               <div class="select-all">
                                 <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
                                   Select All
@@ -173,7 +173,7 @@
                     <div class="custom-sel">
                         <div class="form-control-wrapper">
                           <mat-form-field>
-                            <mat-select  placeholder="Select" [(ngModel)]="category" [ngModelOptions]="{standalone: true}" #select multiple>
+                            <mat-select  placeholder="Select" [(ngModel)]="category" [ngModelOptions]="{standalone: true}" #catSelect multiple>
                               <div class="select-all">
                                 <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
                                   Select All
@@ -220,7 +220,7 @@
     
                     <div class="col-md-8">
                         <label>Body</label>
-                        <div #summernote id="summernote"></div>
+                       <div #summernoteEditor id="summernote"></div>
                     </div>
                     
                     <div class="col-md-4">

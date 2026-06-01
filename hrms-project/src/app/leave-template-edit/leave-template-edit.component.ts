@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, AfterViewInit ,Inject } from '@angular/core';
+import { Component, ElementRef, AfterViewInit ,Inject, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { CatogaryService } from '../catogary-master/catogary.service';
 
 
 declare var $: any;
-import 'summernote'; // Ensure you have summernote imported
+import 'summernote';
+import {  MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core'; // Ensure you have summernote imported
 
 @Component({
   selector: 'app-leave-template-edit',
@@ -17,10 +20,32 @@ import 'summernote'; // Ensure you have summernote imported
 })
 export class LeaveTemplateEditComponent {
 
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
     body: any;
     templateData: any;
+      related_to: any = 'branch';
   
     RequestType:any []=[];
+
+  department: number[] = [];
+  category: number[] = [];
+  designation: number[] = [];
+  branch: number[] = [];
+  branches:any []=[];
+  Departments: any[] = [];
+  Categories: any[] = [];
+  Designations: any[] = [];
+
+    allSelectedBrach=false;
+    allSelecteddept = false;
+    allSelectedcat = false;
+    allSelecteddes = false;
+    allSelectedEmp = false;
+  
+    @ViewChild('branchSelect') branchSelect!: MatSelect;
+    @ViewChild('deptSelect') deptSelect!: MatSelect;
+    @ViewChild('catSelect') catSelect!: MatSelect;
+    @ViewChild('selectdes') selectdes!: MatSelect;
   
   
   
@@ -30,6 +55,7 @@ export class LeaveTemplateEditComponent {
       private authService: AuthenticationService,
       private employeeService: EmployeeService,
       private userService: UserMasterService,
+      private categoryService: CatogaryService,
       private DepartmentServiceService: DepartmentServiceService,
       @Inject(MAT_DIALOG_DATA) public data: any,
       private dialogRef: MatDialogRef<LeaveTemplateEditComponent>,
@@ -50,12 +76,137 @@ export class LeaveTemplateEditComponent {
   ngOnInit(): void {
    
     this.loadRequestType();
-    this.loadEmailPlaceholders(); // Call the method on component init
+    this.loadEmailPlaceholders(); 
+    this.loadDeparmentBranch();
+    this.loadDEpartments();
+    this.loadCAtegory();
+    this.loadDesignations();
+
+  // Detect related_to automatically
+  if (this.templateData.branch?.length) {
+    this.related_to = 'branch';
+  } else if (this.templateData.Department?.length) {
+    this.related_to = 'department';
+  } else if (this.templateData.Category?.length) {
+    this.related_to = 'category';
+  } else if (this.templateData.Designation?.length) {
+    this.related_to = 'designation';
+  }// Call the method on component init
   
   
   
    
   }
+
+
+  loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.branches.length === 1) {
+            this.branch = this.branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+
+  mapBranchesNameToId() {
+  if (!this.branches || !Array.isArray(this.templateData?.branch)) return;
+
+  this.templateData.branch = this.branches
+    .filter((b: any) => this.templateData.branch.includes(b.branch_name))
+    .map((b: any) => b.id);
+
+  console.log('Mapped branch IDs:', this.templateData.branch);
+}
+
+  
+
+    loadDEpartments(callback?: Function): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Departments = result;
+          console.log(' fetching Companies:');
+          if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  loadCAtegory(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.categoryService.getcatogarys(selectedSchema).subscribe(
+        (result: any) => {
+          this.Categories = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+
+  loadDesignations(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getDesignations(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Designations:', error);
+        }
+      );
+    }
+  }
+
   
   
     
@@ -156,6 +307,10 @@ export class LeaveTemplateEditComponent {
     const payload = {
       template_type: this.templateData.template_type,
       subject: this.templateData.subject,
+        branch: this.templateData.branch || [],
+  Department: this.templateData.Department || [],
+  Category: this.templateData.Category || [],
+  Designation: this.templateData.Designation || [],
       body: bodyContent
     };
   
@@ -215,6 +370,42 @@ export class LeaveTemplateEditComponent {
       }
       }
   
-  
+      toggleAllSelectionBrach(): void {
+                if (this.selectBrach) {
+                  if (this.allSelectedBrach) {
+                    this.selectBrach.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
+
+                toggleAllSelectiondept(): void {
+    if (this.deptSelect) {
+      this.deptSelect.options.forEach((item: MatOption) =>
+        this.allSelecteddept ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+    toggleAllSelectiondes(): void {
+
+     if (this.selectdes) {
+      this.selectdes.options.forEach((item: MatOption) =>
+        this.allSelecteddes ? item.select() : item.deselect()
+      );
+    }
+
+
+  }
+
+    toggleAllSelectioncat(): void {
+    if (this.catSelect) {
+      this.catSelect.options.forEach((item: MatOption) =>
+        this.allSelectedcat ? item.select() : item.deselect()
+      );
+    }
+  }
 
 }
