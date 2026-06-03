@@ -171,17 +171,18 @@ import { LateinEarlyoutEmailTemplateComponent } from './latein-earlyout-email-te
 import { EmployeeSalaryComponent } from './employee-salary/employee-salary.component';
 import { CompensatoryTransactionComponent } from './compensatory-transaction/compensatory-transaction.component';
 import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
+import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.component';
 
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
-   { path: 'login', component: LoginComponent ,  },
-  
+  { path: 'login', component: LoginComponent, },
 
-   { path: 'company-selection', component: CompanySelectionComponent },
-   { path: 'main-dashboard', component: MainDashboardComponent },
-   { path: 'schema-selection', component: SchemaSelectionComponent , canActivate: [AuthGuard],},
-   { path: 'employee-schema-selection', component: EmployeeSchemaSelectionComponent , canActivate: [AuthGuard],},
+
+  { path: 'company-selection', component: CompanySelectionComponent },
+  { path: 'main-dashboard', component: MainDashboardComponent },
+  { path: 'schema-selection', component: SchemaSelectionComponent, canActivate: [AuthGuard], },
+  { path: 'employee-schema-selection', component: EmployeeSchemaSelectionComponent, canActivate: [AuthGuard], },
 
 
 
@@ -194,59 +195,38 @@ const routes: Routes = [
       {
         path: 'sub-sidebar',
         component: SubSidebarComponent,
-        children:[
+        children: [
           {
-            path:'department-master',
-            component:DepartmentMasterComponent,
+            path: 'department-master',
+            component: DepartmentMasterComponent,
           },
           {
-            path:'designation-master',
-            component:DesignationMasterComponent
+            path: 'designation-master',
+            component: DesignationMasterComponent
           },
           {
-            path:'catogary-master',
-            component:CatogaryMasterComponent
+            path: 'catogary-master',
+            component: CatogaryMasterComponent
           },
           {
-            path:'employee-master',
-            component:EmployeeMasterComponent,
+            path: 'employee-master',
+            component: EmployeeMasterComponent,
           },
           {
-            path:'employee-details/:id/details',
-            component:EmployeeDetailsComponent
+            path: 'employee-details/:id/details',
+            component: EmployeeDetailsComponent
           },
 
-          {
-            path:'general-request',
-            component:GeneralRequestComponent,
-          },
-            {
-            path:'general-request-escalation',
-            component:GeneralRequestEscalationComponent,
-          },
-
-          {
-            path:'request-type',
-            component:RequestTypeComponent,
-          },
-          {
-            path:'approval-level',
-            component:ApprovalLevelComponent,
-          },
-          {
-            path:'approvals',
-            component:ApprovalsComponent,
-          },
-
-          {
-            path:'attendace-marking',
-            component:AttendaceMarkingComponent,
-          },
-        
         
           {
-            path:'document-expired',
-            component:DocumentExpiredComponent
+            path: 'attendace-marking',
+            component: AttendaceMarkingComponent,
+          },
+
+
+          {
+            path: 'document-expired',
+            component: DocumentExpiredComponent
           },
           // {
           //   path:'employee-overtime',
@@ -254,123 +234,125 @@ const routes: Routes = [
           // },
 
           {
-            path:'resignation-approval-level',
-            component:ResignationApprovalLevelComponent
+            path: 'resignation-approval-level',
+            component: ResignationApprovalLevelComponent
           },
 
           {
-            path:'resignation-request',
-            component:ResignationRequestComponent
+            path: 'resignation-request',
+            component: ResignationRequestComponent
           },
 
-            {
-            path:'resignation-approvals',
-            component:ResignationApprovalsComponent
+          {
+            path: 'resignation-approvals',
+            component: ResignationApprovalsComponent
           },
           {
-            path:'resignation-approved-list',
-            component:ResignationApprovedListComponent
+            path: 'resignation-approved-list',
+            component: ResignationApprovedListComponent
           },
           {
-            path:'end-of-service',
-            component:EndOfServiceComponent
+            path: 'end-of-service',
+            component: EndOfServiceComponent
           },
           {
-            path:'gratyuity',
-            component:GratuityComponent
+            path: 'gratyuity',
+            component: GratuityComponent
           },
 
 
-          
-          { path: 'report-generate',
-             component: ReportGenerateComponent },
-          
-        ], 
+
+          {
+            path: 'report-generate',
+            component: ReportGenerateComponent
+          },
+
+        ],
       },
       {
         path: 'settings',
         component: SettingsComponent,
-        children:[
+        children: [
           {
-            path:'company-master',
-            component:CompanyMasterComponent
+            path: 'company-master',
+            component: CompanyMasterComponent
           },
           {
-            path:'branch-master',
-            component:BranchMasterComponent
+            path: 'branch-master',
+            component: BranchMasterComponent
           },
           {
-            path:'user-master',
-            component:UserMasterComponent
+            path: 'user-master',
+            component: UserMasterComponent
           },
           {
-            path:'company-details/:id/details',
-            component:CompanyDetailsComponent
+            path: 'company-details/:id/details',
+            component: CompanyDetailsComponent
           },
           {
-            path:'user-grouping-master',
-            component:UserGroupingMasterComponent
+            path: 'user-grouping-master',
+            component: UserGroupingMasterComponent
           },
           {
-            path:'branch-permissions',
-            component:BranchPermissionsComponent
+            path: 'branch-permissions',
+            component: BranchPermissionsComponent
           },
           {
-            path:'state-master',
-            component:StateMasterComponent
+            path: 'state-master',
+            component: StateMasterComponent
           },
           {
-            path:'document-type-master',
-            component:DocumentTypeMasterComponent
-          },
-
-
-          {
-            path:'user-details/:id/details',
-            component:UserDetailsComponent
-          },
-          {
-            path:'permission-assigned',
-            component:PermissionAssignedComponent
+            path: 'document-type-master',
+            component: DocumentTypeMasterComponent
           },
 
+
           {
-            path:'location-master',
-            component:LocationMasterComponent
+            path: 'user-details/:id/details',
+            component: UserDetailsComponent
           },
           {
-            path:'document-numbering',
-            component:DocumentNumberingComponent
+            path: 'permission-assigned',
+            component: PermissionAssignedComponent
           },
 
           {
-            path:'announcement-master',
-            component:AnnouncementMasterComponent
+            path: 'location-master',
+            component: LocationMasterComponent
           },
           {
-            path:'weelcalendar',
-            component:WeelcalendarComponent
-          },
-          {
-            path:'assign-weekcalendar',
-            component:AssignWeekcalendarComponent
-          },
-          {
-            path:'assignweek-calendar-days',
-            component:AssignweekCalendarDaysComponent
-          },
-          {
-            path:'holiday-calendar',
-            component:HolidayCalendarComponent
-          },
-          {
-            path:'assign-holiday-calendar',
-            component:AssignHolidayCalendarComponent
+            path: 'document-numbering',
+            component: DocumentNumberingComponent
           },
 
           {
-            path:'shifts',
-            component:ShiftsComponent
+            path: 'announcement-master',
+            component: AnnouncementMasterComponent
+          },
+          {
+            path: 'weelcalendar',
+            component: WeelcalendarComponent
+          },
+          {
+            path: 'assign-weekcalendar',
+            component: AssignWeekcalendarComponent
+          },
+          {
+            path: 'assignweek-calendar-days',
+            component: AssignweekCalendarDaysComponent
+          },
+          {
+            path: 'holiday-calendar',
+            component: HolidayCalendarComponent
+          },
+          {
+            path: 'assign-holiday-calendar',
+            component: AssignHolidayCalendarComponent
+          },
+
+          {
+            path: 'shifts',
+            component: ShiftsComponent
           },
 
           // {
@@ -414,595 +396,629 @@ const routes: Routes = [
           //   component:AssetTransactionReportComponent
           // },
           {
-            path:'from-designer',
-            component:FromDesignerComponent
+            path: 'from-designer',
+            component: FromDesignerComponent
           },
           {
-            path:'asset-udf',
-            component:AssetUdfComponent
+            path: 'asset-udf',
+            component: AssetUdfComponent
           },
           {
-            path:'email-template',
-            component:EmailTemplateComponent
+            path: 'email-template',
+            component: EmailTemplateComponent
           },
           {
-            path:'email-configuration',
-            component:EmailConfigurationComponent
+            path: 'email-configuration',
+            component: EmailConfigurationComponent
           },
           {
-            path:'notification-settings',
-            component:NotificationSettingsComponent
+            path: 'notification-settings',
+            component: NotificationSettingsComponent
           },
 
           {
-            path:'document-request-level',
-            component:DocumentRequestLevelComponent
+            path: 'document-request-email-template',
+            component: DocumentRequestEmailTemplateComponent
+          },
+          {
+            path: 'advance-salary-emailtemplate',
+            component: AdvanceSalaryEmailtemplateComponent
+          },
+          {
+            path: 'loan-email-template',
+            component: LoanEmailTemplateComponent
           },
 
           {
-             
-            path:'document-request-type',
-            component:DocumentRequestTypeComponent
-
+            path: 'asset-email-template',
+            component: AssetEmailTemplateComponent
           },
 
           {
-            path:'document-request',
-            component:DocumentRequestComponent
+            path: 'airticket-email-template',
+            component: AirticketEmailTemplateComponent
           },
 
           {
-            path:'document-request-approval',
-            component:DocumentRequestApprovalsComponent
-          },
-          {
-            path:'document-request-email-template',
-            component:DocumentRequestEmailTemplateComponent
-          },
-          {
-            path:'advance-salary-emailtemplate',
-            component:AdvanceSalaryEmailtemplateComponent
-          },
-          {
-            path:'loan-email-template',
-            component:LoanEmailTemplateComponent
+            path: 'resignation-email-template',
+            component: ResignationEmailTemplateComponent
           },
 
           {
-            path:'asset-email-template',
-            component:AssetEmailTemplateComponent
+            path: 'latein-earlyout-email-template',
+            component: LateinEarlyoutEmailTemplateComponent
           },
 
           {
-            path:'airticket-email-template',
-            component:AirticketEmailTemplateComponent
+            path: 'leave-template',
+            component: LeaveTemplateComponent,
           },
-
           {
-            path:'resignation-email-template',
-            component:ResignationEmailTemplateComponent
+            path: 'doc-exp-emailtemplate',
+            component: DocExpEmailtemplateComponent
           },
-
           {
-            path:'latein-earlyout-email-template',
-            component:LateinEarlyoutEmailTemplateComponent
-          },
-
-
-
-            {
-      path:'leave-template',
-      component:LeaveTemplateComponent,
-    },
-    {
-      path:'doc-exp-emailtemplate',
-      component:DocExpEmailtemplateComponent
-    },
-             {
-            path:'company-policy',
-            component:CompanyPolicyComponent
+            path: 'company-policy',
+            component: CompanyPolicyComponent
           },
 
         ],
       },
-{
-  path: 'leave-options',
-  component: LeaveOptionsComponent,
-  children:[
-    {
-      path:'leave-type',
-      component:LeaveTypeComponent,
-    },
+      {
+        path: 'leave-options',
+        component: LeaveOptionsComponent,
+        children: [
+          {
+            path: 'leave-type',
+            component: LeaveTypeComponent,
+          },
 
-    {
-      path:'leave-master',
-      component:LeaveMasterComponent,
-    },
-    {
-      path:'leave-request',
-      component:LeaveRequestComponent,
-    },
-    {
-      path:'leave-approval-level',
-      component:LeaveApprovalLevelComponent,
-    },
-    {
-      path:'leave-balance',
-      component:LeaveBalanceComponent,
-    },
- 
-
-    {
-      path:'leave-approvals',
-      component:LeaveApprovalsComponent,
-    },
-    {
-      path:'compensatory-leave',
-      component:CompensatoryLeaveComponent,
-    },
-
-    {
-      path:'compensatory-transaction',
-      component:CompensatoryTransactionComponent,
-    },
-
-    {
-      path:'immediate-rejection',
-      component:ImmediateRejectionComponent,
-    },
-    {
-      path:'leave-accruval',
-      component:LeaveAccruvalComponent
-    },
-    {
-      path:'employee-leave-rejoin',
-      component:EmployeeLeaveRejoinComponent
-    },
-    {
-      path:'leave-escalation',
-      component:LeaveEscalationComponent
-    },
-  ]
-
-},
-
-{
-  path: 'salary-options',
-  component: SalaryOptionsComponent,
-  children:[
-    {
-      path:'salary',
-      component:SalaryComponent,
-    },
-
-    {
-      path:'employee-salary',
-      component:EmployeeSalaryComponent,
-    },
-
-    {
-      path:'pay-roll',
-      component:PayRollComponent,
-    },
-    
-    {
-      path:'pay-structure',
-      component:PayStructureComponent,
-    },
-    {
-      path: 'payroll-details/:id',
-      component: PayrollDetailsComponent
-    },
-
-    {
-      path:'payroll-appoval-level',
-      component:PayrollAppovalLevelComponent,
-    },
-
-    {
-      path:'payslip-approval',
-      component:PayslipApprovalComponent,
-    },
-    {
-      path:'wps',
-      component:WpsComponent,
-    },
-
-    {
-      path:'advance-salary-approval-level',
-      component:AdvanceSalaryApprovalLevelComponent,
-    },
-    {
-      path:'advance-salary-request',
-      component:AdvanceSalaryRequestComponent,
-    },
-    {
-      path:'advance-salary-request',
-      component:AdvanceSalaryRequestComponent,
-    },
-    {
-      path:'advance-salary-approvals',
-      component:AdvanceSalaryApprovalsComponent,
-    },
-     {
-      path:'advance-salary-escalation',
-      component:AdvanceSalaryEscalationComponent,
-    },
-
-  ]
-
-},
+          {
+            path: 'leave-master',
+            component: LeaveMasterComponent,
+          },
+          {
+            path: 'leave-request',
+            component: LeaveRequestComponent,
+          },
+          {
+            path: 'leave-approval-level',
+            component: LeaveApprovalLevelComponent,
+          },
+          {
+            path: 'leave-balance',
+            component: LeaveBalanceComponent,
+          },
 
 
-{
-  path: 'loan-sidebar',
-  component: LoanSidebarComponent,
-  children:[
-    {
-      path:'loan-type',
-      component:LoanTypeComponent,
-    },
-    {
-      path:'loan-application',
-      component:LoanApplicationComponent,
-    },
-    {
-      path:'loan-repayment',
-      component:LoanRepaymentComponent,
-    },
-    {
-      path:'loan-approvel-level',
-      component:LoanApprovelLevelComponent,
-    },
-   
-    {
-      path:'loan-approval',
-      component:LoanApprovalComponent,
-    },
+          {
+            path: 'leave-approvals',
+            component: LeaveApprovalsComponent,
+          },
+          {
+            path: 'compensatory-leave',
+            component: CompensatoryLeaveComponent,
+          },
 
-    {
-      path:'loan-escalation',
-      component:LoanEscalationComponent,
-    },
-   
+          {
+            path: 'compensatory-transaction',
+            component: CompensatoryTransactionComponent,
+          },
 
-  ]
+          {
+            path: 'immediate-rejection',
+            component: ImmediateRejectionComponent,
+          },
+          {
+            path: 'leave-accruval',
+            component: LeaveAccruvalComponent
+          },
+          {
+            path: 'employee-leave-rejoin',
+            component: EmployeeLeaveRejoinComponent
+          },
+          {
+            path: 'leave-escalation',
+            component: LeaveEscalationComponent
+          },
+        ]
 
-},
-
-
-{
-  path: 'asset-options',
-  component: AssetOptionsComponent,
-  children:[
-   
-    {
-      path:'asset-type',
-      component:AssetTypesComponent,
-    },
-
-    {
-      path:'asset-master',
-      component:AssetMasterComponent,
-    },
-
-    {
-      path:'asset-allocation',
-      component:AssetAllocationComponent,
-    },
-    {
-      path:'asset-request',
-      component:AssetRequestComponent,
-    },
-    {
-      path:'asset-approvel-level',
-      component:AssetApprovelLevelComponent,
-    },
-    {
-      path:'asset-approval',
-      component:AssetApprovalComponent,
-    },
-    {
-      path:'asset-escalation',
-      component:AssetEscalationComponent,
-    },
-
-
-  ]
-
-},
-
-{
-  path: 'attendance-sidebar',
-  component: AttendanceSidebarComponent,
-  children:[
-   
-    {
-      path: 'attendace-marking',
-      component: AttendaceMarkingComponent,
-    },
+      },
 
       {
-      path: 'employee-early-going',
-      component: EmployeeEarlyGoingComponent,
-    },
-    {
-      path: 'employee-recheck',
-      component: EmployeeRecheckComponent,
-    },
-   
-    {
-      path: 'employee-punching-list',
-      component: EmployeePunchingListComponent,
-    },
+        path: 'salary-options',
+        component: SalaryOptionsComponent,
+        children: [
+          {
+            path: 'salary',
+            component: SalaryComponent,
+          },
 
-     {
-      path: 'geofence',
-      component: GeofenceComponent,
-    },
+          {
+            path: 'employee-salary',
+            component: EmployeeSalaryComponent,
+          },
 
-     {
-      path: 'attendance-punching',
-      component: AttendancePunchingComponent,
-    },
+          {
+            path: 'pay-roll',
+            component: PayRollComponent,
+          },
+
+          {
+            path: 'pay-structure',
+            component: PayStructureComponent,
+          },
+          {
+            path: 'payroll-details/:id',
+            component: PayrollDetailsComponent
+          },
+
+          {
+            path: 'payroll-appoval-level',
+            component: PayrollAppovalLevelComponent,
+          },
+
+          {
+            path: 'payslip-approval',
+            component: PayslipApprovalComponent,
+          },
+          {
+            path: 'wps',
+            component: WpsComponent,
+          },
+
+          {
+            path: 'advance-salary-approval-level',
+            component: AdvanceSalaryApprovalLevelComponent,
+          },
+          {
+            path: 'advance-salary-request',
+            component: AdvanceSalaryRequestComponent,
+          },
+          {
+            path: 'advance-salary-request',
+            component: AdvanceSalaryRequestComponent,
+          },
+          {
+            path: 'advance-salary-approvals',
+            component: AdvanceSalaryApprovalsComponent,
+          },
+          {
+            path: 'advance-salary-escalation',
+            component: AdvanceSalaryEscalationComponent,
+          },
+
+        ]
+
+      },
+
+
       {
-      path: 'employee-face-register',
-      component: EmployeeFaceRegisterComponent,
-    },
-    
-   {
-      path: 'manual-entry',
-      component: ManualEntryComponent,
-    },
-
-    {
-      path: 'employee-punching-details',
-      component: EmployeePunchingDetailsComponent,
-    },
-
-    {
-      path: 'attendance-policy',
-      component: AttendancePolicyComponent,
-    },
-
-    {
-      path: 'attendance-attendance-request',
-      component: AttendanceRequestComponent,
-    },
-
-    {
-      path: 'latein-earlyout-approval-level',
-      component: LateinEarlyoutApprovalLevelComponent,
-    },
-
-    {
-      path: 'latein-earlyout-approvals',
-      component: LateinEarlyoutApprovalsComponent,
-    },
-
-    {
-      path: 'employee-full-attendance',
-      component: EmployeeFullAttendanceComponent
-    },
-
-
-
-  ]
-
-},
-
-{
-  path: 'air-ticket-options',
-  component: AirTicketOptionsComponent,
-  children:[
-   
-    {
-      path:'air-ticket-policy',
-      component:AirTicketPolicyComponent,
-    },
-
-   
-    {
-      path:'airticket-allocation',
-      component:AirticketAllocationComponent,
-    },
-
-       
-    {
-      path:'airticket-request',
-      component:AirticketRequestComponent,
-    },
-    {
-      path:'airticket-rule',
-      component:AirticketRuleComponent,
-    },
-
-    {
-      path:'airticket-approval-level',
-      component:AirticketApprovalLevelComponent,
-    },
-
-     {
-      path:'airticket-approvals',
-      component:AirticketApprovalsComponent,
-    },
-
-    {
-      path:'airticket-escalation',
-      component:AirticketEscalationComponent,
-    },
-
-
-  ]
-
-},
-
-
-
-{
-  path: 'project-options',
-  component: ProjectOptionsComponent,
-  children:[
-   
-    {
-      path:'project-master',
-      component:ProjectMasterComponent,
-    },
-    {
-      path:'project-stages',
-      component:ProjectStagesComponent,
-    },
-
-   
-    {
-      path:'project-tasks',
-      component:ProjectTasksComponent,
-    },
-
-    {
-      path:'project-timesheet',
-      component:ProjectTimesheetComponent,
-    },
-
-
-  ]
-
-},
-
-{
-  path: 'shift-options',
-  component: ShiftOptionsComponent,
-  children:[
-   
-    {
-      path:'shifts',
-      component:ShiftsComponent,
-    },
-
-    {
-      path:'shift-pattern',
-      component:ShiftPatternComponent,
-    },
-
-    {
-      path:'shift-employee',
-      component:ShiftEmployeeComponent,
-    },
-
-    {
-      path:'shift-override',
-      component:ShiftOverrideComponent,
-    },
-
-    {
-      path:'employee-overtime',
-      component:EmployeeOvertimeComponent,
-    },
-
-    {
-      path:'overtime-policy',
-      component: OvertimePolicyComponent,
-    },
-
-    {
-      path:'overtime-rule',
-      component: OvertimeRuleComponent,
-    },
-    
-
-
-  ]
-
-},
-
-{
-  path: 'report-options',
-  component: ReportOptionsComponent,
-  children:[
-   
+        path: 'loan-sidebar',
+        component: LoanSidebarComponent,
+        children: [
           {
-            path:'report-generate',
-            component:ReportGenerateComponent,
+            path: 'loan-type',
+            component: LoanTypeComponent,
           },
           {
-            path:'document-report',
-            component:DocumentReportComponent,
+            path: 'loan-application',
+            component: LoanApplicationComponent,
           },
           {
-            path:'general-request-report',
-            component:GeneralRequestReportComponent,
+            path: 'loan-repayment',
+            component: LoanRepaymentComponent,
           },
           {
-            path:'department-report',
-            component:DepartmentReportComponent,
+            path: 'loan-approvel-level',
+            component: LoanApprovelLevelComponent,
+          },
+
+          {
+            path: 'loan-approval',
+            component: LoanApprovalComponent,
+          },
+
+          {
+            path: 'loan-escalation',
+            component: LoanEscalationComponent,
+          },
+
+
+        ]
+
+      },
+
+
+      {
+        path: 'asset-options',
+        component: AssetOptionsComponent,
+        children: [
+
+          {
+            path: 'asset-type',
+            component: AssetTypesComponent,
+          },
+
+          {
+            path: 'asset-master',
+            component: AssetMasterComponent,
+          },
+
+          {
+            path: 'asset-allocation',
+            component: AssetAllocationComponent,
           },
           {
-            path:'designation-report',
-            component:DesignationReportComponent,
+            path: 'asset-request',
+            component: AssetRequestComponent,
           },
           {
-            path:'leave-report',
-            component:LeaveReportComponent
+            path: 'asset-approvel-level',
+            component: AssetApprovelLevelComponent,
           },
           {
-            path:'leave-approvals-report',
-            component:LeaveApprovalsReportComponent,
+            path: 'asset-approval',
+            component: AssetApprovalComponent,
           },
           {
-            path:'leave-balance-report',
-            component:LeaveBalanceReportComponent,
+            path: 'asset-escalation',
+            component: AssetEscalationComponent,
+          },
+
+
+        ]
+
+      },
+
+      {
+        path: 'attendance-sidebar',
+        component: AttendanceSidebarComponent,
+        children: [
+
+          {
+            path: 'attendace-marking',
+            component: AttendaceMarkingComponent,
+          },
+
+          {
+            path: 'employee-early-going',
+            component: EmployeeEarlyGoingComponent,
           },
           {
-            path:'employee-attendance',
-            component:EmployeeAttendanceComponent,
+            path: 'employee-recheck',
+            component: EmployeeRecheckComponent,
+          },
+
+          {
+            path: 'employee-punching-list',
+            component: EmployeePunchingListComponent,
+          },
+
+          {
+            path: 'geofence',
+            component: GeofenceComponent,
+          },
+
+          {
+            path: 'attendance-punching',
+            component: AttendancePunchingComponent,
           },
           {
-            path:'asset-report',
-            component:AssetReportComponent,
+            path: 'employee-face-register',
+            component: EmployeeFaceRegisterComponent,
+          },
+
+          {
+            path: 'manual-entry',
+            component: ManualEntryComponent,
+          },
+
+          {
+            path: 'employee-punching-details',
+            component: EmployeePunchingDetailsComponent,
+          },
+
+          {
+            path: 'attendance-policy',
+            component: AttendancePolicyComponent,
+          },
+
+          {
+            path: 'attendance-attendance-request',
+            component: AttendanceRequestComponent,
+          },
+
+          {
+            path: 'latein-earlyout-approval-level',
+            component: LateinEarlyoutApprovalLevelComponent,
+          },
+
+          {
+            path: 'latein-earlyout-approvals',
+            component: LateinEarlyoutApprovalsComponent,
+          },
+
+          {
+            path: 'employee-full-attendance',
+            component: EmployeeFullAttendanceComponent
+          },
+
+
+
+        ]
+
+      },
+
+      {
+        path: 'general-sidebar',
+        component: GeneralSidebarComponent,
+        children: [
+
+          {
+            path: 'document-request-level',
+            component: DocumentRequestLevelComponent
+          },
+
+          {
+
+            path: 'document-request-type',
+            component: DocumentRequestTypeComponent
+
+          },
+
+          {
+            path: 'document-request',
+            component: DocumentRequestComponent
+          },
+
+          {
+            path: 'document-request-approval',
+            component: DocumentRequestApprovalsComponent
+          },
+
+          {
+            path: 'general-request',
+            component: GeneralRequestComponent,
           },
           {
-            path:'asset-transaction-report',
-            component:AssetTransactionReportComponent,
+            path: 'general-request-escalation',
+            component: GeneralRequestEscalationComponent,
           },
-    
+
+          {
+            path: 'request-type',
+            component: RequestTypeComponent,
+          },
+          {
+            path: 'approval-level',
+            component: ApprovalLevelComponent,
+          },
+          {
+            path: 'approvals',
+            component: ApprovalsComponent,
+          },
 
 
-  ]
-
-},
-
-{
-  path: 'document-folders',
-  component: DocumentFoldersComponent,
-  children:[
-   
-    {
-      path:'document-folder-files/:id',
-      component:DocumentFolderFilesComponent,
-    },
-
-   
-
-  ]
-
-},
 
 
-{
-  path: 'dashboard-contents',
-  component: DashboardContentsComponent,
-},
-{
-  path: 'attendace-marking',
-  component: AttendaceMarkingComponent,
-},
+
+        ]
+
+      },
+
+      {
+        path: 'air-ticket-options',
+        component: AirTicketOptionsComponent,
+        children: [
+
+          {
+            path: 'air-ticket-policy',
+            component: AirTicketPolicyComponent,
+          },
+
+
+          {
+            path: 'airticket-allocation',
+            component: AirticketAllocationComponent,
+          },
+
+
+          {
+            path: 'airticket-request',
+            component: AirticketRequestComponent,
+          },
+          {
+            path: 'airticket-rule',
+            component: AirticketRuleComponent,
+          },
+
+          {
+            path: 'airticket-approval-level',
+            component: AirticketApprovalLevelComponent,
+          },
+
+          {
+            path: 'airticket-approvals',
+            component: AirticketApprovalsComponent,
+          },
+
+          {
+            path: 'airticket-escalation',
+            component: AirticketEscalationComponent,
+          },
+
+
+        ]
+
+      },
+
+
+
+      {
+        path: 'project-options',
+        component: ProjectOptionsComponent,
+        children: [
+
+          {
+            path: 'project-master',
+            component: ProjectMasterComponent,
+          },
+          {
+            path: 'project-stages',
+            component: ProjectStagesComponent,
+          },
+
+
+          {
+            path: 'project-tasks',
+            component: ProjectTasksComponent,
+          },
+
+          {
+            path: 'project-timesheet',
+            component: ProjectTimesheetComponent,
+          },
+
+
+        ]
+
+      },
+
+      {
+        path: 'shift-options',
+        component: ShiftOptionsComponent,
+        children: [
+
+          {
+            path: 'shifts',
+            component: ShiftsComponent,
+          },
+
+          {
+            path: 'shift-pattern',
+            component: ShiftPatternComponent,
+          },
+
+          {
+            path: 'shift-employee',
+            component: ShiftEmployeeComponent,
+          },
+
+          {
+            path: 'shift-override',
+            component: ShiftOverrideComponent,
+          },
+
+          {
+            path: 'employee-overtime',
+            component: EmployeeOvertimeComponent,
+          },
+
+          {
+            path: 'overtime-policy',
+            component: OvertimePolicyComponent,
+          },
+
+          {
+            path: 'overtime-rule',
+            component: OvertimeRuleComponent,
+          },
+
+
+
+        ]
+
+      },
+
+      {
+        path: 'report-options',
+        component: ReportOptionsComponent,
+        children: [
+
+          {
+            path: 'report-generate',
+            component: ReportGenerateComponent,
+          },
+          {
+            path: 'document-report',
+            component: DocumentReportComponent,
+          },
+          {
+            path: 'general-request-report',
+            component: GeneralRequestReportComponent,
+          },
+          {
+            path: 'department-report',
+            component: DepartmentReportComponent,
+          },
+          {
+            path: 'designation-report',
+            component: DesignationReportComponent,
+          },
+          {
+            path: 'leave-report',
+            component: LeaveReportComponent
+          },
+          {
+            path: 'leave-approvals-report',
+            component: LeaveApprovalsReportComponent,
+          },
+          {
+            path: 'leave-balance-report',
+            component: LeaveBalanceReportComponent,
+          },
+          {
+            path: 'employee-attendance',
+            component: EmployeeAttendanceComponent,
+          },
+          {
+            path: 'asset-report',
+            component: AssetReportComponent,
+          },
+          {
+            path: 'asset-transaction-report',
+            component: AssetTransactionReportComponent,
+          },
+
+
+
+        ]
+
+      },
+
+      {
+        path: 'document-folders',
+        component: DocumentFoldersComponent,
+        children: [
+
+          {
+            path: 'document-folder-files/:id',
+            component: DocumentFolderFilesComponent,
+          },
+
+
+
+        ]
+
+      },
+
+
+      {
+        path: 'dashboard-contents',
+        component: DashboardContentsComponent,
+      },
+      {
+        path: 'attendace-marking',
+        component: AttendaceMarkingComponent,
+      },
 
 
       {
         path: 'fiscal-year',
         component: FiscalYearComponent,
       }
-     
+
     ]
   },
   {
@@ -1013,34 +1029,34 @@ const routes: Routes = [
   {
     path: 'employee-dashboard',
     component: EmployeeDashboardComponent,
-    children:[
+    children: [
       {
-        path:'employee-sction',
-        component:EmployeeSctionComponent,
+        path: 'employee-sction',
+        component: EmployeeSctionComponent,
       },
       {
-        path:'employee-approvals',
-        component:EmployeeApprovalsComponent,
+        path: 'employee-approvals',
+        component: EmployeeApprovalsComponent,
       },
       {
-        path:'employee-leave',
-        component:EmployeeLeaveComponent,
+        path: 'employee-leave',
+        component: EmployeeLeaveComponent,
       },
       {
-        path:'emp-attendance',
-        component:EmpAttendanceComponent,
-      },
-       {
-        path:'emp-asset-request',
-        component:EmpAssetRequestComponent,
+        path: 'emp-attendance',
+        component: EmpAttendanceComponent,
       },
       {
-        path:'emp-loan',
-        component:EmpLoanComponent,
+        path: 'emp-asset-request',
+        component: EmpAssetRequestComponent,
+      },
+      {
+        path: 'emp-loan',
+        component: EmpLoanComponent,
       },
     ]
   },
-  
+
   {
     path: 'branch-creation',
     component: BranchCreationComponent
@@ -1055,18 +1071,18 @@ const routes: Routes = [
   // { path: 'dashboard', component: DashboardComponent },
 
 
-//   { path: '', redirectTo: '/login', pathMatch: 'full' },
-//   { path: 'login', component: LoginComponent },
+  //   { path: '', redirectTo: '/login', pathMatch: 'full' },
+  //   { path: 'login', component: LoginComponent },
 
-//  {
-//    path: 'main-sidebar', 
-//    component: MainSidebarComponent,
-//    children: [
-//      { path: 'sub-sidebar', component: SubSidebarComponent },
-    
-//    ],
-//  },
-//  { path: 'sub-sidebar/:subNavId', component: SubNavigationComponent },
+  //  {
+  //    path: 'main-sidebar', 
+  //    component: MainSidebarComponent,
+  //    children: [
+  //      { path: 'sub-sidebar', component: SubSidebarComponent },
+
+  //    ],
+  //  },
+  //  { path: 'sub-sidebar/:subNavId', component: SubNavigationComponent },
 
 ];
 

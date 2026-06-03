@@ -51,7 +51,80 @@ margin-right: 10px;
 }
 
 
+.serarch_Sec {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  background: #fff;
+}
 
+.serarch_Sec:focus-within {
+  border-color: #5d1e82;
+  box-shadow: 0 0 0 2px rgba(93, 30, 130, 0.1);
+}
+
+.serarch_Sec input.form-control,
+.serarch_Sec select.form-control {
+  border: none;
+  box-shadow: none;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.serarch_Sec input:focus,
+.serarch_Sec select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* Search icon container */
+.search_op {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  cursor: pointer;
+  background-color: #5c1e81;  /* ✅ now it will show */
+  transition: background 0.2s ease, transform 0.15s ease;
+  border-left: 1px solid #eee;
+}
+
+/* Icon styling */
+.search_op .mat-icon {
+  color: #ffffff;
+  font-size: 22px;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+/* Hover effects */
+.search_op:hover {
+  background: #f5f5f5;
+}
+
+.search_op:hover .mat-icon {
+  color: #5d1e82;
+  transform: scale(1.15);
+}
+
+
+/* Dropdown section */
+.ser_sub {
+  margin-top: 6px;
+}
+
+.ser_sub select {
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ser_sub select:focus {
+  border-color: #5d1e82;
+  box-shadow: 0 0 0 2px rgba(93, 30, 130, 0.1);
+}
 
 .search-box {
     width: 100%;

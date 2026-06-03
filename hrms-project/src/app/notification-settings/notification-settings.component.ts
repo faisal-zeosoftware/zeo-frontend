@@ -59,6 +59,8 @@ export class NotificationSettingsComponent {
 
   Branches: any[] = []; // Array to store schema names
 
+    send_email:  boolean = false;
+
 
 
   constructor(
@@ -442,6 +444,7 @@ mapUsersNameToId() {
         const companyData = {
           days_before_expiry: this.days_before_expiry,
           days_after_expiry: this.days_after_expiry,
+          send_email: this.send_email,
           branch: this.branch,
           notify_users: this.notify_users,
           created_by: this.created_by,

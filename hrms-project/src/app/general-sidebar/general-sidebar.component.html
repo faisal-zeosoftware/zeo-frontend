@@ -1,0 +1,100 @@
+<div class="sub-sidebar clickOutside">
+    <mat-sidenav-container>
+      <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
+        <div class="wrapper">
+  
+          <div class="sidebar-top"> 
+             <!-- Toggle Button (placed OUTSIDE sidebar) -->
+      <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
+        <span *ngIf="!isMenuOpen">☰</span>
+        <span *ngIf="isMenuOpen">×</span>
+      </button>
+                
+    
+          </div>
+          <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+            <ul>
+             
+                   <li (click)="toggleGeneralRequest()" style="cursor: pointer;">
+                    <a>
+                      <mat-icon>peoples</mat-icon> General Request 
+                      <mat-icon style="float: right;">{{ showGeneralRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </a>
+                  </li>
+
+                 <ul *ngIf="showGeneralRequest" style="padding-left: 20px;">
+                  <li routerLink="/main-sidebar/general-sidebar/general-request" *ngIf="hasViewPermissionGenreq"><a ><mat-icon>peoples</mat-icon> General Request</a></li>
+                 
+                  <li routerLink="/main-sidebar/general-sidebar/request-type" *ngIf="hasViewPermissionReqType"><a ><mat-icon>peoples</mat-icon> Request Type</a></li>
+                  
+                  <li routerLink="/main-sidebar/general-sidebar/approvals" *ngIf="hasViewPermissionAprv"><a ><mat-icon>peoples</mat-icon> Approvals</a></li>
+                  
+                  <li routerLink="/main-sidebar/general-sidebar/approval-level" *ngIf="hasViewPermissionAprvlvl"><a ><mat-icon>peoples</mat-icon> Approval Level</a></li>
+
+                  <li routerLink="/main-sidebar/general-sidebar/general-request-escalation" *ngIf="hasViewPermissionGenReqEsc"><a ><mat-icon>peoples</mat-icon>General Request Escalation</a></li>
+                 </ul>
+
+                  <li (click)="toggleDocumentRequest()" style="cursor: pointer;">
+                    <a>
+                      <mat-icon>peoples</mat-icon>Document Request 
+                      <mat-icon style="float: right;">{{ showDocumentRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </a>
+                  </li>
+                  <ul *ngIf="showDocumentRequest" style="padding-left: 20px;">
+                  <li routerLink="/main-sidebar/general-sidebar/document-request" *ngIf="hasViewPermissionDocReq"><a><mat-icon>peoples</mat-icon>Document Request</a></li>
+                  <li routerLink="/main-sidebar/general-sidebar/document-request-type" *ngIf="hasViewPermissionDocReqType"><a><mat-icon>peoples</mat-icon>Document Type</a></li>
+                  <li routerLink="/main-sidebar/general-sidebar/document-request-approval" *ngIf="hasViewPermissionDocReqApr"><a><mat-icon>peoples</mat-icon>Document Approval List</a></li>
+                  <li routerLink="/main-sidebar/general-sidebar/document-request-level" *ngIf="hasViewPermissionDocAprlvl"><a><mat-icon>peoples</mat-icon>Document Approval Level</a></li>
+                  </ul>
+
+
+
+                
+
+                    <mat-nav-list>
+       
+    
+     
+  
+                      
+                      <div>
+              
+              
+                   
+                      </div>
+                      <style>
+                        .mat-expansion-panel-body {
+                          padding: 0 0px 16px !important;
+                        }
+                        .mat-expansion-panel{
+                  background: transparent;
+                 
+                }
+                      </style>
+              
+                    </mat-nav-list>
+                     
+                </ul> 
+    
+                     
+     
+            </div>
+      
+        </div>
+     
+    
+    
+    
+    
+    
+    
+        </mat-sidenav>
+    
+    
+        <router-outlet></router-outlet>
+    
+        <!-- <router-outlet></router-outlet> -->
+    
+      </mat-sidenav-container>
+    
+    </div>

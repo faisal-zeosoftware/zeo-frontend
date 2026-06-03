@@ -8,17 +8,43 @@
                 <div class="col-md-3">
                     <h1> Users </h1>
                 </div>
-                <div class="col-md-4">
-                    
-         
-                  <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search by Username or email "    [(ngModel)]="searchQuery" (input)="filterEmployees()">
-                        <button class="search-btn" >
-                          <i class="fa fa-search"></i>
-                        </button>
-                      </div>
 
-                </div>
+                    
+<div class="col-md-4">
+  <div class="input-group serarch_Sec mt-1">
+    <input
+      type="text"
+      class="form-control"
+      [placeholder]="searchPlaceholder"
+      [(ngModel)]="searchQuery"
+      (input)="filterEmployees()"
+    />
+
+    <div
+      class="search_op"
+      title="Search Filter"
+      (click)="serSubSec = !serSubSec"
+    >
+      <mat-icon>filter_alt</mat-icon>
+    </div>
+  </div>
+
+  <div class="ser_sub" *ngIf="serSubSec">
+    <div class="input-group serarch_Sec mt-2">
+      <select
+        class="form-control"
+        [(ngModel)]="searchType"
+        (change)="onSearchTypeChange()"
+      >
+        <option value="username">Search by Username</option>
+        <option value="email">Search by Email</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
+
                 <div class="col-md-5">
                     <div class="button-group pull-right">
                         <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"> <span class="header-btn-icon"><mat-icon>add_circle

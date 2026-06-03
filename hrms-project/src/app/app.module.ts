@@ -254,6 +254,7 @@ import { EmployeeSalaryComponent } from './employee-salary/employee-salary.compo
 import { CompensatoryTransactionComponent } from './compensatory-transaction/compensatory-transaction.component';
 import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
+import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.component';
 
 @NgModule({
   declarations: [
@@ -464,6 +465,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
      EmployeeSalaryComponent,
      CompensatoryTransactionComponent,
      EmployeeFullAttendanceComponent,
+     GeneralSidebarComponent,
      
      
 

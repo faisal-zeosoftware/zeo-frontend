@@ -118,6 +118,12 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
     return this.http.get(url);
   }
 
+  getAllEmployeesForExport(selectedSchema: string): Observable<any> {
+  return this.http.get(
+    `${this.apiUrl}/employee/api/Employee/?schema=${selectedSchema}`
+  );
+}
+
 
   getAttendanceCalendar(
     employeeId: number,

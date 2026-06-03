@@ -171,7 +171,7 @@
    <input type="date"  class="form-control" required id="emp_date_of_birth" name="emp_date_of_birth"  [(ngModel)]="emp_date_of_birth"  placeholder="Enter {{dobFieldName}}"
     [ngModelOptions]="{standalone: true}" >
    
-   <div *ngIf="registerButtonClicked && !emp_date_of_birth" class="error-message">Description is required.</div>
+   <div *ngIf="registerButtonClicked && !emp_date_of_birth" class="error-message">{{dobFieldName}} is required.</div>
 </div>
 
 
@@ -388,10 +388,9 @@
             
             
     <div class="custom-sel">
-      <label> 
-        <span class="required-star" >*</span>
-
-        {{repoFieldName}}</label>
+      <label> {{repoFieldName}}
+          <span class="required-star" >*</span>
+        </label>
 
    
  
@@ -460,9 +459,9 @@
            
     <label>{{joinFieldName}}</label>
    <input type="date"  class="form-control" required id="emp_date_of_confirmation" name="emp_date_of_confirmation"  [(ngModel)]="emp_date_of_confirmation"  placeholder="Enter {{joinFieldName}}"
-    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_date_of_confirmation}">
+    [ngModelOptions]="{standalone: true}">
    
-   <div *ngIf="registerButtonClicked && !emp_date_of_confirmation" class="error-message">Active date .</div>
+   <!-- <div *ngIf="registerButtonClicked && !emp_date_of_confirmation" class="error-message">Active date .</div> -->
 </div>
 
 
@@ -1200,7 +1199,7 @@
        <input type="date"  class="form-control" required id="emp_date_of_birth" name="emp_date_of_birth"  [(ngModel)]="emp_date_of_birth"  placeholder="Enter Date Birth"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_date_of_birth}">
        
-       <div *ngIf="registerButtonClicked && !emp_date_of_birth" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_date_of_birth" class="error-message">Date of birth is required.</div>
     </div>
     
     <div class="col-md-6" >
@@ -1209,7 +1208,7 @@
        <input type="text"  class="form-control" required  id="emp_personal_email" name="emp_personal_email" [(ngModel)]="emp_personal_email"  placeholder="Enter Email ID"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_personal_email}">
        
-       <div *ngIf="registerButtonClicked && !emp_personal_email" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_personal_email" class="error-message">Email is required.</div>
     </div>
     
     
@@ -1221,7 +1220,7 @@
        <input type="text"  class="form-control" required id="emp_mobile_number_1" name="emp_mobile_number_1" [(ngModel)]="emp_mobile_number_1"  placeholder="Enter Contact Number"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_mobile_number_1}">
        
-       <div *ngIf="registerButtonClicked && !emp_mobile_number_1" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_mobile_number_1" class="error-message">Contact is required.</div>
     </div>
     
     
@@ -1232,7 +1231,7 @@
        <input type="text"  class="form-control" required id="emp_mobile_number_2" name="emp_mobile_number_2" [(ngModel)]="emp_mobile_number_2"  placeholder="Enter Contact Number"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_mobile_number_2}">
        
-       <div *ngIf="registerButtonClicked && !emp_mobile_number_2" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_mobile_number_2" class="error-message">Contact 2 is required.</div>
     </div>
     
     
@@ -1246,7 +1245,7 @@
     
     
        
-       <div *ngIf="registerButtonClicked && !emp_permenent_address" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_permenent_address" class="error-message">Permenent Address is required.</div>
     </div>
     
     
@@ -1258,7 +1257,7 @@
     
        
        
-       <div *ngIf="registerButtonClicked && !emp_present_address" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_present_address" class="error-message">Present Address is required.</div>
     </div>
     
     <div class="col-md-6" >
@@ -1267,7 +1266,7 @@
        <input type="text"  class="form-control" required id="emp_city" name="emp_city"  [(ngModel)]="emp_city"  placeholder="Enter City Name"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_city}">
        
-       <div *ngIf="registerButtonClicked && !emp_city" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_city" class="error-message">City is required.</div>
     </div>
     
  
@@ -1278,7 +1277,7 @@
        <input type="text"  class="form-control" id="emp_blood_group" name="emp_blood_group"  [(ngModel)]="emp_blood_group"  placeholder="Enter Blood Group"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_blood_group}">
        
-       <div class="error-message">Description is required.</div>
+       <div class="error-message">Blood Group is required.</div>
     </div>
     
     <div class="col-md-6" >
@@ -1287,7 +1286,7 @@
        <input type="text"  class="form-control" required  id="emp_nationality" name="emp_nationality" [(ngModel)]="emp_nationality"  placeholder="Enter Nationality"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_nationality}">
        
-       <div *ngIf="registerButtonClicked && !emp_nationality" class="error-message">Description is required.</div>
+       <div *ngIf="registerButtonClicked && !emp_nationality" class="error-message">Nationality is required.</div>
     </div>
     
     

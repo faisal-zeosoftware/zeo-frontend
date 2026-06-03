@@ -5,6 +5,7 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { CatogaryService } from '../catogary-master/catogary.service';
 import { MatSelect } from '@angular/material/select';
 import { LeaveService } from '../leave-master/leave.service';
 import { MatOption } from '@angular/material/core';
@@ -34,6 +35,11 @@ export class AnnouncementMasterComponent {
   allSelectedEmp=false;
 
   Branches: any[] = []; // Array to store schema names
+
+    @ViewChild('selectCat') selectCat: MatSelect | undefined;
+    @ViewChild('selectDes') selectDes: MatSelect | undefined;
+    @ViewChild('selectDept') selectDept: MatSelect | undefined;
+    @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
   
 
   hasAddPermission: boolean = false;
@@ -48,6 +54,9 @@ export class AnnouncementMasterComponent {
   expires_at: any = '';
   specific_employees: any = '';
   branches: any = '';
+  categories:any='';
+  designations:any='';
+  departments:any='';
 
   created_by: any = '';
  
@@ -56,6 +65,7 @@ export class AnnouncementMasterComponent {
   is_sticky:  boolean = false;
   allow_comments:  boolean = false;
   send_email:  boolean = false;
+
 
   attachment: File | null = null;
 
@@ -74,7 +84,15 @@ export class AnnouncementMasterComponent {
   userDetailss: any[] = [];
   username: any;
 
-  schemas: string[] = []; // Array to store schema names
+  schemas: string[] = [];// Array to store schema names
+
+  Departments:any []=[];
+  Categories:any []=[];
+  Designations: any[] = [];
+  
+  allSelecteddept=false;
+  allSelectedcat=false;
+  allSelecteddes=false;
 
 
 
@@ -92,6 +110,7 @@ export class AnnouncementMasterComponent {
     private DesignationService: DesignationService,
     private leaveService: LeaveService,
     private DepartmentServiceService: DepartmentServiceService ,
+    private categoryService: CatogaryService,
 
     
 
@@ -119,6 +138,13 @@ ngOnInit(): void {
   this.LoadEmployees();
 
 });
+
+    this.loadCAtegory();
+
+   
+    this.loadDesignations();
+
+    this.loadDEpartments();
 
 
  
@@ -359,6 +385,96 @@ if (selectedSchema) {
       }
     }
 
+                 toggleAllSelectiondept(): void {
+                if (this.selectDept) {
+                  if (this.allSelecteddept) {
+                    this.selectDept.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectDept.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
+               loadDEpartments(callback?: Function): void {
+              
+                    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+                    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+                    console.log('schemastore',selectedSchema )
+                    // Check if selectedSchema is available
+                    if (selectedSchema) {
+                      this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema,savedIds).subscribe(
+                        (result: any) => {
+                          this.Departments = result;
+                          console.log(' fetching Companies:');
+                          if (callback) callback();
+                        },
+                        (error) => {
+                          console.error('Error fetching Companies:', error);
+                        }
+                      );
+                    }
+                    }
+
+               toggleAllSelectionDes(): void {
+                if (this.selectDes) {
+                  if (this.allSelecteddes) {
+                    this.selectDes.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectDes.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
+        
+                    loadDesignations(): void {
+              
+                      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+                    
+                      console.log('schemastore',selectedSchema )
+                      // Check if selectedSchema is available
+                      if (selectedSchema) {
+                        this.employeeService.getDesignations(selectedSchema).subscribe(
+                          (result: any) => {
+                            this.Designations = result;
+                            console.log(' fetching Companies:');
+                    
+                          },
+                          (error) => {
+                            console.error('Error fetching Companies:', error);
+                          }
+                        );
+                      }
+                      }
+            
+             toggleAllSelectioncat(): void {
+                if (this.selectCat) {
+                  if (this.allSelectedcat) {
+                    this.selectCat.options.forEach((item: MatOption) => item.select());
+                  } else {
+                    this.selectCat.options.forEach((item: MatOption) => item.deselect());
+                  }
+                }
+              }
+        
+                    loadCAtegory(): void {
+              
+                      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+                    
+                      console.log('schemastore',selectedSchema )
+                      // Check if selectedSchema is available
+                      if (selectedSchema) {
+                        this.categoryService.getcatogarys(selectedSchema).subscribe(
+                          (result: any) => {
+                            this.Categories = result;
+                            console.log(' fetching Companies:');
+                    
+                          },
+                          (error) => {
+                            console.error('Error fetching Companies:', error);
+                          }
+                        );
+                      }
+                      }
+
 
     
 isLoading: boolean = false;
@@ -367,18 +483,23 @@ registerAnnouncement(): void {
   this.registerButtonClicked = true;
   this.isLoading = true; // start loader ✅
 
-  const companyData = {
-    title: this.title,
-    message: this.message,
-    send_email: this.send_email,
-    is_sticky: this.is_sticky,
-    schedule_at: this.schedule_at,
-    expires_at: this.expires_at,
-    allow_comments: this.allow_comments,
-    specific_employees: this.specific_employees,
-    branches: this.branches,
-    created_by: this.created_by,
-  };
+const companyData = {
+  title: this.title,
+  message: this.message,
+  send_email: this.send_email,
+  is_sticky: this.is_sticky,
+  schedule_at: this.schedule_at,
+  expires_at: this.expires_at,
+  allow_comments: this.allow_comments,
+  specific_employees: this.specific_employees,
+  branches: this.branches,
+
+  emp_dept_id: this.departments || [],
+  emp_desgntn_id: this.designations || [],
+  emp_ctgry_id: this.categories || [],
+
+  created_by: this.created_by
+};
 
   this.employeeService.registerAnnouncement(companyData).subscribe(
     (response) => {
@@ -519,7 +640,17 @@ registerAnnouncement(): void {
       editAsset: any = {}; // holds the asset being edited
       
       openEditModal(asset: any): void {
-      this.editAsset = { ...asset }; // copy asset data
+      this.editAsset = { ...asset,
+
+  emp_dept_id: asset.emp_dept_id || [],
+  emp_desgntn_id: asset.emp_desgntn_id || [],
+  emp_ctgry_id: asset.emp_ctgry_id || [],
+
+  branches: asset.branches || [],
+  specific_employees: asset.specific_employees || []
+
+
+      }; // copy asset data
       this.isEditModalOpen = true;
       }
       
@@ -615,6 +746,52 @@ filterEmployees() {
     emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
   );
 
+}
+
+
+getEmployeeNames(employeeIds: number[]): string {
+  if (!employeeIds?.length) return '-';
+
+  return this.Employees
+    .filter(emp => employeeIds.includes(emp.id))
+    .map(emp => emp.emp_code)
+    .join(', ');
+}
+
+getBranchNames(branchIds: number[]): string {
+  if (!branchIds?.length) return '-';
+
+  return this.Branches
+    .filter(branch => branchIds.includes(branch.id))
+    .map(branch => branch.branch_name)
+    .join(', ');
+}
+
+getDepartmentNames(deptIds: number[]): string {
+  if (!deptIds?.length) return '-';
+
+  return this.Departments
+    .filter(dept => deptIds.includes(dept.id))
+    .map(dept => dept.dept_name)
+    .join(', ');
+}
+
+getDesignationNames(desIds: number[]): string {
+  if (!desIds?.length) return '-';
+
+  return this.Designations
+    .filter(des => desIds.includes(des.id))
+    .map(des => des.desgntn_job_title)
+    .join(', ');
+}
+
+getCategoryNames(catIds: number[]): string {
+  if (!catIds?.length) return '-';
+
+  return this.Categories
+    .filter(cat => catIds.includes(cat.id))
+    .map(cat => cat.ctgry_title)
+    .join(', ');
 }
   
    

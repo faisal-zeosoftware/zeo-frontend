@@ -16,6 +16,8 @@ import { SessionService } from '../login/session.service';
 import { IdleService } from '../idle.service';
 import { environment } from '../../environments/environment';
 import {combineLatest, Subscription } from 'rxjs';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-employee-master',
@@ -430,12 +432,15 @@ ngOnDestroy(): void {
         this.filteredEmployees = [...this.employees];
         this.isLoading = false;
       },
+      
       error: (err) => {
         console.error('Fetch error:', err);
         this.isLoading = false;
       }
     });
   }
+
+
 
 
 isTableView = false; // default grid view
@@ -565,6 +570,94 @@ toggleView() {
         }
       );
     }
+
+
+exportEmployeesToExcel() {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    alert('No schema selected');
+    return;
+  }
+
+  this.EmployeeService
+    .getAllEmployeesForExport(selectedSchema)
+    .subscribe({
+      next: (employees: any[]) => {
+
+        const exportData = employees.map(emp => ({
+          'Employee Code': emp.emp_code,
+          'First Name': emp.emp_first_name,
+          'Last Name': emp.emp_last_name,
+          'Gender': emp.emp_gender,
+          'DOB': emp.emp_date_of_birth,
+          'Personal Email': emp.emp_personal_email,
+          'Company Email': emp.emp_company_email,
+          'Mobile 1': emp.emp_mobile_number_1,
+          'Mobile 2': emp.emp_mobile_number_2,
+          'City': emp.emp_city,
+          'Permanent Address': emp.emp_permenent_address,
+          'Present Address': emp.emp_present_address,
+          'Religion': emp.emp_relegion,
+          'Blood Group': emp.emp_blood_group,
+          'Nationality': emp.emp_nationality,
+          'Marital Status': emp.emp_marital_status,
+          'Father Name': emp.emp_father_name,
+          'Mother Name': emp.emp_mother_name,
+          'Posting Location': emp.emp_posting_location,
+          'Country': emp.emp_country_id,
+          'State': emp.emp_state_id,
+          'Company': emp.emp_company_id,
+          'Branch': emp.emp_branch_id,
+          'Department': emp.emp_dept_id,
+          'Designation': emp.emp_desgntn_id,
+          'Category': emp.emp_ctgry_id,
+          'Languages': emp.emp_languages,
+          'Date Of Confirmation': emp.emp_date_of_confirmation,
+          'Joined Date': emp.emp_joined_date,
+          'ESS User': emp.is_ess ? 'Yes' : 'No',
+          'Status': emp.emp_status ? 'Active' : 'Inactive'
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+        const workbook = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(
+          workbook,
+          worksheet,
+          'Employees'
+        );
+
+        XLSX.writeFile(
+          workbook,
+          'Employee_Report.xlsx'
+        );
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
+}
+
+saveAsExcelFile(buffer: any, fileName: string): void {
+
+  const data: Blob = new Blob(
+    [buffer],
+    {
+      type:
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    }
+  );
+
+  FileSaver.saveAs(
+    data,
+    `${fileName}_${new Date().getTime()}.xlsx`
+  );
+}
+
+
 
 
     

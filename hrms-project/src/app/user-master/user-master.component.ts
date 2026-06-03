@@ -42,6 +42,13 @@ export class UserMasterComponent {
   filteredEmployees: any[] = [];
   searchQuery: string = '';
 
+searchType: string = 'username';
+searchPlaceholder: string = 'Search by username or empcode';
+
+
+serSubSec = false;
+showSearchOptions = true;
+
 
   constructor(private UserMasterService:UserMasterService,
     private companyRegistrationService: CompanyRegistrationService, 
@@ -234,20 +241,30 @@ if (this.userId !== null) {
         );
       }
     }
+
+
+toggleSearchOptions() {
+  this.serSubSec = !this.serSubSec;
+}
    
   
-    filterEmployees(): void {
-      if (!Array.isArray(this.Users)) {
-        console.error('Users is not an array:', this.Users);
-        return;
-      }
-    
-      const query = this.searchQuery.toLowerCase();
-      this.filteredEmployees = this.Users.filter(user =>
-        user.username.toLowerCase().includes(query) ||
-        user.email.toLowerCase().includes(query)
-      );
+filterEmployees() {
+  const query = this.searchQuery.toLowerCase().trim();
+
+  this.filteredEmployees = this.Users.filter(user => {
+    switch (this.searchType) {
+
+      case 'username':
+        return user.username?.toLowerCase().includes(query);
+
+      case 'email':
+        return user.email?.toLowerCase().includes(query);
+
+      default:
+        return true;
     }
+  });
+}
 
 
     openPopus(){
@@ -314,6 +331,33 @@ if (this.userId !== null) {
       });
     }
   }
+
+onSearchTypeChange(): void {
+
+  switch (this.searchType) {
+
+    case 'username':
+      this.searchPlaceholder = 'Search by Username';
+      break;
+
+    case 'email':
+      this.searchPlaceholder = 'Search by Email';
+      break;
+
+    case 'role':
+      this.searchPlaceholder = 'Search by Role';
+      break;
+
+    case 'contact':
+      this.searchPlaceholder = 'Search by Contact Number';
+      break;
+
+    default:
+      this.searchPlaceholder = 'Search Users';
+  }
+
+  this.filterEmployees();
+}
 
 
   openEditEmpPopuss(employeeId: number, ):void{

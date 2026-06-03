@@ -26,7 +26,7 @@
                   
                   <li routerLink="/main-sidebar/sub-sidebar/catogary-master" *ngIf="hasViewPermissionCat"><a ><mat-icon>peoples</mat-icon> Category Master</a></li>
 
-                  <li (click)="toggleGeneralRequest()" style="cursor: pointer;">
+                  <!-- <li (click)="toggleGeneralRequest()" style="cursor: pointer;">
                     <a>
                       <mat-icon>peoples</mat-icon> General Request 
                       <mat-icon style="float: right;">{{ showGeneralRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
@@ -42,7 +42,7 @@
                   <li routerLink="/main-sidebar/sub-sidebar/approval-level" *ngIf="hasViewPermissionAprvlvl"><a ><mat-icon>peoples</mat-icon> Approval Level</a></li>
 
                   <li routerLink="/main-sidebar/sub-sidebar/general-request-escalation" *ngIf="hasViewPermissionGenReqEsc"><a ><mat-icon>peoples</mat-icon>General Request Escalation</a></li>
-                 </ul>
+                 </ul> -->
                  
                   <!-- <li routerLink="/main-sidebar/sub-sidebar/attendace-marking" *ngIf="hasViewPermissionAttd"><a ><mat-icon>peoples</mat-icon> Attendance Marking</a></li> -->
 
@@ -59,7 +59,7 @@
 
                   <ul *ngIf="showAdvanceSalary" style="padding-left: 20px;">
                     <li routerLink="/main-sidebar/sub-sidebar/resignation-approvals"  *ngIf="hasViewApprovalList">
-                      <a> Approval List</a>
+                      <a>Approval List</a>
                     </li>
                     <li routerLink="/main-sidebar/sub-sidebar/resignation-approved-list"  *ngIf="hasViewResignationApprovedList">
                       <a>Resignation Approved List</a>

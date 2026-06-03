@@ -398,6 +398,19 @@ background-color:#8e44ad;
     background-color:#2980b9;
 }
 
+.action-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-toolbar button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+} 
+
 
 
 
