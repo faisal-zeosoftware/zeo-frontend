@@ -13,6 +13,7 @@ import { SessionService } from '../login/session.service';
 
 import {combineLatest, Subscription } from 'rxjs';
 
+
 @Component({
   selector: 'app-assign-weekcalendar',
   templateUrl: './assign-weekcalendar.component.html',
@@ -22,6 +23,7 @@ import {combineLatest, Subscription } from 'rxjs';
 export class AssignWeekcalendarComponent {
 
   private dataSubscription?: Subscription;
+  
 
   related_to: any = 'branch';
   // branch: any = '';
@@ -456,7 +458,12 @@ loadBranches(callback?: Function): void {
       this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
         (result: any) => {
           this.Employee = result;
-          this.FilteredEmployees = result;          
+          this.FilteredEmployees = result;
+          
+          this.currentPage = 1;
+
+          this.updatePagination();    
+
           if (callback) callback();
         },
         (error) => {
@@ -507,26 +514,6 @@ loadBranches(callback?: Function): void {
 
   }
 
-  // loadWeekendCalendar(): void {
-
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore', selectedSchema)
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.categoryService.getWeekendcalendar(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.WeekCalendar = result;
-  //         console.log(' fetching Companies:');
-
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Companies:', error);
-  //       }
-  //     );
-  //   }
-  // }
-
 
   loadWeekendCalendar(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();
@@ -551,27 +538,7 @@ loadBranches(callback?: Function): void {
 
 
 
-  // loadAssignedWeekendCalendar(): void {
 
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore', selectedSchema)
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.employeeService.getAssignWeekendcalendar(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.AssignWeekCalendar = result;
-  //         this.filteredDocuments = result;  // Initialize filtered data
-
-  //         console.log(' fetching Companies:');
-
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Companies:', error);
-  //       }
-  //     );
-  //   }
-  // }
 
 
   isLoading: boolean = false;
@@ -594,52 +561,6 @@ loadBranches(callback?: Function): void {
   }
 
 
-
-
-  // registerAssignCalendar(): void {
-  //   this.registerButtonClicked = true;
-  //   const companyData = {
-  //     related_to: this.related_to,
-
-  //     branch: this.branch,
-  //     department: this.department,
-
-  //     category: this.category,
-  //     designation: this.designation,
-
-  //     employee: this.employee,
-  //     weekend_model: this.weekend_model,
-
-
-
-
-
-
-  //     // Add other form field values to the companyData object
-  //   };
-
-
-  //   this.employeeService.registerAssignweekCalendar(companyData).subscribe(
-  //     (response) => {
-  //       console.log('Registration successful', response);
-
-  //       alert('Weekend Calendar has been Assigned ');
-  //       window.location.reload();
-
-
-
-  //     },
-  //     (error) => {
-  //       console.error('Add failed', error);
-  //       console.log('Full error response:', error);
-
-  //       // Check if the error message matches the specific error
-  //       const errorMessage = error.error?.error || 'An error occurred while Assign the Week Calendar. Please try again.';
-  //       alert(errorMessage);
-  //     }
-  //   );
-  // }
-
   registerAssignCalendar(): void {
 
     const selectedEmployees =
@@ -647,13 +568,21 @@ loadBranches(callback?: Function): void {
         .filter(x => x.selected)
         .map(x => x.id);
   
-    const companyData = {
-  
-      weekend_model: this.weekend_model,
-  
-      employee: selectedEmployees
-  
-    };
+        const companyData = {
+
+          weekend_model: this.weekend_model,
+        
+          branch: this.selectedBranches,
+        
+          department: this.selectedDepartments,
+        
+          category: this.selectedCategories,
+        
+          designation: this.selectedDesignations,
+        
+          employee: selectedEmployees
+        
+        };
   
     this.employeeService
         .registerAssignweekCalendar(companyData)
@@ -663,7 +592,7 @@ loadBranches(callback?: Function): void {
   
             alert('Weekend Calendar Assigned');
   
-            window.location.reload();
+            // window.location.reload();
   
           },
   
@@ -890,10 +819,10 @@ selectedEmployeeIds.forEach(categoryId => {
 
 
 
-selectedBranch: any = '';
-selectedDepartment: any = '';
-selectedCategory: any = '';
-selectedDesignation: any = '';
+selectedBranches: number[] = [];
+selectedDepartments: number[] = [];
+selectedCategories: number[] = [];
+selectedDesignations: number[] = [];
 
 allEmployeesSelected = false;
 
@@ -903,20 +832,28 @@ applyEmployeeFilter(): void {
   this.FilteredEmployees = this.Employee.filter(emp => {
 
     const branchMatch =
-      !this.selectedBranch ||
-      emp.emp_branch_id === this.getBranchName(this.selectedBranch);
+      this.selectedBranches.length === 0 ||
+      this.selectedBranches.some(id =>
+        emp.emp_branch_id === this.getBranchName(id)
+      );
 
     const deptMatch =
-      !this.selectedDepartment ||
-      emp.emp_dept_id === this.getDepartmentName(this.selectedDepartment);
+      this.selectedDepartments.length === 0 ||
+      this.selectedDepartments.some(id =>
+        emp.emp_dept_id === this.getDepartmentName(id)
+      );
 
     const categoryMatch =
-      !this.selectedCategory ||
-      emp.emp_ctgry_id === this.getCategoryName(this.selectedCategory);
+      this.selectedCategories.length === 0 ||
+      this.selectedCategories.some(id =>
+        emp.emp_ctgry_id === this.getCategoryName(id)
+      );
 
     const designationMatch =
-      !this.selectedDesignation ||
-      emp.emp_desgntn_id === this.getDesignationName(this.selectedDesignation);
+      this.selectedDesignations.length === 0 ||
+      this.selectedDesignations.some(id =>
+        emp.emp_desgntn_id === this.getDesignationName(id)
+      );
 
     return (
       branchMatch &&
@@ -926,6 +863,10 @@ applyEmployeeFilter(): void {
     );
 
   });
+  this.currentPage = 1;
+
+  this.updatePagination();
+
 
 }
 
@@ -960,5 +901,264 @@ getDesignationName(id: number): string {
   return item ? item.desgntn_job_title : '';
 
 }
+
+
+
+
+// select all option in branch
+
+toggleAllBranches(): void {
+
+  if (
+    this.selectedBranches.length ===
+    this.branches.length
+  ) {
+
+    this.selectedBranches = [];
+
+  } else {
+
+    this.selectedBranches =
+      this.branches.map(x => x.id);
+
+  }
+
+  this.applyEmployeeFilter();
+}
+
+
+
+isAllBranchesSelected(): boolean {
+
+  return (
+    this.branches.length > 0 &&
+    this.selectedBranches.length ===
+    this.branches.length
+  );
+
+}
+
+isSomeBranchesSelected(): boolean {
+
+  return (
+    this.selectedBranches.length > 0 &&
+    this.selectedBranches.length <
+    this.branches.length
+  );
+
+}
+
+
+toggleAllDepartments(): void {
+
+  if (
+    this.selectedDepartments.length ===
+    this.Departments.length
+  ) {
+
+    this.selectedDepartments = [];
+
+  } else {
+
+    this.selectedDepartments =
+      this.Departments.map(x => x.id);
+
+  }
+
+  this.applyEmployeeFilter();
+
+}
+
+isAllDepartmentsSelected(): boolean {
+
+  return (
+    this.Departments.length > 0 &&
+    this.selectedDepartments.length ===
+    this.Departments.length
+  );
+
+}
+
+isSomeDepartmentsSelected(): boolean {
+
+  return (
+    this.selectedDepartments.length > 0 &&
+    this.selectedDepartments.length <
+    this.Departments.length
+  );
+
+
+  
+}
+
+
+
+// select all function
+
+toggleAllCategories(): void {
+
+  if (
+    this.selectedCategories.length ===
+    this.Categories.length
+  ) {
+
+    this.selectedCategories = [];
+
+  } else {
+
+    this.selectedCategories =
+      this.Categories.map(x => x.id);
+
+  }
+
+  this.applyEmployeeFilter();
+
+}
+
+isAllCategoriesSelected(): boolean {
+
+  return (
+    this.Categories.length > 0 &&
+    this.selectedCategories.length ===
+    this.Categories.length
+  );
+
+}
+
+isSomeCategoriesSelected(): boolean {
+
+  return (
+    this.selectedCategories.length > 0 &&
+    this.selectedCategories.length <
+    this.Categories.length
+  );
+
+}
+
+toggleAllDesignations(): void {
+
+  if (
+    this.selectedDesignations.length ===
+    this.Designations.length
+  ) {
+
+    this.selectedDesignations = [];
+
+  } else {
+
+    this.selectedDesignations =
+      this.Designations.map(x => x.id);
+
+  }
+
+  this.applyEmployeeFilter();
+
+}
+
+isAllDesignationsSelected(): boolean {
+
+  return (
+    this.Designations.length > 0 &&
+    this.selectedDesignations.length ===
+    this.Designations.length
+  );
+
+}
+
+isSomeDesignationsSelected(): boolean {
+
+  return (
+    this.selectedDesignations.length > 0 &&
+    this.selectedDesignations.length <
+    this.Designations.length
+  );
+
+}
+
+
+
+currentPage: number = 1;
+itemsPerPage: number = 3;
+pagedEmployees: any[] = [];
+
+
+updatePagination(): void {
+
+  const startIndex =
+    (this.currentPage - 1) * this.itemsPerPage;
+
+  const endIndex =
+    startIndex + this.itemsPerPage;
+
+  this.pagedEmployees =
+    this.FilteredEmployees.slice(
+      startIndex,
+      endIndex
+    );
+
+}
+
+
+get totalPages(): number {
+
+  return Math.ceil(
+    this.FilteredEmployees.length /
+    this.itemsPerPage
+  );
+
+}
+
+
+
+nextPage(): void {
+
+  if (this.currentPage < this.totalPages) {
+
+    this.currentPage++;
+
+    this.updatePagination();
+
+  }
+
+}
+
+
+
+previousPage(): void {
+
+  if (this.currentPage > 1) {
+
+    this.currentPage--;
+
+    this.updatePagination();
+
+  }
+
+}
+
+
+
+goToPage(page: number): void {
+
+  this.currentPage = page;
+
+  this.updatePagination();
+
+}
+
+
+
+get pageNumbers(): number[] {
+
+  return Array(
+    this.totalPages
+  ).fill(0).map((x, i) => i + 1);
+
+}
+
+
+
+
+
 
 }

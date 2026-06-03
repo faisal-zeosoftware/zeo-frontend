@@ -89,185 +89,357 @@
           </div>
              
             </div>
-  
-            <div class="row">
+  <!-- FILTER SECTION -->
+<div class="filter-card mb-4">
 
-              <!-- Branch -->
-            
-              <div class="col-md-3">
-            
-                <label>Branch</label>
-            
-                <select
-                class="form-control"
-                [(ngModel)]="selectedBranch"
-                [ngModelOptions]="{standalone:true}"
-                (change)="applyEmployeeFilter()">
-              
-                <option value="">All Branches</option>
-              
-                <option
-                  *ngFor="let item of branches"
-                  [value]="item.id">
-              
-                  {{ item.branch_name }}
-              
-                </option>
-              
-              </select>
-            
-              </div>
-            
-              <!-- Department -->
-            
-              <div class="col-md-3">
-            
-                <label>Department</label>
-            
-                <select
-                  class="form-control"
-                  [(ngModel)]="selectedDepartment"
-                  [ngModelOptions]="{standalone:true}"
-                  (change)="applyEmployeeFilter()">
-            
-                  <option value="">All Departments</option>
-            
-                  <option
-                    *ngFor="let item of Departments"
-                    [value]="item.id">
-            
-                    {{ item.dept_name }}
-            
-                  </option>
-            
-                </select>
-            
-              </div>
-            
-              <!-- Category -->
-            
-              <div class="col-md-3">
-            
-                <label>Category</label>
-            
-                <select
-                  class="form-control"
-                  [(ngModel)]="selectedCategory"
-                  [ngModelOptions]="{standalone:true}"
-                  (change)="applyEmployeeFilter()">
-            
-                  <option value="">All Categories</option>
-            
-                  <option
-                    *ngFor="let item of Categories"
-                    [value]="item.id">
-            
-                    {{ item.ctgry_title }}
-            
-                  </option>
-            
-                </select>
-            
-              </div>
-            
-              <!-- Designation -->
-            
-              <div class="col-md-3">
-            
-                <label>Designation</label>
-            
-                <select
-                  class="form-control"
-                  [(ngModel)]="selectedDesignation"
-                  [ngModelOptions]="{standalone:true}"
-                  (change)="applyEmployeeFilter()">
-            
-                  <option value="">All Designations</option>
-            
-                  <option
-                    *ngFor="let item of Designations"
-                    [value]="item.id">
-            
-                    {{ item.desgntn_job_title }}
-            
-                  </option>
-            
-                </select>
-            
-              </div>
-            
-            </div>
+    <!-- <div class="filter-header">
+      <mat-icon>filter_alt</mat-icon>
+      <span>Employee Filters</span>
+    </div> -->
 
-            <div class="table-responsive mt-4">
+  <div class="row g-3">
 
-              <table class="table table-hover table-bordered">
-            
-                <thead>
-            
-                  <tr>
-            
-                    <th width="60">
-            
-                      <mat-checkbox
-                        [(ngModel)]="allEmployeesSelected"
-                        [ngModelOptions]="{standalone:true}"
-                        (change)="toggleSelectAllEmployees()">
-                      </mat-checkbox>
-            
-                    </th>
-            
-                    <th>Code</th>
-            
-                    <th>Employee Name</th>
-            
-                    <th>Branch</th>
-            
-                    <th>Department</th>
-            
-                    <th>Category</th>
-            
-                    <th>Designation</th>
-            
-                  </tr>
-            
-                </thead>
-            
-                <tbody>
-            
-                  <tr *ngFor="let emp of FilteredEmployees">
-            
-                    <td>
-            
-                      <mat-checkbox
-                        [(ngModel)]="emp.selected"
-                        [ngModelOptions]="{standalone:true}">
-                      </mat-checkbox>
-            
-                    </td>
-            
-                    <td>{{ emp.emp_code }}</td>
-            
-                    <td>
-                      {{ emp.emp_first_name }}
-                      {{ emp.emp_last_name }}
-                    </td>
-            
-                    <td>{{ emp.emp_branch_id }}</td>
-            
-                    <td>{{ emp.emp_dept_id }}</td>
-            
-                    <td>{{ emp.emp_ctgry_id }}</td>
-            
-                    <td>{{ emp.emp_desgntn_id }}</td>
-            
-                  </tr>
-            
-                </tbody>
-            
-              </table>
-            
-            </div>
+    <!-- Branch -->
+     <div class="col-md-3">
+
+    
+      <div class="filter-select-card">
+
+        <label class="filter-title">
+          <mat-icon>apartment</mat-icon>
+          Branch
+        </label>
+      
+        <mat-form-field
+          appearance="outline"
+          class="modern-multi-select">
+      
+          <mat-select
+          multiple
+          [(ngModel)]="selectedBranches"
+          [ngModelOptions]="{standalone:true}"
+          (selectionChange)="applyEmployeeFilter()">
         
+          <mat-checkbox
+            class="select-all-checkbox"
+            [checked]="isAllBranchesSelected()"
+            [indeterminate]="isSomeBranchesSelected()"
+            (click)="$event.stopPropagation()"
+            (change)="toggleAllBranches()">
+        
+            Select All
+        
+          </mat-checkbox>
+        
+          <mat-option
+            *ngFor="let item of branches"
+            [value]="item.id">
+        
+            {{ item.branch_name }}
+        
+          </mat-option>
+        
+        </mat-select>
+        </mat-form-field>
+      
+      </div>
+   </div>
+
+<div class="col-md-3">
+  <div class="filter-select-card">
+
+    <label class="filter-title">
+      <mat-icon>corporate_fare</mat-icon>
+      Department
+    </label>
+  
+    <mat-form-field
+      appearance="outline"
+      class="modern-multi-select">
+  
+      <mat-select
+      multiple
+      [(ngModel)]="selectedDepartments"
+      [ngModelOptions]="{standalone:true}"
+      (selectionChange)="applyEmployeeFilter()">
+    
+      <mat-checkbox
+        class="select-all-checkbox"
+        [checked]="isAllDepartmentsSelected()"
+        [indeterminate]="isSomeDepartmentsSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllDepartments()">
+    
+        Select All
+    
+      </mat-checkbox>
+    
+      <mat-option
+        *ngFor="let item of Departments"
+        [value]="item.id">
+    
+        {{ item.dept_name }}
+    
+      </mat-option>
+    
+    </mat-select>
+  
+    </mat-form-field>
+  
+  </div>
+
+  </div>
+
+
+
+<div class="col-md-3">
+  <div class="filter-select-card">
+
+    <label class="filter-title">
+      <mat-icon>category</mat-icon>
+      Category
+    </label>
+  
+    <mat-form-field
+      appearance="outline"
+      class="modern-multi-select">
+  
+      <mat-select
+  multiple
+  [(ngModel)]="selectedCategories"
+  [ngModelOptions]="{standalone:true}"
+  (selectionChange)="applyEmployeeFilter()">
+
+  <mat-checkbox
+    class="select-all-checkbox"
+    [checked]="isAllCategoriesSelected()"
+    [indeterminate]="isSomeCategoriesSelected()"
+    (click)="$event.stopPropagation()"
+    (change)="toggleAllCategories()">
+
+    Select All
+
+  </mat-checkbox>
+
+  <mat-option
+    *ngFor="let item of Categories"
+    [value]="item.id">
+
+    {{ item.ctgry_title }}
+
+  </mat-option>
+
+</mat-select>
+  
+    </mat-form-field>
+  
+  </div>
+  
+  </div>
+
+  
+<div class="col-md-3">
+  <div class="filter-select-card">
+
+  <label class="filter-title">
+    <mat-icon>badge</mat-icon>
+    Designation
+  </label>
+
+  <mat-form-field
+    appearance="outline"
+    class="modern-multi-select">
+
+    <mat-select
+    multiple
+    [(ngModel)]="selectedDesignations"
+    [ngModelOptions]="{standalone:true}"
+    (selectionChange)="applyEmployeeFilter()">
+  
+    <mat-checkbox
+      class="select-all-checkbox"
+      [checked]="isAllDesignationsSelected()"
+      [indeterminate]="isSomeDesignationsSelected()"
+      (click)="$event.stopPropagation()"
+      (change)="toggleAllDesignations()">
+  
+      Select All
+  
+    </mat-checkbox>
+  
+    <mat-option
+      *ngFor="let item of Designations"
+      [value]="item.id">
+  
+      {{ item.desgntn_job_title }}
+  
+    </mat-option>
+  
+  </mat-select>
+
+  </mat-form-field>
+
+</div>
+  
+</div>
+
+
+
+  </div>
+
+</div>
+
+<div class="employee-card">
+
+
+  <div class="table-responsive">
+
+    <table class="employee-table">
+
+      <thead>
+
+        <tr>
+
+          <th width="70">
+
+            <mat-checkbox
+              [(ngModel)]="allEmployeesSelected"
+              [ngModelOptions]="{standalone:true}"
+              (change)="toggleSelectAllEmployees()">
+            </mat-checkbox>
+
+          </th>
+
+          <th>Employee</th>
+          <th>Branch</th>
+          <th>Department</th>
+          <th>Category</th>
+          <th>Designation</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let emp of pagedEmployees">
+
+          <td>
+
+            <mat-checkbox
+              [(ngModel)]="emp.selected"
+              [ngModelOptions]="{standalone:true}">
+            </mat-checkbox>
+
+          </td>
+
+          <td>
+
+            <div class="employee-info">
+
+              <div class="employee-avatar-wrapper">
+            
+                <img
+                  *ngIf="emp.emp_profile_pic"
+                  [src]="emp.emp_profile_pic"
+                  class="employee-avatar">
+            
+                <div
+                  *ngIf="!emp.emp_profile_pic"
+                  class="employee-avatar-placeholder">
+            
+                  <mat-icon>person</mat-icon>
+            
+                </div>
+            
+              </div>
+            
+              <div>
+            
+                <div class="employee-name">
+                  {{ emp.emp_first_name }}
+                  {{ emp.emp_last_name }}
+                </div>
+            
+                <div class="employee-code">
+                  {{ emp.emp_code }}
+                </div>
+            
+              </div>
+            
+            </div>
+          </td>
+
+          <td>
+            <span class="custom-badge blue">
+              {{ emp.emp_branch_id }}
+            </span>
+          </td>
+
+          <td>
+            <span class="custom-badge green">
+              {{ emp.emp_dept_id }}
+            </span>
+          </td>
+
+          <td>
+            <span class="custom-badge orange">
+              {{ emp.emp_ctgry_id }}
+            </span>
+          </td>
+
+          <td>
+            <span class="custom-badge purple">
+              {{ emp.emp_desgntn_id }}
+            </span>
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+    <div class="pagination-container">
+
+      <button
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+    
+        Previous
+    
+      </button>
+    
+      <button
+        *ngFor="let page of pageNumbers"
+        class="page-number"
+        [class.active]="currentPage === page"
+        (click)="goToPage(page)">
+    
+        {{ page }}
+    
+      </button>
+    
+      <button
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+    
+        Next
+    
+      </button>
+    
+    </div>
+
+  </div>
+
+</div>
+       
+
+
+
+
   
   <div class="row">
     <div class="col-md-8">
