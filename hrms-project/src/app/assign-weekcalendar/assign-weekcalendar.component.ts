@@ -596,51 +596,89 @@ loadBranches(callback?: Function): void {
 
 
 
+  // registerAssignCalendar(): void {
+  //   this.registerButtonClicked = true;
+  //   const companyData = {
+  //     related_to: this.related_to,
+
+  //     branch: this.branch,
+  //     department: this.department,
+
+  //     category: this.category,
+  //     designation: this.designation,
+
+  //     employee: this.employee,
+  //     weekend_model: this.weekend_model,
+
+
+
+
+
+
+  //     // Add other form field values to the companyData object
+  //   };
+
+
+  //   this.employeeService.registerAssignweekCalendar(companyData).subscribe(
+  //     (response) => {
+  //       console.log('Registration successful', response);
+
+  //       alert('Weekend Calendar has been Assigned ');
+  //       window.location.reload();
+
+
+
+  //     },
+  //     (error) => {
+  //       console.error('Add failed', error);
+  //       console.log('Full error response:', error);
+
+  //       // Check if the error message matches the specific error
+  //       const errorMessage = error.error?.error || 'An error occurred while Assign the Week Calendar. Please try again.';
+  //       alert(errorMessage);
+  //     }
+  //   );
+  // }
+
   registerAssignCalendar(): void {
-    this.registerButtonClicked = true;
+
+    const selectedEmployees =
+      this.FilteredEmployees
+        .filter(x => x.selected)
+        .map(x => x.id);
+  
     const companyData = {
-      related_to: this.related_to,
-
-      branch: this.branch,
-      department: this.department,
-
-      category: this.category,
-      designation: this.designation,
-
-      employee: this.employee,
+  
       weekend_model: this.weekend_model,
-
-
-
-
-
-
-      // Add other form field values to the companyData object
+  
+      employee: selectedEmployees
+  
     };
-
-
-    this.employeeService.registerAssignweekCalendar(companyData).subscribe(
-      (response) => {
-        console.log('Registration successful', response);
-
-        alert('Weekend Calendar has been Assigned ');
-        window.location.reload();
-
-
-
-      },
-      (error) => {
-        console.error('Add failed', error);
-        console.log('Full error response:', error);
-
-        // Check if the error message matches the specific error
-        const errorMessage = error.error?.error || 'An error occurred while Assign the Week Calendar. Please try again.';
-        alert(errorMessage);
-      }
-    );
+  
+    this.employeeService
+        .registerAssignweekCalendar(companyData)
+        .subscribe(
+  
+          (response) => {
+  
+            alert('Weekend Calendar Assigned');
+  
+            window.location.reload();
+  
+          },
+  
+          (error) => {
+  
+            alert(
+              error.error?.error ||
+              'Assignment failed'
+            );
+  
+          }
+  
+        );
+  
   }
-
-
 
   isExpanded = false;
   searchQuery = '';
@@ -860,26 +898,25 @@ selectedDesignation: any = '';
 allEmployeesSelected = false;
 
 
-
 applyEmployeeFilter(): void {
 
   this.FilteredEmployees = this.Employee.filter(emp => {
 
     const branchMatch =
       !this.selectedBranch ||
-      emp.branch_id == this.selectedBranch;
+      emp.emp_branch_id === this.getBranchName(this.selectedBranch);
 
     const deptMatch =
       !this.selectedDepartment ||
-      emp.department_id == this.selectedDepartment;
+      emp.emp_dept_id === this.getDepartmentName(this.selectedDepartment);
 
     const categoryMatch =
       !this.selectedCategory ||
-      emp.category_id == this.selectedCategory;
+      emp.emp_ctgry_id === this.getCategoryName(this.selectedCategory);
 
     const designationMatch =
       !this.selectedDesignation ||
-      emp.designation_id == this.selectedDesignation;
+      emp.emp_desgntn_id === this.getDesignationName(this.selectedDesignation);
 
     return (
       branchMatch &&
@@ -892,10 +929,36 @@ applyEmployeeFilter(): void {
 
 }
 
+getBranchName(id: number): string {
 
-onBranchChange():void{
-  
+  const item = this.branches.find(x => x.id == id);
+
+  return item ? item.branch_name : '';
+
 }
 
+getDepartmentName(id: number): string {
+
+  const item = this.Departments.find(x => x.id == id);
+
+  return item ? item.dept_name : '';
+
+}
+
+getCategoryName(id: number): string {
+
+  const item = this.Categories.find(x => x.id == id);
+
+  return item ? item.ctgry_title : '';
+
+}
+
+getDesignationName(id: number): string {
+
+  const item = this.Designations.find(x => x.id == id);
+
+  return item ? item.desgntn_job_title : '';
+
+}
 
 }

@@ -99,22 +99,22 @@
                 <label>Branch</label>
             
                 <select
-                  class="form-control"
-                  [(ngModel)]="selectedBranch"
-                  [ngModelOptions]="{standalone:true}"
-                  (change)="onBranchChange()">
-            
-                  <option value="">All Branches</option>
-            
-                  <option
-                    *ngFor="let item of branches"
-                    [value]="item.id">
-            
-                    {{ item.branch_name }}
-            
-                  </option>
-            
-                </select>
+                class="form-control"
+                [(ngModel)]="selectedBranch"
+                [ngModelOptions]="{standalone:true}"
+                (change)="applyEmployeeFilter()">
+              
+                <option value="">All Branches</option>
+              
+                <option
+                  *ngFor="let item of branches"
+                  [value]="item.id">
+              
+                  {{ item.branch_name }}
+              
+                </option>
+              
+              </select>
             
               </div>
             
