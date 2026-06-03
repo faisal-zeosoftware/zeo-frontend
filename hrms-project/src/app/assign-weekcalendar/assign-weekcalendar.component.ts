@@ -445,26 +445,6 @@ loadBranches(callback?: Function): void {
   }
 
 
-  // loadEmployee(): void {
-
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore', selectedSchema)
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.employeeService.getemployeesMaster(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.Employee = result;
-  //         this.FilteredEmployees = result;
-  //         console.log(' fetching Employees:');
-
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Employees:', error);
-  //       }
-  //     );
-  //   }
-  // }
 
 
   loadEmp(callback?: Function): void {
@@ -735,6 +715,12 @@ toggleSelectAllEmployees() {
     this.allSelecteddelete = !this.allSelecteddelete;
 this.AssignWeekCalendar.forEach(employee => employee.selected = this.allSelecteddelete);
 
+this.FilteredEmployees.forEach(emp => {
+
+  emp.selected = this.allEmployeesSelected;
+
+});
+
 }
 
 onCheckboxChange(employee:number) {
@@ -865,6 +851,46 @@ selectedEmployeeIds.forEach(categoryId => {
 }
 
 
+
+selectedBranch: any = '';
+selectedDepartment: any = '';
+selectedCategory: any = '';
+selectedDesignation: any = '';
+
+allEmployeesSelected = false;
+
+
+
+applyEmployeeFilter(): void {
+
+  this.FilteredEmployees = this.Employee.filter(emp => {
+
+    const branchMatch =
+      !this.selectedBranch ||
+      emp.branch_id == this.selectedBranch;
+
+    const deptMatch =
+      !this.selectedDepartment ||
+      emp.department_id == this.selectedDepartment;
+
+    const categoryMatch =
+      !this.selectedCategory ||
+      emp.category_id == this.selectedCategory;
+
+    const designationMatch =
+      !this.selectedDesignation ||
+      emp.designation_id == this.selectedDesignation;
+
+    return (
+      branchMatch &&
+      deptMatch &&
+      categoryMatch &&
+      designationMatch
+    );
+
+  });
+
+}
 
 
 

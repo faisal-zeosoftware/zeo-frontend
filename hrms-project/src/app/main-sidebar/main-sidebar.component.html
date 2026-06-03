@@ -238,11 +238,38 @@
         <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
 
           <div class="schema-row" (click)="toggleSchema(i, $event)">
-            <div class="schema-info">
+            <!-- <div class="schema-info">
               <div class="avatar">{{ data.name | slice:0:1 }}</div>
               <span class="company-name">{{ data.name }}</span>
+            </div> -->
+
+            <div class="schema-info">
+              <div class="avatar">
+                {{ data.name | slice:0:1 }}
+              </div>
+            
+              <span class="company-name">
+                {{ data.name }}
+              </span>
+            
+              <!-- Notification Bell -->
+              <div
+              class="notification-wrapper"
+              *ngIf="data.notification_count > 0"
+              (click)="openNotificationModal(data, $event)">
+            
+              <mat-icon class="notification-bell">
+                notifications
+              </mat-icon>
+            
+              <span class="notification-count">
+                {{ data.notification_count > 99 ? '99+' : data.notification_count }}
+              </span>
+            
             </div>
-            <mat-icon>
+
+            </div>
+            <mat-icon style="color: black;">
               {{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}
             </mat-icon>
           </div>
@@ -272,6 +299,84 @@
     </div>
   </div>
 </li>
+
+
+<!-- Notification Modal -->
+
+<div
+  class="notification-modal-overlay"
+  *ngIf="isNotificationModalOpen">
+
+  <div class="notification-modal">
+
+    <div class="modal-header">
+
+      <h3>
+        Notifications
+      </h3>
+
+      <span
+        class="close-btn"
+        (click)="closeNotificationModal()">
+
+        ×
+
+      </span>
+
+    </div>
+
+    <div class="company-title">
+
+      {{ selectedCompanyNotification?.name }}
+
+    </div>
+
+    <div
+      *ngIf="notificationList.length > 0">
+
+      <div
+        class="notification-card"
+        *ngFor="let item of notificationList">
+
+        <div class="notification-icon">
+
+          <mat-icon>
+            notifications_active
+          </mat-icon>
+
+        </div>
+
+        <div class="notification-content">
+
+          <h5>
+            {{ item.title }}
+          </h5>
+
+          <p>
+            {{ item.message }}
+          </p>
+
+          <small>
+            {{ item.created_at | date:'medium' }}
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div
+      class="empty-notification"
+      *ngIf="notificationList.length === 0">
+
+      No Notifications Found
+
+    </div>
+
+  </div>
+
+</div>
 
       <!-- Admin logo -->
 

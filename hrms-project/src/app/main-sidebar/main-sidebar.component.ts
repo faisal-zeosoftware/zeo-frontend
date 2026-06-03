@@ -785,7 +785,7 @@ applySelection(): void {
 
   this.isCompanyDropdownOpen = false;
 }
-
+  
 
 
 
@@ -808,10 +808,28 @@ showsidebarclick() {
 
   }
 
+  isNotificationModalOpen = false;
 
+  selectedCompanyNotification: any = null;
   
-
+  notificationList: any[] = [];
   
+  openNotificationModal(company: any, event: Event): void {
+    event.stopPropagation();
+  
+    this.selectedCompanyNotification = company;
+  
+    this.notificationList =
+      company.notifications?.latest_notifications ||
+      company.latest_notifications ||
+      [];
+  
+    this.isNotificationModalOpen = true;
+  }
+  
+  closeNotificationModal(): void {
+    this.isNotificationModalOpen = false;
+  }
 
   logout(): void {
     this.authService.logout().subscribe(() => {

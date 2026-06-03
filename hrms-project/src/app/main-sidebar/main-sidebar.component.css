@@ -1057,3 +1057,208 @@ table thead th {
 
 
 
+.schema-info{
+  display:flex;
+  align-items:center;
+  flex:1;
+}
+
+.company-name{
+  flex:1;
+  margin-left:10px;
+  font-weight:500;
+}
+
+/* Bell Container */
+.notification-wrapper{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+}
+
+/* Bell Icon */
+.notification-bell{
+  font-size:24px !important;
+  width:24px !important;
+  height:24px !important;
+  color:#ff9800 !important;
+  animation:ringBell 2s infinite;
+}
+
+/* Count Badge */
+.notification-count{
+  position:absolute;
+  top:-3px;
+  right:-3px;
+
+  min-width:18px;
+  height:18px;
+
+  padding:0 4px;
+
+  background:#f44336;
+  color:#fff;
+
+  border-radius:50px;
+
+  font-size:10px;
+  font-weight:700;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border:2px solid #fff;
+}
+
+
+
+
+@keyframes ringBell {
+
+  0% {
+    transform: rotate(0);
+  }
+
+  5% {
+    transform: rotate(15deg);
+  }
+
+  10% {
+    transform: rotate(-15deg);
+  }
+
+  15% {
+    transform: rotate(10deg);
+  }
+
+  20% {
+    transform: rotate(-10deg);
+  }
+
+  25% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(0);
+  }
+}
+
+
+
+
+.notification-modal-overlay{
+  position:fixed;
+  inset:0;
+
+  background:rgba(0,0,0,.45);
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  z-index:99999;
+}
+
+.notification-modal{
+  width:600px;
+  max-width:95%;
+
+  max-height:80vh;
+
+  overflow-y:auto;
+
+  background:#fff;
+
+  border-radius:15px;
+
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:15px 20px;
+
+  border-bottom:1px solid #eee;
+}
+
+.company-title{
+  padding:15px 20px;
+
+  font-weight:600;
+
+  color:#1976d2;
+}
+
+.notification-card{
+  display:flex;
+
+  gap:15px;
+
+  margin:12px 20px;
+
+  padding:15px;
+
+  border-radius:12px;
+
+  background:#f8f9fa;
+
+  transition:.3s;
+}
+
+.notification-card:hover{
+  transform:translateY(-2px);
+
+  background:#eef5ff;
+}
+
+.notification-icon mat-icon{
+  color:#ff9800;
+
+  font-size:28px;
+}
+
+.notification-content{
+  flex:1;
+}
+
+.notification-content h5{
+  margin:0;
+
+  font-size:15px;
+
+  font-weight:600;
+}
+
+.notification-content p{
+  margin:5px 0;
+
+  color:#666;
+}
+
+.notification-content small{
+  color:#999;
+}
+
+.empty-notification{
+  text-align:center;
+
+  padding:40px;
+
+  color:#888;
+}
+
+.close-btn{
+  cursor:pointer;
+
+  font-size:24px;
+
+  font-weight:bold;
+}
