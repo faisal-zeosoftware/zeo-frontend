@@ -1262,3 +1262,72 @@ table thead th {
 
   font-weight:bold;
 }
+
+
+.branch-option{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 12px;
+  cursor:pointer;
+}
+
+.branch-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.notification-wrapper{
+  position:relative;
+  cursor:pointer;
+}
+
+.notification-bell{
+  color:#ff9800;
+  font-size:20px;
+}
+
+.notification-count{
+  position:absolute;
+  top:4px;
+  right:2px;
+  background:#f44336;
+  color:#fff;
+  font-size:10px;
+  min-width:16px;
+  height:16px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+}
+
+.notification-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.notification-type{
+  background:#e3f2fd;
+  color:#1976d2;
+  padding:2px 8px;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:600;
+}
+
+
+
+
+.clickable-card{
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.clickable-card:hover{
+  background:#f4f8ff;
+  transform:translateY(-2px);
+}

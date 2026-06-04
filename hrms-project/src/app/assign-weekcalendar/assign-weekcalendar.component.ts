@@ -705,39 +705,39 @@ editAsset: any = {}; // holds the asset being edited
 // this.isEditModalOpen = true;
 // }
 
-openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
+// openEditModal(asset: any): void {
+//   this.editAsset = { ...asset };
 
-  // Convert branch names → IDs
-  if (this.editAsset.branch?.length) {
-    this.editAsset.branch = this.branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+//   // Convert branch names → IDs
+//   if (this.editAsset.branch?.length) {
+//     this.editAsset.branch = this.branches
+//       .filter(b => this.editAsset.branch.includes(b.branch_name))
+//       .map(b => b.id);
+//   }
 
-  // Department
-  if (this.editAsset.department?.length) {
-    this.editAsset.department = this.Departments
-      .filter(d => this.editAsset.department.includes(d.dept_name))
-      .map(d => d.id);
-  }
+//   // Department
+//   if (this.editAsset.department?.length) {
+//     this.editAsset.department = this.Departments
+//       .filter(d => this.editAsset.department.includes(d.dept_name))
+//       .map(d => d.id);
+//   }
 
-  // Category
-  if (this.editAsset.category?.length) {
-    this.editAsset.category = this.Categories
-      .filter(c => this.editAsset.category.includes(c.ctgry_title))
-      .map(c => c.id);
-  }
+//   // Category
+//   if (this.editAsset.category?.length) {
+//     this.editAsset.category = this.Categories
+//       .filter(c => this.editAsset.category.includes(c.ctgry_title))
+//       .map(c => c.id);
+//   }
 
-  // Designation
-  if (this.editAsset.designation?.length) {
-    this.editAsset.designation = this.Designations
-      .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
-      .map(d => d.id);
-  }
+//   // Designation
+//   if (this.editAsset.designation?.length) {
+//     this.editAsset.designation = this.Designations
+//       .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
+//       .map(d => d.id);
+//   }
 
-  this.isEditModalOpen = true;
-}
+//   this.isEditModalOpen = true;
+// }
 
 closeEditModal(): void {
 this.isEditModalOpen = false;
@@ -745,38 +745,6 @@ this.editAsset = {};
 }
 
 
-updateAssetType(): void {
-const selectedSchema = localStorage.getItem('selectedSchema');
-if (!selectedSchema || !this.editAsset.id) {
-alert('Missing schema or asset ID');
-return;
-}
-
-this.employeeService.updateAssignweekoff(this.editAsset.id, this.editAsset).subscribe(
-(response) => {
-  alert('Assign week off updated successfully!');
-  this.closeEditModal();
-  // this.loadLAssetType(); // reload updated list
-  window.location.reload();
-},
-(error) => {
-console.error('Error updating Asset type:', error);
-
-let errorMsg = 'Update failed';
-
-const backendError = error?.error;
-
-if (backendError && typeof backendError === 'object') {
-// Convert the object into a readable string
-errorMsg = Object.keys(backendError)
-  .map(key => `${key}: ${backendError[key].join(', ')}`)
-  .join('\n');
-}
-
-alert(errorMsg);
-}
-);
-}
 
 
 deleteSelectedAssetType() { 
@@ -1160,5 +1128,190 @@ get pageNumbers(): number[] {
 
 
 
+
+
+// edit modal 
+
+
+
+editSelectedBranches: number[] = [];
+editSelectedDepartments: number[] = [];
+editSelectedCategories: number[] = [];
+editSelectedDesignations: number[] = [];
+
+editFilteredEmployees: any[] = [];
+editPagedEmployees: any[] = [];
+editAllEmployeesSelected = false;
+
+editCurrentPage = 1;
+editItemsPerPage = 3;
+
+
+
+openEditModal(asset: any): void {
+
+  this.editAsset = { ...asset };
+
+  // Weekend Calendar
+  this.editAsset.weekend_model = asset.weekend_model;
+
+  // Branch
+  this.editSelectedBranches =
+    this.branches
+      .filter(x =>
+        asset.branch?.includes(x.branch_name)
+      )
+      .map(x => x.id);
+
+  // Department
+  this.editSelectedDepartments =
+    this.Departments
+      .filter(x =>
+        asset.department?.includes(x.dept_name)
+      )
+      .map(x => x.id);
+
+  // Category
+  this.editSelectedCategories =
+    this.Categories
+      .filter(x =>
+        asset.category?.includes(x.ctgry_title)
+      )
+      .map(x => x.id);
+
+  // Designation
+  this.editSelectedDesignations =
+    this.Designations
+      .filter(x =>
+        asset.designation?.includes(
+          x.desgntn_job_title
+        )
+      )
+      .map(x => x.id);
+
+  // Employees
+
+  this.editFilteredEmployees =
+    this.Employee.map(emp => ({
+
+      ...emp,
+
+      selected:
+        asset.employee?.includes(
+          emp.emp_code
+        ) ||
+
+        asset.employee?.includes(
+          emp.id
+        )
+
+    }));
+
+  this.applyEditEmployeeFilter();
+
+  this.isEditModalOpen = true;
+}
+
+
+applyEditEmployeeFilter(): void {
+
+  this.editFilteredEmployees =
+    this.Employee.filter(emp => {
+
+      const branchMatch =
+        this.editSelectedBranches.length === 0 ||
+
+        this.editSelectedBranches.some(id =>
+          emp.emp_branch_id ===
+          this.getBranchName(id)
+        );
+
+      const deptMatch =
+        this.editSelectedDepartments.length === 0 ||
+
+        this.editSelectedDepartments.some(id =>
+          emp.emp_dept_id ===
+          this.getDepartmentName(id)
+        );
+
+      const categoryMatch =
+        this.editSelectedCategories.length === 0 ||
+
+        this.editSelectedCategories.some(id =>
+          emp.emp_ctgry_id ===
+          this.getCategoryName(id)
+        );
+
+      const designationMatch =
+        this.editSelectedDesignations.length === 0 ||
+
+        this.editSelectedDesignations.some(id =>
+          emp.emp_desgntn_id ===
+          this.getDesignationName(id)
+        );
+
+      return (
+        branchMatch &&
+        deptMatch &&
+        categoryMatch &&
+        designationMatch
+      );
+
+    });
+
+  this.updateEditPagination();
+}
+
+updateEditPagination(): void {
+
+  const start =
+    (this.editCurrentPage - 1)
+    * this.editItemsPerPage;
+
+  const end =
+    start + this.editItemsPerPage;
+
+  this.editPagedEmployees =
+    this.editFilteredEmployees.slice(
+      start,
+      end
+    );
+
+}
+
+
+
+updateAssetType(): void {
+
+  const selectedEmployees =
+    this.editFilteredEmployees
+      .filter(x => x.selected)
+      .map(x => x.id);
+
+  const payload = {
+
+    weekend_model:
+      this.editAsset.weekend_model,
+
+    branch:
+      this.editSelectedBranches,
+
+    department:
+      this.editSelectedDepartments,
+
+    category:
+      this.editSelectedCategories,
+
+    designation:
+      this.editSelectedDesignations,
+
+    employee:
+      selectedEmployees
+
+  };
+
+  console.log(payload);
+
+}
 
 }

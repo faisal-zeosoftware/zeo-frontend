@@ -92,10 +92,7 @@
   <!-- FILTER SECTION -->
 <div class="filter-card mb-4">
 
-    <!-- <div class="filter-header">
-      <mat-icon>filter_alt</mat-icon>
-      <span>Employee Filters</span>
-    </div> -->
+
 
   <div class="row g-3">
 
@@ -287,155 +284,158 @@
 
   </div>
 
-</div>
-
-<div class="employee-card">
+  <div class="employee-card">
 
 
-  <div class="table-responsive">
-
-    <table class="employee-table">
-
-      <thead>
-
-        <tr>
-
-          <th width="70">
-
-            <mat-checkbox
-              [(ngModel)]="allEmployeesSelected"
-              [ngModelOptions]="{standalone:true}"
-              (change)="toggleSelectAllEmployees()">
-            </mat-checkbox>
-
-          </th>
-
-          <th>Employee</th>
-          <th>Branch</th>
-          <th>Department</th>
-          <th>Category</th>
-          <th>Designation</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        <tr *ngFor="let emp of pagedEmployees">
-
-          <td>
-
-            <mat-checkbox
-              [(ngModel)]="emp.selected"
-              [ngModelOptions]="{standalone:true}">
-            </mat-checkbox>
-
-          </td>
-
-          <td>
-
-            <div class="employee-info">
-
-              <div class="employee-avatar-wrapper">
-            
-                <img
-                  *ngIf="emp.emp_profile_pic"
-                  [src]="emp.emp_profile_pic"
-                  class="employee-avatar">
-            
-                <div
-                  *ngIf="!emp.emp_profile_pic"
-                  class="employee-avatar-placeholder">
-            
-                  <mat-icon>person</mat-icon>
-            
+    <div class="table-responsive">
+  
+      <table class="employee-table">
+  
+        <thead>
+  
+          <tr>
+  
+            <th width="70">
+  
+              <mat-checkbox
+                [(ngModel)]="allEmployeesSelected"
+                [ngModelOptions]="{standalone:true}"
+                (change)="toggleSelectAllEmployees()">
+              </mat-checkbox>
+  
+            </th>
+  
+            <th>Employee</th>
+            <th>Branch</th>
+            <th>Department</th>
+            <th>Category</th>
+            <th>Designation</th>
+  
+          </tr>
+  
+        </thead>
+  
+        <tbody>
+  
+          <tr *ngFor="let emp of pagedEmployees">
+  
+            <td>
+  
+              <mat-checkbox
+                [(ngModel)]="emp.selected"
+                [ngModelOptions]="{standalone:true}">
+              </mat-checkbox>
+  
+            </td>
+  
+            <td>
+  
+              <div class="employee-info">
+  
+                <div class="employee-avatar-wrapper">
+              
+                  <img
+                    *ngIf="emp.emp_profile_pic"
+                    [src]="emp.emp_profile_pic"
+                    class="employee-avatar">
+              
+                  <div
+                    *ngIf="!emp.emp_profile_pic"
+                    class="employee-avatar-placeholder">
+              
+                    <mat-icon>person</mat-icon>
+              
+                  </div>
+              
                 </div>
-            
+              
+                <div>
+              
+                  <div class="employee-name">
+                    {{ emp.emp_first_name }}
+                    {{ emp.emp_last_name }}
+                  </div>
+              
+                  <div class="employee-code">
+                    {{ emp.emp_code }}
+                  </div>
+              
+                </div>
+              
               </div>
-            
-              <div>
-            
-                <div class="employee-name">
-                  {{ emp.emp_first_name }}
-                  {{ emp.emp_last_name }}
-                </div>
-            
-                <div class="employee-code">
-                  {{ emp.emp_code }}
-                </div>
-            
-              </div>
-            
-            </div>
-          </td>
-
-          <td>
-            <span class="custom-badge blue">
-              {{ emp.emp_branch_id }}
-            </span>
-          </td>
-
-          <td>
-            <span class="custom-badge green">
-              {{ emp.emp_dept_id }}
-            </span>
-          </td>
-
-          <td>
-            <span class="custom-badge orange">
-              {{ emp.emp_ctgry_id }}
-            </span>
-          </td>
-
-          <td>
-            <span class="custom-badge purple">
-              {{ emp.emp_desgntn_id }}
-            </span>
-          </td>
-
-        </tr>
-
-      </tbody>
-
-    </table>
-
-    <div class="pagination-container">
-
-      <button
-        class="page-btn"
-        (click)="previousPage()"
-        [disabled]="currentPage === 1">
-    
-        Previous
-    
-      </button>
-    
-      <button
-        *ngFor="let page of pageNumbers"
-        class="page-number"
-        [class.active]="currentPage === page"
-        (click)="goToPage(page)">
-    
-        {{ page }}
-    
-      </button>
-    
-      <button
-        class="page-btn"
-        (click)="nextPage()"
-        [disabled]="currentPage === totalPages">
-    
-        Next
-    
-      </button>
-    
+            </td>
+  
+            <td>
+              <span class="custom-badge blue">
+                {{ emp.emp_branch_id }}
+              </span>
+            </td>
+  
+            <td>
+              <span class="custom-badge green">
+                {{ emp.emp_dept_id }}
+              </span>
+            </td>
+  
+            <td>
+              <span class="custom-badge orange">
+                {{ emp.emp_ctgry_id }}
+              </span>
+            </td>
+  
+            <td>
+              <span class="custom-badge purple">
+                {{ emp.emp_desgntn_id }}
+              </span>
+            </td>
+  
+          </tr>
+  
+        </tbody>
+  
+      </table>
+  
+      <div class="pagination-container">
+  
+        <button
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+        <button
+          *ngFor="let page of pageNumbers"
+          class="page-number"
+          [class.active]="currentPage === page"
+          (click)="goToPage(page)">
+      
+          {{ page }}
+      
+        </button>
+      
+        <button
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
+      </div>
+  
     </div>
-
+  
   </div>
+         
+
 
 </div>
-       
+
+
 
 
 
@@ -478,161 +478,196 @@
 
 <form>
 
-      <div class="row">
+  <div class="row">
+    <div class="col-md-6" >
+      <div class="custom-sel">
+          <label>Weekend Calendar</label>
+          <select class="form-control" id="weekend_model" required [(ngModel)]="editAsset.weekend_model"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !weekend_model}" >
+              <option value="" >Select</option>
+              <option *ngFor="let deparmentsec of WeekCalendar" [value]="deparmentsec.id">{{ deparmentsec.description     }} </option>
+          </select>
+          <div *ngIf="registerButtonClicked && !weekend_model" class="error-message">Please Select calendar </div>
+      </div>
+  </div>
   
-                <div class="col-md-12">
-                    <label>Choose option</label><br>
-                    <mat-radio-group aria-label="Select an option" [(ngModel)]="editAsset.related_to" [ngModelOptions]="{standalone: true}">
-                        <mat-radio-button  value="branch">branch</mat-radio-button>
-                        <mat-radio-button value="department"> department</mat-radio-button>
-                        <mat-radio-button value="category"> category</mat-radio-button>
-                        <mat-radio-button value="designation"> Designation </mat-radio-button>
-                        <mat-radio-button value="employee"> employee</mat-radio-button>
-  
-  
-                      </mat-radio-group>
-                </div>
-  
-  
-               
-  
-                   
-            
-                
-                <div class="col-md-6" *ngIf="editAsset.related_to === 'branch'">
-                    <label>Select Branches</label>
-                    <div class="custom-sel">
-                      <div class="form-control-wrapper">
-                    
-  
-                        <mat-form-field>
-                          <!-- <mat-label>Favorite food</mat-label> -->
-                          <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #branchSelect multiple>
-                            <div class="select-all">
-                              <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
-                                Select All
-                              </mat-checkbox>
-                            </div>
-                            <input type="text" placeholder="serach" class="form-control">
-  
-                            <mat-option *ngFor="let food of branches" [value]="food.id">
-                              {{ food.branch_name }}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                        
-                      </div>
-                     
-                    </div>
-                  </div>
-                  
-                    
-                 
-                  <div class="col-md-6" *ngIf="editAsset.related_to === 'department'">
-                    <label>Department</label>
-                    <div class="custom-sel">
-                        <div class="form-control-wrapper">
-                          <mat-form-field>
-                            <mat-select  placeholder="Select" [(ngModel)]="editAsset.department" [ngModelOptions]="{standalone: true}" #deptSelect  multiple>
-                              <div class="select-all">
-                                <mat-checkbox [(ngModel)]="allSelecteddept" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondept()">
-                                  Select All
-                                </mat-checkbox>
-                              </div>
-                              <mat-option *ngFor="let deparmentsec of Departments" [value]="deparmentsec.id">
-                                {{ deparmentsec.dept_name }}
-                              </mat-option>
-                            </mat-select>
-                          </mat-form-field>
-                        </div>
-                     
-                      </div>
-                </div>
-  
-                <div class="col-md-6" *ngIf="editAsset.related_to === 'category'">
-                    <label>Category</label>
-                    <div class="custom-sel">
-                        <div class="form-control-wrapper">
-                          <mat-form-field>
-                            <mat-select  placeholder="Select" [(ngModel)]="editAsset.category" [ngModelOptions]="{standalone: true}" #catSelect multiple>
-                              <div class="select-all">
-                                <mat-checkbox [(ngModel)]="allSelectedcat" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectioncat()">
-                                  Select All
-                                </mat-checkbox>
-                              </div>
-                             
-                              <mat-option *ngFor="let deparmentsec of Categories" [value]="deparmentsec.id">
-                                {{ deparmentsec.ctgry_title }}
-                              </mat-option>
-                            </mat-select>
-                          </mat-form-field>
-                        </div>
-                       
-                      </div>
-                </div>
-                
-                <div class="col-md-6" *ngIf="editAsset.related_to === 'designation'">
-                  <label>Designation </label>
-                  <div class="custom-sel">
-                      <div class="form-control-wrapper">
-                        <mat-form-field>
-                          <mat-select  placeholder="Select" [(ngModel)]="editAsset.designation" [ngModelOptions]="{standalone: true}" #selectdes multiple>
-                            <div class="select-all">
-                              <mat-checkbox [(ngModel)]="allSelecteddes" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectiondes()">
-                                Select All
-                              </mat-checkbox>
-                            </div>
-                           
-                            <mat-option *ngFor="let deparmentsec of Designations" [value]="deparmentsec.id">
-                              {{ deparmentsec.desgntn_job_title }}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                     
-                    </div>
-              </div>
-  
-                <div class="col-md-6" *ngIf="editAsset.related_to === 'employee'">
-                  <label>Employee</label>
-                  <div class="custom-sel">
-                      <div class="form-control-wrapper">
-                        <mat-form-field>
-                          <mat-select  placeholder="Select" [(ngModel)]="editAsset.employee" [ngModelOptions]="{standalone: true}" #empSelect multiple>
-                            <div class="select-all">
-                              <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
-                                Select All
-                              </mat-checkbox>
-                            </div>
-                            <input type="text" placeholder="serach" class="form-control"
-                            [(ngModel)]="SearchEmployee" (input)="FilterEmployee">
-  
-                            <mat-option *ngFor="let emp of FilteredEmployees" [value]="emp.id">
-                              {{ emp.emp_first_name }}   {{ emp.emp_last_name }}
-                            </mat-option>
-                          </mat-select>
-                        </mat-form-field>
-                      </div>
-                    
-                    </div>
-              </div>
-  
-  
-                <div class="col-md-6" >
-                    <div class="custom-sel">
-                        <label>Weekend Calendar</label>
-                        <select class="form-control" id="weekend_model" required [(ngModel)]="editAsset.weekend_model"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !weekend_model}" >
-                            <option value="" >Select</option>
-                            <option *ngFor="let deparmentsec of WeekCalendar" [value]="deparmentsec.id">{{ deparmentsec.description     }} </option>
-                        </select>
-                        <div *ngIf="registerButtonClicked && !weekend_model" class="error-message">Please Select calendar </div>
-                    </div>
-                </div>
-                   
-  
-  
-                </div>
-  
+  </div>
+
+
+<!-- FILTER SECTION -->
+<div class="filter-card mb-4">
+
+<div class="row">
+
+  <!-- Branch -->
+
+  <div class="col-md-3">
+
+    <mat-form-field appearance="outline">
+
+      <mat-select
+        multiple
+        [(ngModel)]="editSelectedBranches"
+        [ngModelOptions]="{standalone:true}"
+        (selectionChange)="applyEditEmployeeFilter()">
+
+        <mat-option
+          *ngFor="let item of branches"
+          [value]="item.id">
+
+          {{item.branch_name}}
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+  <!-- Department -->
+
+  <div class="col-md-3">
+
+    <mat-form-field appearance="outline">
+
+      <mat-select
+        multiple
+        [(ngModel)]="editSelectedDepartments"
+        [ngModelOptions]="{standalone:true}"
+        (selectionChange)="applyEditEmployeeFilter()">
+
+        <mat-option
+          *ngFor="let item of Departments"
+          [value]="item.id">
+
+          {{item.dept_name}}
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+  <!-- Category -->
+
+  <div class="col-md-3">
+
+    <mat-form-field appearance="outline">
+
+      <mat-select
+        multiple
+        [(ngModel)]="editSelectedCategories"
+        [ngModelOptions]="{standalone:true}"
+        (selectionChange)="applyEditEmployeeFilter()">
+
+        <mat-option
+          *ngFor="let item of Categories"
+          [value]="item.id">
+
+          {{item.ctgry_title}}
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+  <!-- Designation -->
+
+  <div class="col-md-3">
+
+    <mat-form-field appearance="outline">
+
+      <mat-select
+        multiple
+        [(ngModel)]="editSelectedDesignations"
+        [ngModelOptions]="{standalone:true}"
+        (selectionChange)="applyEditEmployeeFilter()">
+
+        <mat-option
+          *ngFor="let item of Designations"
+          [value]="item.id">
+
+          {{item.desgntn_job_title}}
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+</div>
+</div>
+
+
+<div class="employee-card">
+
+
+  <div class="table-responsive">
+
+    <table class="employee-table">
+
+      <thead>
+
+        <tr>
+
+          <th width="70">
+
+            <mat-checkbox
+              [(ngModel)]="allEmployeesSelected"
+              [ngModelOptions]="{standalone:true}"
+              (change)="toggleSelectAllEmployees()">
+            </mat-checkbox>
+
+          </th>
+
+          <th>Employee</th>
+          <th>Branch</th>
+          <th>Department</th>
+          <th>Category</th>
+          <th>Designation</th>
+
+        </tr>
+
+      </thead>
+
+<tr *ngFor="let emp of editPagedEmployees">
+
+  <td>
+
+    <mat-checkbox
+      [(ngModel)]="emp.selected"
+      [ngModelOptions]="{standalone:true}">
+    </mat-checkbox>
+
+  </td>
+
+  <td>
+
+    {{ emp.emp_first_name }}
+    {{ emp.emp_last_name }}
+
+  </td>
+
+  <td>{{ emp.emp_branch_id }}</td>
+
+  <td>{{ emp.emp_dept_id }}</td>
+
+  <td>{{ emp.emp_ctgry_id }}</td>
+
+  <td>{{ emp.emp_desgntn_id }}</td>
+
+</tr>
+    
+</table>
+</div>
+</div>
   
   <div class="row">
     <div class="col-md-8"></div>

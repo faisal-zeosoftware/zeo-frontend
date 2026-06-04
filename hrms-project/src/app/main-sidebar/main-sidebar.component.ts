@@ -667,7 +667,7 @@ onNotificationClick(noti: any): void {
       this.router.navigate(['/main-sidebar/asset-options/airticket-approvals']);
       break;
     case 'general':
-      this.router.navigate(['/main-sidebar/sub-sidebar/approvals']);
+      this.router.navigate(['/main-sidebar/general-sidebar/approvals']);
       break;
     case 'docrequest':
       this.router.navigate(['/main-sidebar/settings/document-request-approval']);
@@ -811,6 +811,10 @@ showsidebarclick() {
   isNotificationModalOpen = false;
 
   selectedCompanyNotification: any = null;
+  selectedBranchNotification: any = null;
+
+
+
   
   notificationList: any[] = [];
   
@@ -830,6 +834,22 @@ showsidebarclick() {
   closeNotificationModal(): void {
     this.isNotificationModalOpen = false;
   }
+
+  openBranchNotificationModal(
+  branch: any,
+  event: Event
+): void {
+
+  event.stopPropagation();
+
+  this.selectedBranchNotification = branch;
+
+  this.notificationList =
+    branch.notifications || [];
+
+  this.isNotificationModalOpen = true;
+
+}
 
   logout(): void {
     this.authService.logout().subscribe(() => {
@@ -851,5 +871,63 @@ showsidebarclick() {
 
 
 
+
+
+
+
+  onBranchNotificationClick(item: any): void {
+
+    const key = `${item.type}-${item.id}`;
+  
+    const readNotifications =
+      JSON.parse(
+        localStorage.getItem(
+          'readNotifications'
+        ) || '{}'
+      );
+  
+    readNotifications[key] = true;
+  
+    localStorage.setItem(
+      'readNotifications',
+      JSON.stringify(readNotifications)
+    );
+  
+    this.notificationList =
+      this.notificationList.filter(
+        x => x.id !== item.id
+      );
+  
+    this.closeNotificationModal();
+  
+    switch(item.type){
+  
+      case 'general':
+        this.router.navigate([
+          '/main-sidebar/general-sidebar/approvals'
+        ]);
+        break;
+  
+      case 'leave':
+        this.router.navigate([
+          '/main-sidebar/leave-options/leave-approvals'
+        ]);
+        break;
+  
+      case 'asset':
+        this.router.navigate([
+          '/main-sidebar/asset-options/asset-approval'
+        ]);
+        break;
+  
+      case 'loanrequest':
+        this.router.navigate([
+          '/main-sidebar/loan-sidebar/loan-approval'
+        ]);
+        break;
+  
+    }
+  
+  }
   
 }

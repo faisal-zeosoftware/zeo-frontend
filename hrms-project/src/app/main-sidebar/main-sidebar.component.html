@@ -260,7 +260,7 @@
               </span>
             
               <!-- Notification Bell -->
-              <div
+              <!-- <div
               class="notification-wrapper"
               *ngIf="data.notification_count > 0"
               (click)="openNotificationModal(data, $event)">
@@ -273,7 +273,7 @@
                 {{ data.notification_count > 99 ? '99+' : data.notification_count }}
               </span>
             
-            </div>
+            </div> -->
 
             </div>
             <mat-icon style="color: black;">
@@ -282,22 +282,55 @@
           </div>
 
           <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
-            <div class="branch-option multi-select"
-                 *ngFor="let branch of data.branches"
-                 (click)="!isLoadingEss && toggleBranchSelection(data, branch, $event)">
-
+            <div
+            class="branch-option multi-select"
+            *ngFor="let branch of data.branches"
+            (click)="!isLoadingEss && toggleBranchSelection(data, branch, $event)">
+          
+            <div class="branch-left">
+          
               <mat-icon class="check-box">
-                {{ (selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)) 
-                    ? 'check_box' 
-                    : 'check_box_outline_blank' }}
+                {{
+                  (selectedSchema === data.schema_name &&
+                  selectedBranchIds.includes(branch.id))
+                  ? 'check_box'
+                  : 'check_box_outline_blank'
+                }}
               </mat-icon>
-
-              <span class="branch-name"
-                    [class.selected-text]="(selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id))">
+          
+              <span
+                class="branch-name"
+                [class.selected-text]="
+                  selectedSchema === data.schema_name &&
+                  selectedBranchIds.includes(branch.id)
+                ">
                 {{ branch.branch_name }}
               </span>
-
+          
             </div>
+          
+            <!-- Notification Bell -->
+          
+            <div
+              class="notification-wrapper"
+              *ngIf="branch.notification_count > 0"
+              (click)="openBranchNotificationModal(branch, $event)">
+          
+              <mat-icon class="notification-bell">
+                notifications
+              </mat-icon>
+          
+              <span class="notification-count">
+                {{
+                  branch.notification_count > 99
+                    ? '99+'
+                    : branch.notification_count
+                }}
+              </span>
+          
+            </div>
+          
+          </div>
           </div>
 
         </div>
@@ -331,45 +364,52 @@
       </span>
 
     </div>
-
     <div class="company-title">
 
-      {{ selectedCompanyNotification?.name }}
-
+      {{ selectedBranchNotification?.branch_name }}
+    
     </div>
-
     <div
       *ngIf="notificationList.length > 0">
 
       <div
-        class="notification-card"
-        *ngFor="let item of notificationList">
-
-        <div class="notification-icon">
-
-          <mat-icon>
-            notifications_active
-          </mat-icon>
-
-        </div>
-
-        <div class="notification-content">
-
+      class="notification-card clickable-card"
+      *ngFor="let item of notificationList"
+      (click)="onBranchNotificationClick(item)">
+    
+      <div class="notification-icon">
+    
+        <mat-icon>
+          notifications_active
+        </mat-icon>
+    
+      </div>
+    
+      <div class="notification-content">
+    
+        <div class="notification-top">
+    
           <h5>
             {{ item.title }}
           </h5>
-
-          <p>
-            {{ item.message }}
-          </p>
-
-          <small>
-            {{ item.created_at | date:'medium' }}
-          </small>
-
+    
+          <span class="notification-type">
+            {{ item.type }}
+          </span>
+    
         </div>
-
+    
+        <p>
+          {{ item.message }}
+        </p>
+    
+        <small>
+          {{ item.created_at | date:'medium' }}
+        </small>
+    
       </div>
+    
+    </div>
 
     </div>
 
