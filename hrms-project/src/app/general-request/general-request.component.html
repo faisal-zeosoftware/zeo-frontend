@@ -127,24 +127,6 @@
   </small>
 </div>
                     
-    
-                  <div class="col-md-6" >
-                   
-                    <label>Reason
-                      <span class="required-star">*</span>
-                    </label>
-                   <input type="text"  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter Reason"
-                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !reason}">
-                   
-                   <div *ngIf="registerButtonClicked && !reason" class="error-message">reason is required.</div>
-              </div>
-    
-    
-           
-              
-          
-        
-    
         
               <div class="col-md-6">
                 <div class="custom-sel">
@@ -204,6 +186,17 @@
             <label>Request Document</label>
             <input type="file" class="form-control" (change)="onFileChange($event)">
           </div>
+        <div class="col-md-6" >
+                   
+                    <label>Reason
+                      <span class="required-star">*</span>
+                    </label>
+                   <input type="text"  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter Reason"
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !reason}">
+                   
+                   <div *ngIf="registerButtonClicked && !reason" class="error-message">reason is required.</div>
+        </div>
+        
         <div class="col-md-12">
             <label>Remarks</label>
             <textarea class="form-control" rows="3" [(ngModel)]="remarks" [ngModelOptions]="{standalone: true}" placeholder="Enter remarks"></textarea>

@@ -84,7 +84,7 @@ private employeeService: EmployeeService,
   });
   
     
-  this.loadDeparmentBranch();
+  this.loadUsers();
   // this.loadAssignedPermissionsForUser();
 
 
@@ -230,7 +230,7 @@ if (this.userId !== null) {
   }
   
 
-  loadDeparmentBranch(): void {
+  loadUsers(): void {
     const selectedSchema = this.authService.getSelectedSchema();
         if (selectedSchema) {
           this.DepartmentServiceService.getApprover(selectedSchema).subscribe(

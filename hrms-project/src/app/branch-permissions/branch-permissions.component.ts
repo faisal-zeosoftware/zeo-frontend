@@ -74,7 +74,7 @@ private employeeService: EmployeeService,
 
  ngOnInit(): void {
     
-  this.loadDeparmentBranch();
+  this.loadUsers();
   this.loadUserPermissions();
   this.loadBranch();
 
@@ -225,7 +225,7 @@ if (this.userId !== null) {
   }
   
 
-  loadDeparmentBranch(): void {
+  loadUsers(): void {
     const selectedSchema = this.authService.getSelectedSchema();
         if (selectedSchema) {
           this.DepartmentServiceService.getApprover(selectedSchema).subscribe(

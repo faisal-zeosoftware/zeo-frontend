@@ -131,10 +131,7 @@
     
 
 
-  <div class="col-md-12">
-    <label>description</label>
-    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
-  </div>
+
      
 
 
@@ -181,6 +178,12 @@
       <div *ngIf="registerButtonClicked && !task" class="error-message">
     Please Select Task
   </div>
+  </div>
+
+
+    <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
   </div>
 
 
@@ -282,17 +285,7 @@
           </div>
 
          
-    
-
-
-  <div class="col-md-12">
-    <label>description</label>
-    <textarea class="form-control" [(ngModel)]="editProjectTime.description" [ngModelOptions]="{standalone: true}"></textarea>
-  </div>
-     
-
-
-
+  
 <div class="col-md-6" >
     <label>Select Projects</label>
     <div class="custom-sel">
@@ -327,11 +320,10 @@
     </div>
   </div>
 
-
-
-
-
-      
+    <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="editProjectTime.description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
 
 
     

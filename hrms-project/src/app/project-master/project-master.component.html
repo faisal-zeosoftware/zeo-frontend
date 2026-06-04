@@ -111,30 +111,37 @@
   </div>
           </div>
 
-         
           <div class="col-md-6" >
-               
-            <label>Start Date</label>
-           <input type="date"  class="form-control" required  [(ngModel)]="start_date"  placeholder="Enter start date"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
+  <label>Select Branch
+    <span class="required-star">*</span>
+  </label>
+  <div class="custom-sel">
+    <div class="form-control-wrapper">
+  
+
+      <mat-form-field>
+        <!-- <mat-label>Favorite food</mat-label> -->
+        <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branches}" #selectBr multiple>
+          <div class="select-all">
+            <mat-checkbox [(ngModel)]="allSelectedBr" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBr()">
+              Select All
+            </mat-checkbox>
+            
+          </div>
+          <input type="text" placeholder="serach" class="form-control">
+
+          <mat-option *ngFor="let food of Branches"  [value]="food.id">
+            {{ food.branch_name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
       
-      <div class="col-md-6" >
-               
-        <label>End Date</label>
-       <input type="date"  class="form-control" required  [(ngModel)]="end_date"  placeholder="Enter end date"
-        [ngModelOptions]="{standalone: true}" >
-       
+    </div>
+    <div *ngIf="registerButtonClicked && (!branches || branches.length === 0)" class="error-message">
+      Please Select Branch
+    </div>
   </div>
-
-
-
-  <div class="col-md-12">
-    <label>description</label>
-    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
-  </div>
-     
+</div>
 
 
 
@@ -199,39 +206,25 @@
       </div>
     </div>
   </div>
+
+            <div class="col-md-6" >
+               
+            <label>Start Date</label>
+           <input type="date"  class="form-control" required  [(ngModel)]="start_date"  placeholder="Enter start date"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+      
+      <div class="col-md-6" >
+               
+        <label>End Date</label>
+       <input type="date"  class="form-control" required  [(ngModel)]="end_date"  placeholder="Enter end date"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
  
   
-<div class="col-md-6" >
-  <label>Select Branch
-    <span class="required-star">*</span>
-  </label>
-  <div class="custom-sel">
-    <div class="form-control-wrapper">
-  
 
-      <mat-form-field>
-        <!-- <mat-label>Favorite food</mat-label> -->
-        <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branches}" #selectBr multiple>
-          <div class="select-all">
-            <mat-checkbox [(ngModel)]="allSelectedBr" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBr()">
-              Select All
-            </mat-checkbox>
-            
-          </div>
-          <input type="text" placeholder="serach" class="form-control">
-
-          <mat-option *ngFor="let food of Branches"  [value]="food.id">
-            {{ food.branch_name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      
-    </div>
-    <div *ngIf="registerButtonClicked && (!branches || branches.length === 0)" class="error-message">
-      Please Select Branch
-    </div>
-  </div>
-</div>
 
 
   <div class="col-md-6">
@@ -248,6 +241,11 @@
     Please upload a document
   </div>
 </div>
+
+  <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
 
 
        
@@ -352,12 +350,6 @@
        
   </div>
 
-
-
-  <div class="col-md-12">
-    <label>description</label>
-    <textarea class="form-control" [(ngModel)]="editProject.description" [ngModelOptions]="{standalone: true}"></textarea>
-  </div>
      
 
 
@@ -482,7 +474,10 @@
 </div>
 
 
-
+  <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="editProject.description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
        
 
       

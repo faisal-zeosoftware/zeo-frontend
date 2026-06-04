@@ -165,12 +165,22 @@
                     </div>
                      <div *ngIf="registerButtonClicked && !request_type" class="error-message">Request type required</div>
                   </div>
-                
-                
-                 
-                
+                          <div class="col-md-6" >
                
+                <label>Departure date</label>
+               <input type="date"  class="form-control" required  [(ngModel)]="departure_date"  placeholder="Enter departure date"
+                [ngModelOptions]="{standalone: true}" >
                
+          </div> 
+
+                    <div class="col-md-6" >
+               
+            <label>Return date</label>
+           <input type="date"  class="form-control" required  [(ngModel)]="return_date"  placeholder="Enter Return date"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+                
 
               <div class="col-md-6" >
                
@@ -180,20 +190,8 @@
                
           </div>
 
-           <div class="col-md-6" >
-               
-                <label>Departure date</label>
-               <input type="date"  class="form-control" required  [(ngModel)]="departure_date"  placeholder="Enter departure date"
-                [ngModelOptions]="{standalone: true}" >
-               
-          </div>
-          <div class="col-md-6" >
-               
-            <label>Return date</label>
-           <input type="date"  class="form-control" required  [(ngModel)]="return_date"  placeholder="Enter Return date"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
+
+
 
 
       <div class="col-md-6" >
@@ -354,21 +352,7 @@
                     </div>
                   </div>
                 
-                
-                 
-                
-               
-               
-
-              <div class="col-md-6" >
-               
-                <label> Request date</label>
-               <input type="date"  class="form-control" required  [(ngModel)]="editAsset.request_date"  placeholder="Enter request date"
-                [ngModelOptions]="{standalone: true}" >
-               
-          </div>
-
-           <div class="col-md-6" >
+                           <div class="col-md-6" >
                
                 <label>Departure date</label>
                <input type="date"  class="form-control" required  [(ngModel)]="editAsset.departure_date"  placeholder="Enter departure date"
@@ -382,6 +366,17 @@
             [ngModelOptions]="{standalone: true}" >
            
       </div>
+                 
+                
+              <div class="col-md-6" >
+               
+                <label> Request date</label>
+               <input type="date"  class="form-control" required  [(ngModel)]="editAsset.request_date"  placeholder="Enter request date"
+                [ngModelOptions]="{standalone: true}" >
+               
+          </div>
+
+
 
 
       <div class="col-md-6" >

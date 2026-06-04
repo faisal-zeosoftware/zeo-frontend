@@ -879,7 +879,7 @@ rejectApprovalRequestLeave(apiUrl: string, approvalData: { note: string; status:
   
   }
   getApproverUsers(selectedSchema: string): Observable<any> {
-    const apiUrl = `${this.apiUrl}/users/tenant-non-ess-users/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/users/tenant-users/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);

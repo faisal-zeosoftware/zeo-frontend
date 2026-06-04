@@ -54,7 +54,7 @@ export class UserMasterService {
 
   getApprover(selectedSchema: string): Observable<any> {
     // Construct the API URL with the selected schema
-    const Url = `${this.apiUrl}/users/api/user/?schema=${selectedSchema}`;
+    const Url = `${this.apiUrl}/users/tenant-users/?schema=${selectedSchema}`;
   
 
     // Fetch employees from the API

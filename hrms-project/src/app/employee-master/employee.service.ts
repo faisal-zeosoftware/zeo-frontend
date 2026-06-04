@@ -1201,7 +1201,7 @@ deleteDocumentType(categoryId: number): Observable<any> {
     return throwError('No schema selected.'); // Return an error observable if no schema is selected
   }
  
-  const apiUrl = `${this.apiUrl}/core/api/Documents/${categoryId}/?schema=${selectedSchema}`;
+  const apiUrl = `${this.apiUrl}/employee/api/Documents/${categoryId}/?schema=${selectedSchema}`;
  
   return this.http.delete(apiUrl);
 }
@@ -1225,7 +1225,7 @@ deleteDocumentReqType(categoryId: number): Observable<any> {
 
 updateDocumentType(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
-  const apiUrl = `${this.apiUrl}/core/api/Documents/${id}/?schema=${selectedSchema}`;
+  const apiUrl = `${this.apiUrl}/employee/api/Documents/${id}/?schema=${selectedSchema}`;
   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   return this.http.put(apiUrl, data, { headers }).pipe(

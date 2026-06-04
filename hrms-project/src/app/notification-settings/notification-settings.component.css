@@ -99,93 +99,66 @@ margin-right: 10px;
 
 /* Add your CSS styles here */
 .modal {
-  display: block; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  margin-left: auto;
-  margin-right: auto;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    margin-left: auto;
+    margin-right: auto;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 70%; /* Could be more or less, depending on screen size */
+    margin-right: auto;
+    margin-left: 22%;
+    margin-top: 100px;
+    height: auto;
+  
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: red;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  .modal h2{
+  
+    font-size: 16px;
+    text-transform: capitalize;
+    font-weight: 600;
+    font-family: math;
+  }
 
-.modal-content {
-  background-color: #fefefe;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 60%; /* Could be more or less, depending on screen size */
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 100px;
-  height: auto;
 
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  text-align: right;
-}
-
-.close:hover,
-.close:focus {
-  color: red;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.modal h2{
-
-  font-size: 16px;
-  text-transform: capitalize;
-  font-weight: 600;
-  font-family: math;
-}
-
-
+  
   table thead th{
     color: white;
   }
 
 
+
+
+/* multiple checkox style here */
+  
   .form-control-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-::ng-deep .form-control-wrapper mat-form-field {
-  width: 100%;
-}
-
-::ng-deep .form-control-wrapper .mat-form-field-wrapper {
-  padding: 0;
-  margin: 0;
-}
-
-::ng-deep .form-control-wrapper .mat-form-field-flex {
-  background: none;
-  border: none;
-  box-shadow: none;
-}
-
-::ng-deep .form-control-wrapper .mat-form-field-underline {
-  display: none;
-}
-
-::ng-deep .form-control-wrapper .mat-select {
-  padding: 0;
-  border: none;
-  box-shadow: none;
-  height: auto;
-  line-height: 1.5;
-}
-
- .form-control-wrapper {
     display: flex;
     flex-direction: column;
   }
@@ -242,58 +215,117 @@ margin-right: 10px;
     margin-top: -14px;
 }
 
+::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
 
-/* Notify Users mat-select same style as form-control */
-::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  min-height: 38px;
-  background: #fff;
-  padding: 4px 10px;
-  box-shadow: none !important;
+  background-color: white;
 }
 
-/* Remove default Material outline */
-::ng-deep .form-control-wrapper .mdc-notched-outline {
-  display: none !important;
+::ng-deep .form-control-wrapper .mdc-text-field{
+  padding: 0px;
 }
 
-/* Align selected text properly */
-::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
-  min-height: 30px;
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
+  outline: none-webkit-focus-ring-color auto 0px;
+  
+
+}
+
+
+/* Remove :focus-visible style from all input elements */
+input:focus-visible {
+  outline: none;
+}
+
+/* Remove :focus-visible style from mat-select */
+.mat-select:focus-visible {
+  outline: none;
+}
+
+/* Use !important to ensure the outline is removed */
+::ng-deep .form-control-wrapper:focus-visible {
+  outline: none !important;
+}
+
+
+::ng-deep .mat-select:focus-visible {
+  outline: none;
+}
+
+/* Optionally, you can also override other styles */
+::ng-deep .mat-select:focus-visible .mat-select-value {
+  outline: none;
+}
+
+::ng-deep .mdc-text-field--no-label{
+  border:1px solid #ced4da;
+}
+
+::ng-deep .mat-mdc-form-field-flex {
+  padding: 4px 7px;
+  height: 35px;
+}
+
+
+.table-scroll{
+    overflow-x: scroll;
+    overflow-y: scroll;
+}
+
+
+
+::ng-deep .table-scroll thead th{
+    white-space: nowrap;
+}
+/* .loader-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  justify-content: center;
   align-items: center;
 }
 
-/* Focus effect like bootstrap */
-::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:hover,
-::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
-  border-color: #80bdff;
+.loader-container.show {
+  display: flex;
 }
 
-/* Search input inside dropdown */
-::ng-deep .mat-mdc-select-panel input.form-control {
-  margin: 10px;
-  width: calc(100% - 20px);
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} */
 
-/* Phones */
-@media (max-width: 768px) {
 
- ::ng-deep.modal-content{
+
+
+
+  /* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
     
-    margin-top: 200px !important;
+    margin-top: 200px;
+    margin-left: 15%;
 
   }
 
-
-.header_section{
+  .header_section{
   background: white;
   padding: 24px 18px 15px 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   width: 100%;
   border-bottom: solid 3px navy;
 }
-
-
-  }
+}

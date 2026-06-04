@@ -192,7 +192,7 @@ updateEscalationLevelLeave(selectedSchema: string, levelId: number, data: any): 
 
   getApprover(selectedSchema: string): Observable<any> {
     // Construct the API URL with the selected schema
-    const Url = `${this.apiUrl}/users/tenant-non-ess-users/?schema=${selectedSchema}`;
+    const Url = `${this.apiUrl}/users/tenant-users/?schema=${selectedSchema}`;
 
     // Fetch employees from the API
     return this.http.get(Url);

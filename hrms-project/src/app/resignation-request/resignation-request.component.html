@@ -128,6 +128,24 @@
 </div>
 
               <div class="col-md-6">
+                <label>Type
+                  <span class="required-star">*</span>
+                </label>
+                <div class="custom-sel">
+                  <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location}">
+                    <option  value="resignation" >Resignation</option>
+                    <option  value="termination" >Termination</option>
+
+                    <option  value="retirement" >Retirement</option>
+
+                    <option  value="death_or_disablement" >Death or Disablement</option>
+                    
+                  </select>
+                </div>
+                 <div *ngIf="registerButtonClicked && !termination_type" class="error-message">Termination Type Required</div>
+              </div>
+
+              <div class="col-md-6">
                 <label>Document date
                   <span class="required-star">*</span>
                 </label>
@@ -174,24 +192,6 @@
               </div>
             
 
-            
-              <div class="col-md-6">
-                <label>Type
-                  <span class="required-star">*</span>
-                </label>
-                <div class="custom-sel">
-                  <select class="form-control" id="termination_type" name="termination_type" [(ngModel)]="termination_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !location}">
-                    <option  value="resignation" >Resignation</option>
-                    <option  value="termination" >Termination</option>
-
-                    <option  value="retirement" >Retirement</option>
-
-                    <option  value="death_or_disablement" >Death or Disablement</option>
-                    
-                  </select>
-                </div>
-                 <div *ngIf="registerButtonClicked && !termination_type" class="error-message">Termination Type Required</div>
-              </div>
 
           <div class="col-md-6">
             <label>Request Attachment</label>

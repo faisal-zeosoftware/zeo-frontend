@@ -109,36 +109,6 @@
           </div>
 
          
-          <div class="col-md-6" >
-               
-            <label>Start Date</label>
-           <input type="date"  class="form-control" required  [(ngModel)]="start_date"  placeholder="Enter start date"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
-      
-      <div class="col-md-6" >
-               
-        <label>End Date</label>
-       <input type="date"  class="form-control" required  [(ngModel)]="end_date"  placeholder="Enter end date"
-        [ngModelOptions]="{standalone: true}" >
-       
-  </div>
-
-
-
-  <div class="col-md-12">
-    <label>description</label>
-    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
-  </div>
-     
-  <div class="col-md-6" >
-               
-    <label>Sequence</label>
-   <input type="number"  class="form-control" required  [(ngModel)]="sequence"  placeholder="Enter sequence"
-    [ngModelOptions]="{standalone: true}" >
-   
-</div>
 
 
 <div class="col-md-6" >
@@ -247,6 +217,31 @@
       </div>
     </div>
   </div>
+
+       
+  <div class="col-md-6" >
+               
+    <label>Sequence</label>
+   <input type="number"  class="form-control" required  [(ngModel)]="sequence"  placeholder="Enter sequence"
+    [ngModelOptions]="{standalone: true}" >
+   
+</div>
+
+            <div class="col-md-6" >
+               
+            <label>Start Date</label>
+           <input type="date"  class="form-control" required  [(ngModel)]="start_date"  placeholder="Enter start date"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+      
+      <div class="col-md-6" >
+               
+        <label>End Date</label>
+       <input type="date"  class="form-control" required  [(ngModel)]="end_date"  placeholder="Enter end date"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
  
 
   <div class="col-md-6">
@@ -263,6 +258,11 @@
     Please upload a document
   </div>
 </div>
+
+  <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
 
 
        
@@ -351,36 +351,7 @@
           </div>
 
          
-          <div class="col-md-6" >
-               
-            <label>Start Date</label>
-           <input type="date"  class="form-control" required  [(ngModel)]="editProjecttask.start_date"  placeholder="Enter start date"
-            [ngModelOptions]="{standalone: true}" >
-           
-      </div>
       
-      <div class="col-md-6" >
-               
-        <label>End Date</label>
-       <input type="date"  class="form-control" required  [(ngModel)]="editProjecttask.end_date"  placeholder="Enter end date"
-        [ngModelOptions]="{standalone: true}" >
-       
-  </div>
-
-
-
-  <div class="col-md-12">
-    <label>description</label>
-    <textarea class="form-control" [(ngModel)]="editProjecttask.description" [ngModelOptions]="{standalone: true}"></textarea>
-  </div>
-     
-  <div class="col-md-6" >
-               
-    <label>Sequence</label>
-   <input type="number"  class="form-control" required  [(ngModel)]="editProjecttask.sequence"  placeholder="Enter sequence"
-    [ngModelOptions]="{standalone: true}" >
-   
-</div>
 
 
 <div class="col-md-6" >
@@ -475,7 +446,32 @@
       </div>
     </div>
   </div>
- 
+      
+  <div class="col-md-6" >
+               
+    <label>Sequence</label>
+   <input type="number"  class="form-control" required  [(ngModel)]="editProjecttask.sequence"  placeholder="Enter sequence"
+    [ngModelOptions]="{standalone: true}" >
+   
+</div>
+  
+      <div class="col-md-6" >
+               
+            <label>Start Date</label>
+           <input type="date"  class="form-control" required  [(ngModel)]="editProjecttask.start_date"  placeholder="Enter start date"
+            [ngModelOptions]="{standalone: true}" >
+           
+      </div>
+      
+      <div class="col-md-6" >
+               
+        <label>End Date</label>
+       <input type="date"  class="form-control" required  [(ngModel)]="editProjecttask.end_date"  placeholder="Enter end date"
+        [ngModelOptions]="{standalone: true}" >
+       
+  </div>
+
+
 
 <div class="col-md-6">
   <label>Upload Document</label>
@@ -511,8 +507,10 @@
 </div>
 
 
-
-       
+  <div class="col-md-12">
+    <label>description</label>
+    <textarea class="form-control" [(ngModel)]="editProjecttask.description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
 
       
 <div class="col-md-6">

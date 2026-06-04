@@ -374,7 +374,7 @@ export class CountryService {
      
   
       
-      const apiUrl = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
+      const apiUrl = `${this.apiUrl}/employee/api/Documents/?schema=${selectedSchema}`;
       const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   
       return this.http.post(apiUrl, companyData, { headers }).pipe(
@@ -416,12 +416,12 @@ export class CountryService {
           console.error('No schema selected.');
           return throwError('No schema selected.');
         }
-        const url = `${this.apiUrl}/core/api/Documents/${docId}/?schema=${selectedSchema}`;
+        const url = `${this.apiUrl}/employee/api/Documents/${docId}/?schema=${selectedSchema}`;
         return this.http.put(url, payload);
       }
 
       deleteAssignedPermission(permissionId: number,selectedSchema: string): Observable<any> {
-        const apiUrl = `${this.apiUrl}/core/api/Documents/${permissionId}/?schema=${selectedSchema}`;
+        const apiUrl = `${this.apiUrl}/employee/api/Documents/${permissionId}/?schema=${selectedSchema}`;
         return this.http.delete(apiUrl);
       }
     
@@ -519,7 +519,7 @@ export class CountryService {
     // Converts [1,3,4] into the string "[1,3,4]" for the URL
     const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
     
-    let url = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
+    let url = `${this.apiUrl}/employee/api/Documents/?schema=${selectedSchema}`;
     if (branchParam) {
       url += `&branch_id=${branchParam}`;
     }
