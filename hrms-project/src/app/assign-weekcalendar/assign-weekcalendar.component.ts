@@ -1152,60 +1152,57 @@ openEditModal(asset: any): void {
 
   this.editAsset = { ...asset };
 
-  // Weekend Calendar
-  this.editAsset.weekend_model = asset.weekend_model;
+  // Weekend Calendar Auto Select
 
+  const selectedCalendar = this.WeekCalendar.find(
+    (x: any) => x.weekend_name === asset.weekend_model
+  );
+  
+  this.editAsset.weekend_model =
+    selectedCalendar?.id ?? null;
+
+    
   // Branch
-  this.editSelectedBranches =
-    this.branches
-      .filter(x =>
-        asset.branch?.includes(x.branch_name)
-      )
-      .map(x => x.id);
+  this.editSelectedBranches = this.branches
+    .filter(x =>
+      asset.branch?.includes(x.branch_name)
+    )
+    .map(x => x.id);
 
   // Department
-  this.editSelectedDepartments =
-    this.Departments
-      .filter(x =>
-        asset.department?.includes(x.dept_name)
-      )
-      .map(x => x.id);
+  this.editSelectedDepartments = this.Departments
+    .filter(x =>
+      asset.department?.includes(x.dept_name)
+    )
+    .map(x => x.id);
 
   // Category
-  this.editSelectedCategories =
-    this.Categories
-      .filter(x =>
-        asset.category?.includes(x.ctgry_title)
-      )
-      .map(x => x.id);
+  this.editSelectedCategories = this.Categories
+    .filter(x =>
+      asset.category?.includes(x.ctgry_title)
+    )
+    .map(x => x.id);
 
   // Designation
-  this.editSelectedDesignations =
-    this.Designations
-      .filter(x =>
-        asset.designation?.includes(
-          x.desgntn_job_title
-        )
+  this.editSelectedDesignations = this.Designations
+    .filter(x =>
+      asset.designation?.includes(
+        x.desgntn_job_title
       )
-      .map(x => x.id);
+    )
+    .map(x => x.id);
 
   // Employees
 
-  this.editFilteredEmployees =
-    this.Employee.map(emp => ({
+  this.editFilteredEmployees = this.Employee.map(emp => ({
+    ...emp,
 
-      ...emp,
+    selected:
+      asset.employee?.includes(emp.id) ||
+      asset.employee?.includes(emp.emp_code)
+  }));
 
-      selected:
-        asset.employee?.includes(
-          emp.emp_code
-        ) ||
-
-        asset.employee?.includes(
-          emp.id
-        )
-
-    }));
+  this.editCurrentPage = 1;
 
   this.applyEditEmployeeFilter();
 
@@ -1215,12 +1212,15 @@ openEditModal(asset: any): void {
 
 applyEditEmployeeFilter(): void {
 
+  const selectedEmpIds = this.editFilteredEmployees
+    .filter(x => x.selected)
+    .map(x => x.id);
+
   this.editFilteredEmployees =
     this.Employee.filter(emp => {
 
       const branchMatch =
         this.editSelectedBranches.length === 0 ||
-
         this.editSelectedBranches.some(id =>
           emp.emp_branch_id ===
           this.getBranchName(id)
@@ -1228,7 +1228,6 @@ applyEditEmployeeFilter(): void {
 
       const deptMatch =
         this.editSelectedDepartments.length === 0 ||
-
         this.editSelectedDepartments.some(id =>
           emp.emp_dept_id ===
           this.getDepartmentName(id)
@@ -1236,7 +1235,6 @@ applyEditEmployeeFilter(): void {
 
       const categoryMatch =
         this.editSelectedCategories.length === 0 ||
-
         this.editSelectedCategories.some(id =>
           emp.emp_ctgry_id ===
           this.getCategoryName(id)
@@ -1244,7 +1242,6 @@ applyEditEmployeeFilter(): void {
 
       const designationMatch =
         this.editSelectedDesignations.length === 0 ||
-
         this.editSelectedDesignations.some(id =>
           emp.emp_desgntn_id ===
           this.getDesignationName(id)
@@ -1257,7 +1254,12 @@ applyEditEmployeeFilter(): void {
         designationMatch
       );
 
-    });
+    }).map(emp => ({
+      ...emp,
+      selected: selectedEmpIds.includes(emp.id)
+    }));
+
+  this.editCurrentPage = 1;
 
   this.updateEditPagination();
 }
@@ -1285,8 +1287,8 @@ updateAssetType(): void {
 
   const selectedEmployees =
     this.editFilteredEmployees
-      .filter(x => x.selected)
-      .map(x => x.id);
+      .filter(emp => emp.selected)
+      .map(emp => emp.id);
 
   const payload = {
 
@@ -1312,6 +1314,225 @@ updateAssetType(): void {
 
   console.log(payload);
 
+  // API Call here
+
 }
+
+get editTotalPages(): number {
+
+  return Math.ceil(
+    this.editFilteredEmployees.length /
+    this.editItemsPerPage
+  );
+
+}
+
+
+editNextPage(): void {
+
+  if (
+    this.editCurrentPage <
+    this.editTotalPages
+  ) {
+
+    this.editCurrentPage++;
+
+    this.updateEditPagination();
+
+  }
+
+}
+
+
+editPreviousPage(): void {
+
+  if (
+    this.editCurrentPage > 1
+  ) {
+
+    this.editCurrentPage--;
+
+    this.updateEditPagination();
+
+  }
+
+}
+
+editGoToPage(page: number): void {
+
+  this.editCurrentPage = page;
+
+  this.updateEditPagination();
+
+}
+
+
+get editPageNumbers(): number[] {
+
+  return Array(
+    this.editTotalPages
+  ).fill(0).map((x, i) => i + 1);
+
+}
+
+
+
+// toggleSelectAllEditEmployees(): void {
+
+//   const value =
+//     !this.editAllEmployeesSelected;
+
+//   this.editAllEmployeesSelected =
+//     value;
+
+//   this.editFilteredEmployees.forEach(
+//     emp => emp.selected = value
+//   );
+
+// }
+
+toggleSelectAllEditEmployees(): void {
+
+  this.editFilteredEmployees.forEach(emp => {
+
+    emp.selected = this.editAllEmployeesSelected;
+
+  });
+
+  this.updateEditPagination();
+
+}
+
+
+toggleAllEditBranches(): void {
+
+  if (this.editSelectedBranches.length === this.branches.length) {
+
+    this.editSelectedBranches = [];
+
+  } else {
+
+    this.editSelectedBranches =
+      this.branches.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditBranchesSelected(): boolean {
+
+  return this.branches.length > 0 &&
+         this.editSelectedBranches.length === this.branches.length;
+
+}
+
+isSomeEditBranchesSelected(): boolean {
+
+  return this.editSelectedBranches.length > 0 &&
+         this.editSelectedBranches.length < this.branches.length;
+
+}
+
+
+
+toggleAllEditDepartments(): void {
+
+  if (this.editSelectedDepartments.length === this.Departments.length) {
+
+    this.editSelectedDepartments = [];
+
+  } else {
+
+    this.editSelectedDepartments =
+      this.Departments.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditDepartmentsSelected(): boolean {
+
+  return this.Departments.length > 0 &&
+         this.editSelectedDepartments.length === this.Departments.length;
+
+}
+
+isSomeEditDepartmentsSelected(): boolean {
+
+  return this.editSelectedDepartments.length > 0 &&
+         this.editSelectedDepartments.length < this.Departments.length;
+
+}
+
+
+toggleAllEditCategories(): void {
+
+  if (this.editSelectedCategories.length === this.Categories.length) {
+
+    this.editSelectedCategories = [];
+
+  } else {
+
+    this.editSelectedCategories =
+      this.Categories.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditCategoriesSelected(): boolean {
+
+  return this.Categories.length > 0 &&
+         this.editSelectedCategories.length === this.Categories.length;
+
+}
+
+isSomeEditCategoriesSelected(): boolean {
+
+  return this.editSelectedCategories.length > 0 &&
+         this.editSelectedCategories.length < this.Categories.length;
+
+}
+
+toggleAllEditDesignations(): void {
+
+  if (this.editSelectedDesignations.length === this.Designations.length) {
+
+    this.editSelectedDesignations = [];
+
+  } else {
+
+    this.editSelectedDesignations =
+      this.Designations.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditDesignationsSelected(): boolean {
+
+  return this.Designations.length > 0 &&
+         this.editSelectedDesignations.length === this.Designations.length;
+
+}
+
+isSomeEditDesignationsSelected(): boolean {
+
+  return this.editSelectedDesignations.length > 0 &&
+         this.editSelectedDesignations.length < this.Designations.length;
+
+}
+
+
+
+
 
 }
