@@ -1161,7 +1161,7 @@ openEditModal(asset: any): void {
   this.editAsset.weekend_model =
     selectedCalendar?.id ?? null;
 
-    
+
   // Branch
   this.editSelectedBranches = this.branches
     .filter(x =>
@@ -1282,7 +1282,6 @@ updateEditPagination(): void {
 }
 
 
-
 updateAssetType(): void {
 
   const selectedEmployees =
@@ -1292,29 +1291,55 @@ updateAssetType(): void {
 
   const payload = {
 
-    weekend_model:
-      this.editAsset.weekend_model,
+    weekend_model: this.editAsset.weekend_model,
 
-    branch:
-      this.editSelectedBranches,
+    branch: this.editSelectedBranches,
 
-    department:
-      this.editSelectedDepartments,
+    department: this.editSelectedDepartments,
 
-    category:
-      this.editSelectedCategories,
+    category: this.editSelectedCategories,
 
-    designation:
-      this.editSelectedDesignations,
+    designation: this.editSelectedDesignations,
 
-    employee:
-      selectedEmployees
+    employee: selectedEmployees
 
   };
 
-  console.log(payload);
+  console.log('Update Payload:', payload);
 
-  // API Call here
+  this.employeeService
+    .updateAssignweekCalendar(this.editAsset.id, payload)
+    .subscribe({
+
+      next: (response) => {
+
+        alert('Weekend Calendar Updated Successfully');
+
+        this.closeEditModal();
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);  
+            
+    
+          }
+        });
+
+      },
+
+      error: (error) => {
+
+        alert(
+          error.error?.error ||
+          error.error?.message ||
+          'Update failed'
+        );
+
+      }
+
+    });
 
 }
 

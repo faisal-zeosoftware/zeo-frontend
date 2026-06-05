@@ -1795,6 +1795,31 @@ updateGeofence(id: number, data: any): Observable<any> {
   }
 
 
+  updateAssignweekCalendar(id: number, companyData: any): Observable<any> {
+
+    const selectedSchema = localStorage.getItem('selectedSchema');
+  
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError(() => new Error('No schema selected.'));
+    }
+  
+    const Url =
+      `${this.apiUrl}/calendars/api/assign-weekend/${id}/?schema=${selectedSchema}`;
+  
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+  
+    return this.http.put(Url, companyData, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error during update:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+
   deleteAssignWeekendcalendar(id: number, selectedSchema: string): Observable<any> {
     const url = `${this.apiUrl}/calendars/api/assign-weekend/${id}/?schema=${selectedSchema}`;
     return this.http.delete(url);
