@@ -1,186 +1,243 @@
 <div class="container">
   <div class="comapny_section">
-
-
-
-
     <div class="header_section">
-
       <div class="row">
         <div class="col-md-4">
-          <h1> Employee Overtime </h1>
+          <h1>Employee Overtime</h1>
         </div>
         <div class="col-md-3">
-
           <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
         </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
-            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span
-                class="header-btn-icon"><i class="fa-solid fa-circle-plus"></i>
-              </span> Create</button>
+            <button
+              type="button"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
+            >
+              <span class="header-btn-icon"
+                ><i class="fa-solid fa-circle-plus"></i>
+              </span>
+              Create
+            </button>
             <span *ngIf="!hasAddPermission"></span>
 
-            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
-              <span class="header-btn-icon">
-                <mat-icon>draw
-                </mat-icon></span> Edit</button>
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
             <span *ngIf="hasEditPermission"></span>
 
-            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission">
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
               <span class="header-btn-icon">
-                <mat-icon> delete
-                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
 
             <span *ngIf="!hasDeletePermission"></span>
           </div>
         </div>
       </div>
-
-
-
     </div>
 
     <div class="row">
       <div class="col-md-2">
-
-        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()">Select All</button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          style="width: 100%"
+          color="warn"
+          *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()"
+        >
+          Select All
+        </button>
       </div>
       <div class="col-md-3">
-        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete
-          Selected </button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          color="warn"
+          *ngIf="Delete"
+          (click)="deleteSelectedAssetType()"
+        >
+          Delete Selected
+        </button>
       </div>
     </div>
-
-
 
     <div *ngIf="iscreateLoanApp" class="modal">
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2> Create Employee Overtime</h2>
+            <h2>Create Employee Overtime</h2>
           </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div>  
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+          </div>
         </div>
         <hr />
         <form (ngSubmit)="EmployeeOvertime()" enctype="multipart/form-data">
-
-
           <div class="row">
-
-    
             <div class="col-md-6">
-              <label>Employee
-                 <span class="required-star">*</span>
+              <label
+                >Employee
+                <span class="required-star">*</span>
               </label>
               <div class="custom-sel">
-                <select class="form-control" id="employee" name="employee" [(ngModel)]="employee"
-                  [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !employee}">
-                  <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
+                <select
+                  class="form-control"
+                  id="employee"
+                  name="employee"
+                  [(ngModel)]="employee"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !employee,
+                  }"
+                >
+                  <option
+                    *ngFor="let leavetype of Employees"
+                    [value]="leavetype.id"
+                  >
                     {{ leavetype.emp_code }}
                   </option>
                 </select>
               </div>
-              <div *ngIf="registerButtonClicked && !employee" class="error-message">employee is required.</div>
-            </div>
-
-
-            <div class="col-md-6">
-              <label>Date
-                 <span class="required-star">*</span>
-              </label>
-              <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Enter date"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !date}">
-              <div *ngIf="registerButtonClicked && !date" class="error-message">date is required.</div>
+              <div
+                *ngIf="registerButtonClicked && !employee"
+                class="error-message"
+              >
+                employee is required.
+              </div>
             </div>
 
             <div class="col-md-6">
-              <label>Hours
-                 <span class="required-star">*</span>
+              <label
+                >Date
+                <span class="required-star">*</span>
               </label>
-              <input type="text" class="form-control" required [(ngModel)]="hours"
-                placeholder="Number of overtime hours" [ngModelOptions]="{standalone: true}"
-                [ngClass]="{'error-field': registerButtonClicked && !hours}">
-              <div *ngIf="registerButtonClicked && !hours" class="error-message">hours is required.</div>
+              <input
+                type="date"
+                class="form-control"
+                required
+                [(ngModel)]="date"
+                placeholder="Enter date"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !date }"
+              />
+              <div *ngIf="registerButtonClicked && !date" class="error-message">
+                date is required.
+              </div>
             </div>
 
+            <div class="col-md-6">
+              <label
+                >Hours
+                <span class="required-star">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="hours"
+                placeholder="Number of overtime hours"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !hours }"
+              />
+              <div
+                *ngIf="registerButtonClicked && !hours"
+                class="error-message"
+              >
+                hours is required.
+              </div>
+            </div>
 
             <div class="col-md-6">
               <label>Rate multiplier</label>
-              <input type="text" class="form-control" required [(ngModel)]="rate_multiplier"
-                placeholder="Multiplier for overtime rate" [ngModelOptions]="{standalone: true}">
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="rate_multiplier"
+                placeholder="Multiplier for overtime rate"
+                [ngModelOptions]="{ standalone: true }"
+              />
             </div>
 
+            <div class="col-md-6">
+              <label> Slab</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="slab"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="OT">Overtime</option>
+                  <option value="EXT">Extended Overtime</option>
+                </select>
+              </div>
+            </div>
 
+            <div class="col-md-6">
+              <label>approved by</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  id="approved_by"
+                  name="approved_by"
+                  [(ngModel)]="approved_by"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option *ngFor="let approver of Users" [value]="approver.id">
+                    {{ approver.username }}
+                  </option>
+                </select>
+              </div>
+            </div>
 
             <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-3">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="approved" [ngModelOptions]="{standalone: true}">Approved</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="approved"
+                    [ngModelOptions]="{ standalone: true }"
+                    >Approved</mat-checkbox
+                  >
                 </div>
               </div>
             </div>
-
-
-
-            <div class="col-md-6">
-              <label> Slab</label>
-              <div class="custom-sel">
-                <select class="form-control" [(ngModel)]="slab" [ngModelOptions]="{standalone: true}">
-                  <option value="OT">Overtime</option>
-                  <option value="EXT">Extended Overtime </option>
-                </select>
-              </div>
-            </div>
-
-
-
-
-
-            <div class="col-md-6">
-              <label>approved by</label>
-              <div class="custom-sel">
-                <select class="form-control" id="approved_by" name="approved_by" [(ngModel)]="approved_by"
-                  [ngModelOptions]="{standalone: true}">
-                  <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.username }}</option>
-                </select>
-              </div>
-            </div>
-
-
-
-
-
-
-
           </div>
 
           <div class="row" *ngIf="hasAddPermission">
             <div class="col-md-8"></div>
             <div class="col-md-2">
-              <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-4">Close</button>
-
+              <button
+                type="button"
+                (click)="closeapplicationModal()"
+                class="btn btn-danger btn-full mt-4"
+              >
+                Close
+              </button>
             </div>
             <div class="col-md-2">
-              <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
+              <button type="submit" class="btn btn-success btn-full mt-4">
+                Add
+              </button>
             </div>
           </div>
         </form>
-
-
-
-
       </div>
     </div>
 
@@ -189,121 +246,156 @@
       <div class="modal-content">
         <div class="row">
           <div class="col-md-10">
-            <h2>Edit Employee Overtime </h2>
+            <h2>Edit Employee Overtime</h2>
           </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeEditModal()">
-      ×
-    </span>
-  </div>  
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeEditModal()"> × </span>
+          </div>
         </div>
         <hr />
 
         <form>
           <div class="row">
-
-
-              <div class="col-md-6">
+            <div class="col-md-6">
               <label>Employee</label>
               <div class="custom-sel">
-                <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee"
-                  [ngModelOptions]="{ standalone: true }">
-                  <option *ngFor="let leavetype of Employees" [value]="leavetype.id">
+                <select
+                  class="form-control"
+                  id="employee"
+                  name="employee"
+                  [(ngModel)]="editAsset.employee"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option
+                    *ngFor="let leavetype of Employees"
+                    [value]="leavetype.id"
+                  >
                     {{ leavetype.emp_code }}
                   </option>
                 </select>
               </div>
             </div>
 
-
             <div class="col-md-6">
               <label>Date</label>
-              <input type="date" class="form-control" required [(ngModel)]="editAsset.date" placeholder="Enter date"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !date}">
-              <div *ngIf="registerButtonClicked && !date" class="error-message">date field is required.</div>
+              <input
+                type="date"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.date"
+                placeholder="Enter date"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !date }"
+              />
+              <div *ngIf="registerButtonClicked && !date" class="error-message">
+                date field is required.
+              </div>
             </div>
 
             <div class="col-md-6">
               <label>Hours</label>
-              <input type="text" class="form-control" required [(ngModel)]="editAsset.hours"
-                placeholder="Number of overtime hours" [ngModelOptions]="{standalone: true}"
-                [ngClass]="{'error-field': registerButtonClicked && !hours}">
-              <div *ngIf="registerButtonClicked && !hours" class="error-message">hours field is required.</div>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.hours"
+                placeholder="Number of overtime hours"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !hours }"
+              />
+              <div
+                *ngIf="registerButtonClicked && !hours"
+                class="error-message"
+              >
+                hours field is required.
+              </div>
             </div>
-
 
             <div class="col-md-6">
               <label>Rate multiplier</label>
-              <input type="text" class="form-control" required [(ngModel)]="editAsset.rate_multiplier"
-                placeholder="Multiplier for overtime rate" [ngModelOptions]="{standalone: true}">
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.rate_multiplier"
+                placeholder="Multiplier for overtime rate"
+                [ngModelOptions]="{ standalone: true }"
+              />
             </div>
-
-
 
             <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-3">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.approved" [ngModelOptions]="{standalone: true}">Approved</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.approved"
+                    [ngModelOptions]="{ standalone: true }"
+                    >Approved</mat-checkbox
+                  >
                 </div>
               </div>
             </div>
 
-
             <div class="col-md-6">
               <label> Slab</label>
               <div class="custom-sel">
-                <select class="form-control" [(ngModel)]="editAsset.slab" [ngModelOptions]="{standalone: true}">
+                <select
+                  class="form-control"
+                  [(ngModel)]="editAsset.slab"
+                  [ngModelOptions]="{ standalone: true }"
+                >
                   <option value="OT">Overtime</option>
-                  <option value="EXT">Extended Overtime </option>
+                  <option value="EXT">Extended Overtime</option>
                 </select>
               </div>
             </div>
-
-
 
             <div class="col-md-6">
               <label>approved by</label>
               <div class="custom-sel">
-                <select class="form-control" id="approved_by" name="approved_by" [(ngModel)]="editAsset.approved_by"
-                  [ngModelOptions]="{standalone: true}">
-                  <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.username }}</option>
+                <select
+                  class="form-control"
+                  id="approved_by"
+                  name="approved_by"
+                  [(ngModel)]="editAsset.approved_by"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option *ngFor="let approver of Users" [value]="approver.id">
+                    {{ approver.username }}
+                  </option>
                 </select>
               </div>
             </div>
-
-
-
-
-
-
-
           </div>
-
 
           <div class="row">
             <div class="col-md-8"></div>
             <div class="col-md-2">
-              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-4">Close</button>
-
+              <button
+                type="button"
+                (click)="closeEditModal()"
+                class="btn btn-danger btn-full mt-4"
+              >
+                Close
+              </button>
             </div>
             <div class="col-md-2">
-              <button type="button" (click)="updateAssetType()" class="btn btn-success btn-full mt-4">Update</button>
+              <button
+                type="button"
+                (click)="updateAssetType()"
+                class="btn btn-success btn-full mt-4"
+              >
+                Update
+              </button>
             </div>
           </div>
         </form>
-
-
-
       </div>
     </div>
 
-
-
-
-   <div class="com_list mt-4" *ngIf="hasViewPermission">
-        <table width="100%" *ngIf="hasViewPermission">
+    <div class="com_list mt-4" *ngIf="hasViewPermission">
+      <table width="100%" *ngIf="hasViewPermission">
         <thead class="thead-dark">
           <tr>
             <th>No</th>
@@ -331,28 +423,19 @@
                 color="primary"
                 aria-label="Edit icon"
                 *ngIf="showEditBtn"
-    
-                
                 (click)="openEditModal(docs)"
               >
-                <mat-icon style="color: white;">draw</mat-icon>
+                <mat-icon style="color: white">draw</mat-icon>
               </button>
-    
-              <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-    
+
+              <mat-checkbox
+                *ngIf="Delete"
+                [(ngModel)]="docs.selected"
+              ></mat-checkbox>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
-
-
   </div>
-
-
-
-
-
-
 </div>

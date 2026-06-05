@@ -93,6 +93,15 @@ ShiftsPattern: any[] = [];
   Employee: any[] = [];
   Designations: any[] = [];
 
+  branch: number[] = [];
+  department: number[] = [];
+  category: number[] = [];
+  designation: number[] = [];
+
+  employee: number[] = [];
+
+  FilteredEmployees: any[] = [];
+
   
   allSelectedbR=false;
   allSelectedBrach=false;
@@ -151,8 +160,8 @@ ngOnInit(): void {
       this.loadShifts();
       this.loadShiftsEmployee();
       // this.loadShiftsEmployee();
-      this.loadDeparmentBranch(); 
-       this.loadEmployee();
+       this.loadBranches(); 
+       this.loadEmp();
        this.loadDEpartments();
        this.loadShiftsPattern();
 
@@ -332,7 +341,6 @@ ngOnInit(): void {
 
   departments:any='';
   single_shift_pattern:any='';
-  employee:any='';
   categories:any='';
   designations:any='';
 
@@ -343,38 +351,37 @@ ngOnInit(): void {
 
 
   registerEmployeeallocateshifts(): void {
-    this.registerButtonClicked = true;
+        const selectedEmployeeIds =
+      this.FilteredEmployees
+        .filter(x => x.selected)
+        .map(x => x.id);
   
     // Build the payload, converting values as necessary:
-    const payload = {
-      start_date: this.start_date || null,
-      end_date: this.end_date || null,
-      schedule_name: this.schedule_name || null,
-      shift_type: this.shift_type || null,
-      created_by: this.created_by ,
+const payload = {
+  start_date: this.start_date || null,
+  end_date: this.end_date || null,
+  schedule_name: this.schedule_name || null,
+  shift_type: this.shift_type || null,
+  created_by: this.created_by,
 
-      // Convert to number if provided; otherwise, send null.
-      rotation_cycle_weeks: this.rotation_cycle_weeks ? Number(this.rotation_cycle_weeks) : null,
+  rotation_cycle_weeks: this.rotation_cycle_weeks
+    ? Number(this.rotation_cycle_weeks)
+    : null,
 
-      week1_pattern: this.week1_pattern || null,
-      week2_pattern: this.week2_pattern || null,
-      week3_pattern: this.week3_pattern || null,
-      week4_pattern: this.week4_pattern || null,
+  week1_pattern: this.week1_pattern || null,
+  week2_pattern: this.week2_pattern || null,
+  week3_pattern: this.week3_pattern || null,
+  week4_pattern: this.week4_pattern || null,
 
-      // employee: this.employee || null,
-      branches: this.branches || null,
-     
-      // designations: this.designations || null,
-      // categories: this.categories || null,
-     employee: (this.employee && Array.isArray(this.employee)) ? this.employee : [],
-     designations: (this.designations && Array.isArray(this.designations)) ? this.designations : [],
-     categories: (this.categories && Array.isArray(this.categories)) ? this.categories : [],
-      // For a multi-select field, ensure we send an array.
-     departments: (this.departments && Array.isArray(this.departments)) ? this.departments : [],
+  branches: this.selectedBranches,
+  departments: this.selectedDepartments,
+  categories: this.selectedCategories,
+  designations: this.selectedDesignations,
 
-      // If nothing is selected for single shift pattern, send null.
-      single_shift_pattern: this.single_shift_pattern || null,
-    };
+  employee: selectedEmployeeIds,
+
+  single_shift_pattern: this.single_shift_pattern || null
+};
   
     console.log('Payload:', payload);
   
@@ -403,6 +410,373 @@ ngOnInit(): void {
       }
     );
   }
+
+    //////////////////////////////////////////////////// Create Section ///////////////////////////////////////////////////////
+
+   iscreateEmployeeShift: boolean = false;
+
+  openPopus(): void {
+    this.iscreateEmployeeShift = true;
+
+    // reset branch
+    this.branch = [];
+
+    // ✅ Auto select first branch
+    if (this.branches && this.branches.length > 0) {
+
+      this.branch = [this.branches[0].id];
+
+      this.allSelectedBrach = false;
+
+    }
+
+  }
+
+  closeapplicationModal(): void {
+    this.iscreateEmployeeShift = false;
+
+  }
+
+  selectedBranches: number[] = [];
+  selectedDepartments: number[] = [];
+  selectedCategories: number[] = [];
+  selectedDesignations: number[] = [];
+
+  allEmployeesSelected = false;
+
+  applyEmployeeFilter(): void {
+
+    this.FilteredEmployees = this.Employee.filter(emp => {
+
+      const branchMatch =
+        this.selectedBranches.length === 0 ||
+        this.selectedBranches.some(id =>
+          emp.emp_branch_id === this.getBranchName(id)
+        );
+
+      const deptMatch =
+        this.selectedDepartments.length === 0 ||
+        this.selectedDepartments.some(id =>
+          emp.emp_dept_id === this.getDepartmentName(id)
+        );
+
+      const categoryMatch =
+        this.selectedCategories.length === 0 ||
+        this.selectedCategories.some(id =>
+          emp.emp_ctgry_id === this.getCategoryName(id)
+        );
+
+      const designationMatch =
+        this.selectedDesignations.length === 0 ||
+        this.selectedDesignations.some(id =>
+          emp.emp_desgntn_id === this.getDesignationName(id)
+        );
+
+      return (
+        branchMatch &&
+        deptMatch &&
+        categoryMatch &&
+        designationMatch
+      );
+
+    });
+    this.currentPage = 1;
+
+    this.updatePagination();
+
+
+  }
+
+  getBranchName(id: number): string {
+
+    const item = this.branches.find((x: { id: number; }) => x.id == id);
+
+    return item ? item.branch_name : '';
+
+  }
+
+  getDepartmentName(id: number): string {
+
+    const item = this.Departments.find(x => x.id == id);
+
+    return item ? item.dept_name : '';
+
+  }
+
+  getCategoryName(id: number): string {
+
+    const item = this.Categories.find(x => x.id == id);
+
+    return item ? item.ctgry_title : '';
+
+  }
+
+  getDesignationName(id: number): string {
+
+    const item = this.Designations.find(x => x.id == id);
+
+    return item ? item.desgntn_job_title : '';
+
+  }
+
+
+toggleSelectAllEmployees(): void {
+
+  this.FilteredEmployees.forEach(emp => {
+    emp.selected = this.allEmployeesSelected;
+  });
+
+}
+
+  toggleAllBranches(): void {
+
+    if (
+      this.selectedBranches.length ===
+      this.branches.length
+    ) {
+
+      this.selectedBranches = [];
+
+    } else {
+
+      this.selectedBranches =
+        this.branches.map((x: { id: any; }) => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+  }
+
+
+
+  isAllBranchesSelected(): boolean {
+
+    return (
+      this.branches.length > 0 &&
+      this.selectedBranches.length ===
+      this.branches.length
+    );
+
+  }
+
+  isSomeBranchesSelected(): boolean {
+
+    return (
+      this.selectedBranches.length > 0 &&
+      this.selectedBranches.length <
+      this.branches.length
+    );
+
+  }
+
+
+  toggleAllDepartments(): void {
+
+    if (
+      this.selectedDepartments.length ===
+      this.Departments.length
+    ) {
+
+      this.selectedDepartments = [];
+
+    } else {
+
+      this.selectedDepartments =
+        this.Departments.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+  isAllDepartmentsSelected(): boolean {
+
+    return (
+      this.Departments.length > 0 &&
+      this.selectedDepartments.length ===
+      this.Departments.length
+    );
+
+  }
+
+  isSomeDepartmentsSelected(): boolean {
+
+    return (
+      this.selectedDepartments.length > 0 &&
+      this.selectedDepartments.length <
+      this.Departments.length
+    );
+
+
+
+  }
+
+
+
+  // select all function
+
+  toggleAllCategories(): void {
+
+    if (
+      this.selectedCategories.length ===
+      this.Categories.length
+    ) {
+
+      this.selectedCategories = [];
+
+    } else {
+
+      this.selectedCategories =
+        this.Categories.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+  isAllCategoriesSelected(): boolean {
+
+    return (
+      this.Categories.length > 0 &&
+      this.selectedCategories.length ===
+      this.Categories.length
+    );
+
+  }
+
+  isSomeCategoriesSelected(): boolean {
+
+    return (
+      this.selectedCategories.length > 0 &&
+      this.selectedCategories.length <
+      this.Categories.length
+    );
+
+  }
+
+  toggleAllDesignations(): void {
+
+    if (
+      this.selectedDesignations.length ===
+      this.Designations.length
+    ) {
+
+      this.selectedDesignations = [];
+
+    } else {
+
+      this.selectedDesignations =
+        this.Designations.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+  isAllDesignationsSelected(): boolean {
+
+    return (
+      this.Designations.length > 0 &&
+      this.selectedDesignations.length ===
+      this.Designations.length
+    );
+
+  }
+
+  isSomeDesignationsSelected(): boolean {
+
+    return (
+      this.selectedDesignations.length > 0 &&
+      this.selectedDesignations.length <
+      this.Designations.length
+    );
+
+  }
+
+
+
+  currentPage: number = 1;
+  itemsPerPage: number = 3;
+  pagedEmployees: any[] = [];
+
+
+  updatePagination(): void {
+
+    const startIndex =
+      (this.currentPage - 1) * this.itemsPerPage;
+
+    const endIndex =
+      startIndex + this.itemsPerPage;
+
+    this.pagedEmployees =
+      this.FilteredEmployees.slice(
+        startIndex,
+        endIndex
+      );
+
+  }
+
+
+  get totalPages(): number {
+
+    return Math.ceil(
+      this.FilteredEmployees.length /
+      this.itemsPerPage
+    );
+
+  }
+
+
+
+  nextPage(): void {
+
+    if (this.currentPage < this.totalPages) {
+
+      this.currentPage++;
+
+      this.updatePagination();
+
+    }
+
+  }
+
+
+
+  previousPage(): void {
+
+    if (this.currentPage > 1) {
+
+      this.currentPage--;
+
+      this.updatePagination();
+
+    }
+
+  }
+
+
+
+  goToPage(page: number): void {
+
+    this.currentPage = page;
+
+    this.updatePagination();
+
+  }
+
+
+
+  get pageNumbers(): number[] {
+
+    return Array(
+      this.totalPages
+    ).fill(0).map((x, i) => i + 1);
+
+  }
+
   
     loadShifts(callback?: Function): void {
     
@@ -475,37 +849,39 @@ ngOnInit(): void {
 
 
 
-        loadDeparmentBranch(callback?: Function): void {
-          const selectedSchema = this.authService.getSelectedSchema();
-          
-          if (selectedSchema) {
-            this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-              (result: any[]) => {
-                // 1. Get the sidebar selected IDs from localStorage
-                const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-        
-                // 2. Filter the API result to only include branches selected in the sidebar
-                // If sidebar is empty, you might want to show all, or show none. 
-                // Usually, we show only the selected ones:
-                if (sidebarSelectedIds.length > 0) {
-                  this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-                } else {
-                  this.Branches = result; // Fallback: show all if nothing is selected in sidebar
-                }
-                // Inside the subscribe block of loadDeparmentBranch
-                if (this.Branches.length === 1) {
-                  this.Branches = this.Branches[0].id;
-                }
-        
-                console.log('Filtered branches for selection:', this.Branches);
-                if (callback) callback();
-              },
-              (error) => {
-                console.error('Error fetching branches:', error);
-              }
+  loadBranches(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+
+          const sidebarSelectedIds: number[] =
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch =>
+              sidebarSelectedIds.includes(branch.id)
             );
+          } else {
+            this.branches = result;
           }
+
+          // ✅ FIX: DO NOT overwrite array
+          if (this.branches.length === 1) {
+            this.branch = [this.branches[0].id]; // auto select
+          }
+
+          console.log('Filtered branches:', this.branches);
+
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
         }
+      );
+    }
+  }
       
           
           
@@ -642,26 +1018,27 @@ ngOnInit(): void {
                       }
                       }
           
-                      loadEmployee(callback?: Function): void {
-              
-                        const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-                        const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+     loadEmp(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-                        console.log('schemastore',selectedSchema )
-                        // Check if selectedSchema is available
-                        if (selectedSchema) {
-                          this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-                            (result: any) => {
-                              this.Employee = result;
-                              console.log(' fetching Employees:');
-                              if (callback) callback();
-                            },
-                            (error) => {
-                              console.error('Error fetching Employees:', error);
-                            }
-                          );
-                        }
-                        }
+
+    if (selectedSchema) {
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Employee = result;
+          this.FilteredEmployees = result;
+           this.currentPage = 1;
+
+          this.updatePagination();   
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
         
         
         
@@ -672,31 +1049,10 @@ ngOnInit(): void {
 
 
 
- iscreateEmployeeShift: boolean = false;
 
 
-
-
-      openPopus():void{
-        this.iscreateEmployeeShift = true;
-
-          this.branches = [];
-
-  // ✅ Auto select first branch
-  if (this.Branches && this.Branches.length > 0) {
-
-    this.branches = [this.Branches[0].id];
-
-        this.allSelectedBrach = false;
-
-  }
-
-      }
     
-      closeapplicationModal():void{
-        this.iscreateEmployeeShift = false;
 
-      }
 
 
 
@@ -766,6 +1122,14 @@ updateAssetType(): void {
     }
   );
 }
+
+
+  Delete: boolean = false;
+  allSelecteddelete: boolean = false;
+
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
+  }
 
 
 deleteSelectedAssetType() { 
@@ -989,7 +1353,6 @@ getMonthNameFromDate(dateStr: string): string {
 
       
     employeeSearch: string = '';
-allEmployeesSelected: boolean = false;
 
 toggleAllEmployees() {
 

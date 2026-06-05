@@ -11,7 +11,7 @@ import { MatOption } from '@angular/material/core';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 
-import {combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 @Component({
   selector: 'app-assign-holiday-calendar',
   templateUrl: './assign-holiday-calendar.component.html',
@@ -110,21 +110,21 @@ export class AssignHolidayCalendarComponent {
 
 
   ngOnInit(): void {
- 
+
     this.loadCAtegory();
     // this.loadEmployee();
     this.loadDesignations();
 
-     // Listen for sidebar changes so the dropdown updates instantly
-  this.employeeService.selectedBranches$.subscribe(ids => {
-    this.loadBranches();
-    this.loadEmp();
-    this.loadDEpartments();
-    this.loadWeekendCalendar();
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadBranches();
+      this.loadEmp();
+      this.loadDEpartments();
+      this.loadWeekendCalendar();
 
 
 
-  });
+    });
 
     // this.loadAssignedWeekendCalendar();
 
@@ -135,8 +135,8 @@ export class AssignHolidayCalendarComponent {
       this.employeeService.selectedBranches$
     ]).subscribe(([schema, branchIds]) => {
       if (schema) {
-        this.fetchEmployees(schema, branchIds);  
-        
+        this.fetchEmployees(schema, branchIds);
+
 
       }
     });
@@ -285,43 +285,6 @@ export class AssignHolidayCalendarComponent {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
- 
-loadBranches(callback?: Function): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (selectedSchema) {
-    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any[]) => {
-
-        const sidebarSelectedIds: number[] =
-          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-
-        if (sidebarSelectedIds.length > 0) {
-          this.branches = result.filter(branch =>
-            sidebarSelectedIds.includes(branch.id)
-          );
-        } else {
-          this.branches = result;
-        }
-
-        // ✅ FIX: DO NOT overwrite array
-        if (this.branches.length === 1) {
-          this.branch = [this.branches[0].id]; // auto select
-        }
-
-        console.log('Filtered branches:', this.branches);
-
-        if (callback) callback();
-      },
-      (error) => {
-        console.error('Error fetching branches:', error);
-      }
-    );
-  }
-}
-
-
-
 
 
   toggleAllSelectionBrach(): void {
@@ -331,7 +294,7 @@ loadBranches(callback?: Function): void {
       );
     }
   }
-  
+
 
   toggleAllSelectiondept(): void {
     if (this.deptSelect) {
@@ -351,15 +314,8 @@ loadBranches(callback?: Function): void {
 
 
   toggleAllSelectiondes(): void {
-    // if (this.selectdes) {
-    //   if (this.allSelecteddes) {
-    //     this.selectdes.options.forEach((item: MatOption) => item.select());
-    //   } else {
-    //     this.selectdes.options.forEach((item: MatOption) => item.deselect());
-    //   }
-    // }
 
-     if (this.selectdes) {
+    if (this.selectdes) {
       this.selectdes.options.forEach((item: MatOption) =>
         this.allSelecteddes ? item.select() : item.deselect()
       );
@@ -373,6 +329,41 @@ loadBranches(callback?: Function): void {
     if (this.empSelect) {
       this.empSelect.options.forEach((item: MatOption) =>
         this.allSelectedEmp ? item.select() : item.deselect()
+      );
+    }
+  }
+
+
+  loadBranches(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+
+          const sidebarSelectedIds: number[] =
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch =>
+              sidebarSelectedIds.includes(branch.id)
+            );
+          } else {
+            this.branches = result;
+          }
+
+          // ✅ FIX: DO NOT overwrite array
+          if (this.branches.length === 1) {
+            this.branch = [this.branches[0].id]; // auto select
+          }
+
+          console.log('Filtered branches:', this.branches);
+
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
       );
     }
   }
@@ -443,6 +434,48 @@ loadBranches(callback?: Function): void {
     }
   }
 
+    loadEmp(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+    if (selectedSchema) {
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Employee = result;
+          this.FilteredEmployees = result;
+           this.currentPage = 1;
+
+          this.updatePagination();   
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+
+    loadWeekendCalendar(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+    if (selectedSchema) {
+      this.categoryService.getWeekendcalendarNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.WeekCalendar = result;
+
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
 
   // loadEmployee(): void {
 
@@ -466,24 +499,7 @@ loadBranches(callback?: Function): void {
   // }
 
 
-  loadEmp(callback?: Function): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
-  
-    if (selectedSchema) {
-      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-        (result: any) => {
-          this.Employee = result;
-          this.FilteredEmployees = result;          
-          if (callback) callback();
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-  }
+
 
   deleteAssignedWeekend(id: number): void {
     if (confirm('Are you sure you want to delete this record?')) {
@@ -494,18 +510,18 @@ loadBranches(callback?: Function): void {
         this.employeeService.deleteAssignWeekendcalendar(id, selectedSchema).subscribe(
           () => {
             alert('Deleted successfully!');
- // combineLatest waits for both Schema and Branches to have a value
- this.dataSubscription = combineLatest([
-  this.employeeService.selectedSchema$,
-  this.employeeService.selectedBranches$
-]).subscribe(([schema, branchIds]) => {
-  if (schema) {
-    this.fetchEmployees(schema, branchIds);  
-    
+            // combineLatest waits for both Schema and Branches to have a value
+            this.dataSubscription = combineLatest([
+              this.employeeService.selectedSchema$,
+              this.employeeService.selectedBranches$
+            ]).subscribe(([schema, branchIds]) => {
+              if (schema) {
+                this.fetchEmployees(schema, branchIds);
 
-  }
-});
-    },
+
+              }
+            });
+          },
           (error: any) => {   // ✅ Add explicit type here
             console.error('Error deleting record:', error);
             alert('Failed to delete record');
@@ -547,25 +563,8 @@ loadBranches(callback?: Function): void {
   // }
 
 
-  loadWeekendCalendar(callback?: Function): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
-  
-    if (selectedSchema) {
-      this.categoryService.getWeekendcalendarNew(selectedSchema, savedIds).subscribe(
-        (result: any) => {
-          this.WeekCalendar = result;
-          
-          if (callback) callback();
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-  }
-  
+
+
 
 
 
@@ -612,40 +611,39 @@ loadBranches(callback?: Function): void {
     });
   }
 
+    registerAssignCalendar(): void {
+    const selectedEmployees =
+      this.FilteredEmployees
+        .filter(x => x.selected)
+        .map(x => x.id);
 
-  
-
-
-  registerAssignCalendar(): void {
-    this.registerButtonClicked = true;
     const companyData = {
       related_to: this.related_to,
-    
-      branch:this.branch,
-      department: this.department,
-    
-      category:this.category,
-      employee:this.employee,
 
       holiday_model: this.holiday_model,
-    
-     
 
+      branch: this.selectedBranches,
 
-   
+      department: this.selectedDepartments,
+
+      category: this.selectedCategories,
+
+      designation: this.selectedDesignations,
+
+      employee: selectedEmployees
 
       // Add other form field values to the companyData object
     };
-  
+
 
     this.employeeService.registerHolidacalendar(companyData).subscribe(
       (response) => {
         console.log('Registration successful', response);
-      
-            alert('Holiday Calendar has been Assigned ');
-            window.location.reload();
-            // window.location.reload();
-       
+
+        alert('Holiday Calendar has been Assigned ');
+        window.location.reload();
+        // window.location.reload();
+
 
       },
       (error) => {
@@ -655,9 +653,808 @@ loadBranches(callback?: Function): void {
         // Check if the error message matches the specific error
         const errorMessage = error.error?.error || 'An error occurred while Assign the Holiday Calendar. Please try again.';
         alert(errorMessage);
-    }
+      }
     );
   }
+
+
+
+  //////////////////////////////////////////////////// Create Section ///////////////////////////////////////////////////////
+
+  iscreateLoanApp: boolean = false;
+
+  openPopus(): void {
+    this.iscreateLoanApp = true;
+
+    // reset branch
+    this.branch = [];
+
+    // ✅ Auto select first branch
+    if (this.branches && this.branches.length > 0) {
+
+      this.branch = [this.branches[0].id];
+
+      this.allSelectedBrach = false;
+
+    }
+
+  }
+
+  closeapplicationModal(): void {
+    this.iscreateLoanApp = false;
+
+  }
+
+  selectedBranches: number[] = [];
+  selectedDepartments: number[] = [];
+  selectedCategories: number[] = [];
+  selectedDesignations: number[] = [];
+
+  allEmployeesSelected = false;
+
+  applyEmployeeFilter(): void {
+
+    this.FilteredEmployees = this.Employee.filter(emp => {
+
+      const branchMatch =
+        this.selectedBranches.length === 0 ||
+        this.selectedBranches.some(id =>
+          emp.emp_branch_id === this.getBranchName(id)
+        );
+
+      const deptMatch =
+        this.selectedDepartments.length === 0 ||
+        this.selectedDepartments.some(id =>
+          emp.emp_dept_id === this.getDepartmentName(id)
+        );
+
+      const categoryMatch =
+        this.selectedCategories.length === 0 ||
+        this.selectedCategories.some(id =>
+          emp.emp_ctgry_id === this.getCategoryName(id)
+        );
+
+      const designationMatch =
+        this.selectedDesignations.length === 0 ||
+        this.selectedDesignations.some(id =>
+          emp.emp_desgntn_id === this.getDesignationName(id)
+        );
+
+      return (
+        branchMatch &&
+        deptMatch &&
+        categoryMatch &&
+        designationMatch
+      );
+
+    });
+    this.currentPage = 1;
+
+    this.updatePagination();
+
+
+  }
+
+  getBranchName(id: number): string {
+
+    const item = this.branches.find(x => x.id == id);
+
+    return item ? item.branch_name : '';
+
+  }
+
+  getDepartmentName(id: number): string {
+
+    const item = this.Departments.find(x => x.id == id);
+
+    return item ? item.dept_name : '';
+
+  }
+
+  getCategoryName(id: number): string {
+
+    const item = this.Categories.find(x => x.id == id);
+
+    return item ? item.ctgry_title : '';
+
+  }
+
+  getDesignationName(id: number): string {
+
+    const item = this.Designations.find(x => x.id == id);
+
+    return item ? item.desgntn_job_title : '';
+
+  }
+
+
+  toggleSelectAllEmployees() {
+    this.allSelecteddelete = !this.allSelecteddelete;
+    this.AssignHolCalendar.forEach(employee => employee.selected = this.allSelecteddelete);
+
+    this.FilteredEmployees.forEach(emp => {
+
+      emp.selected = this.allEmployeesSelected;
+
+    });
+
+  }
+
+  toggleAllBranches(): void {
+
+    if (
+      this.selectedBranches.length ===
+      this.branches.length
+    ) {
+
+      this.selectedBranches = [];
+
+    } else {
+
+      this.selectedBranches =
+        this.branches.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+  }
+
+
+
+  isAllBranchesSelected(): boolean {
+
+    return (
+      this.branches.length > 0 &&
+      this.selectedBranches.length ===
+      this.branches.length
+    );
+
+  }
+
+  isSomeBranchesSelected(): boolean {
+
+    return (
+      this.selectedBranches.length > 0 &&
+      this.selectedBranches.length <
+      this.branches.length
+    );
+
+  }
+
+
+  toggleAllDepartments(): void {
+
+    if (
+      this.selectedDepartments.length ===
+      this.Departments.length
+    ) {
+
+      this.selectedDepartments = [];
+
+    } else {
+
+      this.selectedDepartments =
+        this.Departments.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+  isAllDepartmentsSelected(): boolean {
+
+    return (
+      this.Departments.length > 0 &&
+      this.selectedDepartments.length ===
+      this.Departments.length
+    );
+
+  }
+
+  isSomeDepartmentsSelected(): boolean {
+
+    return (
+      this.selectedDepartments.length > 0 &&
+      this.selectedDepartments.length <
+      this.Departments.length
+    );
+
+
+
+  }
+
+
+
+  // select all function
+
+  toggleAllCategories(): void {
+
+    if (
+      this.selectedCategories.length ===
+      this.Categories.length
+    ) {
+
+      this.selectedCategories = [];
+
+    } else {
+
+      this.selectedCategories =
+        this.Categories.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+  isAllCategoriesSelected(): boolean {
+
+    return (
+      this.Categories.length > 0 &&
+      this.selectedCategories.length ===
+      this.Categories.length
+    );
+
+  }
+
+  isSomeCategoriesSelected(): boolean {
+
+    return (
+      this.selectedCategories.length > 0 &&
+      this.selectedCategories.length <
+      this.Categories.length
+    );
+
+  }
+
+  toggleAllDesignations(): void {
+
+    if (
+      this.selectedDesignations.length ===
+      this.Designations.length
+    ) {
+
+      this.selectedDesignations = [];
+
+    } else {
+
+      this.selectedDesignations =
+        this.Designations.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+  isAllDesignationsSelected(): boolean {
+
+    return (
+      this.Designations.length > 0 &&
+      this.selectedDesignations.length ===
+      this.Designations.length
+    );
+
+  }
+
+  isSomeDesignationsSelected(): boolean {
+
+    return (
+      this.selectedDesignations.length > 0 &&
+      this.selectedDesignations.length <
+      this.Designations.length
+    );
+
+  }
+
+
+
+  currentPage: number = 1;
+  itemsPerPage: number = 3;
+  pagedEmployees: any[] = [];
+
+
+  updatePagination(): void {
+
+    const startIndex =
+      (this.currentPage - 1) * this.itemsPerPage;
+
+    const endIndex =
+      startIndex + this.itemsPerPage;
+
+    this.pagedEmployees =
+      this.FilteredEmployees.slice(
+        startIndex,
+        endIndex
+      );
+
+  }
+
+
+  get totalPages(): number {
+
+    return Math.ceil(
+      this.FilteredEmployees.length /
+      this.itemsPerPage
+    );
+
+  }
+
+
+
+  nextPage(): void {
+
+    if (this.currentPage < this.totalPages) {
+
+      this.currentPage++;
+
+      this.updatePagination();
+
+    }
+
+  }
+
+
+
+  previousPage(): void {
+
+    if (this.currentPage > 1) {
+
+      this.currentPage--;
+
+      this.updatePagination();
+
+    }
+
+  }
+
+
+
+  goToPage(page: number): void {
+
+    this.currentPage = page;
+
+    this.updatePagination();
+
+  }
+
+
+
+  get pageNumbers(): number[] {
+
+    return Array(
+      this.totalPages
+    ).fill(0).map((x, i) => i + 1);
+
+  }
+
+
+
+  
+
+
+///////////////////////////////////////////// edit modal ///////////////////////////////////////////////////////
+
+
+  openEditPopuss(categoryId: number): void {
+
+  }
+
+
+  showEditBtn: boolean = false;
+
+  isEditModalOpen: boolean = false;
+  editAsset: any = {}; 
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+  closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
+
+
+editSelectedBranches: number[] = [];
+editSelectedDepartments: number[] = [];
+editSelectedCategories: number[] = [];
+editSelectedDesignations: number[] = [];
+
+editFilteredEmployees: any[] = [];
+editPagedEmployees: any[] = [];
+editAllEmployeesSelected = false;
+
+editCurrentPage = 1;
+editItemsPerPage = 3;
+
+
+
+openEditModal(asset: any): void {
+
+  this.editAsset = { ...asset };
+
+  // Weekend Calendar Auto Select
+
+  const selectedCalendar = this.WeekCalendar.find(
+    (x: any) => x.weekend_name === asset.weekend_model
+  );
+  
+  this.editAsset.weekend_model =
+    selectedCalendar?.id ?? null;
+
+    
+  // Branch
+  this.editSelectedBranches = this.branches
+    .filter(x =>
+      asset.branch?.includes(x.branch_name)
+    )
+    .map(x => x.id);
+
+  // Department
+  this.editSelectedDepartments = this.Departments
+    .filter(x =>
+      asset.department?.includes(x.dept_name)
+    )
+    .map(x => x.id);
+
+  // Category
+  this.editSelectedCategories = this.Categories
+    .filter(x =>
+      asset.category?.includes(x.ctgry_title)
+    )
+    .map(x => x.id);
+
+  // Designation
+  this.editSelectedDesignations = this.Designations
+    .filter(x =>
+      asset.designation?.includes(
+        x.desgntn_job_title
+      )
+    )
+    .map(x => x.id);
+
+  // Employees
+
+  this.editFilteredEmployees = this.Employee.map(emp => ({
+    ...emp,
+
+    selected:
+      asset.employee?.includes(emp.id) ||
+      asset.employee?.includes(emp.emp_code)
+  }));
+
+  this.editCurrentPage = 1;
+
+  this.applyEditEmployeeFilter();
+
+  this.isEditModalOpen = true;
+}
+
+
+applyEditEmployeeFilter(): void {
+
+  const selectedEmpIds = this.editFilteredEmployees
+    .filter(x => x.selected)
+    .map(x => x.id);
+
+  this.editFilteredEmployees =
+    this.Employee.filter(emp => {
+
+      const branchMatch =
+        this.editSelectedBranches.length === 0 ||
+        this.editSelectedBranches.some(id =>
+          emp.emp_branch_id ===
+          this.getBranchName(id)
+        );
+
+      const deptMatch =
+        this.editSelectedDepartments.length === 0 ||
+        this.editSelectedDepartments.some(id =>
+          emp.emp_dept_id ===
+          this.getDepartmentName(id)
+        );
+
+      const categoryMatch =
+        this.editSelectedCategories.length === 0 ||
+        this.editSelectedCategories.some(id =>
+          emp.emp_ctgry_id ===
+          this.getCategoryName(id)
+        );
+
+      const designationMatch =
+        this.editSelectedDesignations.length === 0 ||
+        this.editSelectedDesignations.some(id =>
+          emp.emp_desgntn_id ===
+          this.getDesignationName(id)
+        );
+
+      return (
+        branchMatch &&
+        deptMatch &&
+        categoryMatch &&
+        designationMatch
+      );
+
+    }).map(emp => ({
+      ...emp,
+      selected: selectedEmpIds.includes(emp.id)
+    }));
+
+  this.editCurrentPage = 1;
+
+  this.updateEditPagination();
+}
+
+updateEditPagination(): void {
+
+  const start =
+    (this.editCurrentPage - 1)
+    * this.editItemsPerPage;
+
+  const end =
+    start + this.editItemsPerPage;
+
+  this.editPagedEmployees =
+    this.editFilteredEmployees.slice(
+      start,
+      end
+    );
+
+}
+
+
+
+updateAssetType(): void {
+
+  const selectedEmployees =
+    this.editFilteredEmployees
+      .filter(emp => emp.selected)
+      .map(emp => emp.id);
+
+  const payload = {
+
+    weekend_model:
+      this.editAsset.weekend_model,
+
+    branch:
+      this.editSelectedBranches,
+
+    department:
+      this.editSelectedDepartments,
+
+    category:
+      this.editSelectedCategories,
+
+    designation:
+      this.editSelectedDesignations,
+
+    employee:
+      selectedEmployees
+
+  };
+
+  console.log(payload);
+
+  // API Call here
+
+}
+
+get editTotalPages(): number {
+
+  return Math.ceil(
+    this.editFilteredEmployees.length /
+    this.editItemsPerPage
+  );
+
+}
+
+
+editNextPage(): void {
+
+  if (
+    this.editCurrentPage <
+    this.editTotalPages
+  ) {
+
+    this.editCurrentPage++;
+
+    this.updateEditPagination();
+
+  }
+
+}
+
+
+editPreviousPage(): void {
+
+  if (
+    this.editCurrentPage > 1
+  ) {
+
+    this.editCurrentPage--;
+
+    this.updateEditPagination();
+
+  }
+
+}
+
+editGoToPage(page: number): void {
+
+  this.editCurrentPage = page;
+
+  this.updateEditPagination();
+
+}
+
+
+get editPageNumbers(): number[] {
+
+  return Array(
+    this.editTotalPages
+  ).fill(0).map((x, i) => i + 1);
+
+}
+
+
+
+// toggleSelectAllEditEmployees(): void {
+
+//   const value =
+//     !this.editAllEmployeesSelected;
+
+//   this.editAllEmployeesSelected =
+//     value;
+
+//   this.editFilteredEmployees.forEach(
+//     emp => emp.selected = value
+//   );
+
+// }
+
+toggleSelectAllEditEmployees(): void {
+
+  this.editFilteredEmployees.forEach(emp => {
+
+    emp.selected = this.editAllEmployeesSelected;
+
+  });
+
+  this.updateEditPagination();
+
+}
+
+
+toggleAllEditBranches(): void {
+
+  if (this.editSelectedBranches.length === this.branches.length) {
+
+    this.editSelectedBranches = [];
+
+  } else {
+
+    this.editSelectedBranches =
+      this.branches.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditBranchesSelected(): boolean {
+
+  return this.branches.length > 0 &&
+         this.editSelectedBranches.length === this.branches.length;
+
+}
+
+isSomeEditBranchesSelected(): boolean {
+
+  return this.editSelectedBranches.length > 0 &&
+         this.editSelectedBranches.length < this.branches.length;
+
+}
+
+
+
+toggleAllEditDepartments(): void {
+
+  if (this.editSelectedDepartments.length === this.Departments.length) {
+
+    this.editSelectedDepartments = [];
+
+  } else {
+
+    this.editSelectedDepartments =
+      this.Departments.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditDepartmentsSelected(): boolean {
+
+  return this.Departments.length > 0 &&
+         this.editSelectedDepartments.length === this.Departments.length;
+
+}
+
+isSomeEditDepartmentsSelected(): boolean {
+
+  return this.editSelectedDepartments.length > 0 &&
+         this.editSelectedDepartments.length < this.Departments.length;
+
+}
+
+
+toggleAllEditCategories(): void {
+
+  if (this.editSelectedCategories.length === this.Categories.length) {
+
+    this.editSelectedCategories = [];
+
+  } else {
+
+    this.editSelectedCategories =
+      this.Categories.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditCategoriesSelected(): boolean {
+
+  return this.Categories.length > 0 &&
+         this.editSelectedCategories.length === this.Categories.length;
+
+}
+
+isSomeEditCategoriesSelected(): boolean {
+
+  return this.editSelectedCategories.length > 0 &&
+         this.editSelectedCategories.length < this.Categories.length;
+
+}
+
+toggleAllEditDesignations(): void {
+
+  if (this.editSelectedDesignations.length === this.Designations.length) {
+
+    this.editSelectedDesignations = [];
+
+  } else {
+
+    this.editSelectedDesignations =
+      this.Designations.map(x => x.id);
+
+  }
+
+  this.applyEditEmployeeFilter();
+
+}
+
+isAllEditDesignationsSelected(): boolean {
+
+  return this.Designations.length > 0 &&
+         this.editSelectedDesignations.length === this.Designations.length;
+
+}
+
+isSomeEditDesignationsSelected(): boolean {
+
+  return this.editSelectedDesignations.length > 0 &&
+         this.editSelectedDesignations.length < this.Designations.length;
+
+}
+
 
 
 
@@ -681,187 +1478,151 @@ loadBranches(callback?: Function): void {
 
 
 
-  iscreateLoanApp: boolean = false;
 
 
 
 
-  openPopus():void{
-    this.iscreateLoanApp = true;
 
-      // reset branch
-  this.branch = [];
 
-  // ✅ Auto select first branch
-  if (this.branches && this.branches.length > 0) {
 
-    this.branch = [this.branches[0].id];
 
-        this.allSelectedBrach = false;
-
-  }
-
-  }
-
-  closeapplicationModal():void{
-    this.iscreateLoanApp = false;
-
+  onCheckboxChange(employee: number) {
+    // No need to implement any logic here if you just want to change the style.
+    // You can add any additional logic if needed.
   }
 
 
 
 
-  openEditPopuss(categoryId: number):void{
-    
-  }
+
+  // openEditModal(asset: any): void {
+  // this.editAsset = { ...asset }; // copy asset data
+  // this.isEditModalOpen = true;
+  // }
+
+  // openEditModal(asset: any): void {
+  //   this.editAsset = { ...asset };
 
 
-  showEditBtn: boolean = false;
+  //   if (this.editAsset.branch?.length) {
+  //     this.editAsset.branch = this.branches
+  //       .filter(b => this.editAsset.branch.includes(b.branch_name))
+  //       .map(b => b.id);
+  //   }
 
-  EditShowButtons() {
-    this.showEditBtn = !this.showEditBtn;
-  }
+
+  //   if (this.editAsset.department?.length) {
+  //     this.editAsset.department = this.Departments
+  //       .filter(d => this.editAsset.department.includes(d.dept_name))
+  //       .map(d => d.id);
+  //   }
 
 
+  //   if (this.editAsset.category?.length) {
+  //     this.editAsset.category = this.Categories
+  //       .filter(c => this.editAsset.category.includes(c.ctgry_title))
+  //       .map(c => c.id);
+  //   }
+
+
+  //   if (this.editAsset.designation?.length) {
+  //     this.editAsset.designation = this.Designations
+  //       .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
+  //       .map(d => d.id);
+  //   }
+
+  //   this.isEditModalOpen = true;
+  // }
+
+  // closeEditModal(): void {
+  //   this.isEditModalOpen = false;
+  //   this.editAsset = {};
+  // }
+
+
+  // updateAssetType(): void {
+  //   const selectedSchema = localStorage.getItem('selectedSchema');
+  //   if (!selectedSchema || !this.editAsset.id) {
+  //     alert('Missing schema or asset ID');
+  //     return;
+  //   }
+
+  //   this.employeeService.updateAssigHolidayCal(this.editAsset.id, this.editAsset).subscribe(
+  //     (response) => {
+  //       alert('Assign holiday calendar updated successfully!');
+  //       this.closeEditModal();
+  //       window.location.reload();
+  //     },
+  //     (error) => {
+  //       console.error('Error updating Asset type:', error);
+
+  //       let errorMsg = 'Update failed';
+
+  //       const backendError = error?.error;
+
+  //       if (backendError && typeof backendError === 'object') {
+  //         // Convert the object into a readable string
+  //         errorMsg = Object.keys(backendError)
+  //           .map(key => `${key}: ${backendError[key].join(', ')}`)
+  //           .join('\n');
+  //       }
+
+  //       alert(errorMsg);
+  //     }
+  //   );
+  // }
+
+  // delete model
+
+  
   Delete: boolean = false;
   allSelecteddelete: boolean = false;
 
-toggleCheckboxes() {
-  this.Delete = !this.Delete;
-}
-
-toggleSelectAllEmployees() {
-    this.allSelecteddelete = !this.allSelecteddelete;
-this.AssignHolCalendar.forEach(employee => employee.selected = this.allSelecteddelete);
-
-}
-
-onCheckboxChange(employee:number) {
-  // No need to implement any logic here if you just want to change the style.
-  // You can add any additional logic if needed.
-}
-
-
-
-isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
-
-// openEditModal(asset: any): void {
-// this.editAsset = { ...asset }; // copy asset data
-// this.isEditModalOpen = true;
-// }
-
-openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
-
-  // Convert branch names → IDs
-  if (this.editAsset.branch?.length) {
-    this.editAsset.branch = this.branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
   }
 
-  // Department
-  if (this.editAsset.department?.length) {
-    this.editAsset.department = this.Departments
-      .filter(d => this.editAsset.department.includes(d.dept_name))
-      .map(d => d.id);
-  }
 
-  // Category
-  if (this.editAsset.category?.length) {
-    this.editAsset.category = this.Categories
-      .filter(c => this.editAsset.category.includes(c.ctgry_title))
-      .map(c => c.id);
-  }
+  deleteSelectedAssetType() {
+    const selectedEmployeeIds = this.AssignHolCalendar
+      .filter(employee => employee.selected)
+      .map(employee => employee.id);
 
-  // Designation
-  if (this.editAsset.designation?.length) {
-    this.editAsset.designation = this.Designations
-      .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
-      .map(d => d.id);
-  }
-
-  this.isEditModalOpen = true;
-}
-
-closeEditModal(): void {
-this.isEditModalOpen = false;
-this.editAsset = {};
-}
-
-
-updateAssetType(): void {
-const selectedSchema = localStorage.getItem('selectedSchema');
-if (!selectedSchema || !this.editAsset.id) {
-alert('Missing schema or asset ID');
-return;
-}
-
-this.employeeService.updateAssigHolidayCal(this.editAsset.id, this.editAsset).subscribe(
-(response) => {
-  alert('Assign holiday calendar updated successfully!');
-  this.closeEditModal();
-  // this.loadLAssetType(); // reload updated list
-  window.location.reload();
-},
-(error) => {
-console.error('Error updating Asset type:', error);
-
-let errorMsg = 'Update failed';
-
-const backendError = error?.error;
-
-if (backendError && typeof backendError === 'object') {
-// Convert the object into a readable string
-errorMsg = Object.keys(backendError)
-  .map(key => `${key}: ${backendError[key].join(', ')}`)
-  .join('\n');
-}
-
-alert(errorMsg);
-}
-);
-}
-
-
-deleteSelectedAssetType() { 
-const selectedEmployeeIds = this.AssignHolCalendar
-.filter(employee => employee.selected)
-.map(employee => employee.id);
-
-if (selectedEmployeeIds.length === 0) {
-alert('No assign holiday calendar selected for deletion.');
-return;
-}
-
-if (confirm('Are you sure you want to delete the selected assign holiday calendar?')) {
-
- let total = selectedEmployeeIds.length;
-let completed = 0;
-
-
-selectedEmployeeIds.forEach(categoryId => {
-  this.employeeService.deleteAssignHolidaycal(categoryId).subscribe(
-    () => {
-      console.log('holiday calendar  deleted successfully:', categoryId);
-      // Remove the deleted employee from the local list
-      this.AssignHolCalendar = this.AssignHolCalendar.filter(employee => employee.id !== categoryId);
-      completed++;
- if (completed === total) {        
-      alert(' assign holiday calendar deleted successfully');
-      window.location.reload();
- }
-
-    },
-    (error) => {
-      console.error('Error deleting Asset type:', error);
-      alert('Error deleting holiday calendar: ' + error.statusText);
+    if (selectedEmployeeIds.length === 0) {
+      alert('No assign holiday calendar selected for deletion.');
+      return;
     }
-  );
-});
-}
-}
+
+    if (confirm('Are you sure you want to delete the selected assign holiday calendar?')) {
+
+      let total = selectedEmployeeIds.length;
+      let completed = 0;
+
+
+      selectedEmployeeIds.forEach(categoryId => {
+        this.employeeService.deleteAssignHolidaycal(categoryId).subscribe(
+          () => {
+            console.log('holiday calendar  deleted successfully:', categoryId);
+            // Remove the deleted employee from the local list
+            this.AssignHolCalendar = this.AssignHolCalendar.filter(employee => employee.id !== categoryId);
+            completed++;
+            if (completed === total) {
+              alert(' assign holiday calendar deleted successfully');
+              window.location.reload();
+            }
+
+          },
+          (error) => {
+            console.error('Error deleting Asset type:', error);
+            alert('Error deleting holiday calendar: ' + error.statusText);
+          }
+        );
+      });
+    }
+  }
+
+
+
 
 
 

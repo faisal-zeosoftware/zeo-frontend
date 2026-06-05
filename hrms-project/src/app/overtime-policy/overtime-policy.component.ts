@@ -303,6 +303,75 @@ this.category.forEach((id: number) =>
 }
 
 
+isAllBranchesSelected(): boolean {
+  return this.branch?.length === this.Branches?.length;
+}
+
+isSomeBranchesSelected(): boolean {
+  return this.branch?.length > 0 &&
+         this.branch?.length < this.Branches?.length;
+}
+
+toggleAllBranches(): void {
+  if (this.isAllBranchesSelected()) {
+    this.branch = [];
+  } else {
+    this.branch = this.Branches.map(x => x.id);
+  }
+}
+
+isAllDepartmentsSelected(): boolean {
+  return this.department?.length === this.Departments?.length;
+}
+
+isSomeDepartmentsSelected(): boolean {
+  return this.department?.length > 0 &&
+         this.department?.length < this.Departments?.length;
+}
+
+toggleAllDepartments(): void {
+  if (this.isAllDepartmentsSelected()) {
+    this.department = [];
+  } else {
+    this.department = this.Departments.map(x => x.id);
+  }
+}
+
+isAllCategoriesSelected(): boolean {
+  return this.category?.length === this.Categories?.length;
+}
+
+isSomeCategoriesSelected(): boolean {
+  return this.category?.length > 0 &&
+         this.category?.length < this.Categories?.length;
+}
+
+toggleAllCategories(): void {
+  if (this.isAllCategoriesSelected()) {
+    this.category = [];
+  } else {
+    this.category = this.Categories.map(x => x.id);
+  }
+}
+
+isAllDesignationsSelected(): boolean {
+  return this.designation?.length === this.Designations?.length;
+}
+
+isSomeDesignationsSelected(): boolean {
+  return this.designation?.length > 0 &&
+         this.designation?.length < this.Designations?.length;
+}
+
+toggleAllDesignations(): void {
+  if (this.isAllDesignationsSelected()) {
+    this.designation = [];
+  } else {
+    this.designation = this.Designations.map(x => x.id);
+  }
+}
+
+
 
 
   // loadovertimepolicy(): void {

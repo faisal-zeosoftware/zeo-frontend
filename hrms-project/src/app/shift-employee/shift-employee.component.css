@@ -461,6 +461,554 @@ table thead td {
 }
 
 
+  /* ================= FILTER CARD ================= */
+
+.filter-card{
+  background:#fff;
+  border-radius:15px;
+  padding:20px;
+  box-shadow:0 3px 15px rgba(0,0,0,.08);
+  margin-top:20px;
+}
+
+.filter-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+  font-size:18px;
+  font-weight:600;
+  color:#1e293b;
+}
+
+.filter-label{
+  font-size:13px;
+  font-weight:600;
+  color:#64748b;
+  margin-bottom:6px;
+}
+
+.modern-select{
+  border-radius:10px;
+  height:45px;
+  border:1px solid #dbe3ea;
+}
+
+/* ================= TABLE CARD ================= */
+
+.employee-card{
+  background:#fff;
+  border-radius:15px;
+  box-shadow:0 4px 20px rgba(0,0,0,.08);
+  overflow:hidden;
+}
+
+.table-header{
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #eee;
+}
+
+.title-section{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.title-section h4{
+  margin:0;
+  font-size:18px;
+  font-weight:600;
+}
+
+.employee-count{
+  background:#eef6ff;
+  color:#1976d2;
+  padding:8px 15px;
+  border-radius:20px;
+  font-weight:600;
+}
+
+/* ================= TABLE ================= */
+
+.employee-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.employee-table thead{
+  background:#f8fafc;
+}
+
+.employee-table th{
+  padding:15px;
+  font-weight:600;
+  color:#475569;
+}
+
+.employee-table td{
+  padding:15px;
+  border-top:1px solid #f1f5f9;
+}
+
+.employee-table tbody tr{
+  transition:.3s;
+}
+
+.employee-table tbody tr:hover{
+  background:#f8fbff;
+}
+
+/* ================= EMPLOYEE ================= */
+
+.employee-info{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.employee-avatar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #e2e8f0;
+}
+
+.employee-name{
+  font-weight:600;
+  color:#1e293b;
+}
+
+.employee-code{
+  font-size:12px;
+  color:#64748b;
+}
+
+/* ================= BADGES ================= */
+
+.custom-badge{
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+}
+
+.blue{
+  background:#e3f2fd;
+  color:#1565c0;
+}
+
+.green{
+  background:#e8f5e9;
+  color:#2e7d32;
+}
+
+.orange{
+  background:#fff3e0;
+  color:#ef6c00;
+}
+
+.purple{
+  background:#f3e5f5;
+  color:#6a1b9a;
+}
+
+
+
+/* ================= TABLE ================= */
+
+.employee-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px; /* reduced font size */
+}
+
+/* Header */
+.employee-table thead{
+  background:linear-gradient(
+    180deg,
+    #eaf6ff 0%,
+    #d6eeff 100%
+  );
+}
+
+.employee-table th{
+  padding:10px 12px;
+  font-size:12px;
+  font-weight:600;
+  color:#2b5d7e;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  border-right:1px solid #cfe4f3;
+  white-space:nowrap;
+}
+
+.employee-table th:last-child{
+  border-right:none;
+}
+
+/* Body */
+.employee-table td{
+  padding:10px 12px;
+  font-size:12px;
+  color:#334155;
+  border-top:1px solid #edf2f7;
+}
+
+.employee-table tbody tr{
+  transition:.25s;
+}
+
+.employee-table tbody tr:nth-child(even){
+  background:#fafcff;
+}
+
+.employee-table tbody tr:hover{
+  background:#f0f9ff;
+}
+
+.employee-avatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #e2e8f0;
+}
+
+.employee-name{
+  font-size:13px;
+  font-weight:600;
+}
+
+.employee-code{
+  font-size:11px;
+  color:#64748b;
+}
+
+.custom-badge{
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.employee-count{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  background:#e8f4ff;
+  color:#1976d2;
+
+  padding:6px 14px;
+  border-radius:20px;
+
+  font-size:12px;
+  font-weight:600;
+}
+
+.employee-table thead{
+  background:linear-gradient(
+    180deg,
+    #dff4ff 0%,
+    #c8ebff 100%
+  );
+}
+
+.employee-table th{
+  color:#fff ;
+  font-size:11px;
+  font-weight:700;
+  padding:10px;
+}
+
+
+
+/* ===============================
+   FILTER CARD
+================================= */
+
+.filter-select-card{
+  position:relative;
+}
+
+.filter-title{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  margin-bottom:6px;
+
+  font-size:13px;
+  font-weight:600;
+
+  color:#475569;
+}
+
+.filter-title mat-icon{
+  font-size:18px;
+  width:18px;
+  height:18px;
+  color:#0ea5e9;
+}
+
+/* ===============================
+   MULTI SELECT
+================================= */
+
+.modern-multi-select{
+  width:100%;
+}
+
+.modern-multi-select .mat-mdc-text-field-wrapper{
+  background:#fff !important;
+
+  border-radius:12px !important;
+
+  border:1px solid #dbeafe !important;
+
+  min-height:48px !important;
+
+  transition:.3s;
+}
+
+.modern-multi-select .mat-mdc-text-field-wrapper:hover{
+
+  border-color:#38bdf8 !important;
+
+  box-shadow:
+  0 4px 15px rgba(56,189,248,.15);
+
+}
+
+.modern-multi-select.mat-focused .mat-mdc-text-field-wrapper{
+
+  border-color:#0284c7 !important;
+
+  box-shadow:
+  0 0 0 4px rgba(2,132,199,.10);
+
+}
+
+.modern-multi-select .mat-mdc-select-value{
+  font-size:13px;
+  color:#334155;
+  font-weight:500;
+}
+
+/* Selected count chips */
+
+.mat-mdc-select-value-text{
+
+  display:flex;
+  align-items:center;
+
+  gap:6px;
+
+  font-size:13px;
+}
+
+/* dropdown arrow */
+
+.mat-mdc-select-arrow{
+  color:#0284c7 !important;
+}
+
+/* ===============================
+   DROPDOWN PANEL
+================================= */
+
+.mat-mdc-select-panel{
+
+  border-radius:14px !important;
+
+  padding:8px !important;
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,.12) !important;
+}
+
+.mat-mdc-option{
+
+  border-radius:8px !important;
+
+  margin-bottom:4px;
+
+  font-size:13px;
+}
+
+.mat-mdc-option:hover{
+
+  background:#eff6ff !important;
+
+}
+
+.mat-mdc-option.mdc-list-item--selected{
+
+  background:#dbeafe !important;
+
+  color:#0369a1 !important;
+
+  font-weight:600;
+}
+
+.advanced-filter-card{
+
+  background:linear-gradient(
+      180deg,
+      #ffffff,
+      #f8fbff
+  );
+
+  border:1px solid #e2e8f0;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  margin-bottom:20px;
+
+  box-shadow:
+  0 4px 20px rgba(0,0,0,.05);
+}
+
+.filter-heading{
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  font-size:16px;
+  font-weight:600;
+
+  color:#0f172a;
+
+  margin-bottom:18px;
+}
+
+.filter-heading mat-icon{
+  color:#0ea5e9;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+  bottom: 15px !important;
+}
+
+.select-all-checkbox{
+  display:block;
+  padding:10px 16px;
+  border-bottom:1px solid #e5e7eb;
+  background:#f8fafc;
+  font-weight:600;
+  color:#2563eb;
+}
+
+.mat-mdc-option{
+  min-height:38px !important;
+  font-size:13px;
+}
+
+
+
+
+.employee-avatar-wrapper{
+  width:40px;
+  height:40px;
+}
+
+.employee-avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid #dbe3ea;
+}
+
+.employee-avatar-placeholder{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#e3f2fd;
+  color:#1976d2;
+
+  border:1px solid #bbdefb;
+}
+
+.employee-avatar-placeholder mat-icon{
+  font-size:22px;
+  width:22px;
+  height:22px;
+}
+
+
+.pagination-container{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  padding:15px;
+  border-top:1px solid #edf2f7;
+}
+
+.page-btn{
+  border:none;
+  background:#f1f5f9;
+  padding:6px 14px;
+  border-radius:6px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.page-number{
+  width:32px;
+  height:32px;
+  border:none;
+  border-radius:50%;
+  background:#f8fafc;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+}
+
+.page-number.active{
+  background:#38bdf8;
+  color:#fff;
+}
+
+.page-btn:hover,
+.page-number:hover{
+  background:#e2e8f0;
+}
+
+
+
+  /* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
+    
+    margin-top: 200px;
+    margin-left: 15%;
+
+  }
+
+  .header_section{
+  background: white;
+  padding: 24px 18px 15px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  width: 100%;
+  border-bottom: solid 3px navy;
+}
+
+
 
 
 
@@ -476,5 +1024,5 @@ table thead td {
 
 }
 
-
+}
 

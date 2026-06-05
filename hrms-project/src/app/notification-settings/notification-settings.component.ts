@@ -50,6 +50,11 @@ export class NotificationSettingsComponent {
   departments: any = '';
   notify_users: any = '';
 
+  department: number[] = [];
+designation: number[] = [];
+category: number[] = [];
+branch: number[] = [];
+
 
   created_by: any = '';
 
@@ -416,18 +421,19 @@ export class NotificationSettingsComponent {
   registerUserAssignedPermission(): void {
     this.registerButtonClicked = true;
 
-    const companyData = {
-      days_before_expiry: this.days_before_expiry,
-      days_after_expiry: this.days_after_expiry,
-      send_email: this.send_email,
-      branches: this.branches,
-      emp_dept_id: this.departments || [],
-      emp_desgntn_id: this.designations || [],
-      emp_ctgry_id: this.categories || [],
+const companyData = {
+  days_before_expiry: this.days_before_expiry,
+  days_after_expiry: this.days_after_expiry,
+  send_email: this.send_email,
 
-      notify_users: this.notify_users,
-      created_by: this.created_by,
-    };
+  branch: this.branch || [],
+  Department: this.department || [],
+  Category: this.category || [],
+  Designation: this.designation || [],
+
+  notify_users: this.notify_users || [],
+  created_by: this.created_by,
+};
 
     this.leaveService.registerEmailNotification(companyData).subscribe(
       (response) => {
@@ -462,6 +468,76 @@ export class NotificationSettingsComponent {
       }
     );
   }
+
+  
+isAllBranchesSelected(): boolean {
+  return this.branch?.length === this.Branches?.length;
+}
+
+isSomeBranchesSelected(): boolean {
+  return this.branch?.length > 0 &&
+         this.branch?.length < this.Branches?.length;
+}
+
+toggleAllBranches(): void {
+  if (this.isAllBranchesSelected()) {
+    this.branch = [];
+  } else {
+    this.branch = this.Branches.map(x => x.id);
+  }
+}
+
+isAllDepartmentsSelected(): boolean {
+  return this.department?.length === this.Departments?.length;
+}
+
+isSomeDepartmentsSelected(): boolean {
+  return this.department?.length > 0 &&
+         this.department?.length < this.Departments?.length;
+}
+
+toggleAllDepartments(): void {
+  if (this.isAllDepartmentsSelected()) {
+    this.department = [];
+  } else {
+    this.department = this.Departments.map(x => x.id);
+  }
+}
+
+isAllCategoriesSelected(): boolean {
+  return this.category?.length === this.Categories?.length;
+}
+
+isSomeCategoriesSelected(): boolean {
+  return this.category?.length > 0 &&
+         this.category?.length < this.Categories?.length;
+}
+
+toggleAllCategories(): void {
+  if (this.isAllCategoriesSelected()) {
+    this.category = [];
+  } else {
+    this.category = this.Categories.map(x => x.id);
+  }
+}
+
+isAllDesignationsSelected(): boolean {
+  return this.designation?.length === this.Designations?.length;
+}
+
+isSomeDesignationsSelected(): boolean {
+  return this.designation?.length > 0 &&
+         this.designation?.length < this.Designations?.length;
+}
+
+toggleAllDesignations(): void {
+  if (this.isAllDesignationsSelected()) {
+    this.designation = [];
+  } else {
+    this.designation = this.Designations.map(x => x.id);
+  }
+}
+
 
 
 
