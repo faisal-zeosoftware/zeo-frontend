@@ -4288,6 +4288,119 @@ toggleApprovalExpand(index: number): void {
 }
 
 
+// change ess passwprd section 
+isSettingsOpen = false;
+isPasswordModalOpen = false;
+
+oldPassword = '';
+newPassword = '';
+confirmPassword = '';
+
+toggleSettingsMenu(): void {
+
+  this.isSettingsOpen =
+    !this.isSettingsOpen;
+
+}
+
+openPasswordModal(): void {
+
+  this.isSettingsOpen = false;
+
+  this.isPasswordModalOpen = true;
+
+}
+
+closePasswordModal(): void {
+
+  this.isPasswordModalOpen = false;
+
+  this.oldPassword = '';
+  this.newPassword = '';
+  this.confirmPassword = '';
+
+}
+
+
+
+
+changePassword(): void {
+
+  if (
+    !this.oldPassword ||
+    !this.newPassword ||
+    !this.confirmPassword
+  ) {
+
+    alert('Please fill all fields');
+    return;
+
+  }
+
+  if (
+    this.newPassword !==
+    this.confirmPassword
+  ) {
+
+    alert(
+      'New password and Confirm password must match'
+    );
+
+    return;
+
+  }
+
+  const payload = {
+
+    old_password:
+      this.oldPassword,
+
+    new_password:
+      this.newPassword
+
+  };
+
+  this.employeeService
+    .changePassword(payload)
+    .subscribe({
+
+      next: (response) => {
+
+        alert(
+          'Password changed successfully'
+        );
+
+        this.closePasswordModal();
+
+      },
+
+      error: (error) => {
+
+        let errorMessage =
+          'Failed to change password';
+
+        if (
+          error.error &&
+          typeof error.error === 'object'
+        ) {
+
+          errorMessage = Object.values(
+            error.error
+          )
+            .flat()
+            .join('\n');
+
+        }
+
+        alert(errorMessage);
+
+      }
+
+    });
+
+}
+
+
 }
   
 

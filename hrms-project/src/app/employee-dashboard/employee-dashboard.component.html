@@ -363,20 +363,174 @@
   </div>
 </div>
 
+<div class="d-flex align-items-center">
 
-   <button
+  <!-- Settings -->
+
+  <div class="dropdown position-relative me-2">
+
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      (click)="toggleSettingsMenu()">
+
+      <i class="fa fa-gear"></i>
+
+    </button>
+
+    <ul
+      class="dropdown-menu settings-dropdown shadow"
+      [class.show]="isSettingsOpen">
+
+      <li>
+        <a
+          class="dropdown-item"
+          href="javascript:void(0)"
+          (click)="openPasswordModal()">
+
+          <i class="fa fa-key me-2"></i>
+          Change Password
+
+        </a>
+      </li>
+
+    </ul>
+
+  </div>
+
+  <!-- Logout -->
+
+  <button
     class="btn btn-secondary"
-    (click)="logout()"
-  >
-    <i class="fa fa-sign-out-alt me-0"></i> Logout
+    (click)="logout()">
+
+    <i class="fa fa-sign-out-alt me-1"></i>
+    Logout
+
   </button>
-    
+
+</div>
           
         </div>
       </header>
 
 
+  <!-- Change Password Modal -->
 
+  <div *ngIf="isPasswordModalOpen" class="modal">
+
+    <div class="modal-content password-modal">
+  
+      <div class="row">
+  
+        <div class="col-md-10">
+  
+          <h3>
+            <i class="fa fa-lock me-2"></i>
+            Change Password
+          </h3>
+  
+        </div>
+  
+        <div class="col-md-2 text-end">
+  
+          <span
+            class="close-btn"
+            (click)="closePasswordModal()">
+  
+            ×
+  
+          </span>
+  
+        </div>
+  
+      </div>
+  
+      <hr>
+  
+      <form>
+  
+        <!-- Old Password -->
+  
+        <div class="mb-3">
+  
+          <label class="form-label">
+            Current Password
+            <span class="text-danger">*</span>
+          </label>
+  
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="oldPassword"
+            [ngModelOptions]="{standalone:true}"
+            placeholder="Enter current password">
+  
+        </div>
+  
+        <!-- New Password -->
+  
+        <div class="mb-3">
+  
+          <label class="form-label">
+            New Password
+            <span class="text-danger">*</span>
+          </label>
+  
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="newPassword"
+            [ngModelOptions]="{standalone:true}"
+            placeholder="Enter new password">
+  
+        </div>
+  
+        <!-- Confirm Password -->
+  
+        <div class="mb-3">
+  
+          <label class="form-label">
+            Confirm Password
+            <span class="text-danger">*</span>
+          </label>
+  
+          <input
+            type="password"
+            class="form-control"
+            [(ngModel)]="confirmPassword"
+            [ngModelOptions]="{standalone:true}"
+            placeholder="Confirm new password">
+  
+        </div>
+  
+        <div class="text-end">
+  
+          <button
+            type="button"
+            class="btn btn-danger me-2"
+            (click)="closePasswordModal()">
+  
+            Cancel
+  
+          </button>
+  
+          <button
+            type="button"
+            class="btn btn-success"
+            (click)="changePassword()">
+  
+            Update Password
+  
+          </button>
+  
+        </div>
+  
+      </form>
+  
+    </div>
+  
+  </div>
 
 
       <!-- Dashboard Tab (Default View) -->

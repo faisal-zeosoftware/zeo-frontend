@@ -1445,3 +1445,201 @@ body {
   }
 
 }
+
+
+.password-modal {
+
+  max-width: 500px;
+  width: 100%;
+
+}
+
+.password-modal .form-control {
+
+  height: 45px;
+  border-radius: 8px;
+
+}
+
+.password-modal h3 {
+
+  font-size: 22px;
+  font-weight: 600;
+
+}
+
+.close-btn {
+
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: bold;
+
+}
+
+.dropdown-menu.show {
+
+  display: block;
+
+}
+
+
+.settings-dropdown {
+  position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  min-width: 200px;
+  margin-top: 8px;
+  z-index: 1050;
+}
+
+.settings-dropdown.show {
+  display: block;
+}
+
+.settings-dropdown .dropdown-item {
+  padding: 10px 15px;
+  font-size: 14px;
+}
+
+.settings-dropdown .dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+
+
+/* Modal Background */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+/* Modal Box */
+
+.password-modal {
+  width: 500px;
+  max-width: 95%;
+
+  border-radius: 15px;
+  background: #fff;
+
+  padding: 25px;
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.18);
+
+  animation: modalFade .25s ease;
+}
+
+/* Animation */
+
+@keyframes modalFade {
+  from {
+    transform: translateY(-15px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Title */
+
+.password-modal h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.password-modal h3 i {
+  color: #0d6efd;
+}
+
+/* Close Button */
+
+.close-btn {
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+
+  color: #6c757d;
+
+  transition: .2s;
+}
+
+.close-btn:hover {
+  color: #dc3545;
+}
+
+/* Labels */
+
+.form-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+/* Input Fields */
+
+.password-modal .form-control {
+  height: 48px;
+
+  border-radius: 10px;
+
+  border: 1px solid #d1d5db;
+
+  transition: all .3s;
+}
+
+.password-modal .form-control:focus {
+  border-color: #0d6efd;
+
+  box-shadow:
+    0 0 0 3px rgba(13, 110, 253, .15);
+}
+
+/* Footer Buttons */
+
+.password-modal .btn {
+  min-width: 140px;
+  height: 42px;
+
+  border-radius: 8px;
+
+  font-weight: 600;
+}
+
+.password-modal .btn-success {
+  background: #198754;
+  border-color: #198754;
+}
+
+.password-modal .btn-success:hover {
+  background: #157347;
+}
+
+.password-modal .btn-danger:hover {
+  background: #bb2d3b;
+}
+
+/* Divider */
+
+.password-modal hr {
+  margin: 20px 0;
+  border-color: #e5e7eb;
+}
