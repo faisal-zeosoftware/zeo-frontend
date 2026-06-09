@@ -31,7 +31,7 @@ export class SettingsComponent {
   hasViewPermissionAssignPermission: boolean = false;
   hasViewStateMaster: boolean = false;
   hasViewCompanyMaster: boolean = false;
-  hasViewAnnounceMaster:boolean = false;
+  // hasViewAnnounceMaster:boolean = false;
   hasViewDocNotifySettings:boolean = false;
   hasViewPermissionBranchPermission: boolean = false;
 
@@ -156,7 +156,7 @@ if (this.userId !== null) {
         this.hasViewCompanyMaster = true;
         this.hasViewNotification = true;
         this.hasViewDN = true;
-        this.hasViewAnnounceMaster = true;
+        // this.hasViewAnnounceMaster = true;
         this.hasViewDocNotifySettings = true;
         this.hasViewPermissionFormdes = true;
 
@@ -242,7 +242,7 @@ if (this.userId !== null) {
                 this.hasViewCompanyMaster = true;
                 this.hasViewNotification = true;
                 this.hasViewDN = true;
-                this.hasViewAnnounceMaster = true;
+                // this.hasViewAnnounceMaster = true;
                 this.hasViewDocNotifySettings = true;
                 this.hasViewPermissionFormdes = true;
 
@@ -328,8 +328,8 @@ if (this.userId !== null) {
                     this.hasViewDN = this.checkGroupPermission('view_documentnumbering', groupPermissions);
                     console.log('Has view permission:', this.hasViewDN);
 
-                    this.hasViewAnnounceMaster = this.checkGroupPermission('view_announcement', groupPermissions);
-                    console.log('Has view permission:', this.hasViewAnnounceMaster);
+                    // this.hasViewAnnounceMaster = this.checkGroupPermission('view_announcement', groupPermissions);
+                    // console.log('Has view permission:', this.hasViewAnnounceMaster);
 
                     this.hasViewDocNotifySettings = this.checkGroupPermission('view_notificationsettings', groupPermissions);
                     console.log('Has view permission:', this.hasViewDocNotifySettings);

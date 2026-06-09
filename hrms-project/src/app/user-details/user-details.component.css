@@ -64,6 +64,36 @@ margin-right: 10px;
     margin-top: 2px;
 }
 
+.btn-warning {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.header-btn-icon {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap; /* keeps buttons in one line */
+}
+
+.button-group .btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.button-group .mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
 
 
 .list_company_sec{

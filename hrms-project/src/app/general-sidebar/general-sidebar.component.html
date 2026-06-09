@@ -14,6 +14,9 @@
           </div>
           <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
             <ul>
+
+
+               
              
                    <li (click)="toggleGeneralRequest()" style="cursor: pointer;">
                     <a>
@@ -47,7 +50,7 @@
                   <li routerLink="/main-sidebar/general-sidebar/document-request-level" *ngIf="hasViewPermissionDocAprlvl"><a><mat-icon>peoples</mat-icon>Document Approval Level</a></li>
                   </ul>
 
-
+  <li routerLink="/main-sidebar/general-sidebar/announcement-master" *ngIf="hasViewAnnounceMaster"><a ><mat-icon>peoples</mat-icon>Announcement</a></li>
 
                 
 

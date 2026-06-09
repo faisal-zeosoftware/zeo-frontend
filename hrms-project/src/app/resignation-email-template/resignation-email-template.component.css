@@ -475,6 +475,193 @@ input:focus-visible {
 }
 
 
+/* ===============================
+   FILTER CARD
+================================= */
+
+.filter-select-card{
+  position:relative;
+}
+
+.filter-title{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  margin-bottom:6px;
+
+  font-size:13px;
+  font-weight:600;
+
+  color:#475569;
+}
+
+.filter-title mat-icon{
+  font-size:18px;
+  width:18px;
+  height:18px;
+  color:#0ea5e9;
+}
+
+/* ===============================
+   MULTI SELECT
+================================= */
+
+.modern-multi-select{
+  width:100%;
+}
+
+.modern-multi-select .mat-mdc-text-field-wrapper{
+  background:#fff !important;
+
+  border-radius:12px !important;
+
+  border:1px solid #dbeafe !important;
+
+  min-height:48px !important;
+
+  transition:.3s;
+}
+
+.modern-multi-select .mat-mdc-text-field-wrapper:hover{
+
+  border-color:#38bdf8 !important;
+
+  box-shadow:
+  0 4px 15px rgba(56,189,248,.15);
+
+}
+
+.modern-multi-select.mat-focused .mat-mdc-text-field-wrapper{
+
+  border-color:#0284c7 !important;
+
+  box-shadow:
+  0 0 0 4px rgba(2,132,199,.10);
+
+}
+
+.modern-multi-select .mat-mdc-select-value{
+  font-size:13px;
+  color:#334155;
+  font-weight:500;
+}
+
+/* Selected count chips */
+
+.mat-mdc-select-value-text{
+
+  display:flex;
+  align-items:center;
+
+  gap:6px;
+
+  font-size:13px;
+}
+
+/* dropdown arrow */
+
+.mat-mdc-select-arrow{
+  color:#0284c7 !important;
+}
+
+/* ===============================
+   DROPDOWN PANEL
+================================= */
+
+.mat-mdc-select-panel{
+
+  border-radius:14px !important;
+
+  padding:8px !important;
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,.12) !important;
+}
+
+.mat-mdc-option{
+
+  border-radius:8px !important;
+
+  margin-bottom:4px;
+
+  font-size:13px;
+}
+
+.mat-mdc-option:hover{
+
+  background:#eff6ff !important;
+
+}
+
+.mat-mdc-option.mdc-list-item--selected{
+
+  background:#dbeafe !important;
+
+  color:#0369a1 !important;
+
+  font-weight:600;
+}
+
+.advanced-filter-card{
+
+  background:linear-gradient(
+      180deg,
+      #ffffff,
+      #f8fbff
+  );
+
+  border:1px solid #e2e8f0;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  margin-bottom:20px;
+
+  box-shadow:
+  0 4px 20px rgba(0,0,0,.05);
+}
+
+.filter-heading{
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  font-size:16px;
+  font-weight:600;
+
+  color:#0f172a;
+
+  margin-bottom:18px;
+}
+
+.filter-heading mat-icon{
+  color:#0ea5e9;
+}
+
+::ng-deep .mat-mdc-form-field-infix {
+  bottom: 15px !important;
+}
+
+.select-all-checkbox{
+  display:block;
+  padding:10px 16px;
+  border-bottom:1px solid #e5e7eb;
+  background:#f8fafc;
+  font-weight:600;
+  color:#2563eb;
+}
+
+.mat-mdc-option{
+  min-height:38px !important;
+  font-size:13px;
+}
+
+
+
+
     /* Phones */
 @media (max-width: 728px) {
 

@@ -16,6 +16,7 @@ import { SuccesModalComponent } from '../succes-modal/succes-modal.component';
 import { UserMasterService } from '../user-master/user-master.service';
 import { UesrEmployeeComponent } from '../uesr-employee/uesr-employee.component';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-user-edit',
@@ -75,28 +76,23 @@ export class UserEditComponent {
   }
 
 
-  ngOnInit(): void {
-    this.UserMasterService.getEmpById(this.data.employeeId).subscribe(
-      (Emp) => {
-        this.Emp = Emp;
-        this.Emp.password = ''; 
-      },
-      (error) => {
-        console.error('Error fetching category:', error);
-      }
+ngOnInit(): void {
+  forkJoin({
+    emp: this.UserMasterService.getEmpById(this.data.employeeId),
+    companies: this.CompanyRegistrationService.getCompany()
+  }).subscribe(({ emp, companies }) => {
+
+    this.companies = companies;
+    this.Emp = emp;
+
+    this.Emp.tenants = emp.allocated_tenants.map(
+      (t: any) => Number(t.id)
     );
 
-
-
-
-    this.loadCompanies();
-    // this.loadbranches();
-
-    // this.loadGrouping();
-    // this.loadPermission();
-  
-
-  }
+    console.log('Companies:', this.companies);
+    console.log('Selected IDs:', this.Emp.tenants);
+  });
+}
 
   updateEmp(): void {
  

@@ -208,21 +208,35 @@
                 <form>
                     <div class="from-sec">
                         <div class="row">
-                            <div class="col-md-6">
+<div class="col-md-6">
+    <label>Employee job History From date</label>
+    <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="emp_jh_from_date"
+        [ngModelOptions]="{standalone: true}"
+        (change)="calculateExperience()">
+</div>
 
-                                <label>Employee job History From date</label>
-                                <input type="date" class="form-control" required [(ngModel)]="emp_jh_from_date"
-                                    placeholder="Enter From date" [ngModelOptions]="{standalone: true}">
+<div class="col-md-6">
+    <label>Employee job History to date</label>
+    <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="emp_jh_end_date"
+        [ngModelOptions]="{standalone: true}"
+        (change)="calculateExperience()">
+</div>
 
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label>Employee job History to date</label>
-                                <input type="date" class="form-control" required [(ngModel)]="emp_jh_end_date"
-                                    placeholder="Enter to date" [ngModelOptions]="{standalone: true}">
-
-                            </div>
+<div class="col-md-6">
+    <label>Employee Work Experience (Years)</label>
+    <input
+        type="number"
+        class="form-control"
+        [(ngModel)]="emp_jh_years_experiance"
+        [ngModelOptions]="{standalone: true}"
+        readonly>
+</div>
 
                             <div class="col-md-6">
 
@@ -263,13 +277,7 @@
 
                             </div>
 
-                            <div class="col-md-6">
 
-                                <label>Employee work Experiance</label>
-                                <input type="number" class="form-control" required [(ngModel)]="emp_jh_years_experiance"
-                                    placeholder="Enter work Experiance" [ngModelOptions]="{standalone: true}">
-
-                            </div>
 
 
 

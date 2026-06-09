@@ -328,6 +328,28 @@ createempbankdetails():void{
 }
 
 
+calculateExperience(): void {
+
+  if (!this.emp_jh_from_date || !this.emp_jh_end_date) {
+    this.emp_jh_years_experiance = '';
+    return;
+  }
+
+  const from = new Date(this.emp_jh_from_date);
+  const to = new Date(this.emp_jh_end_date);
+
+  let years = to.getFullYear() - from.getFullYear();
+  let months = to.getMonth() - from.getMonth();
+
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  this.emp_jh_years_experiance = `${years}.${months}`;
+}
+
+
 
 
 

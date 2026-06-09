@@ -1,154 +1,209 @@
 <div class="container">
-    <div class="comapny_section" *ngIf="Companies">
-
-       
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-7">
-                    <h1> User Details </h1>
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <!-- <button type="button"  class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>add_circle
+  <div class="comapny_section" *ngIf="Companies">
+    <div class="header_section">
+      <div class="row">
+        <div class="col-md-7">
+          <h1>User Details</h1>
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <!-- <button type="button"  class="btn-Create btn btn-success "><span class="header-btn-icon"><mat-icon>add_circle
                         </mat-icon></span> Create</button> -->
 
-                        <button *ngIf="hasEditPermission" type="button" class="btn-Edit btn-info btn"  (click)="openEditEmpPopuss(Companies.id)">
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <button *ngIf="hasDeletePermission" type="button" class="btn-Delete btn btn-danger" (click)="onDeleteEmployee(Companies.id)">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> Delete</button>
-                  
-                        </div>
-                </div>
+        <div class="button-group">
 
-            </div>
-           
-           
+   <button
+    type="button"
+    class="btn btn-warning"
+    (click)="openPopuSettings()"
+  >
+    <mat-icon>lock_reset</mat-icon>
+    Reset Password
+  </button>
 
+  <!-- <button
+    *ngIf="hasEditPermission"
+    type="button"
+    class="btn btn-info"
+    (click)="openEditEmpPopuss(Companies.id)"
+  >
+    <mat-icon>draw</mat-icon>
+    Edit
+  </button> -->
+
+  <!-- <button
+    *ngIf="hasDeletePermission"
+    type="button"
+    class="btn btn-danger"
+    (click)="onDeleteEmployee(Companies.id)"
+  >
+    <mat-icon>delete</mat-icon>
+    Delete
+  </button> -->
+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="body-section">
+      <div class="user_spec">
+        <div class="row">
+          <div class="col-md-2">
+            <mat-icon
+              style="
+                color: #714b67;
+                height: 100%;
+                width: 100%;
+                font-size: 150px;
+              "
+              >person
+            </mat-icon>
+          </div>
+
+          <div class="col-md-9">
+            <!-- <h1>
+              {{ Companies.username }}
+              <i class="fa fa-cog pull-right" (click)="openPopuSettings()"></i>
+            </h1> -->
+            <!-- <h3 style="color: #714b67">Front End Developer</h3> -->
+
+            <h2>User Name: {{ Companies.username }}</h2>
+            <hr />
+          </div>
         </div>
 
-        <div class="body-section">
-            
-            
-            <div class="user_spec">
-
-
-                <div class="row">
-                    <div class="col-md-2">
-                        <mat-icon style="color: #714b67; height: 100%; width: 100%; font-size: 150px;">person
-                        </mat-icon>
-                    </div>
-
-                    <div class="col-md-9">
-                        <h1>{{Companies.username}} <i class="fa fa-cog pull-right" (click)="openPopuSettings()"></i></h1>
-                        <!-- <h3 style="color: #714b67">Front End Developer</h3> -->
-
-
-                        <h2 >User Name: {{Companies.username}}</h2><hr>
-                    </div>
-                </div>
-
-                <div class="user_de_Sec">
-                <div class="row">
-                    <div class="col-md-4">
-                        <h2 style="color: black;">Abouts</h2><hr>
-                        <!-- <h2>Date of joined</h2>
+        <div class="user_de_Sec">
+          <div class="row">
+            <div class="col-md-4">
+              <h2 style="color: black">Abouts</h2>
+              <hr />
+              <!-- <h2>Date of joined</h2>
                         <h2 style="margin-top: 0px;color: black;">12-01-2024</h2> -->
 
-                     
+              <h2>Admin Status</h2>
+              <h2 style="margin-top: 0px; color: black">
+                {{ Companies.is_superuser }}
+              </h2>
 
-                        <h2>Admin Status</h2>
-                        <h2 style="margin-top: 0px;color: black;">{{Companies.is_superuser}} </h2>
+              <h2>Ess Status</h2>
+              <h2 style="margin-top: 0px; color: black">
+                {{ Companies.is_ess }}
+              </h2>
 
-                        <h2>Ess Status</h2>
-                        <h2 style="margin-top: 0px;color: black;">{{Companies.is_ess}} </h2>
-
-                        <h2>Staff Status</h2>
-                        <h2 style="margin-top: 0px;color: black;">{{Companies.is_staff}} </h2>
-
-                    </div>
-
-                    <div class="col-md-4">
-                        <h2 style="color: black;">Contact</h2><hr>
-                      
-
-                        <h2>Email</h2>
-                        <h2 style="margin-top: 0px;color: black;">{{Companies.email}}</h2>
-                        <h2>Phone</h2>
-                        <h2 style="margin-top: 0px;color: black;">+91 7788987867</h2>
-                    </div>
-                    <div class="col-md-4">
-                        <h2 style="color: black;">User Details</h2><hr>
-                        <h2>Company</h2>
-                        <h2 style="margin-top: 0px;color: black;"> {{ Companies.allocated_tenants?.[0]?.schema_name }}</h2>
-
-                        <h2>Group Permissions</h2>
-                        <!-- <h2 style="margin-top: 0px;color: black;">Manager </h2> -->
-                                                 <h2 style="margin-top: 0px;color: black;"> {{ Companies.user_groups }}</h2>
-
-                    </div>
-                </div>
-                </div>
-
-
-
+              <h2>Staff Status</h2>
+              <h2 style="margin-top: 0px; color: black">
+                {{ Companies.is_staff }}
+              </h2>
             </div>
-        </div>
 
-        </div>
-
-
-        <div *ngIf="isSettings" class="modal">
-            <div class="modal-content">
-          
-              <div class="row">
-                <div class="col-md-10">
-                  <h2>Change password</h2>
-                </div>
-                <div class="col-md-2">
-                  <span class="close pull-right" (click)="closeSettings()">&times;</span>
-                </div>
-              </div>
-          
+            <div class="col-md-4">
+              <h2 style="color: black">Contact</h2>
               <hr />
-          
-              <div class="row">
-                <div class="col-md-12">
-          
-                  <!-- EMAIL -->
-                  <label>Email ID</label>
-                  <input type="email" [(ngModel)]="email" class="form-control" placeholder="Enter email ID">
-          
-                  <button class="btn btn-success mt-2 d-block mx-auto" (click)="sendOtp()" *ngIf="!otpSent">
-                    Send OTP
-                  </button>
-          
-                  <!-- OTP INPUT -->
-                  <div *ngIf="otpSent && !otpVerified">
-                    <input type="text" [(ngModel)]="otp" class="form-control mt-3" placeholder="Enter OTP">
-          
-                    <button class="btn btn-primary mt-2 d-block mx-auto" (click)="verifyOtp()">
-                      Verify OTP
-                    </button>
-                  </div>
-          
-                  <!-- NEW PASSWORD -->
-                  <div *ngIf="otpVerified">
-                    <label class="mt-3">New Password</label>
-                    <input type="password" [(ngModel)]="newPassword" class="form-control" placeholder="Enter new password">
-          
-                    <button class="btn btn-danger mt-3 d-block mx-auto" (click)="resetPassword()">
-                      Reset Password
-                    </button>
-                  </div>
-          
-                </div>
-              </div>
-          
+
+              <h2>Email</h2>
+              <h2 style="margin-top: 0px; color: black">
+                {{ Companies.email }}
+              </h2>
+              <h2>Phone</h2>
+              <h2 style="margin-top: 0px; color: black">+91 7788987867</h2>
+            </div>
+            <div class="col-md-4">
+              <h2 style="color: black">User Details</h2>
+              <hr />
+              <h2>Company</h2>
+              <h2 style="margin-top: 0px; color: black">
+                {{ Companies.allocated_tenants?.[0]?.schema_name }}
+              </h2>
+
+              <h2>Group Permissions</h2>
+              <!-- <h2 style="margin-top: 0px;color: black;">Manager </h2> -->
+              <h2 style="margin-top: 0px; color: black">
+                {{ Companies.user_groups }}
+              </h2>
             </div>
           </div>
-          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isSettings" class="modal">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col-md-10">
+          <h2>Change password</h2>
+        </div>
+        <!-- <div class="col-md-2">
+          <span class="close pull-right" (click)="closeSettings()"
+            >&times;</span
+          >
+        </div> -->
+    <div class="col-md-2">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn pull-right" (click)="closeSettings()">
+      ×
+    </span>
+  </div> 
+      </div>
+
+      <hr />
+
+      <div class="row">
+        <div class="col-md-12">
+          <!-- EMAIL -->
+          <label>Email ID</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            class="form-control"
+            placeholder="Enter email ID"
+          />
+
+          <button
+            class="btn btn-success mt-2 d-block mx-auto"
+            (click)="sendOtp()"
+            *ngIf="!otpSent"
+          >
+            Send OTP
+          </button>
+
+          <!-- OTP INPUT -->
+          <div *ngIf="otpSent && !otpVerified">
+            <input
+              type="text"
+              [(ngModel)]="otp"
+              class="form-control mt-3"
+              placeholder="Enter OTP"
+            />
+
+            <button
+              class="btn btn-primary mt-2 d-block mx-auto"
+              (click)="verifyOtp()"
+            >
+              Verify OTP
+            </button>
+          </div>
+
+          <!-- NEW PASSWORD -->
+          <div *ngIf="otpVerified">
+            <label class="mt-3">New Password</label>
+            <input
+              type="password"
+              [(ngModel)]="newPassword"
+              class="form-control"
+              placeholder="Enter new password"
+            />
+
+            <button
+              class="btn btn-danger mt-3 d-block mx-auto"
+              (click)="resetPassword()"
+            >
+              Reset Password
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

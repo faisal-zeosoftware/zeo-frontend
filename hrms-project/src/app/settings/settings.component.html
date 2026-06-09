@@ -30,12 +30,7 @@
               </div>
               <div *ngIf="!hasViewPermissionBranch"></div>
 
-              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/user-master" *ngIf="hasViewPermissionUsers">
-                <a class="set_siding" mat-list-item>
-                  <span class="side_option">Users</span>
-                </a>
-              </div>
-              <div *ngIf="!hasViewPermissionUsers"></div>
+
 
               <!-- <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/user-grouping-master" *ngIf="hasViewPermissionGroups">
                 <a class="set_siding" mat-list-item>
@@ -79,12 +74,6 @@
               </div>
               <div *ngIf="!hasViewDN"></div>
 
-              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/announcement-master" *ngIf="hasViewAnnounceMaster">
-                <a class="set_siding" mat-list-item>
-                  <span class="side_option">Announcement</span>
-                </a>
-              </div>
-              <div *ngIf="!hasViewAnnounceMaster"></div>
 
               <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/notification-settings" *ngIf="hasViewDocNotifySettings">
                 <a class="set_siding" mat-list-item>
@@ -310,40 +299,7 @@
            <div *ngIf="!hasViewPermissionAssettransreport"></div>
         </mat-expansion-panel> -->
 
-        <!-- Customization -->
 
-        <mat-expansion-panel>
-          <mat-expansion-panel-header class="mar-expantion-span">
-            <a mat-list-item>
-              <mat-icon>dashboard_customize </mat-icon>
-              <span class="con_clr"> Customization</span></a
-            >
-          </mat-expansion-panel-header>
-
-          <div
-            class="mat-expansion-panel-body"
-            *ngIf="hasViewPermissionEmpForm"
-          >
-            <a
-              class="set_siding"
-              mat-list-item
-              routerLink="/main-sidebar/settings/from-designer"
-              ><span class="side_option">Employee form</span>
-            </a>
-          </div>
-
-          <div
-            class="mat-expansion-panel-body"
-            *ngIf="hasviewPermissionAssetForm"
-          >
-            <a
-              class="set_siding"
-              mat-list-item
-              routerLink="/main-sidebar/settings/asset-udf"
-              ><span class="side_option">Asset form</span>
-            </a>
-          </div>
-        </mat-expansion-panel>
 
                     <!-- User Permissions -->
               <mat-expansion-panel>
@@ -353,6 +309,13 @@
                   <span class="con_clr"> User And Permissions</span>
                 </a>
               </mat-expansion-panel-header>
+
+              <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/user-master" *ngIf="hasViewPermissionUsers">
+                <a class="set_siding" mat-list-item>
+                  <span class="side_option">User Master</span>
+                </a>
+              </div>
+              <div *ngIf="!hasViewPermissionUsers"></div>
 
               <div class="mat-expansion-panel-body" routerLink="/main-sidebar/settings/user-grouping-master" *ngIf="hasViewPermissionGroups">
                 <a class="set_siding" mat-list-item>
@@ -520,6 +483,42 @@
               <span class="con_clr">Company Policy</span></a
             >
           </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+
+                <!-- Customization -->
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header class="mar-expantion-span">
+            <a mat-list-item>
+              <mat-icon>dashboard_customize </mat-icon>
+              <span class="con_clr"> Customization</span></a
+            >
+          </mat-expansion-panel-header>
+
+          <div
+            class="mat-expansion-panel-body"
+            *ngIf="hasViewPermissionEmpForm"
+          >
+            <a
+              class="set_siding"
+              mat-list-item
+              routerLink="/main-sidebar/settings/from-designer"
+              ><span class="side_option">Employee form</span>
+            </a>
+          </div>
+
+          <div
+            class="mat-expansion-panel-body"
+            *ngIf="hasviewPermissionAssetForm"
+          >
+            <a
+              class="set_siding"
+              mat-list-item
+              routerLink="/main-sidebar/settings/asset-udf"
+              ><span class="side_option">Asset form</span>
+            </a>
+          </div>
         </mat-expansion-panel>
 
         <!-- <mat-expansion-panel>

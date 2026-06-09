@@ -326,10 +326,6 @@ const routes: Routes = [
           },
 
           {
-            path: 'announcement-master',
-            component: AnnouncementMasterComponent
-          },
-          {
             path: 'weelcalendar',
             component: WeelcalendarComponent
           },
@@ -754,6 +750,11 @@ const routes: Routes = [
         path: 'general-sidebar',
         component: GeneralSidebarComponent,
         children: [
+
+          {
+            path: 'announcement-master',
+            component: AnnouncementMasterComponent
+          },
 
           {
             path: 'document-request-level',

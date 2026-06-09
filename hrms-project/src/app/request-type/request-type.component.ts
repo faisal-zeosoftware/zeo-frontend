@@ -478,12 +478,15 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = { ...asset };
 
-// Map employee name → ID
-this.mapSalaryComNameToId();
+  // Convert branch names to IDs if needed
+  this.mapBranchesNameToId();
 
+  // Convert salary component name to ID
+  this.mapSalaryComNameToId();
+
+  this.isEditModalOpen = true;
 }
 
 
@@ -604,7 +607,12 @@ updateAssetType(): void {
 
     
 mapBranchesNameToId() {
-  if (!this.branches || !Array.isArray(this.editAsset?.branch)) return;
+  if (!this.branches || !this.editAsset?.branch) return;
+
+  // If already IDs, no need to map
+  if (typeof this.editAsset.branch[0] === 'number') {
+    return;
+  }
 
   this.editAsset.branch = this.branches
     .filter((b: any) => this.editAsset.branch.includes(b.branch_name))

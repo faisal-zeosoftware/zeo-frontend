@@ -151,7 +151,7 @@ export class AnnouncementMasterComponent {
     this.employeeService.selectedBranches$.subscribe(ids => {
 
       this.loadEmp();
-       this.loadBranches();
+      this.loadBranches();
 
     });
 
@@ -293,51 +293,51 @@ export class AnnouncementMasterComponent {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
-   toggleAllSelectionBrach(): void {
-      if (this.branchSelect) {
-        this.branchSelect.options.forEach((item: MatOption) =>
-          this.allSelectedBrach ? item.select() : item.deselect()
-        );
-      }
+  toggleAllSelectionBrach(): void {
+    if (this.branchSelect) {
+      this.branchSelect.options.forEach((item: MatOption) =>
+        this.allSelectedBrach ? item.select() : item.deselect()
+      );
     }
-  
-  
-    toggleAllSelectiondept(): void {
-      if (this.deptSelect) {
-        this.deptSelect.options.forEach((item: MatOption) =>
-          this.allSelecteddept ? item.select() : item.deselect()
-        );
-      }
+  }
+
+
+  toggleAllSelectiondept(): void {
+    if (this.deptSelect) {
+      this.deptSelect.options.forEach((item: MatOption) =>
+        this.allSelecteddept ? item.select() : item.deselect()
+      );
     }
-  
-    toggleAllSelectioncat(): void {
-      if (this.catSelect) {
-        this.catSelect.options.forEach((item: MatOption) =>
-          this.allSelectedcat ? item.select() : item.deselect()
-        );
-      }
+  }
+
+  toggleAllSelectioncat(): void {
+    if (this.catSelect) {
+      this.catSelect.options.forEach((item: MatOption) =>
+        this.allSelectedcat ? item.select() : item.deselect()
+      );
     }
-  
-  
-    toggleAllSelectiondes(): void {
-  
-      if (this.selectdes) {
-        this.selectdes.options.forEach((item: MatOption) =>
-          this.allSelecteddes ? item.select() : item.deselect()
-        );
-      }
-  
-  
+  }
+
+
+  toggleAllSelectiondes(): void {
+
+    if (this.selectdes) {
+      this.selectdes.options.forEach((item: MatOption) =>
+        this.allSelecteddes ? item.select() : item.deselect()
+      );
     }
-  
-  
-    toggleAllSelectionEmp(): void {
-      if (this.empSelect) {
-        this.empSelect.options.forEach((item: MatOption) =>
-          this.allSelectedEmp ? item.select() : item.deselect()
-        );
-      }
+
+
+  }
+
+
+  toggleAllSelectionEmp(): void {
+    if (this.empSelect) {
+      this.empSelect.options.forEach((item: MatOption) =>
+        this.allSelectedEmp ? item.select() : item.deselect()
+      );
     }
+  }
 
 
   loadUsers(): void {
@@ -361,7 +361,7 @@ export class AnnouncementMasterComponent {
   }
 
 
-     loadEmp(callback?: Function): void {
+  loadEmp(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();
     const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
@@ -371,9 +371,9 @@ export class AnnouncementMasterComponent {
         (result: any) => {
           this.Employee = result;
           this.FilteredEmployees = result;
-           this.currentPage = 1;
+          this.currentPage = 1;
 
-          this.updatePagination();   
+          this.updatePagination();
           if (callback) callback();
         },
         (error) => {
@@ -384,40 +384,40 @@ export class AnnouncementMasterComponent {
   }
 
 
-    loadBranches(callback?: Function): void {
-      const selectedSchema = this.authService.getSelectedSchema();
-  
-      if (selectedSchema) {
-        this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-          (result: any[]) => {
-  
-            const sidebarSelectedIds: number[] =
-              JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
-            if (sidebarSelectedIds.length > 0) {
-              this.branches = result.filter(branch =>
-                sidebarSelectedIds.includes(branch.id)
-              );
-            } else {
-              this.branches = result;
-            }
-  
-            // ✅ FIX: DO NOT overwrite array
-            if (this.branches.length === 1) {
-              this.branch = [this.branches[0].id]; // auto select
-            }
-  
-            console.log('Filtered branches:', this.branches);
-  
-            if (callback) callback();
-          },
-          (error) => {
-            console.error('Error fetching branches:', error);
+  loadBranches(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+
+          const sidebarSelectedIds: number[] =
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch =>
+              sidebarSelectedIds.includes(branch.id)
+            );
+          } else {
+            this.branches = result;
           }
-        );
-      }
+
+          // ✅ FIX: DO NOT overwrite array
+          if (this.branches.length === 1) {
+            this.branch = [this.branches[0].id]; // auto select
+          }
+
+          console.log('Filtered branches:', this.branches);
+
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
     }
-  
+  }
+
 
 
   loadDEpartments(callback?: Function): void {
@@ -488,12 +488,11 @@ export class AnnouncementMasterComponent {
   isLoading: boolean = false;
 
   registerAnnouncement(): void {
-    this.registerButtonClicked = true;
-    this.isLoading = true;
+
     const selectedEmployees =
       this.FilteredEmployees
         .filter(x => x.selected)
-        .map(x => x.id); // start loader ✅
+        .map(x => x.id);
 
     const companyData = {
       title: this.title,
@@ -505,7 +504,7 @@ export class AnnouncementMasterComponent {
       allow_comments: this.allow_comments,
       created_by: this.created_by,
 
-      branch: this.selectedBranches,
+      branches: this.selectedBranches,
 
       department: this.selectedDepartments,
 
@@ -513,7 +512,7 @@ export class AnnouncementMasterComponent {
 
       designation: this.selectedDesignations,
 
-      employee: selectedEmployees
+      specific_employees: selectedEmployees
 
 
     };

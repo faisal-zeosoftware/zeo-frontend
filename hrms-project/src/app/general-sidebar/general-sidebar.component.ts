@@ -27,6 +27,9 @@ export class GeneralSidebarComponent {
   hasViewPermissionAprvlvl: boolean = false;
   hasViewPermissionGenReqEsc: boolean = false;
 
+  // Accouncement permission
+  hasViewAnnounceMaster:boolean = false;
+
 
 
 
@@ -99,6 +102,8 @@ export class GeneralSidebarComponent {
             this.hasViewPermissionAprvlvl = true;
             this.hasViewPermissionGenReqEsc = true;
 
+            this.hasViewAnnounceMaster = true;
+
 
 
 
@@ -134,6 +139,8 @@ export class GeneralSidebarComponent {
                     this.hasViewPermissionAprvlvl = true;
                     this.hasViewPermissionGenReqEsc = true;
 
+                    this.hasViewAnnounceMaster = true;
+
 
 
 
@@ -143,7 +150,8 @@ export class GeneralSidebarComponent {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
 
-
+                    this.hasViewAnnounceMaster = this.checkGroupPermission('view_announcement', groupPermissions);
+                    console.log('Has view permission:', this.hasViewAnnounceMaster);
 
                     this.hasViewPermissionDocReqType = this.checkGroupPermission('view_docrequesttype', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermissionDocReqType);
