@@ -994,21 +994,21 @@ export class AnnouncementMasterComponent {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = {
-      ...asset,
+  // openEditModal(asset: any): void {
+  //   this.editAsset = {
+  //     ...asset,
 
-      emp_dept_id: asset.emp_dept_id || [],
-      emp_desgntn_id: asset.emp_desgntn_id || [],
-      emp_ctgry_id: asset.emp_ctgry_id || [],
+  //     emp_dept_id: asset.emp_dept_id || [],
+  //     emp_desgntn_id: asset.emp_desgntn_id || [],
+  //     emp_ctgry_id: asset.emp_ctgry_id || [],
 
-      branches: asset.branches || [],
-      specific_employees: asset.specific_employees || []
+  //     branches: asset.branches || [],
+  //     specific_employees: asset.specific_employees || []
 
 
-    }; // copy asset data
-    this.isEditModalOpen = true;
-  }
+  //   }; // copy asset data
+  //   this.isEditModalOpen = true;
+  // }
 
   closeEditModal(): void {
     this.isEditModalOpen = false;
@@ -1053,37 +1053,7 @@ export class AnnouncementMasterComponent {
   }
 
 
-  updateAssetType(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
-      return;
-    }
 
-    this.employeeService.updateAnnouncement(this.editAsset.id, this.editAsset).subscribe(
-      (response) => {
-        alert(' Announcement  updated successfully!');
-        this.closeEditModal();
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Error updating Announcement:', error);
-
-        let errorMsg = 'Update failed';
-
-        const backendError = error?.error;
-
-        if (backendError && typeof backendError === 'object') {
-          // Convert the object into a readable string
-          errorMsg = Object.keys(backendError)
-            .map(key => `${key}: ${backendError[key].join(', ')}`)
-            .join('\n');
-        }
-
-        alert(errorMsg);
-      }
-    );
-  }
 
 
 
@@ -1149,6 +1119,238 @@ export class AnnouncementMasterComponent {
       .map(cat => cat.ctgry_title)
       .join(', ');
   }
+
+
+ //////////////////////////////////// edit model /////////////////////////////////////////
+
+ editSelectedBranches: number[] = [];
+editSelectedDepartments: number[] = [];
+editSelectedCategories: number[] = [];
+editSelectedDesignations: number[] = [];
+
+editFilteredEmployees: any[] = [];
+editPagedEmployees: any[] = [];
+
+editAllEmployeesSelected = false;
+
+editCurrentPage = 1;
+editItemsPerPage = 3;
+
+openEditModal(asset: any): void {
+
+  this.editAsset = { ...asset };
+
+  // Branches
+  this.editSelectedBranches =
+    asset.branches || [];
+
+  // Departments
+  this.editSelectedDepartments =
+    asset.department || [];
+
+  // Categories
+  this.editSelectedCategories =
+    asset.category || [];
+
+  // Designations
+  this.editSelectedDesignations =
+    asset.designation || [];
+
+  // Employees
+  this.editFilteredEmployees =
+    this.Employee.map(emp => ({
+      ...emp,
+      selected:
+        asset.specific_employees?.includes(emp.id)
+    }));
+
+  this.editCurrentPage = 1;
+
+  this.applyEditEmployeeFilter();
+
+  this.isEditModalOpen = true;
+}
+
+applyEditEmployeeFilter(): void {
+
+  const selectedIds =
+    this.editFilteredEmployees
+      .filter(x => x.selected)
+      .map(x => x.id);
+
+  this.editFilteredEmployees =
+    this.Employee.filter(emp => {
+
+      const branchMatch =
+        this.editSelectedBranches.length === 0 ||
+        this.editSelectedBranches.some(id =>
+          emp.emp_branch_id ===
+          this.getBranchName(id)
+        );
+
+      const deptMatch =
+        this.editSelectedDepartments.length === 0 ||
+        this.editSelectedDepartments.some(id =>
+          emp.emp_dept_id ===
+          this.getDepartmentName(id)
+        );
+
+      const categoryMatch =
+        this.editSelectedCategories.length === 0 ||
+        this.editSelectedCategories.some(id =>
+          emp.emp_ctgry_id ===
+          this.getCategoryName(id)
+        );
+
+      const designationMatch =
+        this.editSelectedDesignations.length === 0 ||
+        this.editSelectedDesignations.some(id =>
+          emp.emp_desgntn_id ===
+          this.getDesignationName(id)
+        );
+
+      return (
+        branchMatch &&
+        deptMatch &&
+        categoryMatch &&
+        designationMatch
+      );
+
+    }).map(emp => ({
+      ...emp,
+      selected: selectedIds.includes(emp.id)
+    }));
+
+  this.updateEditPagination();
+}
+
+
+updateEditPagination(): void {
+
+  const start =
+    (this.editCurrentPage - 1) *
+    this.editItemsPerPage;
+
+  const end =
+    start + this.editItemsPerPage;
+
+  this.editPagedEmployees =
+    this.editFilteredEmployees.slice(
+      start,
+      end
+    );
+}
+
+updateAssetType(): void {
+
+  const selectedEmployees =
+    this.editFilteredEmployees
+      .filter(x => x.selected)
+      .map(x => x.id);
+
+  const payload = {
+
+    title: this.editAsset.title,
+    message: this.editAsset.message,
+
+    schedule_at:
+      this.editAsset.schedule_at,
+
+    expires_at:
+      this.editAsset.expires_at,
+
+    send_email:
+      this.editAsset.send_email,
+
+    created_by:
+      this.editAsset.created_by,
+
+    branches:
+      this.editSelectedBranches,
+
+    department:
+      this.editSelectedDepartments,
+
+    category:
+      this.editSelectedCategories,
+
+    designation:
+      this.editSelectedDesignations,
+
+    specific_employees:
+      selectedEmployees
+
+  };
+
+  this.employeeService
+    .updateAnnouncement(
+      this.editAsset.id,
+      payload
+    )
+    .subscribe({
+      next: () => {
+
+        alert(
+          'Announcement updated successfully'
+        );
+
+        this.closeEditModal();
+
+        window.location.reload();
+
+      },
+      error: err => {
+
+        console.error(err);
+
+      }
+    });
+}
+
+toggleSelectAllEditEmployees(): void {
+
+  this.editFilteredEmployees.forEach(emp => {
+
+    emp.selected =
+      this.editAllEmployeesSelected;
+
+  });
+
+  this.updateEditPagination();
+}
+
+get editTotalPages(): number {
+  return Math.ceil(
+    this.editFilteredEmployees.length /
+    this.editItemsPerPage
+  );
+}
+
+editNextPage(): void {
+  if (this.editCurrentPage < this.editTotalPages) {
+    this.editCurrentPage++;
+    this.updateEditPagination();
+  }
+}
+
+editPreviousPage(): void {
+  if (this.editCurrentPage > 1) {
+    this.editCurrentPage--;
+    this.updateEditPagination();
+  }
+}
+
+editGoToPage(page: number): void {
+  this.editCurrentPage = page;
+  this.updateEditPagination();
+}
+
+get editPageNumbers(): number[] {
+  return Array(this.editTotalPages)
+    .fill(0)
+    .map((_, i) => i + 1);
+}
+
 
 
 

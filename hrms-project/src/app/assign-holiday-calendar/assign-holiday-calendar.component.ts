@@ -41,7 +41,7 @@ export class AssignHolidayCalendarComponent {
   Employee: any[] = [];
 
 
-  WeekCalendar: any[] = [];
+  HolidayCalendar: any[] = [];
 
   branch: number[] = [];
   department: number[] = [];
@@ -120,7 +120,7 @@ export class AssignHolidayCalendarComponent {
       this.loadBranches();
       this.loadEmp();
       this.loadDEpartments();
-      this.loadWeekendCalendar();
+      this.loadHolidayCalendar();
 
 
 
@@ -457,15 +457,15 @@ export class AssignHolidayCalendarComponent {
   }
 
 
-    loadWeekendCalendar(callback?: Function): void {
+    loadHolidayCalendar(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();
     const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
 
     if (selectedSchema) {
-      this.categoryService.getWeekendcalendarNew(selectedSchema, savedIds).subscribe(
+      this.categoryService.getHolidayCalendarNew(selectedSchema, savedIds).subscribe(
         (result: any) => {
-          this.WeekCalendar = result;
+          this.HolidayCalendar = result;
 
           if (callback) callback();
         },
@@ -1076,55 +1076,61 @@ openEditModal(asset: any): void {
 
   this.editAsset = { ...asset };
 
-  // Weekend Calendar Auto Select
+  const selectedCalendar =
+    this.HolidayCalendar.find(
+      (x: any) =>
+        x.calendar_title?.trim() ===
+        asset.holiday_model?.trim()
+    );
 
-  const selectedCalendar = this.WeekCalendar.find(
-    (x: any) => x.weekend_name === asset.weekend_model
-  );
-  
-  this.editAsset.weekend_model =
+  this.editAsset.holiday_model =
     selectedCalendar?.id ?? null;
 
-    
-  // Branch
-  this.editSelectedBranches = this.branches
-    .filter(x =>
-      asset.branch?.includes(x.branch_name)
-    )
-    .map(x => x.id);
-
-  // Department
-  this.editSelectedDepartments = this.Departments
-    .filter(x =>
-      asset.department?.includes(x.dept_name)
-    )
-    .map(x => x.id);
-
-  // Category
-  this.editSelectedCategories = this.Categories
-    .filter(x =>
-      asset.category?.includes(x.ctgry_title)
-    )
-    .map(x => x.id);
-
-  // Designation
-  this.editSelectedDesignations = this.Designations
-    .filter(x =>
-      asset.designation?.includes(
-        x.desgntn_job_title
+  this.editSelectedBranches =
+    this.branches
+      .filter(x =>
+        asset.branch?.includes(
+          x.branch_name
+        )
       )
-    )
-    .map(x => x.id);
+      .map(x => x.id);
 
-  // Employees
+  this.editSelectedDepartments =
+    this.Departments
+      .filter(x =>
+        asset.department?.includes(
+          x.dept_name
+        )
+      )
+      .map(x => x.id);
 
-  this.editFilteredEmployees = this.Employee.map(emp => ({
-    ...emp,
+  this.editSelectedCategories =
+    this.Categories
+      .filter(x =>
+        asset.category?.includes(
+          x.ctgry_title
+        )
+      )
+      .map(x => x.id);
 
-    selected:
-      asset.employee?.includes(emp.id) ||
-      asset.employee?.includes(emp.emp_code)
-  }));
+  this.editSelectedDesignations =
+    this.Designations
+      .filter(x =>
+        asset.designation?.includes(
+          x.desgntn_job_title
+        )
+      )
+      .map(x => x.id);
+
+  this.editFilteredEmployees =
+    this.Employee.map(emp => ({
+      ...emp,
+      selected: asset.employee?.some(
+        (e: any) =>
+          e == emp.id ||
+          e == emp.emp_code
+      )
+    }));
 
   this.editCurrentPage = 1;
 
@@ -1205,8 +1211,6 @@ updateEditPagination(): void {
 
 }
 
-
-
 updateAssetType(): void {
 
   const selectedEmployees =
@@ -1216,29 +1220,57 @@ updateAssetType(): void {
 
   const payload = {
 
-    weekend_model:
-      this.editAsset.weekend_model,
+    holiday_model: this.editAsset.holiday_model,
 
-    branch:
-      this.editSelectedBranches,
+    branch: this.editSelectedBranches,
 
-    department:
-      this.editSelectedDepartments,
+    department: this.editSelectedDepartments,
 
-    category:
-      this.editSelectedCategories,
+    category: this.editSelectedCategories,
 
-    designation:
-      this.editSelectedDesignations,
+    designation: this.editSelectedDesignations,
 
-    employee:
-      selectedEmployees
+    employee: selectedEmployees
 
   };
 
-  console.log(payload);
+  console.log('Update Payload:', payload);
 
-  // API Call here
+  this.employeeService
+    .updateAssignHoliCalendar(this.editAsset.id, payload)
+    .subscribe({
+
+      next: (response) => {
+
+        alert('Holiday Calendar Updated Successfully');
+
+        window.location.reload();
+
+        this.closeEditModal();
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);  
+            
+    
+          }
+        });
+
+      },
+
+      error: (error) => {
+
+        alert(
+          error.error?.error ||
+          error.error?.message ||
+          'Update failed'
+        );
+
+      }
+
+    });
 
 }
 

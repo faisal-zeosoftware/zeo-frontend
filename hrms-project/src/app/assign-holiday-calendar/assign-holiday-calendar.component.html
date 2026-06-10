@@ -81,7 +81,7 @@
                     </label>
                     <select class="form-control" id="holiday_model" required [(ngModel)]="holiday_model"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !holiday_model}">
                         <option value="" >Select</option>
-                        <option *ngFor="let deparmentsec of WeekCalendar" [value]="deparmentsec.id">{{ deparmentsec.calendar_title     }}  ( {{ deparmentsec.year}} )</option>
+                        <option *ngFor="let deparmentsec of HolidayCalendar" [value]="deparmentsec.id">{{ deparmentsec.calendar_title     }}  ( {{ deparmentsec.year}} )</option>
                     </select>
                 </div>
                  <div *ngIf="registerButtonClicked && !holiday_model" class="error-message">Please select holiday calender</div> 
@@ -482,7 +482,7 @@
                     </label>
                     <select class="form-control" id="holiday_model" required [(ngModel)]="editAsset.holiday_model"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !holiday_model}">
                         <option value="" >Select</option>
-                        <option *ngFor="let deparmentsec of WeekCalendar" [value]="deparmentsec.id">{{ deparmentsec.calendar_title     }}  ( {{ deparmentsec.year}} )</option>
+                        <option *ngFor="let deparmentsec of HolidayCalendar" [value]="deparmentsec.id">{{ deparmentsec.calendar_title     }}  ( {{ deparmentsec.year}} )</option>
                     </select>
                 </div>
                  <div *ngIf="registerButtonClicked && !holiday_model" class="error-message">Please select holiday calender</div> 
@@ -692,9 +692,10 @@
           <th width="70">
 
             <mat-checkbox
-              [(ngModel)]="allEmployeesSelected"
+             
               [ngModelOptions]="{standalone:true}"
-              (change)="toggleSelectAllEmployees()">
+              [(ngModel)]="editAllEmployeesSelected"
+              (change)="toggleSelectAllEditEmployees()">
             </mat-checkbox>
 
           </th>
@@ -709,35 +710,118 @@
 
       </thead>
 
-<tr *ngFor="let emp of editPagedEmployees">
+      <tbody>
 
-  <td>
-
-    <mat-checkbox
-      [(ngModel)]="emp.selected"
-      [ngModelOptions]="{standalone:true}">
-    </mat-checkbox>
-
-  </td>
-
-  <td>
-
-    {{ emp.emp_first_name }}
-    {{ emp.emp_last_name }}
-
-  </td>
-
-  <td>{{ emp.emp_branch_id }}</td>
-
-  <td>{{ emp.emp_dept_id }}</td>
-
-  <td>{{ emp.emp_ctgry_id }}</td>
-
-  <td>{{ emp.emp_desgntn_id }}</td>
-
-</tr>
+        <tr *ngFor="let emp of editPagedEmployees">
+        
+          <td>
+        
+            <mat-checkbox
+              [(ngModel)]="emp.selected"
+              [ngModelOptions]="{standalone:true}">
+            </mat-checkbox>
+        
+          </td>
+        
+          <td>
+        
+            <div class="employee-info">
+        
+              <div class="employee-avatar-wrapper">
+        
+                <img
+                  *ngIf="emp.emp_profile_pic"
+                  [src]="emp.emp_profile_pic"
+                  class="employee-avatar">
+        
+                <div
+                  *ngIf="!emp.emp_profile_pic"
+                  class="employee-avatar-placeholder">
+        
+                  <mat-icon>person</mat-icon>
+        
+                </div>
+        
+              </div>
+        
+              <div>
+        
+                <div class="employee-name">
+                  {{ emp.emp_first_name }}
+                  {{ emp.emp_last_name }}
+                </div>
+        
+                <div class="employee-code">
+                  {{ emp.emp_code }}
+                </div>
+        
+              </div>
+        
+            </div>
+        
+          </td>
+        
+          <td>
+            <span class="custom-badge blue">
+              {{ emp.emp_branch_id }}
+            </span>
+          </td>
+        
+          <td>
+            <span class="custom-badge green">
+              {{ emp.emp_dept_id }}
+            </span>
+          </td>
+        
+          <td>
+            <span class="custom-badge orange">
+              {{ emp.emp_ctgry_id }}
+            </span>
+          </td>
+        
+          <td>
+            <span class="custom-badge purple">
+              {{ emp.emp_desgntn_id }}
+            </span>
+          </td>
+        
+        </tr>
+        
+        </tbody>
     
 </table>
+
+<div class="pagination-container">
+
+  <button
+    class="page-btn"
+    (click)="editPreviousPage()"
+    [disabled]="editCurrentPage === 1">
+
+    Previous
+
+  </button>
+
+  <button
+    *ngFor="let page of editPageNumbers"
+    class="page-number"
+    [class.active]="editCurrentPage === page"
+    (click)="editGoToPage(page)">
+
+    {{ page }}
+
+  </button>
+
+  <button
+    class="page-btn"
+    (click)="editNextPage()"
+    [disabled]="editCurrentPage === editTotalPages">
+
+    Next
+
+  </button>
+
+</div>
 </div>
 </div>
   

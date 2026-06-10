@@ -592,7 +592,7 @@ loadBranches(callback?: Function): void {
   
             alert('Weekend Calendar Assigned');
   
-            // window.location.reload();
+            window.location.reload();
   
           },
   
@@ -658,19 +658,6 @@ loadBranches(callback?: Function): void {
 
 
 
-
-  openEditPopuss(categoryId: number):void{
-    
-  }
-
-
-  showEditBtn: boolean = false;
-
-  EditShowButtons() {
-    this.showEditBtn = !this.showEditBtn;
-  }
-
-
   Delete: boolean = false;
   allSelecteddelete: boolean = false;
 
@@ -697,8 +684,6 @@ onCheckboxChange(employee:number) {
 
 
 
-isEditModalOpen: boolean = false;
-editAsset: any = {}; // holds the asset being edited
 
 // openEditModal(asset: any): void {
 // this.editAsset = { ...asset }; // copy asset data
@@ -739,10 +724,7 @@ editAsset: any = {}; // holds the asset being edited
 //   this.isEditModalOpen = true;
 // }
 
-closeEditModal(): void {
-this.isEditModalOpen = false;
-this.editAsset = {};
-}
+
 
 
 
@@ -1132,6 +1114,25 @@ get pageNumbers(): number[] {
 
 // edit modal 
 
+  openEditPopuss(categoryId: number):void{
+    
+  }
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+  isEditModalOpen: boolean = false;
+editAsset: any = {};
+
+  closeEditModal(): void {
+this.isEditModalOpen = false;
+this.editAsset = {};
+}
+
 
 
 editSelectedBranches: number[] = [];
@@ -1148,6 +1149,7 @@ editItemsPerPage = 3;
 
 
 
+
 openEditModal(asset: any): void {
 
   this.editAsset = { ...asset };
@@ -1155,12 +1157,11 @@ openEditModal(asset: any): void {
   // Weekend Calendar Auto Select
 
   const selectedCalendar = this.WeekCalendar.find(
-    (x: any) => x.weekend_name === asset.weekend_model
+    (x: any) => x.calendar_code === asset.weekend_model
   );
-  
+
   this.editAsset.weekend_model =
     selectedCalendar?.id ?? null;
-
 
   // Branch
   this.editSelectedBranches = this.branches
@@ -1314,6 +1315,8 @@ updateAssetType(): void {
       next: (response) => {
 
         alert('Weekend Calendar Updated Successfully');
+
+        window.location.reload();
 
         this.closeEditModal();
         this.dataSubscription = combineLatest([
