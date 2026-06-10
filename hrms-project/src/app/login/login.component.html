@@ -33,148 +33,182 @@
 
 <!-- <div class="buble-one"></div>
   <div class="buble-two"></div> -->
-<div class="mt-5"></div>
-<div class="container" id="container">
 
-  <h3></h3>
+<div class="login-page">
 
-  <div class="form-container sign-in" *ngIf="showCurrentDiv">
-    <!--  -->
+  <div class="login-container">
 
-    <form (ngSubmit)="validateCredentials()" *ngIf="step === 1">
-      <h1>Sign In</h1>
-    
-      <input type="text" class="form-control"
-             [(ngModel)]="username"
-             placeholder="enter user id"
-             [ngModelOptions]="{standalone: true}">
-    
-      <!-- <input type="password" class="form-control"
-             [(ngModel)]="password"
-             placeholder="enter password"
-             [ngModelOptions]="{standalone: true}"> -->
-             <div class="position-relative" style="width: 100%;">
+    <!-- LEFT SIDE -->
+    <div class="login-left">
 
-              <input 
-                [type]="showPassword ? 'text' : 'password'" 
-                class="form-control"
-                [(ngModel)]="password"
-                placeholder="enter password"
-                [ngModelOptions]="{standalone: true}"
-              >
-            
-              <!-- Eye Icon -->
-              <span class="toggle-eye" (click)="togglePassword()">
-                <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-              </span>
-            
-            </div>
-      <button class="btn-log" type="submit">Login</button>
-    </form>
-    
-    
-    
-  <!-- STEP 2: SEND OTP -->
-   <form *ngIf="step === 2">
-<div  class="otp-success-box">
+      <div class="brand-section">
 
-  <div class="success-icon">
-    <span class="checkmark"></span>
-  </div>
+        <img
+          src="assets/zeo_logo_new.png"
+          class="logo"
+          alt="Logo">
 
-  <p class="success-text">User validated successfully!</p>
+        <h2>ZEO HRMS</h2>
 
-  <button class="btn-log" (click)="sendOtp()">Send OTP</button>
+        <p>Human Resource Management System</p>
+
+      </div>
+
+      <!-- STEP 1 -->
+      <form *ngIf="step === 1"
+            (ngSubmit)="validateCredentials()">
+
+        <div class="input-group">
+
+          <i class="fa fa-user"></i>
+
+          <input
+            type="text"
+            placeholder="Username"
+            [(ngModel)]="username"
+            [ngModelOptions]="{standalone:true}">
+
+        </div>
+<div class="input-group password-group">
+
+    <i class="fa fa-lock input-icon"></i>
+
+    <input
+        [type]="showPassword ? 'text' : 'password'"
+        placeholder="Password"
+        [(ngModel)]="password"
+        [ngModelOptions]="{standalone:true}">
+
+    <span
+        class="eye-icon"
+        (click)="togglePassword()">
+
+        <i
+            class="fa"
+            [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" style="left: 0px;">
+        </i>
+
+    </span>
 
 </div>
-</form>
-    
-    <form *ngIf="step === 3">
-    <!-- STEP 3: OTP VERIFY -->
- 
-      <input type="text"
-             class="form-control"
-             placeholder="Enter OTP"
-             [(ngModel)]="otp"
-             [ngModelOptions]="{standalone: true}">
-    
-      <button class="btn-log" (click)="verifyOtp()">Verify OTP</button>
- 
-    </form>
-    
 
-  </div>
+        <button
+          type="submit"
+          class="btn-login">
 
+          Login
 
+        </button>
 
+      </form>
 
+      <!-- STEP 2 -->
+      <div
+        *ngIf="step === 2"
+        class="otp-success">
 
+        <div class="success-circle">
 
+          <i class="fa fa-check"></i>
 
+        </div>
 
+        <h4>User Validated Successfully</h4>
 
-  
-  <div class="form-container sign-in" *ngIf="!showCurrentDiv">
+        <p>
+          Click below to receive OTP
+        </p>
 
-    <form (submit)="registerUser()">
-      <h1 class="">Sign Up</h1>
-      <input [(ngModel)]="register.username" id="username" [ngModelOptions]="{standalone:true}" type="text" class="form-control"
-        placeholder="User Name" required [ngClass]="{'error-field': registerButtonClicked && !username}">
-        <div *ngIf="registerButtonClicked && !username" class="error-message">username is required.</div>
+        <button
+          class="btn-login"
+          (click)="sendOtp()">
 
+          Send OTP
 
-      <input [(ngModel)]="register.first_name" [ngModelOptions]="{standalone:true}" type="text" class="form-control"
-        placeholder="First Name" required [ngClass]="{'error-field': registerButtonClicked && !first_name}">
-        <div *ngIf="registerButtonClicked && !first_name" class="error-message">first_name is required.</div>
+        </button>
 
-
-      <input [(ngModel)]="register.last_name" [ngModelOptions]="{standalone: true}" type="text" class="form-control"
-        placeholder="Last Name" required>
-
-      <input [(ngModel)]="register.email" [ngModelOptions]="{standalone: true}" type="email" class="form-control"
-        placeholder="Email" required [ngClass]="{'error-field': registerButtonClicked && !email}">
-        <div *ngIf="registerButtonClicked && !email" class="error-message">email is required.</div> 
-
-
-      <input [(ngModel)]="register.contact_number" [ngModelOptions]="{standalone: true}" type="email"
-        class="form-control" placeholder="Contact Number" required [ngClass]="{'error-field': registerButtonClicked && !contact_number}">
-        <div *ngIf="registerButtonClicked && !contact_number" class="error-message">contact_number is required.</div> 
-
-
-      <input [(ngModel)]="register.password" [ngModelOptions]="{standalone: true}" type="password" class="form-control"
-        placeholder="password" required [ngClass]="{'error-field': registerButtonClicked && !password}">
-        <div *ngIf="registerButtonClicked && !password" class="error-message">password is required.</div> 
-
-
-      <button class="btn-log" type="submit">Sign Up</button>
-    </form>
-
-
-
-
-
-  </div>
-  
-  <div class="toggle-container">
-    <div class="toggle">
-      <div class="toggle-panel toggle-left">
-        <h1>Welcome Back!</h1>
-        <p>Enter your Personal details to use all of site features</p>
-        <button class="hidden" id="login">Sign In</button>
       </div>
-      <div class="toggle-panel toggle-right">
 
+      <!-- STEP 3 -->
+      <form *ngIf="step === 3">
 
-        <h1>Hello, Friend!</h1>
-        <p>Register with your Personal details to use all of site features</p>
-        <!-- <button  class="hidden btn-log" id="register" *ngIf="showButton" (click)="toggleDivs()"> {{ showCurrentDiv ? 'Sign Up' :
-          'Sign In' }}</button> -->
-      </div>
+        <h3>OTP Verification</h3>
+
+        <p class="subtitle">
+          Enter OTP sent to your mobile/email
+        </p>
+
+        <div class="input-group">
+
+          <i class="fa fa-key"></i>
+
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            [(ngModel)]="otp"
+            [ngModelOptions]="{standalone:true}">
+
+        </div>
+
+        <button
+          class="btn-login"
+          (click)="verifyOtp()">
+
+          Verify OTP
+
+        </button>
+
+      </form>
+
     </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="login-right">
+
+      <img
+      src="assets/no-projects.svg"
+        class="hero-image">
+
+      <h1>Smart HR Management</h1>
+
+      <p>
+        Manage Employees, Attendance,
+        Payroll and Performance from one place.
+      </p>
+
+      <!-- <div class="feature-cards">
+
+        <div class="feature-card">
+
+          <i class="fa fa-users"></i>
+
+          <span>Employees</span>
+
+        </div>
+
+        <div class="feature-card">
+
+          <i class="fa fa-calendar-check"></i>
+
+          <span>Attendance</span>
+
+        </div>
+
+        <div class="feature-card">
+
+          <i class="fa fa-money-bill"></i>
+
+          <span>Payroll</span>
+
+        </div>
+
+      </div> -->
+
+    </div>
+
   </div>
 
 </div>
-
 
 <!-- GLOBAL LOADING SPINNER -->
 <div class="loading-overlay" *ngIf="isLoading">
