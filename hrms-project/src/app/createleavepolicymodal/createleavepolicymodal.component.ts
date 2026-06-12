@@ -19,7 +19,7 @@ import { DesignationService } from '../designation-master/designation.service';
 export class CreateleavepolicymodalComponent {
 
 
-  
+
 
 
 
@@ -63,7 +63,7 @@ export class CreateleavepolicymodalComponent {
     { short: 'Dec', full: 'December' }
   ];
 
-  
+
   private dataSubscription?: Subscription;
 
 
@@ -93,7 +93,7 @@ export class CreateleavepolicymodalComponent {
   accrual_month: any = '';
   accrual_day: any = '';
   round_of: any = '';
-  prorate_type:any = '';
+  prorate_type: any = '';
   leave_type: any = '';
   leave_entitlement: any = '';
 
@@ -106,7 +106,7 @@ export class CreateleavepolicymodalComponent {
 
   leavePayRules: any[] = [];
 
-  
+
 
 
   registerButtonClicked: boolean = false;
@@ -123,7 +123,9 @@ export class CreateleavepolicymodalComponent {
 
 
   gender: any = '';
-  branch: any = '';
+  // branch: any = '';
+  branch:any[] = [];
+  
   designation: any = '';
   department: any = '';
   role: any = '';
@@ -158,7 +160,7 @@ export class CreateleavepolicymodalComponent {
   allow_half_day: boolean = false;
   include_weekend_and_holiday: boolean = false;
   use_common_workflow: boolean = false;
-      include_dashboard: boolean = false;
+  include_dashboard: boolean = false;
 
 
 
@@ -181,12 +183,12 @@ export class CreateleavepolicymodalComponent {
   encashment_max_limit: any = '';
   opening_balance: any = '';
 
-  allow_cf:boolean =false;
+  allow_cf: boolean = false;
   allow_encashment: boolean = false;
 
 
 
-   constructor(
+  constructor(
     private http: HttpClient,
     private leaveService: LeaveService,
     private sessionService: SessionService,
@@ -198,26 +200,26 @@ export class CreateleavepolicymodalComponent {
     private DesignationService: DesignationService,
     public dialogRef: MatDialogRef<CreateleavepolicymodalComponent>,
 
-   private ref:MatDialogRef<CreateleavepolicymodalComponent>) {}
+    private ref: MatDialogRef<CreateleavepolicymodalComponent>) { }
 
-   ngOnInit(): void {
+  ngOnInit(): void {
     this.LoadBranch();
 
-  // combineLatest waits for both Schema and Branches to have a value
-  this.dataSubscription = combineLatest([
-    this.employeeService.selectedSchema$,
-    this.employeeService.selectedBranches$
-  ]).subscribe(([schema, branchIds]) => {
-    if (schema) {
-      this.fetchLeaveType(schema, branchIds);
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchLeaveType(schema, branchIds);
 
-    }
-  });
+      }
+    });
 
-   // Listen for sidebar changes so the dropdown updates instantly
-  this.employeeService.selectedBranches$.subscribe(ids => {
-    this.LoadBranch(); 
-  });
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.LoadBranch();
+    });
 
 
     const selectedSchema = this.authService.getSelectedSchema();
@@ -248,7 +250,7 @@ export class CreateleavepolicymodalComponent {
         async (userData: any) => {
           this.userDetails = userData; // Store user details in userDetails property
 
-          this.created_by= this.userId;
+          this.created_by = this.userId;
           console.log('User ID:', this.userId); // Log user ID
           console.log('User Details:', this.userDetails); // Log user details
 
@@ -359,12 +361,12 @@ export class CreateleavepolicymodalComponent {
   }
 
 
-  
+
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
-  ClosePopup(){
+  ClosePopup() {
     this.ref.close('Closed using function')
   }
 
@@ -376,7 +378,7 @@ export class CreateleavepolicymodalComponent {
       next: (data: any) => {
         // Filter active employees
         this.LeaveTypes = data;
-  
+
         this.isLoading = false;
       },
       error: (err) => {
@@ -385,17 +387,17 @@ export class CreateleavepolicymodalComponent {
       }
     });
   }
-  
+
 
   LoadBranch(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema();
-    
+
     if (selectedSchema) {
       this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
         (result: any[]) => {
           // 1. Get the sidebar selected IDs from localStorage
           const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
+
           // 2. Filter the API result to only include branches selected in the sidebar
           // If sidebar is empty, you might want to show all, or show none. 
           // Usually, we show only the selected ones:
@@ -408,7 +410,7 @@ export class CreateleavepolicymodalComponent {
           if (this.branches.length === 1) {
             this.branch = this.branches[0].id;
           }
-  
+
           console.log('Filtered branches for selection:', this.branches);
           if (callback) callback();
         },
@@ -461,8 +463,8 @@ export class CreateleavepolicymodalComponent {
     this.leaveService.getEmployee(selectedSchema).subscribe(
       (data: any) => {
         // Check if `data` contains strings instead of objects
-       this.Employees = data;
-  
+        this.Employees = data;
+
         console.log('Fetched Employees:', this.Employees);
       },
       (error: any) => {
@@ -470,20 +472,20 @@ export class CreateleavepolicymodalComponent {
       }
     );
   }
-  
+
 
 
   selectedPolicy: string = '';
   showPolicySelection: boolean = true;
-  
+
   nextStep() {
 
     if (!this.selectedPolicy) {
       return;
     }
-  
+
     this.showPolicySelection = false;
-  
+
     this.dialogRef.updateSize('1400px', '90vh');
   }
 
@@ -494,9 +496,9 @@ export class CreateleavepolicymodalComponent {
       this.showResetDay = true;    // Show day dropdown
     } else if (this.frequency === 'months') {
       this.showResetMonth = false; // Hide month dropdown
-      this.showResetDay = true;   
-      
-    
+      this.showResetDay = true;
+
+
       // Show day dropdown
     } else {
       this.showResetMonth = false; // Hide both dropdowns
@@ -505,7 +507,7 @@ export class CreateleavepolicymodalComponent {
   }
 
 
-  
+
   onAccrualFrequencyChange(): void {
     if (this.accrual_frequency === 'years') {
       this.showMonth = true;  // Show month dropdown
@@ -570,7 +572,7 @@ export class CreateleavepolicymodalComponent {
 
 
 
-  
+
 
   allSelectedcon = false;
   allSelecteddeptcon = false;
@@ -624,91 +626,87 @@ export class CreateleavepolicymodalComponent {
 
 
 
-  
-registerleaveEntitlement(): void {
 
-  this.registerButtonClicked = true;
+  registerleaveEntitlement(): void {
+    
+    if (!this.leave_type) {
+      alert('Select Leave Type');
+      return;
+    }
 
-  const payload = {
+    this.registerButtonClicked = true;
 
-    leave_type: this.leave_type,
+    const payload = {
 
-    min_experience: this.min_experience,
-
-    effective_after_from: this.effective_after_from,
-
-    effective_after_unit: this.effective_after_unit,
-
-    accrual_rate: this.accrual_rate,
-
-    accrual_frequency: this.accrual_frequency,
-
-    accrual_month: this.accrual_month,
-
-    accrual_day: this.accrual_day,
-
-    prorate_type: this.prorate_type,
-
-
-    created_by: this.created_by,
-
-    branches: this.branch || [],
-
-    categories: this.categories || [],
-
-    departments: this.departments || [],
-
-    designations: this.designations || [],
-
-    prorate_accrual: this.prorate_accrual,
-
-    accrual: this.accrual,
-
-
-
-    // reset section
-
-    frequency:this.frequency,
-
-    month:this.month,
-
-    day:this.day,
-
-    carry_forward_choice:this.carry_forward_choice,
-
-
-    cf_value:this.cf_value,
-
-    cf_unit_or_percentage:this.cf_unit_or_percentage,
-
-    cf_max_limit:this.cf_max_limit,
-
-    encashment_value:this.encashment_value,
-
-    encashment_unit_or_percentage:this.encashment_unit_or_percentage,
-
-    encashment_max_limit:this.encashment_max_limit,
-
-    opening_balance:this.opening_balance,
-
-    reset:this.reset,
-
-    allow_cf:this.allow_cf,
-
-    allow_encashment:this.allow_encashment,
-
-
-
-
-
-
-
-
-
-  };
+      leave_type: this.leave_type,
+    
+      min_experience: this.min_experience,
+    
+      effective_after_from: this.effective_after_from,
+    
+      effective_after_unit: this.effective_after_unit,
+    
+      accrual_rate: this.accrual_rate,
+    
+      accrual_frequency: this.accrual_frequency,
+    
+      accrual_month: this.accrual_month,
+    
+      accrual_day: this.accrual_day,
+    
+      prorate_type: this.prorate_type,
+    
+      prorate_accrual: this.prorate_accrual,
+    
+      accrual: this.accrual,
+    
+      created_by: this.created_by,
+    
+      branches: this.branch || [],
+    
+      categories: this.categories || [],
+    
+      departments: this.departments || [],
+    
+      designations: this.designations || [],
+    
+      reset_policy: {
+    
+          reset: this.reset,
+    
+          frequency: this.frequency,
+    
+          month: this.month,
+    
+          day: this.day,
+    
+          allow_cf: this.allow_cf,
+    
+          carry_forward_choice: this.carry_forward_choice,
+    
+          cf_value: this.cf_value,
+    
+          cf_unit_or_percentage: this.cf_unit_or_percentage,
+    
+          cf_max_limit: this.cf_max_limit,
+    
+          allow_encashment: this.allow_encashment,
+    
+          encashment_value: this.encashment_value,
+    
+          encashment_unit_or_percentage:
+              this.encashment_unit_or_percentage,
+    
+          encashment_max_limit:
+              this.encashment_max_limit,
+    
+          opening_balance:
+              this.opening_balance
+      }
+    
+    };
 
 
- 
 
 
     this.leaveService
@@ -719,7 +717,7 @@ registerleaveEntitlement(): void {
 
           alert('✅ Entitlement Added');
 
-       
+
 
         },
 
@@ -733,8 +731,17 @@ registerleaveEntitlement(): void {
 
       });
 
-  
-}
+
+  }
+
+
+
+
+
+
+
+
+
 
 
 
