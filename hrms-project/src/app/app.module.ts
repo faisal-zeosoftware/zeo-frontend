@@ -255,6 +255,8 @@ import { CompensatoryTransactionComponent } from './compensatory-transaction/com
 import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.component';
+import { LeavePolicyComponent } from './leave-policy/leave-policy.component';
+import { CreateleavepolicymodalComponent } from './createleavepolicymodal/createleavepolicymodal.component';
 
 @NgModule({
   declarations: [
@@ -466,6 +468,8 @@ import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.compo
      CompensatoryTransactionComponent,
      EmployeeFullAttendanceComponent,
      GeneralSidebarComponent,
+     LeavePolicyComponent,
+     CreateleavepolicymodalComponent,
      
      
 

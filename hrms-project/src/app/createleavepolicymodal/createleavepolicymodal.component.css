@@ -1,0 +1,479 @@
+.close:hover,
+.close:focus {
+  color: red;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.close {
+  color: #000000;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: right;
+}
+
+
+
+/* FOCUS */
+.form-control:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
+}
+
+
+/* TEXTAREA */
+textarea.form-control {
+  height: auto;
+  min-height: 80px;
+}
+
+/* LABEL */
+label {
+  font-weight: 600;
+  color: #334155;
+  /* margin-bottom: 5px; */
+  /* display: block; */
+  font-size: 12px;
+}
+
+
+
+
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.3em;
+  font-weight: 300;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.section {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+      opacity: 0;
+      transform: translateY(30px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+.section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 50px rgba(55, 198, 171, 0.2);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid #f0f9ff;
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #37c6ab 0%, #2a9d8f 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 24px;
+}
+
+h2 {
+  color: #1e293b;
+  font-size: 1.8em;
+  font-weight: 700;
+  margin: 0;
+}
+
+.description {
+  color: #64748b;
+  margin-bottom: 25px;
+  font-size: 1.05em;
+  line-height: 1.7;
+}
+
+.example-box {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 30px;
+  border-radius: 16px;
+  margin: 20px 0;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.example-box:hover {
+  border-color: #37c6ab;
+  box-shadow: 0 5px 20px rgba(55, 198, 171, 0.1);
+}
+
+.example-title {
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 20px;
+  font-size: 1.15em;
+  display: flex;
+  align-items: center;
+}
+
+.example-title::before {
+  content: '◉';
+  color: #37c6ab;
+  font-size: 1.2em;
+  margin-right: 10px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: white;
+  border: 2px solid transparent;
+}
+
+.radio-option:hover {
+  background: #f0fdfa;
+  border-color: #37c6ab;
+  transform: translateX(5px);
+}
+
+.radio-option:has(input:checked) {
+  background: linear-gradient(135deg, #e6f7f4 0%, #d1f4ed 100%);
+  border-color: #37c6ab;
+  box-shadow: 0 4px 15px rgba(55, 198, 171, 0.15);
+}
+
+.radio-option input[type="radio"] {
+  width: 22px;
+  height: 22px;
+  margin-right: 15px;
+  cursor: pointer;
+  accent-color: #37c6ab;
+}
+
+.radio-option label {
+  cursor: pointer;
+  font-size: 1.05em;
+  color: #334155;
+  font-weight: 500;
+  flex: 1;
+}
+
+.inline-group {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.inline-group .radio-option {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+
+.insight {
+  background: linear-gradient(135deg, #e6f7f4 0%, #d1f4ed 100%);
+  border-left: 5px solid #37c6ab;
+  padding: 20px 25px;
+  margin: 25px 0;
+  border-radius: 12px;
+  font-size: 0.95em;
+  line-height: 1.8;
+  box-shadow: 0 4px 15px rgba(55, 198, 171, 0.1);
+}
+
+.insight strong {
+  color: #2a9d8f;
+  font-weight: 700;
+  font-size: 1.05em;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.note {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-left: 5px solid #f59e0b;
+  padding: 20px 25px;
+  margin: 25px 0;
+  border-radius: 12px;
+  font-size: 0.95em;
+  line-height: 1.8;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
+}
+
+.note strong {
+  color: #d97706;
+  font-weight: 700;
+  font-size: 1.05em;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.badge {
+  display: inline-block;
+  background: #37c6ab;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+      grid-template-columns: 1fr;
+  }
+
+  h1 {
+      font-size: 2.5em;
+  }
+
+  .section {
+      padding: 25px;
+  }
+}
+
+
+
+.radio-group{
+  display:flex;
+  gap:20px;
+}
+
+.radio-option{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.fixed-entitlement-section,
+.variable-entitlement-section{
+  margin-top:20px;
+}
+
+.example-box{
+
+    max-width:450px;
+
+    margin:auto;
+
+    padding:30px;
+
+    border-radius:15px;
+
+    background:#fff;
+
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+}
+
+.radio-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+}
+
+.radio-option{
+
+    padding:15px;
+
+    border:1px solid #ddd;
+
+    border-radius:10px;
+
+    cursor:pointer;
+}
+
+
+
+
+
+
+.form-control-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  ::ng-deep .form-control-wrapper mat-form-field {
+    width: 100%;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-wrapper {
+    padding: 0;
+    margin: 0;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-flex {
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-underline {
+    display: none;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    height: auto;
+    line-height: 1.5;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select-trigger {
+    height: auto;
+    padding: 0;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select-value-text {
+    padding: 0;
+    margin: 0;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-infix {
+    padding: 0;
+    border: none;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select-placeholder {
+    transform: translateY(-50%);
+    top: 50%;
+  }
+  
+  
+  ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
+    margin-top: -14px;
+  }
+  
+  ::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
+  
+  background-color: white;
+  }
+  
+  ::ng-deep .form-control-wrapper .mdc-text-field{
+  padding: 0px;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
+  outline: none-webkit-focus-ring-color auto 0px;
+  
+  
+  }
+  
+  
+  /* Remove :focus-visible style from all input elements */
+  input:focus-visible {
+  outline: none;
+  }
+  
+  /* Remove :focus-visible style from mat-select */
+  .mat-select:focus-visible {
+  outline: none;
+  }
+  
+  /* Use !important to ensure the outline is removed */
+  ::ng-deep .form-control-wrapper:focus-visible {
+  outline: none !important;
+  }
+  
+  
+  ::ng-deep .mat-select:focus-visible {
+  outline: none;
+  }
+  
+  /* Optionally, you can also override other styles */
+  ::ng-deep .mat-select:focus-visible .mat-select-value {
+  outline: none;
+  }
+  
+  ::ng-deep .mdc-text-field--no-label{
+  border:1px solid #ced4da;
+  }
+  
+  ::ng-deep .mat-mdc-form-field-flex {
+  padding: 4px 7px;
+  height: 35px;
+  }
+  
+  .check-box-selection-sec{
+    padding: 0px !important;
+  }
+
+
+  .leave-policy-content-box{
+    background: whitesmoke;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+  }
+
+  .check-box-selection-sec {
+    font-size: 12px;
+  }
+
+
+  .form-contol {
+    font-size: 12px;
+  }
+
+
+  ::ng-deep .mdc-label {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+}
+
+select.form-control {
+    font-size: 13px;
+}
+
+.form-control {
+    font-size: 13px;
+}
+
+.form-control::placeholder {
+    font-size: 13px;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.reset-section{
+    background: white;
+    padding: 20px;
+    border: 0px;
+    margin-bottom: 20px;
+}

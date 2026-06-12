@@ -1,0 +1,70 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+  
+      <div class="header_section">
+  
+        <div class="row">
+          <div class="col-md-3">
+            <h1> Leave Policy</h1>
+          </div>
+  
+          <div class="col-md-4">
+  
+            <!-- <input type="text" class="form-control mt-1" placeholder="Search by name" > -->
+  
+          </div>
+          <div class="col-md-5">
+            <div class="button-group pull-right">
+              <button type="button" class="btn-Create btn btn-success" (click)="CreateLeaveModal()"
+                *ngIf="hasAddPermission"> <span class="header-btn-icon"><mat-icon>add_circle
+                  </mat-icon></span> Create</button>
+              <span *ngIf="!hasAddPermission"></span>
+  
+              <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                <span class="header-btn-icon">
+                  <mat-icon>draw
+                  </mat-icon></span> Edit</button>
+              <span *ngIf="!hasEditPermission"></span>
+              <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+                *ngIf="hasDeletePermission">
+                <span class="header-btn-icon">
+                  <mat-icon> delete
+                  </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+              <span *ngIf="!hasDeletePermission"></span>
+  
+  
+  
+            </div>
+          </div>
+  
+        </div>
+  
+  
+  
+      </div>
+  
+  
+      <div class="row">
+        <div class="col-md-2">
+  
+          <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
+            (click)="toggleSelectAllLeaveTypes()">Select All</button>
+  
+        </div>
+        <div class="col-md-3">
+          <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedLeavetype()">Delete
+            Selected </button>
+  
+        </div>
+      </div>
+  
+  
+  
+  
+  
+    </div>
+  
+  </div>
+  
+  
+  

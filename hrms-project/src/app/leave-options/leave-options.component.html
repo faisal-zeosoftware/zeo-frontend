@@ -16,6 +16,8 @@
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul>
                 <li  routerLink="/main-sidebar/leave-options/leave-master" *ngIf="hasViewPermissionLeaveMas"><a ><mat-icon>switch_account</mat-icon> Leave Type</a></li>
+                <li  routerLink="/main-sidebar/leave-options/leave-policy" *ngIf="hasViewPermissionLeaveMas"><a ><mat-icon>switch_account</mat-icon> Leave Policy</a></li>
+
                 <li  routerLink="/main-sidebar/leave-options/leave-request" *ngIf="hasViewPermissionEmpLeaveReq"><a ><mat-icon>switch_account</mat-icon> Leave Request</a></li>
 
                   <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">

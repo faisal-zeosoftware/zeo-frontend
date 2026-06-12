@@ -172,6 +172,7 @@ import { EmployeeSalaryComponent } from './employee-salary/employee-salary.compo
 import { CompensatoryTransactionComponent } from './compensatory-transaction/compensatory-transaction.component';
 import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
 import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.component';
+import { LeavePolicyComponent } from './leave-policy/leave-policy.component';
 
 
 const routes: Routes = [
@@ -516,6 +517,11 @@ const routes: Routes = [
           {
             path: 'leave-escalation',
             component: LeaveEscalationComponent
+          },
+
+          {
+            path: 'leave-policy',
+            component: LeavePolicyComponent
           },
         ]
 

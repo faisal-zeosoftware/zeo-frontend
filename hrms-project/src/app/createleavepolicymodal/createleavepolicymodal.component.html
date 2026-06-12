@@ -1,0 +1,1132 @@
+<div mat-dialog-content class="">
+    <div class="cpm-sec">
+
+        <div class="pull-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="ClosePopup()">
+                ×
+            </span>
+        </div><br><br>
+
+        <div *ngIf="showPolicySelection">
+
+            <div class="example-box">
+
+                <div class="example-title">
+                    Leave Policy
+                </div>
+
+                <div class="radio-group">
+
+                    <div class="radio-option">
+
+                        <input type="radio" id="fixed" value="fixed" name="leavepolicy" [(ngModel)]="selectedPolicy"
+                            [ngModelOptions]="{standalone:true}">
+
+                        <label for="fixed">
+                            💳 Fixed Entitlement
+                        </label>
+
+                    </div>
+
+                    <div class="radio-option">
+
+                        <input type="radio" id="variable" value="variable" name="leavepolicy"
+                            [(ngModel)]="selectedPolicy" [ngModelOptions]="{standalone:true}">
+
+                        <label for="variable">
+                            🅿️ Variable Entitlement
+                        </label>
+
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-4">
+
+                    <button class="btn btn-primary" (click)="nextStep()">
+
+                        Next
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="fixed-entitlement-section " *ngIf="!showPolicySelection && selectedPolicy === 'fixed'">
+
+
+
+
+
+
+            <!-- entitlement and reset section -->
+
+            <form (ngSubmit)="registerleaveEntitlement()" enctype="multipart/form-data">
+                <div class="row">
+
+
+                    <div class="col-md-4">
+                        <label>Leave Type</label>
+                        <div class="custom-sel">
+                            <select class="form-control" id="leave_type" name="leave_type" [(ngModel)]="leave_type"
+                                [ngModelOptions]="{standalone: true}">
+                                <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">{{ leavetype.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Effective after</label>
+                        <input type="number" class="form-control" required [(ngModel)]="min_experience"
+                            placeholder="Enter Effective after" [ngModelOptions]="{standalone: true}"
+                            [ngClass]="{'error-field': registerButtonClicked && !min_experience}">
+                        <div *ngIf="registerButtonClicked && !min_experience" class="error-message"> is required.</div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label>Effective after unit</label>
+                        <div class="custom-sel">
+                            <select class="form-control" id="effective_after_unit" name="effective_after_unit"
+                                [(ngModel)]="effective_after_unit" [ngModelOptions]="{standalone: true}">
+                                <option value="years">Years</option>
+                                <option value="months">Months</option>
+                                <option value="days">Days</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label>Effective after from</label>
+                        <div class="custom-sel">
+                            <select class="form-control" id="effective_after_from" name="effective_after_from"
+                                [(ngModel)]="effective_after_from" [ngModelOptions]="{standalone: true}">
+                                <option value="date_of_joining">Date Of Joining</option>
+                                <option value="date_of_confirmation">Date Of Confirmation</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label>Select Branches</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+
+
+                                <mat-form-field>
+                                    <!-- <mat-label>Favorite food</mat-label> -->
+                                    <mat-select placeholder="Select" [(ngModel)]="branch"
+                                        [ngModelOptions]="{standalone: true}" #select multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelected"
+                                                [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+                                        <input type="text" placeholder="serach" class="form-control">
+
+                                        <mat-option *ngFor="let branch of branches" [value]="branch.id">{{
+                                            branch.branch_name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+                    <div class="col-md-4">
+                        <label>Department</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+                                <mat-form-field>
+                                    <mat-select placeholder="Select" [(ngModel)]="departments"
+                                        [ngModelOptions]="{standalone: true}" #selectDeptcon multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelecteddeptcon"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (change)="toggleAllSelectiondeptcon()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+                                        <mat-option *ngFor="let department of Departments" [value]="department.id">{{
+                                            department.dept_name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <!-- <div *ngIf="registerButtonClicked && (!department || department.length === 0)" class="error-message">
+            Please Select Your department
+          </div> -->
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-md-4">
+                        <label>Designation</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+                                <mat-form-field>
+                                    <mat-select placeholder="Select" [(ngModel)]="designations"
+                                        [ngModelOptions]="{standalone: true}" #selectDescon multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelectedDescon"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (change)="toggleAllSelectionDescon()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+
+                                        <mat-option *ngFor="let des of Designation" [value]="des.id">{{
+                                            des.desgntn_job_title }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <!-- <div *ngIf="registerButtonClicked && (!category || category.length === 0)" class="error-message">
+            Please Select Your category
+          </div> -->
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-md-4">
+                        <label>Role</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+                                <mat-form-field>
+                                    <mat-select placeholder="Select" [(ngModel)]="categories"
+                                        [ngModelOptions]="{standalone: true}" #selectCatcon multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelectedcatcon"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (change)="toggleAllSelectioncatcon()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+
+                                        <mat-option *ngFor="let role of Category" [value]="role.id">{{ role.ctgry_title
+                                            }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <!-- <div *ngIf="registerButtonClicked && (!category || category.length === 0)" class="error-message">
+            Please Select Your category
+          </div> -->
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+                <div class="leave-policy-content-box">
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <div class="check-box-selection-sec ">
+                                <div class="mat-set">
+                                    <!-- <mat-checkbox [(ngModel)]="is_ess">Is_Ess User</mat-checkbox> -->
+                                    <mat-checkbox [(ngModel)]="accrual"
+                                        [ngModelOptions]="{standalone: true}">Accrual</mat-checkbox>
+                                    <!-- <mat-checkbox [(ngModel)]="is_staff">Is_Staff</mat-checkbox> -->
+                                </div>
+
+                            </div>
+                        </div>
+                        <p style="font-size: 10px;margin-left: 40px;">Define how much and when leave gets credited to an
+                            employee</p>
+
+
+                    </div>
+                    <div class="row" *ngIf="accrual">
+
+
+                        <div class="col-md-4">
+                            <label>Accrual rate</label>
+                            <input type="number" class="form-control" required [(ngModel)]="accrual_rate"
+                                placeholder="Enter Accrual rate" [ngModelOptions]="{standalone: true}">
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Accrual frequency</label>
+                            <div class="custom-sel">
+                                <select class="form-control" id="accrual_frequency" name="accrual_frequency"
+                                    [(ngModel)]="accrual_frequency" (change)="onAccrualFrequencyChange()"
+                                    [ngModelOptions]="{standalone: true}">
+                                    <option value="years">Years</option>
+                                    <option value="months">Months</option>
+                                    <option value="days">Days</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Accrual Month: Visible only when "Years" is selected -->
+                        <div class="col-md-4" *ngIf="showMonth">
+                            <label>Accrual month</label>
+                            <div class="custom-sel">
+                                <select class="form-control" id="accrual_month" name="accrual_month"
+                                    [(ngModel)]="accrual_month" [ngModelOptions]="{standalone: true}">
+                                    <option value="Jan">January</option>
+                                    <option value="Feb">February</option>
+                                    <option value="Mar">March</option>
+                                    <option value="Apr">April</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">June</option>
+                                    <option value="Jul">July</option>
+                                    <option value="Aug">August</option>
+                                    <option value="Sep">September</option>
+                                    <option value="Oct">October</option>
+                                    <option value="Nov">November</option>
+                                    <option value="Dec">December</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Accrual Day: Visible when "Years" or "Months" is selected -->
+                        <div class="col-md-4" *ngIf="showDay">
+                            <label>Accrual day</label>
+                            <div class="custom-sel">
+                                <select class="form-control" id="accrual_day" name="accrual_day"
+                                    [(ngModel)]="accrual_day" [ngModelOptions]="{standalone: true}">
+                                    <option value="1st">1st Day Of the Month</option>
+                                    <option value="last">Last Day Of the Month</option>
+                                    <option value="joining_day">Employee joining Date</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <label></label>
+                            <div class="check-box-selection-sec mt-2">
+                                <div class="mat-set">
+                                    <mat-checkbox [(ngModel)]="prorate_accrual"
+                                        [ngModelOptions]="{standalone: true}">Prorate
+                                        accrual</mat-checkbox>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <!-- <div class="col-md-4">
+      <label>Round of</label>
+      <div class="custom-sel">
+        <select class="form-control" id="round_of" name="round_of" [(ngModel)]="round_of" [ngModelOptions]="{standalone: true}">
+          <option value="nearest_lowest">Nearest Lowest</option>
+          <option value="nearest_highest">Nearest Highest</option>
+        </select>
+      </div>
+    </div> -->
+                    </div>
+
+                </div>
+
+
+                <div class="leave-policy-content-box">
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <div class="check-box-selection-sec">
+                                <div class="mat-set">
+                                    <mat-checkbox [(ngModel)]="reset"
+                                        [ngModelOptions]="{standalone: true}">Reset</mat-checkbox>
+                                </div>
+
+                            </div>
+                        </div>
+                        <p style="font-size: 10px;margin-left: 40px;">Define the reset, carry forward and encashment of
+                            leave balance</p>
+
+
+                    </div>
+                    <div *ngIf="reset">
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                <label>Frequency</label>
+                                <div class="custom-sel">
+                                    <select class="form-control" id="frequency" name="frequency" [(ngModel)]="frequency"
+                                        (change)="onResetFrequencyChange()" [ngModelOptions]="{standalone: true}">
+                                        <option value="years">Years</option>
+                                        <option value="months">Months</option>
+                                        <option value="days">Days</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="showResetMonth">
+                                <label> Month</label>
+                                <div class="custom-sel">
+                                    <select class="form-control" id="month" name="month" [(ngModel)]="month"
+                                        [ngModelOptions]="{standalone: true}">
+                                        <option value="Jan">January</option>
+                                        <option value="Feb">February</option>
+                                        <option value="Mar">March</option>
+                                        <option value="Apr">April</option>
+                                        <option value="May">May</option>
+                                        <option value="Jun">June</option>
+                                        <option value="Jul">July</option>
+                                        <option value="Aug">August</option>
+                                        <option value="Sep">September</option>
+                                        <option value="Oct">October</option>
+                                        <option value="Nov">November</option>
+                                        <option value="Dec">December</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="showResetDay">
+                                <label>Day</label>
+                                <div class="custom-sel">
+                                    <select class="form-control" id="day" name="day" [(ngModel)]="day"
+                                        [ngModelOptions]="{standalone: true}">
+                                        <option value="1st">1st Day Of the Month</option>
+                                        <option value="last">Last Day Of the Month</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+                        <div class="reset-section">
+
+                            <div class="row">
+                                <div class="col-md-4 ">
+
+
+                                    <div class="check-box-selection-sec form-control ">
+                                        <div class="mat-set">
+                                            <mat-checkbox [(ngModel)]="allow_cf"
+                                                [ngModelOptions]="{standalone: true}">Allow
+                                                CF</mat-checkbox>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" *ngIf="allow_cf">
+
+
+                                <div class="col-md-4">
+                                    <label>Carry forward choice</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="carry_forward_choice"
+                                            name="carry_forward_choice" [(ngModel)]="carry_forward_choice"
+                                            [ngModelOptions]="{standalone: true}">
+                                            <option value="carry_forward">carry forward</option>
+                                            <option value="carry_forward_with_expiry">carry forward with Expiry</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <label>Cf value</label>
+                                    <input type="number" class="form-control" [(ngModel)]="cf_value"
+                                        placeholder="Enter cf value" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Cf unit or percentage</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="cf_unit_or_percentage"
+                                            name="cf_unit_or_percentage" [(ngModel)]="cf_unit_or_percentage"
+                                            [ngModelOptions]="{standalone: true}">
+                                            <option value="percentage">Percentage</option>
+                                            <option value="unit">Unit</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Cf max limit</label>
+                                    <input type="number" class="form-control" [(ngModel)]="cf_max_limit"
+                                        placeholder="Enter cf Max Limit" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <div class="col-md-4" *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                                    <label>Cf expires in value</label>
+                                    <input type="number" class="form-control" [(ngModel)]="cf_expires_in_value"
+                                        placeholder="Enter value" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+
+                                <div class="col-md-4" *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                                    <label>Cf time choice</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="cf_time_choice" name="cf_time_choice"
+                                            [(ngModel)]="cf_time_choice" [ngModelOptions]="{standalone: true}">
+                                            <option value="Years">Years</option>
+                                            <option value="months">Months</option>
+                                            <option value="days">Days</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="reset-section">
+
+                            <div class="row">
+                                <div class="col-md-4">
+
+                                    <div class="check-box-selection-sec form-control ">
+                                        <div class="mat-set">
+                                            <mat-checkbox [(ngModel)]="allow_encashment"
+                                                [ngModelOptions]="{standalone: true}">Allow
+                                                Encashment</mat-checkbox>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" *ngIf="allow_encashment">
+                                <div class="col-md-4">
+                                    <label>Encashment value</label>
+                                    <input type="number" class="form-control" [(ngModel)]="encashment_value"
+                                        placeholder="Enter Value" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label> Unit or percentage</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="encashment_unit_or_percentage"
+                                            name="encashment_unit_or_percentage"
+                                            [(ngModel)]="encashment_unit_or_percentage"
+                                            [ngModelOptions]="{standalone: true}">
+                                            <option value="percentage">Percentage</option>
+                                            <option value="unit">Unit</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Encashment max limit</label>
+                                    <input type="number" class="form-control" [(ngModel)]="encashment_max_limit"
+                                        placeholder="Enter Limit" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+
+
+
+
+
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                <label>Opening Balance</label>
+                                <div class="custom-sel">
+                                    <input type="number" class="form-control" [(ngModel)]="opening_balance"
+                                        [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row" *ngIf="hasAddPermission">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-full mt-4"
+                            (click)="ClosePopup()">Cancel</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success btn-full mt-4">Add </button>
+
+                    </div>
+                </div>
+            </form>
+
+
+
+
+
+
+
+
+        </div>
+
+        <div class="variable-entitlement-section " *ngIf="!showPolicySelection && selectedPolicy === 'variable'">
+
+            <!-- entitlement and reset section -->
+
+            <form (ngSubmit)="registerleaveEntitlement()" enctype="multipart/form-data">
+                <div class="row">
+
+
+                    <div class="col-md-4">
+                        <label>Leave Type</label>
+                        <div class="custom-sel">
+                            <select class="form-control" id="leave_type" name="leave_type" [(ngModel)]="leave_type"
+                                [ngModelOptions]="{standalone: true}">
+                                <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">{{ leavetype.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Effective after</label>
+                        <input type="number" class="form-control" required [(ngModel)]="min_experience"
+                            placeholder="Enter Effective after" [ngModelOptions]="{standalone: true}"
+                            [ngClass]="{'error-field': registerButtonClicked && !min_experience}">
+                        <div *ngIf="registerButtonClicked && !min_experience" class="error-message"> is required.</div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label>Effective after unit</label>
+                        <div class="custom-sel">
+                            <select class="form-control" id="effective_after_unit" name="effective_after_unit"
+                                [(ngModel)]="effective_after_unit" [ngModelOptions]="{standalone: true}">
+                                <option value="years">Years</option>
+                                <option value="months">Months</option>
+                                <option value="days">Days</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label>Effective after from</label>
+                        <div class="custom-sel">
+                            <select class="form-control" id="effective_after_from" name="effective_after_from"
+                                [(ngModel)]="effective_after_from" [ngModelOptions]="{standalone: true}">
+                                <option value="date_of_joining">Date Of Joining</option>
+                                <option value="date_of_confirmation">Date Of Confirmation</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-4">
+                        <label>Select Branches</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+
+
+                                <mat-form-field>
+                                    <!-- <mat-label>Favorite food</mat-label> -->
+                                    <mat-select placeholder="Select" [(ngModel)]="branch"
+                                        [ngModelOptions]="{standalone: true}" #select multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelected"
+                                                [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+                                        <input type="text" placeholder="serach" class="form-control">
+
+                                        <mat-option *ngFor="let branch of branches" [value]="branch.id">{{
+                                            branch.branch_name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+
+
+
+                    <div class="col-md-4">
+                        <label>Department</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+                                <mat-form-field>
+                                    <mat-select placeholder="Select" [(ngModel)]="departments"
+                                        [ngModelOptions]="{standalone: true}" #selectDeptcon multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelecteddeptcon"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (change)="toggleAllSelectiondeptcon()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+                                        <mat-option *ngFor="let department of Departments" [value]="department.id">{{
+                                            department.dept_name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <!-- <div *ngIf="registerButtonClicked && (!department || department.length === 0)" class="error-message">
+            Please Select Your department
+          </div> -->
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-md-4">
+                        <label>Designation</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+                                <mat-form-field>
+                                    <mat-select placeholder="Select" [(ngModel)]="designations"
+                                        [ngModelOptions]="{standalone: true}" #selectDescon multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelectedDescon"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (change)="toggleAllSelectionDescon()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+
+                                        <mat-option *ngFor="let des of Designation" [value]="des.id">{{
+                                            des.desgntn_job_title }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <!-- <div *ngIf="registerButtonClicked && (!category || category.length === 0)" class="error-message">
+            Please Select Your category
+          </div> -->
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-md-4">
+                        <label>Role</label>
+                        <div class="custom-sel">
+                            <div class="form-control-wrapper">
+                                <mat-form-field>
+                                    <mat-select placeholder="Select" [(ngModel)]="categories"
+                                        [ngModelOptions]="{standalone: true}" #selectCatcon multiple>
+                                        <div class="select-all">
+                                            <mat-checkbox [(ngModel)]="allSelectedcatcon"
+                                                [ngModelOptions]="{standalone: true}"
+                                                (change)="toggleAllSelectioncatcon()">
+                                                Select All
+                                            </mat-checkbox>
+                                        </div>
+
+                                        <mat-option *ngFor="let role of Category" [value]="role.id">{{ role.ctgry_title
+                                            }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                            <!-- <div *ngIf="registerButtonClicked && (!category || category.length === 0)" class="error-message">
+            Please Select Your category
+          </div> -->
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+                <div class="leave-policy-content-box">
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <div class="check-box-selection-sec ">
+                                <div class="mat-set">
+                                    <!-- <mat-checkbox [(ngModel)]="is_ess">Is_Ess User</mat-checkbox> -->
+                                    <mat-checkbox [(ngModel)]="accrual"
+                                        [ngModelOptions]="{standalone: true}">Accrual</mat-checkbox>
+                                    <!-- <mat-checkbox [(ngModel)]="is_staff">Is_Staff</mat-checkbox> -->
+                                </div>
+
+                            </div>
+                        </div>
+                        <p style="font-size: 10px;margin-left: 40px;">Define how much and when leave gets credited to an
+                            employee</p>
+
+
+                    </div>
+                    <div class="row" *ngIf="accrual">
+
+
+                        <div class="col-md-4">
+                            <label>Accrual rate</label>
+                            <input type="number" class="form-control" required [(ngModel)]="accrual_rate"
+                                placeholder="Enter Accrual rate" [ngModelOptions]="{standalone: true}">
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>Accrual frequency</label>
+                            <div class="custom-sel">
+                                <select class="form-control" id="accrual_frequency" name="accrual_frequency"
+                                    [(ngModel)]="accrual_frequency" (change)="onAccrualFrequencyChange()"
+                                    [ngModelOptions]="{standalone: true}">
+                                    <option value="years">Years</option>
+                                    <option value="months">Months</option>
+                                    <option value="days">Days</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Accrual Month: Visible only when "Years" is selected -->
+                        <div class="col-md-4" *ngIf="showMonth">
+                            <label>Accrual month</label>
+                            <div class="custom-sel">
+                                <select class="form-control" id="accrual_month" name="accrual_month"
+                                    [(ngModel)]="accrual_month" [ngModelOptions]="{standalone: true}">
+                                    <option value="Jan">January</option>
+                                    <option value="Feb">February</option>
+                                    <option value="Mar">March</option>
+                                    <option value="Apr">April</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">June</option>
+                                    <option value="Jul">July</option>
+                                    <option value="Aug">August</option>
+                                    <option value="Sep">September</option>
+                                    <option value="Oct">October</option>
+                                    <option value="Nov">November</option>
+                                    <option value="Dec">December</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Accrual Day: Visible when "Years" or "Months" is selected -->
+                        <div class="col-md-4" *ngIf="showDay">
+                            <label>Accrual day</label>
+                            <div class="custom-sel">
+                                <select class="form-control" id="accrual_day" name="accrual_day"
+                                    [(ngModel)]="accrual_day" [ngModelOptions]="{standalone: true}">
+                                    <option value="1st">1st Day Of the Month</option>
+                                    <option value="last">Last Day Of the Month</option>
+                                    <option value="joining_day">Employee joining Date</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <label></label>
+                            <div class="check-box-selection-sec mt-2">
+                                <div class="mat-set">
+                                    <mat-checkbox [(ngModel)]="prorate_accrual"
+                                        [ngModelOptions]="{standalone: true}">Prorate
+                                        accrual</mat-checkbox>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <!-- <div class="col-md-4">
+      <label>Round of</label>
+      <div class="custom-sel">
+        <select class="form-control" id="round_of" name="round_of" [(ngModel)]="round_of" [ngModelOptions]="{standalone: true}">
+          <option value="nearest_lowest">Nearest Lowest</option>
+          <option value="nearest_highest">Nearest Highest</option>
+        </select>
+      </div>
+    </div> -->
+                    </div>
+
+                </div>
+
+
+                <div class="leave-policy-content-box">
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <div class="check-box-selection-sec">
+                                <div class="mat-set">
+                                    <mat-checkbox [(ngModel)]="reset"
+                                        [ngModelOptions]="{standalone: true}">Reset</mat-checkbox>
+                                </div>
+
+                            </div>
+                        </div>
+                        <p style="font-size: 10px;margin-left: 40px;">Define the reset, carry forward and encashment of
+                            leave balance</p>
+
+
+                    </div>
+                    <div *ngIf="reset">
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                <label>Frequency</label>
+                                <div class="custom-sel">
+                                    <select class="form-control" id="frequency" name="frequency" [(ngModel)]="frequency"
+                                        (change)="onResetFrequencyChange()" [ngModelOptions]="{standalone: true}">
+                                        <option value="years">Years</option>
+                                        <option value="months">Months</option>
+                                        <option value="days">Days</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="showResetMonth">
+                                <label> Month</label>
+                                <div class="custom-sel">
+                                    <select class="form-control" id="month" name="month" [(ngModel)]="month"
+                                        [ngModelOptions]="{standalone: true}">
+                                        <option value="Jan">January</option>
+                                        <option value="Feb">February</option>
+                                        <option value="Mar">March</option>
+                                        <option value="Apr">April</option>
+                                        <option value="May">May</option>
+                                        <option value="Jun">June</option>
+                                        <option value="Jul">July</option>
+                                        <option value="Aug">August</option>
+                                        <option value="Sep">September</option>
+                                        <option value="Oct">October</option>
+                                        <option value="Nov">November</option>
+                                        <option value="Dec">December</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="showResetDay">
+                                <label>Day</label>
+                                <div class="custom-sel">
+                                    <select class="form-control" id="day" name="day" [(ngModel)]="day"
+                                        [ngModelOptions]="{standalone: true}">
+                                        <option value="1st">1st Day Of the Month</option>
+                                        <option value="last">Last Day Of the Month</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+                        <div class="reset-section">
+
+                            <div class="row">
+                                <div class="col-md-4 ">
+
+
+                                    <div class="check-box-selection-sec form-control ">
+                                        <div class="mat-set">
+                                            <mat-checkbox [(ngModel)]="allow_cf"
+                                                [ngModelOptions]="{standalone: true}">Allow
+                                                CF</mat-checkbox>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" *ngIf="allow_cf">
+
+
+                                <div class="col-md-4">
+                                    <label>Carry forward choice</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="carry_forward_choice"
+                                            name="carry_forward_choice" [(ngModel)]="carry_forward_choice"
+                                            [ngModelOptions]="{standalone: true}">
+                                            <option value="carry_forward">carry forward</option>
+                                            <option value="carry_forward_with_expiry">carry forward with Expiry</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <label>Cf value</label>
+                                    <input type="number" class="form-control" [(ngModel)]="cf_value"
+                                        placeholder="Enter cf value" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Cf unit or percentage</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="cf_unit_or_percentage"
+                                            name="cf_unit_or_percentage" [(ngModel)]="cf_unit_or_percentage"
+                                            [ngModelOptions]="{standalone: true}">
+                                            <option value="percentage">Percentage</option>
+                                            <option value="unit">Unit</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Cf max limit</label>
+                                    <input type="number" class="form-control" [(ngModel)]="cf_max_limit"
+                                        placeholder="Enter cf Max Limit" [ngModelOptions]="{standalone: true}">
+                                </div>
+                                <div class="col-md-4" *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                                    <label>Cf expires in value</label>
+                                    <input type="number" class="form-control" [(ngModel)]="cf_expires_in_value"
+                                        placeholder="Enter value" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+
+                                <div class="col-md-4" *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                                    <label>Cf time choice</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="cf_time_choice" name="cf_time_choice"
+                                            [(ngModel)]="cf_time_choice" [ngModelOptions]="{standalone: true}">
+                                            <option value="Years">Years</option>
+                                            <option value="months">Months</option>
+                                            <option value="days">Days</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="reset-section">
+
+                            <div class="row">
+                                <div class="col-md-4">
+
+                                    <div class="check-box-selection-sec form-control ">
+                                        <div class="mat-set">
+                                            <mat-checkbox [(ngModel)]="allow_encashment"
+                                                [ngModelOptions]="{standalone: true}">Allow
+                                                Encashment</mat-checkbox>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" *ngIf="allow_encashment">
+                                <div class="col-md-4">
+                                    <label>Encashment value</label>
+                                    <input type="number" class="form-control" [(ngModel)]="encashment_value"
+                                        placeholder="Enter Value" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label> Unit or percentage</label>
+                                    <div class="custom-sel">
+                                        <select class="form-control" id="encashment_unit_or_percentage"
+                                            name="encashment_unit_or_percentage"
+                                            [(ngModel)]="encashment_unit_or_percentage"
+                                            [ngModelOptions]="{standalone: true}">
+                                            <option value="percentage">Percentage</option>
+                                            <option value="unit">Unit</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Encashment max limit</label>
+                                    <input type="number" class="form-control" [(ngModel)]="encashment_max_limit"
+                                        placeholder="Enter Limit" [ngModelOptions]="{standalone: true}">
+                                </div>
+
+
+
+
+
+
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                <label>Opening Balance</label>
+                                <div class="custom-sel">
+                                    <input type="number" class="form-control" [(ngModel)]="opening_balance"
+                                        [ngModelOptions]="{standalone: true}">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row" *ngIf="hasAddPermission">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-full mt-4"
+                            (click)="ClosePopup()">Cancel</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success btn-full mt-4">Add </button>
+
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+    </div>
+</div>
+<div mat-dialog-action>
+
+</div>
