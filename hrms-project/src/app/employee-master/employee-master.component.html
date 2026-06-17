@@ -294,8 +294,13 @@
         <tbody>
           <tr *ngFor="let emp of filteredEmployees" (click)="showEmployeeDetails(emp.id)">
             <td>
-              <img [src]="emp.emp_profile_pic" alt="Profile"
-                   style="width: 40px; height: 40px; border-radius: 50%;">
+                <img *ngIf="emp.emp_profile_pic" 
+                      [src]="emp.emp_profile_pic" 
+                      alt="Profile" class="profile-avatar-main">
+
+            <div *ngIf="!emp.emp_profile_pic" class="profile-avatar-main placeholder-avatar-profile">
+                  <mat-icon>person</mat-icon>
+             </div>
             </td>
             <td>{{ emp.emp_code }}</td>
             <td>{{ emp.emp_first_name }} {{ emp.emp_last_name }}</td>

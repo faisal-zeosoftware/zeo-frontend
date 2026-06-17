@@ -79,6 +79,17 @@ export class EmployeeFamilyComponent {
   iban_number:string='';
   is_active: boolean = false;
 
+  showOnlySection: string | null = null;
+
+    private sectionMap: { [key: string]: number } = {
+    'family': 0,
+    'qualification': 1,
+    'jobhistory': 2,
+    'bank': 3,
+    'documents': 4
+  };
+
+  step = 0; // default
       
 
 
@@ -94,8 +105,16 @@ export class EmployeeFamilyComponent {
    @Inject(MAT_DIALOG_DATA) public data: any,
    ) {
     this.emp_id = data.emp_id;
+
+       this.showOnlySection = data.section || null;
+  
+  if (this.showOnlySection) {
+    this.step = this.sectionMap[this.showOnlySection];
+  }
+  }
     
-   }
+   
+
 
    CreateEmployeeFamily(): void {
     this.registerButtonClicked = true;
@@ -680,6 +699,11 @@ username: any;
 
   }
 
+  Closefamup(){
+      this.ref.close('Closed using function');
+
+  }
+
 
 
   loadDocumentType(): void {
@@ -701,9 +725,6 @@ username: any;
  }
   }
   
-
-
-  step = 0;
 
   setStep(index: number) {
     this.step = index;

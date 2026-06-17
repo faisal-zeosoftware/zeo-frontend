@@ -1201,7 +1201,7 @@ deleteDocumentType(categoryId: number): Observable<any> {
     return throwError('No schema selected.'); // Return an error observable if no schema is selected
   }
  
-  const apiUrl = `${this.apiUrl}/core/api/Documents/${categoryId}/?schema=${selectedSchema}`;
+  const apiUrl = `${this.apiUrl}/employee/api/Documents/${categoryId}/?schema=${selectedSchema}`;
  
   return this.http.delete(apiUrl);
 }

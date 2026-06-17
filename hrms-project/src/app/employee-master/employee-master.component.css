@@ -580,6 +580,34 @@ background-color:#8e44ad;
     border: 4px solid #fff;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
+
+  .profile-avatar-main{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+
+  }
+
+  .placeholder-avatar-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #b5bdc8; /* Light grey background */
+  color: #9ca3af;            /* Grey icon color */
+  border: 4px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 40px;               /* Match your .avatar-wrapper size */
+  height: 40px;
+}
+
+.placeholder-avatar-profile mat-icon {
+  font-size: 28px;           /* Large person icon */
+  width: 28px;
+  height: 28px;
+}
+
+
   
   .edit-btn-floating {
     position: absolute;

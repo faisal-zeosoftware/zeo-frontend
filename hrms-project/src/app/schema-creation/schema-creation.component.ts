@@ -37,6 +37,7 @@ export class SchemaCreationComponent {
 
   timezone: string = '';
   city: string = '';
+  pincode: string = '';
 
   users:any[]=[];
   countries:any[]=[];
@@ -195,6 +196,7 @@ if (this.financial_year) {
 }
 
     companyData.append('city', this.city);
+    companyData.append('pincode',this.pincode);
 
   
 

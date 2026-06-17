@@ -60,7 +60,7 @@
 
      
 
-    <div class="com_list table-scroll mt-4" *ngIf="hasViewPermission">
+ <div class="com_list table-scroll mt-4" *ngIf="hasViewPermission">
 
         <table class="table-container" width="100%">
             <thead>
@@ -71,6 +71,7 @@
                 <th>State</th>
                 <th>Timezone</th>
                 <th>City</th>
+                <th>Pincode</th>
 
                 <th>Industry Type</th>
                 <th>Address line 1</th>
@@ -94,6 +95,7 @@
                 </td>
                 <td>{{ schema.timezone }}</td>
                 <td>{{ schema.city }}</td>
+                <td>{{ schema.pincode }}</td>
 
                 <td>{{ schema.industry_type }}</td>
                 <td>{{ schema.address_line1 }}</td>

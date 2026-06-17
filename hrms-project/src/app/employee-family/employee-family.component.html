@@ -4,7 +4,11 @@
         <h1>Create Employee Family</h1><hr> -->
 
         <mat-accordion class="example-headers-align">
-            <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+  <mat-expansion-panel 
+    [expanded]="step === 0" 
+    (opened)="setStep(0)" 
+    *ngIf="!showOnlySection || showOnlySection === 'family'"
+    hideToggle>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Employee Family
@@ -99,11 +103,15 @@
                 </div>
 
                 <mat-action-row>
-                    <button mat-button color="primary" (click)="CreateEmployeeFamily()">Add</button>
+                    <button mat-raised-button color="primary" (click)="CreateEmployeeFamily()">Add</button>
                 </mat-action-row>
             </mat-expansion-panel>
 
-            <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
+           <mat-expansion-panel 
+    [expanded]="step === 1" 
+    (opened)="setStep(1)" 
+    *ngIf="!showOnlySection || showOnlySection === 'qualification'"
+    hideToggle>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Qualification
@@ -188,14 +196,14 @@
                     </div>
                 </form>
 
-                <mat-action-row>
-                    <button mat-button color="warn" (click)="prevStep()">Previous</button>
-                    <button mat-button color="primary" (click)="createEmployeeQual()">Add</button>
-                </mat-action-row>
+<mat-action-row>
+    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
+    <button mat-raised-button color="primary" (click)="createEmployeeQual()">Add</button>
+</mat-action-row>
             </mat-expansion-panel>
 
 
-            <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle>
+            <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)"  *ngIf="!showOnlySection || showOnlySection === 'jobhistory'" hideToggle>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Job History
@@ -317,13 +325,13 @@
                     </div>
                 </form>
 
-                <mat-action-row>
-                    <button mat-button color="warn" (click)="prevStep()">Previous</button>
-                    <button mat-button color="primary" (click)="createEmployeeJonHistory()">Add</button>
-                </mat-action-row>
+<mat-action-row>
+    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
+    <button mat-raised-button color="primary" (click)="createEmployeeJonHistory()">Add</button>
+</mat-action-row>
             </mat-expansion-panel>
 
-            <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)" hideToggle>
+            <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)"  *ngIf="!showOnlySection || showOnlySection === 'bank'" hideToggle>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Bank Details
@@ -414,13 +422,13 @@
                     </div>
                 </form>
 
-                <mat-action-row>
-                    <button mat-button color="warn" (click)="prevStep()">Previous</button>
-                    <button mat-button color="primary" (click)="createempbankdetails()">Add</button>
-                </mat-action-row>
+<mat-action-row>
+    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
+    <button mat-raised-button color="primary" (click)="createempbankdetails()">Add</button>
+</mat-action-row>
             </mat-expansion-panel>
 
-                        <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)" hideToggle>
+            <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)"  *ngIf="!showOnlySection || showOnlySection === 'documents'" hideToggle>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         Employee Document Upload
@@ -518,10 +526,10 @@
                         
                     </div>
 
-                    <mat-action-row>
-                        <button mat-button color="warn" (click)="prevStep()">Previous</button>
-                        <button mat-button color="primary" type="submit">Add</button>
-                    </mat-action-row>
+<mat-action-row>
+    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
+   <button mat-raised-button color="primary" type="submit">Add</button>
+</mat-action-row>
                 </form>
                 <div class="from-sec" *ngIf="visibilitys" >
 
@@ -600,15 +608,22 @@
         </mat-accordion>
 
 
-        <div class="row">
+        <!-- Bottom buttons - HIDE when showing only one section -->
+        <div class="row" *ngIf="!showOnlySection">
             <div class="col-md-8"></div>
             <div class="col-md-2">
-                <button (click)="ClosePopup()" class="pull-right btn btn-danger btn-full mt-4">Close</button>
-
+                <button (click)="Closefamup()" class="pull-right btn btn-danger btn-full mt-4">Close</button>
             </div>
             <div class="col-md-2">
                 <button mat-raised-button color="primary" (click)="ClosePopup()" class="pull-right btn-full mt-4">Done</button>
-
+            </div>
+        </div>
+        
+        <!-- Show only Close button when single section mode -->
+        <div class="row" *ngIf="showOnlySection">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <button (click)="Closefamup()" class="pull-right btn btn-danger btn-full mt-4">Close</button>
             </div>
         </div>
 

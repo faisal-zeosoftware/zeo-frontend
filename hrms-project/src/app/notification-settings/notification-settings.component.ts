@@ -12,6 +12,7 @@ import { combineLatest, Subscription } from 'rxjs';
 import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
+import { CountryService } from '../country.service';
 
 @Component({
   selector: 'app-notification-settings',
@@ -49,6 +50,7 @@ export class NotificationSettingsComponent {
   designations: any = '';
   departments: any = '';
   notify_users: any = '';
+    document_type:any='';
 
   department: number[] = [];
 designation: number[] = [];
@@ -58,7 +60,7 @@ branch: number[] = [];
 
   created_by: any = '';
 
-
+  DocumentTypes: any[] = [];
 
   LeaveTypes: any[] = [];
   Employees: any[] = [];
@@ -91,6 +93,7 @@ branch: number[] = [];
     private leaveService: LeaveService,
     private employeeService: EmployeeService,
     private DesignationService: DesignationService,
+    private countryService: CountryService,
     private DepartmentServiceService: DepartmentServiceService,
     private categoryService: CatogaryService,
 
@@ -128,6 +131,7 @@ branch: number[] = [];
 
 
       this.LoadUsers();
+      this.loadDocumentType();
       this.loadCAtegory();
 
 
@@ -362,6 +366,26 @@ branch: number[] = [];
   }
 
 
+    loadDocumentType(): void {
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+ console.log('schemastore',selectedSchema )
+ // Check if selectedSchema is available
+ if (selectedSchema) {
+    this.countryService.getDocument(selectedSchema).subscribe(
+      (result: any) => {
+        this.DocumentTypes = result;
+        console.log(' fetching Companies:');
+
+      },
+      (error) => {
+        console.error('Error fetching Companies:', error);
+      }
+    );
+ }
+  }
+
+
 
   //   LoadBeanch(callback?: Function) {
   //       const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -430,7 +454,7 @@ const companyData = {
   Department: this.department || [],
   Category: this.category || [],
   Designation: this.designation || [],
-
+  document_type:this.document_type || [],
   notify_users: this.notify_users || [],
   created_by: this.created_by,
 };

@@ -730,23 +730,24 @@ attendanceData: any = null; // Define this at the class level
   }
 
 
-  employeefamAdd():void{
+employeefamAdd(section: string): void {
+  const dialogRef = this.dialog.open(EmployeeFamilyComponent, {
+    width: '80%',
+    height: '500px',
+    data: { 
+      emp_id: this.employee.id,
+      section: section  // <-- pass which section to open
+    }
+  });
 
-
-    const dialogRef = this.dialog.open(EmployeeFamilyComponent, {
-      width:'80%',
-      height:'500px', // Adjust width as needed
-      data: { emp_id: this.employee.id }  // Pass any data you want to display in the modal
-    });
-  
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('The success modal was closed');
-      // Handle any actions after the modal is closed, if needed
-      this.loadFamilyDetails();
-
-    });
-
-  }
+  dialogRef.afterClosed().subscribe(() => {
+    this.loadFamilyDetails();
+    this.loadQualification();
+    this.loadJobHistory();
+    this.loadBankDetails();
+    // reload other sections as needed
+  });
+}
 
 
   employeeLang():void{

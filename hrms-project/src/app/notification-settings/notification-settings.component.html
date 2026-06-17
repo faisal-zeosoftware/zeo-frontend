@@ -6,7 +6,7 @@
           <h1>Document Notification Setting</h1>
         </div>
         <!-- <div class="col-md-3"> -->
-          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+        <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
         <!-- </div> -->
         <div class="col-md-7">
           <div class="button-group pull-right">
@@ -94,7 +94,7 @@
           enctype="multipart/form-data"
         >
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label
                 >Days before expiry
                 <span class="required-star">*</span>
@@ -118,7 +118,7 @@
               </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label
                 >Days after expiry
                 <span class="required-star">*</span>
@@ -128,7 +128,7 @@
                 class="form-control"
                 required
                 [(ngModel)]="days_after_expiry"
-                placeholder="Enter days after expiry"
+                placeholder="Enter days after exp"
                 [ngModelOptions]="{ standalone: true }"
                 [ngClass]="{
                   'error-field': registerButtonClicked && !days_after_expiry,
@@ -142,8 +142,28 @@
               </div>
             </div>
 
+                        <div class="col-md-3">
+              <div class="custom-sel">
+                <label>Select Document Type</label>
+                <select
+                  class="form-control"
+                  required
+                  [(ngModel)]="document_type"
+                  name="document_type"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let country of DocumentTypes"
+                    [value]="country.id"
+                  >
+                    {{ country.type_name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
             <!-- Notify Users -->
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="filter-select-card">
                 <label class="filter-title">
                   <mat-icon>group</mat-icon>
@@ -413,7 +433,7 @@
 
         <form>
           <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label>Days before expiry</label>
               <input
                 type="number"
@@ -434,7 +454,7 @@
               </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label>Days after expiry</label>
               <input
                 type="number"
@@ -455,7 +475,27 @@
               </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
+              <div class="custom-sel">
+                <label>Select Document Type</label>
+                <select
+                  class="form-control"
+                  required
+                  [(ngModel)]="editAsset.document_type"
+                  name="document_type"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let country of DocumentTypes"
+                    [value]="country.id"
+                  >
+                    {{ country.type_name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-3">
               <div class="filter-select-card">
                 <label class="filter-title">
                   <mat-icon>group</mat-icon>

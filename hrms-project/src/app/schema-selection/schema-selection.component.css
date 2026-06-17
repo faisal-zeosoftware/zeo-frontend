@@ -1,3 +1,4 @@
+
 .schema_Sec{
     background: white;
      padding: 40px 30px 55px 30px;
@@ -179,6 +180,10 @@ body {
     text-decoration: none;
     position: relative;
     z-index: 1;
+}
+
+.logo{
+    width:80px;
 }
 
 #hamburger-menu,
