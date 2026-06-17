@@ -53,13 +53,35 @@ export class LeaveService {
   }
 
 
-  updateLeaveEntitlement(id: number, data: any): Observable<any> {
-    const schema = localStorage.getItem('selectedSchema');
+  // updateLeaveEntitlement(id: number, data: any): Observable<any> {
+  //   const schema = localStorage.getItem('selectedSchema');
+  //   return this.http.put(
+  //     `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${schema}`,
+  //     data
+  //   );
+  // }
+
+
+  updateLeaveEntitlement(
+    id:number,
+    payload:any
+  ): Observable<any>{
+  
+    const selectedSchema =
+      localStorage.getItem(
+        'selectedSchema'
+      );
+  
     return this.http.put(
-      `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${schema}`,
-      data
+  
+      `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${selectedSchema}`,
+  
+      payload
+  
     );
+  
   }
+  
 
   updateLeaveResetPolicy(id: number, formData: FormData): Observable<any> {
 
@@ -136,6 +158,30 @@ deleteLeaveReset(id: number): Observable<any> {
       })
     );
   }
+
+
+  registerApplicablepolicy(companyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+
+
+    const Url = `${this.apiUrl}/calendars/api/applicable_to/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post(Url, companyData, { headers }).pipe(
+      catchError((error) => {
+        // Handle errors here (you can log, show a user-friendly message, etc.)
+        console.error('Error during company registration:', error);
+        return throwError(error);
+
+      })
+    );
+  }
+
 
   updateLeaveApplicable(id: number, data: any): Observable<any> {
 
@@ -2210,6 +2256,43 @@ postEmployeeRecheck(empCode: string, selectedSchema: string): Observable<any> {
 
   return this.http.post(apiUrl, payload);
 }
+
+
+
+
+
+getLeaveEntitlementReset(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/leave-entitlement/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
+getLeaveApplicables(selectedSchema: string, branchIds: number[]): Observable<any> {
+  // Converts [1,3,4] into the string "[1,3,4]" for the URL
+  const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+  
+  let url = `${this.apiUrl}/calendars/api/applicable_to/?schema=${selectedSchema}`;
+  if (branchParam) {
+    url += `&branch_id=${branchParam}`;
+  }
+  
+  return this.http.get(url);
+}
+
+
+
+
+
+
+
+
 
 
 }
