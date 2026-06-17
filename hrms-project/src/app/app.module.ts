@@ -257,6 +257,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.component';
 import { LeavePolicyComponent } from './leave-policy/leave-policy.component';
 import { CreateleavepolicymodalComponent } from './createleavepolicymodal/createleavepolicymodal.component';
+import { EmployeeUserComponent } from './employee-user/employee-user.component';
 
 @NgModule({
   declarations: [
@@ -470,6 +471,7 @@ import { CreateleavepolicymodalComponent } from './createleavepolicymodal/create
      GeneralSidebarComponent,
      LeavePolicyComponent,
      CreateleavepolicymodalComponent,
+     EmployeeUserComponent,
      
      
 

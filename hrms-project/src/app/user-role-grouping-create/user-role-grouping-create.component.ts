@@ -7,6 +7,8 @@ import { AuthenticationService } from '../login/authentication.service';
 import { environment } from '../../environments/environment';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Inject, Optional } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 // import { window } from 'rxjs';
 
 @Component({
@@ -2760,7 +2762,8 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     private UserMasterService: UserMasterService,
     private authService: AuthenticationService,
     private http: HttpClient,
-    private ref: MatDialogRef<UserRoleGroupingCreateComponent>
+    private ref: MatDialogRef<UserRoleGroupingCreateComponent>,
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: any 
   ) { }
 
   ngOnInit(): void {
@@ -2803,9 +2806,33 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     this.updateInderminateShift();
     this.updateInderminateAttendance();
 
+      if (this.data && this.data.isDuplicate && this.data.duplicateData) {
+    this.groupName = this.data.duplicateData.name;
+    
+    // If permissions are passed, pre-select them
+    if (this.data.duplicateData.permissions && this.data.duplicateData.permissions.length > 0) {
+      // Wait for permissions to load, then select them
+      setTimeout(() => {
+        this.preselectPermissions(this.data.duplicateData.permissions);
+      }, 1000); // Adjust timeout based on your API load time
+    }
+  }
+
 
 
   }
+
+  preselectPermissions(permissions: any[]): void {
+  // Extract permission IDs
+  const permissionIds = permissions.map(p => p.id || p);
+  
+  // Add to selected permissions
+  this.selectedPermissions = [...permissionIds];
+  
+  // Update all master checkboxes to reflect selection
+  this.updateAllMasterCheckboxes();
+  this.syncAllUIStates();
+}
 
   //update interminate Sections
 

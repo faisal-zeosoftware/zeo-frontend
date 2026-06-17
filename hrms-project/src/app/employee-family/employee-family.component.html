@@ -1,9 +1,18 @@
 <div mat-dialog-content class="">
+     <div class="col-md-12 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="Closefamup()">
+      ×
+    </span>
+  </div>
     <div class="cpm-sec" >
+
+
         <!-- 
         <h1>Create Employee Family</h1><hr> -->
 
         <mat-accordion class="example-headers-align">
+
   <mat-expansion-panel 
     [expanded]="step === 0" 
     (opened)="setStep(0)" 

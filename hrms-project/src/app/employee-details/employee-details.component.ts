@@ -729,6 +729,27 @@ attendanceData: any = null; // Define this at the class level
       }
   }
 
+  // Add this new method alongside your existing employeefamAdd method
+openEmployeeFullForm(): void {
+  const dialogRef = this.dialog.open(EmployeeFamilyComponent, {
+    width: '80%',
+    height: '500px',
+    data: { 
+      emp_id: this.employee.id,
+      section: null  // <-- null means show ALL sections
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(() => {
+    // Reload all sections after closing
+    this.loadFamilyDetails();
+    this.loadQualification();
+    this.loadJobHistory();
+    this.loadBankDetails();
+    this.fetchEmployeeDocuments();
+  });
+}
+
 
 employeefamAdd(section: string): void {
   const dialogRef = this.dialog.open(EmployeeFamilyComponent, {

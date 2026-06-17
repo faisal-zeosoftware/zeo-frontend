@@ -1,53 +1,89 @@
+.connect-question h3 {
+    font-size: 18px;
+    color: #333;
+    font-family: "Poppins", sans-serif;
+    margin-bottom: 15px;
+}
 
+.btn-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
 
-.success-header{
+.btn-yes, .btn-no {
+    padding: 10px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+    transition: all 0.3s ease;
+}
+
+.btn-yes {
+    background: #45b86b;
+    color: white;
+}
+
+.btn-yes:hover {
+    background: #3aa05c;
+}
+
+.btn-no {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-no:hover {
+    background: #c82333;
+}
+
+/* Existing styles remain same */
+.success-header {
     background: #47c9a2;
     height: 250px;
     width: 250px;
     padding: 10px;
-}
-.succes-ico{
-    margin-left: auto;
-    margin-right: auto;
-     text-align: center;   
-      
+    border-radius: 10px;
+    margin: 0 auto;
 }
 
-.mat_success{
+.succes-ico {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.mat_success {
     height: 100px;
     width: 150px;
     font-size: 80px;
     margin-top: 30px;
+    color: white;
 }
 
-.success-header h1{
+.success-header h1 {
     font-size: 22px;
     color: white;
     font-family: "Poppins";
 }
 
-.btn-continue{
-    background: #45b86b;
-    color: white;
-    
-}
-
 .close {
-    color:red !important;
+    color: red !important;
     float: right;
     font-size: 28px;
     font-weight: bold;
     text-align: right;
-  }
-  
-  .close:hover,
-  .close:focus {
-    color: red;
-    text-decoration: none;
     cursor: pointer;
-  }
-  
+}
 
-  .success-header{
+.close:hover,
+.close:focus {
+    color: darkred;
+    text-decoration: none;
+}
+
+.success-header {
     margin-top: 35px;
-  }
+}

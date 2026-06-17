@@ -916,12 +916,11 @@
                 </div> -->
         
         
-                <div class="col-md-6"  *ngIf="!isCountryFieldHidden">
+                <!-- <div class="col-md-6"  *ngIf="!isCountryFieldHidden">
                     <label>{{cntryFieldName}}</label>
                 
                     
                     
-                    <!-- Hidden input to store the final value to be posted -->
                  
                                   
                     <select class="form-control"  [(ngModel)]="emp_country_id"  [ngModelOptions]="{standalone: true}" style="display: none;" 
@@ -936,16 +935,15 @@
                                         {{cntryFieldName}} is required.
                                     </div>
                 
-                    <!-- <input type="text" class="form-control" [(ngModel)]="emp_gender" [ngModelOptions]="{standalone: true}" style="display: none;"> -->
                 
                     <ng-container [ngSwitch]="cntryDataType">
-                        <!-- Text Box for Gender -->
+                    
                         <input *ngSwitchCase="'Text Box'" type="text" class="form-control" 
                                required placeholder="{{cntryFieldName}}" 
                                [(ngModel)]="temp_emp_cntry" 
                                (ngModelChange)="synccntry($event)" [ngModelOptions]="{standalone: true}">
                         
-                        <!-- Dropdown for Gender -->
+                      
                         <div *ngSwitchCase="'Dropdown'" class="custom-sel">
                             <select class="form-control" [(ngModel)]="temp_emp_cntry" (ngModelChange)="synccntry($event)" [ngModelOptions]="{standalone: true}" (change)="onCountryChange()">
                 
@@ -954,7 +952,7 @@
                             </select>
                         </div>
                     </ng-container>
-                </div>
+                </div> -->
                 
                 
         
@@ -1124,7 +1122,7 @@
         </div>
         <div class="col-md-2">
             <button  type="submit" (click)="uploadEmployeeDocument()"
-               mat-raised-button color="primary" class="pull-right btn-full mt-4" >Next</button>
+               mat-raised-button color="primary" class="pull-right btn-full mt-4" >Create</button>
 
         </div>
     </div>

@@ -429,4 +429,62 @@ deleteSelectedEmployees() {
   }
 }
 
+ // Simple duplicate - creates immediately without opening dialog
+  // duplicateGroupInline(group: any): void {
+  //   if (!confirm('Are you sure you want to duplicate this group?')) {
+  //     return;
+  //   }
+
+  //   const duplicateData = {
+  //     name: group.name + ' Copy',
+  //     permissions: group.permissions || []
+  //   };
+
+  //   this.UserMasterService.registerGroupingRole(duplicateData).subscribe(
+  //     (response) => {
+  //       console.log('Group duplicated successfully', response);
+  //       alert('Group duplicated successfully');
+        
+  //       // Refresh the list
+  //       const selectedSchema = this.authService.getSelectedSchema();
+  //       if (selectedSchema) {
+  //         this.fetchDesignations(selectedSchema);
+  //       }
+  //     },
+  //     (error) => {
+  //       console.error('Failed to duplicate group', error);
+  //       alert('Failed to duplicate group. Please try again.');
+  //     }
+  //   );
+  // }
+
+isDuplicateModalOpen: boolean = false;
+duplicateGroupData: any = {};
+
+duplicateGroup(group: any): void {
+  // Open Create Dialog with pre-filled duplicate data
+  const dialogRef = this.dialog.open(UserRoleGroupingCreateComponent, {
+    width: '80%',
+    height: '500px',
+    data: {
+      isDuplicate: true,
+      duplicateData: {
+        name: group.name + ' Copy',
+        // Copy permissions from the original group
+        permissions: group.permissions || []
+      }
+    }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      console.log('Group duplicated successfully');
+      // Refresh the list
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    }
+  });
+}
 }

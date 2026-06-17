@@ -931,11 +931,23 @@ uploadEmployeeDocument(): void {
   }
 
   // DATE FORMAT
+   // DATE FORMAT
+let formattedDate = '';
+if (this.emp_date_of_confirmation && this.emp_date_of_confirmation !== '') {
   const selectedDate = new Date(this.emp_date_of_confirmation);
-  const formattedDate = selectedDate.toISOString().split('T')[0];
+  if (!isNaN(selectedDate.getTime())) {
+    formattedDate = selectedDate.toISOString().split('T')[0];
+  }
+}
 
+let formattedJoinedDate = '';
+if (this.emp_joined_date && this.emp_joined_date !== '') {
   const joinedDate = new Date(this.emp_joined_date);
-  const formattedJoinedDate = joinedDate.toISOString().split('T')[0];
+  if (!isNaN(joinedDate.getTime())) {
+    formattedJoinedDate = joinedDate.toISOString().split('T')[0];
+  }
+}
+
 
 
 
