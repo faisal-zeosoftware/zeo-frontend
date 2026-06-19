@@ -26,6 +26,7 @@ export class SalaryComponent {
 
   name: any = '';
   component_type: any = '';
+  component_value_type: any = '';
   code: any = '';
   description: any = '';
   reason: any = '';
@@ -361,13 +362,13 @@ this.loadDeparmentBranch();
     formData.append('component_type', this.component_type);
     formData.append('code', this.code);
     formData.append('branch', this.branch);
-
+    formData.append('component_value_type', this.component_value_type);
     formData.append('description', this.description || '');
     formData.append('formula', this.formula || '');
 
-    formData.append('is_fixed', (this.is_fixed ?? false).toString());
+    // formData.append('is_fixed', (this.is_fixed ?? false).toString());
     formData.append('deduct_leave', (this.deduct_leave ?? false).toString());
-    formData.append('is_loan_component', (this.is_loan_component ?? false).toString());
+    // formData.append('is_loan_component', (this.is_loan_component ?? false).toString());
 
     formData.append('show_in_payslip', (this.show_in_payslip ?? false).toString());
 
@@ -375,9 +376,9 @@ this.loadDeparmentBranch();
     formData.append('prorata_calculation', (this.prorata_calculation ?? false).toString());
     formData.append('is_emi_deduction', (this.is_emi_deduction ?? false).toString());
 
-    formData.append('is_advance_salary', (this.is_advance_salary ?? false).toString());
-    formData.append('is_air_ticket', (this.is_air_ticket ?? false).toString());
-    formData.append('is_gratuity', (this.is_gratuity ?? false).toString());
+    // formData.append('is_advance_salary', (this.is_advance_salary ?? false).toString());
+    // formData.append('is_air_ticket', (this.is_air_ticket ?? false).toString());
+    // formData.append('is_gratuity', (this.is_gratuity ?? false).toString());
 
 
 
@@ -438,6 +439,23 @@ this.loadDeparmentBranch();
   }
 
 
+  onComponentValueTypeChange(): void {
+  if (this.component_value_type === 'variable') {
+    this.isAddFieldsModalOpen = true; // Open Formula Writer popup
+  } else {
+    this.isAddFieldsModalOpen = false; // Close popup for Fixed
+    this.formula = ''; // Optional: clear formula
+  }
+}
+
+onComponentValueTypeChangeEdit(): void {
+  if (this.editAsset.component_value_type === 'variable') {
+    this.isAddFieldsModalOpen = true;
+  } else {
+    this.isAddFieldsModalOpen = false;
+    this.editAsset.formula = '';
+  }
+}
 
   // LoadSalaryCom(selectedSchema: string) {
   //   this.leaveService.getSalaryCom(selectedSchema).subscribe(

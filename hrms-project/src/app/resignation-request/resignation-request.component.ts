@@ -99,16 +99,24 @@ schemas: string[] = []; // Array to store schema names
     ngOnInit(): void {
 
         // combineLatest waits for both Schema and Branches to have a value
-        this.dataSubscription = combineLatest([
-          this.employeeService.selectedSchema$,
-          this.employeeService.selectedBranches$
-        ]).subscribe(([schema, branchIds]) => {
-          if (schema) {
-            this.fetchEmployees(schema, branchIds);
-            this.fetchResignation(schema, branchIds);
+this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
 
-          }
-        });
+  if (schema) {
+
+    // existing
+    this.fetchEmployees(schema, branchIds);
+    this.fetchResignation(schema, branchIds);
+
+    // add this
+    this.loadDeparmentBranch(branchIds);
+
+    // reload employee dropdown
+    this.loademployee();
+  }
+});
 
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
@@ -886,38 +894,51 @@ onBranchChange(event: any): void {
   });
 }
 
-  loadDeparmentBranch(callback?: Function): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-    
-    if (selectedSchema) {
-      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-        (result: any[]) => {
-          // 1. Get the sidebar selected IDs from localStorage
-          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
-          // 2. Filter the API result to only include branches selected in the sidebar
-          // If sidebar is empty, you might want to show all, or show none. 
-          // Usually, we show only the selected ones:
-          if (sidebarSelectedIds.length > 0) {
-            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+loadDeparmentBranch(selectedBranchIds: number[] = []): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema)
+      .subscribe({
+
+        next: (result: any[]) => {
+
+          if (selectedBranchIds.length > 0) {
+
+            this.branches = result.filter(branch =>
+              selectedBranchIds.includes(branch.id)
+            );
+
           } else {
-            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+
+            this.branches = result;
+
           }
-          // Inside the subscribe block of loadDeparmentBranch
-          if (this.branches.length === 1) {
+
+          console.log('Filtered branches:', this.branches);
+
+          // Auto select first branch
+          if (this.branches.length > 0) {
+
             this.branch = this.branches[0].id;
+
+            this.onBranchChange({
+              target: { value: this.branch }
+            });
+
           }
-  
-          console.log('Filtered branches for selection:', this.branches);
-          if (callback) callback();
+
         },
-        (error) => {
+
+        error: (error) => {
           console.error('Error fetching branches:', error);
         }
-      );
-    }
-    }
 
+      });
+  }
+}
     
   mapBranchesNameToId() {
   if (!this.branches || !this.editAsset?.branch) return;

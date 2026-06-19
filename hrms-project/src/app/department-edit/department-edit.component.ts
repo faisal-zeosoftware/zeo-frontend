@@ -127,21 +127,42 @@ ngOnInit(): void {
 loadDeparmentBranch(callback?: () => void): void {
   const selectedSchema = this.authService.getSelectedSchema();
 
-  console.log('schemastore', selectedSchema);
-
   if (selectedSchema) {
     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any) => {
+      (result: any[]) => {
 
-        // ✅ FIX: assign to Branches (used in UI + filter)
-        this.Branches = result;
+        const sidebarSelectedIds: number[] = JSON.parse(
+          localStorage.getItem('selectedBranchIds') || '[]'
+        );
 
-        // (optional) keep Departments if you still need it
-        this.Departments = result;
+        let filteredBranches = result;
 
-        console.log('Fetched Branches:', this.Branches);
+        if (sidebarSelectedIds.length > 0) {
+          filteredBranches = result.filter(branch =>
+            sidebarSelectedIds.includes(branch.id)
+          );
+        }
 
-        if (callback) callback();
+        // Keep already assigned branch visible in edit mode
+        const currentBranchId =
+          this.department?.branch_id || this.department?.branch;
+
+        const existingBranch = result.find(
+          b => b.id === currentBranchId
+        );
+
+        if (
+          existingBranch &&
+          !filteredBranches.some(b => b.id === existingBranch.id)
+        ) {
+          filteredBranches.push(existingBranch);
+        }
+
+        this.Branches = filteredBranches;
+
+        if (callback) {
+          callback();
+        }
       },
       (error) => {
         console.error('Error fetching Branches:', error);

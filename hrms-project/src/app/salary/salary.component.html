@@ -1,60 +1,78 @@
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
-
     <div class="header_section">
-
       <div class="row">
         <div class="col-md-4">
           <h1>Salary Component</h1>
         </div>
 
-        <div class="col-md-3">
-
-
-        </div>
+        <div class="col-md-3"></div>
         <div class="col-md-5">
           <div class="button-group pull-right">
-            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success "
-              *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                </mat-icon></span> Create</button>
+            <button
+              type="button"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
+            >
+              <span class="header-btn-icon"
+                ><mat-icon>add_circle </mat-icon></span
+              >
+              Create
+            </button>
             <span *ngIf="!hasAddPermission"></span>
 
-            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
-              <span class="header-btn-icon">
-                <mat-icon>draw
-                </mat-icon></span> Edit</button>
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
             <span *ngIf="hasEditPermission"></span>
-            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission">
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
               <span class="header-btn-icon">
-                <mat-icon> delete
-                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
 
             <span *ngIf="!hasDeletePermission"></span>
           </div>
         </div>
       </div>
-
-
-
     </div>
 
     <div class="row">
       <div class="col-md-2">
-
-        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()">Select All</button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          style="width: 100%"
+          color="warn"
+          *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()"
+        >
+          Select All
+        </button>
       </div>
       <div class="col-md-3">
-        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedAssetMaster()">Delete
-          Selected </button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          color="warn"
+          *ngIf="Delete"
+          (click)="deleteSelectedAssetMaster()"
+        >
+          Delete Selected
+        </button>
       </div>
     </div>
-
-
-
 
     <div *ngIf="iscreateLoanApp" class="modal">
       <div class="modal-content">
@@ -62,81 +80,159 @@
           <div class="col-md-10">
             <h2>Create Salary Component</h2>
           </div>
-<div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div> 
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+          </div>
         </div>
         <hr />
 
         <form>
-
           <div class="row">
             <div class="col-md-6">
-              <label> Component Name
-                 <span class="required-star">*</span>
+              <label>
+                Component Name
+                <span class="required-star">*</span>
               </label>
-              <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter  name"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
-              <div *ngIf="registerButtonClicked && !name" class="error-message"> name is required.</div>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="name"
+                placeholder="Enter  name"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !name }"
+              />
+              <div *ngIf="registerButtonClicked && !name" class="error-message">
+                name is required.
+              </div>
             </div>
             <div class="col-md-6">
-              <label>Component Type
-                 <span class="required-star">*</span>
+              <label
+                >Component Type
+                <span class="required-star">*</span>
               </label>
               <div class="custom-sel">
-                <select class="form-control" id="component_type" name="component_type" [(ngModel)]="component_type"
-                  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !component_type}">
+                <select
+                  class="form-control"
+                  id="component_type"
+                  name="component_type"
+                  [(ngModel)]="component_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !component_type,
+                  }"
+                >
                   <option value="deduction">Deduction</option>
                   <option value="addition">Addition</option>
                   <option value="others">Others</option>
                 </select>
               </div>
-               <div *ngIf="registerButtonClicked && !component_type" class="error-message">Component Type is required.</div>
+              <div
+                *ngIf="registerButtonClicked && !component_type"
+                class="error-message"
+              >
+                Component Type is required.
+              </div>
             </div>
 
             <div class="col-md-6">
               <label>Code</label>
-              <input type="text" class="form-control" required [(ngModel)]="code" placeholder="Enter code "
-                [ngModelOptions]="{standalone: true}">
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="code"
+                placeholder="Enter code "
+                [ngModelOptions]="{ standalone: true }"
+              />
             </div>
             <div class="col-md-6">
-              <label>Select Branch
-                 <span class="required-star">*</span>
+              <label
+                >Component value Type
+                <span class="required-star">*</span>
               </label>
               <div class="custom-sel">
-                <select class="form-control" id="branch" name="branch" [(ngModel)]="branch"
-                  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                  <option *ngFor="let employee of branches" [value]="employee.id">{{ employee.branch_name }}</option>
+                <select
+                  class="form-control"
+                  id="component_value_type"
+                  name="component_value_type"
+                  [(ngModel)]="component_value_type"
+                  (change)="onComponentValueTypeChange()"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field':
+                      registerButtonClicked && !component_value_type,
+                  }"
+                >
+                  <option value="">Select Type</option>
+                  <option value="fixed">Fixed</option>
+                  <option value="variable">Variable</option>
                 </select>
               </div>
-              <div *ngIf="registerButtonClicked && !branch" class="error-message">Branch is required.</div>
+              <div
+                *ngIf="registerButtonClicked && !component_value_type"
+                class="error-message"
+              >
+                component_value_type is required.
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label
+                >Select Branch
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  id="branch"
+                  name="branch"
+                  [(ngModel)]="branch"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !branch,
+                  }"
+                >
+                  <option
+                    *ngFor="let employee of branches"
+                    [value]="employee.id"
+                  >
+                    {{ employee.branch_name }}
+                  </option>
+                </select>
+              </div>
+              <div
+                *ngIf="registerButtonClicked && !branch"
+                class="error-message"
+              >
+                Branch is required.
+              </div>
             </div>
 
             <div class="col-md-12">
               <label>Description</label>
-              <textarea class="form-control" [(ngModel)]="description" [ngModelOptions]="{standalone: true}"></textarea>
+              <textarea
+                class="form-control"
+                [(ngModel)]="description"
+                [ngModelOptions]="{ standalone: true }"
+              ></textarea>
             </div>
-
-
 
             <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="deduct_leave" [ngModelOptions]="{standalone: true}">
-                    Deduct leave</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="deduct_leave"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Deduct leave</mat-checkbox
+                  >
                 </div>
-
               </div>
-
-
-
             </div>
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
@@ -148,24 +244,23 @@
 
 
 
-            </div>
-
+            </div> -->
 
             <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="show_in_payslip" [ngModelOptions]="{standalone: true}">
-                    Show In Payslip</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="show_in_payslip"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Show In Payslip</mat-checkbox
+                  >
                 </div>
-
               </div>
-
-
-
             </div>
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
@@ -177,9 +272,9 @@
 
 
 
-            </div>
+            </div> -->
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
@@ -191,10 +286,9 @@
 
 
 
-            </div>
+            </div> -->
 
-
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
@@ -206,11 +300,9 @@
 
 
 
-            </div>
+            </div> -->
 
-
-
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control  mt-2">
                 <div class="mat-set">
@@ -219,10 +311,8 @@
                 </div>
 
               </div>
-            </div>
-
+            </div> -->
           </div>
-
 
           <!-- Modal Popup for  formula writer -->
           <div *ngIf="isAddFieldsModalOpen" class="modal">
@@ -230,30 +320,38 @@
               <div class="row">
                 <div class="col-md-10">
                   <h2>Formulae Writer</h2>
-
                 </div>
                 <div class="col-md-2">
-                  <span class="close pull-right" (click)="closemarketModal()">&times;</span>
-
+                  <span class="close pull-right" (click)="closemarketModal()"
+                    >&times;</span
+                  >
                 </div>
               </div>
-              <hr>
-
+              <hr />
 
               <div class="row">
                 <!-- Left column: Dropdowns -->
                 <div class="col-md-5 col-6">
-
                   <!-- Salary Component Dropdown -->
                   <div class="dropdown-container">
                     <div class="dropdown-header" (click)="toggleDropdown()">
                       Head Of Pay
-                      <span class="arrow" [ngClass]="{ 'open': dropdownOpen }">&#9662;</span>
+                      <span class="arrow" [ngClass]="{ open: dropdownOpen }"
+                        >&#9662;</span
+                      >
                     </div>
 
                     <ul class="dropdown-options" *ngIf="dropdownOpen">
-                      <li class="dropdown-option" *ngFor="let component of Salarycomponent"
-                        (click)="insertComponentToFormula(component.code, formulaTextArea)">
+                      <li
+                        class="dropdown-option"
+                        *ngFor="let component of Salarycomponent"
+                        (click)="
+                          insertComponentToFormula(
+                            component.code,
+                            formulaTextArea
+                          )
+                        "
+                      >
                         {{ component.code }}
                       </li>
                     </ul>
@@ -261,130 +359,170 @@
 
                   <!-- functions Operator Dropdown -->
                   <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleFunctionsDropdown()">
+                    <div
+                      class="dropdown-header"
+                      (click)="toggleFunctionsDropdown()"
+                    >
                       Functions
-                      <span class="arrow" [ngClass]="{ 'open': FunctionsdropdownOpen }">&#9662;</span>
+                      <span
+                        class="arrow"
+                        [ngClass]="{ open: FunctionsdropdownOpen }"
+                        >&#9662;</span
+                      >
                     </div>
 
                     <ul class="dropdown-options" *ngIf="FunctionsdropdownOpen">
-                      <li class="dropdown-option" *ngFor="let fn of FunctionsOperators"
-                        (click)="insertComponentToFormula(fn, formulaTextArea)">
+                      <li
+                        class="dropdown-option"
+                        *ngFor="let fn of FunctionsOperators"
+                        (click)="insertComponentToFormula(fn, formulaTextArea)"
+                      >
                         {{ fn }}
                       </li>
                     </ul>
                   </div>
 
-
                   <!-- variables Operator Dropdown -->
                   <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleVariablesDropdown()">
+                    <div
+                      class="dropdown-header"
+                      (click)="toggleVariablesDropdown()"
+                    >
                       Variables
-                      <span class="arrow" [ngClass]="{ 'open': VariablesdropdownOpen }">&#9662;</span>
+                      <span
+                        class="arrow"
+                        [ngClass]="{ open: VariablesdropdownOpen }"
+                        >&#9662;</span
+                      >
                     </div>
 
                     <ul class="dropdown-options" *ngIf="VariablesdropdownOpen">
-                      <li class="dropdown-option" *ngFor="let vars of VariablesOperators"
-                        (click)="insertComponentToFormula(vars, formulaTextArea)">
+                      <li
+                        class="dropdown-option"
+                        *ngFor="let vars of VariablesOperators"
+                        (click)="
+                          insertComponentToFormula(vars, formulaTextArea)
+                        "
+                      >
                         {{ vars }}
                       </li>
                     </ul>
-
                   </div>
-
-
-
 
                   <!-- Logical Operator Dropdown -->
 
-
                   <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleOperatorDropdown()">
+                    <div
+                      class="dropdown-header"
+                      (click)="toggleOperatorDropdown()"
+                    >
                       Logical Operators
-                      <span class="arrow" [ngClass]="{ 'open': operatorDropdownOpen }">&#9662;</span>
+                      <span
+                        class="arrow"
+                        [ngClass]="{ open: operatorDropdownOpen }"
+                        >&#9662;</span
+                      >
                     </div>
 
                     <ul class="dropdown-options" *ngIf="operatorDropdownOpen">
-                      <li class="dropdown-option" *ngFor="let op of logicalOperators"
-                        (click)="insertComponentToFormula(op, formulaTextArea)">
+                      <li
+                        class="dropdown-option"
+                        *ngFor="let op of logicalOperators"
+                        (click)="insertComponentToFormula(op, formulaTextArea)"
+                      >
                         {{ op }}
                       </li>
                     </ul>
                   </div>
 
-
                   <!-- Arithmetic Operator Dropdown -->
                   <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleArithmeticDropdown()">
+                    <div
+                      class="dropdown-header"
+                      (click)="toggleArithmeticDropdown()"
+                    >
                       Arithmetic Operators
-                      <span class="arrow" [ngClass]="{ 'open': arithmeticDropdownOpen }">&#9662;</span>
+                      <span
+                        class="arrow"
+                        [ngClass]="{ open: arithmeticDropdownOpen }"
+                        >&#9662;</span
+                      >
                     </div>
 
                     <ul class="dropdown-options" *ngIf="arithmeticDropdownOpen">
-                      <li class="dropdown-option" *ngFor="let arith of arithmeticOperators"
-                        (click)="insertComponentToFormula(arith, formulaTextArea)">
+                      <li
+                        class="dropdown-option"
+                        *ngFor="let arith of arithmeticOperators"
+                        (click)="
+                          insertComponentToFormula(arith, formulaTextArea)
+                        "
+                      >
                         {{ arith }}
                       </li>
                     </ul>
                   </div>
-
-
-
-
-
-
-
                 </div>
 
                 <!-- Right column: Textarea -->
                 <div class="col-md-7 col-6">
-                  <textarea class="form-control display" [(ngModel)]="formula" #formulaTextArea
-                    [ngModelOptions]="{standalone: true}" rows="6">
-</textarea>
+                  <textarea
+                    class="form-control display"
+                    [(ngModel)]="formula"
+                    #formulaTextArea
+                    [ngModelOptions]="{ standalone: true }"
+                    rows="6"
+                  ></textarea>
 
                   <div class="row">
-                    <div class="col-md-6">
-
-                    </div>
+                    <div class="col-md-6"></div>
                     <div class="col-md-3">
-                      <button type="button" class="btn btn-danger btn-full pull-right mt-2"
-                      (click)="closemarketModal()">Close</button>
+                      <button
+                        type="button"
+                        class="btn btn-danger btn-full pull-right mt-2"
+                        (click)="closemarketModal()"
+                      >
+                        Close
+                      </button>
                     </div>
-                    
-                    <div class="col-md-3">
-                      <button type="button" class="btn btn-success btn-full pull-right mt-2"
-                        (click)="closemarketModal()">OK</button>
 
+                    <div class="col-md-3">
+                      <button
+                        type="button"
+                        class="btn btn-success btn-full pull-right mt-2"
+                        (click)="closemarketModal()"
+                      >
+                        OK
+                      </button>
                     </div>
                   </div>
-
-
-
                 </div>
               </div>
-
             </div>
           </div>
-
 
           <div class="row">
-            <div class="col-md-8">
-
-            </div>
+            <div class="col-md-8"></div>
             <div class="col-md-2">
-              <button type="button" (click)="closeapplicationModal()"
-                class="btn btn-danger btn-full mt-5">Close</button>
+              <button
+                type="button"
+                (click)="closeapplicationModal()"
+                class="btn btn-danger btn-full mt-5"
+              >
+                Close
+              </button>
             </div>
 
             <div class="col-md-2">
-              <button type="button" class="btn-Create btn-full mt-5 btn-success btn"
-                (click)="CreateSalaryComponent()">Save</button>
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="CreateSalaryComponent()"
+              >
+                Save
+              </button>
             </div>
           </div>
-
-
         </form>
-
-
       </div>
     </div>
 
@@ -395,30 +533,40 @@
           <div class="col-md-10">
             <h2>Edit Salary Component</h2>
           </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeEditModal()">
-      ×
-    </span>
-  </div> 
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeEditModal()"> × </span>
+          </div>
         </div>
         <hr />
 
         <form>
-
-
           <div class="row">
             <div class="col-md-6">
               <label> Component Name</label>
-              <input type="text" class="form-control" required [(ngModel)]="editAsset.name" placeholder="Enter  name"
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !name}">
-              <div *ngIf="registerButtonClicked && !name" class="error-message"> name is required.</div>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.name"
+                placeholder="Enter  name"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !name }"
+              />
+              <div *ngIf="registerButtonClicked && !name" class="error-message">
+                name is required.
+              </div>
             </div>
             <div class="col-md-6">
               <label>Component Type</label>
               <div class="custom-sel">
-                <select class="form-control" id="component_type" name="component_type"
-                  [(ngModel)]="editAsset.component_type" [ngModelOptions]="{standalone: true}">
+                <select
+                  class="form-control"
+                  id="component_type"
+                  name="component_type"
+                  [(ngModel)]="editAsset.component_type"
+                  [ngModelOptions]="{ standalone: true }"
+                >
                   <option value="deduction">Deduction</option>
                   <option value="addition">Addition</option>
                   <option value="others">Others</option>
@@ -428,283 +576,377 @@
 
             <div class="col-md-6">
               <label>Code</label>
-              <input type="text" class="form-control" required [(ngModel)]="editAsset.code" placeholder="Enter code "
-                [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !code}">
-              <div *ngIf="registerButtonClicked && !code" class="error-message">code is required.</div>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.code"
+                placeholder="Enter code "
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !code }"
+              />
+              <div *ngIf="registerButtonClicked && !code" class="error-message">
+                code is required.
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label>Component Value Type</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="editAsset.component_value_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  (change)="onComponentValueTypeChangeEdit()"
+                >
+                  <option value="fixed">Fixed</option>
+                  <option value="variable">Variable</option>
+                </select>
+              </div>
             </div>
             <div class="col-md-6">
               <label>Select Branch</label>
               <div class="custom-sel">
-                <select class="form-control" id="branch" name="branch" [(ngModel)]="editAsset.branch"
-                  [ngModelOptions]="{standalone: true}">
-                  <option *ngFor="let employee of branches" [value]="employee.id">{{ employee.branch_name }}</option>
+                <select
+                  class="form-control"
+                  id="branch"
+                  name="branch"
+                  [(ngModel)]="editAsset.branch"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option
+                    *ngFor="let employee of branches"
+                    [value]="employee.id"
+                  >
+                    {{ employee.branch_name }}
+                  </option>
                 </select>
               </div>
             </div>
 
             <div class="col-md-12">
               <label>Description</label>
-              <textarea class="form-control" [(ngModel)]="editAsset.description"
-                [ngModelOptions]="{standalone: true}"></textarea>
-            </div>
-
-
-
-            <div class="col-md-6">
-              <label></label>
-              <div class="check-box-selection-sec form-control mt-2">
-                <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.deduct_leave" [ngModelOptions]="{standalone: true}">
-                    Deduct leave</mat-checkbox>
-                </div>
-
-              </div>
-
-
-
+              <textarea
+                class="form-control"
+                [(ngModel)]="editAsset.description"
+                [ngModelOptions]="{ standalone: true }"
+              ></textarea>
             </div>
 
             <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.is_loan_component" [ngModelOptions]="{standalone: true}">
-                    Is Loan Component</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.deduct_leave"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Deduct leave</mat-checkbox
+                  >
                 </div>
-
               </div>
-
-
-
             </div>
 
+            <!-- <div class="col-md-6">
+              <label></label>
+              <div class="check-box-selection-sec form-control mt-2">
+                <div class="mat-set">
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.is_loan_component"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Is Loan Component</mat-checkbox
+                  >
+                </div>
+              </div>
+            </div> -->
 
             <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.show_in_payslip" [ngModelOptions]="{standalone: true}">
-                    Show In Payslip</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.show_in_payslip"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Show In Payslip</mat-checkbox
+                  >
                 </div>
-
               </div>
-
-
-
             </div>
 
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.is_gratuity" [ngModelOptions]="{standalone: true}">
-                    Is Gratuity</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.is_gratuity"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Is Gratuity</mat-checkbox
+                  >
                 </div>
-
               </div>
+            </div> -->
 
-
-
-            </div>
-
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.is_air_ticket" [ngModelOptions]="{standalone: true}">
-                    Is Airticket</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.is_air_ticket"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Is Airticket</mat-checkbox
+                  >
                 </div>
-
               </div>
+            </div> -->
 
-
-
-            </div>
-
-
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
               <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.is_advance_salary" [ngModelOptions]="{standalone: true}">
-                    Is Advance Salary</mat-checkbox>
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.is_advance_salary"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    Is Advance Salary</mat-checkbox
+                  >
                 </div>
-
               </div>
+            </div> -->
 
-
-
-            </div>
-
-
-
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
               <label></label>
-              <div class="check-box-selection-sec form-control  mt-2">
+              <div class="check-box-selection-sec form-control mt-2">
                 <div class="mat-set">
-                  <mat-checkbox [(ngModel)]="editAsset.is_fixed" [ngModelOptions]="{standalone: true}"
-                    (change)="onFixedChangeEdit()">Is Fixed</mat-checkbox>
-                </div>
-
-              </div>
-            </div>
-
-
-
-              <!-- Modal Popup for  formula writer -->
-          <div *ngIf="isAddFieldsModalOpen" class="modal">
-            <div class="modal-content">
-              <div class="row">
-                <div class="col-md-10">
-                  <h2>Formulae Writer</h2>
-
-                </div>
-                <div class="col-md-2">
-                  <span class="close pull-right" (click)="closemarketModal()">&times;</span>
-
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.is_fixed"
+                    [ngModelOptions]="{ standalone: true }"
+                    (change)="onFixedChangeEdit()"
+                    >Is Fixed</mat-checkbox
+                  >
                 </div>
               </div>
-              <hr>
+            </div> -->
 
-
-              <div class="row">
-                <!-- Left column: Dropdowns -->
-                <div class="col-md-5 col-6">
-
-                  <!-- Salary Component Dropdown -->
-                  <div class="dropdown-container">
-                    <div class="dropdown-header" (click)="toggleDropdown()">
-                      Head Of Pay
-                      <span class="arrow" [ngClass]="{ 'open': dropdownOpen }">&#9662;</span>
-                    </div>
-
-                    <ul class="dropdown-options" *ngIf="dropdownOpen">
-                      <li class="dropdown-option" *ngFor="let component of Salarycomponent"
-                        (click)="insertComponentToFormula(component.code, formulaTextArea)">
-                        {{ component.code }}
-                      </li>
-                    </ul>
+            <!-- Modal Popup for  formula writer -->
+            <div *ngIf="isAddFieldsModalOpen" class="modal">
+              <div class="modal-content">
+                <div class="row">
+                  <div class="col-md-10">
+                    <h2>Formulae Writer</h2>
                   </div>
-
-                  <!-- functions Operator Dropdown -->
-                  <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleFunctionsDropdown()">
-                      Functions
-                      <span class="arrow" [ngClass]="{ 'open': FunctionsdropdownOpen }">&#9662;</span>
-                    </div>
-
-                    <ul class="dropdown-options" *ngIf="FunctionsdropdownOpen">
-                      <li class="dropdown-option" *ngFor="let fn of FunctionsOperators"
-                        (click)="insertComponentToFormula(fn, formulaTextArea)">
-                        {{ fn }}
-                      </li>
-                    </ul>
+                  <div class="col-md-2">
+                    <span class="close pull-right" (click)="closemarketModal()"
+                      >&times;</span
+                    >
                   </div>
-
-
-                  <!-- variables Operator Dropdown -->
-                  <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleVariablesDropdown()">
-                      Variables
-                      <span class="arrow" [ngClass]="{ 'open': VariablesdropdownOpen }">&#9662;</span>
-                    </div>
-
-                    <ul class="dropdown-options" *ngIf="VariablesdropdownOpen">
-                      <li class="dropdown-option" *ngFor="let vars of VariablesOperators"
-                        (click)="insertComponentToFormula(vars, formulaTextArea)">
-                        {{ vars }}
-                      </li>
-                    </ul>
-
-                  </div>
-
-
-
-
-                  <!-- Logical Operator Dropdown -->
-
-
-                  <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleOperatorDropdown()">
-                      Logical Operators
-                      <span class="arrow" [ngClass]="{ 'open': operatorDropdownOpen }">&#9662;</span>
-                    </div>
-
-                    <ul class="dropdown-options" *ngIf="operatorDropdownOpen">
-                      <li class="dropdown-option" *ngFor="let op of logicalOperators"
-                        (click)="insertComponentToFormula(op, formulaTextArea)">
-                        {{ op }}
-                      </li>
-                    </ul>
-                  </div>
-
-
-                  <!-- Arithmetic Operator Dropdown -->
-                  <div class="dropdown-container mt-2">
-                    <div class="dropdown-header" (click)="toggleArithmeticDropdown()">
-                      Arithmetic Operators
-                      <span class="arrow" [ngClass]="{ 'open': arithmeticDropdownOpen }">&#9662;</span>
-                    </div>
-
-                    <ul class="dropdown-options" *ngIf="arithmeticDropdownOpen">
-                      <li class="dropdown-option" *ngFor="let arith of arithmeticOperators"
-                        (click)="insertComponentToFormula(arith, formulaTextArea)">
-                        {{ arith }}
-                      </li>
-                    </ul>
-                  </div>
-
-
-
-
-
-
-
                 </div>
+                <hr />
 
-                <!-- Right column: Textarea -->
-                <div class="col-md-7 col-6">
-                  <textarea class="form-control display" [(ngModel)]="editAsset.formula" #formulaTextArea
-                    [ngModelOptions]="{standalone: true}" rows="6">
-</textarea>
+                <div class="row">
+                  <!-- Left column: Dropdowns -->
+                  <div class="col-md-5 col-6">
+                    <!-- Salary Component Dropdown -->
+                    <div class="dropdown-container">
+                      <div class="dropdown-header" (click)="toggleDropdown()">
+                        Head Of Pay
+                        <span class="arrow" [ngClass]="{ open: dropdownOpen }"
+                          >&#9662;</span
+                        >
+                      </div>
 
-                  <div class="row">
-                    <div class="col-md-6">
-
+                      <ul class="dropdown-options" *ngIf="dropdownOpen">
+                        <li
+                          class="dropdown-option"
+                          *ngFor="let component of Salarycomponent"
+                          (click)="
+                            insertComponentToFormula(
+                              component.code,
+                              formulaTextArea
+                            )
+                          "
+                        >
+                          {{ component.code }}
+                        </li>
+                      </ul>
                     </div>
-                     <div class="col-md-3">
-                      <button type="button" class="btn btn-danger btn-full pull-right mt-2"
-                        (click)="closemarketModal()">close</button>
 
+                    <!-- functions Operator Dropdown -->
+                    <div class="dropdown-container mt-2">
+                      <div
+                        class="dropdown-header"
+                        (click)="toggleFunctionsDropdown()"
+                      >
+                        Functions
+                        <span
+                          class="arrow"
+                          [ngClass]="{ open: FunctionsdropdownOpen }"
+                          >&#9662;</span
+                        >
+                      </div>
+
+                      <ul
+                        class="dropdown-options"
+                        *ngIf="FunctionsdropdownOpen"
+                      >
+                        <li
+                          class="dropdown-option"
+                          *ngFor="let fn of FunctionsOperators"
+                          (click)="
+                            insertComponentToFormula(fn, formulaTextArea)
+                          "
+                        >
+                          {{ fn }}
+                        </li>
+                      </ul>
                     </div>
-                    <div class="col-md-3">
-                      <button type="button" class="btn btn-success btn-full pull-right mt-2"
-                        (click)="closemarketModal()">OK</button>
 
+                    <!-- variables Operator Dropdown -->
+                    <div class="dropdown-container mt-2">
+                      <div
+                        class="dropdown-header"
+                        (click)="toggleVariablesDropdown()"
+                      >
+                        Variables
+                        <span
+                          class="arrow"
+                          [ngClass]="{ open: VariablesdropdownOpen }"
+                          >&#9662;</span
+                        >
+                      </div>
+
+                      <ul
+                        class="dropdown-options"
+                        *ngIf="VariablesdropdownOpen"
+                      >
+                        <li
+                          class="dropdown-option"
+                          *ngFor="let vars of VariablesOperators"
+                          (click)="
+                            insertComponentToFormula(vars, formulaTextArea)
+                          "
+                        >
+                          {{ vars }}
+                        </li>
+                      </ul>
+                    </div>
+
+                    <!-- Logical Operator Dropdown -->
+
+                    <div class="dropdown-container mt-2">
+                      <div
+                        class="dropdown-header"
+                        (click)="toggleOperatorDropdown()"
+                      >
+                        Logical Operators
+                        <span
+                          class="arrow"
+                          [ngClass]="{ open: operatorDropdownOpen }"
+                          >&#9662;</span
+                        >
+                      </div>
+
+                      <ul class="dropdown-options" *ngIf="operatorDropdownOpen">
+                        <li
+                          class="dropdown-option"
+                          *ngFor="let op of logicalOperators"
+                          (click)="
+                            insertComponentToFormula(op, formulaTextArea)
+                          "
+                        >
+                          {{ op }}
+                        </li>
+                      </ul>
+                    </div>
+
+                    <!-- Arithmetic Operator Dropdown -->
+                    <div class="dropdown-container mt-2">
+                      <div
+                        class="dropdown-header"
+                        (click)="toggleArithmeticDropdown()"
+                      >
+                        Arithmetic Operators
+                        <span
+                          class="arrow"
+                          [ngClass]="{ open: arithmeticDropdownOpen }"
+                          >&#9662;</span
+                        >
+                      </div>
+
+                      <ul
+                        class="dropdown-options"
+                        *ngIf="arithmeticDropdownOpen"
+                      >
+                        <li
+                          class="dropdown-option"
+                          *ngFor="let arith of arithmeticOperators"
+                          (click)="
+                            insertComponentToFormula(arith, formulaTextArea)
+                          "
+                        >
+                          {{ arith }}
+                        </li>
+                      </ul>
                     </div>
                   </div>
 
+                  <!-- Right column: Textarea -->
+                  <div class="col-md-7 col-6">
+                    <textarea
+                      class="form-control display"
+                      [(ngModel)]="editAsset.formula"
+                      #formulaTextArea
+                      [ngModelOptions]="{ standalone: true }"
+                      rows="6"
+                    ></textarea>
 
-
+                    <div class="row">
+                      <div class="col-md-6"></div>
+                      <div class="col-md-3">
+                        <button
+                          type="button"
+                          class="btn btn-danger btn-full pull-right mt-2"
+                          (click)="closemarketModal()"
+                        >
+                          close
+                        </button>
+                      </div>
+                      <div class="col-md-3">
+                        <button
+                          type="button"
+                          class="btn btn-success btn-full pull-right mt-2"
+                          (click)="closemarketModal()"
+                        >
+                          OK
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
             </div>
           </div>
-
-
-          </div>
-
-
-
 
           <div class="row">
             <div class="col-md-8"></div>
             <div class="col-md-2">
-              <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-5">Close</button>
+              <button
+                type="button"
+                (click)="closeEditModal()"
+                class="btn btn-danger btn-full mt-5"
+              >
+                Close
+              </button>
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateAssetType()">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="updateAssetType()"
+              >
                 Update
               </button>
             </div>
@@ -713,9 +955,7 @@
       </div>
     </div>
 
-
     <div class="com_list mt-4" *ngIf="hasViewPermission">
-
       <div class="table-responsive" *ngIf="hasViewPermission">
         <table class="table table-striped custom-table">
           <thead>
@@ -724,10 +964,10 @@
               <th>Name</th>
               <th>Component Type</th>
               <th>Code</th>
-              <th>Is Fixed</th>
+              <th>Component Value Type</th>
               <th>Formula</th>
               <th>Description</th>
-              <th>Is Loan Component</th>
+              <!-- <th>Is Loan Component</th> -->
               <th>Action</th>
             </tr>
           </thead>
@@ -737,35 +977,43 @@
               <td data-label="Name">{{ docs.name }}</td>
               <td data-label="Component Type">{{ docs.component_type }}</td>
               <td data-label="Code">{{ docs.code }}</td>
-              <td data-label="Is Fixed">{{ docs.is_fixed }}</td>
-              <td data-label="Formula">{{ docs.formula }}</td>
-              <td data-label="Description">{{ docs.description }}</td>
-              <td data-label="Is Loan Component">{{ docs.is_loan_component }}</td>
+              <!-- <td data-label="Is Fixed">{{ docs.is_fixed }}</td> -->
+              <td data-label="Component Value Type">
+                {{ docs.component_value_type }}
+              </td>
+
+              <td data-label="Formula">
+                {{ docs.formula || "-" }}
+              </td>
+
+              <td data-label="Description">
+                {{ docs.description }}
+              </td>
+              <!-- <td data-label="Is Loan Component">{{ docs.is_loan_component }}</td> -->
               <td data-label="Action">
-                <button mat-fab color="primary" aria-label="Edit icon" *ngIf="showEditBtn"
-                  (click)="openEditModal(docs)">
-                  <mat-icon style="color: white;">draw</mat-icon>
+                <button
+                  mat-fab
+                  color="primary"
+                  aria-label="Edit icon"
+                  *ngIf="showEditBtn"
+                  (click)="openEditModal(docs)"
+                >
+                  <mat-icon style="color: white">draw</mat-icon>
                 </button>
-                <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+                <mat-checkbox
+                  *ngIf="Delete"
+                  [(ngModel)]="docs.selected"
+                ></mat-checkbox>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-
-
-
     </div>
-
-
-
-
-
   </div>
 </div>
 
-
-    <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>
