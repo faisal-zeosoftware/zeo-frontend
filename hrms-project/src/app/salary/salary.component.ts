@@ -26,6 +26,7 @@ export class SalaryComponent {
 
   name: any = '';
   component_type: any = '';
+  payroll_category: any = '';
   component_value_type: any = '';
   code: any = '';
   description: any = '';
@@ -360,6 +361,7 @@ this.loadDeparmentBranch();
     const formData = new FormData();
     formData.append('name', this.name);
     formData.append('component_type', this.component_type);
+    formData.append('payroll_category', this.payroll_category);
     formData.append('code', this.code);
     formData.append('branch', this.branch);
     formData.append('component_value_type', this.component_value_type);
@@ -456,6 +458,31 @@ onComponentValueTypeChangeEdit(): void {
     this.editAsset.formula = '';
   }
 }
+
+
+payrollCategories = [
+  { value: 'basic', label: 'Basic Salary' },
+  { value: 'hra', label: 'HRA' },
+  { value: 'education_allowance', label: 'Education Allowance' },
+  { value: 'transport_allowance', label: 'Transport Allowance' },
+  { value: 'food_allowance', label: 'Food Allowance' },
+  { value: 'housing_allowance', label: 'Housing Allowance' },
+  { value: 'telephone_allowance', label: 'Telephone Allowance' },
+  { value: 'medical_allowance', label: 'Medical Allowance' },
+  { value: 'travel_allowance', label: 'Travel Allowance' },
+  { value: 'other_allowance', label: 'Other Allowance' },
+  { value: 'bonus', label: 'Bonus' },
+  { value: 'commission', label: 'Commission' },
+  { value: 'overtime', label: 'Overtime' },
+  { value: 'loan', label: 'Loan Deduction' },
+  { value: 'advance_salary', label: 'Advance Salary' },
+  { value: 'air_ticket', label: 'Air Ticket' },
+  { value: 'gratuity', label: 'Gratuity' },
+  { value: 'leave_encashment', label: 'Leave Encashment' },
+  { value: 'pf', label: 'Provident Fund' },
+  { value: 'esi', label: 'ESI' },
+  { value: 'tax', label: 'Tax' }
+];
 
   // LoadSalaryCom(selectedSchema: string) {
   //   this.leaveService.getSalaryCom(selectedSchema).subscribe(

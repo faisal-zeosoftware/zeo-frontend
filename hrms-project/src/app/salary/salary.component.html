@@ -99,7 +99,7 @@
                 class="form-control"
                 required
                 [(ngModel)]="name"
-                placeholder="Enter  name"
+                placeholder="Enter name"
                 [ngModelOptions]="{ standalone: true }"
                 [ngClass]="{ 'error-field': registerButtonClicked && !name }"
               />
@@ -135,6 +135,38 @@
                 Component Type is required.
               </div>
             </div>
+            <div class="col-md-6">
+              <label>
+                Payroll Category
+                <span class="required-star">*</span>
+              </label>
+
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="payroll_category"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !payroll_category,
+                  }"
+                >
+
+                  <option
+                    *ngFor="let category of payrollCategories"
+                    [value]="category.value"
+                  >
+                    {{ category.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div
+                *ngIf="registerButtonClicked && !payroll_category"
+                class="error-message"
+              >
+                Payroll Category is required.
+              </div>
+            </div>
 
             <div class="col-md-6">
               <label>Code</label>
@@ -165,7 +197,6 @@
                       registerButtonClicked && !component_value_type,
                   }"
                 >
-                  <option value="">Select Type</option>
                   <option value="fixed">Fixed</option>
                   <option value="variable">Variable</option>
                 </select>
@@ -575,6 +606,36 @@
             </div>
 
             <div class="col-md-6">
+              <label>
+                Payroll Category
+                <span class="required-star">*</span>
+              </label>
+
+              <div class="custom-sel">
+<select
+  class="form-control"
+  [(ngModel)]="editAsset.payroll_category"
+  [ngModelOptions]="{standalone: true}">
+
+  <option
+    *ngFor="let category of payrollCategories"
+    [value]="category.value">
+
+    {{ category.label }}
+  </option>
+
+</select>
+              </div>
+
+              <div
+                *ngIf="registerButtonClicked && !payroll_category"
+                class="error-message"
+              >
+                Payroll Category is required.
+              </div>
+            </div>
+
+            <div class="col-md-6">
               <label>Code</label>
               <input
                 type="text"
@@ -963,6 +1024,7 @@
               <th>No</th>
               <th>Name</th>
               <th>Component Type</th>
+              <th>Payroll Category</th>
               <th>Code</th>
               <th>Component Value Type</th>
               <th>Formula</th>
@@ -976,6 +1038,9 @@
               <td data-label="No">{{ i + 1 }}</td>
               <td data-label="Name">{{ docs.name }}</td>
               <td data-label="Component Type">{{ docs.component_type }}</td>
+              <td data-label="Payroll Category">
+                {{ docs.payroll_category }}
+              </td>
               <td data-label="Code">{{ docs.code }}</td>
               <!-- <td data-label="Is Fixed">{{ docs.is_fixed }}</td> -->
               <td data-label="Component Value Type">
