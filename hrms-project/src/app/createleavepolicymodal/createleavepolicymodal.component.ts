@@ -189,6 +189,9 @@ export class CreateleavepolicymodalComponent {
   allow_encashment: boolean = false;
 
 
+  selectedLeaveTypeId: number | null = null;
+
+
 
   constructor(
     private http: HttpClient,
@@ -1368,72 +1371,58 @@ registerleaveApplicable(): void {
 
   const companyData = {
 
-    leave_type: this.leave_type,
+    leave_type: this.selectedLeaveTypeId,
 
-    gender: this.gender === 'B' ? null : this.gender,
+    gender:
+      this.gender === 'B'
+        ? null
+        : this.gender,
 
-    branch: this.selectedBranches,
+    branch:
+      this.selectedBranches,
 
-    department: this.selectedDepartments,
+    department:
+      this.selectedDepartments,
 
-    category: this.selectedCategories,
+    category:
+      this.selectedCategories,
 
-    designation: this.selectedDesignations,
+    designation:
+      this.selectedDesignations,
 
-    employee: selectedEmployees
+    employee:
+      selectedEmployees
 
   };
 
   this.leaveService
-    .registerApplicablepolicy(companyData)
-    .subscribe({
+      .registerApplicablepolicy(companyData)
+      .subscribe({
 
-      next: (response: any) => {
+        next: (response: any) => {
 
-        alert(
-          response?.message ||
-          response?.success ||
-          '✅ Applicable Policy Saved Successfully'
-        );
+          alert(
+            response?.message ||
+            response?.success ||
+            'Applicable Policy Saved Successfully'
+          );
 
-      
+          this.currentStep =
+            this.hasPayRuleEnabled ? 4 : 3;
 
-        
-  if (this.showPayRuleStep) {
+        },
 
-    this.currentStep = 4; // Review
+        error: (err) => {
 
-  } else {
+          alert(
+            err?.error?.message ||
+            err?.error?.error ||
+            'Applicable Policy Save Failed'
+          );
 
-    this.currentStep = 3; // Review
+        }
 
-  }
-
-
-  this.currentStep = 3;
-
-        console.log('Success Response:', response);
-
-        window.location.reload();
-
-      },
-
-      error: (err) => {
-
-        console.error('Error Response:', err);
-
-        const errorMessage =
-          err?.error?.message ||
-          err?.error?.error ||
-          err?.error?.detail ||
-          JSON.stringify(err?.error) ||
-          'Applicable Policy Save Failed';
-
-        alert(errorMessage);
-
-      }
-
-    });
+      });
 
 }
 
@@ -1600,29 +1589,37 @@ registerleaveEntitlementFixed(): void {
 registerleaveApplicableFixed(): void {
 
   const selectedEmployees =
-    this.FilteredEmployees
-      .filter(x => x.selected)
-      .map(x => x.id);
+  this.FilteredEmployees
+    .filter(x => x.selected)
+    .map(x => x.id);
 
-  const companyData = {
+const companyData = {
 
-    leave_type: this.leave_type,
+  leave_type: this.selectedLeaveTypeId,
 
-    gender: this.gender === 'B' ? null : this.gender,
+  gender:
+    this.gender === 'B'
+      ? null
+      : this.gender,
 
-    branch: this.selectedBranches,
+  branch:
+    this.selectedBranches,
 
-    department: this.selectedDepartments,
+  department:
+    this.selectedDepartments,
 
-    category: this.selectedCategories,
+  category:
+    this.selectedCategories,
 
-    designation: this.selectedDesignations,
+  designation:
+    this.selectedDesignations,
 
-    employee: selectedEmployees
+  employee:
+    selectedEmployees
 
-  };
+};
 
-  this.leaveService
+this.leaveService
     .registerApplicablepolicy(companyData)
     .subscribe({
 
@@ -1631,36 +1628,21 @@ registerleaveApplicableFixed(): void {
         alert(
           response?.message ||
           response?.success ||
-          '✅ Applicable Policy Saved Successfully'
+          'Applicable Policy Saved Successfully'
         );
-        if (this.showPayRuleStep) {
 
-          this.currentStep = 4; // Review
-      
-        } else {
-      
-          this.currentStep = 3; // Review
-      
-        }
-
-        console.log('Success Response:', response);
-
-      
+        this.currentStep =
+          this.hasPayRuleEnabled ? 4 : 3;
 
       },
 
       error: (err) => {
 
-        console.error('Error Response:', err);
-
-        const errorMessage =
+        alert(
           err?.error?.message ||
           err?.error?.error ||
-          err?.error?.detail ||
-          JSON.stringify(err?.error) ||
-          'Applicable Policy Save Failed';
-
-        alert(errorMessage);
+          'Applicable Policy Save Failed'
+        );
 
       }
 
@@ -1687,7 +1669,7 @@ submitPayRule(): void {
       this.payRuleData.pay_percentage,
 
     leave_type:
-      this.leave_type,
+      this.selectedLeaveTypeId,
 
     created_by:
       this.userId
@@ -1703,17 +1685,7 @@ submitPayRule(): void {
 
       alert('Pay Rule Saved Successfully');
 
-      this.payRuleData = {
-
-        sequence: null,
-
-        days: null,
-
-        pay_percentage: null
-
-      };
-
-      this.currentStep = 3; // Go Applicable
+      this.currentStep = 3;
 
     },
 
@@ -1731,9 +1703,7 @@ submitPayRule(): void {
 
 }
 
-
 submitPayRuleFixed(): void {
-
   const selectedSchema =
     this.authService.getSelectedSchema();
 
@@ -1749,7 +1719,7 @@ submitPayRuleFixed(): void {
       this.payRuleData.pay_percentage,
 
     leave_type:
-      this.leave_type,
+      this.selectedLeaveTypeId,
 
     created_by:
       this.userId
@@ -1765,17 +1735,7 @@ submitPayRuleFixed(): void {
 
       alert('Pay Rule Saved Successfully');
 
-      this.payRuleData = {
-
-        sequence: null,
-
-        days: null,
-
-        pay_percentage: null
-
-      };
-
-      this.currentStep = 3; // Go Applicable
+      this.currentStep = 3;
 
     },
 
@@ -1844,10 +1804,7 @@ onLeaveTypeChange(row: any): void {
   row.enable_leave_pay_rule =
     selectedLeaveType?.enable_leave_pay_rule || false;
 
-  console.log(
-    'Selected Leave Type:',
-    selectedLeaveType
-  );
+  this.selectedLeaveTypeId = row.leave_type;
 
 }
 
