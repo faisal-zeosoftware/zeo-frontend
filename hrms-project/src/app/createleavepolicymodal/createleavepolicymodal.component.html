@@ -93,9 +93,9 @@
                         
                             <div class="step-content">
                         
-                                <h6 *ngIf="showPayRuleStep">Pay Rule</h6>
+                                <h6 *ngIf="hasPayRuleEnabled">Pay Rule</h6>
                         
-                                <h6 *ngIf="!showPayRuleStep">Applicable</h6>
+                                <h6 *ngIf="!hasPayRuleEnabled">Applicable</h6>
                         
                             </div>
                         
@@ -109,9 +109,9 @@
                         
                             <div class="step-content">
                         
-                                <h6 *ngIf="showPayRuleStep">Applicable</h6>
+                                <h6 *ngIf="hasPayRuleEnabled">Applicable</h6>
                         
-                                <h6 *ngIf="!showPayRuleStep">Review</h6>
+                                <h6 *ngIf="!hasPayRuleEnabled">Review</h6>
                         
                             </div>
                         
@@ -145,22 +145,26 @@
                                 <div class="col-md-4">
                                     <label>Leave Type</label>
                                     <div class="custom-sel">
-                                        <select class="form-control" [(ngModel)]="leave_type"
-                                        (change)="onLeaveTypeChange()" [ngModelOptions]="{standalone:true}">
-
-                                        <option *ngFor="let leavetype of LeaveTypes" [value]="leavetype.id">
-
+                                        <select
+                                        class="form-control"
+                                        [(ngModel)]="row.leave_type"
+                                        [ngModelOptions]="{standalone:true}"
+                                        (change)="onLeaveTypeChange(row)">
+                                    
+                                        <option *ngFor="let leavetype of LeaveTypes"
+                                                [value]="leavetype.id">
+                                    
                                             {{ leavetype.name }}
-
+                                    
                                         </option>
-
+                                    
                                     </select>
                                     </div>
                                 </div>
 
                                 <div class="col-md-4">
                                     <label>Effective after</label>
-                                    <input type="number" class="form-control" required [(ngModel)]="min_experience"
+                                    <input type="number" class="form-control" required [(ngModel)]="row.min_experience"
                                         placeholder="Enter Effective after" [ngModelOptions]="{standalone: true}"
                                         [ngClass]="{'error-field': registerButtonClicked && !min_experience}">
                                     <div *ngIf="registerButtonClicked && !min_experience" class="error-message"> is
@@ -172,7 +176,7 @@
                                     <label>Effective after unit</label>
                                     <div class="custom-sel">
                                         <select class="form-control" id="effective_after_unit"
-                                            name="effective_after_unit" [(ngModel)]="effective_after_unit"
+                                            name="effective_after_unit" [(ngModel)]="row.effective_after_unit"
                                             [ngModelOptions]="{standalone: true}">
                                             <option value="years">Years</option>
                                             <option value="months">Months</option>
@@ -186,7 +190,7 @@
                                     <label>Effective after from</label>
                                     <div class="custom-sel">
                                         <select class="form-control" id="effective_after_from"
-                                            name="effective_after_from" [(ngModel)]="effective_after_from"
+                                            name="effective_after_from" [(ngModel)]="row.effective_after_from"
                                             [ngModelOptions]="{standalone: true}">
                                             <option value="date_of_joining">Date Of Joining</option>
                                             <option value="date_of_confirmation">Date Of Confirmation</option>
@@ -203,7 +207,7 @@
 
                                             <mat-form-field>
                                                 <!-- <mat-label>Favorite food</mat-label> -->
-                                                <mat-select placeholder="Select" [(ngModel)]="branch"
+                                                <mat-select placeholder="Select" [(ngModel)]="row.branch"
                                                     [ngModelOptions]="{standalone: true}" #select multiple>
                                                     <div class="select-all">
                                                         <mat-checkbox [(ngModel)]="allSelected"
@@ -236,7 +240,7 @@
                                     <div class="custom-sel">
                                         <div class="form-control-wrapper">
                                             <mat-form-field>
-                                                <mat-select placeholder="Select" [(ngModel)]="departments"
+                                                <mat-select placeholder="Select" [(ngModel)]="row.departments"
                                                     [ngModelOptions]="{standalone: true}" #selectDeptcon multiple>
                                                     <div class="select-all">
                                                         <mat-checkbox [(ngModel)]="allSelecteddeptcon"
@@ -266,7 +270,7 @@
                                     <div class="custom-sel">
                                         <div class="form-control-wrapper">
                                             <mat-form-field>
-                                                <mat-select placeholder="Select" [(ngModel)]="designations"
+                                                <mat-select placeholder="Select" [(ngModel)]="row.designations"
                                                     [ngModelOptions]="{standalone: true}" #selectDescon multiple>
                                                     <div class="select-all">
                                                         <mat-checkbox [(ngModel)]="allSelectedDescon"
@@ -296,7 +300,7 @@
                                     <div class="custom-sel">
                                         <div class="form-control-wrapper">
                                             <mat-form-field>
-                                                <mat-select placeholder="Select" [(ngModel)]="categories"
+                                                <mat-select placeholder="Select" [(ngModel)]="row.categories"
                                                     [ngModelOptions]="{standalone: true}" #selectCatcon multiple>
                                                     <div class="select-all">
                                                         <mat-checkbox [(ngModel)]="allSelectedcatcon"
@@ -333,7 +337,7 @@
 
                                         <div class="check-box-selection-sec">
                                             <div class="mat-set">
-                                                <mat-checkbox [(ngModel)]="reset"
+                                                <mat-checkbox [(ngModel)]="row.reset"
                                                     [ngModelOptions]="{standalone: true}">Reset</mat-checkbox>
                                             </div>
 
@@ -345,14 +349,14 @@
 
 
                                 </div>
-                                <div *ngIf="reset">
+                                <div *ngIf="row.reset">
                                     <div class="row">
 
                                         <div class="col-md-4">
                                             <label>Frequency</label>
                                             <div class="custom-sel">
                                                 <select class="form-control" id="frequency" name="frequency"
-                                                    [(ngModel)]="frequency" (change)="onResetFrequencyChange(row)"
+                                                    [(ngModel)]="row.frequency" (change)="onResetFrequencyChange(row)"
                                                     [ngModelOptions]="{standalone: true}">
                                                     <option value="years">Years</option>
                                                     <option value="months">Months</option>
@@ -361,10 +365,10 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4" *ngIf="showResetMonth">
+                                        <div class="col-md-4" *ngIf="row.showResetMonth">
                                             <label> Month</label>
                                             <div class="custom-sel">
-                                                <select class="form-control" id="month" name="month" [(ngModel)]="month"
+                                                <select class="form-control" id="month" name="month" [(ngModel)]="row.month"
                                                     [ngModelOptions]="{standalone: true}">
                                                     <option value="Jan">January</option>
                                                     <option value="Feb">February</option>
@@ -383,10 +387,10 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4" *ngIf="showResetDay">
+                                        <div class="col-md-4" *ngIf="row.showResetDay">
                                             <label>Day</label>
                                             <div class="custom-sel">
-                                                <select class="form-control" id="day" name="day" [(ngModel)]="day"
+                                                <select class="form-control" id="day" name="day" [(ngModel)]="row.day"
                                                     [ngModelOptions]="{standalone: true}">
                                                     <option value="1st">1st Day Of the Month</option>
                                                     <option value="last">Last Day Of the Month</option>
@@ -411,7 +415,7 @@
                                         <div class="col-md-4">
                                             <label>Opening Balance</label>
                                             <div class="custom-sel">
-                                                <input type="number" class="form-control" [(ngModel)]="opening_balance"
+                                                <input type="number" class="form-control" [(ngModel)]="row.opening_balance"
                                                     [ngModelOptions]="{standalone: true}">
                                             </div>
                                         </div>
@@ -454,8 +458,8 @@
                     <!-- STEP 2 -->
 
                     <div *ngIf="
-                    (showPayRuleStep && currentStep === 3) ||
-                    (!showPayRuleStep && currentStep === 2)
+                    (hasPayRuleEnabled && currentStep === 3) ||
+                    (!hasPayRuleEnabled && currentStep === 2)
                     ">
 
                         <!-- APPLICABLE SECTION -->
@@ -813,7 +817,7 @@
 
                      <!-- STEP 3 -->
 
-                     <div *ngIf="showPayRuleStep && currentStep === 2">
+                     <div *ngIf="hasPayRuleEnabled && currentStep === 2">
                         <div class="mt-4">
 
                             <h5>Enter Leave Pay Rule</h5>
@@ -914,9 +918,9 @@
                         
                             <div class="step-content">
                         
-                                <h6 *ngIf="showPayRuleStep">Pay Rule</h6>
+                                <h6 *ngIf="hasPayRuleEnabled">Pay Rule</h6>
                         
-                                <h6 *ngIf="!showPayRuleStep">Applicable</h6>
+                                <h6 *ngIf="!hasPayRuleEnabled">Applicable</h6>
                         
                             </div>
                         
@@ -930,18 +934,18 @@
                         
                             <div class="step-content">
                         
-                                <h6 *ngIf="showPayRuleStep">Applicable</h6>
+                                <h6 *ngIf="hasPayRuleEnabled">Applicable</h6>
                         
-                                <h6 *ngIf="!showPayRuleStep">Review</h6>
+                                <h6 *ngIf="!hasPayRuleEnabled">Review</h6>
                         
                             </div>
                         
                         </div>
 
-                        <div *ngIf="showPayRuleStep" class="step-line">
+                        <div *ngIf="hasPayRuleEnabled" class="step-line">
                         </div>
 
-                        <div *ngIf="showPayRuleStep" class="step-item" [class.active]="currentStep >= 4">
+                        <div *ngIf="hasPayRuleEnabled" class="step-item" [class.active]="currentStep >= 4">
 
                             <div class="step-circle">
                                 4
@@ -998,14 +1002,17 @@
                                         <select
                                         class="form-control"
                                         [(ngModel)]="row.leave_type"
-                                        [ngModelOptions]="{standalone:true}">
-                                       
-                                         <option *ngFor="let leavetype of LeaveTypes"
-                                                 [value]="leavetype.id">
-                                           {{ leavetype.name }}
-                                         </option>
-                                       
-                                       </select>
+                                        [ngModelOptions]="{standalone:true}"
+                                        (change)="onLeaveTypeChange(row)">
+                                    
+                                        <option *ngFor="let leavetype of LeaveTypes"
+                                                [value]="leavetype.id">
+                                    
+                                            {{ leavetype.name }}
+                                    
+                                        </option>
+                                    
+                                    </select>
                                     </div>
                                 </div>
 
@@ -1566,8 +1573,8 @@
                     <!-- STEP 2 -->
 
                     <div *ngIf="
-                    (showPayRuleStep && currentStep === 3) ||
-                    (!showPayRuleStep && currentStep === 2)
+                    (hasPayRuleEnabled  && currentStep === 3) ||
+                    (!hasPayRuleEnabled  && currentStep === 2)
                     ">
 
                         <!-- APPLICABLE SECTION -->
@@ -1929,7 +1936,7 @@
 
                     <!-- STEP 3 -->
 
-                    <div *ngIf="showPayRuleStep && currentStep === 2">
+                    <div *ngIf="hasPayRuleEnabled && currentStep === 2">
                         <div class="mt-4">
 
                             <h5>Enter Leave Pay Rule</h5>

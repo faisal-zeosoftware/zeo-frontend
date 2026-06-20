@@ -1835,19 +1835,30 @@ payRuleData = {
 createdEntitlementId: number | null = null;
 
 
-onLeaveTypeChange(): void {
+onLeaveTypeChange(row: any): void {
 
-  this.selectedLeaveTypeForModal =
-    this.LeaveTypes.find(
-      x => x.id == this.leave_type
-    );
+  const selectedLeaveType = this.LeaveTypes.find(
+    x => x.id == row.leave_type
+  );
 
-  this.showPayRuleStep =
-    this.selectedLeaveTypeForModal?.enable_leave_pay_rule === true;
+  row.enable_leave_pay_rule =
+    selectedLeaveType?.enable_leave_pay_rule || false;
+
+  console.log(
+    'Selected Leave Type:',
+    selectedLeaveType
+  );
 
 }
 
 
+get hasPayRuleEnabled(): boolean {
+
+  return this.entitlementRows.some(
+    row => row.enable_leave_pay_rule === true
+  );
+
+}
 
 
 // edit section
