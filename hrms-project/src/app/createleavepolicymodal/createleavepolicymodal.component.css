@@ -1056,3 +1056,12 @@ label {
   .mat-mdc-select-trigger {
     margin-top: 13px !important;
   }
+
+
+  .entitlement-section{
+    margin-bottom: 40px;
+  }
+  
+  .ent-remove{
+    margin-bottom: 20px;
+  }
