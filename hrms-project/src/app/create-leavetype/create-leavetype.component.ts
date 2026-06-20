@@ -23,6 +23,8 @@ export class CreateLeavetypeComponent {
   name: any = '';
   code: any = '';
   type: any = '';
+  leave_category: any = '';
+
   unit: any = '';
   valid_to: any = '';
   valid_from: any = '';
@@ -114,6 +116,8 @@ currentEntitlementId: number | null = null;
     formData.append('name', this.name);
     formData.append('code', this.code);
     formData.append('type', this.type);
+    formData.append('leave_category', this.leave_category);
+
     formData.append('unit', this.unit);
     formData.append('valid_from', formattedValidFrom);  // ✅ Fixing Date Format
     formData.append('valid_to', formattedValidTo);      // ✅ Fixing Date Format
