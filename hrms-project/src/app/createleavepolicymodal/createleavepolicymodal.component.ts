@@ -1244,7 +1244,7 @@ registerleaveEntitlement(): void {
 
     const payload = {
 
-      leave_type: this.leave_type,
+      leave_type: row.leave_type,
 
       min_experience: row.min_experience,
 
@@ -1272,17 +1272,10 @@ registerleaveEntitlement(): void {
       prorate_accrual:
         row.prorate_accrual,
 
-      branches:
-        this.branch || [],
-
-      departments:
-        this.departments || [],
-
-      designations:
-        this.designations || [],
-
-      categories:
-        this.categories || [],
+        branches: row.branch || [],
+        departments: row.departments || [],
+        designations: row.designations || [],
+        categories: row.categories || [],
 
       created_by:
         this.created_by,
@@ -1913,98 +1906,209 @@ loadPolicyForEdit(entitlement: any): void {
 
 
 
+// patchEntitlement(data: any): void {
+
+//   this.createdEntitlementId =
+//     data.id;
+
+//   this.leave_type =
+//     data.leave_type;
+
+//   this.min_experience =
+//     data.min_experience;
+
+//   this.effective_after_unit =
+//     data.effective_after_unit;
+
+//   this.effective_after_from =
+//     data.effective_after_from;
+
+//   this.branch =
+//     data.branches || [];
+
+//   this.departments =
+//     data.departments || [];
+
+//   this.designations =
+//     data.designations || [];
+
+//   this.categories =
+//     data.categories || [];
+
+//   this.accrual =
+//     data.accrual;
+
+//   this.accrual_rate =
+//     data.accrual_rate;
+
+//   this.accrual_frequency =
+//     data.accrual_frequency;
+
+//   this.accrual_month =
+//     data.accrual_month;
+
+//   this.accrual_day =
+//     data.accrual_day;
+
+//   this.prorate_accrual =
+//     data.prorate_accrual;
+
+//   if(data.reset_policy){
+
+//       const r =
+//         data.reset_policy;
+
+//       this.reset =
+//         r.reset;
+
+//       this.frequency =
+//         r.frequency;
+
+//       this.month =
+//         r.month;
+
+//       this.day =
+//         r.day;
+
+//       this.allow_cf =
+//         r.allow_cf;
+
+//       this.allow_encashment =
+//         r.allow_encashment;
+
+//       this.cf_value =
+//         r.cf_value;
+
+//       this.cf_max_limit =
+//         r.cf_max_limit;
+
+//       this.cf_unit_or_percentage =
+//         r.cf_unit_or_percentage;
+
+//       this.encashment_value =
+//         r.encashment_value;
+
+//       this.encashment_max_limit =
+//         r.encashment_max_limit;
+
+//       this.encashment_unit_or_percentage =
+//         r.encashment_unit_or_percentage;
+
+//       this.opening_balance =
+//         r.opening_balance;
+
+//   }
+
+// }
+
 patchEntitlement(data: any): void {
 
-  this.createdEntitlementId =
-    data.id;
+  this.createdEntitlementId = data.id;
 
-  this.leave_type =
-    data.leave_type;
+  // Clear existing rows
+  this.entitlementRows = [];
 
-  this.min_experience =
-    data.min_experience;
+  const row = this.createEntitlementRow();
 
-  this.effective_after_unit =
+  row.leave_type = data.leave_type;
+
+  row.min_experience = data.min_experience;
+
+  row.effective_after_unit =
     data.effective_after_unit;
 
-  this.effective_after_from =
+  row.effective_after_from =
     data.effective_after_from;
 
-  this.branch =
+  row.branch =
     data.branches || [];
 
-  this.departments =
+  row.departments =
     data.departments || [];
 
-  this.designations =
+  row.designations =
     data.designations || [];
 
-  this.categories =
+  row.categories =
     data.categories || [];
 
-  this.accrual =
+  row.accrual =
     data.accrual;
 
-  this.accrual_rate =
+  row.accrual_rate =
     data.accrual_rate;
 
-  this.accrual_frequency =
+  row.accrual_frequency =
     data.accrual_frequency;
 
-  this.accrual_month =
+  row.accrual_month =
     data.accrual_month;
 
-  this.accrual_day =
+  row.accrual_day =
     data.accrual_day;
 
-  this.prorate_accrual =
+  row.prorate_accrual =
     data.prorate_accrual;
 
-  if(data.reset_policy){
+  // Accrual UI visibility
+  this.onAccrualFrequencyChange(row);
 
-      const r =
-        data.reset_policy;
+  if (data.reset_policy) {
 
-      this.reset =
-        r.reset;
+    row.reset =
+      data.reset_policy.reset;
 
-      this.frequency =
-        r.frequency;
+    row.frequency =
+      data.reset_policy.frequency;
 
-      this.month =
-        r.month;
+    row.month =
+      data.reset_policy.month;
 
-      this.day =
-        r.day;
+    row.day =
+      data.reset_policy.day;
 
-      this.allow_cf =
-        r.allow_cf;
+    row.allow_cf =
+      data.reset_policy.allow_cf;
 
-      this.allow_encashment =
-        r.allow_encashment;
+    row.carry_forward_choice =
+      data.reset_policy.carry_forward_choice;
 
-      this.cf_value =
-        r.cf_value;
+    row.cf_value =
+      data.reset_policy.cf_value;
 
-      this.cf_max_limit =
-        r.cf_max_limit;
+    row.cf_unit_or_percentage =
+      data.reset_policy.cf_unit_or_percentage;
 
-      this.cf_unit_or_percentage =
-        r.cf_unit_or_percentage;
+    row.cf_max_limit =
+      data.reset_policy.cf_max_limit;
 
-      this.encashment_value =
-        r.encashment_value;
+    row.cf_expires_in_value =
+      data.reset_policy.cf_expires_in_value;
 
-      this.encashment_max_limit =
-        r.encashment_max_limit;
+    row.cf_time_choice =
+      data.reset_policy.cf_time_choice;
 
-      this.encashment_unit_or_percentage =
-        r.encashment_unit_or_percentage;
+    row.allow_encashment =
+      data.reset_policy.allow_encashment;
 
-      this.opening_balance =
-        r.opening_balance;
+    row.encashment_value =
+      data.reset_policy.encashment_value;
+
+    row.encashment_unit_or_percentage =
+      data.reset_policy.encashment_unit_or_percentage;
+
+    row.encashment_max_limit =
+      data.reset_policy.encashment_max_limit;
+
+    row.opening_balance =
+      data.reset_policy.opening_balance;
+
+    // Reset UI visibility
+    this.onResetFrequencyChange(row);
 
   }
+
+  this.entitlementRows.push(row);
 
 }
 
@@ -2100,6 +2204,9 @@ entitlementRows: any[] = [
 
 createEntitlementRow() {
   return {
+
+    // Leave Type
+    leave_type: null,
 
     // Entitlement
     min_experience: null,
