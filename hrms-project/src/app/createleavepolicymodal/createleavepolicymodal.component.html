@@ -1414,7 +1414,7 @@
                                                     [ngModelOptions]="{standalone: true}">
                                             </div>
                                             <div class="col-md-4"
-                                                *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                                                *ngIf="row.carry_forward_choice === 'carry_forward_with_expiry'">
                                                 <label>Cf expires in value</label>
                                                 <input type="number" class="form-control"
                                                     [(ngModel)]="row.cf_expires_in_value" placeholder="Enter value"
@@ -1423,7 +1423,7 @@
 
 
                                             <div class="col-md-4"
-                                                *ngIf="carry_forward_choice === 'carry_forward_with_expiry'">
+                                                *ngIf="row.carry_forward_choice === 'carry_forward_with_expiry'">
                                                 <label>Cf time choice</label>
                                                 <div class="custom-sel">
                                                     <select class="form-control" id="cf_time_choice"

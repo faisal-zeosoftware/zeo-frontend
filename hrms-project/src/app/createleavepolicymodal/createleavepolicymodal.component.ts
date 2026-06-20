@@ -213,15 +213,18 @@ export class CreateleavepolicymodalComponent {
   ngOnInit(): void {
     // this.LoadBranch();
    
-    if(this.data?.editMode){
-
+    if (
+      this.data?.editMode &&
+      this.data?.entitlements
+    ) {
+    
       this.isEditMode = true;
-
-      this.loadPolicyForEdit(
-        this.data.entitlement
+    
+      this.patchMultipleEntitlements(
+        this.data.entitlements
       );
-
-  }
+    
+    }
 
 
     // combineLatest waits for both Schema and Branches to have a value
@@ -518,16 +521,12 @@ export class CreateleavepolicymodalComponent {
       row.showResetMonth = true;
       row.showResetDay = true;
   
-    }
-  
-    else if (row.frequency === 'months') {
+    } else if (row.frequency === 'months') {
   
       row.showResetMonth = false;
       row.showResetDay = true;
   
-    }
-  
-    else {
+    } else {
   
       row.showResetMonth = false;
       row.showResetDay = false;
@@ -543,16 +542,12 @@ export class CreateleavepolicymodalComponent {
       row.showMonth = true;
       row.showDay = true;
   
-    }
-  
-    else if (row.accrual_frequency === 'months') {
+    } else if (row.accrual_frequency === 'months') {
   
       row.showMonth = false;
       row.showDay = true;
   
-    }
-  
-    else {
+    } else {
   
       row.showMonth = false;
       row.showDay = false;
@@ -1232,13 +1227,13 @@ emp.selected = this.allEmployeesSelected;
 
 registerleaveEntitlement(): void {
 
-  if (!this.leave_type) {
+  // if (!this.leave_type) {
 
-    alert('Select Leave Type');
+  //   alert('Select Leave Type');
 
-    return;
+  //   return;
 
-  }
+  // }
 
   const requests = this.entitlementRows.map(row => {
 
@@ -1868,7 +1863,7 @@ editApplicableData: any;
 
 loadPolicyForEdit(entitlement: any): void {
 
-  this.patchEntitlement(entitlement);
+  this.patchMultipleEntitlements(entitlement);
 
   const selectedSchema =
       this.authService.getSelectedSchema();
@@ -2001,117 +1996,126 @@ loadPolicyForEdit(entitlement: any): void {
 
 // }
 
-patchEntitlement(data: any): void {
+patchMultipleEntitlements(
+  entitlements: any[]
+): void {
 
-  this.createdEntitlementId = data.id;
-
-  // Clear existing rows
   this.entitlementRows = [];
 
-  const row = this.createEntitlementRow();
+  entitlements.forEach(item => {
 
-  row.leave_type = data.leave_type;
+    const row =
+      this.createEntitlementRow();
 
-  row.min_experience = data.min_experience;
+    row.id =
+      item.id;
 
-  row.effective_after_unit =
-    data.effective_after_unit;
+    row.leave_type =
+      item.leave_type;
 
-  row.effective_after_from =
-    data.effective_after_from;
+    row.min_experience =
+      item.min_experience;
 
-  row.branch =
-    data.branches || [];
+    row.effective_after_unit =
+      item.effective_after_unit;
 
-  row.departments =
-    data.departments || [];
+    row.effective_after_from =
+      item.effective_after_from;
 
-  row.designations =
-    data.designations || [];
+    row.branch =
+      item.branches || [];
 
-  row.categories =
-    data.categories || [];
+    row.departments =
+      item.departments || [];
 
-  row.accrual =
-    data.accrual;
+    row.designations =
+      item.designations || [];
 
-  row.accrual_rate =
-    data.accrual_rate;
+    row.categories =
+      item.categories || [];
 
-  row.accrual_frequency =
-    data.accrual_frequency;
+    row.accrual =
+      item.accrual;
 
-  row.accrual_month =
-    data.accrual_month;
+    row.accrual_rate =
+      item.accrual_rate;
 
-  row.accrual_day =
-    data.accrual_day;
+    row.accrual_frequency =
+      item.accrual_frequency;
 
-  row.prorate_accrual =
-    data.prorate_accrual;
+    row.accrual_month =
+      item.accrual_month;
 
-  // Accrual UI visibility
-  this.onAccrualFrequencyChange(row);
+    row.accrual_day =
+      item.accrual_day;
 
-  if (data.reset_policy) {
+    row.prorate_accrual =
+      item.prorate_accrual;
 
-    row.reset =
-      data.reset_policy.reset;
+    if (item.reset_policy) {
 
-    row.frequency =
-      data.reset_policy.frequency;
+      const r =
+        item.reset_policy;
 
-    row.month =
-      data.reset_policy.month;
+      row.reset =
+        true;
 
-    row.day =
-      data.reset_policy.day;
+      row.frequency =
+        r.frequency;
 
-    row.allow_cf =
-      data.reset_policy.allow_cf;
+      row.month =
+        r.month;
 
-    row.carry_forward_choice =
-      data.reset_policy.carry_forward_choice;
+      row.day =
+        r.day;
 
-    row.cf_value =
-      data.reset_policy.cf_value;
+      row.allow_cf =
+        r.allow_cf;
 
-    row.cf_unit_or_percentage =
-      data.reset_policy.cf_unit_or_percentage;
+      row.carry_forward_choice =
+        r.carry_forward_choice;
 
-    row.cf_max_limit =
-      data.reset_policy.cf_max_limit;
+      row.cf_value =
+        r.cf_value;
 
-    row.cf_expires_in_value =
-      data.reset_policy.cf_expires_in_value;
+      row.cf_unit_or_percentage =
+        r.cf_unit_or_percentage;
 
-    row.cf_time_choice =
-      data.reset_policy.cf_time_choice;
+      row.cf_max_limit =
+        r.cf_max_limit;
 
-    row.allow_encashment =
-      data.reset_policy.allow_encashment;
+      row.cf_expires_in_value =
+        r.cf_expires_in_value;
 
-    row.encashment_value =
-      data.reset_policy.encashment_value;
+      row.cf_time_choice =
+        r.cf_time_choice;
 
-    row.encashment_unit_or_percentage =
-      data.reset_policy.encashment_unit_or_percentage;
+      row.allow_encashment =
+        r.allow_encashment;
 
-    row.encashment_max_limit =
-      data.reset_policy.encashment_max_limit;
+      row.encashment_value =
+        r.encashment_value;
 
-    row.opening_balance =
-      data.reset_policy.opening_balance;
+      row.encashment_unit_or_percentage =
+        r.encashment_unit_or_percentage;
 
-    // Reset UI visibility
+      row.encashment_max_limit =
+        r.encashment_max_limit;
+
+      row.opening_balance =
+        r.opening_balance;
+
+    }
+
+    this.onAccrualFrequencyChange(row);
+
     this.onResetFrequencyChange(row);
 
-  }
+    this.entitlementRows.push(row);
 
-  this.entitlementRows.push(row);
+  });
 
 }
-
 
 patchApplicable(data: any): void {
 
@@ -2149,53 +2153,115 @@ updateLeaveEntitlement(
 
 updateEntitlement(): void {
 
-  const payload = {
+  const requests = this.entitlementRows.map(row => {
 
-    leave_type:
-      this.leave_type,
+    const payload = {
 
-    min_experience:
-      this.min_experience,
+      leave_type: row.leave_type,
 
-    effective_after_unit:
-      this.effective_after_unit,
+      min_experience: row.min_experience,
 
-    effective_after_from:
-      this.effective_after_from,
+      effective_after_unit:
+        row.effective_after_unit,
 
-    accrual:
-      this.accrual,
+      effective_after_from:
+        row.effective_after_from,
 
-    accrual_rate:
-      this.accrual_rate
+      branches: row.branch,
 
-  };
+      departments: row.departments,
 
+      designations: row.designations,
 
-  this.leaveService
-      .updateLeaveEntitlement(
-          this.createdEntitlementId!,
-          payload
-      )
-      .subscribe({
+      categories: row.categories,
 
-          next: () => {
+      accrual: row.accrual,
 
-              alert(
-                'Leave Policy Updated'
-              );
+      accrual_rate: row.accrual_rate,
 
-              this.dialogRef.close(
-                true
-              );
+      accrual_frequency: row.accrual_frequency,
 
-          }
+      accrual_month: row.accrual_month,
 
-      });
+      accrual_day: row.accrual_day,
+
+      prorate_accrual: row.prorate_accrual,
+
+      reset_policy: row.reset ? {
+
+        reset: true,
+
+        frequency: row.frequency,
+
+        month: row.month,
+
+        day: row.day,
+
+        allow_cf: row.allow_cf,
+
+        carry_forward_choice:
+          row.carry_forward_choice,
+
+        cf_value: row.cf_value,
+
+        cf_unit_or_percentage:
+          row.cf_unit_or_percentage,
+
+        cf_max_limit: row.cf_max_limit,
+
+        cf_expires_in_value:
+          row.cf_expires_in_value,
+
+        cf_time_choice:
+          row.cf_time_choice,
+
+        allow_encashment:
+          row.allow_encashment,
+
+        encashment_value:
+          row.encashment_value,
+
+        encashment_unit_or_percentage:
+          row.encashment_unit_or_percentage,
+
+        encashment_max_limit:
+          row.encashment_max_limit,
+
+        opening_balance:
+          row.opening_balance
+
+      } : null
+
+    };
+
+    return this.leaveService.updateLeaveEntitlement(
+      row.id,
+      payload
+    );
+
+  });
+
+  forkJoin(requests).subscribe({
+
+    next: () => {
+
+      alert('Leave Policy Updated Successfully');
+
+      this.dialogRef.close(true);
+
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      alert('Update Failed');
+
+    }
+
+  });
 
 }
-
-
 
 // multiple entitlement save
 entitlementRows: any[] = [
@@ -2205,21 +2271,19 @@ entitlementRows: any[] = [
 createEntitlementRow() {
   return {
 
-    // Leave Type
-    leave_type: null,
+    id: null,   // <-- ADD THIS
 
-    // Entitlement
+    leave_type: null,  // <-- ADD THIS ALSO
+
     min_experience: null,
     effective_after_from: 'date_of_joining',
     effective_after_unit: 'months',
 
-    // Branch / Department
     branch: [],
     departments: [],
     designations: [],
     categories: [],
 
-    // Accrual
     accrual: false,
     accrual_rate: null,
     accrual_frequency: 'months',
@@ -2228,21 +2292,17 @@ createEntitlementRow() {
     prorate_type: null,
     prorate_accrual: false,
 
-    // Accrual UI
     showMonth: false,
     showDay: true,
 
-    // Reset
     reset: false,
     frequency: 'years',
     month: null,
     day: null,
 
-    // Reset UI
     showResetMonth: true,
     showResetDay: true,
 
-    // Carry Forward
     allow_cf: false,
     carry_forward_choice: null,
     cf_value: null,
@@ -2251,13 +2311,11 @@ createEntitlementRow() {
     cf_expires_in_value: null,
     cf_time_choice: null,
 
-    // Encashment
     allow_encashment: false,
     encashment_value: null,
     encashment_unit_or_percentage: null,
     encashment_max_limit: null,
 
-    // Opening Balance
     opening_balance: null
   };
 }

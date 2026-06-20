@@ -67,30 +67,36 @@
         </div>
     
         <div class="row">
-    
-            <div class="col-md-4 mb-3" *ngFor="let entitlement of EntitlementResets">
-    
-                <div class="leave-policy-card"  (click)="editLeavePolicy(entitlement)">
-    
-                    <div class="policy-icon">
-                        <i class="fa fa-calendar"></i>
-                    </div>
-    
-                    <div class="policy-content">
-    
-                        <h5>{{ entitlement.leave_type_name }}</h5>
-    
-                        <span class="policy-badge">
-                            Leave Policy
-                        </span>
-    
-                    </div>
-    
+
+            <div
+              class="col-md-4 mb-3"
+              *ngFor="let entitlement of leavePolicies">
+          
+              <div
+                class="leave-policy-card"
+                (click)="editLeavePolicy(entitlement)">
+          
+                <div class="policy-icon">
+                  <i class="fa fa-calendar"></i>
                 </div>
-    
+          
+                <div class="policy-content">
+          
+                  <h5>
+                    {{ entitlement.leave_type_name }}
+                  </h5>
+          
+                  <span class="policy-badge">
+                    Leave Policy
+                  </span>
+          
+                </div>
+          
+              </div>
+          
             </div>
-    
-        </div>
+          
+          </div>
     
     </div>
   

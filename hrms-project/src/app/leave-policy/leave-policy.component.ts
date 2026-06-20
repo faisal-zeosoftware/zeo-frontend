@@ -82,6 +82,9 @@ export class LeavePolicyComponent {
   EntitlementResets: any[] = [];
 
 
+leavePolicies: any[] = [];
+
+
   Applicable: any[] = [];
 
 
@@ -576,25 +579,56 @@ registerleaveEntitlement(): void {
 
 
 loadEntitlementReset(callback?: Function): void {
-    
-  const selectedSchema = this.authService.getSelectedSchema();
-  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
+  const selectedSchema =
+    this.authService.getSelectedSchema();
+
+  const savedIds =
+    JSON.parse(
+      localStorage.getItem('selectedBranchIds') || '[]'
+    );
 
   if (selectedSchema) {
-    this.leaveService.getLeaveEntitlementReset(selectedSchema, savedIds).subscribe(
-      (result: any) => {
-        this.EntitlementResets = result;
-        
-        if (callback) callback();
-      },
-      (error) => {
-        console.error('Error fetching Companies:', error);
-      }
-    );
-  }
+
+    this.leaveService
+      .getLeaveEntitlementReset(
+        selectedSchema,
+        savedIds
+      )
+      .subscribe(
+
+        (result: any) => {
+
+          this.EntitlementResets = result;
+
+          this.leavePolicies =
+            result.filter(
+              (item: any, index: number, self: any[]) =>
+                index ===
+                self.findIndex(
+                  x =>
+                    x.leave_type ===
+                    item.leave_type
+                )
+            );
+
+          if (callback) {
+            callback();
+          }
+
+        },
+
+        error => {
+
+          console.error(error);
+
+        }
+
+      );
+
   }
 
+}
 
 
 
@@ -624,20 +658,33 @@ loadEntitlementReset(callback?: Function): void {
 
     editLeavePolicy(entitlement: any): void {
 
+      const allRows =
+        this.EntitlementResets.filter(
+          x =>
+            x.leave_type ===
+            entitlement.leave_type
+        );
+    
       this.dialog.open(
         CreateleavepolicymodalComponent,
         {
           width: '90%',
           height: '90%',
           data: {
+    
             editMode: true,
-            entitlement: entitlement
+    
+            leaveType:
+              entitlement.leave_type,
+    
+            entitlements:
+              allRows
+    
           }
         }
       );
     
     }
-    
 
 
 
