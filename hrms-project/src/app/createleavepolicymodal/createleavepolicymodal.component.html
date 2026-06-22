@@ -72,7 +72,10 @@
 
                     <div class="vertical-stepper">
 
-                        <div class="step-item" [class.active]="currentStep >= 1">
+                        <div
+                        class="step-item"
+                        [class.active]="currentStep === 1"
+                        (click)="goToStep(1)">
 
                             <div class="step-circle">
                                 1
@@ -87,7 +90,7 @@
 
                         <div class="step-line"></div>
 
-                        <div class="step-item" [class.active]="currentStep >= 2">
+                        <div class="step-item" [class.active]="currentStep >= 2"  (click)="goToStep(2)">
 
                             <div class="step-circle">2</div>
                         
@@ -103,7 +106,7 @@
 
                         <div class="step-line"></div>
 
-                        <div class="step-item" [class.active]="currentStep >= 3">
+                        <div class="step-item" [class.active]="currentStep >= 3" (click)="goToStep(3)">
 
                             <div class="step-circle">3</div>
                         
@@ -470,7 +473,7 @@
                         <!-- appplicable section -->
 
 
-                        <form (ngSubmit)="registerleaveApplicableFixed()" enctype="multipart/form-data">
+                        <form >
 
                             <div class="row">
                                 <div class="col-md-4">
@@ -806,8 +809,21 @@
 
 
                                 <div class="col-md-2">
-                                    <button type="submit" class="btn-Create btn-full mt-5 btn-success btn"
-                                        *ngIf="hasAddPermission">Save</button>
+                                    <button
+                                    *ngIf="!isEditMode"
+                                    (click)="registerleaveApplicableFixed()">
+                                  
+                                    Save
+                                  
+                                  </button>
+                                  
+                                  <button
+                                    *ngIf="isEditMode"
+                                    (click)="updateApplicableFixed()">
+                                  
+                                    Update
+                                  
+                                  </button>
                                 </div>
                             </div>
 
@@ -897,7 +913,10 @@
 
                     <div class="vertical-stepper">
 
-                        <div class="step-item" [class.active]="currentStep >= 1">
+                        <div
+                        class="step-item"
+                        [class.active]="currentStep === 1"
+                        (click)="goToStep(1)">
 
                             <div class="step-circle">
                                 1
@@ -912,7 +931,7 @@
 
                         <div class="step-line"></div>
 
-                        <div class="step-item" [class.active]="currentStep >= 2">
+                        <div class="step-item" [class.active]="currentStep >= 2" (click)="goToStep(2)">
 
                             <div class="step-circle">2</div>
                         
@@ -928,7 +947,7 @@
 
                         <div class="step-line"></div>
 
-                        <div class="step-item" [class.active]="currentStep >= 3">
+                        <div class="step-item" [class.active]="currentStep >= 3" (click)="goToStep(3)" >
 
                             <div class="step-circle">3</div>
                         
@@ -945,7 +964,7 @@
                         <div *ngIf="hasPayRuleEnabled" class="step-line">
                         </div>
 
-                        <div *ngIf="hasPayRuleEnabled" class="step-item" [class.active]="currentStep >= 4">
+                        <div *ngIf="hasPayRuleEnabled" class="step-item" [class.active]="currentStep >= 4" (click)="goToStep(4)">
 
                             <div class="step-circle">
                                 4
@@ -1921,8 +1940,21 @@
 
 
                                 <div class="col-md-2">
-                                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn"
-                                        *ngIf="hasAddPermission" (click)="registerleaveApplicable()">Save</button>
+                                    <button
+                                    *ngIf="!isEditMode"
+                                    (click)="registerleaveApplicable()">
+                                  
+                                    Save
+                                  
+                                  </button>
+                                  
+                                  <button
+                                    *ngIf="isEditMode"
+                                    (click)="updateApplicable()">
+                                  
+                                    Update
+                                  
+                                  </button>
                                 </div>
                             </div>
 

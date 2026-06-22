@@ -193,6 +193,26 @@ deleteLeaveReset(id: number): Observable<any> {
   );
 }
 
+updateApplicablePolicy(
+  id: number,
+  payload: any
+) {
+
+  const schema =
+    localStorage.getItem(
+      'selectedSchema'
+    );
+
+  return this.http.put(
+
+    `${this.apiUrl}/calendars/api/applicable_to/${id}/?schema=${schema}`,
+
+    payload
+
+  );
+
+}
+
 deleteLeaveApplicable(id: number): Observable<any> {
 
   const selectedSchema = localStorage.getItem('selectedSchema');

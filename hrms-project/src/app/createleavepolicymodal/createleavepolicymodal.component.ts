@@ -220,13 +220,19 @@ export class CreateleavepolicymodalComponent {
       this.data?.editMode &&
       this.data?.entitlements
     ) {
-    
+  
       this.isEditMode = true;
-    
+  
+      // Populate entitlement section
       this.patchMultipleEntitlements(
         this.data.entitlements
       );
-    
+  
+      // Populate applicable section
+      this.loadPolicyForEdit(
+        this.data.entitlements[0]
+      );
+  
     }
 
 
@@ -1066,168 +1072,6 @@ emp.selected = this.allEmployeesSelected;
 
 
 
-
-
-// registerleaveEntitlement(): void {
-
-//   if (!this.leave_type) {
-//     alert('Select Leave Type');
-//     return;
-//   }
-
-//   this.registerButtonClicked = true;
-
-//   const payload = {
-
-//     leave_type: this.leave_type,
-  
-//     min_experience:
-//       this.min_experience || null,
-  
-//     effective_after_from:
-//       this.effective_after_from || null,
-  
-//     effective_after_unit:
-//       this.effective_after_unit || null,
-  
-//     accrual_rate:
-//       this.accrual
-//         ? this.accrual_rate || null
-//         : null,
-  
-//     accrual_frequency:
-//       this.accrual
-//         ? this.accrual_frequency || null
-//         : null,
-  
-//     accrual_month:
-//       this.accrual
-//         ? this.accrual_month || null
-//         : null,
-  
-//     accrual_day:
-//       this.accrual
-//         ? this.accrual_day || null
-//         : null,
-  
-//     prorate_type:
-//       this.prorate_type || null,
-  
-//     prorate_accrual:
-//       this.prorate_accrual,
-  
-//     accrual:
-//       this.accrual,
-  
-//     created_by:
-//       this.created_by,
-  
-//     branches:
-//       this.branch || [],
-  
-//     categories:
-//       this.categories || [],
-  
-//     departments:
-//       this.departments || [],
-  
-//     designations:
-//       this.designations || [],
-  
-//     reset_policy: this.reset
-//       ? {
-//           reset: true,
-  
-//           frequency:
-//             this.frequency || null,
-  
-//           month:
-//             this.month || null,
-  
-//           day:
-//             this.day || null,
-  
-//           allow_cf:
-//             this.allow_cf,
-  
-//           carry_forward_choice:
-//             this.carry_forward_choice || null,
-  
-//           cf_value:
-//             this.cf_value || null,
-  
-//           cf_unit_or_percentage:
-//             this.cf_unit_or_percentage || null,
-  
-//           cf_max_limit:
-//             this.cf_max_limit || null,
-  
-//           allow_encashment:
-//             this.allow_encashment,
-  
-//           encashment_value:
-//             this.encashment_value || null,
-  
-//           encashment_unit_or_percentage:
-//             this.encashment_unit_or_percentage || null,
-  
-//           encashment_max_limit:
-//             this.encashment_max_limit || null,
-  
-//           opening_balance:
-//             this.opening_balance || null
-//         }
-//       : {
-//           reset: false
-//         }
-  
-//   };
-//   this.leaveService.registerLeaveEntitlement(payload).subscribe({
-
-//     next: (res: any) => {
-
-//       alert(
-//         res?.message ||
-//         res?.success ||
-//         '✅ Leave Entitlement Added Successfully'
-//       );
-
-//       this.createdEntitlementId = res.id;
-
-//       if (this.showPayRuleStep) {
-
-//         this.currentStep = 2; // Pay Rule
-      
-//       } else {
-      
-//         this.currentStep = 2; // Applicable
-      
-//       }
-
-//       console.log('Success Response:', res);
-
-//     },
-
-//     error: (err) => {
-
-//       console.error('Error Response:', err);
-
-//       const errorMessage =
-//         err?.error?.message ||
-//         err?.error?.error ||
-//         err?.error?.detail ||
-//         JSON.stringify(err?.error) ||
-//         'Failed to create Leave Entitlement';
-
-//       alert(errorMessage);
-
-//     }
-
-//   });
-
-// }
-
-
 registerleaveEntitlement(): void {
 
   // if (!this.leave_type) {
@@ -1772,6 +1616,18 @@ nextStep(): void {
 
 }
 
+goToStep(step: number): void {
+
+  if (!this.isEditMode) {
+
+    return;
+
+  }
+
+  this.currentStep = step;
+
+}
+
 previousStep(): void {
   if (this.currentStep > 1) {
     this.currentStep--;
@@ -1831,8 +1687,6 @@ editApplicableData: any;
 
 loadPolicyForEdit(entitlement: any): void {
 
-  this.patchMultipleEntitlements(entitlement);
-
   const selectedSchema =
       this.authService.getSelectedSchema();
 
@@ -1855,11 +1709,9 @@ loadPolicyForEdit(entitlement: any): void {
               entitlement.leave_type_name
           );
 
-        if(applicable){
+        if (applicable) {
 
-          this.patchApplicable(
-            applicable
-          );
+          this.patchApplicable(applicable);
 
         }
 
@@ -1868,101 +1720,132 @@ loadPolicyForEdit(entitlement: any): void {
 }
 
 
+updateApplicable(): void {
 
-// patchEntitlement(data: any): void {
+  const selectedEmployees =
+    this.FilteredEmployees
+      .filter(x => x.selected)
+      .map(x => x.id);
 
-//   this.createdEntitlementId =
-//     data.id;
+  const payload = {
 
-//   this.leave_type =
-//     data.leave_type;
+    leave_type: this.entitlementRows[0]?.leave_type,
 
-//   this.min_experience =
-//     data.min_experience;
+    gender:
+      this.gender === 'B'
+        ? null
+        : this.gender,
 
-//   this.effective_after_unit =
-//     data.effective_after_unit;
+    branch:
+      this.selectedBranches,
 
-//   this.effective_after_from =
-//     data.effective_after_from;
+    department:
+      this.selectedDepartments,
 
-//   this.branch =
-//     data.branches || [];
+    category:
+      this.selectedCategories,
 
-//   this.departments =
-//     data.departments || [];
+    designation:
+      this.selectedDesignations,
 
-//   this.designations =
-//     data.designations || [];
+    employee:
+      selectedEmployees
 
-//   this.categories =
-//     data.categories || [];
+  };
 
-//   this.accrual =
-//     data.accrual;
+  this.leaveService
+    .updateApplicablePolicy(
+      this.applicableId!,
+      payload
+    )
+    .subscribe({
 
-//   this.accrual_rate =
-//     data.accrual_rate;
+      next: (res: any) => {
 
-//   this.accrual_frequency =
-//     data.accrual_frequency;
+        alert(
+          res?.message ||
+          'Applicable Updated Successfully'
+        );
 
-//   this.accrual_month =
-//     data.accrual_month;
+      },
 
-//   this.accrual_day =
-//     data.accrual_day;
+      error: (err) => {
 
-//   this.prorate_accrual =
-//     data.prorate_accrual;
+        alert(
+          err?.error?.message ||
+          'Applicable Update Failed'
+        );
 
-//   if(data.reset_policy){
+      }
 
-//       const r =
-//         data.reset_policy;
+    });
 
-//       this.reset =
-//         r.reset;
+}
 
-//       this.frequency =
-//         r.frequency;
 
-//       this.month =
-//         r.month;
+updateApplicableFixed(): void {
 
-//       this.day =
-//         r.day;
+  const selectedEmployees =
+    this.FilteredEmployees
+      .filter(x => x.selected)
+      .map(x => x.id);
 
-//       this.allow_cf =
-//         r.allow_cf;
+  const payload = {
 
-//       this.allow_encashment =
-//         r.allow_encashment;
+    leave_type: this.entitlementRows[0]?.leave_type,
 
-//       this.cf_value =
-//         r.cf_value;
+    gender:
+      this.gender === 'B'
+        ? null
+        : this.gender,
 
-//       this.cf_max_limit =
-//         r.cf_max_limit;
+    branch:
+      this.selectedBranches,
 
-//       this.cf_unit_or_percentage =
-//         r.cf_unit_or_percentage;
+    department:
+      this.selectedDepartments,
 
-//       this.encashment_value =
-//         r.encashment_value;
+    category:
+      this.selectedCategories,
 
-//       this.encashment_max_limit =
-//         r.encashment_max_limit;
+    designation:
+      this.selectedDesignations,
 
-//       this.encashment_unit_or_percentage =
-//         r.encashment_unit_or_percentage;
+    employee:
+      selectedEmployees
 
-//       this.opening_balance =
-//         r.opening_balance;
+  };
 
-//   }
+  this.leaveService
+    .updateApplicablePolicy(
+      this.applicableId!,
+      payload
+    )
+    .subscribe({
 
-// }
+      next: (res: any) => {
+
+        alert(
+          res?.message ||
+          'Applicable Updated Successfully'
+        );
+
+      },
+
+      error: (err) => {
+
+        alert(
+          err?.error?.message ||
+          'Applicable Update Failed'
+        );
+
+      }
+
+    });
+
+}
+
+
 
 patchMultipleEntitlements(
   entitlements: any[]
@@ -2087,14 +1970,43 @@ patchMultipleEntitlements(
 
 patchApplicable(data: any): void {
 
-  this.editApplicableData =
-    data;
+  console.log('Applicable Data', data);
 
-  this.gender =
-    data.gender;
+  this.applicableId = data.id;
 
+  this.gender = data.gender || 'B';
+
+  this.selectedBranches = this.branches
+    .filter(b =>
+      data.branch?.includes(b.branch_name)
+    )
+    .map(b => b.id);
+
+  this.selectedDepartments = this.Departments
+    .filter(d =>
+      data.department?.includes(d.dept_name)
+    )
+    .map(d => d.id);
+
+  this.selectedDesignations = this.Designation
+    .filter(d =>
+      data.designation?.includes(d.desgntn_job_title)
+    )
+    .map(d => d.id);
+
+  this.selectedCategories = this.Category
+    .filter(c =>
+      data.role?.includes(c.ctgry_title)
+    )
+    .map(c => c.id);
+
+  this.applyEmployeeFilter();
+
+  console.log('Selected Branches', this.selectedBranches);
+  console.log('Selected Departments', this.selectedDepartments);
+  console.log('Selected Designations', this.selectedDesignations);
+  console.log('Selected Categories', this.selectedCategories);
 }
-
 
 updateLeaveEntitlement(
   id:number,
@@ -2296,6 +2208,7 @@ addEntitlementRow(): void {
 
 }
 
+
 removeEntitlementRow(index: number): void {
 
   if (this.entitlementRows.length > 1) {
@@ -2305,5 +2218,16 @@ removeEntitlementRow(index: number): void {
   }
 
 }
+
+
+
+applicableId: number | null = null;
+
+
+
+
+
+
+
 
 }
