@@ -6704,6 +6704,16 @@ getDocumentsByFolder(folderId: number): Observable<any> {
   );
 }
 
+getDelegationDetails(schema: string) {
+  return this.http.get(
+    `${environment.apiBaseUrl}/employee/api/delegations/?schema=${schema}`
+  );
+}
+
+createDelegation(apiUrl: string, payload: any) {
+  return this.http.post(apiUrl, payload);
+}
+
 changePassword(data: any): Observable<any> {
 
   const apiUrl =

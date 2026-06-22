@@ -6,6 +6,8 @@ import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { UserMasterService } from '../user-master/user-master.service';
+import { DepartmentService } from '../department-report/department.service';
 
 
 @Component({
@@ -33,8 +35,30 @@ export class ApprovalsComponent {
 
   Approvals: any[] = []; // Assuming this array holds the list of expired documents
 
+delegationData: any = null;
+isDelegationModalOpen: boolean = false;
 
-  hasAddPermission: boolean = false;
+
+delegationForm: any = {
+  start_date: '',
+  end_date: '',
+  is_active: true,
+  reason: '',
+  deligator: null,
+  deligate_to: null,
+  request: null,
+  created_by: null
+};
+
+deligators: any[] = [];
+delegateTos: any[] = [];
+requests: any[] = [];
+Genreq: any[] = [];
+
+Users: any[] = [];
+
+
+hasAddPermission: boolean = false;
 hasDeletePermission: boolean = false;
 hasViewPermission: boolean =false;
 hasEditPermission: boolean = false;
@@ -42,9 +66,12 @@ hasEditPermission: boolean = false;
   constructor(private authService: AuthenticationService,
     private router: Router,
    private EmployeeService: EmployeeService,
+   private userService: UserMasterService,
    private route: ActivatedRoute,
    private sessionService: SessionService,
    private DesignationService: DesignationService,
+     
+
 
    ) { }
 
@@ -61,6 +88,11 @@ hasEditPermission: boolean = false;
               }
             });
 
+              // Listen for sidebar changes so the dropdown updates instantly
+    this.EmployeeService.selectedBranches$.subscribe(ids => {
+      this.loadApprovalLevelGen(); 
+    });
+
     // this.fetchingApprovals();
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
@@ -71,6 +103,8 @@ hasEditPermission: boolean = false;
         // Perform any actions on navigation end if needed
       }
     });
+
+      this.loadUsers();
 
     const selectedSchema = this.authService.getSelectedSchema();
     const selectedSchemaId = this.authService.getSelectedSchemaId();
@@ -202,6 +236,27 @@ hasEditPermission: boolean = false;
 }
 
 
+
+  loadApprovalLevelGen(): void {
+    
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.EmployeeService.getAllgeneralRequest(selectedSchema).subscribe(
+        (result: any) => {
+          this.Genreq = result;
+          console.log(' fetching Companies:');
+  
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+    }
+
 // checkViewPermission(permissions: any[]): boolean {
 //   const requiredPermission = 'add_approval' ||'change_approval' ||'delete_approval' ||'view_approval';
   
@@ -272,6 +327,19 @@ hasEditPermission: boolean = false;
         }
       });
     }
+
+
+    loadUsers(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+      }
+    );
+  }
+}
   
 
 
@@ -385,6 +453,77 @@ note: string = '';  // To hold the note entered by the user
   }
 }
 
+
+
+openDelegationModal() {
+  this.isDelegationModalOpen = true;
+}
+
+closeDelegationModal() {
+  this.isDelegationModalOpen = false;
+}
+
+createDelegation(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
+
+  const apiUrl =
+    `${this.apiUrl}/employee/api/delegations/?schema=${selectedSchema}`;
+
+  const payload = {
+    start_date: this.delegationForm.start_date,
+    end_date: this.delegationForm.end_date,
+    is_active: this.delegationForm.is_active,
+    reason: this.delegationForm.reason,
+    deligator: this.userId,
+    deligate_to: this.delegationForm.deligate_to,
+    request: this.delegationForm.request,
+    created_by: this.userId
+  };
+
+  this.EmployeeService.createDelegation(apiUrl, payload)
+    .subscribe({
+      next: (res: any) => {
+
+        console.log('Delegation Created', res);
+
+        alert('Delegation created successfully');
+
+        this.closeDelegationModal();
+
+        window.location.reload();
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+}
+
+openDelegationModalFromApproval(approval: any) {
+
+  console.log('approval clicked', approval);
+
+  const generalRequest = this.Genreq.find(
+    (req: any) =>
+      req.document_number === approval.general_request
+  );
+
+  console.log('matched GeneralRequest', generalRequest);
+
+  this.delegationForm = {
+    ...this.delegationForm,
+    request: generalRequest ? generalRequest.id : null,
+    deligator: this.userId
+  };
+
+  console.log('request id sending', this.delegationForm.request);
+
+  this.isDelegationModalOpen = true;
+}
 
 closemarketModal(){
   this.isAddFieldsModalOpen=false;

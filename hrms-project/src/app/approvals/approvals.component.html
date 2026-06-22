@@ -1,93 +1,190 @@
-<div class="container" *ngIf="hasViewPermission" >
-    <div class="comapny_section">
-        <div class="com_list ">
-    <div class="">
+<div class="container" *ngIf="hasViewPermission">
+  <div class="comapny_section">
+    <div class="com_list">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2>General Request Approval List</h2>
+      </div>
+    </div>
 
-        <h2>Approval </h2>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="approval_sec" *ngFor="let apr of Approvals">
+          <h6>General Request Approvals</h6>
+          <hr />
 
+          <div class="row">
+            <div class="col-md-4">
+              <h4>General Request Number</h4>
+              <h5>{{ apr.general_request }}</h5>
+            </div>
+            <div class="col-md-2">
+              <h4>Status</h4>
+              <h5>{{ apr.status }}</h5>
+            </div>
+            <div class="col-md-2">
+              <h4>Level</h4>
+              <h5>{{ apr.level }}</h5>
+            </div>
+            <div class="col-md-2">
+              <h4>Comment</h4>
+              <h5>{{ apr.note }}</h5>
+            </div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn pull-right"
+                (click)="selectedaprovaldetalis(apr.id)"
+              >
+                View
+              </button>
+            </div>
+              <div class="col-md-12">
+              <button
+                type="button"
+                class="btn btn-primary pull-right"
+                (click)="openDelegationModalFromApproval(selectedApproval)">
+                Delegate Request
+              </button>
+              </div>
+          </div>
 
-  
-  
-
-
-        </div>
-
-        </div>
-
-
-        <div class="row">
-            <div class="col-md-12">
-              <div class="approval_sec" *ngFor="let apr of Approvals" >
-                <h6>General Request Approvals</h6><hr>
-                <div class="row ">
-                    <div class="col-md-4">
-                      <h4>General Request Number</h4>
-                      <h5>{{apr.general_request}}</h5>
-                    </div>
-                    <div class="col-md-2">
-                      <h4>Status  </h4>
-                      <h5>{{apr.status}} </h5>
-                    </div>
-                    <div class="col-md-2">
-                      <h4>Level </h4>
-                      <h5>{{apr.level}}</h5>
-                    </div>
-                    <div class="col-md-2">
-                        <h4>Comment </h4>
-                        <h5>{{apr.note}}</h5>
-                      </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn pull-right" (click)="selectedaprovaldetalis(apr.id)">View</button>
-                    </div>
-                  </div>
-              
-         
-                <!-- <h6> General Request - {{apr.general_request}}</h6>
+          <!-- <h6> General Request - {{apr.general_request}}</h6>
                 <h6>Status - {{apr.status}}</h6>
                 <h6>Level - {{apr.level}}</h6> -->
-        
-            
-        
-              </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Popup for selected approval details -->
+    <div *ngIf="isAddFieldsModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="col-md-12 text-right">
+          <!-- Styled Square Close Button -->
+          <span class="close-btn" (click)="closemarketModal()"> × </span>
+        </div>
+
+        <div *ngIf="selectedApproval">
+          <h6>General Request Approvals</h6>
+          <hr />
+          <h6>General Request - {{ selectedApproval.general_request }}</h6>
+          <h6>Status - {{ selectedApproval.status }}</h6>
+          <h6>Level - {{ selectedApproval.level }}</h6>
+
+          <textarea
+            class="form-control"
+            [(ngModel)]="note"
+            placeholder="Add a Comment here..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+          <div class="row mt-2">
+            <!-- <div class="col-md-6"></div> -->
+
+            <div class="col-md-2"></div>
+
+            <div class="col-md-3">
+              <button
+                type="button"
+                class="btn btn btn-danger btn-full"
+                (click)="rejectApproval(selectedApproval.id)"
+              >
+                Reject
+              </button>
             </div>
-          </div>
-
-
-
-          <!-- Modal Popup for selected approval details -->
-<div *ngIf="isAddFieldsModalOpen" class="modal">
-
-    <div class="modal-content">
-     <div class="col-md-12 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closemarketModal()">
-      ×
-    </span>
-  </div>
-  
-      <div *ngIf="selectedApproval">
-        <h6>General Request Approvals</h6><hr>
-        <h6> General Request - {{selectedApproval.general_request}}</h6>
-        <h6>Status - {{selectedApproval.status}}</h6>
-        <h6>Level - {{selectedApproval.level}}</h6>
-  
-  
-      <textarea class="form-control" [(ngModel)]="note" placeholder="Add a Comment here..."  [ngModelOptions]="{standalone: true}"></textarea>
-  
-        <div class="row mt-2">
-          <div class="col-md-6"></div>
-          <div class="col-md-3">
-            <button type="button" class="btn btn btn-danger btn-full" (click)="rejectApproval(selectedApproval.id)">Reject</button>
-          </div>
-          <div class="col-md-3">
-            <button type="button" class="btn btn-success btn-full" (click)="approveApproval(selectedApproval.id)">Approve</button>
+            <div class="col-md-3">
+              <button
+                type="button"
+                class="btn btn-success btn-full"
+                (click)="approveApproval(selectedApproval.id)"
+              >
+                Approve
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  
-  
 
-</div>
+    <div *ngIf="isDelegationModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="text-right">
+          <span class="close-btn" (click)="closeDelegationModal()"> × </span>
+        </div>
+
+        <h4>Create Delegation</h4>
+        <hr />
+        <div class="row">
+          <div class="col-md-4">
+            <label>Start Date</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="delegationForm.start_date"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label>End Date</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="delegationForm.end_date"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label>Deligator</label>
+
+            <select class="form-control" [(ngModel)]="delegationForm.deligator">
+              <option *ngFor="let user of Users" [ngValue]="user.id">
+                {{ user.username }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label>Delegate To</label>
+
+            <select
+              class="form-control"
+              [(ngModel)]="delegationForm.deligate_to"
+            >
+              <option *ngFor="let user of Users" [ngValue]="user.id">
+                {{ user.username }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-5">
+            <label>Request</label>
+
+            <select
+              class="form-control"
+              [(ngModel)]="delegationForm.request"
+              disabled
+            >
+              <option *ngFor="let req of Genreq" [value]="req.id">
+                {{ req.document_number }} - {{ req.request_type }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group mb-2">
+            <label>Reason</label>
+            <textarea class="form-control" [(ngModel)]="delegationForm.reason">
+            </textarea>
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Active</label>
+            <input type="checkbox" [(ngModel)]="delegationForm.is_active" />
+          </div>
+        </div>
+
+        <button class="btn btn-success" (click)="createDelegation()">
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
