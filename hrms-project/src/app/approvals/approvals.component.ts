@@ -453,7 +453,12 @@ note: string = '';  // To hold the note entered by the user
   }
 }
 
+closemarketModal(){
+  this.isAddFieldsModalOpen=false;
+}
 
+
+// Delegate Model
 
 openDelegationModal() {
   this.isDelegationModalOpen = true;
@@ -525,8 +530,12 @@ openDelegationModalFromApproval(approval: any) {
   this.isDelegationModalOpen = true;
 }
 
-closemarketModal(){
-  this.isAddFieldsModalOpen=false;
+showDelegationDetails = false;
+
+toggleDelegationDetails() {
+  this.showDelegationDetails = !this.showDelegationDetails;
 }
+
+
 
 }
