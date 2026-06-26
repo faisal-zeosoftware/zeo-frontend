@@ -863,36 +863,78 @@
 
                             <h5>Enter Leave Pay Rule</h5>
 
-                            <div class="row">
-
-                                <div class="col-md-4">
-
-                                    <label>Sequence</label>
-
-                                    <input type="number" class="form-control" [(ngModel)]="payRuleData.sequence"
-                                        [ngModelOptions]="{standalone:true}">
-
-                                </div>
-
-                                <div class="col-md-4">
-
-                                    <label>Days</label>
-
-                                    <input type="number" class="form-control" [(ngModel)]="payRuleData.days"
-                                        [ngModelOptions]="{standalone:true}">
-
-                                </div>
-
-                                <div class="col-md-4">
-
-                                    <label>Pay %</label>
-
-                                    <input type="number" class="form-control" [(ngModel)]="payRuleData.pay_percentage"
-                                        [ngModelOptions]="{standalone:true}">
-
-                                </div>
-
+                            <div
+                            class="payrule-card mb-3"
+                            *ngFor="let row of payRuleRows; let i=index">
+                          
+                            <div
+                              class="text-end mb-2"
+                              *ngIf="payRuleRows.length > 1">
+                          
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-sm"
+                                (click)="removePayRuleRow(i)">
+                          
+                                Remove
+                          
+                              </button>
+                          
                             </div>
+                          
+                            <div class="row">
+                          
+                              <div class="col-md-4">
+                          
+                                <label>Sequence</label>
+                          
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                  [(ngModel)]="row.sequence"
+                                  [ngModelOptions]="{standalone:true}">
+                          
+                              </div>
+                          
+                              <div class="col-md-4">
+                          
+                                <label>Days</label>
+                          
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                  [(ngModel)]="row.days"
+                                  [ngModelOptions]="{standalone:true}">
+                          
+                              </div>
+                          
+                              <div class="col-md-4">
+                          
+                                <label>Pay %</label>
+                          
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                  [(ngModel)]="row.pay_percentage"
+                                  [ngModelOptions]="{standalone:true}">
+                          
+                              </div>
+                          
+                            </div>
+                          
+                          </div>
+                          <div class="mt-3">
+
+                            <button
+                              type="button"
+                              class="btn btn-primary"
+                              (click)="addPayRuleRow()">
+                          
+                              + Add Pay Rule
+                          
+                            </button>
+                          
+                          </div>
 
                             <div class="mt-3">
 
@@ -1050,7 +1092,7 @@
                             <div class="row">
 
 
-                                <div class="col-md-4">
+                                <!-- <div class="col-md-4">
                                     <label>Leave Type</label>
                                     <div class="custom-sel">
                                         <select
@@ -1069,6 +1111,32 @@
                                     
                                     </select>
                                     </div>
+                                </div> -->
+
+                                <div class="col-md-4" *ngIf="i === 0">
+
+                                    <label>Leave Type</label>
+                                
+                                    <div class="custom-sel">
+                                
+                                        <select
+                                            class="form-control"
+                                            [(ngModel)]="row.leave_type"
+                                            [ngModelOptions]="{standalone:true}"
+                                            (change)="onMainLeaveTypeChange(row)"
+                                            [disabled]="isEditMode">
+                                
+                                            <option *ngFor="let leavetype of LeaveTypes"
+                                                    [value]="leavetype.id">
+                                
+                                                {{ leavetype.name }}
+                                
+                                            </option>
+                                
+                                        </select>
+                                
+                                    </div>
+                                
                                 </div>
 
                                 <div class="col-md-4">
@@ -2009,36 +2077,79 @@
 
                             <h5>Enter Leave Pay Rule</h5>
 
-                            <div class="row">
-
-                                <div class="col-md-4">
-
-                                    <label>Sequence</label>
-
-                                    <input type="number" class="form-control" [(ngModel)]="payRuleData.sequence"
-                                        [ngModelOptions]="{standalone:true}">
-
-                                </div>
-
-                                <div class="col-md-4">
-
-                                    <label>Days</label>
-
-                                    <input type="number" class="form-control" [(ngModel)]="payRuleData.days"
-                                        [ngModelOptions]="{standalone:true}">
-
-                                </div>
-
-                                <div class="col-md-4">
-
-                                    <label>Pay %</label>
-
-                                    <input type="number" class="form-control" [(ngModel)]="payRuleData.pay_percentage"
-                                        [ngModelOptions]="{standalone:true}">
-
-                                </div>
-
+                            <div
+                            class="payrule-card mb-3"
+                            *ngFor="let row of payRuleRows; let i=index">
+                          
+                            <div
+                              class="text-end mb-2"
+                              *ngIf="payRuleRows.length > 1">
+                          
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-sm"
+                                (click)="removePayRuleRow(i)">
+                          
+                                Remove
+                          
+                              </button>
+                          
                             </div>
+                          
+                            <div class="row">
+                          
+                              <div class="col-md-4">
+                          
+                                <label>Sequence</label>
+                          
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                  [(ngModel)]="row.sequence"
+                                  [ngModelOptions]="{standalone:true}">
+                          
+                              </div>
+                          
+                              <div class="col-md-4">
+                          
+                                <label>Days</label>
+                          
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                  [(ngModel)]="row.days"
+                                  [ngModelOptions]="{standalone:true}">
+                          
+                              </div>
+                          
+                              <div class="col-md-4">
+                          
+                                <label>Pay %</label>
+                          
+                                <input
+                                  type="number"
+                                  class="form-control"
+                                  [(ngModel)]="row.pay_percentage"
+                                  [ngModelOptions]="{standalone:true}">
+                          
+                              </div>
+                          
+                            </div>
+                          
+                          </div>
+                          <div class="mt-3">
+
+                            <button
+                              type="button"
+                              class="btn btn-primary"
+                              (click)="addPayRuleRow()">
+                          
+                              + Add Pay Rule
+                          
+                            </button>
+                          
+                          </div>
+
 
                             <div class="mt-3">
 
@@ -2047,25 +2158,34 @@
                                     Save Pay Rule
 
                                 </button> -->
+                                <div class="row">
+                                    <di class="col-md-10">
 
-                                <button
-  *ngIf="!isEditMode"
-  class="btn btn-success"
-  (click)="submitPayRule()">
+                                    </di>
+                                    <div class="col-md-2">
+                                        <button
+                                        *ngIf="!isEditMode"
+                                        class="btn btn-success"
+                                        (click)="submitPayRuleFixed()">
+                                      
+                                        Save Pay Rule
+                                      
+                                      </button>
+                                      
+                                      <button
+                                        *ngIf="isEditMode"
+                                        class="btn btn-primary"
+                                        (click)="updatePayRule()">
+                                      
+                                        Update Pay Rule
+                                      
+                                      </button>
+                                      
+                                        
+                                    </div>
+                                </div>
 
-  Save Pay Rule
-
-</button>
-
-<button
-  *ngIf="isEditMode"
-  class="btn btn-primary"
-  (click)="updatePayRule()">
-
-  Update Pay Rule
-
-</button>
-
+      
                             </div>
 
                         </div>
