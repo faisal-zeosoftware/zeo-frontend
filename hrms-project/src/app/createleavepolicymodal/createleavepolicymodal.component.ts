@@ -126,8 +126,8 @@ export class CreateleavepolicymodalComponent {
 
   gender: any = '';
   // branch: any = '';
-  branch:any[] = [];
-  
+  branch: any[] = [];
+
   designation: any = '';
   department: any = '';
   role: any = '';
@@ -208,32 +208,46 @@ export class CreateleavepolicymodalComponent {
     private ref: MatDialogRef<CreateleavepolicymodalComponent>,
 
     @Inject(MAT_DIALOG_DATA)
-    public data: any
-  
-  
-  ) { }
+    public data: any,
+  ) {
+    if (this.data && this.data.editMode) {
+      this.isEditMode = true;
+    }
+  }
 
   ngOnInit(): void {
     // this.LoadBranch();
-   
+
     if (
       this.data?.editMode &&
       this.data?.entitlements
     ) {
-  
+
       this.isEditMode = true;
-  
+
       // Populate entitlement section
       this.patchMultipleEntitlements(
         this.data.entitlements
       );
-  
+
+      if (this.data.payRule) {
+
+        this.patchPayRule(
+          this.data.payRule
+        );
+
+      }
+
       // Populate applicable section
       this.loadPolicyForEdit(
         this.data.entitlements[0]
       );
-  
+
+
+
     }
+
+
 
 
     // combineLatest waits for both Schema and Branches to have a value
@@ -251,7 +265,7 @@ export class CreateleavepolicymodalComponent {
     this.employeeService.selectedBranches$.subscribe(ids => {
       this.LoadBranch();
       this.loadEmp();
-      
+
     });
 
 
@@ -395,22 +409,60 @@ export class CreateleavepolicymodalComponent {
 
 
 
+
+
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
   ClosePopup() {
-    this.ref.close('Closed using function')
+    this.ref.close('Closed using function');
+    window.location.reload();
   }
 
 
   isLoading: boolean = false;
+  // fetchLeaveType(schema: string, branchIds: number[]): void {
+  //   this.isLoading = true;
+  //   this.leaveService.getLeaveTypeNew(schema, branchIds).subscribe({
+  //     next: (data: any) => {
+  //       // Filter active employees
+  //       this.LeaveTypes = data;
+
+  //       this.isLoading = false;
+  //     },
+  //     error: (err) => {
+  //       console.error('Fetch error:', err);
+  //       this.isLoading = false;
+  //     }
+  //   });
+  // }
+
   fetchLeaveType(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.leaveService.getLeaveTypeNew(schema, branchIds).subscribe({
       next: (data: any) => {
         // Filter active employees
         this.LeaveTypes = data;
+
+        // --- ADDED CONDITION FOR EDIT TIME INITIALIZATION ---
+        if (this.isEditMode && this.data?.leaveType) {
+          // Find the matching leave type from the freshly fetched array using the ID passed into the dialog
+          const selectedLeaveType = this.LeaveTypes.find(
+            x => x.id == this.data.leaveType
+          );
+
+          if (selectedLeaveType) {
+            // Loop through your mapped entitlement rows and set the flag matching the fetched layout
+            this.entitlementRows.forEach(row => {
+              row.enable_leave_pay_rule = selectedLeaveType.enable_leave_pay_rule || false;
+            });
+
+            // Fallback backup reference identifier 
+            this.selectedLeaveTypeId = this.data.leaveType;
+          }
+        }
+        // ----------------------------------------------------
 
         this.isLoading = false;
       },
@@ -526,43 +578,43 @@ export class CreateleavepolicymodalComponent {
   onResetFrequencyChange(row: any): void {
 
     if (row.frequency === 'years') {
-  
+
       row.showResetMonth = true;
       row.showResetDay = true;
-  
+
     } else if (row.frequency === 'months') {
-  
+
       row.showResetMonth = false;
       row.showResetDay = true;
-  
+
     } else {
-  
+
       row.showResetMonth = false;
       row.showResetDay = false;
-  
+
     }
-  
+
   }
 
   onAccrualFrequencyChange(row: any): void {
 
     if (row.accrual_frequency === 'years') {
-  
+
       row.showMonth = true;
       row.showDay = true;
-  
+
     } else if (row.accrual_frequency === 'months') {
-  
+
       row.showMonth = false;
       row.showDay = true;
-  
+
     } else {
-  
+
       row.showMonth = false;
       row.showDay = false;
-  
+
     }
-  
+
   }
 
   allSelected = false;
@@ -685,445 +737,445 @@ export class CreateleavepolicymodalComponent {
   Employee: any[] = [];
 
 
-selectedBranches: number[] = [];
-selectedDepartments: number[] = [];
-selectedCategories: number[] = [];
-selectedDesignations: number[] = [];
+  selectedBranches: number[] = [];
+  selectedDepartments: number[] = [];
+  selectedCategories: number[] = [];
+  selectedDesignations: number[] = [];
 
-allEmployeesSelected = false;
+  allEmployeesSelected = false;
 
-loadEmp(callback?: Function): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  loadEmp(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
 
-  if (selectedSchema) {
-    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-      (result: any) => {
-        this.Employee = result;
-        this.FilteredEmployees = result;
-        
-        this.currentPage = 1;
+    if (selectedSchema) {
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Employee = result;
+          this.FilteredEmployees = result;
 
-        this.updatePagination();    
+          this.currentPage = 1;
 
-        if (callback) callback();
-      },
-      (error) => {
-        console.error('Error fetching Companies:', error);
-      }
-    );
+          this.updatePagination();
+
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
   }
-}
 
 
-applyEmployeeFilter(): void {
+  applyEmployeeFilter(): void {
 
-  this.FilteredEmployees = this.Employee.filter(emp => {
+    this.FilteredEmployees = this.Employee.filter(emp => {
 
-    const branchMatch =
-      this.selectedBranches.length === 0 ||
-      this.selectedBranches.some(id =>
-        emp.emp_branch_id === this.getBranchName(id)
+      const branchMatch =
+        this.selectedBranches.length === 0 ||
+        this.selectedBranches.some(id =>
+          emp.emp_branch_id === this.getBranchName(id)
+        );
+
+      const deptMatch =
+        this.selectedDepartments.length === 0 ||
+        this.selectedDepartments.some(id =>
+          emp.emp_dept_id === this.getDepartmentName(id)
+        );
+
+      const categoryMatch =
+        this.selectedCategories.length === 0 ||
+        this.selectedCategories.some(id =>
+          emp.emp_ctgry_id === this.getCategoryName(id)
+        );
+
+      const designationMatch =
+        this.selectedDesignations.length === 0 ||
+        this.selectedDesignations.some(id =>
+          emp.emp_desgntn_id === this.getDesignationName(id)
+        );
+
+      return (
+        branchMatch &&
+        deptMatch &&
+        categoryMatch &&
+        designationMatch
       );
 
-    const deptMatch =
-      this.selectedDepartments.length === 0 ||
-      this.selectedDepartments.some(id =>
-        emp.emp_dept_id === this.getDepartmentName(id)
-      );
+    });
+    this.currentPage = 1;
 
-    const categoryMatch =
-      this.selectedCategories.length === 0 ||
-      this.selectedCategories.some(id =>
-        emp.emp_ctgry_id === this.getCategoryName(id)
-      );
+    this.updatePagination();
 
-    const designationMatch =
-      this.selectedDesignations.length === 0 ||
-      this.selectedDesignations.some(id =>
-        emp.emp_desgntn_id === this.getDesignationName(id)
-      );
+
+  }
+
+  getBranchName(id: number): string {
+
+    const item = this.branches.find(x => x.id == id);
+
+    return item ? item.branch_name : '';
+
+  }
+
+  getDepartmentName(id: number): string {
+
+    const item = this.Departments.find(x => x.id == id);
+
+    return item ? item.dept_name : '';
+
+  }
+
+  getCategoryName(id: number): string {
+
+    const item = this.Category.find(x => x.id == id);
+
+    return item ? item.ctgry_title : '';
+
+  }
+
+  getDesignationName(id: number): string {
+
+    const item = this.Designation.find(x => x.id == id);
+
+    return item ? item.desgntn_job_title : '';
+
+  }
+
+
+
+
+  // select all option in branch
+
+  toggleAllBranches(): void {
+
+    if (
+      this.selectedBranches.length ===
+      this.branches.length
+    ) {
+
+      this.selectedBranches = [];
+
+    } else {
+
+      this.selectedBranches =
+        this.branches.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+  }
+
+
+
+  isAllBranchesSelected(): boolean {
 
     return (
-      branchMatch &&
-      deptMatch &&
-      categoryMatch &&
-      designationMatch
+      this.branches.length > 0 &&
+      this.selectedBranches.length ===
+      this.branches.length
     );
 
-  });
-  this.currentPage = 1;
-
-  this.updatePagination();
-
-
-}
-
-getBranchName(id: number): string {
-
-  const item = this.branches.find(x => x.id == id);
-
-  return item ? item.branch_name : '';
-
-}
-
-getDepartmentName(id: number): string {
-
-  const item = this.Departments.find(x => x.id == id);
-
-  return item ? item.dept_name : '';
-
-}
-
-getCategoryName(id: number): string {
-
-  const item = this.Category.find(x => x.id == id);
-
-  return item ? item.ctgry_title : '';
-
-}
-
-getDesignationName(id: number): string {
-
-  const item = this.Designation.find(x => x.id == id);
-
-  return item ? item.desgntn_job_title : '';
-
-}
-
-
-
-
-// select all option in branch
-
-toggleAllBranches(): void {
-
-  if (
-    this.selectedBranches.length ===
-    this.branches.length
-  ) {
-
-    this.selectedBranches = [];
-
-  } else {
-
-    this.selectedBranches =
-      this.branches.map(x => x.id);
-
   }
 
-  this.applyEmployeeFilter();
-}
+  isSomeBranchesSelected(): boolean {
 
-
-
-isAllBranchesSelected(): boolean {
-
-  return (
-    this.branches.length > 0 &&
-    this.selectedBranches.length ===
-    this.branches.length
-  );
-
-}
-
-isSomeBranchesSelected(): boolean {
-
-  return (
-    this.selectedBranches.length > 0 &&
-    this.selectedBranches.length <
-    this.branches.length
-  );
-
-}
-
-
-toggleAllDepartments(): void {
-
-  if (
-    this.selectedDepartments.length ===
-    this.Departments.length
-  ) {
-
-    this.selectedDepartments = [];
-
-  } else {
-
-    this.selectedDepartments =
-      this.Departments.map(x => x.id);
-
-  }
-
-  this.applyEmployeeFilter();
-
-}
-
-isAllDepartmentsSelected(): boolean {
-
-  return (
-    this.Departments.length > 0 &&
-    this.selectedDepartments.length ===
-    this.Departments.length
-  );
-
-}
-
-isSomeDepartmentsSelected(): boolean {
-
-  return (
-    this.selectedDepartments.length > 0 &&
-    this.selectedDepartments.length <
-    this.Departments.length
-  );
-
-
-  
-}
-
-
-
-// select all function
-
-toggleAllCategories(): void {
-
-  if (
-    this.selectedCategories.length ===
-    this.Category.length
-  ) {
-
-    this.selectedCategories = [];
-
-  } else {
-
-    this.selectedCategories =
-      this.Category.map(x => x.id);
-
-  }
-
-  this.applyEmployeeFilter();
-}
-
-isAllCategoriesSelected(): boolean {
-
-  return (
-    this.Category.length > 0 &&
-    this.selectedCategories.length ===
-    this.Category.length
-  );
-
-}
-
-isSomeCategoriesSelected(): boolean {
-
-  return (
-    this.selectedCategories.length > 0 &&
-    this.selectedCategories.length <
-    this.Category.length
-  );
-
-}
-
-toggleAllDesignations(): void {
-
-  if (
-    this.selectedDesignations.length ===
-    this.Designation.length
-  ) {
-
-    this.selectedDesignations = [];
-
-  } else {
-
-    this.selectedDesignations =
-      this.Designation.map(x => x.id);
-
-  }
-
-  this.applyEmployeeFilter();
-
-}
-
-
-
-isAllDesignationsSelected(): boolean {
-
-  return (
-    this.Designation.length > 0 &&
-    this.selectedDesignations.length ===
-    this.Designation.length
-  );
-
-}
-
-isSomeDesignationsSelected(): boolean {
-
-  return (
-    this.selectedDesignations.length > 0 &&
-    this.selectedDesignations.length <
-    this.Designation.length
-  );
-
-}
-
-
-currentPage: number = 1;
-itemsPerPage: number = 3;
-pagedEmployees: any[] = [];
-
-
-updatePagination(): void {
-
-  const startIndex =
-    (this.currentPage - 1) * this.itemsPerPage;
-
-  const endIndex =
-    startIndex + this.itemsPerPage;
-
-  this.pagedEmployees =
-    this.FilteredEmployees.slice(
-      startIndex,
-      endIndex
+    return (
+      this.selectedBranches.length > 0 &&
+      this.selectedBranches.length <
+      this.branches.length
     );
 
-}
+  }
 
 
-get totalPages(): number {
+  toggleAllDepartments(): void {
 
-  return Math.ceil(
-    this.FilteredEmployees.length /
-    this.itemsPerPage
-  );
+    if (
+      this.selectedDepartments.length ===
+      this.Departments.length
+    ) {
 
-}
+      this.selectedDepartments = [];
+
+    } else {
+
+      this.selectedDepartments =
+        this.Departments.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+  isAllDepartmentsSelected(): boolean {
+
+    return (
+      this.Departments.length > 0 &&
+      this.selectedDepartments.length ===
+      this.Departments.length
+    );
+
+  }
+
+  isSomeDepartmentsSelected(): boolean {
+
+    return (
+      this.selectedDepartments.length > 0 &&
+      this.selectedDepartments.length <
+      this.Departments.length
+    );
 
 
 
-nextPage(): void {
+  }
 
-  if (this.currentPage < this.totalPages) {
 
-    this.currentPage++;
+
+  // select all function
+
+  toggleAllCategories(): void {
+
+    if (
+      this.selectedCategories.length ===
+      this.Category.length
+    ) {
+
+      this.selectedCategories = [];
+
+    } else {
+
+      this.selectedCategories =
+        this.Category.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+  }
+
+  isAllCategoriesSelected(): boolean {
+
+    return (
+      this.Category.length > 0 &&
+      this.selectedCategories.length ===
+      this.Category.length
+    );
+
+  }
+
+  isSomeCategoriesSelected(): boolean {
+
+    return (
+      this.selectedCategories.length > 0 &&
+      this.selectedCategories.length <
+      this.Category.length
+    );
+
+  }
+
+  toggleAllDesignations(): void {
+
+    if (
+      this.selectedDesignations.length ===
+      this.Designation.length
+    ) {
+
+      this.selectedDesignations = [];
+
+    } else {
+
+      this.selectedDesignations =
+        this.Designation.map(x => x.id);
+
+    }
+
+    this.applyEmployeeFilter();
+
+  }
+
+
+
+  isAllDesignationsSelected(): boolean {
+
+    return (
+      this.Designation.length > 0 &&
+      this.selectedDesignations.length ===
+      this.Designation.length
+    );
+
+  }
+
+  isSomeDesignationsSelected(): boolean {
+
+    return (
+      this.selectedDesignations.length > 0 &&
+      this.selectedDesignations.length <
+      this.Designation.length
+    );
+
+  }
+
+
+  currentPage: number = 1;
+  itemsPerPage: number = 3;
+  pagedEmployees: any[] = [];
+
+
+  updatePagination(): void {
+
+    const startIndex =
+      (this.currentPage - 1) * this.itemsPerPage;
+
+    const endIndex =
+      startIndex + this.itemsPerPage;
+
+    this.pagedEmployees =
+      this.FilteredEmployees.slice(
+        startIndex,
+        endIndex
+      );
+
+  }
+
+
+  get totalPages(): number {
+
+    return Math.ceil(
+      this.FilteredEmployees.length /
+      this.itemsPerPage
+    );
+
+  }
+
+
+
+  nextPage(): void {
+
+    if (this.currentPage < this.totalPages) {
+
+      this.currentPage++;
+
+      this.updatePagination();
+
+    }
+
+  }
+
+
+
+  previousPage(): void {
+
+    if (this.currentPage > 1) {
+
+      this.currentPage--;
+
+      this.updatePagination();
+
+    }
+
+  }
+
+
+
+  goToPage(page: number): void {
+
+    this.currentPage = page;
 
     this.updatePagination();
 
   }
 
-}
 
 
+  get pageNumbers(): number[] {
 
-previousPage(): void {
-
-  if (this.currentPage > 1) {
-
-    this.currentPage--;
-
-    this.updatePagination();
+    return Array(
+      this.totalPages
+    ).fill(0).map((x, i) => i + 1);
 
   }
 
-}
+
+
+  AssignWeekCalendar: any[] = [];
+
+
+  Delete: boolean = false;
+  allSelecteddelete: boolean = false;
+
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
+  }
+
+  toggleSelectAllEmployees() {
+    this.allSelecteddelete = !this.allSelecteddelete;
+    this.AssignWeekCalendar.forEach(employee => employee.selected = this.allSelecteddelete);
+
+    this.FilteredEmployees.forEach(emp => {
+
+      emp.selected = this.allEmployeesSelected;
+
+    });
+
+  }
 
 
 
-goToPage(page: number): void {
+  registerleaveEntitlement(): void {
 
-  this.currentPage = page;
+    // if (!this.leave_type) {
 
-  this.updatePagination();
+    //   alert('Select Leave Type');
 
-}
+    //   return;
 
+    // }
 
+    const requests = this.entitlementRows.map(row => {
 
-get pageNumbers(): number[] {
+      const payload = {
 
-  return Array(
-    this.totalPages
-  ).fill(0).map((x, i) => i + 1);
+        leave_type: row.leave_type,
 
-}
+        min_experience: row.min_experience,
 
+        effective_after_from:
+          row.effective_after_from,
 
+        effective_after_unit:
+          row.effective_after_unit,
 
-AssignWeekCalendar: any[] = [];
+        accrual:
+          row.accrual,
 
+        accrual_rate:
+          row.accrual_rate,
 
-Delete: boolean = false;
-allSelecteddelete: boolean = false;
+        accrual_frequency:
+          row.accrual_frequency,
 
-toggleCheckboxes() {
-this.Delete = !this.Delete;
-}
+        accrual_month:
+          row.accrual_month,
 
-toggleSelectAllEmployees() {
-  this.allSelecteddelete = !this.allSelecteddelete;
-this.AssignWeekCalendar.forEach(employee => employee.selected = this.allSelecteddelete);
+        accrual_day:
+          row.accrual_day,
 
-this.FilteredEmployees.forEach(emp => {
-
-emp.selected = this.allEmployeesSelected;
-
-});
-
-}
-
-
-
-registerleaveEntitlement(): void {
-
-  // if (!this.leave_type) {
-
-  //   alert('Select Leave Type');
-
-  //   return;
-
-  // }
-
-  const requests = this.entitlementRows.map(row => {
-
-    const payload = {
-
-      leave_type: row.leave_type,
-
-      min_experience: row.min_experience,
-
-      effective_after_from:
-        row.effective_after_from,
-
-      effective_after_unit:
-        row.effective_after_unit,
-
-      accrual:
-        row.accrual,
-
-      accrual_rate:
-        row.accrual_rate,
-
-      accrual_frequency:
-        row.accrual_frequency,
-
-      accrual_month:
-        row.accrual_month,
-
-      accrual_day:
-        row.accrual_day,
-
-      prorate_accrual:
-        row.prorate_accrual,
+        prorate_accrual:
+          row.prorate_accrual,
 
         branches: row.branch || [],
         departments: row.departments || [],
         designations: row.designations || [],
         categories: row.categories || [],
 
-      created_by:
-        this.created_by,
+        created_by:
+          this.created_by,
 
-      reset_policy: row.reset
-        ? {
+        reset_policy: row.reset
+          ? {
 
             reset: true,
 
@@ -1167,79 +1219,85 @@ registerleaveEntitlement(): void {
               row.opening_balance
 
           }
-        : {
+          : {
             reset: false
           }
 
+      };
+
+      return this.leaveService
+        .registerLeaveEntitlement(payload);
+
+    });
+
+    forkJoin(requests).subscribe({
+
+      next: (responses) => {
+
+        console.log(responses);
+
+        alert(
+          'All Entitlements Saved Successfully'
+        );
+
+        if (this.hasPayRuleEnabled) {
+
+          this.currentStep = 2; // Pay Rule
+        
+        } else {
+        
+          this.currentStep = 2; // Applicable
+        
+        }
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        alert(
+          'Error while saving entitlements'
+        );
+
+      }
+
+    });
+
+  }
+
+  registerleaveApplicable(): void {
+
+    const selectedEmployees =
+      this.FilteredEmployees
+        .filter(x => x.selected)
+        .map(x => x.id);
+
+    const companyData = {
+
+      leave_type: this.selectedLeaveTypeId,
+
+      gender:
+        this.gender === 'B'
+          ? null
+          : this.gender,
+
+      branch:
+        this.selectedBranches,
+
+      department:
+        this.selectedDepartments,
+
+        role: this.selectedCategories,   // <-- change here
+
+        designation: this.selectedDesignations,
+
+      employee:
+        selectedEmployees
+
     };
 
-    return this.leaveService
-      .registerLeaveEntitlement(payload);
-
-  });
-
-  forkJoin(requests).subscribe({
-
-    next: (responses) => {
-
-      console.log(responses);
-
-      alert(
-        'All Entitlements Saved Successfully'
-      );
-
-      this.currentStep = 2;
-
-    },
-
-    error: (err) => {
-
-      console.error(err);
-
-      alert(
-        'Error while saving entitlements'
-      );
-
-    }
-
-  });
-
-}
-
-registerleaveApplicable(): void {
-
-  const selectedEmployees =
-    this.FilteredEmployees
-      .filter(x => x.selected)
-      .map(x => x.id);
-
-  const companyData = {
-
-    leave_type: this.selectedLeaveTypeId,
-
-    gender:
-      this.gender === 'B'
-        ? null
-        : this.gender,
-
-    branch:
-      this.selectedBranches,
-
-    department:
-      this.selectedDepartments,
-
-    category:
-      this.selectedCategories,
-
-    designation:
-      this.selectedDesignations,
-
-    employee:
-      selectedEmployees
-
-  };
-
-  this.leaveService
+    this.leaveService
       .registerApplicablepolicy(companyData)
       .subscribe({
 
@@ -1251,8 +1309,8 @@ registerleaveApplicable(): void {
             'Applicable Policy Saved Successfully'
           );
 
-          this.currentStep =
-            this.hasPayRuleEnabled ? 4 : 3;
+          // this.currentStep =
+          //   this.hasPayRuleEnabled ? 4 : 3;
 
         },
 
@@ -1268,215 +1326,266 @@ registerleaveApplicable(): void {
 
       });
 
-}
-
-
-
-registerleaveEntitlementFixed(): void {
-
-  if (!this.leave_type) {
-    alert('Select Leave Type');
-    return;
   }
 
-  this.registerButtonClicked = true;
 
-  const payload = {
 
-    leave_type: this.leave_type,
-  
-    min_experience:
-      this.min_experience || null,
-  
-    effective_after_from:
-      this.effective_after_from || null,
-  
-    effective_after_unit:
-      this.effective_after_unit || null,
-  
-    accrual_rate:
-      this.accrual
-        ? this.accrual_rate || null
-        : null,
-  
-    accrual_frequency:
-      this.accrual
-        ? this.accrual_frequency || null
-        : null,
-  
-    accrual_month:
-      this.accrual
-        ? this.accrual_month || null
-        : null,
-  
-    accrual_day:
-      this.accrual
-        ? this.accrual_day || null
-        : null,
-  
-    prorate_type:
-      this.prorate_type || null,
-  
-    prorate_accrual:
-      this.prorate_accrual,
-  
-    accrual:
-      this.accrual,
-  
-    created_by:
-      this.created_by,
-  
-    branches:
-      this.branch || [],
-  
-    categories:
-      this.categories || [],
-  
-    departments:
-      this.departments || [],
-  
-    designations:
-      this.designations || [],
-  
-    reset_policy: this.reset
-      ? {
+  registerleaveEntitlementFixed(): void {
+
+    if (!this.leave_type) {
+      alert('Select Leave Type');
+      return;
+    }
+
+    this.registerButtonClicked = true;
+
+    const payload = {
+
+      leave_type: this.leave_type,
+
+      min_experience:
+        this.min_experience || null,
+
+      effective_after_from:
+        this.effective_after_from || null,
+
+      effective_after_unit:
+        this.effective_after_unit || null,
+
+      accrual_rate:
+        this.accrual
+          ? this.accrual_rate || null
+          : null,
+
+      accrual_frequency:
+        this.accrual
+          ? this.accrual_frequency || null
+          : null,
+
+      accrual_month:
+        this.accrual
+          ? this.accrual_month || null
+          : null,
+
+      accrual_day:
+        this.accrual
+          ? this.accrual_day || null
+          : null,
+
+      prorate_type:
+        this.prorate_type || null,
+
+      prorate_accrual:
+        this.prorate_accrual,
+
+      accrual:
+        this.accrual,
+
+      created_by:
+        this.created_by,
+
+      branches:
+        this.branch || [],
+
+      categories:
+        this.categories || [],
+
+      departments:
+        this.departments || [],
+
+      designations:
+        this.designations || [],
+
+      reset_policy: this.reset
+        ? {
           reset: true,
-  
+
           frequency:
             this.frequency || null,
-  
+
           month:
             this.month || null,
-  
+
           day:
             this.day || null,
-  
+
           allow_cf:
             this.allow_cf,
-  
+
           carry_forward_choice:
             this.carry_forward_choice || null,
-  
+
           cf_value:
             this.cf_value || null,
-  
+
           cf_unit_or_percentage:
             this.cf_unit_or_percentage || null,
-  
+
           cf_max_limit:
             this.cf_max_limit || null,
-  
+
           allow_encashment:
             this.allow_encashment,
-  
+
           encashment_value:
             this.encashment_value || null,
-  
+
           encashment_unit_or_percentage:
             this.encashment_unit_or_percentage || null,
-  
+
           encashment_max_limit:
             this.encashment_max_limit || null,
-  
+
           opening_balance:
             this.opening_balance || null
         }
-      : {
+        : {
           reset: false
         }
-  
-  };
-  this.leaveService.registerLeaveEntitlement(payload).subscribe({
 
-    next: (res: any) => {
+    };
+    this.leaveService.registerLeaveEntitlement(payload).subscribe({
 
-      alert(
-        res?.message ||
-        res?.success ||
-        '✅ Leave Entitlement Added Successfully'
-      );
-
-      if (this.showPayRuleStep) {
-
-        this.currentStep = 2; // Pay Rule
-      
-      } else {
-      
-        this.currentStep = 2; // Applicable
-      
-      }
-
-      console.log('Success Response:', res);
-
-    },
-
-    error: (err) => {
-
-      console.error('Error Response:', err);
-
-      const errorMessage =
-        err?.error?.message ||
-        err?.error?.error ||
-        err?.error?.detail ||
-        JSON.stringify(err?.error) ||
-        'Failed to create Leave Entitlement';
-
-      alert(errorMessage);
-
-    }
-
-  });
-
-}
-
-
-registerleaveApplicableFixed(): void {
-
-  const selectedEmployees =
-  this.FilteredEmployees
-    .filter(x => x.selected)
-    .map(x => x.id);
-
-const companyData = {
-
-  leave_type: this.selectedLeaveTypeId,
-
-  gender:
-    this.gender === 'B'
-      ? null
-      : this.gender,
-
-  branch:
-    this.selectedBranches,
-
-  department:
-    this.selectedDepartments,
-
-  category:
-    this.selectedCategories,
-
-  designation:
-    this.selectedDesignations,
-
-  employee:
-    selectedEmployees
-
-};
-
-this.leaveService
-    .registerApplicablepolicy(companyData)
-    .subscribe({
-
-      next: (response: any) => {
+      next: (res: any) => {
 
         alert(
-          response?.message ||
-          response?.success ||
-          'Applicable Policy Saved Successfully'
+          res?.message ||
+          res?.success ||
+          '✅ Leave Entitlement Added Successfully'
         );
 
-        this.currentStep =
-          this.hasPayRuleEnabled ? 4 : 3;
+        if (this.hasPayRuleEnabled) {
+
+          this.currentStep = 2; // Pay Rule
+        
+        } else {
+        
+          this.currentStep = 2; // Applicable
+        
+        }
+
+        console.log('Success Response:', res);
+
+      },
+
+      error: (err) => {
+
+        console.error('Error Response:', err);
+
+        const errorMessage =
+          err?.error?.message ||
+          err?.error?.error ||
+          err?.error?.detail ||
+          JSON.stringify(err?.error) ||
+          'Failed to create Leave Entitlement';
+
+        alert(errorMessage);
+
+      }
+
+    });
+
+  }
+
+
+  registerleaveApplicableFixed(): void {
+
+    const selectedEmployees =
+      this.FilteredEmployees
+        .filter(x => x.selected)
+        .map(x => x.id);
+
+    const companyData = {
+
+      leave_type: this.selectedLeaveTypeId,
+
+      gender:
+        this.gender === 'B'
+          ? null
+          : this.gender,
+
+      branch:
+        this.selectedBranches,
+
+      department:
+        this.selectedDepartments,
+
+        role: this.selectedCategories,   // <-- change here
+
+        designation: this.selectedDesignations,
+
+      employee:
+        selectedEmployees
+
+    };
+
+    this.leaveService
+      .registerApplicablepolicy(companyData)
+      .subscribe({
+
+        next: (response: any) => {
+
+          alert(
+            response?.message ||
+            response?.success ||
+            'Applicable Policy Saved Successfully'
+          );
+
+          // this.currentStep =
+          //   this.hasPayRuleEnabled ? 4 : 3;
+
+        },
+
+        error: (err) => {
+
+          alert(
+            err?.error?.message ||
+            err?.error?.error ||
+            'Applicable Policy Save Failed'
+          );
+
+        }
+
+      });
+
+  }
+
+
+
+  submitPayRule(): void {
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+    const payload = {
+
+      sequence:
+        this.payRuleData.sequence,
+
+      days:
+        this.payRuleData.days,
+
+      pay_percentage:
+        this.payRuleData.pay_percentage,
+
+      leave_type:
+        this.selectedLeaveTypeId,
+
+      created_by:
+        this.userId
+
+    };
+
+    this.http.post(
+      `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+      payload
+    ).subscribe({
+
+      next: () => {
+
+        alert('Pay Rule Saved Successfully');
+
+        this.currentStep = 3; // Applicable
 
       },
 
@@ -1485,217 +1594,229 @@ this.leaveService
         alert(
           err?.error?.message ||
           err?.error?.error ||
-          'Applicable Policy Save Failed'
+          'Pay Rule Save Failed'
         );
 
       }
 
     });
 
-}
-
-
-
-submitPayRule(): void {
-
-  const selectedSchema =
-    this.authService.getSelectedSchema();
-
-  const payload = {
-
-    sequence:
-      this.payRuleData.sequence,
-
-    days:
-      this.payRuleData.days,
-
-    pay_percentage:
-      this.payRuleData.pay_percentage,
-
-    leave_type:
-      this.selectedLeaveTypeId,
-
-    created_by:
-      this.userId
-
-  };
-
-  this.http.post(
-    `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-    payload
-  ).subscribe({
-
-    next: () => {
-
-      alert('Pay Rule Saved Successfully');
-
-      this.currentStep = 3;
-
-    },
-
-    error: (err) => {
-
-      alert(
-        err?.error?.message ||
-        err?.error?.error ||
-        'Pay Rule Save Failed'
-      );
-
-    }
-
-  });
-
-}
-
-submitPayRuleFixed(): void {
-  const selectedSchema =
-    this.authService.getSelectedSchema();
-
-  const payload = {
-
-    sequence:
-      this.payRuleData.sequence,
-
-    days:
-      this.payRuleData.days,
-
-    pay_percentage:
-      this.payRuleData.pay_percentage,
-
-    leave_type:
-      this.selectedLeaveTypeId,
-
-    created_by:
-      this.userId
-
-  };
-
-  this.http.post(
-    `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-    payload
-  ).subscribe({
-
-    next: () => {
-
-      alert('Pay Rule Saved Successfully');
-
-      this.currentStep = 3;
-
-    },
-
-    error: (err) => {
-
-      alert(
-        err?.error?.message ||
-        err?.error?.error ||
-        'Pay Rule Save Failed'
-      );
-
-    }
-
-  });
-
-}
-
-
-
-// stepper functions
-
-
-currentStep: number = 1;
-
-nextStep(): void {
-
-  const maxStep = this.showPayRuleStep ? 4 : 3;
-
-  if (this.currentStep < maxStep) {
-
-    this.currentStep++;
-
   }
 
-}
-
-goToStep(step: number): void {
-
-  if (!this.isEditMode) {
-
-    return;
-
-  }
-
-  this.currentStep = step;
-
-}
-
-previousStep(): void {
-  if (this.currentStep > 1) {
-    this.currentStep--;
-  }
-}
-
-
-
-
-
-showPayRuleStep = false;
-
-selectedLeaveTypeForModal: any = null;
-
-payRuleData = {
-  sequence: null,
-  days: null,
-  pay_percentage: null
-};
-
-createdEntitlementId: number | null = null;
-
-
-onLeaveTypeChange(row: any): void {
-
-  const selectedLeaveType = this.LeaveTypes.find(
-    x => x.id == row.leave_type
-  );
-
-  row.enable_leave_pay_rule =
-    selectedLeaveType?.enable_leave_pay_rule || false;
-
-  this.selectedLeaveTypeId = row.leave_type;
-
-}
-
-
-get hasPayRuleEnabled(): boolean {
-
-  return this.entitlementRows.some(
-    row => row.enable_leave_pay_rule === true
-  );
-
-}
-
-
-// edit section
-
-
-isEditMode = false;
-
-editEntitlementData: any;
-
-editApplicableData: any;
-
-
-
-loadPolicyForEdit(entitlement: any): void {
-
-  const selectedSchema =
+  submitPayRuleFixed(): void {
+    const selectedSchema =
       this.authService.getSelectedSchema();
 
-  const savedIds =
+    const payload = {
+
+      sequence:
+        this.payRuleData.sequence,
+
+      days:
+        this.payRuleData.days,
+
+      pay_percentage:
+        this.payRuleData.pay_percentage,
+
+      leave_type:
+        this.selectedLeaveTypeId,
+
+      created_by:
+        this.userId
+
+    };
+
+    this.http.post(
+      `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+      payload
+    ).subscribe({
+
+      next: () => {
+
+        alert('Pay Rule Saved Successfully');
+
+        this.currentStep = 3; // Applicable
+
+      },
+
+      error: (err) => {
+
+        alert(
+          err?.error?.message ||
+          err?.error?.error ||
+          'Pay Rule Save Failed'
+        );
+
+      }
+
+    });
+
+  }
+
+
+
+  // stepper functions
+
+
+  currentStep: number = 1;
+
+  nextStep(): void {
+
+    const maxStep = this.showPayRuleStep ? 4 : 3;
+
+    if (this.currentStep < maxStep) {
+
+      this.currentStep++;
+
+    }
+
+  }
+
+  // goToStep(step: number): void {
+
+  //   if (!this.isEditMode) {
+
+  //     return;
+
+  //   }
+
+  //   this.currentStep = step;
+
+  // }
+
+  goToStep(step: number): void {
+
+    if (step === 1) {
+  
+      this.currentStep = 1;
+  
+    }
+  
+    if (step === 2) {
+  
+      this.currentStep = 2;
+  
+    }
+  
+    if (
+      step === 3 &&
+      this.hasPayRuleEnabled
+    ) {
+  
+      this.currentStep = 3;
+  
+    }
+  
+  }
+
+  previousStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+
+
+
+
+  showPayRuleStep = false;
+
+  selectedLeaveTypeForModal: any = null;
+
+  payRuleData = {
+    sequence: null,
+    days: null,
+    pay_percentage: null
+  };
+
+  createdEntitlementId: number | null = null;
+
+
+  onLeaveTypeChange(row: any): void {
+
+    const selectedLeaveType = this.LeaveTypes.find(
+      x => x.id == row.leave_type
+    );
+
+    row.enable_leave_pay_rule =
+      selectedLeaveType?.enable_leave_pay_rule || false;
+
+    this.selectedLeaveTypeId = row.leave_type;
+
+  }
+
+
+  get hasPayRuleEnabled(): boolean {
+
+    return this.entitlementRows.some(
+      row => row.enable_leave_pay_rule === true
+    );
+
+  }
+
+
+  // edit section
+
+
+  isEditMode = false;
+
+  editEntitlementData: any;
+
+  editApplicableData: any;
+
+
+
+  // loadPolicyForEdit(entitlement: any): void {
+
+  //   const selectedSchema =
+  //       this.authService.getSelectedSchema();
+
+  //   const savedIds =
+  //       JSON.parse(
+  //         localStorage.getItem('selectedBranchIds') || '[]'
+  //       );
+
+  //   this.leaveService
+  //       .getLeaveApplicables(
+  //         selectedSchema!,
+  //         savedIds
+  //       )
+  //       .subscribe((result: any[]) => {
+
+  //         const applicable =
+  //           result.find(
+  //             x =>
+  //               x.leave_type ===
+  //               entitlement.leave_type_name
+  //           );
+
+  //         if (applicable) {
+
+  //           this.patchApplicable(applicable);
+
+  //         }
+
+  //       });
+
+
+  // }
+
+  loadPolicyForEdit(entitlement: any): void {
+
+    this.patchMultipleEntitlements([entitlement]);
+
+    // Applicable Fetch
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+    const savedIds =
       JSON.parse(
-        localStorage.getItem('selectedBranchIds') || '[]'
+        localStorage.getItem(
+          'selectedBranchIds'
+        ) || '[]'
       );
 
-  this.leaveService
+    this.leaveService
       .getLeaveApplicables(
         selectedSchema!,
         savedIds
@@ -1711,523 +1832,692 @@ loadPolicyForEdit(entitlement: any): void {
 
         if (applicable) {
 
-          this.patchApplicable(applicable);
+          setTimeout(() => {
+
+            this.patchApplicable(
+              applicable
+            );
+
+          }, 500);
 
         }
 
       });
 
-}
-
-
-updateApplicable(): void {
-
-  const selectedEmployees =
-    this.FilteredEmployees
-      .filter(x => x.selected)
-      .map(x => x.id);
-
-  const payload = {
-
-    leave_type: this.entitlementRows[0]?.leave_type,
-
-    gender:
-      this.gender === 'B'
-        ? null
-        : this.gender,
-
-    branch:
-      this.selectedBranches,
-
-    department:
-      this.selectedDepartments,
-
-    category:
-      this.selectedCategories,
-
-    designation:
-      this.selectedDesignations,
-
-    employee:
-      selectedEmployees
-
-  };
-
-  this.leaveService
-    .updateApplicablePolicy(
-      this.applicableId!,
-      payload
-    )
-    .subscribe({
-
-      next: (res: any) => {
-
-        alert(
-          res?.message ||
-          'Applicable Updated Successfully'
-        );
-
-      },
-
-      error: (err) => {
-
-        alert(
-          err?.error?.message ||
-          'Applicable Update Failed'
-        );
-
-      }
-
-    });
-
-}
-
-
-updateApplicableFixed(): void {
-
-  const selectedEmployees =
-    this.FilteredEmployees
-      .filter(x => x.selected)
-      .map(x => x.id);
-
-  const payload = {
-
-    leave_type: this.entitlementRows[0]?.leave_type,
-
-    gender:
-      this.gender === 'B'
-        ? null
-        : this.gender,
-
-    branch:
-      this.selectedBranches,
-
-    department:
-      this.selectedDepartments,
-
-    category:
-      this.selectedCategories,
-
-    designation:
-      this.selectedDesignations,
-
-    employee:
-      selectedEmployees
-
-  };
-
-  this.leaveService
-    .updateApplicablePolicy(
-      this.applicableId!,
-      payload
-    )
-    .subscribe({
-
-      next: (res: any) => {
-
-        alert(
-          res?.message ||
-          'Applicable Updated Successfully'
-        );
-
-      },
-
-      error: (err) => {
-
-        alert(
-          err?.error?.message ||
-          'Applicable Update Failed'
-        );
-
-      }
-
-    });
-
-}
-
-
-
-patchMultipleEntitlements(
-  entitlements: any[]
-): void {
-
-  this.entitlementRows = [];
-
-  entitlements.forEach(item => {
-
-    const row =
-      this.createEntitlementRow();
-
-    row.id =
-      item.id;
-
-    row.leave_type =
-      item.leave_type;
-
-    row.min_experience =
-      item.min_experience;
-
-    row.effective_after_unit =
-      item.effective_after_unit;
-
-    row.effective_after_from =
-      item.effective_after_from;
-
-    row.branch =
-      item.branches || [];
-
-    row.departments =
-      item.departments || [];
-
-    row.designations =
-      item.designations || [];
-
-    row.categories =
-      item.categories || [];
-
-    row.accrual =
-      item.accrual;
-
-    row.accrual_rate =
-      item.accrual_rate;
-
-    row.accrual_frequency =
-      item.accrual_frequency;
-
-    row.accrual_month =
-      item.accrual_month;
-
-    row.accrual_day =
-      item.accrual_day;
-
-    row.prorate_accrual =
-      item.prorate_accrual;
-
-    if (item.reset_policy) {
-
-      const r =
-        item.reset_policy;
-
-      row.reset =
-        true;
-
-      row.frequency =
-        r.frequency;
-
-      row.month =
-        r.month;
-
-      row.day =
-        r.day;
-
-      row.allow_cf =
-        r.allow_cf;
-
-      row.carry_forward_choice =
-        r.carry_forward_choice;
-
-      row.cf_value =
-        r.cf_value;
-
-      row.cf_unit_or_percentage =
-        r.cf_unit_or_percentage;
-
-      row.cf_max_limit =
-        r.cf_max_limit;
-
-      row.cf_expires_in_value =
-        r.cf_expires_in_value;
-
-      row.cf_time_choice =
-        r.cf_time_choice;
-
-      row.allow_encashment =
-        r.allow_encashment;
-
-      row.encashment_value =
-        r.encashment_value;
-
-      row.encashment_unit_or_percentage =
-        r.encashment_unit_or_percentage;
-
-      row.encashment_max_limit =
-        r.encashment_max_limit;
-
-      row.opening_balance =
-        r.opening_balance;
-
-    }
-
-    this.onAccrualFrequencyChange(row);
-
-    this.onResetFrequencyChange(row);
-
-    this.entitlementRows.push(row);
-
-  });
-
-}
-
-patchApplicable(data: any): void {
-
-  console.log('Applicable Data', data);
-
-  this.applicableId = data.id;
-
-  this.gender = data.gender || 'B';
-
-  this.selectedBranches = this.branches
-    .filter(b =>
-      data.branch?.includes(b.branch_name)
-    )
-    .map(b => b.id);
-
-  this.selectedDepartments = this.Departments
-    .filter(d =>
-      data.department?.includes(d.dept_name)
-    )
-    .map(d => d.id);
-
-  this.selectedDesignations = this.Designation
-    .filter(d =>
-      data.designation?.includes(d.desgntn_job_title)
-    )
-    .map(d => d.id);
-
-  this.selectedCategories = this.Category
-    .filter(c =>
-      data.role?.includes(c.ctgry_title)
-    )
-    .map(c => c.id);
-
-  this.applyEmployeeFilter();
-
-  console.log('Selected Branches', this.selectedBranches);
-  console.log('Selected Departments', this.selectedDepartments);
-  console.log('Selected Designations', this.selectedDesignations);
-  console.log('Selected Categories', this.selectedCategories);
-}
-
-updateLeaveEntitlement(
-  id:number,
-  payload:any
-): Observable<any>{
-
-  const selectedSchema =
-    localStorage.getItem(
-      'selectedSchema'
+    // Pay Rule Fetch
+    this.loadPayRule(
+      entitlement.leave_type
     );
-
-  return this.http.put(
-
-    `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${selectedSchema}`,
-
-    payload
-
-  );
-
-}
-
-
-
-
-updateEntitlement(): void {
-
-  const requests = this.entitlementRows.map(row => {
-
-    const payload = {
-
-      leave_type: row.leave_type,
-
-      min_experience: row.min_experience,
-
-      effective_after_unit:
-        row.effective_after_unit,
-
-      effective_after_from:
-        row.effective_after_from,
-
-      branches: row.branch,
-
-      departments: row.departments,
-
-      designations: row.designations,
-
-      categories: row.categories,
-
-      accrual: row.accrual,
-
-      accrual_rate: row.accrual_rate,
-
-      accrual_frequency: row.accrual_frequency,
-
-      accrual_month: row.accrual_month,
-
-      accrual_day: row.accrual_day,
-
-      prorate_accrual: row.prorate_accrual,
-
-      reset_policy: row.reset ? {
-
-        reset: true,
-
-        frequency: row.frequency,
-
-        month: row.month,
-
-        day: row.day,
-
-        allow_cf: row.allow_cf,
-
-        carry_forward_choice:
-          row.carry_forward_choice,
-
-        cf_value: row.cf_value,
-
-        cf_unit_or_percentage:
-          row.cf_unit_or_percentage,
-
-        cf_max_limit: row.cf_max_limit,
-
-        cf_expires_in_value:
-          row.cf_expires_in_value,
-
-        cf_time_choice:
-          row.cf_time_choice,
-
-        allow_encashment:
-          row.allow_encashment,
-
-        encashment_value:
-          row.encashment_value,
-
-        encashment_unit_or_percentage:
-          row.encashment_unit_or_percentage,
-
-        encashment_max_limit:
-          row.encashment_max_limit,
-
-        opening_balance:
-          row.opening_balance
-
-      } : null
-
-    };
-
-    return this.leaveService.updateLeaveEntitlement(
-      row.id,
-      payload
-    );
-
-  });
-
-  forkJoin(requests).subscribe({
-
-    next: () => {
-
-      alert('Leave Policy Updated Successfully');
-
-      this.dialogRef.close(true);
-
-    },
-
-    error: (err) => {
-
-      console.error(err);
-
-      alert('Update Failed');
-
-    }
-
-  });
-
-}
-
-// multiple entitlement save
-entitlementRows: any[] = [
-  this.createEntitlementRow()
-];
-
-createEntitlementRow() {
-  return {
-
-    id: null,   // <-- ADD THIS
-
-    leave_type: null,  // <-- ADD THIS ALSO
-
-    min_experience: null,
-    effective_after_from: 'date_of_joining',
-    effective_after_unit: 'months',
-
-    branch: [],
-    departments: [],
-    designations: [],
-    categories: [],
-
-    accrual: false,
-    accrual_rate: null,
-    accrual_frequency: 'months',
-    accrual_month: null,
-    accrual_day: null,
-    prorate_type: null,
-    prorate_accrual: false,
-
-    showMonth: false,
-    showDay: true,
-
-    reset: false,
-    frequency: 'years',
-    month: null,
-    day: null,
-
-    showResetMonth: true,
-    showResetDay: true,
-
-    allow_cf: false,
-    carry_forward_choice: null,
-    cf_value: null,
-    cf_unit_or_percentage: null,
-    cf_max_limit: null,
-    cf_expires_in_value: null,
-    cf_time_choice: null,
-
-    allow_encashment: false,
-    encashment_value: null,
-    encashment_unit_or_percentage: null,
-    encashment_max_limit: null,
-
-    opening_balance: null
-  };
-}
-
-addEntitlementRow(): void {
-
-  this.entitlementRows.push(
-    this.createEntitlementRow()
-  );
-
-}
-
-
-removeEntitlementRow(index: number): void {
-
-  if (this.entitlementRows.length > 1) {
-
-    this.entitlementRows.splice(index, 1);
 
   }
 
-}
+  loadPayRule(
+    leaveTypeId: number
+  ): void {
+
+    this.leaveService
+      .getLeavePayRules(
+        leaveTypeId
+      )
+      .subscribe({
+
+        next: (res: any) => {
+
+          if (
+            res &&
+            res.length > 0
+          ) {
+
+            const rule =
+              res[0];
+
+            this.payRuleId =
+              rule.id;
+
+            this.payRuleData = {
+
+              sequence:
+                rule.sequence,
+
+              days:
+                rule.days,
+
+              pay_percentage:
+                rule.pay_percentage
+
+            };
+
+          }
+
+        },
+
+        error: err => {
+
+          console.error(
+            'Pay Rule Load Error',
+            err
+          );
+
+        }
+
+      });
+
+  }
+
+
+  updateApplicable(): void {
+
+    const selectedEmployees =
+      this.FilteredEmployees
+        .filter(x => x.selected)
+        .map(x => x.id);
+
+    const payload = {
+
+      leave_type: this.entitlementRows[0]?.leave_type,
+
+      gender: this.gender,
+
+      branch:
+        this.selectedBranches,
+
+      department:
+        this.selectedDepartments,
+
+        role: this.selectedCategories,   // <-- change here
+
+        designation: this.selectedDesignations,
+
+      employee:
+        selectedEmployees
+
+    };
+
+    this.leaveService
+      .updateApplicablePolicy(
+        this.applicableId!,
+        payload
+      )
+      .subscribe({
+
+        next: (res: any) => {
+
+          alert(
+            res?.message ||
+            'Applicable Updated Successfully'
+          );
+
+        },
+
+        error: (err) => {
+
+          alert(
+            err?.error?.message ||
+            'Applicable Update Failed'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  updateApplicableFixed(): void {
+
+    const selectedEmployees =
+      this.FilteredEmployees
+        .filter(x => x.selected)
+        .map(x => x.id);
+
+    const payload = {
+
+      leave_type: this.entitlementRows[0]?.leave_type,
+
+      gender:
+        this.gender === 'B'
+          ? null
+          : this.gender,
+
+      branch:
+        this.selectedBranches,
+
+      department:
+        this.selectedDepartments,
+
+        role: this.selectedCategories,   // <-- change here
+
+  designation: this.selectedDesignations,
+
+      employee:
+        selectedEmployees
+
+    };
+
+    this.leaveService
+      .updateApplicablePolicy(
+        this.applicableId!,
+        payload
+      )
+      .subscribe({
+
+        next: (res: any) => {
+
+          alert(
+            res?.message ||
+            'Applicable Updated Successfully'
+          );
+
+        },
+
+        error: (err) => {
+
+          alert(
+            err?.error?.message ||
+            'Applicable Update Failed'
+          );
+
+        }
+
+      });
+
+  }
 
 
 
-applicableId: number | null = null;
+  patchMultipleEntitlements(
+    entitlements: any[]
+  ): void {
+
+    this.entitlementRows = [];
+
+    entitlements.forEach(item => {
+
+      const row =
+        this.createEntitlementRow();
+
+      row.id =
+        item.id;
+
+      row.leave_type =
+        item.leave_type;
+
+      row.min_experience =
+        item.min_experience;
+
+      row.effective_after_unit =
+        item.effective_after_unit;
+
+      row.effective_after_from =
+        item.effective_after_from;
+
+      row.branch =
+        item.branches || [];
+
+      row.departments =
+        item.departments || [];
+
+      row.designations =
+        item.designations || [];
+
+      row.categories =
+        item.categories || [];
+
+      row.accrual =
+        item.accrual;
+
+      row.accrual_rate =
+        item.accrual_rate;
+
+      row.accrual_frequency =
+        item.accrual_frequency;
+
+      row.accrual_month =
+        item.accrual_month;
+
+      row.accrual_day =
+        item.accrual_day;
+
+      row.prorate_accrual =
+        item.prorate_accrual;
+
+      if (item.reset_policy) {
+
+        const r =
+          item.reset_policy;
+
+        row.reset =
+          true;
+
+        row.frequency =
+          r.frequency;
+
+        row.month =
+          r.month;
+
+        row.day =
+          r.day;
+
+        row.allow_cf =
+          r.allow_cf;
+
+        row.carry_forward_choice =
+          r.carry_forward_choice;
+
+        row.cf_value =
+          r.cf_value;
+
+        row.cf_unit_or_percentage =
+          r.cf_unit_or_percentage;
+
+        row.cf_max_limit =
+          r.cf_max_limit;
+
+        row.cf_expires_in_value =
+          r.cf_expires_in_value;
+
+        row.cf_time_choice =
+          r.cf_time_choice;
+
+        row.allow_encashment =
+          r.allow_encashment;
+
+        row.encashment_value =
+          r.encashment_value;
+
+        row.encashment_unit_or_percentage =
+          r.encashment_unit_or_percentage;
+
+        row.encashment_max_limit =
+          r.encashment_max_limit;
+
+        row.opening_balance =
+          r.opening_balance;
+
+      }
+
+      this.onAccrualFrequencyChange(row);
+
+      this.onResetFrequencyChange(row);
+
+      this.entitlementRows.push(row);
+
+    });
+
+  }
+
+  patchApplicable(data: any): void {
+
+    this.applicableId = data.id;
+  
+    this.gender =
+      data.gender ?? 'B';
+  
+    this.selectedBranches =
+      this.branches
+        .filter(b =>
+          data.branch?.includes(
+            b.branch_name
+          )
+        )
+        .map(b => b.id);
+  
+    this.selectedDepartments =
+      this.Departments
+        .filter(d =>
+          data.department?.includes(
+            d.dept_name
+          )
+        )
+        .map(d => d.id);
+  
+    this.selectedDesignations =
+      this.Designation
+        .filter(d =>
+          data.designation?.includes(
+            d.desgntn_job_title
+          )
+        )
+        .map(d => d.id);
+  
+    this.selectedCategories =
+      this.Category
+        .filter(c =>
+          data.role?.includes(
+            c.ctgry_title
+          )
+        )
+        .map(c => c.id);
+  
+    this.applyEmployeeFilter();
+  
+  }
+
+  updateLeaveEntitlement(
+    id: number,
+    payload: any
+  ): Observable<any> {
+
+    const selectedSchema =
+      localStorage.getItem(
+        'selectedSchema'
+      );
+
+    return this.http.put(
+
+      `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${selectedSchema}`,
+
+      payload
+
+    );
+
+  }
+
+
+
+
+  updateEntitlement(): void {
+
+    const requests = this.entitlementRows.map(row => {
+
+      const payload = {
+
+        leave_type: row.leave_type,
+
+        min_experience: row.min_experience,
+
+        effective_after_unit:
+          row.effective_after_unit,
+
+        effective_after_from:
+          row.effective_after_from,
+
+        branches: row.branch,
+
+        departments: row.departments,
+
+        designations: row.designations,
+
+        categories: row.categories,
+
+        accrual: row.accrual,
+
+        accrual_rate: row.accrual_rate,
+
+        accrual_frequency: row.accrual_frequency,
+
+        accrual_month: row.accrual_month,
+
+        accrual_day: row.accrual_day,
+
+        prorate_accrual: row.prorate_accrual,
+
+        reset_policy: row.reset ? {
+
+          reset: true,
+
+          frequency: row.frequency,
+
+          month: row.month,
+
+          day: row.day,
+
+          allow_cf: row.allow_cf,
+
+          carry_forward_choice:
+            row.carry_forward_choice,
+
+          cf_value: row.cf_value,
+
+          cf_unit_or_percentage:
+            row.cf_unit_or_percentage,
+
+          cf_max_limit: row.cf_max_limit,
+
+          cf_expires_in_value:
+            row.cf_expires_in_value,
+
+          cf_time_choice:
+            row.cf_time_choice,
+
+          allow_encashment:
+            row.allow_encashment,
+
+          encashment_value:
+            row.encashment_value,
+
+          encashment_unit_or_percentage:
+            row.encashment_unit_or_percentage,
+
+          encashment_max_limit:
+            row.encashment_max_limit,
+
+          opening_balance:
+            row.opening_balance
+
+        } : null
+
+      };
+
+      return this.leaveService.updateLeaveEntitlement(
+        row.id,
+        payload
+      );
+
+    });
+
+    forkJoin(requests).subscribe({
+
+      next: () => {
+
+        alert('Leave Policy Updated Successfully');
+
+        this.dialogRef.close(true);
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        alert('Update Failed');
+
+      }
+
+    });
+
+  }
+
+  // multiple entitlement save
+  entitlementRows: any[] = [
+    this.createEntitlementRow()
+  ];
+
+  createEntitlementRow() {
+    return {
+
+      id: null,   // <-- ADD THIS
+
+      leave_type: null,  // <-- ADD THIS ALSO
+
+      min_experience: null,
+      effective_after_from: 'date_of_joining',
+      effective_after_unit: 'months',
+
+      branch: [],
+      departments: [],
+      designations: [],
+      categories: [],
+
+      accrual: false,
+      accrual_rate: null,
+      accrual_frequency: 'months',
+      accrual_month: null,
+      accrual_day: null,
+      prorate_type: null,
+      prorate_accrual: false,
+
+      showMonth: false,
+      showDay: true,
+
+      reset: false,
+      frequency: 'years',
+      month: null,
+      day: null,
+
+      showResetMonth: true,
+      showResetDay: true,
+
+      allow_cf: false,
+      carry_forward_choice: null,
+      cf_value: null,
+      cf_unit_or_percentage: null,
+      cf_max_limit: null,
+      cf_expires_in_value: null,
+      cf_time_choice: null,
+
+      allow_encashment: false,
+      encashment_value: null,
+      encashment_unit_or_percentage: null,
+      encashment_max_limit: null,
+
+      opening_balance: null
+    };
+  }
+
+  addEntitlementRow(): void {
+
+    this.entitlementRows.push(
+      this.createEntitlementRow()
+    );
+
+  }
+
+
+  removeEntitlementRow(index: number): void {
+
+    if (this.entitlementRows.length > 1) {
+
+      this.entitlementRows.splice(index, 1);
+
+    }
+
+  }
+
+
+
+  applicableId: number | null = null;
 
 
 
 
 
+  payRuleId: number | null = null;
 
+  patchPayRule(data: any): void {
+
+    if (!data) return;
+
+    this.payRuleId = data.id;
+
+    this.payRuleData = {
+
+      sequence: data.sequence,
+
+      days: data.days,
+
+      pay_percentage: data.pay_percentage
+
+    };
+
+  }
+
+
+
+
+  updatePayRule(): void {
+
+    if (
+      !this.payRuleId
+    ) {
+      return;
+    }
+
+    const payload = {
+
+      leave_type:
+        this.entitlementRows[0]
+          .leave_type,
+
+      sequence:
+        this.payRuleData.sequence,
+
+      days:
+        this.payRuleData.days,
+
+      pay_percentage:
+        this.payRuleData.pay_percentage
+
+    };
+
+    this.leaveService
+      .updateLeavePayRule(
+        this.payRuleId!,
+        payload
+      )
+      .subscribe({
+
+        next: () => {
+
+          alert('Pay Rule Updated Successfully');
+
+        },
+
+        error: (err) => {
+
+          alert('Failed to Update Pay Rule');
+
+          console.error(err);
+
+        }
+
+      });
+
+  }
+
+
+
+
+
+  loadApplicableAfterMastersLoaded(
+    applicable: any
+  ): void {
+  
+    const interval = setInterval(() => {
+  
+      const mastersLoaded =
+  
+        this.branch?.length > 0 &&
+        this.Departments?.length > 0 &&
+        this.Designation?.length > 0 &&
+        this.Category?.length > 0;
+  
+      if (mastersLoaded) {
+  
+        clearInterval(interval);
+  
+        this.loadApplicableAfterMastersLoaded(
+          applicable
+        );
+      
+  
+      }
+  
+    }, 200);
+  
+  }
+
+  
 
 
 }

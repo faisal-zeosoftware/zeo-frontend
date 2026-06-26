@@ -93,6 +93,45 @@ export class LeaveService {
   );
 }
 
+
+getLeavePayRules(
+  leaveTypeId: number
+): Observable<any> {
+
+  const selectedSchema =
+    localStorage.getItem(
+      'selectedSchema'
+    );
+
+  return this.http.get<any>(
+
+    `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}&leave_type=${leaveTypeId}`
+
+  );
+
+}
+
+// Update Pay Rule
+updateLeavePayRule(
+  id: number,
+  payload: any
+): Observable<any> {
+
+  const selectedSchema =
+    localStorage.getItem(
+      'selectedSchema'
+    );
+
+  return this.http.put(
+
+    `${this.apiUrl}/calendars/api/leave-pay-rule/${id}/?schema=${selectedSchema}`,
+
+    payload
+
+  );
+
+}
+
 deleteLeaveEntitlement(id: number): Observable<any> {
 
   const schema = localStorage.getItem('selectedSchema');

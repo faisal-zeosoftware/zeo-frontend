@@ -656,36 +656,69 @@ loadEntitlementReset(callback?: Function): void {
 
 
 
+    // editLeavePolicy(entitlement: any): void {
+
+    //   const allRows =
+    //     this.EntitlementResets.filter(
+    //       x =>
+    //         x.leave_type ===
+    //         entitlement.leave_type
+    //     );
+    
+    //   this.dialog.open(
+    //     CreateleavepolicymodalComponent,
+    //     {
+    //       width: '90%',
+    //       height: '90%',
+    //       data: {
+    
+    //         editMode: true,
+    
+    //         leaveType:
+    //           entitlement.leave_type,
+    
+    //         entitlements:
+    //           allRows
+    
+    //       }
+    //     }
+    //   );
+    
+    // }
+
+
     editLeavePolicy(entitlement: any): void {
 
-      const allRows =
-        this.EntitlementResets.filter(
-          x =>
-            x.leave_type ===
-            entitlement.leave_type
-        );
-    
-      this.dialog.open(
-        CreateleavepolicymodalComponent,
-        {
-          width: '90%',
-          height: '90%',
-          data: {
-    
-            editMode: true,
-    
-            leaveType:
-              entitlement.leave_type,
-    
-            entitlements:
-              allRows
-    
-          }
-        }
-      );
-    
-    }
+  const allRows =
+    this.EntitlementResets.filter(
+      x => x.leave_type === entitlement.leave_type
+    );
 
+  const payRule =
+    this.leavePayRules.find(
+      p => p.leave_type === entitlement.leave_type
+    );
+
+  this.dialog.open(
+    CreateleavepolicymodalComponent,
+    {
+      width: '90%',
+      height: '90%',
+      data: {
+
+        editMode: true,
+
+        leaveType: entitlement.leave_type,
+
+        entitlements: allRows,
+
+        payRule: payRule || null
+
+      }
+    }
+  );
+
+}
 
 
 }
