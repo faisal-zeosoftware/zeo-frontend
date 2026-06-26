@@ -152,6 +152,20 @@
                         <form (ngSubmit)="registerleaveEntitlementFixed()" enctype="multipart/form-data">
                             <div   class="entitlement-section"
                             *ngFor="let row of entitlementRows; let i=index">
+                                         <div class="text-end  ent-remove"
+     *ngIf="entitlementRows.length > 1">
+
+    <button
+      type="button"
+      class="btn btn-danger btn-sm pull-right"
+      (click)="removeEntitlementRow(i)">
+
+      Remove
+
+    </button>
+
+</div>
+                       
                             <div class="row">
 
 
@@ -162,7 +176,8 @@
                                         class="form-control"
                                         [(ngModel)]="row.leave_type"
                                         [ngModelOptions]="{standalone:true}"
-                                        (change)="onLeaveTypeChange(row)">
+                                        (change)="onLeaveTypeChange(row)"
+                                        [disabled]="isEditMode">
                                     
                                         <option *ngFor="let leavetype of LeaveTypes"
                                                 [value]="leavetype.id">
@@ -1042,7 +1057,8 @@
                                         class="form-control"
                                         [(ngModel)]="row.leave_type"
                                         [ngModelOptions]="{standalone:true}"
-                                        (change)="onLeaveTypeChange(row)">
+                                        (change)="onLeaveTypeChange(row)"
+                                        [disabled]="isEditMode">
                                     
                                         <option *ngFor="let leavetype of LeaveTypes"
                                                 [value]="leavetype.id">

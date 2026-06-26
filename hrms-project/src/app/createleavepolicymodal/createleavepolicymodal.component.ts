@@ -82,6 +82,7 @@ export class CreateleavepolicymodalComponent {
 
 
 
+  
 
 
 
@@ -225,6 +226,20 @@ export class CreateleavepolicymodalComponent {
 
       this.isEditMode = true;
 
+      const firstEntitlement =
+      this.data.entitlements[0];
+
+    // fetch saved type
+    this.selectedPolicy =
+      firstEntitlement.entitlement_type;
+
+    // hide fixed/variable selection screen
+    this.showPolicySelection = false;
+
+    this.loadPolicyForEdit(
+      firstEntitlement
+    );
+
       // Populate entitlement section
       this.patchMultipleEntitlements(
         this.data.entitlements
@@ -242,6 +257,8 @@ export class CreateleavepolicymodalComponent {
       this.loadPolicyForEdit(
         this.data.entitlements[0]
       );
+
+      
 
 
 
@@ -409,6 +426,14 @@ export class CreateleavepolicymodalComponent {
 
 
 
+  selectPolicy(type: string): void {
+
+    this.selectedPolicy = type;
+  
+    this.showPolicySelection = false;
+  }
+
+
 
 
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -443,7 +468,29 @@ export class CreateleavepolicymodalComponent {
     this.leaveService.getLeaveTypeNew(schema, branchIds).subscribe({
       next: (data: any) => {
         // Filter active employees
-        this.LeaveTypes = data;
+        // this.LeaveTypes = data;
+
+        if (this.isEditMode) {
+
+          // Edit Mode
+          // Show only saved leave type
+      
+          this.LeaveTypes = data.filter(
+            (x: any) =>
+              x.id == this.data.leaveType
+          );
+      
+        } else {
+      
+          // Create Mode
+          // Show only leave types not already entitled
+      
+          this.LeaveTypes = data.filter(
+            (x: any) =>
+              x.is_entitlement === false
+          );
+      
+        }
 
         // --- ADDED CONDITION FOR EDIT TIME INITIALIZATION ---
         if (this.isEditMode && this.data?.leaveType) {
@@ -1140,6 +1187,9 @@ export class CreateleavepolicymodalComponent {
 
         leave_type: row.leave_type,
 
+        entitlement_type:
+        this.selectedPolicy,
+
         min_experience: row.min_experience,
 
         effective_after_from:
@@ -1330,128 +1380,125 @@ export class CreateleavepolicymodalComponent {
 
 
 
+
+
   registerleaveEntitlementFixed(): void {
 
-    if (!this.leave_type) {
-      alert('Select Leave Type');
-      return;
-    }
+    // if (!this.leave_type) {
 
-    this.registerButtonClicked = true;
+    //   alert('Select Leave Type');
 
-    const payload = {
+    //   return;
 
-      leave_type: this.leave_type,
+    // }
 
-      min_experience:
-        this.min_experience || null,
+    const requests = this.entitlementRows.map(row => {
 
-      effective_after_from:
-        this.effective_after_from || null,
+      const payload = {
 
-      effective_after_unit:
-        this.effective_after_unit || null,
+        leave_type: row.leave_type,
 
-      accrual_rate:
-        this.accrual
-          ? this.accrual_rate || null
-          : null,
+        entitlement_type:
+        this.selectedPolicy,
 
-      accrual_frequency:
-        this.accrual
-          ? this.accrual_frequency || null
-          : null,
+        min_experience: row.min_experience,
 
-      accrual_month:
-        this.accrual
-          ? this.accrual_month || null
-          : null,
+        effective_after_from:
+          row.effective_after_from,
 
-      accrual_day:
-        this.accrual
-          ? this.accrual_day || null
-          : null,
+        effective_after_unit:
+          row.effective_after_unit,
 
-      prorate_type:
-        this.prorate_type || null,
+        accrual:
+          row.accrual,
 
-      prorate_accrual:
-        this.prorate_accrual,
+        accrual_rate:
+          row.accrual_rate,
 
-      accrual:
-        this.accrual,
+        accrual_frequency:
+          row.accrual_frequency,
 
-      created_by:
-        this.created_by,
+        accrual_month:
+          row.accrual_month,
 
-      branches:
-        this.branch || [],
+        accrual_day:
+          row.accrual_day,
 
-      categories:
-        this.categories || [],
+        prorate_accrual:
+          row.prorate_accrual,
 
-      departments:
-        this.departments || [],
+        branches: row.branch || [],
+        departments: row.departments || [],
+        designations: row.designations || [],
+        categories: row.categories || [],
 
-      designations:
-        this.designations || [],
+        created_by:
+          this.created_by,
 
-      reset_policy: this.reset
-        ? {
-          reset: true,
+        reset_policy: row.reset
+          ? {
 
-          frequency:
-            this.frequency || null,
+            reset: true,
 
-          month:
-            this.month || null,
+            frequency:
+              row.frequency,
 
-          day:
-            this.day || null,
+            month:
+              row.month,
 
-          allow_cf:
-            this.allow_cf,
+            day:
+              row.day,
 
-          carry_forward_choice:
-            this.carry_forward_choice || null,
+            allow_cf:
+              row.allow_cf,
 
-          cf_value:
-            this.cf_value || null,
+            carry_forward_choice:
+              row.carry_forward_choice,
 
-          cf_unit_or_percentage:
-            this.cf_unit_or_percentage || null,
+            cf_value:
+              row.cf_value,
 
-          cf_max_limit:
-            this.cf_max_limit || null,
+            cf_unit_or_percentage:
+              row.cf_unit_or_percentage,
 
-          allow_encashment:
-            this.allow_encashment,
+            cf_max_limit:
+              row.cf_max_limit,
 
-          encashment_value:
-            this.encashment_value || null,
+            allow_encashment:
+              row.allow_encashment,
 
-          encashment_unit_or_percentage:
-            this.encashment_unit_or_percentage || null,
+            encashment_value:
+              row.encashment_value,
 
-          encashment_max_limit:
-            this.encashment_max_limit || null,
+            encashment_unit_or_percentage:
+              row.encashment_unit_or_percentage,
 
-          opening_balance:
-            this.opening_balance || null
-        }
-        : {
-          reset: false
-        }
+            encashment_max_limit:
+              row.encashment_max_limit,
 
-    };
-    this.leaveService.registerLeaveEntitlement(payload).subscribe({
+            opening_balance:
+              row.opening_balance
 
-      next: (res: any) => {
+          }
+          : {
+            reset: false
+          }
+
+      };
+
+      return this.leaveService
+        .registerLeaveEntitlement(payload);
+
+    });
+
+    forkJoin(requests).subscribe({
+
+      next: (responses) => {
+
+        console.log(responses);
 
         alert(
-          res?.message ||
-          res?.success ||
-          '✅ Leave Entitlement Added Successfully'
+          'All Entitlements Saved Successfully'
         );
 
         if (this.hasPayRuleEnabled) {
@@ -1464,22 +1511,15 @@ export class CreateleavepolicymodalComponent {
         
         }
 
-        console.log('Success Response:', res);
-
       },
 
       error: (err) => {
 
-        console.error('Error Response:', err);
+        console.error(err);
 
-        const errorMessage =
-          err?.error?.message ||
-          err?.error?.error ||
-          err?.error?.detail ||
-          JSON.stringify(err?.error) ||
-          'Failed to create Leave Entitlement';
-
-        alert(errorMessage);
+        alert(
+          'Error while saving entitlements'
+        );
 
       }
 
@@ -2223,6 +2263,9 @@ export class CreateleavepolicymodalComponent {
       const payload = {
 
         leave_type: row.leave_type,
+
+        entitlement_type:
+    this.selectedPolicy,
 
         min_experience: row.min_experience,
 
