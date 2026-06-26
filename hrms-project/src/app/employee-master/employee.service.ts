@@ -2095,6 +2095,23 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(url);
   }
 
+ sendDelegationResponse(apiUrl: string, data: any): Observable<any> {
+  return this.http.post(apiUrl, data);
+}
+
+
+  getDelegationNotifications(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/request-notifications/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
 
 
   getLeaveGeneralReqNot(selectedSchema: string): Observable<any> {

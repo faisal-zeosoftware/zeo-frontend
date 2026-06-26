@@ -1,266 +1,442 @@
-
-
 <!-- Sidebar -->
-<nav id="sidebarMenu" class=" d-lg-block sidebar  sidebar-dark" [class.menu-open]="isMenuOpen"
-  [class.menu-close]="!isMenuOpen" >
-  
-
-
+<nav
+  id="sidebarMenu"
+  class="d-lg-block sidebar sidebar-dark"
+  [class.menu-open]="isMenuOpen"
+  [class.menu-close]="!isMenuOpen"
+>
   <div class="position-sticky">
-    <div class="list-group list-group-flush  mt-5">
-      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple"
-      aria-current="true" routerLink="/main-sidebar/dashboard-contents">
-      <span><mat-icon>home</mat-icon> <span class="sidenav-opt"> Dashboard</span></span>
-    </a>
-      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple"
-        aria-current="true" routerLink="/main-sidebar/sub-sidebar/employee-master" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>peoples</mat-icon> <span class="sidenav-opt" > Employee Management</span></span>
+    <div class="list-group list-group-flush mt-5">
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        aria-current="true"
+        routerLink="/main-sidebar/dashboard-contents"
+      >
+        <span
+          ><mat-icon>home</mat-icon>
+          <span class="sidenav-opt"> Dashboard</span></span
+        >
+      </a>
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        aria-current="true"
+        routerLink="/main-sidebar/sub-sidebar/employee-master"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>peoples</mat-icon>
+          <span class="sidenav-opt"> Employee Management</span></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>logout</mat-icon> <span class="sidenav-opt" routerLink="/main-sidebar/leave-options/leave-master"> Leave Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>logout</mat-icon>
+          <span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/leave-options/leave-master"
+          >
+            Leave Management</span
+          ></span
+        >
       </a>
 
-
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>currency_exchange</mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/salary-options/salary"> Payroll Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>currency_exchange</mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/salary-options/salary"
+          >
+            Payroll Management</span
+          ></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>real_estate_agent </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/loan-sidebar/loan-type"> Loan Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>real_estate_agent </mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/loan-sidebar/loan-type"
+          >
+            Loan Management</span
+          ></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>work_update
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/asset-options"> Asset Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>work_update </mat-icon
+          ><span class="sidenav-opt" routerLink="/main-sidebar/asset-options">
+            Asset Management</span
+          ></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>work_update
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/general-sidebar">General Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>work_update </mat-icon
+          ><span class="sidenav-opt" routerLink="/main-sidebar/general-sidebar"
+            >General Management</span
+          ></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>work_update
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/attendance-sidebar/attendace-marking"> Attendance Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>work_update </mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/attendance-sidebar/attendace-marking"
+          >
+            Attendance Management</span
+          ></span
+        >
       </a>
 
-  
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>library_books
-          
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/document-folders"> Document Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>library_books </mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/document-folders"
+          >
+            Document Management</span
+          ></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>timelapse
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/project-options"> Project Management</span></span>
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>timelapse </mat-icon
+          ><span class="sidenav-opt" routerLink="/main-sidebar/project-options">
+            Project Management</span
+          ></span
+        >
       </a>
 
-
-
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>airplane_ticket
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/air-ticket-options"> Air Ticket Management</span></span>
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>airplane_ticket </mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/air-ticket-options"
+          >
+            Air Ticket Management</span
+          ></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>transfer_within_a_station
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/shift-options"> Shift Management</span></span>
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>transfer_within_a_station </mat-icon
+          ><span class="sidenav-opt" routerLink="/main-sidebar/shift-options">
+            Shift Management</span
+          ></span
+        >
       </a>
 
-      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple" *ngIf="!hideButton" routerLink="/main-sidebar/report-options/report-generate" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>stacked_bar_chart</mat-icon> <span class="sidenav-opt" >Report Management</span></span>
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        *ngIf="!hideButton"
+        routerLink="/main-sidebar/report-options/report-generate"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>stacked_bar_chart</mat-icon>
+          <span class="sidenav-opt">Report Management</span></span
+        >
       </a>
 
-      <a routerLinkActive="active"  class="list-group-item list-group-item-action py-2 ripple" *ngIf="!hideButton" routerLink="/main-sidebar/settings/branch-master" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>settings</mat-icon> <span class="sidenav-opt" > Settings</span></span>
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        *ngIf="!hideButton"
+        routerLink="/main-sidebar/settings/branch-master"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>settings</mat-icon>
+          <span class="sidenav-opt"> Settings</span></span
+        >
       </a>
 
-
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon> speed
-        
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/dashboard-contents"> Performance Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon> speed </mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/dashboard-contents"
+          >
+            Performance Management</span
+          ></span
+        >
       </a>
 
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon> group_add
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/dashboard-contents"> Recruitmemt Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon> group_add </mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/dashboard-contents"
+          >
+            Recruitmemt Management</span
+          ></span
+        >
       </a>
-      <a  routerLinkActive="active" class="list-group-item list-group-item-action py-2 ripple" (click)="onToolbarMenuToggle()">
-        <span><mat-icon>book_ribbon
-        
-        </mat-icon><span class="sidenav-opt" routerLink="/main-sidebar/dashboard-contents">Learning  Management</span></span>
-
-
+      <a
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action py-2 ripple"
+        (click)="onToolbarMenuToggle()"
+      >
+        <span
+          ><mat-icon>book_ribbon </mat-icon
+          ><span
+            class="sidenav-opt"
+            routerLink="/main-sidebar/dashboard-contents"
+            >Learning Management</span
+          ></span
+        >
       </a>
-
-       
     </div>
   </div>
 </nav>
 
-
-
-
 <!-- Navbar -->
-<nav id="main-navbar" class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+<nav
+  id="main-navbar"
+  class="navbar navbar-expand-lg navbar-light bg-white fixed-top"
+>
   <!-- Container wrapper -->
   <div class="container-fluid lap_view">
-
-
     <!-- logo -->
     <div class="nav_mov">
-     <a class="navbar-brand">
-      <img src="assets/zeo_logo_new.png" height="70" width="100%" alt="MDB Logo" 
-        loading="lazy" />
-
-     </a>
-     
-
-     </div>
-  
-   
-    <ul class="navbar-nav ms-auto d-flex flex-row" >
-<!-- 🔔 Notification Dropdown -->
-<li class="nav-item dropdown" *ngIf="AllNotifications">
-  <a
-    class="nav-link me-5 me-lg-0 dropdown-toggle hidden-arrow"
-    id="notificationDropdown"
-    data-bs-toggle="dropdown"
-    aria-expanded="false"
-    style="cursor: pointer; position: relative;"
-  >
-    <div class="notiicon position-relative">
-      <mat-icon class="mt-2">notifications</mat-icon>
-      <span
-        *ngIf="notificationCount > 0"
-        class="badge rounded-pill bg-danger position-absolute translate-middle"
-        style="font-size: 11px; left: 70%; top: 5px;"
-      >
-        {{ notificationCount }}
-      </span>
+      <a class="navbar-brand">
+        <img
+          src="assets/zeo_logo_new.png"
+          height="70"
+          width="100%"
+          alt="MDB Logo"
+          loading="lazy"
+        />
+      </a>
     </div>
-  </a>
 
-  <ul
-    class="dropdown-menu dropdown-menu-end shadow p-2"
-    aria-labelledby="notificationDropdown"
-    style="min-width: 320px; max-height: 400px; overflow-y: auto;"
-  >
-    <ng-container *ngIf="AllNotifications.length > 0; else noNotifications">
-      <li *ngFor="let noti of AllNotifications; let i = index">
+    <ul class="navbar-nav ms-auto d-flex flex-row">
+      <!-- 🔔 Notification Dropdown -->
+      <li class="nav-item dropdown" *ngIf="AllNotifications">
         <a
-          class="dropdown-item py-2 px-3"
-          href="javascript:void(0)"
-          (click)="onNotificationClick(noti)"
-          [ngClass]="{ 'flash-highlight': noti.highlighted }"
+          class="nav-link me-5 me-lg-0 dropdown-toggle hidden-arrow"
+          id="notificationDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          style="cursor: pointer; position: relative"
         >
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <strong *ngIf="noti.type === 'document'">📄 Document Expired</strong>
-              <strong *ngIf="noti.type === 'leave'">🏖️ Leave Request</strong>
-              <strong *ngIf="noti.type === 'general'">📢 General Request</strong>
-              <strong *ngIf="noti.type === 'docrequest'">🗂️ Document Request</strong>
-              <strong *ngIf="noti.type === 'loanrequest'">💰 Loan Request</strong>
-              <strong *ngIf="noti.type === 'assetrequest'">🧰 Asset Request</strong>
-              <strong *ngIf="noti.type === 'airticket'">✈️ AirTicket Request</strong>
-              <strong *ngIf="noti.type === 'advancesalaryrequest'">💵 Advance Salary Request</strong>
-              <strong *ngIf="noti.type === 'lateinearlyrequest'">⏱️ Late In / Early Out Request</strong>
-              <div class="text-muted small">
-                {{ noti.created_at | date: 'medium' }}
-              </div>
-              <div class="small mt-1 text-wrap text-dark">
-                {{ noti.message }}
-              </div>
-            </div>
-            <span class="badge bg-primary rounded-pill">New</span>
+          <div class="notiicon position-relative">
+            <mat-icon class="mt-2">notifications</mat-icon>
+            <span
+              *ngIf="notificationCount > 0"
+              class="badge rounded-pill bg-danger position-absolute translate-middle"
+              style="font-size: 11px; left: 70%; top: 5px"
+            >
+              {{ notificationCount }}
+            </span>
           </div>
         </a>
-        <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-1" />
+
+        <ul
+          class="dropdown-menu dropdown-menu-end shadow p-2"
+          aria-labelledby="notificationDropdown"
+          style="min-width: 320px; max-height: 400px; overflow-y: auto"
+        >
+          <ng-container
+            *ngIf="AllNotifications.length > 0; else noNotifications"
+          >
+            <li *ngFor="let noti of AllNotifications; let i = index">
+              <a
+                class="dropdown-item py-2 px-3"
+                href="javascript:void(0)"
+                (click)="onNotificationClick(noti)"
+                [ngClass]="{ 'flash-highlight': noti.highlighted }"
+              >
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong *ngIf="noti.type === 'document'"
+                      >📄 Document Expired</strong
+                    >
+                    <strong *ngIf="noti.type === 'resignation'"
+                      >📄 Resignation Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'leave'"
+                      >🏖️ Leave Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'general'"
+                      >📢 General Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'docrequest'"
+                      >🗂️ Document Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'loanrequest'"
+                      >💰 Loan Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'assetrequest'"
+                      >🧰 Asset Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'airticket'"
+                      >✈️ AirTicket Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'advancesalaryrequest'"
+                      >💵 Advance Salary Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'lateinearlyrequest'"
+                      >⏱️ Late In / Early Out Request</strong
+                    >
+                    <strong *ngIf="noti.type === 'delegation'"
+                      >👥 Delegation Request</strong
+                    >
+                   <strong *ngIf="noti.type === 'delegationres'"
+                      >👥 Delegation Response</strong
+                    >
+                    <div class="text-muted small">
+                      {{ noti.created_at | date: "medium" }}
+                    </div>
+                    <div class="small mt-1 text-wrap text-dark">
+                      {{ noti.message }}
+                    </div>
+                  </div>
+                  <span class="badge bg-primary rounded-pill">New</span>
+                </div>
+              </a>
+              <hr
+                *ngIf="i < AllNotifications.length - 1"
+                class="dropdown-divider my-1"
+              />
+            </li>
+          </ng-container>
+
+          <ng-template #noNotifications>
+            <li>
+              <a class="dropdown-item text-center text-muted py-3">
+                No new notifications
+              </a>
+            </li>
+          </ng-template>
+        </ul>
       </li>
-    </ng-container>
 
-    <ng-template #noNotifications>
-      <li>
-        <a class="dropdown-item text-center text-muted py-3">
-          No new notifications
-        </a>
-      </li>
-    </ng-template>
-  </ul>
-</li>
+      <!-- select company -->
 
+      <li class="nav-item dropdown" *ngIf="schemas.length > 0">
+        <div
+          class="Company_pro company_bor"
+          #dropdownContainer
+          (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen"
+        >
+          <div class="cmp_drop">
+            <mat-icon>business</mat-icon>
+            <!-- <h1>{{ selectedSchema || 'Select Company' }}</h1> -->
+            <h1>{{ selectedSchemaNameDisplay || "Select Company" }}</h1>
+            <mat-icon
+              [style.transform]="
+                isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+              "
+            >
+              expand_more
+            </mat-icon>
+          </div>
 
-       <!-- select company -->
-   
-<li class="nav-item dropdown" *ngIf="schemas.length > 0">
-  <div class="Company_pro company_bor"
-  #dropdownContainer
-  (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen">
-    
-    <div class="cmp_drop">
-      <mat-icon>business</mat-icon>
-      <!-- <h1>{{ selectedSchema || 'Select Company' }}</h1> -->
-      <h1>{{ selectedSchemaNameDisplay || 'Select Company' }}</h1>
-      <mat-icon [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">
-        expand_more
-      </mat-icon>
-    </div>
+          <div
+            class="standard-dropdown"
+            [class.show]="isCompanyDropdownOpen"
+            (click)="$event.stopPropagation()"
+          >
+            <!-- 🔥 SPINNER OVERLAY (CORRECT PLACE) -->
+            <div class="spinner-overlay" *ngIf="isLoadingEss">
+              <mat-progress-spinner
+                diameter="30"
+                mode="indeterminate"
+              ></mat-progress-spinner>
+            </div>
 
-    <div class="standard-dropdown" 
-         [class.show]="isCompanyDropdownOpen" 
-         (click)="$event.stopPropagation()">
+            <div class="menu-header">
+              <mat-icon>checklist</mat-icon>
+              <span>Select Branches</span>
+            </div>
 
-      <!-- 🔥 SPINNER OVERLAY (CORRECT PLACE) -->
-      <div class="spinner-overlay" *ngIf="isLoadingEss">
-        <mat-progress-spinner diameter="30" mode="indeterminate"></mat-progress-spinner>
-      </div>
-
-      <div class="menu-header">
-        <mat-icon>checklist</mat-icon>
-        <span>Select Branches</span>
-      </div>
-
-      <div class="scrollable-content">
-        <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
-
-          <div class="schema-row" (click)="toggleSchema(i, $event)">
-            <!-- <div class="schema-info">
+            <div class="scrollable-content">
+              <div
+                class="schema-item"
+                *ngFor="let data of userDetailss; let i = index"
+              >
+                <div class="schema-row" (click)="toggleSchema(i, $event)">
+                  <!-- <div class="schema-info">
               <div class="avatar">{{ data.name | slice:0:1 }}</div>
               <span class="company-name">{{ data.name }}</span>
             </div> -->
 
-            <div class="schema-info">
-              <div class="avatar">
-                {{ data.name | slice:0:1 }}
-              </div>
-            
-              <span class="company-name">
-                {{ data.name }}
-              </span>
-            
-              <!-- Notification Bell -->
-              <!-- <div
+                  <div class="schema-info">
+                    <div class="avatar">
+                      {{ data.name | slice: 0 : 1 }}
+                    </div>
+
+                    <span class="company-name">
+                      {{ data.name }}
+                    </span>
+
+                    <!-- Notification Bell -->
+                    <!-- <div
               class="notification-wrapper"
               *ngIf="data.notification_count > 0"
               (click)="openNotificationModal(data, $event)">
@@ -274,343 +450,328 @@
               </span>
             
             </div> -->
+                  </div>
+                  <mat-icon style="color: black">
+                    {{
+                      expandedSchemaIndex === i ? "expand_less" : "expand_more"
+                    }}
+                  </mat-icon>
+                </div>
 
+                <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
+                  <div
+                    class="branch-option multi-select"
+                    *ngFor="let branch of data.branches"
+                    (click)="
+                      !isLoadingEss &&
+                        toggleBranchSelection(data, branch, $event)
+                    "
+                  >
+                    <div class="branch-left">
+                      <mat-icon class="check-box">
+                        {{
+                          selectedSchema === data.schema_name &&
+                          selectedBranchIds.includes(branch.id)
+                            ? "check_box"
+                            : "check_box_outline_blank"
+                        }}
+                      </mat-icon>
+
+                      <span
+                        class="branch-name"
+                        [class.selected-text]="
+                          selectedSchema === data.schema_name &&
+                          selectedBranchIds.includes(branch.id)
+                        "
+                      >
+                        {{ branch.branch_name }}
+                      </span>
+                    </div>
+
+                    <!-- Notification Bell -->
+
+                    <div
+                      class="notification-wrapper"
+                      *ngIf="branch.notification_count > 0"
+                      (click)="openBranchNotificationModal(branch, $event)"
+                    >
+                      <mat-icon class="notification-bell">
+                        notifications
+                      </mat-icon>
+
+                      <span class="notification-count">
+                        {{
+                          branch.notification_count > 99
+                            ? "99+"
+                            : branch.notification_count
+                        }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <mat-icon style="color: black;">
-              {{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}
-            </mat-icon>
           </div>
+        </div>
+      </li>
 
-          <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
+      <!-- Notification Modal -->
+
+      <div class="notification-modal-overlay" *ngIf="isNotificationModalOpen">
+        <div class="notification-modal">
+          <div class="modal-header">
+            <h3>Notifications</h3>
+
+            <span class="close-btn" (click)="closeNotificationModal()">
+              ×
+            </span>
+          </div>
+          <div class="company-title">
+            {{ selectedBranchNotification?.branch_name }}
+          </div>
+          <div *ngIf="notificationList.length > 0">
             <div
-            class="branch-option multi-select"
-            *ngFor="let branch of data.branches"
-            (click)="!isLoadingEss && toggleBranchSelection(data, branch, $event)">
-          
-            <div class="branch-left">
-          
-              <mat-icon class="check-box">
-                {{
-                  (selectedSchema === data.schema_name &&
-                  selectedBranchIds.includes(branch.id))
-                  ? 'check_box'
-                  : 'check_box_outline_blank'
-                }}
-              </mat-icon>
-          
-              <span
-                class="branch-name"
-                [class.selected-text]="
-                  selectedSchema === data.schema_name &&
-                  selectedBranchIds.includes(branch.id)
-                ">
-                {{ branch.branch_name }}
-              </span>
-          
+              class="notification-card clickable-card"
+              *ngFor="let item of notificationList"
+              (click)="onBranchNotificationClick(item)"
+            >
+              <div class="notification-icon">
+                <mat-icon> notifications_active </mat-icon>
+              </div>
+
+              <div class="notification-content">
+                <div class="notification-top">
+                  <h5>
+                    {{ item.title }}
+                  </h5>
+
+                  <span class="notification-type">
+                    {{ item.type }}
+                  </span>
+                </div>
+
+                <p>
+                  {{ item.message }}
+                </p>
+
+                <small>
+                  {{ item.created_at | date: "medium" }}
+                </small>
+              </div>
             </div>
-          
-            <!-- Notification Bell -->
-          
-            <div
-              class="notification-wrapper"
-              *ngIf="branch.notification_count > 0"
-              (click)="openBranchNotificationModal(branch, $event)">
-          
-              <mat-icon class="notification-bell">
-                notifications
-              </mat-icon>
-          
-              <span class="notification-count">
-                {{
-                  branch.notification_count > 99
-                    ? '99+'
-                    : branch.notification_count
-                }}
-              </span>
-          
-            </div>
-          
-          </div>
           </div>
 
+          <div class="empty-notification" *ngIf="notificationList.length === 0">
+            No Notifications Found
+          </div>
         </div>
       </div>
-
-    </div>
-  </div>
-</li>
-
-
-<!-- Notification Modal -->
-
-<div
-  class="notification-modal-overlay"
-  *ngIf="isNotificationModalOpen">
-
-  <div class="notification-modal">
-
-    <div class="modal-header">
-
-      <h3>
-        Notifications
-      </h3>
-
-      <span
-        class="close-btn"
-        (click)="closeNotificationModal()">
-
-        ×
-
-      </span>
-
-    </div>
-    <div class="company-title">
-
-      {{ selectedBranchNotification?.branch_name }}
-    
-    </div>
-    <div
-      *ngIf="notificationList.length > 0">
-
-      <div
-      class="notification-card clickable-card"
-      *ngFor="let item of notificationList"
-      (click)="onBranchNotificationClick(item)">
-    
-      <div class="notification-icon">
-    
-        <mat-icon>
-          notifications_active
-        </mat-icon>
-    
-      </div>
-    
-      <div class="notification-content">
-    
-        <div class="notification-top">
-    
-          <h5>
-            {{ item.title }}
-          </h5>
-    
-          <span class="notification-type">
-            {{ item.type }}
-          </span>
-    
-        </div>
-    
-        <p>
-          {{ item.message }}
-        </p>
-    
-        <small>
-          {{ item.created_at | date:'medium' }}
-        </small>
-    
-      </div>
-    
-    </div>
-
-    </div>
-
-    <div
-      class="empty-notification"
-      *ngIf="notificationList.length === 0">
-
-      No Notifications Found
-
-    </div>
-
-  </div>
-
-</div>
 
       <!-- Admin logo -->
 
-    <li>
-      <div class="user_logged_outer" *ngIf="userDetails">
-        <div class="user_logged_in">
-          <mat-icon>person</mat-icon>
+      <li>
+        <div class="user_logged_outer" *ngIf="userDetails">
+          <div class="user_logged_in">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="user_logged_out">
+            <h1>{{ userDetails.username }}</h1>
+          </div>
         </div>
-        <div class="user_logged_out">
-          <h1>{{ userDetails.username }}</h1>
-        </div>
+      </li>
 
-      </div>
-    </li>
-      
       <!-- logout button -->
       <li class="nav-item dropdown">
-
-      
-        <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"  id="navbarDropdownMenuLink"
-          role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-
-            <button type="button" (click)="logout()"  class="btn btn-danger" style="    border-radius: 0px;">Logout</button>
-
+        <a
+          class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"
+          id="navbarDropdownMenuLink"
+          role="button"
+          data-mdb-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <button
+            type="button"
+            (click)="logout()"
+            class="btn btn-danger"
+            style="border-radius: 0px"
+          >
+            Logout
+          </button>
         </a>
-
       </li>
     </ul>
-
-   
   </div>
-
-
-
-
-
-
-
-
-
-
-
-  
 
   <!-- ------------------------------------------ Mobile view ------------------------------------------------ -->
 
-
-
-   <div class="container-fluid mobview">
-
+  <div class="container-fluid mobview">
     <!-- menu open close button -->
 
-     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-          <span *ngIf="!isMenuOpen">☰</span>
-          <span *ngIf="isMenuOpen">X</span>
+    <button
+      type="button"
+      class="btn btn-collapse menu_mob"
+      (click)="toggleSidebarMenu()"
+    >
+      <span *ngIf="!isMenuOpen">☰</span>
+      <span *ngIf="isMenuOpen">X</span>
     </button>
 
-
- 
-
-     <div class="row" >
-
+    <div class="row">
       <!-- logo -->
 
-      <div class="col-md-4 col-9" >
-
+      <div class="col-md-4 col-9">
         <div class="nav_mov">
-     <a class="navbar-brand">
-      <img src="assets/zeo_logo_new.png"  class="img-fluid" alt="MDB Logo" 
-        loading="lazy" />
-
-     </a>
-    
-     </div>
-
+          <a class="navbar-brand">
+            <img
+              src="assets/zeo_logo_new.png"
+              class="img-fluid"
+              alt="MDB Logo"
+              loading="lazy"
+            />
+          </a>
+        </div>
       </div>
 
       <!-- notification -->
 
-      <div class="col-md-1 col-3" >
-         <a class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow pull-right "  role="button"
-        data-mdb-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-        <div class="notiicon">
-           <mat-icon class="mt-2">notifications</mat-icon>
-        </div>   
-         <span class="badge rounded-pill badge-notification bg-danger" *ngIf="expiredDocumentsCount > 0"
-               style="position: absolute; margin-left: -10px; color: white;">{{ expiredDocumentsCount }}</span>
-     </a>
-
+      <div class="col-md-1 col-3">
+        <a
+          class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow pull-right"
+          role="button"
+          data-mdb-toggle="dropdown"
+          aria-expanded="false"
+          style="cursor: pointer"
+        >
+          <div class="notiicon">
+            <mat-icon class="mt-2">notifications</mat-icon>
+          </div>
+          <span
+            class="badge rounded-pill badge-notification bg-danger"
+            *ngIf="expiredDocumentsCount > 0"
+            style="position: absolute; margin-left: -10px; color: white"
+            >{{ expiredDocumentsCount }}</span
+          >
+        </a>
       </div>
-
 
       <!-- select company -->
 
       <div class="col-md-3 col-5">
-           <div class="Company_pro company_bor" (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen">
+        <div
+          class="Company_pro company_bor"
+          (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen"
+        >
           <div class="cmp_drop">
             <mat-icon>business</mat-icon>
-            <h1>{{ selectedSchema || 'Select Company' }}</h1>
-            <mat-icon [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'">expand_more</mat-icon>
+            <h1>{{ selectedSchema || "Select Company" }}</h1>
+            <mat-icon
+              [style.transform]="
+                isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+              "
+              >expand_more</mat-icon
+            >
           </div>
-          <div class="standard-dropdown" [class.show]="isCompanyDropdownOpen" (click)="$event.stopPropagation()">
+          <div
+            class="standard-dropdown"
+            [class.show]="isCompanyDropdownOpen"
+            (click)="$event.stopPropagation()"
+          >
             <div class="menu-header">
               <mat-icon>checklist</mat-icon>
               <span>Select Branches</span>
             </div>
-            
+
             <div class="scrollable-content">
-              <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
+              <div
+                class="schema-item"
+                *ngFor="let data of userDetailss; let i = index"
+              >
                 <div class="schema-row" (click)="toggleSchema(i, $event)">
                   <div class="schema-info">
-                    <div class="avatar">{{ data.name | slice:0:1 }}</div>
+                    <div class="avatar">{{ data.name | slice: 0 : 1 }}</div>
                     <span class="company-name">{{ data.name }}</span>
                   </div>
-                  <mat-icon>{{ expandedSchemaIndex === i ? 'expand_less' : 'expand_more' }}</mat-icon>
+                  <mat-icon>{{
+                    expandedSchemaIndex === i ? "expand_less" : "expand_more"
+                  }}</mat-icon>
                 </div>
                 <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
-                  <div class="branch-option multi-select" 
-                       *ngFor="let branch of data.branches" 
-                       (click)="toggleBranchSelection(data, branch, $event)">
-                    
+                  <div
+                    class="branch-option multi-select"
+                    *ngFor="let branch of data.branches"
+                    (click)="toggleBranchSelection(data, branch, $event)"
+                  >
                     <mat-icon class="check-box">
-                      {{ (selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)) ? 'check_box' : 'check_box_outline_blank' }}
+                      {{
+                        selectedSchema === data.schema_name &&
+                        selectedBranchIds.includes(branch.id)
+                          ? "check_box"
+                          : "check_box_outline_blank"
+                      }}
                     </mat-icon>
-                    
-                    <span class="branch-name" 
-                          [class.selected-text]="(selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id))">
+
+                    <span
+                      class="branch-name"
+                      [class.selected-text]="
+                        selectedSchema === data.schema_name &&
+                        selectedBranchIds.includes(branch.id)
+                      "
+                    >
                       {{ branch.branch_name }}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
-          
+
             <!-- <div class="dropdown-footer">
               <button class="btn-apply" (click)="applySelection()">Apply Selection</button>
             </div> -->
           </div>
         </div>
-
       </div>
 
       <!-- Admin logo -->
 
-      <div class="col-md-2 col-4" >
-         <div class="user_logged_outer" *ngIf="userDetails">
-        <div class="user_logged_in">
-          <mat-icon>person</mat-icon>
+      <div class="col-md-2 col-4">
+        <div class="user_logged_outer" *ngIf="userDetails">
+          <div class="user_logged_in">
+            <mat-icon>person</mat-icon>
+          </div>
+          <div class="user_logged_out">
+            <h1>{{ userDetails.username }}</h1>
+          </div>
         </div>
-        <div class="user_logged_out">
-          <h1>{{ userDetails.username }}</h1>
-        </div>
-
-      </div>
-
       </div>
 
       <!-- logout button -->
 
-      <div class="col-md-2 col-3" >
-           <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"  id="navbarDropdownMenuLink"
-          role="button" data-mdb-toggle="dropdown" aria-expanded="false">
-
-            <button type="button" (click)="logout()"  class="btn btn-danger mt-2 btn-full" style="    border-radius: 0px;">Logout</button>
-
+      <div class="col-md-2 col-3">
+        <a
+          class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"
+          id="navbarDropdownMenuLink"
+          role="button"
+          data-mdb-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <button
+            type="button"
+            (click)="logout()"
+            class="btn btn-danger mt-2 btn-full"
+            style="border-radius: 0px"
+          >
+            Logout
+          </button>
         </a>
-
       </div>
-
-     </div>
-     </div>
-
-
-
-
-
+    </div>
+  </div>
 </nav>
-
-
 
 <router-outlet></router-outlet>
 
-
-    <!-- Loader -->
-         <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>
-
-
+<!-- Loader -->
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>

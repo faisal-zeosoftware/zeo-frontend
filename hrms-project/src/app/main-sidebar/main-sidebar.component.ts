@@ -42,6 +42,8 @@ export class MainSidebarComponent {
   LoanReqNot: any[] = [];
   AdvancesalaryReqNot: any[] = [];
   LateInEarlyOutReqNot: any[] = [];
+  DelegationNot: any[] = [];
+  DelegationResponseNot: any[] = [];
 
   hideButton = false;
   // constructor(public authService: AuthService) {}
@@ -61,7 +63,7 @@ export class MainSidebarComponent {
   selectedCompany: any; // Define this in your component to hold selected company details
 
   constructor(private authService: AuthenticationService,
-     private router: Router,
+    private router: Router,
     private EmployeeService: EmployeeService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
@@ -213,6 +215,8 @@ this.EmployeeService.selectedBranches$.subscribe(ids => {
   this.loadLoanReqNotifications();
   this.loadAdvancesalaryReqNotifications();
   this.loadLateinEarlyOutNotifications();
+  this.loadDelegationNotifications();
+  this.loadDelegationResponseNotifications();
 });
 
   // this.loadExpiredDocuments(selectedSchema);    
@@ -612,6 +616,63 @@ loadAdvancesalaryReqNotifications(callback?: Function): void {
   }
   }
 
+  
+loadDelegationNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getDelegationNotifications(selectedSchema, savedIds).subscribe({
+      next: (delegations: any) => {
+        this.DelegationNot = Array.isArray(delegations)
+          ? delegations
+              .filter((item: any) => item.message?.toLowerCase().includes('delegation'))
+              .map((item) => ({ ...item, type: 'delegation', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading delegations request notifications:', err);
+        this.DelegationNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+loadDelegationResponseNotifications(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+  if (!selectedSchema) return;
+
+  this.EmployeeService.getDelegationNotifications(selectedSchema, savedIds)
+    .subscribe({
+      next: (res: any) => {
+
+        this.DelegationResponseNot = Array.isArray(res)
+          ? res
+              .filter((item: any) =>
+                  item.notification_type === 'delegation_response'
+              )
+              .map(item => ({
+                ...item,
+                type: 'delegationres',
+                highlighted: false
+              }))
+          : [];
+
+        this.combineNotifications();
+      },
+      error: () => {
+        this.DelegationResponseNot = [];
+        this.combineNotifications();
+      }
+    });
+}
+
 
 
 
@@ -628,7 +689,9 @@ combineNotifications(): void {
     ...this.DocReqNot.map(item => ({ ...item, type: 'docrequest' as const, highlighted: false })),
     ...this.LoanReqNot.map(item => ({ ...item, type: 'loanrequest' as const, highlighted: false })),
     ...this.AdvancesalaryReqNot.map(item => ({ ...item, type: 'advancesalaryrequest' as const, highlighted: false })),
-    ...this.LateInEarlyOutReqNot.map(item => ({ ...item, type: 'lateinearlyrequest' as const, highlighted: false }))
+    ...this.LateInEarlyOutReqNot.map(item => ({ ...item, type: 'lateinearlyrequest' as const, highlighted: false })),
+    ...this.DelegationNot.map(item => ({ ...item, type: 'delegation' as const, highlighted: false })),
+    ...this.DelegationResponseNot.map(item => ({ ...item, type: 'delegationres' as const, highlighted: false }))
   ];
 
   this.AllNotifications = allItems
@@ -681,6 +744,12 @@ onNotificationClick(noti: any): void {
     case 'lateinearlyrequest':
       this.router.navigate(['/main-sidebar/attendance-sidebar/latein-earlyout-approvals']);
       break;
+    case 'delegation':
+        this.router.navigate(['/main-sidebar/general-sidebar/approvals']);
+      break;
+    case 'delegationres':
+        this.router.navigate(['/main-sidebar/general-sidebar/approvals']);
+      break;
     default:
       return;
   }
@@ -700,13 +769,13 @@ onNotificationClick(noti: any): void {
 
 
 // Optional: Clean up old entries (run once on app start)
-private cleanupOldReadNotifications(): void {
-  const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
-  const now = Date.now();
-  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+// private cleanupOldReadNotifications(): void {
+//   const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '{}');
+//   const now = Date.now();
+//   const thirtyDays = 30 * 24 * 60 * 60 * 1000;
 
-  // You'd need to store timestamp too — or skip if not needed
-}
+ 
+// }
 
 isCompanyDropdownOpen = false;
 expandedSchemaIndex: number = -1;

@@ -385,6 +385,17 @@
 </div>
 
 <div class="col-md-6">
+    <label>Attendance Source</label>
+
+    <select class="form-control"
+            [(ngModel)]="attendance_source"
+            [ngModelOptions]="{standalone: true}">
+        <option value="manual">Manual Attendance</option>
+        <option value="biometric">Biometric Attendance</option>
+    </select>
+</div>
+
+<div class="col-md-6">
             
             
     <div class="custom-sel">
@@ -465,7 +476,7 @@
 </div>
 
 
-
+<div class="col-md-6"></div>
 
     <div class="col-md-6">
         <label></label>
@@ -496,7 +507,7 @@
     
     </div> -->
 
-    <div class="col-md-3">
+    <div class="col-md-6">
 
         <label class="upload-label">
             Employee Profile Picture
@@ -984,6 +995,8 @@
                             
         
             </div> -->
+
+
         
           
         
@@ -994,6 +1007,8 @@
                 [ngModelOptions]="{standalone: true}" >
                
             </div>
+
+            
         
         
             <div class="col-md-6">

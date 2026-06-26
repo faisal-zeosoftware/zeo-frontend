@@ -115,6 +115,7 @@ export class EmployeeEditComponent {
   emp_dept_id:any='';
   emp_desgntn_id:any='';
   emp_ctgry_id:any='';
+  attendance_source:any='';
   // emp_languages: string[] = [];
   emp_active_date:any='';
   emp_hired_date:any=''; 
@@ -373,6 +374,7 @@ updateEmp(): void {
   safeAppend('emp_dept_id', this.Emp.emp_dept_id);
   safeAppend('emp_desgntn_id', this.Emp.emp_desgntn_id);
   safeAppend('emp_ctgry_id', this.Emp.emp_ctgry_id);
+  safeAppend('attendance_source', this.Emp.attendance_source);
 
   safeAppend('emp_date_of_confirmation', formatDate(this.Emp.emp_date_of_confirmation));
   safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));

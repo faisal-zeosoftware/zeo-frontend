@@ -81,6 +81,7 @@ export class CreateEmployeeComponent implements OnInit {
   emp_dept_id: any = '';
   emp_desgntn_id: any = '';
   emp_ctgry_id: any = '';
+  attendance_source: string = 'manual';
   emp_languages: any = '';
   emp_date_of_confirmation: any = '';
   emp_joined_date: any = '';
@@ -88,6 +89,7 @@ export class CreateEmployeeComponent implements OnInit {
   work_location: any = '';
   visa_location: any = '';
   approver: number | null = null;
+ 
   emp_profile_pic: string | undefined;
 
   is_ess: boolean = false;
@@ -852,6 +854,8 @@ uploadEmployeeDocument(): void {
       elementId: 'emp_ctgry_id'
     },
 
+    
+
     {
       field: this.emp_joined_date,
       fieldName: 'Join Date',
@@ -994,6 +998,8 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
   formData.append('emp_desgntn_id', this.emp_desgntn_id || '');
 
   formData.append('emp_ctgry_id', this.emp_ctgry_id || '');
+
+  formData.append('attendance_source', this.attendance_source);
 
   formData.append('person_id', this.person_id || '');
 

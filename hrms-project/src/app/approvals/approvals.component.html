@@ -29,88 +29,110 @@
               <h4>Comment</h4>
               <h5>{{ apr.note }}</h5>
             </div>
-<div class="col-md-2">
-  <div class="action-buttons">
-    <button style="color:white"
-      class="btn btn-info"
-      (click)="selectedaprovaldetalis(apr.id)"
-    >
-      View
-    </button>
+            <div class="col-md-2">
+              <div class="action-buttons">
+                <button
+                  style="color: white"
+                  class="btn btn-info"
+                  (click)="selectedaprovaldetalis(apr.id)"
+                >
+                  View
+                </button>
 
-    <button
-      class="btn btn-primary"
-      (click)="openDelegationModalFromApproval(apr)"
-    >
-      Delegate
-    </button>
-  </div>
-</div>
+                <button
+                  class="btn btn-primary"
+                  (click)="openDelegationModalFromApproval(apr)"
+                >
+                  Delegate
+                </button>
+              </div>
+            </div>
           </div>
 
-          <!-- Delegation Details -->
-<!-- Delegation Header -->
+          
+          <!-- Delegation Header -->
 <div
   *ngIf="apr.delegation_details"
   class="delegation-header mt-3"
-  (click)="apr.showDelegation = !apr.showDelegation"
 >
-  <h6 class="mb-0">
-    Delegation Details
+  <div class="d-flex justify-content-between align-items-center">
 
-    <span class="float-right">
-<i
-  class="fa"
-  [ngClass]="apr.showDelegation ? 'fa-chevron-up' : 'fa-chevron-down'"
-></i>
-    </span>
-  </h6>
-</div>
+    <h6
+      class="mb-0"
+      (click)="apr.showDelegation = !apr.showDelegation"
+      style="cursor:pointer"
+    >
+      Delegation Details
 
-<!-- Delegation Body -->
-<div
-  *ngIf="apr.delegation_details && apr.showDelegation"
-  class="delegation-card"
->
-  <div class="row">
-    <div class="col-md-6">
-      <strong>Deligator</strong>
-      <p>{{ apr.delegation_details.deligator }}</p>
-    </div>
+      <span class="ml-2">
+        <i
+          class="fa"
+          [ngClass]="
+            apr.showDelegation ? 'fa-chevron-up' : 'fa-chevron-down'
+          "
+        ></i>
+      </span>
+    </h6>
 
-    <div class="col-md-6">
-      <strong>Delegate To</strong>
-      <p>{{ apr.delegation_details.delegate_to }}</p>
-    </div>
+    <button style="color:white"
+      class="btn btn-info btn-sm"
+      (click)="openResponseModal(apr.delegation_details)"
+    >
+      Response
+    </button>
 
-    <div class="col-md-6">
-      <strong>Request</strong>
-      <p>{{ apr.delegation_details.request }}</p>
-    </div>
-
-    <div class="col-md-6">
-      <strong>Active</strong>
-      <p>
-        {{ apr.delegation_details.is_active ? 'Yes' : 'No' }}
-      </p>
-    </div>
-
-    <div class="col-md-6">
-      <strong>Start Date</strong>
-      <p>{{ apr.delegation_details.start_date }}</p>
-    </div>
-
-    <div class="col-md-6">
-      <strong>End Date</strong>
-      <p>{{ apr.delegation_details.end_date }}</p>
-    </div>
-
-    <div class="col-md-12">
-      <strong>Reason</strong>
-      <p>{{ apr.delegation_details.reason }}</p>
-    </div>
   </div>
 </div>
+
+          <!-- Delegation Body -->
+          <div
+            *ngIf="apr.delegation_details && apr.showDelegation"
+            class="delegation-card"
+          >
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Deligator</strong>
+                <p>{{ apr.delegation_details.deligator }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Delegate To</strong>
+                <p>{{ apr.delegation_details.delegate_to }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Request</strong>
+                <p>{{ apr.delegation_details.request }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Active</strong>
+                <p>
+                  {{ apr.delegation_details.is_active ? "Yes" : "No" }}
+                </p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Start Date</strong>
+                <p>{{ apr.delegation_details.start_date }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>End Date</strong>
+                <p>{{ apr.delegation_details.end_date }}</p>
+              </div>
+
+              <div class="col-md-12">
+                <strong>Reason</strong>
+                <p>{{ apr.delegation_details.reason }}</p>
+              </div>
+
+              <div class="col-md-12" *ngIf="apr.delegation_details.response">
+                  <strong>Response</strong>
+               <p>{{ apr.delegation_details.response }}</p>
+               </div>
+            </div>
+          </div>
 
           <!-- <h6> General Request - {{apr.general_request}}</h6>
                 <h6>Status - {{apr.status}}</h6>
@@ -122,19 +144,16 @@
     <!-- Modal Popup for selected approval details -->
     <div *ngIf="isAddFieldsModalOpen" class="modal">
       <div class="modal-content">
-
-
         <div *ngIf="selectedApproval">
-
-        <div class="row mt-2">
-           <div class="col-md-6">
-          <h6>General Request Approvals</h6>
-</div>
-                    <div class="col-md-6 text-right">
-          <!-- Styled Square Close Button -->
-          <span class="close-btn" (click)="closemarketModal()"> × </span>
-        </div>
-                  </div>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <h6>General Request Approvals</h6>
+            </div>
+            <div class="col-md-6 text-right">
+              <!-- Styled Square Close Button -->
+              <span class="close-btn" (click)="closemarketModal()"> × </span>
+            </div>
+          </div>
 
           <hr />
           <h6>General Request - {{ selectedApproval.general_request }}</h6>
@@ -172,6 +191,37 @@
         </div>
       </div>
     </div>
+
+    <div *ngIf="isResponseModalOpen" class="modal">
+  <div class="modal-content">
+
+    <div class="text-right">
+      <span class="close-btn" (click)="closeResponseModal()">×</span>
+    </div>
+
+    <h5>Send Delegation Response</h5>
+    <hr />
+
+    <div class="form-group">
+      <label>Response</label>
+
+      <textarea
+        class="form-control"
+        rows="4"
+        [(ngModel)]="delegationResponse"
+        placeholder="Enter response..."
+      ></textarea>
+    </div>
+
+    <button
+      class="btn btn-primary mt-2"
+      (click)="sendDelegationResponse()"
+    >
+      Send Response
+    </button>
+
+  </div>
+</div>
 
     <div *ngIf="isDelegationModalOpen" class="modal">
       <div class="modal-content">
@@ -243,10 +293,19 @@
             </textarea>
           </div>
 
-          <div class="form-group mb-3">
+          <!-- <div class="form-group mb-3">
             <label>Active</label>
             <input type="checkbox" [(ngModel)]="delegationForm.is_active" />
           </div>
+        </div> -->
+
+                  <div class="col-md-6 mt-2">
+            <div class="check-box-selection-sec form-control">
+                <div class="mat-set">
+                    <mat-checkbox [(ngModel)]="delegationForm.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
+                </div>
+               
+            </div>
         </div>
 
         <button class="btn btn-success" (click)="createDelegation()">
@@ -257,7 +316,7 @@
   </div>
 </div>
 
-              <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>
