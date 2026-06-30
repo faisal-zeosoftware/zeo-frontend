@@ -258,6 +258,9 @@ import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.compo
 import { LeavePolicyComponent } from './leave-policy/leave-policy.component';
 import { CreateleavepolicymodalComponent } from './createleavepolicymodal/createleavepolicymodal.component';
 import { EmployeeUserComponent } from './employee-user/employee-user.component';
+import { AttendanceValidationPolicyComponent } from './attendance-validation-policy/attendance-validation-policy.component';
+import { LateComePolicyComponent } from './late-come-policy/late-come-policy.component';
+import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.component';
 
 @NgModule({
   declarations: [
@@ -472,6 +475,9 @@ import { EmployeeUserComponent } from './employee-user/employee-user.component';
      LeavePolicyComponent,
      CreateleavepolicymodalComponent,
      EmployeeUserComponent,
+     AttendanceValidationPolicyComponent,
+     LateComePolicyComponent,
+     EarlyExitPolicyComponent,
      
      
 

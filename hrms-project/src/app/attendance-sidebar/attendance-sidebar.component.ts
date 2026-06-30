@@ -22,11 +22,18 @@ export class AttendanceSidebarComponent {
   hasViewPermissionEmpRecheck:boolean = false;
   hasViewPermissionPunchingList:boolean = false;
   hasViewPermissionGeoFence:boolean = false;
+
   hasViewPermissionAttendancepolicy:boolean = false;
+  hasViewPermissionAttendancevalidationpolicy:boolean = false;
+  hasViewPermissionLateComingPolicy:boolean = false;
+  hasViewPermissionEarlyExitPolicy:boolean = false;
+
   hasViewPermissionFaceRegister:boolean = false;
   hasViewPermissionAttendanceReq:boolean = false;
   hasViewPermissionLateinEarlyOutApprovallevel:boolean = false;
   hasViewPermissionLateinEarlyOutApprovals:boolean = false;
+
+
   
 
 
@@ -97,6 +104,9 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionPunchingList = true;
           this.hasViewPermissionGeoFence = true;
           this.hasViewPermissionAttendancepolicy = true;
+          this.hasViewPermissionAttendancevalidationpolicy = true;
+          this.hasViewPermissionLateComingPolicy = true;
+          this.hasViewPermissionEarlyExitPolicy = true;
           this.hasViewPermissionFaceRegister = true;
           this.hasViewPermissionAttendanceReq = true;
           this.hasViewPermissionLateinEarlyOutApprovallevel = true;
@@ -132,6 +142,9 @@ export class AttendanceSidebarComponent {
           this.hasViewPermissionPunchingList = true;
           this.hasViewPermissionGeoFence = true;
           this.hasViewPermissionAttendancepolicy = true;
+          this.hasViewPermissionAttendancevalidationpolicy = true;
+          this.hasViewPermissionLateComingPolicy = true;
+          this.hasViewPermissionEarlyExitPolicy = true;
           this.hasViewPermissionFaceRegister = true;
           this.hasViewPermissionAttendanceReq = true;
           this.hasViewPermissionLateinEarlyOutApprovallevel = true;
@@ -253,10 +266,18 @@ export class AttendanceSidebarComponent {
     }
 
            showGeneralRequest = false;
+           showpolicyRequest = false;
 
     toggleGeneralRequest() {
       this.showGeneralRequest = !this.showGeneralRequest;
+      this.showpolicyRequest = !this.showpolicyRequest;
     }
+
+    togglePolicyRequest() {
+      this.showpolicyRequest = !this.showpolicyRequest;
+    }
+
+              
 
 
 

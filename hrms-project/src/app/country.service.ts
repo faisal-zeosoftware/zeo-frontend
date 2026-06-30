@@ -850,5 +850,233 @@ RegisterLateInEarlyOutApproverLevel(data: any): Observable<any> {
   );
 }
 
+// early Exit Policy Api //
+
+registerearlyexitpolicy(companyData: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+  }
+
+  const apiUrl = `${this.apiUrl}/calendars/api/early-going-policy/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.post(apiUrl, companyData, { headers }).pipe(
+    catchError((error) => {
+      // Handle errors here (you can log, show a user-friendly message, etc.)
+      console.error('Error during company registration:', error);
+      return throwError(error);
+
+    })
+  );
+}
+
+  getearlyexitpolicyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/calendars/api/early-going-policy/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+
+  getearlyexitPolicy(): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+  
+    return this.http.get(
+      `${this.apiUrl}/calendars/api/early-going-policy/?schema=${selectedSchema}`
+    );
+  }
+
+    updateEarlyexitPolicy(id: number, data: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/early-going-policy/${id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.put(apiUrl, data, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating asset:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+    deleteEarlyexitPolicy(categoryId: number): Observable<any> {
+    // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+    // return this.http.delete(url);
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+    const apiUrl = `${this.apiUrl}/calendars/api/early-going-policy/${categoryId}/?schema=${selectedSchema}`;
+   
+    return this.http.delete(apiUrl);
+  }
+
+
+
+
+  // Late Coming Policy Api //
+  
+  registerlatecomingpolicy(companyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+  
+    const apiUrl = `${this.apiUrl}/calendars/api/late-come-policy/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.post(apiUrl, companyData, { headers }).pipe(
+      catchError((error) => {
+        // Handle errors here (you can log, show a user-friendly message, etc.)
+        console.error('Error during company registration:', error);
+        return throwError(error);
+  
+      })
+    );
+  }
+  
+  getlatecomingPolicy(): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+  
+    return this.http.get(
+      `${this.apiUrl}/calendars/api/late-come-policy/?schema=${selectedSchema}`
+    );
+  }
+  
+    updateLateComingPolicy(id: number, data: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/late-come-policy/${id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.put(apiUrl, data, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating asset:', error);
+        return throwError(error);
+      })
+    );
+  }
+  
+    getlatecomingpolicyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+      // Converts [1,3,4] into the string "[1,3,4]" for the URL
+      const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+      
+      let url = `${this.apiUrl}/calendars/api/late-come-policy/?schema=${selectedSchema}`;
+      if (branchParam) {
+        url += `&branch_id=${branchParam}`;
+      }
+      
+      return this.http.get(url);
+    }
+  
+    deleteLateComingPolicy(categoryId: number): Observable<any> {
+    // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+    // return this.http.delete(url);
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+    const apiUrl = `${this.apiUrl}/calendars/api/late-come-policy/${categoryId}/?schema=${selectedSchema}`;
+   
+    return this.http.delete(apiUrl);
+  }
+
+
+
+  
+  // Attendance Validation Policy Api //
+  
+  
+  
+  registervalidationpolicy(companyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+  
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance-validation-policy/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.post(apiUrl, companyData, { headers }).pipe(
+      catchError((error) => {
+        // Handle errors here (you can log, show a user-friendly message, etc.)
+        console.error('Error during company registration:', error);
+        return throwError(error);
+  
+      })
+    );
+  }
+  
+  getAttendanceValidationPolicy(): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+  
+    return this.http.get(
+      `${this.apiUrl}/calendars/api/attendance-validation-policy/?schema=${selectedSchema}`
+    );
+  }
+  
+  getAttendancePolicy(): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+  
+    return this.http.get(
+      `${this.apiUrl}/calendars/api/attendance-policy/?schema=${selectedSchema}`
+    );
+  }
+  
+  
+    updateAttendanceValidationPolicy(id: number, data: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance-validation-policy/${id}/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  
+    return this.http.put(apiUrl, data, { headers }).pipe(
+      catchError((error) => {
+        console.error('Error updating asset:', error);
+        return throwError(error);
+      })
+    );
+  }
+  
+  deleteAttendanceValidationPolicy(categoryId: number): Observable<any> {
+    // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+    // return this.http.delete(url);
+  
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+   
+    const apiUrl = `${this.apiUrl}/calendars/api/attendance-validation-policy/${categoryId}/?schema=${selectedSchema}`;
+   
+    return this.http.delete(apiUrl);
+  }
+  
+    getvalidationpolicyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+      // Converts [1,3,4] into the string "[1,3,4]" for the URL
+      const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+      
+      let url = `${this.apiUrl}/calendars/api/attendance-validation-policy/?schema=${selectedSchema}`;
+      if (branchParam) {
+        url += `&branch_id=${branchParam}`;
+      }
+      
+      return this.http.get(url);
+    }
+  
+
   
 }

@@ -28,6 +28,12 @@
                       <mat-icon style="float: right;">{{ showGeneralRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
                     </a>
                   </li>
+                <li (click)="togglePolicyRequest()" style="cursor: pointer;">
+                    <a>
+                      <mat-icon>peoples</mat-icon>Attendance Policy 
+                      <mat-icon style="float: right;">{{ showpolicyRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </a>
+                  </li>
                   <ul *ngIf="showGeneralRequest" style="padding-left: 20px;">
                     
                   <li routerLink="/main-sidebar/attendance-sidebar/attendance-attendance-request" *ngIf="hasViewPermissionAttendanceReq"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Request</a></li>
@@ -35,10 +41,17 @@
                   <li routerLink="/main-sidebar/attendance-sidebar/latein-earlyout-approvals" *ngIf="hasViewPermissionLateinEarlyOutApprovals"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Approvals</a></li>
                   </ul>
 
-                  <li routerLink="/main-sidebar/attendance-sidebar/manual-entry" *ngIf="hasViewPermissionmanualentry"><a><mat-icon>person_raised_hand</mat-icon>Manual entry</a></li>
+
                
-                  <li routerLink="/main-sidebar/attendance-sidebar/attendance-policy" *ngIf="hasViewPermissionAttendancepolicy"><a><mat-icon>person_raised_hand</mat-icon>Attendance Policy</a></li>
-                
+                  <ul *ngIf="showpolicyRequest" style="padding-left: 20px;">
+                  <li routerLink="/main-sidebar/attendance-sidebar/attendance-policy" *ngIf="hasViewPermissionAttendancepolicy"><a><mat-icon>person_raised_hand</mat-icon>Attendance Round Off</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/attendance-validation-policy" *ngIf="hasViewPermissionAttendancevalidationpolicy"><a><mat-icon>person_raised_hand</mat-icon>Attendance Validation Policy</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/late-come-policy" *ngIf="hasViewPermissionLateComingPolicy"><a><mat-icon>person_raised_hand</mat-icon>Late Coming Policy</a></li>
+                  <li routerLink="/main-sidebar/attendance-sidebar/early-exit-policy" *ngIf="hasViewPermissionEarlyExitPolicy"><a><mat-icon>person_raised_hand</mat-icon>Early Exit Policy</a></li>
+                  </ul>
+
+                  <li routerLink="/main-sidebar/attendance-sidebar/manual-entry" *ngIf="hasViewPermissionmanualentry"><a><mat-icon>person_raised_hand</mat-icon>Manual entry</a></li>
+
                   <li routerLink="/main-sidebar/attendance-sidebar/employee-early-going" *ngIf="hasViewPermissionEmpEarlygoing"><a><mat-icon>person_raised_hand</mat-icon> Employees Early going</a></li>
                  
                   <li routerLink="/main-sidebar/attendance-sidebar/employee-recheck" *ngIf="hasViewPermissionEmpRecheck"><a><mat-icon>person_raised_hand</mat-icon> Employees Recheck</a></li>

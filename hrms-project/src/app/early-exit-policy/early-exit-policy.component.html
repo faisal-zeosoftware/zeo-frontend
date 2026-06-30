@@ -1,0 +1,1014 @@
+<div class="container" *ngIf="hasViewPermission">
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="row">
+        <div class="col-md-4">
+          <h1>Early Exit Policy</h1>
+        </div>
+
+        <div class="col-md-3">
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button
+              type="button"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
+            >
+              <span class="header-btn-icon"
+                ><mat-icon>add_circle </mat-icon></span
+              >
+              Create
+            </button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
+            <span *ngIf="hasEditPermission"></span>
+
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
+              <span class="header-btn-icon">
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <button
+          class="mt-3 btn-danger btn"
+          style="width: 100%"
+          color="warn"
+          *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()"
+        >
+          Select All
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          class="mt-3 btn-danger btn"
+          color="warn"
+          *ngIf="Delete"
+          (click)="deleteSelectedEarlyexitPolicy()"
+        >
+          Delete Selected
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Create Early Exit Policy</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Late occurrence limit </label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="occurrence_limit"
+                placeholder="Enter limit"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{
+                  'error-field':
+                    registerButtonClicked && !occurrence_limit,
+                }"
+              />
+              <div
+                *ngIf="registerButtonClicked && !occurrence_limit"
+                class="error-message"
+              >
+                Please Type limit
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label>Leave days to deduct</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="leave_days_to_deduct"
+                placeholder="Enter days to deduct"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label
+                >Penalty type
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="penalty_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !penalty_type,
+                  }"
+                >
+                  <option value="half_day">Half Day</option>
+                  <option value="full_day">Full Day</option>
+                  <option value="leave_deduction">Leave Deduction</option>
+                </select>
+              </div>
+              <div
+                *ngIf="registerButtonClicked && !penalty_type"
+                class="error-message"
+              >
+                Please Select Penalty type
+              </div>
+            </div>
+
+<div class="col-md-6">
+  <label>Attendance Policy</label>
+
+  <div class="custom-sel">
+<select
+  class="form-control"
+  [(ngModel)]="attendance_policy"
+  [ngModelOptions]="{ standalone: true }">
+  <option
+    *ngFor="let policy of attendancePolicies"
+    [ngValue]="policy.id">
+    {{ policy.name }} {{ policy.branch }}
+  </option>
+
+</select>
+  </div>
+</div>
+
+            <div class="col-md-6">
+              <label></label>
+              <div class="check-box-selection-sec form-control mt-3">
+                <div class="mat-set">
+                  <mat-checkbox
+                    [(ngModel)]="enabled"
+                    [ngModelOptions]="{ standalone: true }"
+                    >Enabled</mat-checkbox
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label></label>
+              <div class="check-box-selection-sec form-control mt-3">
+                <div class="mat-set">
+                  <mat-checkbox
+                    [(ngModel)]="reset_monthly"
+                    [ngModelOptions]="{ standalone: true }"
+                    >Reset monthly</mat-checkbox
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- FILTER SECTION -->
+            <div class="filter-card mb-4">
+              <div class="row g-3">
+                <!-- Branch -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>apartment</mat-icon>
+                      Branch
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedBranches"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllBranchesSelected()"
+                          [indeterminate]="isSomeBranchesSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllBranches()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of branches"
+                          [value]="item.id"
+                        >
+                          {{ item.branch_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>corporate_fare</mat-icon>
+                      Department
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedDepartments"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDepartmentsSelected()"
+                          [indeterminate]="isSomeDepartmentsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDepartments()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of Departments"
+                          [value]="item.id"
+                        >
+                          {{ item.dept_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>category</mat-icon>
+                      Category
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedCategories"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllCategoriesSelected()"
+                          [indeterminate]="isSomeCategoriesSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllCategories()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of Categories"
+                          [value]="item.id"
+                        >
+                          {{ item.ctgry_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>badge</mat-icon>
+                      Designation
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedDesignations"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDesignationsSelected()"
+                          [indeterminate]="isSomeDesignationsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDesignations()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of Designations"
+                          [value]="item.id"
+                        >
+                          {{ item.desgntn_job_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+              <div class="employee-card">
+                <div class="table-responsive">
+                  <table class="employee-table">
+                    <thead>
+                      <tr>
+                        <th width="70">
+                          <mat-checkbox
+                            [(ngModel)]="allEmployeesSelected"
+                            [ngModelOptions]="{ standalone: true }"
+                            (change)="toggleSelectAllEmployees()"
+                          >
+                          </mat-checkbox>
+                        </th>
+
+                        <th>Employee</th>
+                        <th>Branch</th>
+                        <th>Department</th>
+                        <th>Category</th>
+                        <th>Designation</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr *ngFor="let emp of pagedEmployees">
+                        <td>
+                          <mat-checkbox
+                            [(ngModel)]="emp.selected"
+                            [ngModelOptions]="{ standalone: true }"
+                          >
+                          </mat-checkbox>
+                        </td>
+
+                        <td>
+                          <div class="employee-info">
+                            <div class="employee-avatar-wrapper">
+                              <img
+                                *ngIf="emp.emp_profile_pic"
+                                [src]="emp.emp_profile_pic"
+                                class="employee-avatar"
+                              />
+
+                              <div
+                                *ngIf="!emp.emp_profile_pic"
+                                class="employee-avatar-placeholder"
+                              >
+                                <mat-icon>person</mat-icon>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div class="employee-name">
+                                {{ emp.emp_first_name }}
+                                {{ emp.emp_last_name }}
+                              </div>
+
+                              <div class="employee-code">
+                                {{ emp.emp_code }}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge blue">
+                            {{ emp.emp_branch_id }}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge green">
+                            {{ emp.emp_dept_id }}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge orange">
+                            {{ emp.emp_ctgry_id }}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge purple">
+                            {{ emp.emp_desgntn_id }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="pagination-container">
+                    <button
+                      class="page-btn"
+                      (click)="previousPage()"
+                      [disabled]="currentPage === 1"
+                    >
+                      Previous
+                    </button>
+
+                    <button
+                      *ngFor="let page of pageNumbers"
+                      class="page-number"
+                      [class.active]="currentPage === page"
+                      (click)="goToPage(page)"
+                    >
+                      {{ page }}
+                    </button>
+
+                    <button
+                      class="page-btn"
+                      (click)="nextPage()"
+                      [disabled]="currentPage === totalPages"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                (click)="closeapplicationModal()"
+                class="btn btn-danger btn-full mt-5"
+              >
+                Close
+              </button>
+            </div>
+
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="CreateEarlyExitPolicy()"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit Early Exit Policy</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeEditModal()"> × </span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Late occurrence limit </label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.occurrence_limit"
+                placeholder="Enter limit"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{
+                  'error-field':
+                    registerButtonClicked && !occurrence_limit,
+                }"
+              />
+              <div
+                *ngIf="registerButtonClicked && !occurrence_limit"
+                class="error-message"
+              >
+                Please Type limit
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label>Leave days to deduct</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.leave_days_to_deduct"
+                placeholder="Enter days to deduct"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label
+                >Penalty type
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="editAsset.penalty_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !penalty_type,
+                  }"
+                >
+                  <option value="half_day">Half Day</option>
+                  <option value="full_day">Full Day</option>
+                  <option value="leave_deduction">Leave Deduction</option>
+                </select>
+              </div>
+              <div
+                *ngIf="registerButtonClicked && !penalty_type"
+                class="error-message"
+              >
+                Please Select Penalty type
+              </div>
+            </div>
+
+<div class="col-md-6">
+  <label>Attendance Policy</label>
+
+  <div class="custom-sel">
+<select
+  class="form-control"
+  [(ngModel)]="editAsset.attendance_policy"
+  [ngModelOptions]="{ standalone: true }">
+  <option
+    *ngFor="let policy of attendancePolicies"
+    [ngValue]="policy.id">
+    {{ policy.name }} {{ policy.branch }}
+  </option>
+
+</select>
+  </div>
+</div>
+
+            <div class="col-md-6">
+              <label></label>
+              <div class="check-box-selection-sec form-control mt-3">
+                <div class="mat-set">
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.enabled"
+                    [ngModelOptions]="{ standalone: true }"
+                    >Enabled</mat-checkbox
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label></label>
+              <div class="check-box-selection-sec form-control mt-3">
+                <div class="mat-set">
+                  <mat-checkbox
+                    [(ngModel)]="editAsset.reset_monthly"
+                    [ngModelOptions]="{ standalone: true }"
+                    >Reset monthly</mat-checkbox
+                  >
+                </div>
+              </div>
+            </div>
+
+
+            <!-- FILTER SECTION -->
+            <div class="filter-card mb-4">
+              <div class="row g-3">
+                <!-- Branch -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>apartment</mat-icon>
+                      Branch
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedBranches"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllBranchesSelected()"
+                          [indeterminate]="isSomeBranchesSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllBranches()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of branches"
+                          [value]="item.id"
+                        >
+                          {{ item.branch_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>corporate_fare</mat-icon>
+                      Department
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedDepartments"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDepartmentsSelected()"
+                          [indeterminate]="isSomeDepartmentsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDepartments()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of Departments"
+                          [value]="item.id"
+                        >
+                          {{ item.dept_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>category</mat-icon>
+                      Category
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedCategories"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllCategoriesSelected()"
+                          [indeterminate]="isSomeCategoriesSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllCategories()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of Categories"
+                          [value]="item.id"
+                        >
+                          {{ item.ctgry_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>badge</mat-icon>
+                      Designation
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="selectedDesignations"
+                        [ngModelOptions]="{ standalone: true }"
+                        (selectionChange)="applyEmployeeFilter()"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDesignationsSelected()"
+                          [indeterminate]="isSomeDesignationsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDesignations()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                        <mat-option
+                          *ngFor="let item of Designations"
+                          [value]="item.id"
+                        >
+                          {{ item.desgntn_job_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+              <div class="employee-card">
+                <div class="table-responsive">
+                  <table class="employee-table">
+                    <thead>
+                      <tr>
+                        <th width="70">
+                          <mat-checkbox
+                            [(ngModel)]="allEmployeesSelected"
+                            [ngModelOptions]="{ standalone: true }"
+                            (change)="toggleSelectAllEmployees()"
+                          >
+                          </mat-checkbox>
+                        </th>
+
+                        <th>Employee</th>
+                        <th>Branch</th>
+                        <th>Department</th>
+                        <th>Category</th>
+                        <th>Designation</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr *ngFor="let emp of pagedEmployees">
+                        <td>
+                          <mat-checkbox
+                            [(ngModel)]="emp.selected"
+                            [ngModelOptions]="{ standalone: true }"
+                          >
+                          </mat-checkbox>
+                        </td>
+
+                        <td>
+                          <div class="employee-info">
+                            <div class="employee-avatar-wrapper">
+                              <img
+                                *ngIf="emp.emp_profile_pic"
+                                [src]="emp.emp_profile_pic"
+                                class="employee-avatar"
+                              />
+
+                              <div
+                                *ngIf="!emp.emp_profile_pic"
+                                class="employee-avatar-placeholder"
+                              >
+                                <mat-icon>person</mat-icon>
+                              </div>
+                            </div>
+
+                            <div>
+                              <div class="employee-name">
+                                {{ emp.emp_first_name }}
+                                {{ emp.emp_last_name }}
+                              </div>
+
+                              <div class="employee-code">
+                                {{ emp.emp_code }}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge blue">
+                            {{ emp.emp_branch_id }}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge green">
+                            {{ emp.emp_dept_id }}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge orange">
+                            {{ emp.emp_ctgry_id }}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span class="custom-badge purple">
+                            {{ emp.emp_desgntn_id }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="pagination-container">
+                    <button
+                      class="page-btn"
+                      (click)="previousPage()"
+                      [disabled]="currentPage === 1"
+                    >
+                      Previous
+                    </button>
+
+                    <button
+                      *ngFor="let page of pageNumbers"
+                      class="page-number"
+                      [class.active]="currentPage === page"
+                      (click)="goToPage(page)"
+                    >
+                      {{ page }}
+                    </button>
+
+                    <button
+                      class="page-btn"
+                      (click)="nextPage()"
+                      [disabled]="currentPage === totalPages"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                (click)="closeEditModal()"
+                class="btn btn-danger btn-full mt-5"
+              >
+                Close
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="updateEarlyExitPolicy()"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="com_list mt-4" *ngIf="hasViewPermission">
+      <div style="overflow-x: auto; width: 100%">
+        <table width="100%">
+          <thead class="thead-dark">
+            <tr>
+              <th>No</th>
+              <th>Leave Days to Deduct</th>
+              <th>Occurrence Limit</th>
+              <th>Penalty Type</th>
+              <th>Attendance Policy</th>
+              <th>Enabled</th>
+              <th>Reset Monthly</th>
+              <th>Branch</th>
+              <th>Department</th>
+              <th>Category</th>
+              <th>Designation</th>
+              <th>Employee</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let docs of LoanTypes; let i = index">
+              <td>{{ i + 1 }}</td>
+
+              <td>{{ docs.leave_days_to_deduct }}</td>
+
+              <td>{{ docs.occurrence_limit }}</td>
+
+              <td>{{ docs.penalty_type }}</td>
+
+              <td>{{ docs.attendance_policy }}</td>
+
+              <td>{{ docs.enabled }}</td>
+
+              <td>{{ docs.reset_monthly }}</td>
+
+              <td>
+                {{ docs.branch?.length ? docs.branch.join(", ") : "Null" }}
+              </td>
+
+              <td>
+                {{
+                  docs.department?.length ? docs.department.join(", ") : "Null"
+                }}
+              </td>
+
+              <td>
+                {{ docs.category?.length ? docs.category.join(", ") : "Null" }}
+              </td>
+
+              <td>
+                {{
+                  docs.designation?.length
+                    ? docs.designation.join(", ")
+                    : "Null"
+                }}
+              </td>
+
+              <td>
+                {{ docs.employee?.length ? docs.employee.join(", ") : "Null" }}
+              </td>
+
+              <td>
+                <button
+                  mat-fab
+                  color="primary"
+                  *ngIf="showEditBtn"
+                  (click)="openEditModal(docs)"
+                >
+                  <mat-icon>draw</mat-icon>
+                </button>
+
+                <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected">
+                </mat-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loader -->
+  <div class="loader-container" [class.show]="isLoading">
+    <div class="loader"></div>
+  </div>
+</div>

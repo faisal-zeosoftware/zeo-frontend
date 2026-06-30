@@ -173,6 +173,9 @@ import { CompensatoryTransactionComponent } from './compensatory-transaction/com
 import { EmployeeFullAttendanceComponent } from './employee-full-attendance/employee-full-attendance.component';
 import { GeneralSidebarComponent } from './general-sidebar/general-sidebar.component';
 import { LeavePolicyComponent } from './leave-policy/leave-policy.component';
+import { AttendanceValidationPolicyComponent } from './attendance-validation-policy/attendance-validation-policy.component';
+import { LateComePolicyComponent } from './late-come-policy/late-come-policy.component';
+import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.component';
 
 
 const routes: Routes = [
@@ -218,7 +221,7 @@ const routes: Routes = [
             component: EmployeeDetailsComponent
           },
 
-        
+
           {
             path: 'attendace-marking',
             component: AttendaceMarkingComponent,
@@ -743,7 +746,22 @@ const routes: Routes = [
 
           {
             path: 'employee-full-attendance',
-            component: EmployeeFullAttendanceComponent
+            component: EmployeeFullAttendanceComponent,
+          },
+
+          {
+            path: 'attendance-validation-policy',
+            component: AttendanceValidationPolicyComponent
+          },
+
+          {
+            path: 'late-come-policy',
+            component: LateComePolicyComponent
+          },
+
+          {
+            path: 'early-exit-policy',
+            component: EarlyExitPolicyComponent
           },
 
 
