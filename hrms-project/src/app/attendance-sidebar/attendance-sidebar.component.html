@@ -28,12 +28,7 @@
                       <mat-icon style="float: right;">{{ showGeneralRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
                     </a>
                   </li>
-                <li (click)="togglePolicyRequest()" style="cursor: pointer;">
-                    <a>
-                      <mat-icon>peoples</mat-icon>Attendance Policy 
-                      <mat-icon style="float: right;">{{ showpolicyRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
-                    </a>
-                  </li>
+
                   <ul *ngIf="showGeneralRequest" style="padding-left: 20px;">
                     
                   <li routerLink="/main-sidebar/attendance-sidebar/attendance-attendance-request" *ngIf="hasViewPermissionAttendanceReq"><a><mat-icon>person_raised_hand</mat-icon>Late In Early Out Request</a></li>
@@ -42,6 +37,12 @@
                   </ul>
 
 
+               <li (click)="togglePolicyRequest()" style="cursor: pointer;">
+                    <a>
+                      <mat-icon>peoples</mat-icon>Attendance Policy 
+                      <mat-icon style="float: right;">{{ showpolicyRequest ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    </a>
+               </li>
                
                   <ul *ngIf="showpolicyRequest" style="padding-left: 20px;">
                   <li routerLink="/main-sidebar/attendance-sidebar/attendance-policy" *ngIf="hasViewPermissionAttendancepolicy"><a><mat-icon>person_raised_hand</mat-icon>Attendance Round Off</a></li>
