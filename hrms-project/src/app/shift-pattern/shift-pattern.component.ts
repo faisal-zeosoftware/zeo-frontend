@@ -28,7 +28,7 @@ export class ShiftPatternComponent {
 
   
   name: any = '';
-  Patern_name:any='';
+  Patern_name:string='';
   description: any = '';
 
  
@@ -57,6 +57,19 @@ export class ShiftPatternComponent {
   Shifts:any []=[];
 
 ShiftsPattern: any[] = [];
+
+
+  pattern_type: 'weekly' | 'monthly' = 'weekly';
+  changes_every: number = 1;
+  
+  // Array structures holding the dynamic UI rules
+  weeks: any[] = [];
+  months: any[] = [];
+
+
+
+  // Weekdays tracking map helper
+  readonly weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 
 
@@ -113,6 +126,8 @@ ngOnInit(): void {
 
   });
   
+  // Initialize defaults
+  this.onChangesEveryOrTypeChange();
  
   this.loadUsers();
   // this.loadLAssetType();
@@ -282,62 +297,62 @@ ngOnInit(): void {
 
 
 
-  registerWeeklyEmployeeShifts(): void {
-    this.registerButtonClicked = true;
+  // registerWeeklyEmployeeShifts(): void {
+  //   this.registerButtonClicked = true;
 
-    if (!this.monday_shift || !this.tuesday_shift || !this.wednesday_shift|| !this.thursday_shift
-      || !this.friday_shift || !this.saturday_shift|| !this.sunday_shift 
-    ) {
-      alert('Please fill out all required fields.');
-      return;
-    }
+  //   if (!this.monday_shift || !this.tuesday_shift || !this.wednesday_shift|| !this.thursday_shift
+  //     || !this.friday_shift || !this.saturday_shift|| !this.sunday_shift 
+  //   ) {
+  //     alert('Please fill out all required fields.');
+  //     return;
+  //   }
 
-    const companyData = {
-      monday_shift: this.monday_shift,
-      tuesday_shift: this.tuesday_shift,
-      wednesday_shift: this.wednesday_shift,
-      thursday_shift: this.thursday_shift,
-      friday_shift: this.friday_shift,
-      saturday_shift: this.saturday_shift,
-      sunday_shift: this.sunday_shift,
-      name: this.Patern_name,
+  //   const companyData = {
+  //     monday_shift: this.monday_shift,
+  //     tuesday_shift: this.tuesday_shift,
+  //     wednesday_shift: this.wednesday_shift,
+  //     thursday_shift: this.thursday_shift,
+  //     friday_shift: this.friday_shift,
+  //     saturday_shift: this.saturday_shift,
+  //     sunday_shift: this.sunday_shift,
+  //     name: this.Patern_name,
 
 
-      // employee: this.employee,
-      // branch: this.branch,
-      // department: this.department,
-      // designation: this.designation,
-      // role: this.role,
+  //     // employee: this.employee,
+  //     // branch: this.branch,
+  //     // department: this.department,
+  //     // designation: this.designation,
+  //     // role: this.role,
 
-    };
+  //   };
 
-    this.employeeService.registerWeeklyShifts(companyData).subscribe(
-      (response) => { 
-        console.log('Registration successful', response);
-        alert('Shift has been added.');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Registration failed', error);
-  let errorMessage = 'Enter all required fields!';
+  //   this.employeeService.registerWeeklyShifts(companyData).subscribe(
+  //     (response) => { 
+  //       console.log('Registration successful', response);
+  //       alert('Shift has been added.');
+  //       window.location.reload();
+  //     },
+  //     (error) => {
+  //       console.error('Registration failed', error);
+  // let errorMessage = 'Enter all required fields!';
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
-        }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
-      }
+  //     // ✅ Handle backend validation or field-specific errors
+  //     if (error.error && typeof error.error === 'object') {
+  //       const messages: string[] = [];
+  //       for (const [key, value] of Object.entries(error.error)) {
+  //         if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+  //         else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+  //         else messages.push(`${key}: ${JSON.stringify(value)}`);
+  //       }
+  //       if (messages.length > 0) errorMessage = messages.join('\n');
+  //     } else if (error.error?.detail) {
+  //       errorMessage = error.error.detail;
+  //     }
 
-      alert(errorMessage);
-    }
-    );
-  }
+  //     alert(errorMessage);
+  //   }
+  //   );
+  // }
 
 
     loadShifts(callback?: Function): void {
@@ -383,6 +398,7 @@ ngOnInit(): void {
     //       );
     //     }
     //     }
+
 
         isLoading: boolean = false;
 
@@ -693,6 +709,239 @@ deleteSelectedShiftPattern() {
     });
   }
 }
+
+
+
+
+
+
+// Restructure configuration arrays whenever pattern type or count changes
+onChangesEveryOrTypeChange(): void {
+
+  if (this.pattern_type === 'weekly') {
+
+    this.weeks = [];
+
+    for (let i = 1; i <= this.changes_every; i++) {
+
+      this.weeks.push({
+
+        sequence: i,
+
+        rules: this.weekDayNames.map(day => ({
+
+          day: day,
+
+          shift_id: null
+
+        }))
+
+      });
+
+    }
+
+  }
+
+  else {
+
+    this.months = [];
+
+    for (let i = 1; i <= this.changes_every; i++) {
+
+      this.months.push({
+
+        sequence: i,
+
+        rules: [
+
+          {
+
+            from: 1,
+
+            to: 'last_day',
+
+            shift_id: null
+
+          }
+
+        ]
+
+      });
+
+    }
+
+  }
+
+}
+
+// Monthly Helper: Add date-range split criteria
+addMonthlyRule(index:number){
+
+  this.months[index].rules.push({
+
+      from:null,
+
+      to:null,
+
+      shift_id:null
+
+  });
+
+}
+
+// Monthly Helper: Remove date-range split criteria
+removeMonthlyRule(monthIndex: number, ruleIndex: number): void {
+  if (this.months[monthIndex].rules.length > 1) {
+    this.months[monthIndex].rules.splice(ruleIndex, 1);
+  }
+}
+
+registerShiftPattern() {
+
+  this.registerButtonClicked = true;
+
+  if (!this.Patern_name) {
+
+    alert('Pattern Name is required');
+
+    return;
+
+  }
+
+  let patternConfig: any = {};
+
+  if (this.pattern_type == 'weekly') {
+
+    const invalid = this.weeks.some(week =>
+      week.rules.some((rule: any) => !rule.shift_id)
+    );
+
+    if (invalid) {
+
+      alert('Please select shift for all weekdays');
+
+      return;
+
+    }
+
+    patternConfig = {
+
+      weeks: this.weeks.map((week: any) => ({
+
+        sequence: week.sequence,
+
+        rules: week.rules.map((rule: any) => ({
+
+          day: rule.day,
+
+          shift_id: Number(rule.shift_id)
+
+        }))
+
+      }))
+
+    };
+
+  }
+
+  else {
+
+    const invalid = this.months.some(month =>
+      month.rules.some((rule: any) =>
+        !rule.from ||
+        !rule.to ||
+        !rule.shift_id
+      )
+    );
+
+    if (invalid) {
+
+      alert('Please complete all monthly rules');
+
+      return;
+
+    }
+
+    patternConfig = {
+
+      months: this.months.map((month: any) => ({
+
+        sequence: month.sequence,
+
+        rules: month.rules.map((rule: any) => ({
+
+          from:
+            rule.from === 'last_day'
+              ? 'last_day'
+              : Number(rule.from),
+
+          to:
+            rule.to === 'last_day'
+              ? 'last_day'
+              : Number(rule.to),
+
+          shift_id: Number(rule.shift_id)
+
+        }))
+
+      }))
+
+    };
+
+  }
+
+  const payload = {
+
+    name: this.Patern_name,
+
+    pattern_type: this.pattern_type,
+
+    changes_every: Number(this.changes_every),
+
+    pattern_config: patternConfig
+
+  };
+
+  console.log(payload);
+
+  this.employeeService.registerWeeklyShifts(payload).subscribe(
+
+    (res: any) => {
+
+      alert('Shift Pattern Created Successfully');
+
+      this.closeapplicationModal();
+
+      // this.();
+
+    },
+
+    error => {
+
+      this.handleBackendErrors(error);
+
+    }
+
+  );
+
+}
+
+
+
+
+
+handleBackendErrors(error: any): void { /* ... Keep unchanged ... */ }
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

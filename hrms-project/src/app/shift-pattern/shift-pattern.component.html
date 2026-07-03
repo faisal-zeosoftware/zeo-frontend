@@ -58,198 +58,108 @@
 
 
         <div *ngIf="iscreateLoanApp" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" >
                 <div class="row">
                     <div class="col-md-10">
-                        <h2> Create Shift Pattern</h2>
+                        <h2>Create Shift Pattern</h2>
                     </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div>
+                    <div class="col-md-2 text-right">
+                        <span class="close-btn" (click)="closeapplicationModal()">×</span>
+                    </div>
                 </div>
                 <hr />
-
+        
                 <form>
-                    <div class="row">
-
-                        <div class="col-md-6">
-
-                            <label> Name
-                                 <span class="required-star">*</span>
-                            </label>
-                            <input type="text" class="form-control" required [(ngModel)]="Patern_name"
-                                placeholder="Enter name " [ngModelOptions]="{standalone: true}"
-                                [ngClass]="{'error-field': registerButtonClicked && !name}">
-
-                            <div *ngIf="registerButtonClicked && !name" class="error-message">name is required.</div>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label>Pattern Name <span class="required-star">*</span></label>
+                            <input type="text" class="form-control" required [(ngModel)]="Patern_name" placeholder="Enter name" name="pattName">
                         </div>
-
-
-                        <div class="col-md-6">
-                            <label>Monday Shift</label>
-                            <div class="custom-sel">
-
-                                <select class="form-control" id="monday_shift" required [(ngModel)]="monday_shift"
-                                    [ngModelOptions]="{standalone: true}">
-                                    <option value="">Select</option>
-                                    <option *ngFor="let deparmentsec of Shifts" [value]="deparmentsec.id">{{
-                                        deparmentsec.name }} </option>
+                        <div class="col-md-4">
+                            <label>Pattern Type</label>
+                            <select class="form-control" [(ngModel)]="pattern_type" name="pattType" (change)="onChangesEveryOrTypeChange()">
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Shift Pattern Changes Every</label>
+                            <div class="d-flex align-items-center">
+                                <select class="form-control mr-2" style="width: 100px;" [(ngModel)]="changes_every" name="changesEvery" (change)="onChangesEveryOrTypeChange()">
+                                    <option *ngFor="let val of [1,2,3,4,5,6]" [value]="val">{{val}}</option>
                                 </select>
-
-
-
-
-
+                                <span>{{ pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}</span>
                             </div>
                         </div>
-
-                        <div class="col-md-6">
-                            <label>Tuesday Shift</label>
-                            <div class="custom-sel">
-
-                                <select class="form-control" id="tuesday_shift" required [(ngModel)]="tuesday_shift"
-                                    [ngModelOptions]="{standalone: true}">
-                                    <option value="">Select</option>
-                                    <option *ngFor="let deparmentsec of Shifts" [value]="deparmentsec.id">{{
-                                        deparmentsec.name }} </option>
-                                </select>
-
-
-
-
-
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <label>Wednesday Shift</label>
-                            <div class="custom-sel">
-
-                                <select class="form-control" id="wednesday_shift" required [(ngModel)]="wednesday_shift"
-                                    [ngModelOptions]="{standalone: true}" >
-                                    <option value="">Select</option>
-                                    <option *ngFor="let deparmentsec of Shifts" [value]="deparmentsec.id">{{
-                                        deparmentsec.name }} </option>
-                                </select>
-
-
-
-
-
-
-                            </div>
-                        </div>
-
-
-
-                        <div class="col-md-6">
-                            <label>Thursday Shift</label>
-                            <div class="custom-sel">
-
-                                <select class="form-control" id="thursday_shift" required [(ngModel)]="thursday_shift"
-                                    [ngModelOptions]="{standalone: true}" >
-                                    <option value="">Select</option>
-                                    <option *ngFor="let deparmentsec of Shifts" [value]="deparmentsec.id">{{
-                                        deparmentsec.name }} </option>
-                                </select>
-                           
-
-
-
-
-
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <label>Friday Shift</label>
-                            <div class="custom-sel">
-
-                                <select class="form-control" id="friday_shift" required [(ngModel)]="friday_shift"
-                                    [ngModelOptions]="{standalone: true}"
-                                    >
-                                    <option value="">Select</option>
-                                    <option *ngFor="let deparmentsec of Shifts" [value]="deparmentsec.id">{{
-                                        deparmentsec.name }} </option>
-                                </select>
-                             
-
-
-
-
-
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <label>Saturday Shift</label>
-                            <div class="custom-sel">
-
-                                <select class="form-control" id="saturday_shift" required [(ngModel)]="saturday_shift"
-                                    [ngModelOptions]="{standalone: true}"
-                                    >
-                                    <option value="">Select</option>
-                                    <option *ngFor="let deparmentsec of Shifts" [value]="deparmentsec.id">{{
-                                        deparmentsec.name }} </option>
-                                </select>
-                              
-
-
-
-
-
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <label>Sunday Shift</label>
-                            <div class="custom-sel">
-
-                                <select class="form-control" id="sunday_shift" required [(ngModel)]="sunday_shift"
-                                    [ngModelOptions]="{standalone: true}">
-                                    <option value="">Select</option>
-                                    <option *ngFor="let deparmentsec of Shifts" [value]="deparmentsec.id">{{
-                                        deparmentsec.name }} </option>
-                                </select>
-                              
-
-
-
-
-
-                            </div>
-                        </div>
-
-
-
-
-
-
                     </div>
-                    <div class="row">
-                        <div class="col-md-8">
-
+        
+                    <hr />
+                    <h4>Define Shift Pattern Structure</h4>
+        
+                    <div *ngIf="pattern_type === 'weekly'">
+                        <div *ngFor="let week of weeks; let wIdx = index" class="card p-3 mb-3 border-light shadow-sm">
+                            <h5>Week {{ week.sequence }}</h5>
+                            <div class="row">
+                                <div *ngFor="let rule of week.rules; let dIdx = index" class="col text-center border-right">
+                                    <label class="font-weight-bold d-block small mb-1">{{ rule.day.substring(0,3) }}</label>
+                                    
+                                    <div class="custom-sel">
+                                        <select class="form-control form-control-sm text-center" [(ngModel)]="rule.shift_id" name="week-{{wIdx}}-day-{{dIdx}}">
+                                            <option value="">+</option>
+                                            <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-       <div class="col-md-2">
-          <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close</button>
-        </div>
-
+                    </div>
+        
+                    <div *ngIf="pattern_type === 'monthly'">
+                        <div *ngFor="let month of months; let mIdx = index" class="card p-3 mb-3 border-light shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5>Month {{ month.sequence }}</h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addMonthlyRule(mIdx)">+ Split Date Range</button>
+                            </div>
+        
+                            <div *ngFor="let rule of month.rules; let rIdx = index" class="row align-items-center mb-2">
+                                <div class="col-md-3">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend"><span class="input-group-text">From</span></div>
+                                        <input type="text" class="form-control" [(ngModel)]="rule.from" placeholder="e.g. 1" name="m-{{mIdx}}-f-{{rIdx}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend"><span class="input-group-text">To</span></div>
+                                        <input type="text" class="form-control" [(ngModel)]="rule.to" placeholder="e.g. 15 or last_day" name="m-{{mIdx}}-t-{{rIdx}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <select class="form-control form-control-sm" [(ngModel)]="rule.shift_id" name="m-{{mIdx}}-s-{{rIdx}}">
+                                        <option value="">Select Shift</option>
+                                        <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    <span class="text-danger" style="cursor:pointer; font-weight:bold" *ngIf="month.rules.length > 1" (click)="removeMonthlyRule(mIdx, rIdx)">🗑️</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="row mt-4">
+                        <div class="col-md-8"></div>
                         <div class="col-md-2">
-                            <button type="button" class="btn-Create btn-full mt-5 btn-success btn"
-                                (click)="registerWeeklyEmployeeShifts()">Add</button>
+                            <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full">Close</button>
                         </div>
+                        <button
+                        type="button"
+                        class="btn btn-success btn-full"
+                        (click)="registerShiftPattern()">
+                        Add Pattern
+                    </button>
                     </div>
                 </form>
-
-
             </div>
         </div>
 
