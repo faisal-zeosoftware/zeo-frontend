@@ -154,6 +154,7 @@
     top: 34px;
     bottom: 0;
     position: fixed;
+    z-index: 1;
 }
 
 .side_option{

@@ -408,6 +408,7 @@ ngOnInit(): void {
       next: (data: any) => {
         // Filter active employees
         this.ShiftsPattern = data;
+        this.filteredShiftPatterns=[...this.ShiftsPattern];
 
         this.isLoading = false;
       },
@@ -716,21 +717,20 @@ deleteSelectedShiftPattern() {
 
 
 // Restructure configuration arrays whenever pattern type or count changes
-onChangesEveryOrTypeChange(): void {
+onChangesEveryOrTypeChange() {
 
   if (this.pattern_type === 'weekly') {
 
-    this.weeks = [];
-
-    for (let i = 1; i <= this.changes_every; i++) {
+    // Add new weeks only
+    while (this.weeks.length < this.changes_every) {
 
       this.weeks.push({
 
-        sequence: i,
+        sequence: this.weeks.length + 1,
 
         rules: this.weekDayNames.map(day => ({
 
-          day: day,
+          day,
 
           shift_id: null
 
@@ -740,17 +740,22 @@ onChangesEveryOrTypeChange(): void {
 
     }
 
+    // Remove extra weeks only
+    while (this.weeks.length > this.changes_every) {
+
+      this.weeks.pop();
+
+    }
+
   }
 
   else {
 
-    this.months = [];
-
-    for (let i = 1; i <= this.changes_every; i++) {
+    while (this.months.length < this.changes_every) {
 
       this.months.push({
 
-        sequence: i,
+        sequence: this.months.length + 1,
 
         rules: [
 
@@ -770,18 +775,36 @@ onChangesEveryOrTypeChange(): void {
 
     }
 
+    while (this.months.length > this.changes_every) {
+
+      this.months.pop();
+
+    }
+
   }
 
 }
 
 // Monthly Helper: Add date-range split criteria
-addMonthlyRule(index:number){
+addMonthlyRule(monthIndex:number){
 
-  this.months[index].rules.push({
+  const rules=this.months[monthIndex].rules;
 
-      from:null,
+  const lastRule=rules[rules.length-1];
 
-      to:null,
+  let nextFrom=1;
+
+  if(lastRule.to!='last_day'){
+
+      nextFrom=Number(lastRule.to)+1;
+
+  }
+
+  rules.push({
+
+      from:nextFrom,
+
+      to:'last_day',
 
       shift_id:null
 
@@ -789,6 +812,28 @@ addMonthlyRule(index:number){
 
 }
 
+
+updateNextRule(monthIndex:number,ruleIndex:number){
+
+  const rules=this.months[monthIndex].rules;
+
+  if(ruleIndex>=rules.length-1){
+
+      return;
+
+  }
+
+  const current=rules[ruleIndex];
+
+  const next=rules[ruleIndex+1];
+
+  if(current.to!='last_day'){
+
+      next.from=Number(current.to)+1;
+
+  }
+
+}
 // Monthly Helper: Remove date-range split criteria
 removeMonthlyRule(monthIndex: number, ruleIndex: number): void {
   if (this.months[monthIndex].rules.length > 1) {
@@ -909,6 +954,7 @@ registerShiftPattern() {
     (res: any) => {
 
       alert('Shift Pattern Created Successfully');
+      
 
       this.closeapplicationModal();
 
@@ -939,8 +985,61 @@ handleBackendErrors(error: any): void { /* ... Keep unchanged ... */ }
 
 
 
+// Look up human-friendly shift names dynamically
+getShiftName(shiftId: any): string {
+  if (!shiftId || !this.Shifts) return 'Off';
+  const match = this.Shifts.find(s => Number(s.id) === Number(shiftId));
+  return match ? match.name : 'Off';
+}
+
+// Maps shift IDs or names to contextual styling CSS classes
+getShiftColorClass(shiftId: any): string {
+  const name = this.getShiftName(shiftId).toLowerCase();
+  
+  if (name.includes('morning')) return 'pill-morning';
+  if (name.includes('night')) return 'pill-night';
+  if (name.includes('evening')) return 'pill-evening';
+  if (name.includes('general')) return 'pill-general';
+  return 'pill-off'; // Default fallback matching UI styles
+}
 
 
+
+searchPattern='';
+
+selectedPatternType='';
+
+filteredShiftPatterns:any[]=[];
+
+
+applyFilters() {
+
+  this.filteredShiftPatterns = this.ShiftsPattern.filter(pattern => {
+
+    const matchesSearch = !this.searchPattern ||
+
+      pattern.name.toLowerCase().includes(this.searchPattern.toLowerCase());
+
+    const matchesType = !this.selectedPatternType ||
+
+      pattern.pattern_type == this.selectedPatternType;
+
+    return matchesSearch && matchesType;
+
+  });
+
+}
+
+
+clearFilters(){
+
+  this.searchPattern='';
+
+  this.selectedPatternType='';
+
+  this.filteredShiftPatterns=[...this.ShiftsPattern];
+
+}
 
 
 
