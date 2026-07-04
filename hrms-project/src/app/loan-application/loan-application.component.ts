@@ -265,15 +265,17 @@ this.Delete = !this.Delete;
     formData.append('employee', this.employee);
     formData.append('loan_type', this.loan_type);
 
-
+ this.isLoading = true;
   
     this.employeeService.registerLoanApplication(formData).subscribe(
       (response) => {
+         this.isLoading = false;
         console.log('Registration successful', response);
-        alert('Loan application has been added');
+        alert('Loan Request has been added');
         window.location.reload();
       },
       (error) => {
+          this.isLoading = false;
         console.error('Added failed', error);
 
           let errorMessage = 'Enter all required fields!';
@@ -526,14 +528,14 @@ submitPauseLoan(): void {
 
   this.employeeService.pauseLoanApplication(this.selectedLoanId, pauseData).subscribe(
     (response) => {
-      alert('Loan application paused successfully!');
+      alert('Loan Request paused successfully!');
       this.closePauseModal();
       // this.loadLoanApplications();
       window.location.reload();
     },
     (error) => {
       console.error('Pause failed:', error);
-      alert('Failed to pause the loan application.');
+      alert('Failed to pause the loan Request.');
     }
   );
 }
@@ -554,7 +556,7 @@ submitResumeLoan(): void {
 
   this.employeeService.resumeLoanApplication(this.selectedLoanId, resumeData).subscribe(
     (response) => {
-      alert('Loan application resumed successfully!');
+      alert('Loan Request resumed successfully!');
       this.closeResumeModal();
       // this.loadLoanApplications();
       window.location.reload();
@@ -562,7 +564,7 @@ submitResumeLoan(): void {
     },
     (error) => {
       console.error('Resume failed:', error);
-      alert('Failed to resume the loan application.');
+      alert('Failed to resume the loan Request.');
     }
   );
 }
@@ -581,11 +583,11 @@ deleteSelectedLoanApplication() {
     .map(employee => employee.id);
 
   if (selectedIds.length === 0) {
-    alert('No Loan Application selected for deletion.');
+    alert('No Loan Request selected for deletion.');
     return;
   }
 
-  if (confirm('Are you sure you want to delete the selected Loan Applications ?')) {
+  if (confirm('Are you sure you want to delete the selected Loan Request ?')) {
 
     let total = selectedIds.length;
     let completed = 0;
@@ -598,11 +600,11 @@ deleteSelectedLoanApplication() {
 
           completed++;
           if (completed === total) {
-            alert('Loan Applications deleted successfully');
+            alert('Loan Requests deleted successfully');
           }
         },
         (error) => {
-          alert('Error deleting Loan Application: ' + error.statusText);
+          alert('Error deleting Loan Requests: ' + error.statusText);
         }
       );
     });
@@ -618,12 +620,12 @@ updateAssetType(): void {
 
   this.employeeService.updateLoanApplication(this.editAsset.id, this.editAsset).subscribe(
     (response) => {
-      alert(' Loan Application updated successfully!');
+      alert(' Loan Request updated successfully!');
       this.closeEditModal();
       window.location.reload();
     },
 (error) => {
-  console.error('Error updating Loan Application:', error);
+  console.error('Error updating Loan Request:', error);
 
   let errorMsg = 'Update failed';
 

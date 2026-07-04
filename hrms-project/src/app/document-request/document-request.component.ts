@@ -418,10 +418,11 @@ LoadDocRequest(selectedSchema: string, branchIds: number[] = []) {
      
   
       
-    
+       this.isLoading = true;
     
       this.leaveService.CreateDocRequest(formData).subscribe(
         (response) => {
+              this.isLoading = false;
           console.log('Registration successful', response);
   
   
@@ -430,6 +431,7 @@ LoadDocRequest(selectedSchema: string, branchIds: number[] = []) {
           window.location.reload();
         },  
         (error) => {
+              this.isLoading = false;
           console.error('Added failed', error);
           
          let errorMessage = 'Enter all required fields!';

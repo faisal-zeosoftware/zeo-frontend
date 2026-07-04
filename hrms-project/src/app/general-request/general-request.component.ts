@@ -704,17 +704,20 @@ registerGeneralreq(): void {
   formData.append('created_by', this.created_by || '');
   formData.append('approved', this.approved ? 'true' : 'false');
   formData.append('remarks', this.remarks || '');
-
   if (this.request_document) {
     formData.append('request_document', this.request_document);
   }
 
+   this.isLoading = true;
+
   this.employeeService.registerGeneralReq(formData).subscribe(
     (response) => {
+       this.isLoading = false;
       alert('General request has been added successfully!');
       window.location.reload();
     },
     (error) => {
+       this.isLoading = false;
       console.error('General request registration failed:', error);
 
       let errorMessage = 'Something went wrong.';

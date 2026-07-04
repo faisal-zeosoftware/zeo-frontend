@@ -73,47 +73,91 @@
           <form (ngSubmit)="SetLateInEarlyOut()" enctype="multipart/form-data">
             <div class="row">
 
-        <div class="col-md-6">
 
-  <div class="custom-sel">
-            <div class="form-control-wrapper">
+            <div class="col-md-6">
+              <div class="custom-sel">
+                <label
+                  >Select Branches
+                  <span class="required-star">*</span>
+                </label>
+                <select
+                  class="form-control"
+                  id="branch"
+                  required
+                  [(ngModel)]="branch"
+                  (change)="onBranchChange()"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !branch,
+                  }"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let deparmentsec of branches"
+                    [value]="deparmentsec.id"
+                  >
+                    {{ deparmentsec.branch_name }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="registerButtonClicked && !branch"
+                  class="error-message"
+                >
+                  Please Select Your Branch
+                </div>
+              </div>
+            </div>
 
-      <label>Select Employee
-         <span class="required-star">*</span>
-      </label>
-       <mat-form-field appearance="outline" style="width:100%">
+            <div class="col-md-6">
+              <label
+                >Employee
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  id="employee"
+                  name="employee"
+                  [(ngModel)]="employee"  (change)="onEmployeeChange()"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !employee,
+                  }"
+                >
+                  <option
+                    *ngFor="let deparmentsec of filteredEmployees"
+                    [value]="deparmentsec.id"
+                  >
+                    {{ deparmentsec.emp_code }}
+                  </option>
+                </select>
+              </div>
+              <div
+                *ngIf="registerButtonClicked && !employee"
+                class="error-message"
+              >
+                Employee is required.
+              </div>
+            </div>
 
-    <!-- Employee Dropdown -->
-  <mat-select [(ngModel)]="employee"
-              [ngModelOptions]="{standalone: true}" 
-              multiple [ngClass]="{'error-field': registerButtonClicked && !employeeSearch}">
+            <div class="col-md-6">
+              <label>Document Number</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="document_number"
+                placeholder="Enter document number"
+                [disabled]="automaticNumbering"
+                [ngModelOptions]="{ standalone: true }"
+                [required]="!automaticNumbering"
+              />
 
-              
+              <!-- Optional: show hint when disabled -->
+              <small *ngIf="automaticNumbering" class="text-muted">
+                Document number will be auto-generated
+              </small>
+            </div>
 
-    <input type="text"
-           placeholder="Search Employee"
-           class="form-control"
-           [(ngModel)]="employeeSearch"
-           [ngModelOptions]="{standalone: true}" 
-           (click)="$event.stopPropagation()">
-
-
-        <!-- Employee List -->
-    <mat-option *ngFor="let emp of filterEmployees()"
-                [value]="emp.id">
-      {{ emp.emp_code }}
-    </mat-option>
-
-      </mat-select>
-          </mat-form-field>
-         
-</div>
-
-  </div>
-
-    <div *ngIf="registerButtonClicked && !employeeSearch" class="error-message">Please Select Employee</div>
-  
-</div>
 
 
               <div class="col-md-6">
@@ -205,40 +249,49 @@
     
     <div class="row">
 
-      <div class="col-md-6">
+   <div class="col-md-6">
+                <div class="custom-sel">
+                    <label>Select Branches
+                      <span class="required-star">*</span>
+                    </label>
+                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange()" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                        <option value="">Select</option>
+                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+                    </select>
+                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+                </div>
+            </div>
 
-  <div class="custom-sel">
-            <div class="form-control-wrapper">
-
-      <label>Select Employee</label>
-       <mat-form-field appearance="outline" style="width:100%">
-
-    <!-- Employee Dropdown -->
-  <mat-select [(ngModel)]="editAsset.employee"
-              [ngModelOptions]="{standalone: true}"
-              multiple>
-
-    <input type="text"
-           placeholder="Search Employee"
-           class="form-control"
-           [(ngModel)]="employeeSearch"
-           [ngModelOptions]="{standalone: true}"
-           (click)="$event.stopPropagation()">
+              <div class="col-md-6">
+                      <label>Employee
+                        <span class="required-star">*</span>
+                      </label>
+                      <div class="custom-sel">
+                        <select class="form-control" id="employee" name="employee" [(ngModel)]="editAsset.employee" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}">
+                          <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }}</option>
+                        </select>
+                      </div>
+                      <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Employee</div>
+                    </div>
 
 
-        <!-- Employee List -->
-    <mat-option *ngFor="let emp of filterEmployees()"
-                [value]="emp.id">
-      {{ emp.emp_code }}
-    </mat-option>
 
-      </mat-select>
-          </mat-form-field>
-</div>
-         
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="editAsset.document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
 
-  </div>
-
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
 </div>
 
               <div class="col-md-6">
@@ -307,8 +360,10 @@
               <th>No</th>
               <th>Date</th>
               <th>Request Type</th>
-              <th>Reason</th>
               <th>Employee</th>
+              <th>Document number</th>
+              <th>Branch</th>
+              <th>Reason</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -321,8 +376,10 @@
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Date">{{ docs.date }}</td>
         <td data-label="RequestType">{{ docs.request_type }}</td>
-        <td data-label="Reason">{{ docs.reason }}</td>
         <td data-label="Employee">{{ docs.employee }}</td>
+        <td data-label="Document number">{{ docs.document_number }}</td>
+        <td>{{ docs.branch }}</td>
+        <td data-label="Reason">{{ docs.reason }}</td>
         <td>
            <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
                  {{ docs.status }}

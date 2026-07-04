@@ -1,366 +1,482 @@
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section">
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="row">
+        <div class="col-md-4">
+          <h1>Document Request</h1>
+        </div>
+        <div class="col-md-3">
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button
+              type="button"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
+            >
+              <span class="header-btn-icon"
+                ><mat-icon>add_circle </mat-icon></span
+              >
+              Create
+            </button>
+            <span *ngIf="!hasAddPermission"></span>
 
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
+            <span *ngIf="hasEditPermission"></span>
 
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
+              <span class="header-btn-icon">
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
 
-
-      <div class="header_section">
-
-        <div class="row">
-            <div class="col-md-4">
-                <h1> Document Request</h1>
-            </div>
-            <div class="col-md-3">
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-            </div>
-            <div class="col-md-5">
-              <div class="button-group pull-right">
-                  <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                  </mat-icon></span> Create</button>
-                  <span *ngIf="!hasAddPermission"></span>
-
-                  <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                      <span class="header-btn-icon">
-                       <mat-icon>draw
-                  </mat-icon></span> Edit</button>
-                  <span *ngIf="hasEditPermission"></span>
-
-                  <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                      <span class="header-btn-icon">
-                          <mat-icon> delete
-                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                     
-                     <span *ngIf="!hasDeletePermission"></span>
-              </div>
+            <span *ngIf="!hasDeletePermission"></span>
           </div>
         </div>
-       
-       
-
+      </div>
     </div>
 
     <div class="row">
       <div class="col-md-2">
-          
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          style="width: 100%"
+          color="warn"
+          *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()"
+        >
+          Select All
+        </button>
       </div>
       <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          color="warn"
+          *ngIf="Delete"
+          (click)="deleteSelectedAssetType()"
+        >
+          Delete Selected
+        </button>
       </div>
-  </div>
-  
-  
+    </div>
 
     <div *ngIf="iscreateLoanApp" class="modal">
-        <div class="modal-content">
-          <div class="row">
-            <div class="col-md-10">
-              <h2> Create Employee Document Request </h2>
-            </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div> 
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Create Employee Document Request</h2>
           </div>
-          <hr />
-          <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
-            <div class="row">
-
-
-               <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches
-                      <span class="required-star">*</span>
-                    </label>
-                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+          </div>
+        </div>
+        <hr />
+        <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="custom-sel">
+                <label
+                  >Select Branches
+                  <span class="required-star">*</span>
+                </label>
+                <select
+                  class="form-control"
+                  id="branch"
+                  required
+                  [(ngModel)]="branch"
+                  (change)="onBranchChange($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !branch,
+                  }"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let deparmentsec of branches"
+                    [value]="deparmentsec.id"
+                  >
+                    {{ deparmentsec.branch_name }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="registerButtonClicked && !branch"
+                  class="error-message"
+                >
+                  Please Select Your Branch
                 </div>
+              </div>
             </div>
 
-             <div class="col-md-6">
-                
-                
-                    <div class="custom-sel">
-                        <label>Employee
-                          <span class="required-star">*</span>
-                        </label>
-                        <select class="form-control" id="employee" required [(ngModel)]="employee"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}" >
-                            <option value="" >Select</option>
-                            <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
-                        </select>
-                        <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Employee</div>
-                    </div>
-                                
-                
-                
-                       
-                       
-                    
-                </div> 
-
-<div class="col-md-6">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
-
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
-
-              <div class="col-md-6">
-                <label>Request Type
-                   <span class="required-star">*</span>
+            <div class="col-md-6">
+              <div class="custom-sel">
+                <label
+                  >Employee
+                  <span class="required-star">*</span>
                 </label>
-                <div class="custom-sel">
-                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}">
-                    <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
-                  </select>
+                <select
+                  class="form-control"
+                  id="employee"
+                  required
+                  [(ngModel)]="employee"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !employee,
+                  }"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let deparmentsec of filteredEmployees"
+                    [value]="deparmentsec.id"
+                  >
+                    {{ deparmentsec.emp_code }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="registerButtonClicked && !employee"
+                  class="error-message"
+                >
+                  Please Select Employee
                 </div>
-                 <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select request type</div>
-              </div> 
-          
-              <div class="col-md-6">
-                <label>reason</label>
-                <input type="text" class="form-control" required [(ngModel)]="reason" placeholder="Enter reason"
-                       [ngModelOptions]="{standalone: true}" >
               </div>
+            </div>
 
-              <!-- <div class="col-md-6">
+            <div class="col-md-6">
+              <label>Document Number</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="document_number"
+                placeholder="Enter document number"
+                [disabled]="automaticNumbering"
+                [ngModelOptions]="{ standalone: true }"
+                [required]="!automaticNumbering"
+              />
+
+              <!-- Optional: show hint when disabled -->
+              <small *ngIf="automaticNumbering" class="text-muted">
+                Document number will be auto-generated
+              </small>
+            </div>
+
+            <div class="col-md-6">
+              <label
+                >Request Type
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  id="request_type"
+                  name="request_type"
+                  [(ngModel)]="request_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !request_type,
+                  }"
+                >
+                  <option
+                    *ngFor="let approver of DocType"
+                    [value]="approver.id"
+                  >
+                    {{ approver.type_name }}
+                  </option>
+                </select>
+              </div>
+              <div
+                *ngIf="registerButtonClicked && !employee"
+                class="error-message"
+              >
+                Please Select request type
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label>reason</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="reason"
+                placeholder="Enter reason"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <!-- <div class="col-md-6">
                 <label>Total</label>
                 <input type="number" class="form-control" required [(ngModel)]="total" placeholder="Enter total "
                        [ngModelOptions]="{standalone: true}" >
               </div> -->
-          
-              <div class="col-md-6">
-                <label>Remark</label>
-                <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
-                       [ngModelOptions]="{standalone: true}" >
-              </div>
-              
-         
-            </div>
-          
-            <div class="row" >
-              <div class="col-md-8"></div>
-              <div class="col-md-2">
-                <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-4">Close</button>
-        
-              </div>
-              <div class="col-md-2">
-                <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
-              </div>
-            </div>
-          </form>
 
-    
+            <div class="col-md-6">
+              <label>Remark</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="remarks"
+                placeholder="Enter remarks"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+          </div>
 
-        
-        </div>
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                (click)="closeapplicationModal()"
+                class="btn btn-danger btn-full mt-4"
+              >
+                Close
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-success btn-full mt-4">
+                Add
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
-
-                 <!-- Edit Modal -->
-<div *ngIf="isEditModalOpen" class="modal">
-<div class="modal-content">
-<div class="row">
-  <div class="col-md-10">
-    <h2>Edit  Employee Document Request </h2>
-  </div>
-    <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeEditModal()">
-      ×
-    </span>
-  </div> 
-</div>
-<hr />
-
-<form >
-  <div class="row">
-
-
-      
-               <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches</label>
-                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
-                </div>
-            </div>
-
-
-                    <div class="col-md-6">
-                
-                
-                    <div class="custom-sel">
-                        <label>Employee</label>
-                        <select class="form-control" id="employee" required [(ngModel)]="editAsset.employee"  [ngModelOptions]="{standalone: true}"  >
-                            <option value="" >Select</option>
-                            <option *ngFor="let user of Employee" [value]="user.id">{{ user.emp_code }} </option>
-                        </select>
-                       
-                    </div>
-                                
-                
-                
-                       
-                       
-                    
-                </div> 
-
-<div class="col-md-6">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="editAsset.document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
-
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
-
-    <div class="col-md-6">
-      <label>Request Type</label>
-      <div class="custom-sel">
-        <select class="form-control" id="request_type" name="request_type" [(ngModel)]="editAsset.request_type" [ngModelOptions]="{standalone: true}">
-          <option *ngFor="let approver of DocType" [value]="approver.id">{{ approver.type_name }}</option>
-        </select>
-      </div>
-    </div> 
-
-    <div class="col-md-6">
-      <label>reason</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.reason" placeholder="Enter reason"
-             [ngModelOptions]="{standalone: true}" >
     </div>
 
-    <!-- <div class="col-md-6">
+    <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit Employee Document Request</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeEditModal()"> × </span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="custom-sel">
+                <label>Select Branches</label>
+                <select
+                  class="form-control"
+                  id="branch"
+                  required
+                  [(ngModel)]="editAsset.branch"
+                  (change)="onBranchChange($event)"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !branch,
+                  }"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let deparmentsec of branches"
+                    [value]="deparmentsec.id"
+                  >
+                    {{ deparmentsec.branch_name }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="registerButtonClicked && !branch"
+                  class="error-message"
+                >
+                  Please Select Your Branch
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="custom-sel">
+                <label>Employee</label>
+                <select
+                  class="form-control"
+                  id="employee"
+                  required
+                  [(ngModel)]="editAsset.employee"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="">Select</option>
+                  <option *ngFor="let user of Employee" [value]="user.id">
+                    {{ user.emp_code }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label>Document Number</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editAsset.document_number"
+                placeholder="Enter document number"
+                [disabled]="automaticNumbering"
+                [ngModelOptions]="{ standalone: true }"
+                [required]="!automaticNumbering"
+              />
+
+              <!-- Optional: show hint when disabled -->
+              <small *ngIf="automaticNumbering" class="text-muted">
+                Document number will be auto-generated
+              </small>
+            </div>
+
+            <div class="col-md-6">
+              <label>Request Type</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  id="request_type"
+                  name="request_type"
+                  [(ngModel)]="editAsset.request_type"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option
+                    *ngFor="let approver of DocType"
+                    [value]="approver.id"
+                  >
+                    {{ approver.type_name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label>reason</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.reason"
+                placeholder="Enter reason"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <!-- <div class="col-md-6">
       <label>Total</label>
       <input type="number" class="form-control" required [(ngModel)]="total" placeholder="Enter total "
              [ngModelOptions]="{standalone: true}" >
     </div> -->
 
-    <div class="col-md-6">
-      <label>Remark</label>
-      <input type="text" class="form-control" required [(ngModel)]="editAsset.remarks" placeholder="Enter remarks"
-             [ngModelOptions]="{standalone: true}" >
-    </div>
-  
+            <div class="col-md-6">
+              <label>Remark</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.remarks"
+                placeholder="Enter remarks"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+          </div>
 
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                (click)="closeEditModal()"
+                class="btn btn-danger btn-full mt-4"
+              >
+                Close
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                (click)="updateAssetType()"
+                class="btn btn-success btn-full mt-4"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="com_list mt-4" style="border-top: white">
+      <table width="100%">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Document number</th>
+            <th>Branch</th>
+            <th>Reason</th>
+            <!-- <th>Total</th> -->
+            <th>Remarks</th>
+            <th>Request type</th>
+            <th>Employee</th>
+            <th>Status</th>
+
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let docs of DocRequest; let i = index">
+            <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="Document number">{{ docs.document_number }}</td>
+            <td>{{ docs.branch }}</td>
+            <td data-label="Reason">{{ docs.reason }}</td>
+            <!-- <td data-label="Total">{{ docs.total }}</td>  -->
+            <td data-label="Remarks">{{ docs.remarks }}</td>
+            <td data-label="Request type">{{ docs.request_type }}</td>
+            <td data-label="Employee">{{ docs.employee }}</td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'"
+              >
+                {{ docs.status }}
+              </span>
+            </td>
+            <td data-label="Action">
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+                (click)="openEditModal(docs)"
+              >
+                <mat-icon style="color: white">draw</mat-icon>
+              </button>
+
+              <mat-checkbox
+                *ngIf="Delete"
+                [(ngModel)]="docs.selected"
+              ></mat-checkbox>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-
-  <div class="row" >
-    <div class="col-md-8"></div>
-    <div class="col-md-2">
-      <button type="button" (click)="closeEditModal()"  class="btn btn-danger btn-full mt-4">Close</button>
-
-    </div>
-    <div class="col-md-2">
-      <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
-    </div>
-  </div>
-</form>
-
-
-
-</div>
 </div>
 
-
-
-
-
-
-
-<div class="com_list  mt-4" style="border-top: white;">
-
-        
-        <table width="100%" >
-          <thead>
-            <tr>
-              <th>No</th>
-              <th> Document number  </th>
-              <th>Branch</th>
-              <th>Reason</th>
-              <!-- <th>Total</th> -->
-              <th>Remarks</th>
-              <th>Request type</th>   
-              <th>Employee</th>
-              <th>Status</th>
-             
-  <th>Action</th>
-             
-            </tr>
-          </thead>
-          <tbody>
-              
-            <tr *ngFor="let docs of DocRequest;let i = index">
-              <td data-label="No">{{ i + 1 }}</td> 
-              <td data-label="Document number">{{ docs.document_number }}</td>
-              <td>{{ docs.branch }}</td>
-              <td data-label="Reason">{{ docs.reason }}</td>
-              <!-- <td data-label="Total">{{ docs.total }}</td>  -->
-              <td data-label="Remarks">{{ docs.remarks }}</td>
-              <td data-label="Request type">{{ docs.request_type }}</td>
-              <td data-label="Employee">{{ docs.employee }}</td> 
-              <td data-label="Status">{{ docs.status }}</td>
-              <td data-label="Action">
-                <button
-                  mat-fab
-                  color="primary"
-                  aria-label="Edit icon"
-                  *ngIf="showEditBtn"
-      
-                  
-                  (click)="openEditModal(docs)"
-                >
-                  <mat-icon style="color: white;">draw</mat-icon>
-                </button>
-      
-                <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-      
-              </td>
-
-            </tr>
-        
-          </tbody>
-        </table>
-
-
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
 </div>
-
-    </div>
-</div>
-
-
-    <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>

@@ -40,49 +40,17 @@
                 </button>
 
                 <button
-                  class="btn btn-primary"
-                  (click)="openDelegationModalFromApproval(apr)"
+                  *ngIf="apr.delegation_details"
+                  class="btn btn-secondary"
+                  (click)="apr.showDelegation = !apr.showDelegation"
                 >
-                  Delegate
+                  {{
+                    apr.showDelegation ? "Hide Details" : "Delegation Details"
+                  }}
                 </button>
               </div>
             </div>
           </div>
-
-          
-          <!-- Delegation Header -->
-<div
-  *ngIf="apr.delegation_details"
-  class="delegation-header mt-3"
->
-  <div class="d-flex justify-content-between align-items-center">
-
-    <h6
-      class="mb-0"
-      (click)="apr.showDelegation = !apr.showDelegation"
-      style="cursor:pointer"
-    >
-      Delegation Details
-
-      <span class="ml-2">
-        <i
-          class="fa"
-          [ngClass]="
-            apr.showDelegation ? 'fa-chevron-up' : 'fa-chevron-down'
-          "
-        ></i>
-      </span>
-    </h6>
-
-    <button style="color:white"
-      class="btn btn-info btn-sm"
-      (click)="openResponseModal(apr.delegation_details)"
-    >
-      Response
-    </button>
-
-  </div>
-</div>
 
           <!-- Delegation Body -->
           <div
@@ -122,15 +90,33 @@
                 <p>{{ apr.delegation_details.end_date }}</p>
               </div>
 
-              <div class="col-md-12">
+              <div class="col-md-6">
                 <strong>Reason</strong>
                 <p>{{ apr.delegation_details.reason }}</p>
               </div>
 
-              <div class="col-md-12" *ngIf="apr.delegation_details.response">
-                  <strong>Response</strong>
-               <p>{{ apr.delegation_details.response }}</p>
-               </div>
+              <div class="col-md-6">
+                <strong>Response</strong>
+                <p>{{ apr.delegation_details.response }}</p>
+              </div>
+
+              <div class="col-md-12 mt-3" *ngIf="canShowResponse(apr)">
+                <strong>Send Deligation Response</strong>
+
+                <textarea
+                  class="form-control"
+                  rows="4"
+                  [(ngModel)]="apr.responseText"
+                  placeholder="Enter response..."
+                ></textarea>
+
+                <button
+                  class="btn btn-primary mt-2"
+                  (click)="sendDelegationResponseInline(apr)"
+                >
+                  Send Response
+                </button>
+              </div>
             </div>
           </div>
 
@@ -168,7 +154,15 @@
           ></textarea>
 
           <div class="row mt-2">
-            <div class="col-md-6"></div>
+            <div class="col-md-3">
+              <button
+                class="btn btn-primary"
+                (click)="openDelegationModalFromApproval(selectedApproval)"
+              >
+                Delegate
+              </button>
+            </div>
+            <div class="col-md-3"></div>
             <div class="col-md-3">
               <button
                 type="button"
@@ -193,35 +187,30 @@
     </div>
 
     <div *ngIf="isResponseModalOpen" class="modal">
-  <div class="modal-content">
+      <div class="modal-content">
+        <div class="text-right">
+          <span class="close-btn" (click)="closeResponseModal()">×</span>
+        </div>
 
-    <div class="text-right">
-      <span class="close-btn" (click)="closeResponseModal()">×</span>
+        <h5>Send Delegation Response</h5>
+        <hr />
+
+        <div class="form-group">
+          <label>Response</label>
+
+          <textarea
+            class="form-control"
+            rows="4"
+            [(ngModel)]="delegationResponse"
+            placeholder="Enter response..."
+          ></textarea>
+        </div>
+
+        <button class="btn btn-primary mt-2" (click)="sendDelegationResponse()">
+          Send Response
+        </button>
+      </div>
     </div>
-
-    <h5>Send Delegation Response</h5>
-    <hr />
-
-    <div class="form-group">
-      <label>Response</label>
-
-      <textarea
-        class="form-control"
-        rows="4"
-        [(ngModel)]="delegationResponse"
-        placeholder="Enter response..."
-      ></textarea>
-    </div>
-
-    <button
-      class="btn btn-primary mt-2"
-      (click)="sendDelegationResponse()"
-    >
-      Send Response
-    </button>
-
-  </div>
-</div>
 
     <div *ngIf="isDelegationModalOpen" class="modal">
       <div class="modal-content">
@@ -299,24 +288,28 @@
           </div>
         </div> -->
 
-                  <div class="col-md-6 mt-2">
+          <div class="col-md-6 mt-2">
             <div class="check-box-selection-sec form-control">
-                <div class="mat-set">
-                    <mat-checkbox [(ngModel)]="delegationForm.is_active" [ngModelOptions]="{standalone: true}">Is Active</mat-checkbox>
-                </div>
-               
+              <div class="mat-set">
+                <mat-checkbox
+                  [(ngModel)]="delegationForm.is_active"
+                  [ngModelOptions]="{ standalone: true }"
+                  >Is Active</mat-checkbox
+                >
+              </div>
             </div>
-        </div>
+          </div>
 
-        <button class="btn btn-success" (click)="createDelegation()">
-          Send
-        </button>
+          <button class="btn btn-success" (click)="createDelegation()">
+            Send
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Loader -->
-<div class="loader-container" [class.show]="isLoading">
-  <div class="loader"></div>
+  <!-- Loader -->
+  <div class="loader-container" [class.show]="isLoading">
+    <div class="loader"></div>
+  </div>
 </div>

@@ -238,7 +238,7 @@
         <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
       </div>
               <div class="col-md-2">
-                <button type="submit" class="btn btn-success btn-full mt-5">Send</button>
+                <button type="submit" class="btn btn-success btn-full mt-5">Add</button>
               </div>
             </div>
           </form>
@@ -427,7 +427,11 @@
               <td>{{ docs.reason }}</td>
               <td>{{ docs.document_number }}</td>
        
-              <td>{{ docs.status }}</td>
+                     <td>
+           <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
+                 {{ docs.status }}
+            </span>
+        </td>
               <td>
                 <button
                   mat-fab

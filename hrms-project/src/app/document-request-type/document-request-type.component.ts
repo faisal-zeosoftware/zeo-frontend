@@ -83,7 +83,9 @@ this.dataSubscription = combineLatest([
   }
 });
   
-     this.loadDeparmentBranch();
+         this.employeeService.selectedBranches$.subscribe(ids => {
+        this.loadDeparmentBranch(); 
+      });
 // Retrieve user ID
 this.userId = this.sessionService.getUserId();
 

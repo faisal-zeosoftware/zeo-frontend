@@ -108,6 +108,10 @@
   gap: 8px;
 }
 
+.action-buttons .btn {
+  width: 110%;
+  min-width: 120px;
+}
   
 table thead th {
     color: #ffffff;

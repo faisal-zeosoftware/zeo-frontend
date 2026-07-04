@@ -289,13 +289,24 @@ const formData = new FormData();
   formData.append('document_number', this.document_number?.toString() || '');
   formData.append('branch', this.branch || '');
 
+     // Show Loader
+  this.isLoading = true;
+
   this.leaveService.requestLeaveAdmin(formData).subscribe(
     (response) => {
+
+      // Hide Loader
+      this.isLoading = false;
+
       console.log('Leave request successful:', response);
       alert('Leave Request has been sent successfully!');
       window.location.reload();
     },
     (error) => {
+
+      // Hide Loader
+      this.isLoading = false;
+
       console.error('Leave request failed:', error);
 
       let errorMessage = 'Something went wrong.';

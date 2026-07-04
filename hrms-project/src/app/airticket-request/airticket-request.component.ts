@@ -316,10 +316,11 @@ ngOnInit(): void {
               // Add other form field values to the companyData object
             };
           
-
+  this.isLoading = true;
         
             this.employeeService.registerAirTicketRequest(companyData).subscribe(
               (response) => {
+                 this.isLoading = false;
                 console.log('Registration successful', response);
                     alert('Request sent successfuly completed');
                     window.location.reload();
@@ -327,6 +328,7 @@ ngOnInit(): void {
         
               },
               (error) => {
+                 this.isLoading = false;
                 console.error('Added failed', error);
   let errorMessage = 'Enter all required fields!';
 

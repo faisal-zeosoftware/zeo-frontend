@@ -526,11 +526,12 @@ loadEmp(callback?: Function): void {
 
      
   
-      
+        this.isLoading = true;
     
     
       this.leaveService.CreateAdvSalaryRequest(formData).subscribe(
         (response) => {
+           this.isLoading = false;
           console.log('Registration successful', response);
   
   
@@ -539,6 +540,7 @@ loadEmp(callback?: Function): void {
           window.location.reload();
         },  
     (error) => {
+       this.isLoading = false;
       console.error('Added failed', error);
 
       let errorMessage = 'Enter all required fields!';
@@ -723,13 +725,35 @@ onCheckboxChange(employee: number) {
 }
 
 
+mapEmployeeNameToId() {
+
+  if (!this.Employee || !this.editAsset.employee) return;
+
+  const emp = this.Employee.find(
+    (e: any) =>
+      e.emp_code === this.editAsset.employee ||
+      e.emp_first_name === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;
+  }
+
+}
+
 
 isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+
+  this.editAsset = { ...asset };
+
+  this.mapBranchesNameToId();
+  this.mapEmployeeNameToId();
+
+
+  this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
@@ -807,59 +831,6 @@ this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).s
 );
 }
 
-
-  // loadDeparmentBranch(callback?: Function): void {
-    
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-  //   console.log('schemastore',selectedSchema )
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.branches = result;
-  //         console.log(' fetching Companies:');
-  //           if (callback) callback();
-
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Companies:', error);
-  //       }
-  //     );
-  //   }
-  //   }
-
-    // loadDeparmentBranch(callback?: Function): void {
-    //   const selectedSchema = this.authService.getSelectedSchema();
-      
-    //   if (selectedSchema) {
-    //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-    //       (result: any[]) => {
-    //         // 1. Get the sidebar selected IDs from localStorage
-    //         const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-    
-    //         // 2. Filter the API result to only include branches selected in the sidebar
-    //         // If sidebar is empty, you might want to show all, or show none. 
-    //         // Usually, we show only the selected ones:
-    //         if (sidebarSelectedIds.length > 0) {
-    //           this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-    //         } else {
-    //           this.branches = result; // Fallback: show all if nothing is selected in sidebar
-    //         }
-    //         // Inside the subscribe block of loadDeparmentBranch
-    //         if (this.branches.length === 1) {
-    //           this.branches = this.branches[0].id;
-    //         }
-    
-    //         console.log('Filtered branches for selection:', this.branches);
-    //         if (callback) callback();
-    //       },
-    //       (error) => {
-    //         console.error('Error fetching branches:', error);
-    //       }
-    //     );
-    //   }
-    // }
 
 
     loadDeparmentBranch(callback?: Function): void {

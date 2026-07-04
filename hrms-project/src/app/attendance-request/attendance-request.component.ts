@@ -8,6 +8,8 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-attendance-request',
@@ -17,11 +19,19 @@ import {combineLatest, Subscription } from 'rxjs';
 
 export class AttendanceRequestComponent {
 
-       
+    private apiUrl = `${environment.apiBaseUrl}`;
     private dataSubscription?: Subscription;
   
     allSelected=false;
   
+
+     branch: any = '';
+
+     branches:any []=[];
+
+      automaticNumbering: boolean = false;
+
+         document_number: number | string | null = null;
   
   
     // document_date:any='';
@@ -30,7 +40,7 @@ export class AttendanceRequestComponent {
     request_type:any='';
     reason:any='';
     status:any='';
-   employee: number[] = [];
+    employee: any = '';
   
     
     created_by:any='';
@@ -41,12 +51,14 @@ export class AttendanceRequestComponent {
   
     LeaveapprovalLevels: any[] = [];
   
-    Employee: any[] = [];
+      Employee: any[] = [];
   
     DocRequest: any[] = [];
   
     Users: any[] = [];
     DocType: any[] = [];
+
+      filteredEmployees: any[] = [];
   
   
   hasAddPermission: boolean = false;
@@ -58,6 +70,7 @@ export class AttendanceRequestComponent {
   userDetails: any;
   userDetailss: any;
   schemas: string[] = []; // Array to store schema names
+
   
     constructor(
       private http: HttpClient,
@@ -66,6 +79,7 @@ export class AttendanceRequestComponent {
       private leaveService:LeaveService,
       private DesignationService: DesignationService,
       private employeeService: EmployeeService,
+      private DepartmentServiceService: DepartmentServiceService 
   
       ) {}
   
@@ -82,15 +96,21 @@ export class AttendanceRequestComponent {
   
             }
           });
+
+   this.employeeService.selectedBranches$.subscribe(ids => {
+    this.loadDeparmentBranch();
+    this.loadEmp(); 
+ 
+  });
   
         const selectedSchema = this.authService.getSelectedSchema();
         if (selectedSchema) {
   
        
-        this.LoadUsers(selectedSchema);
+        // this.LoadUsers(selectedSchema);
         this.LoadLeaveApprovalLevel(selectedSchema);
   
-        this.LoadDocType(selectedSchema);
+        // this.LoadDocType(selectedSchema);
         // this.LoadEmployee(selectedSchema);
         // this.LoadDocRequest(selectedSchema);
   
@@ -256,6 +276,44 @@ export class AttendanceRequestComponent {
           }
         );
       }
+
+
+      loadEmp(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+  if (selectedSchema) {
+    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+      (data: any) => {
+        this.Employee = data;
+        this.filteredEmployees = data; // ✅ IMPORTANT
+
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching Employees:', error);
+      }
+    );
+  }
+}
+
+mapEmployeeNameToId() {
+
+  if (!this.Employee || !this.editAsset.employee) return;
+
+  const emp = this.Employee.find(
+    (e: any) =>
+      e.emp_first_name === this.editAsset.employee ||
+      e.emp_code === this.editAsset.employee
+  );
+
+  if (emp) {
+    this.editAsset.employee = emp.id;
+  }
+
+  console.log(this.editAsset.employee);
+}
+    
   
       
       // LoadEmployee(selectedSchema: string) {
@@ -290,31 +348,6 @@ export class AttendanceRequestComponent {
       }
 
 
-mapEmployeeToId() {
-  if (!this.Employee || this.Employee.length === 0 || !this.editAsset?.employee) return;
-
-  let value = this.editAsset.employee;
-
-  if (!Array.isArray(value)) {
-    value = [value];
-  }
-
-  this.editAsset.employee = value.map((item: any) => {
-
-    // already ID
-    if (!isNaN(item)) return Number(item);
-
-    // map from emp_code → id
-    const found = this.Employee.find(
-      (e: any) => e.emp_code === item
-    );
-
-    return found ? found.id : null;
-
-  }).filter((id: any) => id !== null);
-
-  console.log('Mapped Employee IDs:', this.editAsset.employee);
-}
     
     
     
@@ -378,18 +411,24 @@ mapEmployeeToId() {
         // formData.append('status', this.status);
   
         formData.append('request_type', this.request_type);
+        formData.append('document_number', this.document_number?.toString() || '');
+         formData.append('branch', this.branch);
   
         formData.append('reason', this.reason);
       
         // formData.append('employee', this.employee);
 
-      this.employee.forEach((id: number) =>
-      formData.append('employee', id.toString())
-    );
+          if (this.employee !== null) {
+  formData.append('employee', this.employee.toString());
+}
+
+    this.isLoading = true;
+    
     
 
         this.leaveService.CreateLateinEarlyOutRequest(formData).subscribe(
           (response) => {
+            this.isLoading = false;
             console.log('Latein Early Out successful', response);
              
     
@@ -399,6 +438,7 @@ mapEmployeeToId() {
             window.location.reload();
           },  
     (error) => {
+      this.isLoading = false;
       // same error handling as above...
       console.error('Added failed', error);
       let errorMessage = 'Enter all required fields!';
@@ -420,12 +460,7 @@ mapEmployeeToId() {
         );
       }
   
-  
-  
-  getEmployeeName(empId: number): string {
-  const emp = this.Employee.find(e => e.id === empId);
-  return emp ? emp.emp_code : 'Unknown';
-}
+
   
   
   
@@ -443,10 +478,23 @@ mapEmployeeToId() {
   
   
   
-  openPopus():void{
-    this.iscreateLoanApp = true;
-  
+    openPopus():void{
+      this.iscreateLoanApp = true;
+      this.document_number = null;
+      this.automaticNumbering = false;
+      this.branch = ''; 
+
+              // Auto select first branch
+  if (this.branches && this.branches.length > 0) {
+    this.branch = this.branches[0].id;
+
+    // Trigger employee filtering + document numbering
+    this.onBranchChange();
+  } else {
+    this.branch = '';
   }
+
+    }
   
   closeapplicationModal():void{
     this.iscreateLoanApp = false;
@@ -485,23 +533,14 @@ mapEmployeeToId() {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
   
-openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
+openEditModal(asset: any) {
 
-  // ✅ normalize employee → always number[]
-  let value = this.editAsset.employee;
+    this.editAsset = { ...asset };
 
-  if (!value) {
-    this.editAsset.employee = [];
-  } else if (!Array.isArray(value)) {
-    this.editAsset.employee = [Number(value)];
-  } else {
-    this.editAsset.employee = value.map((v: any) => Number(v));
-  }
+    this.mapEmployeeNameToId();
+    this.mapBranchesNameToId();
 
-  console.log('Preselected employees:', this.editAsset.employee);
-
-  this.isEditModalOpen = true;
+    this.isEditModalOpen = true;
 }
   
   closeEditModal(): void {
@@ -560,6 +599,8 @@ updateLateInEarlyOut(): void {
   const payload = {
     date: this.editAsset.date,
     request_type: this.editAsset.request_type,
+    branch: this.editAsset.branch,
+    document_number: this.editAsset.document_number,
     reason: this.editAsset.reason,
     employee: this.editAsset.employee
   };
@@ -576,39 +617,148 @@ updateLateInEarlyOut(): void {
     }
   );
 }
-  
-  
-      employeeSearch: string = '';
-  allEmployeesSelected: boolean = false;
-  
-  toggleAllEmployees() {
-  
-    if (this.allEmployeesSelected) {
-  
-      this.employee = this.Employee.map((emp: any) => emp.id);
-  
+
+
+
+
+
+
+onBranchChange(): void {
+
+  const selectedBranchId = this.branch;
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedBranchId) {
+    this.filteredEmployees = this.Employee;
+    this.employee = '';
+  } else {
+
+    const selectedBranch = this.branches.find(
+      b => Number(b.id) === Number(selectedBranchId)
+    );
+
+    if (selectedBranch) {
+
+      this.filteredEmployees = this.Employee.filter(emp =>
+        emp.emp_branch_id === selectedBranch.branch_name
+      );
+
     } else {
-  
-      this.employee = [];
-  
+      this.filteredEmployees = [];
     }
-  
-  }
-  
-filterEmployees() {
 
-  if (!this.employeeSearch) {
-    return this.Employee; // 👈 full list
+    this.employee = '';
   }
 
-  return this.Employee.filter((emp: any) =>
-    emp.emp_code.toLowerCase().includes(this.employeeSearch.toLowerCase())
-  );
+  if (!selectedBranchId || !selectedSchema) {
+    this.automaticNumbering = false;
+    this.document_number = null;
+    return;
+  }
+
+  const type = 'lateinearlyout_request';
+
+  const apiUrl =
+    `${this.apiUrl}/organisation/api/document-numbering/?branch_id=${selectedBranchId}&type=${type}&schema=${selectedSchema}`;
+console.log(apiUrl);
+  this.http.get<any>(apiUrl).subscribe({
+
+    next: (response) => {
+
+      const data = Array.isArray(response) && response.length > 0
+        ? response[0]
+        : response;
+
+      this.automaticNumbering = !!data?.automatic_numbering;
+
+      if (this.automaticNumbering) {
+        this.document_number = null;
+      } else {
+        this.document_number = '';
+      }
+    },
+
+    error: () => {
+      this.automaticNumbering = false;
+      this.document_number = '';
+    }
+
+  });
 }
+
+onEmployeeChange(): void {
+
+  if (!this.employee) return;
+
+  const selectedEmployee = this.Employee.find(
+    emp => emp.id == this.employee
+  );
+
+  if (!selectedEmployee) return;
+
+  if (typeof selectedEmployee.emp_branch_id === 'number') {
+    this.branch = selectedEmployee.emp_branch_id;
+  } else {
+
+    const matchedBranch = this.branches.find(
+      b => b.branch_name === selectedEmployee.emp_branch_id
+    );
+
+    if (matchedBranch) {
+      this.branch = matchedBranch.id;
+    }
+  }
+
+  this.onBranchChange();
+}
+
+  loadDeparmentBranch(callback?: Function): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      
+      if (selectedSchema) {
+        this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+          (result: any[]) => {
+            // 1. Get the sidebar selected IDs from localStorage
+            const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
     
+            // 2. Filter the API result to only include branches selected in the sidebar
+            // If sidebar is empty, you might want to show all, or show none. 
+            // Usually, we show only the selected ones:
+            if (sidebarSelectedIds.length > 0) {
+              this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+            } else {
+              this.branches = result; // Fallback: show all if nothing is selected in sidebar
+            }
+            // Inside the subscribe block of loadDeparmentBranch
+            if (this.branches.length === 1) {
+              this.branch = this.branches[0].id;
+            }
+    
+            console.log('Filtered branches for selection:', this.branches);
+            if (callback) callback();
+          },
+          (error) => {
+            console.error('Error fetching branches:', error);
+          }
+        );
+      }
+    }
+
+  mapBranchesNameToId() {
+
+  if (!this.branches || !this.editAsset.branch) return;
+
+  const branch = this.branches.find(
+    (b: any) => b.branch_name === this.editAsset.branch
+  );
+
+  if (branch) {
+    this.editAsset.branch = branch.id;
+  }
+
+}
   
-  
-  
+
   
   
   }

@@ -434,7 +434,6 @@
               <th>Reason for leaving</th>
               <th>Status</th>
               <th>Employee</th>
-              <th>Attachment</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -453,9 +452,12 @@
         <td data-label="Location">{{ docs.location }}</td>
         <td data-label="Termination Type">{{ docs.termination_type }}</td>
         <td data-label="Reason for Leaving">{{ docs.reason_for_leaving }}</td>
-        <td data-label="Status">{{ docs.status }}</td>
+         <td>
+           <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
+                 {{ docs.status }}
+            </span>
+        </td>
         <td data-label="Employee">{{ docs.employee }}</td>
-        <td data-label="Attachment">{{ docs.attachment }}</td>
    
        
               <td data-label="Actions">

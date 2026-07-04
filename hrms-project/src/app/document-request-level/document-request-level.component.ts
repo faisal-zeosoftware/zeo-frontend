@@ -8,6 +8,9 @@ import { MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import {UserMasterService} from '../user-master/user-master.service';
+import { Subscription } from 'rxjs';
+import { combineLatest } from 'rxjs';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 
@@ -20,6 +23,7 @@ import {UserMasterService} from '../user-master/user-master.service';
 export class DocumentRequestLevelComponent {
 
       
+          private dataSubscription?: Subscription;
   @ViewChild('select') select: MatSelect | undefined;
 
   allSelected=false;
@@ -42,7 +46,7 @@ export class DocumentRequestLevelComponent {
 
   registerButtonClicked: boolean = false;
 
-
+ approvalLevels:any []=[];
 
   LeaveTypes: any[] = [];
   LeaveapprovalLevels: any[] = [];
@@ -76,31 +80,47 @@ schemas: string[] = []; // Array to store schema names
     private userService: UserMasterService,
 
     private DesignationService: DesignationService,
+     private DepartmentServiceService: DepartmentServiceService
   
     ) {}
 
     ngOnInit(): void {
-      const selectedSchema = this.authService.getSelectedSchema();
-      if (selectedSchema) {
+                this.dataSubscription = combineLatest([
+                  this.employeeService.selectedSchema$,
+                  this.employeeService.selectedBranches$
+                ]).subscribe(([schema, branchIds]) => {
+                  if (schema) {
+                    this.fetchEmployees(schema, branchIds);
 
-        this.LoadBranch(selectedSchema);
+        
+                  }
+                });
 
-        this.LoadLeavetype(selectedSchema);
+                          this.LoadLeavetype();
       
-      this.LoadLeaveApprovalLevel(selectedSchema);
+      this.LoadLeaveApprovalLevel();
 
-      
+      this.LoadDocType();
+      this.LoadDocRequest();
+
+
+
 
            
       this.loadUsers();
 
 
 
-      this.LoadDocType(selectedSchema);
-      this.LoadDocRequest(selectedSchema);
+  
+
+      this.employeeService.selectedBranches$.subscribe(ids => {
+        this.loadDeparmentBranch(); 
+      });
+
+    
 
       
-      }
+      
 
       this.userId = this.sessionService.getUserId();
 if (this.userId !== null) {
@@ -243,36 +263,106 @@ if (this.userId !== null) {
 
 
   
-  LoadBranch(selectedSchema: string) {
-    this.leaveService.getBranches(selectedSchema).subscribe(
-      (data: any) => {
-        this.Branches = data;
-      
-        console.log('employee:', this.Branches);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
-  }
-  
 
-    LoadLeavetype(selectedSchema: string) {
-      this.leaveService.getLeaveType(selectedSchema).subscribe(
-        (data: any) => {
-          this.LeaveTypes = data;
-        
-          console.log('employee:', this.LeaveTypes);
+
+    loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.Branches.length === 1) {
+            this.branch = this.Branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.Branches);
+          if (callback) callback();
         },
-        (error: any) => {
-          console.error('Error fetching categories:', error);
+        (error) => {
+          console.error('Error fetching branches:', error);
         }
       );
     }
+  }
+
+
+  
+mapBranchesNameToId() {
+  if (!this.Branches || !this.editAsset) return;
+
+  let value = this.editAsset.branch;
+
+  if (!value) {
+    this.editAsset.branch = [];
+    return;
+  }
+
+  // already array of numbers
+  if (Array.isArray(value) && typeof value[0] === 'number') {
+    return;
+  }
+
+  // single number
+  if (typeof value === 'number') {
+    this.editAsset.branch = [value];
+    return;
+  }
+
+  // single string (branch name)
+  if (typeof value === 'string') {
+    const found = this.Branches.find(b => b.branch_name === value);
+    this.editAsset.branch = found ? [found.id] : [];
+    return;
+  }
+
+  // array of names
+  if (Array.isArray(value)) {
+    this.editAsset.branch = this.Branches
+      .filter(b => value.includes(b.branch_name))
+      .map(b => b.id);
+  }
+
+  console.log('✅ Final mapped branch:', this.editAsset.branch);
+}
   
   
 
-    LoadLeaveApprovalLevel(selectedSchema: string) {
+LoadLeavetype() {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
+
+  this.leaveService.getLeaveType(selectedSchema).subscribe(
+    (data: any) => {
+      this.LeaveTypes = data;
+    },
+    error => console.error(error)
+  );
+}
+  
+  
+
+    LoadLeaveApprovalLevel() {
+        const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
       this.leaveService.getDocReqApprovalLevel(selectedSchema).subscribe(
         (data: any) => {
           this.LeaveapprovalLevels = data;
@@ -324,29 +414,15 @@ if (this.userId !== null) {
   }
   }
 
-mapBranchesNameToId() {
-  if (!this.Branches || !this.editAsset?.branch) return;
-
-  this.editAsset.branch = this.editAsset.branch.map((b: any) => {
-
-    // already ID
-    if (typeof b === 'number') return b;
-
-    // object → take id
-    if (typeof b === 'object' && b.id) return b.id;
-
-    // name → find id
-    const found = this.Branches.find(br => br.branch_name === b);
-    return found ? found.id : null;
-
-  }).filter((v: any) => v !== null);
-
-  console.log('✅ Mapped branch:', this.editAsset.branch);
-}
 
   
 
-    LoadDocType(selectedSchema: string) {
+    LoadDocType() {
+        const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
       this.leaveService.getDocRequestType(selectedSchema).subscribe(
         (data: any) => {
           this.DocType = data;
@@ -360,7 +436,12 @@ mapBranchesNameToId() {
     }
   
 
-    LoadDocRequest(selectedSchema: string) {
+    LoadDocRequest() {
+        const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
       this.leaveService.getDocRequest(selectedSchema).subscribe(
         (data: any) => {
           this.DocRequest = data;
@@ -373,6 +454,21 @@ mapBranchesNameToId() {
       );
     }
   
+          fetchEmployees(schema: string, branchIds: number[]): void {
+        this.isLoading = true;
+        this.leaveService.getemployeesDocumentrequestApprovalLevel(schema, branchIds).subscribe({
+          next: (data: any) => {
+            // Filter active employees
+                 this.LeaveapprovalLevels = data;
+  
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Fetch error:', err);
+            this.isLoading = false;
+          }
+        });
+      }
 
 
 
@@ -380,24 +476,38 @@ mapBranchesNameToId() {
 SetLeaveApprovaLevel(): void {
   this.registerButtonClicked = true;
 
-  // ✅ Ensure level numbering
-  const formattedLevels = this.levels.map((lvl, index) => ({
-    ...lvl,
-    level: index + 1,
-    approver: Number(lvl.approver),
-  }));
+  // ✅ VALIDATION
+  if (!this.branch || this.branch.length === 0) {
+    alert('Please select branch');
+    return;
+  }
+
+  if (this.approval_type === 'multi_approval') {
+    for (let i = 0; i < this.levels.length; i++) {
+      const lvl = this.levels[i];
+
+      if (!lvl.level || !lvl.role || !lvl.approver) {
+        alert(`Level ${i + 1}: Level Added`);
+        return;
+      }
+    }
+  }
 
   // ✅ CLEAN JSON PAYLOAD (recommended over FormData for arrays)
-  const payload = {
-    role: this.role,
-    request_type: this.request_type,
-    approval_type: this.approval_type,
-    branch: this.branch,
-    // 🔥 IMPORTANT FIX
-    level: formattedLevels.length,   // ✅ REQUIRED FIELD
+const payload: any = {
+  request_type: this.request_type,
+  approval_type: this.approval_type,
+  branch: this.branch
+};
 
-    levels: formattedLevels
-  };
+if (this.approval_type === 'multi_approval') {
+  payload.levels = this.levels.map(lvl => ({
+    level: Number(lvl.level),
+    role: lvl.role,
+    approver: Number(lvl.approver)
+  }));
+}
+
 
   this.leaveService.CreateDocRequestapprovalLevel(payload).subscribe(
     (response) => {
@@ -425,17 +535,8 @@ openPopus(): void {
 
   this.iscreateLoanApp = true;
 
-  // Reset form values
-  this.request_type = '';
-  this.approval_type = '';
   this.branch = [];
-  this.levels = [
-    {
-      level: '',
-      role: '',
-      approver: '',
-    }
-  ];
+ 
 
   // ✅ Auto select first branch
   if (this.Branches && this.Branches.length > 0) {
@@ -490,28 +591,38 @@ onCheckboxChange(employee:number) {
 isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
-openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset));
-  this.isEditModalOpen = true;
+openEditModal(asset:any){
 
-  if (!this.editAsset.levels) {
-    this.editAsset.levels = [];
-  }
+   this.editAsset=JSON.parse(JSON.stringify(asset));
 
-  // 🔥 IMPORTANT: ensure branch is array
-  if (!Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = [];
-  }
+   this.loadUsers(()=>{
 
-  // 🔥 LOAD BRANCHES FIRST → THEN MAP
-  const selectedSchema = this.authService.getSelectedSchema();
-  if (selectedSchema) {
-    this.LoadBranch(selectedSchema);
+      this.mapBranchesNameToId();
 
-    setTimeout(() => {
-      this.mapBranchesNameToId();   // ✅ THIS FIXES DISPLAY
-    }, 300); // small delay to wait API
-  }
+      const req=this.DocType.find(
+        x=>x.type_name===this.editAsset.request_type
+      );
+
+      if(req){
+         this.editAsset.request_type=req.id;
+      }
+
+      this.editAsset.levels.forEach((lvl:any)=>{
+
+         const user=this.Users.find(
+            u=>u.username===lvl.approver
+         );
+
+         if(user){
+            lvl.approver=user.id;
+         }
+
+      });
+
+      this.isEditModalOpen=true;
+
+   });
+
 }
 
 addEditLevel() {

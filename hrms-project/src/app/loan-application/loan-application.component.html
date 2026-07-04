@@ -1,449 +1,595 @@
 <div class="container">
-    <div class="comapny_section" *ngIf="hasViewPermission">
-       
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <h1> Loan Application</h1>
-                </div>
-                <div class="col-md-3">
-                    
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span>Create</button>
-                        <span *ngIf="!hasAddPermission"></span>
-
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-                           
-                           <span *ngIf="!hasDeletePermission"></span>
-                    </div>
-                </div>
-            </div>
-
-            
-    <div class="row">
-      <div class="col-md-2">
-          
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
-
-      </div>
-      <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLoanApplication()">Delete Selected </button>
-
-      </div>
-  </div>
-           
-           
-
+  <div class="comapny_section" *ngIf="hasViewPermission">
+    <div class="header_section">
+      <div class="row">
+        <div class="col-md-4">
+          <h1>Loan Request</h1>
         </div>
-       
-       
-      
+        <div class="col-md-3">
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button
+              type="button"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
+            >
+              <span class="header-btn-icon"
+                ><mat-icon>add_circle </mat-icon></span
+              >Create
+            </button>
+            <span *ngIf="!hasAddPermission"></span>
 
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
+            <span *ngIf="hasEditPermission"></span>
 
-            <div class="com_list mt-4 table-scroll"  *ngIf="hasViewPermission">
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
+              <span class="header-btn-icon">
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
 
-                <table class="table-container " width="100%">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th>Document Number</th>
-                        <th>Branch</th>
-                        <th>Employee</th>
-                        <th>Amount requested </th>
-                        <th>Repayment period</th>
-                        <th>Status</th>
-                        <th>Emi amount</th>
-                        <th>Remaining balance</th>
-                        <th>Pause start date</th>
-                        <th>Resume date</th>
-                        <th>Pause reason</th>
-                        <th>Loan type</th>
-                         <th>Actions</th>
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
 
-          
-            
-                       
-                      </tr>
-                    </thead>
-                    <tbody>
-                        
-                      <tr *ngFor="let docs of LoanApplications;let i = index">
-                        <td>{{ i + 1 }}</td> 
-                        <td data-label="Document Number">
-                          {{ docs.document_number }}</td>
-                        <td>{{ docs.branch }}</td>
-                        <td>{{ docs.employee }}</td>
-                        <td>{{ docs.amount_requested }}</td>
-                        <td>{{ docs.repayment_period }}</td> 
-                        <td>{{ docs.status }}</td>
-                        <td>{{ docs.emi_amount }}</td>
-                        <td>{{ docs.remaining_balance }}</td>
-                        <td>{{ docs.pause_start_date }}</td>
-                        <td>{{ docs.resume_date }}</td>
-                        <td>{{ docs.pause_reason }}</td> 
-                        <td>{{ docs.loan_type }}</td>
+      <div class="row">
+        <div class="col-md-2">
+          <button
+            class="mt-3 btn-danger btn"
+            style="width: 100%"
+            color="warn"
+            *ngIf="Delete"
+            (click)="toggleSelectAllEmployees()"
+          >
+            Select All
+          </button>
+        </div>
+        <div class="col-md-3">
+          <button
+            class="mt-3 btn-danger btn"
+            color="warn"
+            *ngIf="Delete"
+            (click)="deleteSelectedLoanApplication()"
+          >
+            Delete Selected
+          </button>
+        </div>
+      </div>
+    </div>
 
-  
-                        
-                        <td data-label="Action">
-                  <ng-container *ngIf="docs.status === 'Approved'">
-                      <button  class="btn btn-full btn-warning" (click)="openPauseModal(docs)">Pause</button>
-                  </ng-container>
+    <div class="com_list mt-4 table-scroll" *ngIf="hasViewPermission">
+      <table class="table-container" width="100%">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Document Number</th>
+            <th>Branch</th>
+            <th>Employee</th>
+            <th>Amount requested</th>
+            <th>Repayment period</th>
+            <th>Status</th>
+            <th>Emi amount</th>
+            <th>Remaining balance</th>
+            <th>Pause start date</th>
+            <th>Resume date</th>
+            <th>Pause reason</th>
+            <th>Loan type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let docs of LoanApplications; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td data-label="Document Number">
+              {{ docs.document_number }}
+            </td>
+            <td>{{ docs.branch }}</td>
+            <td>{{ docs.employee }}</td>
+            <td>{{ docs.amount_requested }}</td>
+            <td>{{ docs.repayment_period }}</td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'"
+              >
+                {{ docs.status }}
+              </span>
+            </td>
+            <td>{{ docs.emi_amount }}</td>
+            <td>{{ docs.remaining_balance }}</td>
+            <td>{{ docs.pause_start_date }}</td>
+            <td>{{ docs.resume_date }}</td>
+            <td>{{ docs.pause_reason }}</td>
+            <td>{{ docs.loan_type }}</td>
 
-                  <ng-container *ngIf="docs.status === 'Paused'">                 
-                  <button class="btn btn-full btn-primary" (click)="openResumeModal(docs)">Resume</button>
-                  </ng-container>
+            <td data-label="Action">
+              <ng-container *ngIf="docs.status === 'Approved'">
+                <button
+                  class="btn btn-full btn-warning"
+                  (click)="openPauseModal(docs)"
+                >
+                  Pause
+                </button>
+              </ng-container>
 
-                          <button
-                            mat-fab
-                            color="primary"
-                            aria-label="Edit icon"
-                            *ngIf="showEditBtn"
-          
-                            
-                            (click)="openEditModal(docs)"
-                          >
-                            <mat-icon style="color: white;">draw</mat-icon>
-                          </button>
-          
-                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-          
-                        </td>
-                      
-                      </tr>
-                  
-                    </tbody>
-                  </table>
-    
-                  </div>
+              <ng-container *ngIf="docs.status === 'Paused'">
+                <button
+                  class="btn btn-full btn-primary"
+                  (click)="openResumeModal(docs)"
+                >
+                  Resume
+                </button>
+              </ng-container>
 
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+                (click)="openEditModal(docs)"
+              >
+                <mat-icon style="color: white">draw</mat-icon>
+              </button>
+
+              <mat-checkbox
+                *ngIf="Delete"
+                [(ngModel)]="docs.selected"
+              ></mat-checkbox>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="iscreateLoanApp" class="modal">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col-md-10">
+          <h2>Create Loan Request</h2>
         </div>
 
+        <div class="col-md-2 text-right">
+          <!-- Styled Square Close Button -->
+          <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+        </div>
+      </div>
+      <hr />
 
-
-
-        <div *ngIf="iscreateLoanApp" class="modal">
-            <div class="modal-content">
-              <div class="row">
-                <div class="col-md-10">
-                  <h2>Loan Application</h2>
-                </div>
-
- <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div>
+      <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="custom-sel">
+              <label
+                >Select Branches
+                <span class="required-star">*</span>
+              </label>
+              <select
+                class="form-control"
+                id="branch"
+                required
+                [(ngModel)]="branch"
+                (change)="onBranchChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !branch }"
+              >
+                <option value="">Select</option>
+                <option
+                  *ngFor="let deparmentsec of branches"
+                  [value]="deparmentsec.id"
+                >
+                  {{ deparmentsec.branch_name }}
+                </option>
+              </select>
+              <div
+                *ngIf="registerButtonClicked && !branch"
+                class="error-message"
+              >
+                Please Select Your Branch
               </div>
-              <hr />
-          
-              <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
-                <div class="row">
-
-              <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches
-                      <span class="required-star">*</span>
-                    </label>
-                    <select class="form-control" id="branch" required [(ngModel)]="branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
-                </div>
-            </div>
-
-             <div class="col-md-6" >
-                    <label>Employee
-                      <span class="required-star">*</span>
-                    </label>
-                    <div class="custom-sel">
-                      <select
-                        class="form-control"
-                        id="employee"
-                        name="employee"
-                        [(ngModel)]="employee"
-                        [ngModelOptions]="{ standalone: true }" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !employee}"
-                      >
-                        <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">
-                          {{ deparmentsec.emp_code }}
-                        </option>
-                      </select>
-                    </div>
-                     <div *ngIf="registerButtonClicked && !employee" class="error-message">Please Select Employee</div>
-                  </div>
-
-<div class="col-md-6">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
-
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
-
-
-
-                  <div class="col-md-4">
-                    <label>Amount requested
-                      <span class="required-star">*</span>
-                    </label>
-                    <input type="text" class="form-control" required [(ngModel)]="amount_requested" placeholder="Enter Amount requested"
-                           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !amount_requested}">
-                      <div *ngIf="registerButtonClicked && !amount_requested" class="error-message">Amount Required</div>
-                  </div>
-              
-                  <div class="col-md-4">
-                    <label>Repayment period
-                      <span class="required-star">*</span>
-                    </label>
-                    <input type="number" class="form-control" required [(ngModel)]="repayment_period" placeholder="Enter Repayment period"
-                           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !repayment_period}">
-                  <div *ngIf="registerButtonClicked && !repayment_period" class="error-message">Repayment Period Required</div>
-                  </div>
-
-                  <div class="col-md-4">
-                    <label>Emi amount</label>
-                    <input type="text" class="form-control" required [(ngModel)]="emi_amount" placeholder="Enter Repayment period"
-                           [ngModelOptions]="{standalone: true}">
-                  
-                  </div>
-              
-               
-
-               
-
-                  <div class="col-md-4">
-                    <label>Remaining balance</label>
-                    <input type="text" class="form-control" required [(ngModel)]="remaining_balance" placeholder="Enter remaining balance"
-                           [ngModelOptions]="{standalone: true}">
-                  
-                  </div>
-              
-
-
-                  <div class="col-md-6" >
-                    <label>Loan Type
-                      <span class="required-star">*</span>
-                    </label>
-                    <div class="custom-sel">
-                      <select
-                        class="form-control"
-                        id="loan_type"
-                        name="loan_type"
-                        [(ngModel)]="loan_type"
-                        [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !loan_type}"
-                      >
-                        <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-                          {{ employees.loan_type }}
-                        </option>
-                      </select>
-                    </div>
-                     <div *ngIf="registerButtonClicked && !loan_type" class="error-message">Loan Type Required</div>
-                  </div>
-
-
-                </div>
-              
-                <div class="row" *ngIf="hasAddPermission">
-                  <div class="col-md-8"></div>
-             <div class="col-md-2">
-                <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full mt-5">Close </button>
-              </div>
-                  <div class="col-md-2">
-                    <button type="submit" class="btn btn-success btn-full mt-5">Add</button>
-                  </div>
-                </div>
-              </form>
             </div>
           </div>
 
-  <!-- Edit Modal -->
-<div *ngIf="isEditModalOpen" class="modal">
-<div class="modal-content">
-<div class="row">
-  <div class="col-md-10">
-    <h2>Edit Loan Application</h2>
-  </div>
-   <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeEditModal()">
-      ×
-    </span>
-  </div>
-</div>
-<hr />
-
-             <form (ngSubmit)="updateAssetType()" enctype="multipart/form-data">
-                <div class="row">
-
-
-             <div class="col-md-3">
-                <div class="custom-sel">
-                    <label>Select Branches</label>
-                    <select class="form-control" id="branch" required [(ngModel)]="editAsset.branch" (change)="onBranchChange($event)" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                        <option value="">Select</option>
-                        <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Your Branch</div>
-                </div>
+          <div class="col-md-6">
+            <label
+              >Employee
+              <span class="required-star">*</span>
+            </label>
+            <div class="custom-sel">
+              <select
+                class="form-control"
+                id="employee"
+                name="employee"
+                [(ngModel)]="employee"
+                [ngModelOptions]="{ standalone: true }"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{
+                  'error-field': registerButtonClicked && !employee,
+                }"
+              >
+                <option
+                  *ngFor="let deparmentsec of filteredEmployees"
+                  [value]="deparmentsec.id"
+                >
+                  {{ deparmentsec.emp_code }}
+                </option>
+              </select>
             </div>
+            <div
+              *ngIf="registerButtonClicked && !employee"
+              class="error-message"
+            >
+              Please Select Employee
+            </div>
+          </div>
 
+          <div class="col-md-6">
+            <label>Document Number</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="document_number"
+              placeholder="Enter document number"
+              [disabled]="automaticNumbering"
+              [ngModelOptions]="{ standalone: true }"
+              [required]="!automaticNumbering"
+            />
 
-                 <div class="col-md-6" >
-                    <label>Employee</label>
-                    <div class="custom-sel">
-                      <select class="form-control" [(ngModel)]="editAsset.employee" [ngModelOptions]="{ standalone: true }">
-                        <option [value]="null" disabled>-- Select Employee --</option>
-                        <option *ngFor="let emp of Employees" [value]="emp.id">
-                          {{ emp.emp_code }} - {{ emp.emp_first_name }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
+            <!-- Optional: show hint when disabled -->
+            <small *ngIf="automaticNumbering" class="text-muted">
+              Document number will be auto-generated
+            </small>
+          </div>
 
-<div class="col-md-6">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="editAsset.document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
+          <div class="col-md-4">
+            <label
+              >Amount requested
+              <span class="required-star">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              required
+              [(ngModel)]="amount_requested"
+              placeholder="Enter Amount requested"
+              [ngModelOptions]="{ standalone: true }"
+              [ngClass]="{
+                'error-field': registerButtonClicked && !amount_requested,
+              }"
+            />
+            <div
+              *ngIf="registerButtonClicked && !amount_requested"
+              class="error-message"
+            >
+              Amount Required
+            </div>
+          </div>
 
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
+          <div class="col-md-4">
+            <label
+              >Repayment period
+              <span class="required-star">*</span>
+            </label>
+            <input
+              type="number"
+              class="form-control"
+              required
+              [(ngModel)]="repayment_period"
+              placeholder="Enter Repayment period"
+              [ngModelOptions]="{ standalone: true }"
+              [ngClass]="{
+                'error-field': registerButtonClicked && !repayment_period,
+              }"
+            />
+            <div
+              *ngIf="registerButtonClicked && !repayment_period"
+              class="error-message"
+            >
+              Repayment Period Required
+            </div>
+          </div>
 
+          <div class="col-md-4">
+            <label>Emi amount</label>
+            <input
+              type="text"
+              class="form-control"
+              required
+              [(ngModel)]="emi_amount"
+              placeholder="Enter Repayment period"
+              [ngModelOptions]="{ standalone: true }"
+            />
+          </div>
 
-                  <div class="col-md-4">
-                    <label>Amount requested</label>
-                    <input type="text" class="form-control" required [(ngModel)]="editAsset.amount_requested" placeholder="Enter Amount requested"
-                           [ngModelOptions]="{standalone: true}" >
-                  </div>
-              
-                  <div class="col-md-4">
-                    <label>Repayment period</label>
-                    <input type="number" class="form-control" required [(ngModel)]="editAsset.repayment_period" placeholder="Enter Repayment period"
-                           [ngModelOptions]="{standalone: true}">
-                  
-                  </div>
+          <div class="col-md-4">
+            <label>Remaining balance</label>
+            <input
+              type="text"
+              class="form-control"
+              required
+              [(ngModel)]="remaining_balance"
+              placeholder="Enter remaining balance"
+              [ngModelOptions]="{ standalone: true }"
+            />
+          </div>
 
-                  <div class="col-md-4">
-                    <label>Emi amount</label>
-                    <input type="text" class="form-control" required [(ngModel)]="editAsset.emi_amount" placeholder="Enter Repayment period"
-                           [ngModelOptions]="{standalone: true}">
-                  
-                  </div>
-              
-               
+          <div class="col-md-6">
+            <label
+              >Loan Type
+              <span class="required-star">*</span>
+            </label>
+            <div class="custom-sel">
+              <select
+                class="form-control"
+                id="loan_type"
+                name="loan_type"
+                [(ngModel)]="loan_type"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{
+                  'error-field': registerButtonClicked && !loan_type,
+                }"
+              >
+                <option
+                  *ngFor="let employees of LoanTypes"
+                  [value]="employees.id"
+                >
+                  {{ employees.loan_type }}
+                </option>
+              </select>
+            </div>
+            <div
+              *ngIf="registerButtonClicked && !loan_type"
+              class="error-message"
+            >
+              Loan Type Required
+            </div>
+          </div>
+        </div>
 
-               
+        <div class="row" *ngIf="hasAddPermission">
+          <div class="col-md-8"></div>
+          <div class="col-md-2">
+            <button
+              type="button"
+              (click)="closeapplicationModal()"
+              class="btn btn-danger btn-full mt-5"
+            >
+              Close
+            </button>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success btn-full mt-5">
+              Add
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-                  <div class="col-md-4">
-                    <label>Remaining balance</label>
-                    <input type="text" class="form-control" required [(ngModel)]="editAsset.remaining_balance" placeholder="Enter remaining balance"
-                           [ngModelOptions]="{standalone: true}">
-                  
-                  </div>
-              
+  <!-- Edit Modal -->
+  <div *ngIf="isEditModalOpen" class="modal">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col-md-10">
+          <h2>Edit Loan Request</h2>
+        </div>
+        <div class="col-md-2 text-right">
+          <!-- Styled Square Close Button -->
+          <span class="close-btn" (click)="closeEditModal()"> × </span>
+        </div>
+      </div>
+      <hr />
 
-
-                  <div class="col-md-6" >
-                    <label>Loan Type</label>
-                    <div class="custom-sel">
-                      <select
-                        class="form-control"
-                        id="loan_type"
-                        name="loan_type"
-                        [(ngModel)]="editAsset.loan_type"
-                        [ngModelOptions]="{ standalone: true }"
-                      >
-                        <option *ngFor="let employees of LoanTypes" [value]="employees.id">
-                          {{ employees.loan_type }}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-
-
-                </div>
-              
-                <div class="row" *ngIf="hasAddPermission">
-                  <div class="col-md-8"></div>
-              <div class="col-md-2">
-                <button type="button" (click)="closeEditModal()" class="btn btn-danger btn-full mt-5">Close</button>
+      <form (ngSubmit)="updateAssetType()" enctype="multipart/form-data">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="custom-sel">
+              <label>Select Branches</label>
+              <select
+                class="form-control"
+                id="branch"
+                required
+                [(ngModel)]="editAsset.branch"
+                (change)="onBranchChange($event)"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{ 'error-field': registerButtonClicked && !branch }"
+              >
+                <option value="">Select</option>
+                <option
+                  *ngFor="let deparmentsec of branches"
+                  [value]="deparmentsec.id"
+                >
+                  {{ deparmentsec.branch_name }}
+                </option>
+              </select>
+              <div
+                *ngIf="registerButtonClicked && !branch"
+                class="error-message"
+              >
+                Please Select Your Branch
               </div>
-                  <div class="col-md-2">
-                    <button type="submit" class="btn btn-success btn-full mt-5">Update</button>
-                  </div>
-                </div>
-              </form>
+            </div>
+          </div>
 
+          <div class="col-md-6">
+            <label>Employee</label>
+            <div class="custom-sel">
+              <select
+                class="form-control"
+                [(ngModel)]="editAsset.employee"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <option [value]="null" disabled>-- Select Employee --</option>
+                <option *ngFor="let emp of Employees" [value]="emp.id">
+                  {{ emp.emp_code }} - {{ emp.emp_first_name }}
+                </option>
+              </select>
+            </div>
+          </div>
 
+          <div class="col-md-6">
+            <label>Document Number</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="editAsset.document_number"
+              placeholder="Enter document number"
+              [disabled]="automaticNumbering"
+              [ngModelOptions]="{ standalone: true }"
+              [required]="!automaticNumbering"
+            />
 
-</div>
-</div>
+            <!-- Optional: show hint when disabled -->
+            <small *ngIf="automaticNumbering" class="text-muted">
+              Document number will be auto-generated
+            </small>
+          </div>
 
+          <div class="col-md-4">
+            <label>Amount requested</label>
+            <input
+              type="text"
+              class="form-control"
+              required
+              [(ngModel)]="editAsset.amount_requested"
+              placeholder="Enter Amount requested"
+              [ngModelOptions]="{ standalone: true }"
+            />
+          </div>
 
+          <div class="col-md-4">
+            <label>Repayment period</label>
+            <input
+              type="number"
+              class="form-control"
+              required
+              [(ngModel)]="editAsset.repayment_period"
+              placeholder="Enter Repayment period"
+              [ngModelOptions]="{ standalone: true }"
+            />
+          </div>
 
+          <div class="col-md-4">
+            <label>Emi amount</label>
+            <input
+              type="text"
+              class="form-control"
+              required
+              [(ngModel)]="editAsset.emi_amount"
+              placeholder="Enter Repayment period"
+              [ngModelOptions]="{ standalone: true }"
+            />
+          </div>
 
+          <div class="col-md-4">
+            <label>Remaining balance</label>
+            <input
+              type="text"
+              class="form-control"
+              required
+              [(ngModel)]="editAsset.remaining_balance"
+              placeholder="Enter remaining balance"
+              [ngModelOptions]="{ standalone: true }"
+            />
+          </div>
 
-        
+          <div class="col-md-6">
+            <label>Loan Type</label>
+            <div class="custom-sel">
+              <select
+                class="form-control"
+                id="loan_type"
+                name="loan_type"
+                [(ngModel)]="editAsset.loan_type"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <option
+                  *ngFor="let employees of LoanTypes"
+                  [value]="employees.id"
+                >
+                  {{ employees.loan_type }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
 
-<!-- Modal Popup for selected loan to pause details -->
-<!-- Pause Modal -->
-<div *ngIf="isPauseModalOpen" class="modal">
+        <div class="row" *ngIf="hasAddPermission">
+          <div class="col-md-8"></div>
+          <div class="col-md-2">
+            <button
+              type="button"
+              (click)="closeEditModal()"
+              class="btn btn-danger btn-full mt-5"
+            >
+              Close
+            </button>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success btn-full mt-5">
+              Update
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Popup for selected loan to pause details -->
+  <!-- Pause Modal -->
+  <div *ngIf="isPauseModalOpen" class="modal">
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
           <h2>Pause Loan Application</h2>
         </div>
         <div class="col-md-2">
-          <span class="close pull-right" (click)="closePauseModal()">&times;</span>
+          <span class="close pull-right" (click)="closePauseModal()"
+            >&times;</span
+          >
         </div>
       </div>
       <hr />
-  
+
       <form (ngSubmit)="submitPauseLoan()">
         <div class="row">
           <div class="col-md-4">
             <label>Pause Start Date</label>
-            <input type="date" class="form-control" [(ngModel)]="pause_start_date" name="pause_start_date" required />
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="pause_start_date"
+              name="pause_start_date"
+              required
+            />
           </div>
           <div class="col-md-12">
             <label>Pause Reason</label>
-            <textarea class="form-control" [(ngModel)]="pause_reason" name="pause_reason" required></textarea>
+            <textarea
+              class="form-control"
+              [(ngModel)]="pause_reason"
+              name="pause_reason"
+              required
+            ></textarea>
           </div>
           <div class="col-md-12 mt-3">
             <button type="submit" class="btn btn-primary">Pause Loan</button>
@@ -453,25 +599,32 @@
     </div>
   </div>
 
-  
   <!-- Resume Modal -->
-<div *ngIf="isResumeModalOpen" class="modal">
+  <div *ngIf="isResumeModalOpen" class="modal">
     <div class="modal-content">
       <div class="row">
         <div class="col-md-10">
-          <h2>Resume Loan Application</h2>
+          <h2>Resume Loan Request</h2>
         </div>
         <div class="col-md-2">
-          <span class="close pull-right" (click)="closeResumeModal()">&times;</span>
+          <span class="close pull-right" (click)="closeResumeModal()"
+            >&times;</span
+          >
         </div>
       </div>
       <hr />
-  
+
       <form (ngSubmit)="submitResumeLoan()">
         <div class="row">
           <div class="col-md-4">
             <label>Resume Date</label>
-            <input type="date" class="form-control" [(ngModel)]="resume_date" name="resume_date" required />
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="resume_date"
+              name="resume_date"
+              required
+            />
           </div>
           <div class="col-md-12 mt-3">
             <button type="submit" class="btn btn-success">Resume Loan</button>
@@ -480,13 +633,9 @@
       </form>
     </div>
   </div>
-  
-  
-
-
 </div>
 
-    <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>

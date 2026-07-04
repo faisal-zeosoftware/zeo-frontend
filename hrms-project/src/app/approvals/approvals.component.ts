@@ -263,21 +263,6 @@ selectedDelegationId: number | null = null;
     }
   }
 
-  // checkViewPermission(permissions: any[]): boolean {
-  //   const requiredPermission = 'add_approval' ||'change_approval' ||'delete_approval' ||'view_approval';
-
-
-  //   // Check user permissions
-  //   if (permissions.some(permission => permission.codename === requiredPermission)) {
-  //     return true;
-  //   }
-
-  //   // Check group permissions (if applicable)
-  //   // Replace `// TODO: Implement group permission check`
-  //   // with your logic to retrieve and check group permissions
-  //   // (consider using a separate service or approach)
-  //   return false; // Replace with actual group permission check
-  //   }
 
 
 
@@ -286,34 +271,6 @@ selectedDelegationId: number | null = null;
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
-
-  // Modified fetchingApprovals to accept userId
-
-  // fetchingApprovals(): void {
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore', selectedSchema);
-
-  //   // Check if selectedSchema and userId are available
-  //   if (selectedSchema && this.userId) {
-  //       this.EmployeeService.getApprovalslist(selectedSchema, this.userId).subscribe(
-  //           (result: any) => {
-  //               this.Approvals = result;
-  //               console.log('approvals', this.Approvals)
-  //           },
-  //           (error) => {
-  //               console.error('Error fetching approvals:', error);
-  //           }
-  //       );
-  //   }
-
-
-
-
-
-
-
-  // }
 
 
 
@@ -464,6 +421,17 @@ selectedDelegationId: number | null = null;
   }
 
 
+
+
+
+
+
+
+
+
+/////////////////////////////////// Deligation Model //////////////////////////////////
+
+
   openResponseModal(delegation: any): void {
 
   console.log('Delegation', delegation);
@@ -513,6 +481,44 @@ sendDelegationResponse(): void {
         console.error(err);
       }
     });
+}
+
+sendDelegationResponseInline(apr: any): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    return;
+  }
+
+  const apiUrl =
+    `${this.apiUrl}/employee/api/delegations/${apr.delegation_details.id}/send_response/?schema=${selectedSchema}`;
+
+  const payload = {
+    response: apr.responseText
+  };
+
+  this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+    .subscribe({
+      next: (res: any) => {
+
+        alert('Response sent successfully');
+
+        apr.delegation_details.response = apr.responseText;
+
+        apr.responseText = '';
+
+      },
+      error: err => console.error(err)
+    });
+
+}
+
+canShowResponse(apr: any): boolean {
+
+    return apr.delegation_details &&
+           apr.delegation_details.delegate_to === this.username;
+
 }
 
 

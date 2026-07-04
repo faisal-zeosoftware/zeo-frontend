@@ -293,13 +293,17 @@ CreateAssetType(): void {
     branch: this.branch?.toString() || ''
   };
 
+   this.isLoading = true;
+
   this.employeeService.registerAssetRequest(companyData).subscribe({
     next: (response) => {
+       this.isLoading = false;
       console.log('Registration successful', response);
       alert('Asset request has been added!');
       window.location.reload();
     },
     error: (error) => {
+        this.isLoading = false;
       // same error handling as above...
       console.error('Added failed', error);
       let errorMessage = 'Enter all required fields!';

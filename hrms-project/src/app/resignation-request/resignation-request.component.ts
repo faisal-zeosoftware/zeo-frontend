@@ -464,9 +464,15 @@ SetLeaveApprovaLevel(): void {
     formData.append('attachment', this.attachment);
   }
 
+   // Show Loader
+  this.isLoading = true;
+
   this.leaveService.CreateEmpResignationRequest(formData).subscribe({
 
     next: (response) => {
+
+        // Hide Loader
+      this.isLoading = false;
 
       console.log('Registration successful', response);
 
@@ -478,6 +484,9 @@ SetLeaveApprovaLevel(): void {
     },
 
     error: (error) => {
+
+           // Hide Loader
+      this.isLoading = false;
 
       console.error('API ERROR:', error);
 

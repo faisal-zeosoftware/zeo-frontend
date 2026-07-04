@@ -35,6 +35,7 @@ export class MainSidebarComponent {
   Documents: any[] = []; // store expired document notifications
   // 🔔 Notification Arrays
   AssetNot: any[] = [];
+  ResignationNot: any[] = [];
   AirticketNot: any[] = [];
   LeaveNot: any[] = [];
   GeneralReqNot: any[] = [];
@@ -209,6 +210,7 @@ this.EmployeeService.selectedBranches$.subscribe(ids => {
 
   this.loadLeaveNotifications();
   this.loadAssetNotifications();
+  this.loadResignationNotifications();
   this.loadAirTicketNotifications();
   this.loadGeneralReqNotifications();
   this.loadDocumentReqNotifications();
@@ -365,6 +367,31 @@ loadAssetNotifications(callback?: Function): void {
   }
   }
 
+  loadResignationNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.EmployeeService.getResignationNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (resignations: any) => {
+        this.ResignationNot = Array.isArray(resignations)
+          ? resignations
+              .filter((item: any) => item.message?.toLowerCase().includes('resignation'))
+              .map((item) => ({ ...item, type: 'resignation', highlighted: false }))
+          : [];
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading Resignation request notifications:', err);
+        this.ResignationNot = [];
+        this.combineNotifications();
+      },
+    });
+  }
+  }
+
+
 // ✅ AirTicket Notifications
 // loadAirTicketNotifications(selectedSchema: string): void {
 //   this.EmployeeService.getAirTicketNotify(selectedSchema).subscribe({
@@ -395,8 +422,8 @@ loadAirTicketNotifications(callback?: Function): void {
       next: (airtickets: any) => {
         this.AirticketNot = Array.isArray(airtickets)
           ? airtickets
-              .filter((item: any) => item.message?.toLowerCase().includes('airticket'))
-              .map((item) => ({ ...item, type: 'airticket', highlighted: false }))
+              .filter((item: any) => item.message?.toLowerCase().includes('air ticket'))
+              .map((item) => ({ ...item, type: 'air ticket', highlighted: false }))
           : [];
         this.combineNotifications();
       },
@@ -436,11 +463,11 @@ loadGeneralReqNotifications(callback?: Function): void {
 
   if (selectedSchema) {
     this.EmployeeService.getGeneralReqNotNew(selectedSchema, savedIds).subscribe({
-      next: (leaves: any) => {
-        this.GeneralReqNot = Array.isArray(leaves)
-          ? leaves
+      next: (generals: any) => {
+        this.GeneralReqNot = Array.isArray(generals)
+          ? generals
               .filter((item: any) => item.message?.toLowerCase().includes('generalrequest'))
-              .map((item) => ({ ...item, type: 'general', highlighted: false }))
+              .map((item) => ({ ...item, type: 'generalrequest', highlighted: false }))
           : [];
         this.combineNotifications();
       },
@@ -627,8 +654,8 @@ loadDelegationNotifications(callback?: Function): void {
       next: (delegations: any) => {
         this.DelegationNot = Array.isArray(delegations)
           ? delegations
-              .filter((item: any) => item.message?.toLowerCase().includes('delegation'))
-              .map((item) => ({ ...item, type: 'delegation', highlighted: false }))
+              .filter((item: any) => item.message?.toLowerCase().includes('delegated'))
+              .map((item) => ({ ...item, type: 'delegated', highlighted: false }))
           : [];
         this.combineNotifications();
       },
@@ -684,13 +711,14 @@ combineNotifications(): void {
     ...this.Documents.map(item => ({ ...item, type: 'document' as const, highlighted: false })),
     ...this.LeaveNot.map(item => ({ ...item, type: 'leave' as const, highlighted: false })),
     ...this.AssetNot.map(item => ({ ...item, type: 'asset' as const, highlighted: false })),
-    ...this.AirticketNot.map(item => ({ ...item, type: 'airticket' as const, highlighted: false })),
-    ...this.GeneralReqNot.map(item => ({ ...item, type: 'general' as const, highlighted: false })),
+    ...this.ResignationNot.map(item => ({ ...item, type: 'resignation' as const, highlighted: false })),
+    ...this.AirticketNot.map(item => ({ ...item, type: 'air ticket' as const, highlighted: false })),
+    ...this.GeneralReqNot.map(item => ({ ...item, type: 'generalrequest' as const, highlighted: false })),
     ...this.DocReqNot.map(item => ({ ...item, type: 'docrequest' as const, highlighted: false })),
     ...this.LoanReqNot.map(item => ({ ...item, type: 'loanrequest' as const, highlighted: false })),
     ...this.AdvancesalaryReqNot.map(item => ({ ...item, type: 'advancesalaryrequest' as const, highlighted: false })),
     ...this.LateInEarlyOutReqNot.map(item => ({ ...item, type: 'lateinearlyrequest' as const, highlighted: false })),
-    ...this.DelegationNot.map(item => ({ ...item, type: 'delegation' as const, highlighted: false })),
+    ...this.DelegationNot.map(item => ({ ...item, type: 'delegated' as const, highlighted: false })),
     ...this.DelegationResponseNot.map(item => ({ ...item, type: 'delegationres' as const, highlighted: false }))
   ];
 
@@ -725,6 +753,9 @@ onNotificationClick(noti: any): void {
       break;
     case 'asset':
       this.router.navigate(['/main-sidebar/asset-options/asset-approval']);
+      break;
+    case 'resignation':
+      this.router.navigate(['/main-sidebar/sub-sidebar/resignation-request']);
       break;
     case 'airticket':
       this.router.navigate(['/main-sidebar/asset-options/airticket-approvals']);
