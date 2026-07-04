@@ -564,11 +564,27 @@ ngOnInit(): void {
 
       }
     
-      closeapplicationModal():void{
-        this.iscreateLoanApp = false;
+      closeapplicationModal(){
 
-      }
-
+        this.iscreateLoanApp=false;
+    
+        this.isEditMode=false;
+    
+        this.editingPatternId=null;
+    
+        this.Patern_name='';
+    
+        this.pattern_type='weekly';
+    
+        this.changes_every=1;
+    
+        this.weeks=[];
+    
+        this.months=[];
+    
+        this.onChangesEveryOrTypeChange();
+    
+    }
 
 
 
@@ -607,19 +623,19 @@ ngOnInit(): void {
     isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
-openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
+// openEditModal(asset: any): void {
+//   this.editAsset = { ...asset }; // copy asset data
+//   this.isEditModalOpen = true;
 
 
-  this.mapShiftPatternNameToId();
-  this.mapTuesdayNameToId();
-  this.mapWednesdayNameToId();
-  this.mapThursdayNameToId();
-  this.mapFridayNameToId();
-  this.mapSaturdayNameToId();
-  this.mapSundayNameToId();
-}
+//   this.mapShiftPatternNameToId();
+//   this.mapTuesdayNameToId();
+//   this.mapWednesdayNameToId();
+//   this.mapThursdayNameToId();
+//   this.mapFridayNameToId();
+//   this.mapSaturdayNameToId();
+//   this.mapSundayNameToId();
+// }
 
 closeEditModal(): void {
   this.isEditModalOpen = false;
@@ -1040,6 +1056,331 @@ clearFilters(){
   this.filteredShiftPatterns=[...this.ShiftsPattern];
 
 }
+
+
+
+
+
+
+
+
+
+
+
+// edit section
+
+
+isEditMode = false;
+
+editingPatternId: number | null = null;
+
+
+saveShiftPattern(){
+
+  if(this.isEditMode){
+
+      this.updateShiftPattern();
+
+  }else{
+
+      this.registerShiftPattern();
+
+  }
+
+}
+
+
+
+openEditModal(pattern:any){
+
+  this.isEditMode=true;
+
+  this.editingPatternId=pattern.id;
+
+  this.iscreateLoanApp=true;
+
+  this.Patern_name=pattern.name;
+
+  this.pattern_type=pattern.pattern_type;
+
+  this.changes_every=pattern.changes_every;
+
+  if(pattern.pattern_type=="weekly"){
+
+      this.loadWeeklyPattern(pattern);
+
+  }else{
+
+      this.loadMonthlyPattern(pattern);
+
+  }
+
+}
+
+
+loadWeeklyPattern(pattern:any){
+
+  this.weeks=[];
+
+  pattern.pattern_config.weeks.forEach((week:any)=>{
+
+      this.weeks.push({
+
+          sequence:week.sequence,
+
+          rules:week.rules.map((rule:any)=>({
+
+              day:rule.day,
+
+              shift_id:rule.shift_id
+
+          }))
+
+      });
+
+  });
+
+}
+
+
+
+loadMonthlyPattern(pattern:any){
+
+  this.months=[];
+
+  pattern.pattern_config.months.forEach((month:any)=>{
+
+      this.months.push({
+
+          sequence:month.sequence,
+
+          rules:month.rules.map((rule:any)=>({
+
+              from:rule.from,
+
+              to:rule.to,
+
+              shift_id:rule.shift_id
+
+          }))
+
+      });
+
+  });
+
+}
+
+
+
+
+
+updateShiftPattern() {
+
+  if (this.editingPatternId == null) {
+    alert("Invalid Shift Pattern ID");
+    return;
+  }
+
+  const payload = this.buildPayload();
+
+  this.employeeService
+      .updateShiftPattern(this.editingPatternId, payload)
+      .subscribe({
+        next: (res) => {
+
+          alert("Updated Successfully");
+
+          this.closeapplicationModal();
+
+          // Refresh list
+          // this.fetchEmployees(this.schemaName, this.branchIds);
+
+
+           // combineLatest waits for both Schema and Branches to have a value
+      this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployees(schema, branchIds);  
+          
+
+        }
+      });
+
+        },
+        error: err => {
+          this.handleBackendErrors(err);
+        }
+      });
+
+}
+
+
+
+buildPayload(){
+
+  let patternConfig={};
+
+  if(this.pattern_type=="weekly"){
+
+      patternConfig={
+
+          weeks:this.weeks.map(w=>({
+
+              sequence:w.sequence,
+
+              rules:w.rules.map((r:any)=>({
+
+                  day:r.day,
+
+                  shift_id:Number(r.shift_id)
+
+              }))
+
+          }))
+
+      };
+
+  }
+
+  else{
+
+      patternConfig={
+
+          months:this.months.map(m=>({
+
+              sequence:m.sequence,
+
+              rules:m.rules.map((r:any)=>({
+
+                  from:r.from,
+
+                  to:r.to,
+
+                  shift_id:Number(r.shift_id)
+
+              }))
+
+          }))
+
+      };
+
+  }
+
+  return{
+
+      name:this.Patern_name,
+
+      pattern_type:this.pattern_type,
+
+      changes_every:this.changes_every,
+
+      pattern_config:patternConfig
+
+  };
+
+}
+
+
+
+
+// delete section
+
+
+
+deleteShiftPattern(pattern: any) {
+
+  if (!confirm(`Are you sure you want to delete "${pattern.name}"?`)) {
+    return;
+  }
+
+  this.employeeService.deleteShiftPattern(pattern.id).subscribe({
+
+    next: (res: any) => {
+
+      alert("Shift Pattern deleted successfully");
+
+      // Remove from list immediately
+      this.ShiftsPattern = this.ShiftsPattern.filter(x => x.id !== pattern.id);
+
+      this.filteredShiftPatterns = [...this.ShiftsPattern];
+
+    },
+
+    error: (err) => {
+
+      this.handleBackendErrors(err);
+
+    }
+
+  });
+
+}
+
+
+
+
+// clone method
+
+
+clonePattern(pattern: any) {
+
+  this.isEditMode = false;
+
+  this.editingPatternId = null;
+
+  this.iscreateLoanApp = true;
+
+  // Pattern Name
+  this.Patern_name = pattern.name + ' - Copy';
+
+  this.pattern_type = pattern.pattern_type;
+
+  this.changes_every = pattern.changes_every;
+
+  if (pattern.pattern_type === 'weekly') {
+
+    this.weeks = pattern.pattern_config.weeks.map((week: any) => ({
+
+      sequence: week.sequence,
+
+      rules: week.rules.map((rule: any) => ({
+
+        day: rule.day,
+
+        shift_id: rule.shift_id
+
+      }))
+
+    }));
+
+  }
+
+  else {
+
+    this.months = pattern.pattern_config.months.map((month: any) => ({
+
+      sequence: month.sequence,
+
+      rules: month.rules.map((rule: any) => ({
+
+        from: rule.from,
+
+        to: rule.to,
+
+        shift_id: rule.shift_id
+
+      }))
+
+    }));
+
+  }
+
+}
+
+
+
 
 
 

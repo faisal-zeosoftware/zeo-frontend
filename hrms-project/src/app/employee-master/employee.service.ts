@@ -4827,19 +4827,33 @@ updateWeekoff(id: number, data: any): Observable<any> {
 }
 
 
-  updateShiftPattern(id: number, data: any): Observable<any> {
+//   updateShiftPattern(id: number, data: any): Observable<any> {
+//   const selectedSchema = localStorage.getItem('selectedSchema');
+//   const apiUrl = `${this.apiUrl}/calendars/api/shiftpattern/${id}/?schema=${selectedSchema}`;
+//   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+//   return this.http.put(apiUrl, data, { headers }).pipe(
+//     catchError((error) => {
+//       console.error('Error updating asset:', error);
+//       return throwError(error);
+//     })
+//   );
+// }
+
+
+updateShiftPattern(id:number,payload:any){
+
   const selectedSchema = localStorage.getItem('selectedSchema');
-  const apiUrl = `${this.apiUrl}/calendars/api/shiftpattern/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
-    catchError((error) => {
-      console.error('Error updating asset:', error);
-      return throwError(error);
-    })
+  return this.http.put(
+  
+  `${this.apiUrl}/calendars/api/shiftpattern/${id}/?schema=${selectedSchema}`,
+  
+  payload
+  
   );
-}
-
+  
+  }
   updateShiftOverride(id: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/calendars/api/shift-overrides/${id}/?schema=${selectedSchema}`;

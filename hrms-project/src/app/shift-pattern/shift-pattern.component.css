@@ -103,7 +103,7 @@ margin-right: 10px;
 .modal {
     display: block; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 99999; /* Sit on top */
     margin-left: auto;
     margin-right: auto;
     top: 0;
@@ -118,9 +118,9 @@ margin-right: 10px;
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 60%; /* Could be more or less, depending on screen size */
+    width: 75%; /* Could be more or less, depending on screen size */
     margin-right: auto;
-    margin-left: auto;
+    margin-left: 22%;
     margin-top: 100px;
     height: auto;
   
@@ -317,3 +317,216 @@ margin-right: 10px;
 .btn-view { color: #3b82f6; border-color: #bfdbfe; }
 .btn-edit { color: #d97706; border-color: #fde68a; }
 .btn-delete { color: #ef4444; border-color: #fca5a5; }
+
+
+
+
+
+/* Full Fixed Modal Darkened Blur Overlay Viewport Layer */
+.modal-overlay-backdrop {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1060;
+  padding: 20px;
+}
+
+/* Master Premium Card Container Window */
+.custom-modal-wrapper {
+  background: #ffffff;
+  /* width: 100%;
+  max-width: 840px; */
+  border-radius: 16px;
+  /* display: flex;
+  flex-direction: column; */
+  /* max-height: 90vh; */
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+/* Header Sections Styling elements */
+.modal-header-custom {
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-icon-badge {
+  width: 44px; height: 44px;
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.modal-title-text {
+  font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 2px;
+}
+.modal-subtitle-text {
+  font-size: 13px; margin-bottom: 0;
+}
+.close-circle-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: none; background: #f1f5f9; color: #64748b;
+  font-size: 20px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.2s;
+}
+.close-circle-btn:hover { background: #e2e8f0; color: #0f172a; }
+
+/* Internal Scroll Core Mechanics Container */
+.modal-body-scrollable {
+  padding: 24px;
+  overflow-y: auto;
+  background-color: #f8fafc;
+  flex: 1;
+}
+
+/* Form Controls and Label System Aesthetics */
+.form-section-card {
+  background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;
+}
+.custom-form-label {
+  font-size: 13px; font-weight: 600; color: #334155; display: block; margin-bottom: 6px;
+}
+.required-star { color: #ef4444; }
+
+/* Premium Input Fields Elements Styling styling options */
+.custom-input, .custom-select {
+  height: 42px; border-radius: 8px; border: 1px solid #cbd5e1;
+  font-size: 14px; color: #334155; width: 100%; padding: 0 12px;
+  transition: all 0.2s ease-in-out; background-color: #ffffff;
+}
+.custom-input:focus, .custom-select:focus {
+  border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12); outline: none;
+}
+.input-with-icon { position: relative; }
+.input-with-icon .field-icon {
+  position: absolute; left: 12px; top: 14px; color: #94a3b8; font-size: 14px;
+}
+.input-with-icon .custom-input { padding-left: 36px; }
+
+/* Double Inline Pickers elements rules wrappers */
+.compact-width { width: 90px !important; flex: none; }
+.duration-context-badge {
+  background: #e2e8f0; color: #475569; font-size: 12px; font-weight: 600;
+  padding: 6px 12px; border-radius: 6px; white-space: nowrap;
+}
+
+/* Structural Layout Inner Separators section components */
+.section-divider-title {
+  display: flex; align-items: center; width: 100%; text-align: left; margin: 24px 0 16px;
+}
+.section-divider-title::after {
+  content: ''; flex: 1; margin-left: 14px; height: 1px; background-color: #e2e8f0;
+}
+.divider-text-label {
+  font-size: 14px; font-weight: 700; color: #475569; letter-spacing: 0.3px;
+}
+
+/* TYPE A: Weekly Strip Presentation Rules */
+.structure-week-card {
+  background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;
+}
+.week-card-header, .month-card-header {
+  background: #f1f5f9; padding: 10px 16px; border-bottom: 1px solid #e2e8f0;
+}
+.week-indicator-tag, .month-indicator-tag {
+  font-size: 13px; font-weight: 700; color: #1e293b;
+}
+.week-days-horizontal-strip {
+  display: flex; width: 100%; background: #ffffff;
+}
+.day-input-cell {
+  flex: 1; text-align: center; padding: 12px 6px; border-right: 1px solid #f1f5f9;
+}
+.day-input-cell:last-child { border-right: none; }
+.day-label-text {
+  font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block;
+}
+
+/* Day Item Pill Wrapper Elements Dynamic styles logic */
+.select-pill-wrapper {
+  background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 2px;
+  transition: all 0.2s ease-in-out;
+}
+.select-pill-wrapper.has-value {
+  background-color: #e0f2fe; border-style: solid; border-color: #7dd3fc;
+}
+.clean-hidden-select {
+  width: 100%; border: none; background: transparent; font-size: 12px; font-weight: 600;
+  color: #0284c7; text-align: center; text-align-last: center; cursor: pointer; outline: none;
+  height: 28px;
+}
+.clean-hidden-select option { background: #ffffff; color: #334155; }
+
+/* TYPE B: Monthly Split Layout Flex Row Engine UI */
+.structure-month-card {
+  background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding-bottom: 12px; overflow: hidden;
+}
+.btn-custom-action {
+  background: #ffffff; border: 1px solid #cbd5e1; color: #2563eb; font-weight: 600; font-size: 12px;
+  padding: 5px 12px; border-radius: 6px; transition: all 0.2s;
+}
+.btn-custom-action:hover { background: #f8fafc; border-color: #2563eb; }
+
+.monthly-rules-stack { padding: 0 16px; }
+.monthly-rule-row {
+  display: flex; gap: 12px; width: 100%; background: #f8fafc; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0;
+}
+.range-inputs-group { display: flex; gap: 8px; flex: 2; }
+.custom-input-group {
+  display: flex; align-items: center; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; width: 100%;
+}
+.group-addon-label {
+  background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600; padding: 0 8px;
+  height: 100%; display: flex; align-items: center; border-right: 1px solid #cbd5e1;
+}
+.inline-clean-input {
+  border: none !important; height: 32px !important; font-size: 12px !important; font-weight: 700;
+  text-align: center; color: #334155; width: 100%; outline: none !important; box-shadow: none !important;
+}
+.shift-selection-group { flex: 3; }
+.select-sm-height { height: 34px !important; font-size: 13px; border-radius: 6px; }
+.action-delete-group { flex: 0 0 40px; }
+.row-delete-icon-btn {
+  border: none; background: transparent; color: #94a3b8; font-size: 14px; padding: 6px; transition: color 0.2s;
+}
+.row-delete-icon-btn:hover { color: #ef4444; }
+
+/* Bottom Action Footer Control Panel bar styles definitions */
+.modal-footer-custom {
+  padding: 16px 24px; display: flex; justify-content: flex-end; gap: 12px;
+  border-top: 1px solid #f1f5f9; background: #ffffff;
+}
+.btn-modern-cancel {
+  background: #f1f5f9; color: #475569; font-weight: 600; font-size: 14px;
+  padding: 10px 24px; border: none; border-radius: 8px; transition: background 0.2s;
+}
+.btn-modern-cancel:hover { background: #e2e8f0; color: #0f172a; }
+
+.btn-modern-submit {
+  background: #22c55e; color: #ffffff; font-weight: 600; font-size: 14px;
+  padding: 10px 24px; border: none; border-radius: 8px; transition: background 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-modern-submit:hover { background: #16a34a; }
+
+/* Micro-Animation Accents layer styles definitions */
+.animated-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+

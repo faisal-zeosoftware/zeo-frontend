@@ -57,112 +57,138 @@
 
 
 
+
+
+        
+
+
+
         <div *ngIf="iscreateLoanApp" class="modal">
             <div class="modal-content" >
-                <div class="row">
-                    <div class="col-md-10">
-                        <h2>Create Shift Pattern</h2>
+                <div class="custom-modal-wrapper shadow-lg">
+        
+                    <div class="modal-header-custom">
+                        <div class="header-left">
+                            <div class="header-icon-badge">
+                                <i class="fa fa-calendar-plus"></i>
+                            </div>
+                            <div>
+                                <h3 class="modal-title-text">{{ isEditMode ? 'Update Shift Pattern' : 'Create Shift Pattern' }}</h3>
+                                <p class="modal-subtitle-text text-muted">Set up custom rotational timelines for your employees</p>
+                            </div>
+                        </div>
+                        <button type="button" class="close-circle-btn" (click)="closeapplicationModal()">&times;</button>
                     </div>
-                    <div class="col-md-2 text-right">
-                        <span class="close-btn" (click)="closeapplicationModal()">×</span>
+                    
+                    <div class="modal-body-scrollable">
+                        <form>
+                            <div class="form-section-card mb-4">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label class="custom-form-label">Pattern Name <span class="required-star">*</span></label>
+                                            <div class="input-with-icon">
+                                                <i class="fa fa-pen-nib field-icon"></i>
+                                                <input type="text" class="form-control custom-input" required [(ngModel)]="Patern_name" placeholder="e.g. General Shift Pattern" name="pattName">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label class="custom-form-label">Pattern Type</label>
+                                            <select class="form-control custom-select" [(ngModel)]="pattern_type" name="pattType" (change)="onChangesEveryOrTypeChange()">
+                                                <option value="weekly">Weekly</option>
+                                                <option value="monthly">Monthly</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-0">
+                                            <label class="custom-form-label">Rotates / Changes Every</label>
+                                            <div class="d-flex align-items-center dynamic-duration-picker">
+                                                <select class="form-control custom-select compact-width mr-3" [(ngModel)]="changes_every" name="changesEvery" (change)="onChangesEveryOrTypeChange()">
+                                                    <option *ngFor="let val of [1,2,3,4,5,6]" [value]="val">{{val}}</option>
+                                                </select>
+                                                <span class="duration-context-badge">
+                                                    {{ pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="section-divider-title mb-3">
+                                <span class="divider-text-label"><i class="fa fa-layer-group mr-2"></i>Define Shift Pattern Structure</span>
+                            </div>
+                    
+                            <div *ngIf="pattern_type === 'weekly'" class="animated-fade-in">
+                                <div *ngFor="let week of weeks; let wIdx = index" class="structure-week-card mb-3">
+                                    <div class="week-card-header">
+                                        <span class="week-indicator-tag"><i class="fa fa-calendar-week mr-2"></i>Week {{ week.sequence }}</span>
+                                    </div>
+                                    <div class="week-days-horizontal-strip">
+                                        <div *ngFor="let rule of week.rules; let dIdx = index" class="day-input-cell">
+                                            <label class="day-label-text">{{ rule.day.substring(0,3) }}</label>
+                                            <div class="select-pill-wrapper" [ngClass]="{'has-value': rule.shift_id}">
+                                                <select class="clean-hidden-select" [(ngModel)]="rule.shift_id" name="week-{{wIdx}}-day-{{dIdx}}">
+                                                    <option value="">Off</option>
+                                                    <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div *ngIf="pattern_type === 'monthly'" class="animated-fade-in">
+                                <div *ngFor="let month of months; let mIdx = index" class="structure-month-card mb-3">
+                                    <div class="month-card-header d-flex justify-content-between align-items-center mb-3">
+                                        <span class="month-indicator-tag"><i class="fa fa-calendar-alt mr-2"></i>Month {{ month.sequence }}</span>
+                                        <button type="button" class="btn btn-sm btn-custom-action" (click)="addMonthlyRule(mIdx)">
+                                            <i class="fa fa-plus-circle mr-1"></i> Split Date Range
+                                        </button>
+                                    </div>
+                    
+                                    <div class="monthly-rules-stack">
+                                        <div *ngFor="let rule of month.rules; let rIdx = index" class="monthly-rule-row align-items-center mb-2">
+                                            <div class="range-inputs-group">
+                                                <div class="custom-input-group">
+                                                    <span class="group-addon-label">From</span>
+                                                    <input type="text" class="form-control inline-clean-input" [(ngModel)]="rule.from" placeholder="e.g. 1" name="m-{{mIdx}}-f-{{rIdx}}">
+                                                </div>
+                                                <div class="custom-input-group">
+                                                    <span class="group-addon-label">To</span>
+                                                    <input type="text" class="form-control inline-clean-input" [(ngModel)]="rule.to" (ngModelChange)="updateNextRule(mIdx,rIdx)" placeholder="e.g. 15" name="m-{{mIdx}}-t-{{rIdx}}">
+                                                </div>
+                                            </div>
+                                            <div class="shift-selection-group">
+                                                <select class="form-control custom-select select-sm-height" [(ngModel)]="rule.shift_id" name="m-{{mIdx}}-s-{{rIdx}}">
+                                                    <option value="">-- Assign Scheduled Shift --</option>
+                                                    <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
+                                                </select>
+                                            </div>
+                                            <div class="action-delete-group text-center">
+                                                <button type="button" class="row-delete-icon-btn" *ngIf="month.rules.length > 1" (click)="removeMonthlyRule(mIdx, rIdx)" title="Remove range row">
+                                                    <i class="fa fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
+                    
+                    <div class="modal-footer-custom">
+                        <button type="button" (click)="closeapplicationModal()" class="btn btn-modern-cancel">Cancel</button>
+                        <button type="button" class="btn btn-modern-submit shadow-sm" (click)="saveShiftPattern()">
+                            <i class="fa" [ngClass]="isEditMode ? 'fa-save' : 'fa-check-circle'"></i>
+                            {{ isEditMode ? 'Update Pattern' : 'Save Shift Pattern' }}
+                        </button>
+                    </div>
+            
                 </div>
-                <hr />
-        
-                <form>
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <label>Pattern Name <span class="required-star">*</span></label>
-                            <input type="text" class="form-control" required [(ngModel)]="Patern_name" placeholder="Enter name" name="pattName">
-                        </div>
-                        <div class="col-md-4">
-                            <label>Pattern Type</label>
-                            <select class="form-control" [(ngModel)]="pattern_type" name="pattType" (change)="onChangesEveryOrTypeChange()">
-                                <option value="weekly">Weekly</option>
-                                <option value="monthly">Monthly</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>Shift Pattern Changes Every</label>
-                            <div class="d-flex align-items-center">
-                                <select class="form-control mr-2" style="width: 100px;" [(ngModel)]="changes_every" name="changesEvery" (change)="onChangesEveryOrTypeChange()">
-                                    <option *ngFor="let val of [1,2,3,4,5,6]" [value]="val">{{val}}</option>
-                                </select>
-                                <span>{{ pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}</span>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <hr />
-                    <h4>Define Shift Pattern Structure</h4>
-        
-                    <div *ngIf="pattern_type === 'weekly'">
-                        <div *ngFor="let week of weeks; let wIdx = index" class="card p-3 mb-3 border-light shadow-sm">
-                            <h5>Week {{ week.sequence }}</h5>
-                            <div class="row">
-                                <div *ngFor="let rule of week.rules; let dIdx = index" class="col text-center border-right">
-                                    <label class="font-weight-bold d-block small mb-1">{{ rule.day.substring(0,3) }}</label>
-                                    
-                                    <div class="custom-sel">
-                                        <select class="form-control form-control-sm text-center" [(ngModel)]="rule.shift_id" name="week-{{wIdx}}-day-{{dIdx}}">
-                                            <option value="">+</option>
-                                            <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div *ngIf="pattern_type === 'monthly'">
-                        <div *ngFor="let month of months; let mIdx = index" class="card p-3 mb-3 border-light shadow-sm">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5>Month {{ month.sequence }}</h5>
-                                <button type="button" class="btn btn-sm btn-outline-primary" (click)="addMonthlyRule(mIdx)">+ Split Date Range</button>
-                            </div>
-        
-                            <div *ngFor="let rule of month.rules; let rIdx = index" class="row align-items-center mb-2">
-                                <div class="col-md-3">
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-prepend"><span class="input-group-text">From</span></div>
-                                        <input type="text" class="form-control" [(ngModel)]="rule.from" placeholder="e.g. 1" name="m-{{mIdx}}-f-{{rIdx}}">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-prepend"><span class="input-group-text">To</span></div>
-                                        <input type="text" class="form-control" [(ngModel)]="rule.to" (ngModelChange)="updateNextRule(mIdx,rIdx)" placeholder="e.g. 15 or last_day" name="m-{{mIdx}}-t-{{rIdx}}">
-                                    </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <label></label>
-                                    <select class="form-control form-control-sm" [(ngModel)]="rule.shift_id" name="m-{{mIdx}}-s-{{rIdx}}">
-                                        <option value="">Select Shift</option>
-                                        <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-1 text-center">
-                                    <span class="text-danger" style="cursor:pointer; font-weight:bold" *ngIf="month.rules.length > 1" (click)="removeMonthlyRule(mIdx, rIdx)">🗑️</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <div class="row mt-4">
-                        <div class="col-md-8"></div>
-                        <div class="col-md-2">
-                            <button type="button" (click)="closeapplicationModal()" class="btn btn-danger btn-full">Close</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button
-                            type="button"
-                            class="btn btn-success btn-full"
-                            (click)="registerShiftPattern()">
-                            Add Pattern
-                        </button>                      
-                      </div>
-                    </div>
-                </form>
             </div>
         </div>
 
@@ -456,7 +482,7 @@
             <div class="row">
               <div class="col-xl-6 col-lg-12 mb-4" *ngFor="let pattern of filteredShiftPatterns">
                 <div class="shift-pattern-card shadow-sm h-100">
-                  
+                    <mat-checkbox *ngIf="Delete" [(ngModel)]="pattern.selected" ></mat-checkbox>
                   <div class="card-header-flex p-3">
                     <div class="d-flex align-items-center">
                       <div class="icon-avatar mr-3" [ngClass]="pattern.pattern_type === 'weekly' ? 'bg-light-blue' : 'bg-light-green'">
@@ -530,8 +556,18 @@
                   <div class="card-footer-actions bg-white p-3 d-flex justify-content-between border-top">
                     <button class="btn btn-action btn-view" (click)="openEditModal(pattern)"><i class="fa fa-eye mr-1"></i> View</button>
                     <button class="btn btn-action btn-edit" (click)="openEditModal(pattern)"><i class="fa fa-edit mr-1"></i> Edit</button>
-                    <button class="btn btn-action btn-clone"><i class="fa fa-copy mr-1"></i> Clone</button>
-                    <button class="btn btn-action btn-delete text-danger"><i class="fa fa-trash-alt mr-1"></i> Delete</button>
+                    <button
+                    class="btn btn-action btn-clone"
+                    (click)="clonePattern(pattern)">
+                    <i class="fa fa-copy mr-1"></i>
+                    Clone
+                </button>
+                    <button
+                    class="btn btn-action btn-delete text-danger"
+                    (click)="deleteShiftPattern(pattern)">
+                    <i class="fa fa-trash-alt mr-1"></i>
+                    Delete
+                </button>
                   </div>
           
                 </div>
