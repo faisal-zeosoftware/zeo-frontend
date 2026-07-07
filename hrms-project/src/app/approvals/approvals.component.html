@@ -40,7 +40,7 @@
                 </button>
 
                 <button
-                  *ngIf="apr.delegation_details"
+                  *ngIf="apr.is_deligate"
                   class="btn btn-secondary"
                   (click)="apr.showDelegation = !apr.showDelegation"
                 >
@@ -58,9 +58,15 @@
             class="delegation-card"
           >
             <div class="row">
+
+              <div class="col-md-6">
+                <strong>Request</strong>
+                <p>{{ apr.general_request }}</p>
+              </div>
+
               <div class="col-md-6">
                 <strong>Deligator</strong>
-                <p>{{ apr.delegation_details.deligator }}</p>
+                <p>{{ apr.approver }}</p>
               </div>
 
               <div class="col-md-6">
@@ -68,12 +74,8 @@
                 <p>{{ apr.delegation_details.delegate_to }}</p>
               </div>
 
-              <div class="col-md-6">
-                <strong>Request</strong>
-                <p>{{ apr.delegation_details.request }}</p>
-              </div>
 
-              <div class="col-md-6">
+              <!-- <div class="col-md-6">
                 <strong>Active</strong>
                 <p>
                   {{ apr.delegation_details.is_active ? "Yes" : "No" }}
@@ -88,12 +90,12 @@
               <div class="col-md-6">
                 <strong>End Date</strong>
                 <p>{{ apr.delegation_details.end_date }}</p>
-              </div>
-
+              </div> -->
+<!-- 
               <div class="col-md-6">
                 <strong>Reason</strong>
                 <p>{{ apr.delegation_details.reason }}</p>
-              </div>
+              </div> -->
 
               <div class="col-md-6">
                 <strong>Response</strong>
@@ -218,36 +220,51 @@
           <span class="close-btn" (click)="closeDelegationModal()"> × </span>
         </div>
 
-        <h5>Create Delegation</h5>
+        <h5>Send Delegation</h5>
         <hr />
         <div class="row">
-          <div class="col-md-4">
+          <!-- <div class="col-md-4">
             <label>Start Date</label>
             <input
               type="date"
               class="form-control"
               [(ngModel)]="delegationForm.start_date"
             />
-          </div>
+          </div> -->
 
-          <div class="col-md-4">
+          <!-- <div class="col-md-4">
             <label>End Date</label>
             <input
               type="date"
               class="form-control"
               [(ngModel)]="delegationForm.end_date"
             />
-          </div>
+          </div> -->
 
           <div class="col-md-4">
-            <label>Deligator</label>
+            <label>Request</label>
 
-            <select class="form-control" [(ngModel)]="delegationForm.deligator">
-              <option *ngFor="let user of Users" [ngValue]="user.id">
-                {{ user.username }}
+            <select
+              class="form-control"
+              [(ngModel)]="delegationForm.request"
+              disabled
+            >
+              <option *ngFor="let req of Genreq" [value]="req.id">
+                {{ req.document_number }} - {{ req.request_type }}
               </option>
             </select>
           </div>
+
+<div class="col-md-4">
+  <label>Delegator</label>
+
+  <input
+    type="text"
+    class="form-control"
+    [value]="delegationForm.deligator"
+    readonly
+  />
+</div>
 
           <div class="col-md-4">
             <label>Delegate To</label>
@@ -262,25 +279,12 @@
             </select>
           </div>
 
-          <div class="col-md-5">
-            <label>Request</label>
 
-            <select
-              class="form-control"
-              [(ngModel)]="delegationForm.request"
-              disabled
-            >
-              <option *ngFor="let req of Genreq" [value]="req.id">
-                {{ req.document_number }} - {{ req.request_type }}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-group mb-2">
+          <!-- <div class="form-group mb-2">
             <label>Reason</label>
             <textarea class="form-control" [(ngModel)]="delegationForm.reason">
             </textarea>
-          </div>
+          </div> -->
 
           <!-- <div class="form-group mb-3">
             <label>Active</label>
@@ -288,7 +292,7 @@
           </div>
         </div> -->
 
-          <div class="col-md-6 mt-2">
+          <!-- <div class="col-md-6 mt-2">
             <div class="check-box-selection-sec form-control">
               <div class="mat-set">
                 <mat-checkbox
@@ -298,7 +302,7 @@
                 >
               </div>
             </div>
-          </div>
+          </div> -->
 
           <button class="btn btn-success" (click)="createDelegation()">
             Send

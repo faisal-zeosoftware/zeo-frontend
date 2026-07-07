@@ -7,7 +7,7 @@
 
       <div class="row">
           <div class="col-md-4">
-              <h1>Request Type Master</h1>
+              <h1>Request Type</h1>
           </div>
 
           <div class="col-md-3">
@@ -219,7 +219,7 @@
      
 </div>
 
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="custom-sel">
                     <label>Select Branches</label>
                      <div class="form-control-wrapper">
@@ -245,7 +245,7 @@
 
 
 
-<div class="col-md-6">
+<div class="col-md-6" *ngIf="editAsset.salary_component != null">
   <label>Salary Component</label>
   <div class="custom-sel">
     <select class="form-control" id="salary_component" name="salary_component" [(ngModel)]="editAsset.salary_component"

@@ -64,10 +64,16 @@
 <!-- Modal Popup for selected approval details -->
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
-  
       <div *ngIf="selectedApproval">
-        <h6>Late In Early Out Request Approvals</h6>
+          <div class="row mt-2">
+            <div class="col-md-6">
+              <h6>Late In Early Out Request Approvals</h6>
+            </div>
+            <div class="col-md-6 text-right">
+              <!-- Styled Square Close Button -->
+              <span class="close-btn" (click)="closemarketModal()"> × </span>
+            </div>
+          </div>
         <hr>
         <h6>Lateinearlyout request- {{ selectedApproval.lateinearlyout_request }}</h6>
         <h6>Status - {{ selectedApproval.status }}</h6>

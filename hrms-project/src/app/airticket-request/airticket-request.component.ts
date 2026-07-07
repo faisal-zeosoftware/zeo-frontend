@@ -16,6 +16,7 @@ import {combineLatest, Subscription } from 'rxjs';
   templateUrl: './airticket-request.component.html',
   styleUrl: './airticket-request.component.css'
 })
+
 export class AirticketRequestComponent {
 
 
@@ -550,13 +551,27 @@ onBranchChange(event: any): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
-  this.isEditModalOpen = true;
 
+  this.loadDeparmentBranch(() => {
 
-  this.mapAllocationNameToId();
+    this.loadAllocations(() => {
 
-  this.mapEmployeeNameToId()
+      this.loademployee(() => {
+
+        this.editAsset = { ...asset };
+
+        this.mapBranchesNameToId();
+        this.mapAllocationNameToId();
+        this.mapEmployeeNameToId();
+
+        this.isEditModalOpen = true;
+
+      });
+
+    });
+
+  });
+
 }
 
 closeEditModal(): void {
@@ -817,18 +832,41 @@ loademployee(callback?: Function): void {
     }
 
     
-  mapBranchesNameToId() {
-  if (!this.branches || !this.editAsset?.branch) return;
+mapBranchesNameToId() {
 
-  const Bran = this.branches.find(
+  if (!this.branches || !this.editAsset?.branch) {
+    return;
+  }
+
+  // Already an ID
+  if (typeof this.editAsset.branch === 'number') {
+    return;
+  }
+
+  // If API returns array ["ZeoDemo"]
+  if (Array.isArray(this.editAsset.branch)) {
+
+    const branch = this.branches.find(
+      (b: any) => b.branch_name === this.editAsset.branch[0]
+    );
+
+    if (branch) {
+      this.editAsset.branch = branch.id;
+    }
+
+    return;
+  }
+
+  // If API returns "ZeoDemo"
+  const branch = this.branches.find(
     (b: any) => b.branch_name === this.editAsset.branch
   );
 
-  if (Bran) {
-    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  if (branch) {
+    this.editAsset.branch = branch.id;
   }
 
-  console.log("Mapped employee_id:", this.editAsset.branch);
+  console.log(this.editAsset.branch);
 }
 
 

@@ -465,9 +465,12 @@ sendDelegationResponse(): void {
     response: this.delegationResponse
   };
 
+      this.isLoading = true;
+
   this.EmployeeService.sendDelegationResponse(apiUrl, payload)
     .subscribe({
       next: (res: any) => {
+              this.isLoading = false;
 
         console.log('Response Sent', res);
 
@@ -478,6 +481,7 @@ sendDelegationResponse(): void {
         window.location.reload();
       },
       error: (err) => {
+          this.isLoading = false;
         console.error(err);
       }
     });
@@ -491,33 +495,59 @@ sendDelegationResponseInline(apr: any): void {
     return;
   }
 
+  if (!apr.responseText || !apr.responseText.trim()) {
+    alert("Please enter a response");
+    return;
+  }
+
   const apiUrl =
-    `${this.apiUrl}/employee/api/delegations/${apr.delegation_details.id}/send_response/?schema=${selectedSchema}`;
+    `${this.apiUrl}/employee/api/request-approvals/${apr.id}/send_response/?schema=${selectedSchema}`;
 
   const payload = {
-    response: apr.responseText
+    deligate_response: apr.responseText.trim()
   };
+
+  console.log("Sending:", payload);
+
+  this.isLoading = true;
 
   this.EmployeeService.sendDelegationResponse(apiUrl, payload)
     .subscribe({
+
       next: (res: any) => {
 
-        alert('Response sent successfully');
+        this.isLoading = false;
 
         apr.delegation_details.response = apr.responseText;
+        apr.responseText = "";
 
-        apr.responseText = '';
+        alert("Response sent successfully");
+
+        this.fetchEmployees(
+          selectedSchema,
+          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+        );
 
       },
-      error: err => console.error(err)
+
+      error: err => {
+
+        this.isLoading = false;
+        console.log(err);
+
+      }
+
     });
 
 }
 
 canShowResponse(apr: any): boolean {
 
-    return apr.delegation_details &&
-           apr.delegation_details.delegate_to === this.username;
+  return !!(
+      apr.delegation_details &&
+      apr.delegation_details.is_deligate &&
+      Number(apr.delegation_details.delegate_to_id) === Number(this.userId)
+  );
 
 }
 
@@ -532,67 +562,80 @@ canShowResponse(apr: any): boolean {
     this.isDelegationModalOpen = false;
   }
 
-  createDelegation(): void {
+ createDelegation(): void {
 
-    const selectedSchema = this.authService.getSelectedSchema();
+  const selectedSchema = this.authService.getSelectedSchema();
 
-    if (!selectedSchema) {
-      return;
-    }
-
-    const apiUrl =
-      `${this.apiUrl}/employee/api/delegations/?schema=${selectedSchema}`;
-
-    const payload = {
-      start_date: this.delegationForm.start_date,
-      end_date: this.delegationForm.end_date,
-      is_active: this.delegationForm.is_active,
-      reason: this.delegationForm.reason,
-      deligator: this.userId,
-      deligate_to: this.delegationForm.deligate_to,
-      request: this.delegationForm.request,
-      created_by: this.userId
-    };
-
-    this.EmployeeService.createDelegation(apiUrl, payload)
-      .subscribe({
-        next: (res: any) => {
-
-          console.log('Delegation Created', res);
-
-          alert('Delegation created successfully');
-
-          this.closeDelegationModal();
-
-          window.location.reload();
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
+  if (!selectedSchema || !this.selectedApproval) {
+    return;
   }
 
-  openDelegationModalFromApproval(approval: any) {
+  const apiUrl =
+    `${this.apiUrl}/employee/api/request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
 
-    console.log('approval clicked', approval);
+  const payload = {
 
-    const generalRequest = this.Genreq.find(
-      (req: any) =>
-        req.document_number === approval.general_request
-    );
+    approver: this.userId,
+    deligate_to: this.delegationForm.deligate_to
 
-    console.log('matched GeneralRequest', generalRequest);
+  };
 
-    this.delegationForm = {
-      ...this.delegationForm,
-      request: generalRequest ? generalRequest.id : null,
-      deligator: this.userId
-    };
+  this.isLoading = true;
 
-    console.log('request id sending', this.delegationForm.request);
+  this.EmployeeService.createDelegation(apiUrl, payload)
+    .subscribe({
 
-    this.isDelegationModalOpen = true;
-  }
+      next: () => {
+
+        this.isLoading = false;
+
+        alert("Delegated Successfully");
+
+        window.location.reload();
+
+        this.closeDelegationModal();
+
+        this.fetchEmployees(
+          selectedSchema,
+          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+        );
+
+      },
+
+      error: err => {
+
+        this.isLoading = false;
+        console.error(err);
+
+      }
+
+    });
+
+}
+
+openDelegationModalFromApproval(approval: any) {
+
+  this.selectedApproval = approval;
+
+  const generalRequest = this.Genreq.find(
+    (req: any) => req.document_number === approval.general_request
+  );
+
+    this.selectedApproval = approval;
+
+  const approver = this.Users.find(
+    (user: any) => user.id === approval.approver
+  );
+
+  this.delegationForm = {
+    request: generalRequest ? generalRequest.id : null,
+    approver: approval.approver,
+    deligator: approver ? approver.username : '',
+    deligate_to: null
+  };
+
+  this.isDelegationModalOpen = true;
+}
 
   showDelegationDetails = false;
 

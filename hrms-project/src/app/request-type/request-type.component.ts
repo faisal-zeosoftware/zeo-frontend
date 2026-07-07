@@ -17,6 +17,7 @@ declare var $: any;
   templateUrl: './request-type.component.html',
   styleUrl: './request-type.component.css'
 })
+
 export class RequestTypeComponent    {
 
     @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
@@ -483,8 +484,9 @@ openEditModal(asset: any): void {
   // Convert branch names to IDs if needed
   this.mapBranchesNameToId();
 
-  // Convert salary component name to ID
-  this.mapSalaryComNameToId();
+    if (this.editAsset.salary_component) {
+    this.mapSalaryComNameToId();
+  }
 
   this.isEditModalOpen = true;
 }

@@ -9,6 +9,7 @@ import { SessionService } from '../login/session.service';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 import {combineLatest, Subscription } from 'rxjs';
+import { CountryService } from '../country.service';
 
 @Component({
   selector: 'app-attendance-policy',
@@ -96,6 +97,7 @@ export class AttendancePolicyComponent {
       
   private DesignationService: DesignationService,
   private sessionService: SessionService,
+    private CountryService: CountryService
   
       
   
@@ -751,8 +753,148 @@ if (this.branches.length === 1) {
 //   console.log("Mapped employee_id:", this.editAsset.branch_id);
 // }
 
+  iscreateLoanApp: boolean = false;
   
+    openPopus(): void {
+    this.iscreateLoanApp = true;
+
+
+  }
+
+  closeapplicationModal(): void {
+    this.iscreateLoanApp = false;
+
+  }
+
+    openEditPopuss(categoryId: number): void {
+
+  }
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelected: boolean = false;
+
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
+  }
+
+
   
+toggleSelectAllEmployees(): void {
+
+  this.allSelected = !this.allSelected;
+
+  this.policies.forEach((policy: any) => {
+    policy.selected = this.allSelected;
+  });
+
+}
+
+deleteSelectedAttendanceRoundoff(): void {
+
+  const selectedPolicyIds = this.policies
+    .filter((policy: any) => policy.selected)
+    .map((policy: any) => policy.id);
+
+  if (selectedPolicyIds.length === 0) {
+    alert('No Attendance Round Off policy selected for deletion.');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete the selected Attendance Round Off policy?')) {
+
+    let total = selectedPolicyIds.length;
+    let completed = 0;
+
+    selectedPolicyIds.forEach((id: number) => {
+
+      this.CountryService.deleteAttendanceRoundoff(id).subscribe({
+
+        next: () => {
+
+          // Remove from table
+          this.policies = this.policies.filter((policy: any) => policy.id !== id);
+
+          completed++;
+
+          if (completed === total) {
+            alert('Attendance Round Off policy deleted successfully.');
+          }
+
+          window.location.reload();
+
+        },
+
+        error: (error) => {
+          console.error('Error deleting Attendance Round Off:', error);
+          alert('Error deleting Attendance Round Off.');
+        }
+
+      });
+
+    });
+
+  }
+
+}
+
   
+
+isEditModalOpen = false;
+editAsset: any = {};
+
+openEditModal(policy: any): void {
+  this.editAsset = { ...policy };
+  this.isEditModalOpen = true;
+}
+
+  closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.editAsset = {};
+  }
+
+
+
+
+
+updateAttendanceroundoff(): void {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema || !this.editAsset.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  this.CountryService.updateAttendanceRoundoff(this.editAsset.id, this.editAsset).subscribe(
+    (response) => {
+      alert('Attendance Round Off updated successfully!');
+      this.closeEditModal();
+      window.location.reload();// reload updated list
+    },
+(error) => {
+  console.error('Error updating Attendance Round Off:', error);
+
+  let errorMsg = 'Update failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
+  );
+}
+
 
 }

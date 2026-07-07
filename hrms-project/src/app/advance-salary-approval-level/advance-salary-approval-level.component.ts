@@ -410,31 +410,26 @@ CreateLoanApproverLevel(): void {
   }
 }
 
-
 mapBranchesNameToId() {
   if (!this.Branches || !this.editAsset?.branch) return;
 
-  // Case A: backend returns single ID
-  if (typeof this.editAsset.branch === 'number') {
+  // Always convert to array
+  if (!Array.isArray(this.editAsset.branch)) {
     this.editAsset.branch = [this.editAsset.branch];
-    return;
   }
 
-  // Case B: backend returns single NAME
-  if (typeof this.editAsset.branch === 'string') {
-    const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-    this.editAsset.branch = found ? [found.id] : [];
-    return;
-  }
+  this.editAsset.branch = this.editAsset.branch.map((b: any) => {
 
-  // Case C: backend returns an array of names
-  if (Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = this.Branches
-      .filter(b => this.editAsset.branch.includes(b.branch_name))
-      .map(b => b.id);
-  }
+    // already ID → keep
+    if (typeof b === 'number') return b;
 
-  console.log("Mapped branch IDs:", this.editAsset.branch);
+    // name → convert to ID
+    const found = this.Branches.find(x => x.branch_name === b);
+    return found ? found.id : null;
+
+  }).filter((id: any) => id !== null);
+
+  console.log('Mapped Branch IDs:', this.editAsset.branch);
 }
 
 
@@ -539,6 +534,13 @@ openEditModal(asset: any): void {
     else if (typeof lvl.approver === 'string' && !isNaN(lvl.approver)) {
       lvl.approver = Number(lvl.approver);
     }
+
+      // ✅ Load Branches → THEN map
+  this.loadDeparmentBranch(() => {
+    this.mapBranchesNameToId();
+
+    console.log('FINAL BRANCH VALUE:', this.editAsset.branch);
+  });
 
   });
 

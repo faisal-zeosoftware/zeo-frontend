@@ -2,30 +2,37 @@
     <div class="comapny_section" *ngIf="employee">
         <div class="header_section">
 
-            <div class="row">
-                <div class="col-md-7">
-                    <h1> Employee Details </h1>
-                </div>
-                <div class="col-md-5">
-                    <!-- <div class="button-group pull-right" *ngIf="!hideButton">
+<div class="row">
+    <div class="col-md-7">
+        <h1>Employee Details</h1>
+    </div>
 
-                        <button type="button" class="btn-Edit btn-info btn" (click)="openEditEmpPopuss(employee.id)">
-                            <span class="header-btn-icon">
-                                <mat-icon>draw
-                                </mat-icon></span> Edit</button>
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="onDeleteEmployee(employee.id)">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                                </mat-icon></span> Delete</button>
-                    </div> -->
-        <button type="button" class="btn-Edit btn-success btn pull-right" (click)="openEmployeeFullForm()">
-        <span class="header-btn-icon">
-            <mat-icon>person_add</mat-icon>
-        </span> Add Employee Personal Details
-    </button>
-                </div>
+    <div class="col-md-5">
+        <div class="d-flex justify-content-end align-items-center gap-2" *ngIf="!hideButton">
 
-            </div>
+            <button
+                type="button"
+                class="btn btn-info btn-Edit"
+                (click)="openEditEmpPopuss(employee.id)">
+                <span class="header-btn-icon">
+                    <mat-icon>draw</mat-icon>
+                </span>
+                Edit
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-success btn-Edit"
+                (click)="openEmployeeFullForm()">
+                <span class="header-btn-icon">
+                    <mat-icon>person_add</mat-icon>
+                </span>
+                Add Employee Personal Details
+            </button>
+
+        </div>
+    </div>
+</div>
 
 
 
