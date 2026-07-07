@@ -364,15 +364,6 @@ const payload = {
   shift_type: this.shift_type || null,
   created_by: this.created_by,
 
-  rotation_cycle_weeks: this.rotation_cycle_weeks
-    ? Number(this.rotation_cycle_weeks)
-    : null,
-
-  week1_pattern: this.week1_pattern || null,
-  week2_pattern: this.week2_pattern || null,
-  week3_pattern: this.week3_pattern || null,
-  week4_pattern: this.week4_pattern || null,
-
   branches: this.selectedBranches,
   departments: this.selectedDepartments,
   categories: this.selectedCategories,

@@ -71,6 +71,10 @@ ShiftsPattern: any[] = [];
   // Weekdays tracking map helper
   readonly weekDayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+  dateOptions: any[] = [];
+
+  
+
 
 
 
@@ -107,6 +111,9 @@ ShiftsPattern: any[] = [];
 ngOnInit(): void {
 
 
+
+
+
    // combineLatest waits for both Schema and Branches to have a value
    this.dataSubscription = combineLatest([
     this.employeeService.selectedSchema$,
@@ -125,6 +132,15 @@ ngOnInit(): void {
     this.loadShifts();
 
   });
+
+
+  this.dateOptions = [];
+
+  for (let i = 1; i <= 31; i++) {
+    this.dateOptions.push(i);
+  }
+
+  this.dateOptions.push('last_day');
   
   // Initialize defaults
   this.onChangesEveryOrTypeChange();
@@ -829,27 +845,26 @@ addMonthlyRule(monthIndex:number){
 }
 
 
-updateNextRule(monthIndex:number,ruleIndex:number){
+updateNextRule(monthIndex: number, ruleIndex: number) {
 
-  const rules=this.months[monthIndex].rules;
+  const rules = this.months[monthIndex].rules;
 
-  if(ruleIndex>=rules.length-1){
-
-      return;
-
+  if (ruleIndex >= rules.length - 1) {
+    return;
   }
 
-  const current=rules[ruleIndex];
+  const current = rules[ruleIndex];
+  const next = rules[ruleIndex + 1];
 
-  const next=rules[ruleIndex+1];
+  if (current.to !== 'last_day') {
 
-  if(current.to!='last_day'){
-
-      next.from=Number(current.to)+1;
+    next.from = Number(current.to) + 1;
 
   }
 
 }
+
+
 // Monthly Helper: Remove date-range split criteria
 removeMonthlyRule(monthIndex: number, ruleIndex: number): void {
   if (this.months[monthIndex].rules.length > 1) {

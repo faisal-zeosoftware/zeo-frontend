@@ -153,13 +153,44 @@
                                     <div class="monthly-rules-stack">
                                         <div *ngFor="let rule of month.rules; let rIdx = index" class="monthly-rule-row align-items-center mb-2">
                                             <div class="range-inputs-group">
+                                                
                                                 <div class="custom-input-group">
                                                     <span class="group-addon-label">From</span>
-                                                    <input type="text" class="form-control inline-clean-input" [(ngModel)]="rule.from" placeholder="e.g. 1" name="m-{{mIdx}}-f-{{rIdx}}">
+                                                    <!-- <input type="text" class="form-control inline-clean-input" [(ngModel)]="rule.from" placeholder="e.g. 1" name="m-{{mIdx}}-f-{{rIdx}}"> -->
+                                                    <select
+                                                    class="form-control custom-select  from-disabled mt-0 mb-0"
+                                                    [(ngModel)]="rule.from"
+                                                    name="m-{{mIdx}}-f-{{rIdx}}" disabled>
+                                                    
+                                                        <option
+                                                            *ngFor="let day of dateOptions"
+                                                            [ngValue]="day">
+                                                    
+                                                            {{ day === 'last_day' ? 'Last Day' : day }}
+                                                    
+                                                        </option>
+                                                    
+                                                    </select>
                                                 </div>
                                                 <div class="custom-input-group">
                                                     <span class="group-addon-label">To</span>
-                                                    <input type="text" class="form-control inline-clean-input" [(ngModel)]="rule.to" (ngModelChange)="updateNextRule(mIdx,rIdx)" placeholder="e.g. 15" name="m-{{mIdx}}-t-{{rIdx}}">
+                                                    <!-- <input type="text" class="form-control inline-clean-input" [(ngModel)]="rule.to" (ngModelChange)="updateNextRule(mIdx,rIdx)" placeholder="e.g. 15" name="m-{{mIdx}}-t-{{rIdx}}"> -->
+                                                    <select
+                                                    class="form-control mt-0 mb-0 "
+                                                    [(ngModel)]="rule.to"
+                                                    (ngModelChange)="updateNextRule(mIdx,rIdx)"
+                                                    name="m-{{mIdx}}-t-{{rIdx}}">
+                                                    
+                                                        <option
+                                                            *ngFor="let day of dateOptions"
+                                                            [ngValue]="day">
+                                                    
+                                                            {{ day === 'last_day' ? 'Last Day' : day }}
+                                                    
+                                                        </option>
+                                                    
+                                                    </select>
+                                               
                                                 </div>
                                             </div>
                                             <div class="shift-selection-group">
