@@ -16,6 +16,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
   templateUrl: './loan-approvel-level.component.html',
   styleUrl: './loan-approvel-level.component.css'
 })
+
 export class LoanApprovelLevelComponent {
 
 
@@ -627,26 +628,36 @@ onCheckboxChange(employee:number) {
 isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
-openEditModal(asset: any): void {
+openEditModal(loan: any): void {
 
   this.isEditModalOpen = true;
 
-  this.loadUsers(() => {
+  // First copy the asset
+  this.editAsset = JSON.parse(JSON.stringify(loan));
 
-    this.editAsset = JSON.parse(JSON.stringify(asset)); // move inside
+  // Ensure branch is an array
+  if (!Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = this.editAsset.branch ? [this.editAsset.branch] : [];
+  }
 
-    this.mapApproverIdsForLevels(); // convert AFTER users load
-
-    if (!this.editAsset.levels || !Array.isArray(this.editAsset.levels)) {
-      this.editAsset.levels = [];
-    }
-
+  // Load loan types and map
+  this.loadLoanTypes(() => {
+    this.mapLoanTypeNameToId();
   });
 
+  // Load users and map approvers
+  this.loadUsers(() => {
+    this.mapApproverIdsForLevels();
+  });
+
+  // Load branches and map
   this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
   });
 
+  if (!this.editAsset.levels) {
+    this.editAsset.levels = [];
+  }
 }
 
 addEditLevel() {

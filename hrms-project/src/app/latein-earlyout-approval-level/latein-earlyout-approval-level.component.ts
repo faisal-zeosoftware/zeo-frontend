@@ -323,25 +323,48 @@ CreateLateInEarlyOutApproverLevel(): void {
   
   // non-ess-users usermaster services
   
-    loadUsers(): void {
-      
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.userService.getApprover(selectedSchema).subscribe(
-        (result: any) => {
-          this.Users = result;
-          console.log(' fetching Companies:');
-  
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+loadUsers(callback?: Function): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.userService.getApprover(selectedSchema).subscribe(
+      (result: any) => {
+        this.Users = result;
+        console.log('Users loaded');
+
+        if (callback) {
+          callback();
         }
-      );
-    }
-    }
+      },
+      (error) => {
+        console.error('Error fetching users:', error);
+      }
+    );
+  }
+}
+
+        mapApproverNameToId() {
+  if (!this.Users || !this.editAsset?.levels) return;
+
+  this.editAsset.levels = this.editAsset.levels.map((lvl: any) => {
+
+    // already ID → keep
+    if (typeof lvl.approver === 'number') return lvl;
+
+    // username → convert to ID
+    const found = this.Users.find(
+      (u: any) => u.username === lvl.approver
+    );
+
+    return {
+      ...lvl,
+      approver: found ? found.id : null
+    };
+  });
+
+  console.log('Mapped Approvers:', this.editAsset.levels);
+}
   
   
         
@@ -403,26 +426,29 @@ CreateLateInEarlyOutApproverLevel(): void {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
    
-openEditModal(asset: any): void {
-  this.editAsset = JSON.parse(JSON.stringify(asset));
+openEditModal(lateinearlyout: any): void {
+  this.editAsset = JSON.parse(JSON.stringify(lateinearlyout));
+
+   this.isEditModalOpen = true;
 
   // ✅ FIX branch always array
   if (typeof this.editAsset.branch === 'number') {
     this.editAsset.branch = [this.editAsset.branch];
   }
 
-  // ✅ FIX levels
+  // ✅ Load Users first → map approvers
+  this.loadUsers(() => {
+    this.mapApproverNameToId();
+  });
+
+  // ✅ Ensure levels exist
   if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
     this.editAsset.levels = [
       { level: 1, role: '', approver: null }
     ];
-  } else {
-    this.editAsset.levels = this.editAsset.levels.map((lvl: any, i: number) => ({
-      level: Number(lvl.level) || i + 1,
-      role: lvl.role || '',
-      approver: lvl.approver ? Number(lvl.approver) : null
-    }));
   }
+
+  
 
   this.isEditModalOpen = true;
 

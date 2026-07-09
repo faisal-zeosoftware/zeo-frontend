@@ -61,103 +61,110 @@
 
 
 
-
-    <div class="row ">
-      <div class="col-md-3 mt-4" *ngFor="let leavetype of LeaveTypes">
-        <div class="flip-card" [class.flipped]="leavetype.flipped">
-          <div class="flip-card-inner">
-
-
-
-            <!-- Front Side -->
-            <div class="flip-card-front">
-              <div class="leave_type_outer">
-
-                <td>
-                  <button style="height: 40px; width: 40px;" mat-fab color="primary" 
-                    *ngIf="showEditBtn" (click)="openEditLeaveTypeModal(leavetype)">
-                    <mat-icon style="color: white;">draw</mat-icon>
-                  </button>
-
-                  <mat-checkbox *ngIf="Delete" [(ngModel)]="leavetype.selected"></mat-checkbox>
-
-                </td>
-
-                <div class="leave-img-section">
-                  <div class="d-block mx-auto">
-                    <img src="assets/2144792.jpg" width="100%" class="image-fluid">
-                  </div>
-                </div>
-
-
-
-                <div class="leave-name-section mt-4">
-                  <h4>{{ leavetype.name }}</h4>
-                  <h5>{{ leavetype.code }}</h5>
-                </div>
-
-                <div class="leave_action_Sec mt-4">
-                  <div class="button-row">
-                    <!-- <button type="button" class="btn btn-primary configure-btn"
-                      (click)="openLeaveConfigurationModal(leavetype)">
-                      Configure leave type
-                    </button> -->
-                    <button type="button" class="btn btn-secondary action-btn edit-btn" (click)="toggleFlip(leavetype)">
-                      <i class="fa-solid fa-ellipsis"></i>
+    <!-- TABLE VIEW FOR LEAVE TYPES -->
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="table-container">
+          <div class="table-wrapper">
+            <table class="table table-bordered table-hover leave-types-table">
+              <thead>
+                <tr>
+                  <th class="sticky-left" style="width: 60px;">No</th>
+                  <th>Leave Type</th>
+                  <th>Leave Category</th>
+                  <th>Code</th>
+                  <th>Type</th>
+                  <th>Branch</th>
+                  <th>Unit</th>
+                  <th>Valid From</th>
+                  <th>Valid To</th>
+                  <th>Half Day</th>
+                  <th>Negative</th>
+                  <th>Enable leave Pay Rule</th>
+                  <th>Holiday</th>
+                  <th>Weekend</th>
+                  <th>Description</th>
+                  <th style="width: 80px;" *ngIf="showEditBtn || Delete">Action</th>
+                  <!-- <th class="sticky-right" style="width: 120px;">Configure</th> -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let leavetype of LeaveTypes; let i = index">
+                  <td class="sticky-left">{{ i + 1 }}</td>
+                  <td>
+                    <strong>{{ leavetype.name }}</strong>
+                  </td>
+                   <td>
+                    
+                    {{ leavetype.leave_category }}
+                  </td>
+                  <td>{{ leavetype.code }}</td>
+                  <td>
+                    <span class="badge" [class.badge-success]="leavetype.type === 'paid'" [class.badge-warning]="leavetype.type === 'unpaid'">
+                      {{ leavetype.type | titlecase }}
+                    </span>
+                  </td>
+                  <td>{{ leavetype.branch }}</td>
+                  <td>{{ leavetype.unit | titlecase }}</td>
+                  <td>{{ leavetype.valid_from | date:'mediumDate' }}</td>
+                  <td>{{ leavetype.valid_to | date:'mediumDate' }}</td>
+                                     <td>
+                    <span class="status-badge" [class.status-yes]="leavetype.allow_half_day" [class.status-no]="!leavetype.allow_half_day">
+                      {{ leavetype.allow_half_day ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                   <td>
+                    <span class="status-badge" [class.status-yes]="leavetype.negative" [class.status-no]="!leavetype.allow_half_day">
+                      {{ leavetype.negative ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="status-badge" [class.status-yes]="leavetype.enable_leave_pay_rule" [class.status-no]="!leavetype.enable_leave_pay_rule">
+                      {{ leavetype.enable_leave_pay_rule ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="status-badge" [class.status-yes]="leavetype.include_holiday" [class.status-no]="!leavetype.include_holiday">
+                      {{ leavetype.include_holiday ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                 <td>
+                    <span class="status-badge" [class.status-yes]="leavetype.include_weekend" [class.status-no]="!leavetype.include_weekend">
+                      {{ leavetype.include_weekend ? 'Yes' : 'No' }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="description-text" [title]="leavetype.description">
+                      {{ leavetype.description || 'N/A' }}
+                    </span>
+                  </td>
+                  <td *ngIf="showEditBtn || Delete">
+                    <button style="height: 32px; width: 32px;" mat-mini-fab color="primary"
+                      *ngIf="showEditBtn" (click)="openEditLeaveTypeModal(leavetype)"
+                      class="me-2">
+                      <mat-icon style="color: white; font-size: 16px;">draw</mat-icon>
                     </button>
-                    <!-- <button type="button" class="btn btn-danger action-btn delete-btn">
-                      <i class="fa fa-trash"></i>
-                    </button> -->
-
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Back Side -->
-            <div class="flip-card-back">
-              <div class="edit-content">
-
-                <div class="row">
-                  <div class="col-md-8">
-                    <h2> Leave Type {{ leavetype.name }} Details</h2>
-                    <hr>
-
-                  </div>
-
-                  <div class="col-md-3">
-                    <i class="fa-solid fa-circle-chevron-left" (click)="toggleFlip(leavetype)"></i>
-
-                  </div>
-
-                </div>
-
-
-
-
-                <div class="row">
-                  <div class="col-md-12">
-                    <h4> Code : {{leavetype.code}}</h4>
-
-                    <h4>type : {{leavetype.type}}</h4>
-
-                    <h4>unit : {{leavetype.unit}}</h4>
-                    <h4>use_common_workflow : {{leavetype.use_common_workflow}}</h4>
-                    <h4>valid_from : {{leavetype.valid_from}}</h4>
-                    <h4>valid_to : {{leavetype.valid_to}}</h4>
-                    <h4>include_weekend_and_holiday : {{leavetype.include_weekend_and_holiday}}</h4>
-                    <h4>description :{{leavetype.description}} </h4>
-
-                  </div>
-                </div>
-              </div>
-            </div>
+                    <mat-checkbox *ngIf="Delete" [(ngModel)]="leavetype.selected"></mat-checkbox>
+                  </td>
+                  <!-- <td class="sticky-right">
+                    <button type="button" class="btn btn-primary btn-sm configure-btn"
+                      (click)="openLeaveConfigurationModal(leavetype)">
+                      <i class="fa-solid fa-gear"></i> Configure
+                    </button>
+                  </td> -->
+                </tr>
+                <tr *ngIf="LeaveTypes.length === 0">
+                  <td colspan="12" class="text-center text-muted py-4">
+                    <i class="fa-solid fa-inbox fa-2x mb-2"></i><br>
+                    No Leave Types Found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-
-
     </div>
-
 
 
 
@@ -442,7 +449,6 @@
 
 
 
-
                       <div class="col-md-4">
                         <label>Department</label>
                         <div class="custom-sel">
@@ -643,7 +649,7 @@
                   <div *ngIf="!isEntitlementCreated" class="alert alert-warning mt-3">
                     ⚠️ Please create Leave Entitlement first to enable Reset Configuration
                   </div>
-                  
+
 
                   <form (ngSubmit)="registerleaveReset()" enctype="multipart/form-data"
                     [class.disabled-form]="!isEntitlementCreated">
@@ -876,14 +882,14 @@
                   </form>
                 </div>
 
-                
+
                   <div class="table-container mt-5">
 
 
 
 
 <div class="entitlement-preview mt-3">
-  
+
   <h5 style="font-size: 16px; text-transform: capitalize;">
     Entitlement Details for {{ selectedLeaveTypeForModal?.name }}
   </h5>
@@ -1002,7 +1008,7 @@
 </div>
                   </div>  
               </mat-tab>
-             
+
               <mat-tab *ngIf="showPayRuleForm" label="Leave Pay Rule">
 
 
@@ -1041,11 +1047,11 @@
                     </div>
 
                     <div class="mt-3" *ngIf="hasAddPermission">
-                      
+
                       <button class="btn btn-success me-2" (click)="submitPayRule()">
                         Save Pay Rule
                       </button>
-                      
+
                         <button
                        class="btn btn-primary"
                        (click)="updatePayRule()"
@@ -1302,7 +1308,7 @@
           <button type="button" class="btn btn-sm btn-primary me-2" (click)="editLeaveApplicable(item)">
             Edit
           </button>
-        
+
           <button type="button" class="btn btn-sm btn-danger" (click)="deleteLeaveApplicable(item.id)">
             Delete
           </button>
@@ -1319,7 +1325,6 @@
 
           </mat-step>
         </mat-horizontal-stepper>
-
 
 
 

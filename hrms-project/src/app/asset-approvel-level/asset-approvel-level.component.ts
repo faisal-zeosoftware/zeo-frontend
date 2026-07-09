@@ -627,6 +627,7 @@ loadUsers(callback?: Function): void {
   
 openEditModal(asset: any): void {
   this.editAsset = JSON.parse(JSON.stringify(asset));
+  
 
   this.isEditModalOpen = true;
 
@@ -636,6 +637,11 @@ openEditModal(asset: any): void {
       ? [this.editAsset.branch]
       : [];
   }
+
+    // Load Asset Types first
+  this.loadAssetTypes(() => {
+    this.mapLoanTypeNameToId();
+  });
 
   // ✅ Load Users first → map approvers
   this.loadUsers(() => {

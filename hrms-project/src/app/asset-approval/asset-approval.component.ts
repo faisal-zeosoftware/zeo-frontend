@@ -7,6 +7,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { UserMasterService } from '../user-master/user-master.service';
 
 @Component({
   selector: 'app-asset-approval',
@@ -47,11 +48,12 @@ export class AssetApprovalComponent {
   
     
     constructor(private authService: AuthenticationService,
-      private router: Router,
+     private router: Router,
      private EmployeeService: EmployeeService,
      private route: ActivatedRoute,
      private sessionService: SessionService,
      private leaveService: LeaveService,
+     private userService: UserMasterService,
      private DesignationService: DesignationService,
   
      ) { }
@@ -69,6 +71,12 @@ export class AssetApprovalComponent {
 
           }
         });
+
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.EmployeeService.selectedBranches$.subscribe(ids => {
+      this.loadApprovalLevelAsset();
+    });
+
   
       // this.fetchingApprovals();
           this.selectedSchema = this.sessionService.getSelectedSchema();
@@ -80,6 +88,8 @@ export class AssetApprovalComponent {
           // Perform any actions on navigation end if needed
         }
       });
+
+      this.loadUsers();
   
       const selectedSchema = this.authService.getSelectedSchema();
       const selectedSchemaId = this.authService.getSelectedSchemaId();
@@ -299,6 +309,38 @@ export class AssetApprovalComponent {
       }
     );
   }
+
+      loadUsers(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.userService.getApprover(selectedSchema).subscribe(
+        (result: any) => {
+          this.Users = result;
+        }
+      );
+    }
+  }
+
+    loadApprovalLevelAsset(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.leaveService.getAllassetRequest(selectedSchema).subscribe(
+        (result: any) => {
+          this.Assetreq = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
   
   
   
@@ -482,17 +524,17 @@ export class AssetApprovalComponent {
   
   /////////////////////////////////// Deligation Model //////////////////////////////////
   
-    delegationData: any = null;
+  delegationData: any = null;
   isDelegationModalOpen: boolean = false;
 
-    deligators: any[] = [];
+  deligators: any[] = [];
   delegateTos: any[] = [];
   requests: any[] = [];
   Assetreq: any[] = [];
 
   Users: any[] = [];
 
-    delegationForm: any = {
+  delegationForm: any = {
 
     reason: '',
     deligator: null,
@@ -521,46 +563,46 @@ selectedDelegationId: number | null = null;
     this.isResponseModalOpen = false;
   }
   
-  sendDelegationResponse(): void {
+  // sendDelegationResponse(): void {
   
-    if (!this.selectedDelegationId) {
-      return;
-    }
+  //   if (!this.selectedDelegationId) {
+  //     return;
+  //   }
   
-    const selectedSchema = this.authService.getSelectedSchema();
+  //   const selectedSchema = this.authService.getSelectedSchema();
   
-    if (!selectedSchema) {
-      return;
-    }
+  //   if (!selectedSchema) {
+  //     return;
+  //   }
   
-    const apiUrl =
-      `${this.apiUrl}/employee/api/delegations/${this.selectedDelegationId}/send_response/?schema=${selectedSchema}`;
+  //   const apiUrl =
+  //     `${this.apiUrl}/employee/api/delegations/${this.selectedDelegationId}/send_response/?schema=${selectedSchema}`;
   
-    const payload = {
-      response: this.delegationResponse
-    };
+  //   const payload = {
+  //     response: this.delegationResponse
+  //   };
   
-        this.isLoading = true;
+  //       this.isLoading = true;
   
-    this.EmployeeService.sendDelegationResponse(apiUrl, payload)
-      .subscribe({
-        next: (res: any) => {
-                this.isLoading = false;
+  //   this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+  //     .subscribe({
+  //       next: (res: any) => {
+  //               this.isLoading = false;
   
-          console.log('Response Sent', res);
+  //         console.log('Response Sent', res);
   
-          alert('Response sent successfully');
+  //         alert('Response sent successfully');
   
-          this.closeResponseModal();
+  //         this.closeResponseModal();
   
-          window.location.reload();
-        },
-        error: (err) => {
-            this.isLoading = false;
-          console.error(err);
-        }
-      });
-  }
+  //         window.location.reload();
+  //       },
+  //       error: (err) => {
+  //           this.isLoading = false;
+  //         console.error(err);
+  //       }
+  //     });
+  // }
   
   sendDelegationResponseInline(apr: any): void {
   
@@ -576,7 +618,7 @@ selectedDelegationId: number | null = null;
     }
   
     const apiUrl =
-      `${this.apiUrl}/employee/api/request-approvals/${apr.id}/send_response/?schema=${selectedSchema}`;
+      `${this.apiUrl}/organisation/api/asset-request-approvals/${apr.id}/send_response/?schema=${selectedSchema}`;
   
     const payload = {
       deligate_response: apr.responseText.trim()
@@ -646,7 +688,7 @@ selectedDelegationId: number | null = null;
     }
   
     const apiUrl =
-      `${this.apiUrl}/employee/api/request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
+      `${this.apiUrl}/organisation/api/asset-request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
   
     const payload = {
   
@@ -692,8 +734,8 @@ selectedDelegationId: number | null = null;
   
     this.selectedApproval = approval;
   
-    const generalRequest = this.Assetreq.find(
-      (req: any) => req.document_number === approval.general_request
+    const assetRequest = this.Assetreq.find(
+      (req: any) => req.document_number === approval.asset_request
     );
   
       this.selectedApproval = approval;
@@ -702,12 +744,11 @@ selectedDelegationId: number | null = null;
       (user: any) => user.id === approval.approver
     );
   
-    this.delegationForm = {
-      request: generalRequest ? generalRequest.id : null,
-      approver: approval.approver,
-      deligator: approver ? approver.username : '',
-      deligate_to: null
-    };
+  this.delegationForm = {
+    request: assetRequest ? assetRequest.id : null,
+    deligator: approval.approver,   // directly use username
+    deligate_to: null
+  };
   
     this.isDelegationModalOpen = true;
   }

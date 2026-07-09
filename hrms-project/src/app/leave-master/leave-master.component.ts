@@ -98,6 +98,10 @@ leaveApplicableTopSection!: ElementRef;
 
   enable_leave_pay_rule: boolean = false;
 
+  include_holiday: boolean = false;
+  include_weekend: boolean = false;
+
+
   leavePayRules: any[] = [];
 
   
@@ -143,6 +147,7 @@ leaveApplicableTopSection!: ElementRef;
 
 
   name: any = '';
+  leave_category: any = '';
   code: any = '';
   type: any = '';
   unit: any = '';
@@ -160,7 +165,7 @@ leaveApplicableTopSection!: ElementRef;
   allow_half_day: boolean = false;
   include_weekend_and_holiday: boolean = false;
   use_common_workflow: boolean = false;
-      include_dashboard: boolean = false;
+  include_dashboard: boolean = false;
 
 
 
@@ -531,6 +536,7 @@ updateLeavetype(): void {
   
     const formData = new FormData();
     formData.append('name', this.name);
+    formData.append('leave_category', this.leave_category);
     formData.append('code', this.code);
     formData.append('type', this.type);
     formData.append('unit', this.unit);
@@ -540,8 +546,8 @@ updateLeavetype(): void {
     formData.append('created_by', this.created_by);
     formData.append('negative', this.negative.toString());
     formData.append('allow_half_day', this.allow_half_day.toString());
-    formData.append('include_weekend_and_holiday', this.include_weekend_and_holiday.toString());
-    formData.append('use_common_workflow', this.use_common_workflow.toString());
+    formData.append('include_holiday', this.include_holiday.toString());
+    formData.append('include_weekend', this.include_weekend.toString());
     formData.append('include_dashboard', this.include_dashboard.toString());
     formData.append('enable_leave_pay_rule', this.enable_leave_pay_rule.toString());
   

@@ -4582,6 +4582,19 @@ registerAirticketApproverLevel(data: any): Observable<any> {
     
     return this.http.get(url);
   }
+
+    getApprovalslistDocumentNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/employee/api/Doc-request-approval/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   
 
     

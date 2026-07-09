@@ -635,33 +635,33 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+
   this.editAsset = JSON.parse(JSON.stringify(asset));
   this.isEditModalOpen = true;
 
-  // ✅ Compensatory fix
   this.editAsset.is_compensatory = !!this.editAsset.is_compensatory;
 
-  // ✅ Levels fix
-  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
-    this.editAsset.levels = [
-      { level: 1, role: '', approver: null }
-    ];
-  }
-
-  this.editAsset.levels.forEach((lvl: any, index: number) => {
-    lvl.level = index + 1;
-    lvl.role = lvl.role || '';
+  // Load leave types first
+  this.LoadLeavetype(() => {
+    this.mapLeaveTypeNameToId();
   });
 
-  // ✅ Load users → map approver
+  // Load users
   this.loadUsers(() => {
     this.mapApproverNameToId();
   });
 
-  // ✅ Load branches → normalize
+  // Load branches
   this.loadDeparmentBranch(() => {
     this.normalizeBranch();
   });
+
+this.editAsset.levels = this.editAsset.levels.map((lvl: any, index: number) => ({
+  level: index + 1,
+  role: lvl.role || lvl.designation || '',
+  approver: lvl.approver
+}));
+
 }
 
 addEditLevel() {

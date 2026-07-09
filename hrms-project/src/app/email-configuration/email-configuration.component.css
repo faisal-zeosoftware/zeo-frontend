@@ -181,6 +181,10 @@ margin-right: 10px;
   font-size: inherit !important; /* Ensure that the font size changes according to Summernote settings */
 }
 
+  table thead th{
+    color: white;
+  }
+
 
 /* Phones */
 @media (max-width: 728px) {

@@ -388,7 +388,7 @@ if (this.userId !== null) {
           console.log('Registration successful', response);
   
   
-          alert('Leave Approval Level has been Created');
+          alert('Leave Balance has been Created');
   
           window.location.reload();
         },  

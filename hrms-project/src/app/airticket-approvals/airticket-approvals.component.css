@@ -43,7 +43,7 @@
     margin-top: 10px;
 }
 
-.close-btn {
+ .close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -58,7 +58,60 @@
   border: 1px solid #dee2e6;
 }
 
+.delegation-card {
+  border: 1px solid #dee2e6;
+  border-left: 4px solid #007bff;
+  border-radius: 6px;
+  padding: 15px;
+  background: #f8f9fa;
+}
 
+.delegation-card h6 {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.delegation-card strong {
+  display: block;
+  color: #495057;
+  font-size: 13px;
+}
+
+.delegation-card p {
+  margin-bottom: 12px;
+  color: #212529;
+  font-size: 14px;
+}
+
+
+.delegation-header {
+  cursor: pointer;
+  background: #f1f5f9;
+  border-left: 4px solid #007bff;
+  padding: 12px 15px;
+  border-radius: 6px;
+}
+
+.delegation-header h6 {
+  margin: 0;
+  color: #007bff;
+  font-weight: 600;
+}
+
+.delegation-header:hover {
+  background: #e9ecef;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-buttons .btn {
+  width: 110%;
+  min-width: 120px;
+}
   
 table thead th {
     color: #ffffff;
@@ -77,7 +130,6 @@ table thead th {
     padding: 15px;
   }
   
-
 
 
   p{
@@ -285,19 +337,8 @@ input:focus-visible {
   
 
 
-  .btn-export{
-
-    background: whitesmoke;
-    color: black;
-    padding: 7px 20px;
-    
   
-  }
-  
-
-
-  
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 640px) {
     table thead {
       display: none;
     }
@@ -330,7 +371,8 @@ input:focus-visible {
       padding: 15px;
       margin-inline-end: 10px;
     }
-      .modal-content[_ngcontent-ng-c2143647340]{
+
+    .modal-content[_ngcontent-ng-c2143647340]{
           margin-top: 200px !important;
     }
   }

@@ -46,12 +46,76 @@
                         <h4>Reason </h4>
                         <h5>{{apr.note}}</h5>
                       </div>
-                    <div class="col-md-2" *ngIf="hasAddPermission">
-                        <button type="button" class="btn pull-right" (click)="selectedaprovaldetalis(apr.id)">View</button>
-                    </div>
+            <div class="col-md-2">
+              <div class="action-buttons">
+                <button
+                  style="color: white"
+                  class="btn btn-info"
+                  (click)="selectedaprovaldetalis(apr.id)"
+                >
+                  View
+                </button>
+
+                <button
+                  *ngIf="apr.is_deligate"
+                  class="btn btn-secondary"
+                  (click)="apr.showDelegation = !apr.showDelegation"
+                >
+                  {{
+                    apr.showDelegation ? "Hide Details" : "Delegation Details"
+                  }}
+                </button>
+              </div>
+            </div>
                   </div>
               
 
+                          <!-- Delegation Body -->
+          <div
+            *ngIf="apr.delegation_details && apr.showDelegation"
+            class="delegation-card"
+          >
+            <div class="row">
+
+              <div class="col-md-6">
+                <strong>Request</strong>
+                <p>{{ apr.lateinearlyout_request }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Deligator</strong>
+                <p>{{ apr.approver }}</p>
+              </div>
+
+              <div class="col-md-6">
+                <strong>Delegate To</strong>
+                <p>{{ apr.delegation_details.delegate_to }}</p>
+              </div>
+
+               <div class="col-md-6">
+                <strong>Response</strong>
+                <p>{{ apr.delegation_details.response }}</p>
+              </div>
+
+              <div class="col-md-12 mt-3" *ngIf="canShowResponse(apr)">
+                <strong>Send Deligation Response</strong>
+
+                <textarea
+                  class="form-control"
+                  rows="4"
+                  [(ngModel)]="apr.responseText"
+                  placeholder="Enter response..."
+                ></textarea>
+
+                <button
+                  class="btn btn-primary mt-2"
+                  (click)="sendDelegationResponseInline(apr)"
+                >
+                  Send Response
+                </button>
+              </div>
+            </div>
+          </div>
         
             
         
@@ -84,32 +148,40 @@
           [(ngModel)]="note"
           placeholder="Add a Comment here..."
           [ngModelOptions]="{ standalone: true }"
-        >  
-      </textarea>
+        > </textarea>
+
+                   <div class="row mt-2">
+            <div class="col-md-3">
+              <button
+                class="btn btn-primary"
+                (click)="openDelegationModalFromApproval(selectedApproval)"
+              >
+                Delegate
+              </button>
+            </div>
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+              <button
+                type="button"
+                class="btn btn btn-danger btn-full"
+                (click)="rejectApproval(selectedApproval.id)"
+              >
+                Reject
+              </button>
+            </div>
+            <div class="col-md-3">
+              <button
+                type="button"
+                class="btn btn-success btn-full"
+                (click)="approveApproval(selectedApproval.id)"
+              >
+                Approve
+              </button>
+            </div>
+          </div>
 
    
   
-        <div class="row mt-2">
-          <div class="col-md-6"></div>
-          <div class="col-md-3">
-            <button
-              type="button"
-              class="btn btn btn-danger btn-full"
-              (click)="showRejectionReason = true"
-            >
-              Reject
-            </button>
-          </div>
-          <div class="col-md-3">
-            <button
-              type="button"
-              class="btn btn-success btn-full"
-              (click)="approveApproval(selectedApproval.id)"
-            >
-              Approve
-            </button>
-          </div>
-        </div>
              <!-- Additional input for rejection reason -->
         <div *ngIf="showRejectionReason">
           <textarea
@@ -133,10 +205,97 @@
       </div>
     </div>
   </div>
+
+            <!-- <div *ngIf="isResponseModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="text-right">
+          <span class="close-btn" (click)="closeResponseModal()">×</span>
+        </div>
+
+        <h5>Send Delegation Response</h5>
+        <hr />
+
+        <div class="form-group">
+          <label>Response</label>
+
+          <textarea
+            class="form-control"
+            rows="4"
+            [(ngModel)]="delegationResponse"
+            placeholder="Enter response..."
+          ></textarea>
+        </div>
+
+        <button class="btn btn-primary mt-2" (click)="sendDelegationResponse()">
+          Send Response
+        </button>
+      </div>
+    </div> -->
+
+                 <div *ngIf="isDelegationModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="text-right">
+          <span class="close-btn" (click)="closeDelegationModal()"> × </span>
+        </div>
+
+        <h5>Send Delegation</h5>
+        <hr />
+        <div class="row">
+
+          <div class="col-md-4">
+            <label>Request</label>
+
+            <select
+              class="form-control"
+              [(ngModel)]="delegationForm.request"
+              disabled
+            >
+              <option *ngFor="let req of LinEoutreq" [value]="req.id">
+                {{ req.document_number }} - {{ req.request_type }}
+              </option>
+            </select>
+          </div>
+
+<div class="col-md-4">
+  <label>Delegator</label>
+
+  <input
+    type="text"
+    class="form-control"
+    [value]="delegationForm.deligator"
+    readonly
+  />
+</div>
+
+          <div class="col-md-4">
+            <label>Delegate To</label>
+
+            <select
+              class="form-control"
+              [(ngModel)]="delegationForm.deligate_to"
+            >
+              <option *ngFor="let user of Users" [ngValue]="user.id">
+                {{ user.username }}
+              </option>
+            </select>
+          </div>
+
+                    <button class="btn btn-success" (click)="createDelegation()">
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
   
   
   
 
 </div>
-</div>
+
+
+      <!-- Loader -->
+    <div class="loader-container" [class.show]="isLoading">
+      <div class="loader"></div>
+    </div>
+  </div>
 

@@ -1,9 +1,8 @@
-
 .comapny_section{
 
   margin-top: 100px;
   margin-left: 50px;
-  
+
 }
 
 .header_section{
@@ -28,7 +27,7 @@
    /* padding: 5px 15px; */
    /* border: none; */
 margin-right: 10px;     
- 
+
 }
 
 .btn-Edit{
@@ -430,7 +429,7 @@ label{
   font-size: 14px;
   font-weight: 400;
   text-align: left;
-  
+
 }
 
 .edit-fab-button {
@@ -563,3 +562,196 @@ label{
     opacity: 0.5;
     pointer-events: none;
   }
+
+
+/* ============================================
+   NEW TABLE VIEW STYLES FOR LEAVE TYPES
+   ============================================ */
+
+.leave-types-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.leave-types-table thead th {
+  background: linear-gradient(135deg, #004976 0%, #0066a6 100%);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px;
+  border: none;
+  border-bottom: 2px solid #003a5c;
+  white-space: nowrap;
+}
+
+.leave-types-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.leave-types-table tbody tr:hover {
+  background-color: #f0f7ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 73, 118, 0.1);
+}
+
+.leave-types-table tbody td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #444;
+  border-bottom: 1px solid #e8eef3;
+  vertical-align: middle;
+}
+
+.leave-types-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status Badges */
+.badge-success {
+  background: linear-gradient(135deg, #28a745, #34ce57);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, #ffc107, #ffdb4d);
+  color: #333;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-yes {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-no {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Description text truncation */
+.description-text {
+  max-width: 200px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Configure button in table */
+.leave-types-table .configure-btn {
+  background: linear-gradient(135deg, #004976, #0066a6);
+  border: none;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  width: auto;
+  flex: none;
+}
+
+.leave-types-table .configure-btn:hover {
+  background: linear-gradient(135deg, #003a5c, #004976);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 73, 118, 0.3);
+}
+
+/* Sticky columns for table view */
+.leave-types-table .sticky-left {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 2;
+  border-right: 2px solid #e8eef3;
+}
+
+.leave-types-table .sticky-right {
+  position: sticky;
+  right: 0;
+  background: white;
+  z-index: 2;
+  border-left: 2px solid #e8eef3;
+}
+
+.leave-types-table thead .sticky-left,
+.leave-types-table thead .sticky-right {
+  background: linear-gradient(135deg, #004976 0%, #0066a6 100%);
+}
+
+/* Empty state */
+.leave-types-table .text-center.text-muted {
+  padding: 40px;
+  color: #888;
+}
+
+/* Table container */
+.table-container {
+  background: white;
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Responsive table view */
+@media only screen and (max-width: 1200px) {
+  .leave-types-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .leave-types-table thead,
+  .leave-types-table tbody {
+    display: table;
+    width: 100%;
+    min-width: 900px;
+  }
+}
+
+/* Close button styling */
+.close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #dc3545;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}

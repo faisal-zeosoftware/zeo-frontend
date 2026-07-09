@@ -326,6 +326,7 @@ export class UesrEmployeeComponent implements OnInit {
           next: (response) => {
             console.log('Response:', response);
             window.alert('Connect User to employee Updated successfully!');
+            window.location.reload();
           },
           error: (error) => {
             console.error('Error:', error);

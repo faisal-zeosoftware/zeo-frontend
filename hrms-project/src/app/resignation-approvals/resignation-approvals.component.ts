@@ -7,6 +7,7 @@ import { LeaveService } from '../leave-master/leave.service';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import {combineLatest, Subscription } from 'rxjs';
+import { UserMasterService } from '../user-master/user-master.service';
 
 
 @Component({
@@ -47,11 +48,12 @@ export class ResignationApprovalsComponent {
 
   
   constructor(private authService: AuthenticationService,
-    private router: Router,
+   private router: Router,
    private EmployeeService: EmployeeService,
    private route: ActivatedRoute,
    private sessionService: SessionService,
    private leaveService: LeaveService,
+   private userService: UserMasterService,
    private DesignationService: DesignationService,
 
    ) { }
@@ -71,6 +73,12 @@ export class ResignationApprovalsComponent {
               }
             });
 
+
+                // Listen for sidebar changes so the dropdown updates instantly
+    this.EmployeeService.selectedBranches$.subscribe(ids => {
+      this.loadApprovalLevelResignation();
+    });
+
     // this.fetchingApprovals();
         this.selectedSchema = this.sessionService.getSelectedSchema();
 
@@ -81,6 +89,8 @@ export class ResignationApprovalsComponent {
         // Perform any actions on navigation end if needed
       }
     });
+
+    this.loadUsers();
 
     const selectedSchema = this.authService.getSelectedSchema();
     const selectedSchemaId = this.authService.getSelectedSchemaId();
@@ -303,6 +313,38 @@ LoadEmployee(selectedSchema: string) {
   );
 }
 
+    loadUsers(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.userService.getApprover(selectedSchema).subscribe(
+        (result: any) => {
+          this.Users = result;
+        }
+      );
+    }
+  }
+
+  loadApprovalLevelResignation(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.leaveService.getAllResignationRequest(selectedSchema).subscribe(
+        (result: any) => {
+          this.Resireq = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
 
 
 selectedApproval: any = null;
@@ -479,6 +521,247 @@ getLeaveHistory(): void {
     }
   );
 }
+
+
+
+
+  /////////////////////////////////// Deligation Model //////////////////////////////////
+  
+    delegationData: any = null;
+  isDelegationModalOpen: boolean = false;
+
+    deligators: any[] = [];
+  delegateTos: any[] = [];
+  requests: any[] = [];
+  Resireq: any[] = [];
+
+  Users: any[] = [];
+
+    delegationForm: any = {
+
+    reason: '',
+    deligator: null,
+    deligate_to: null,
+    request: null,
+    created_by: null
+  };
+
+  isResponseModalOpen = false;
+
+delegationResponse = '';
+
+selectedDelegationId: number | null = null;
+  
+    openResponseModal(delegation: any): void {
+  
+    console.log('Delegation', delegation);
+  
+    this.selectedDelegationId = delegation.id;
+    this.delegationResponse = '';
+  
+    this.isResponseModalOpen = true;
+  }
+  
+  closeResponseModal(): void {
+    this.isResponseModalOpen = false;
+  }
+  
+  // sendDelegationResponse(): void {
+  
+  //   if (!this.selectedDelegationId) {
+  //     return;
+  //   }
+  
+  //   const selectedSchema = this.authService.getSelectedSchema();
+  
+  //   if (!selectedSchema) {
+  //     return;
+  //   }
+  
+  //   const apiUrl =
+  //     `${this.apiUrl}/employee/api/delegations/${this.selectedDelegationId}/send_response/?schema=${selectedSchema}`;
+  
+  //   const payload = {
+  //     response: this.delegationResponse
+  //   };
+  
+  //       this.isLoading = true;
+  
+  //   this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+  //     .subscribe({
+  //       next: (res: any) => {
+  //               this.isLoading = false;
+  
+  //         console.log('Response Sent', res);
+  
+  //         alert('Response sent successfully');
+  
+  //         this.closeResponseModal();
+  
+  //         window.location.reload();
+  //       },
+  //       error: (err) => {
+  //           this.isLoading = false;
+  //         console.error(err);
+  //       }
+  //     });
+  // }
+  
+  sendDelegationResponseInline(apr: any): void {
+  
+    const selectedSchema = this.authService.getSelectedSchema();
+  
+    if (!selectedSchema) {
+      return;
+    }
+  
+    if (!apr.responseText || !apr.responseText.trim()) {
+      alert("Please enter a response");
+      return;
+    }
+  
+    const apiUrl =
+      `${this.apiUrl}/employee/api/resign-approval/${apr.id}/send_response/?schema=${selectedSchema}`;
+  
+    const payload = {
+      deligate_response: apr.responseText.trim()
+    };
+  
+    console.log("Sending:", payload);
+  
+    this.isLoading = true;
+  
+    this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+      .subscribe({
+  
+        next: (res: any) => {
+  
+          this.isLoading = false;
+  
+          apr.delegation_details.response = apr.responseText;
+          apr.responseText = "";
+  
+          alert("Response sent successfully");
+  
+          this.fetchEmployees(
+            selectedSchema,
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+          );
+  
+        },
+  
+        error: err => {
+  
+          this.isLoading = false;
+          console.log(err);
+  
+        }
+  
+      });
+  
+  }
+  
+  canShowResponse(apr: any): boolean {
+  
+    return !!(
+        apr.delegation_details &&
+        apr.delegation_details.is_deligate &&
+        Number(apr.delegation_details.delegate_to_id) === Number(this.userId)
+    );
+  
+  }
+  
+  
+    // Delegate Model
+  
+    openDelegationModal() {
+      this.isDelegationModalOpen = true;
+    }
+  
+    closeDelegationModal() {
+      this.isDelegationModalOpen = false;
+    }
+  
+   createDelegation(): void {
+  
+    const selectedSchema = this.authService.getSelectedSchema();
+  
+    if (!selectedSchema || !this.selectedApproval) {
+      return;
+    }
+  
+    const apiUrl =
+      `${this.apiUrl}/employee/api/resign-approval/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
+  
+    const payload = {
+  
+      approver: this.userId,
+      deligate_to: this.delegationForm.deligate_to
+  
+    };
+  
+    this.isLoading = true;
+  
+    this.EmployeeService.createDelegation(apiUrl, payload)
+      .subscribe({
+  
+        next: () => {
+  
+          this.isLoading = false;
+  
+          alert("Delegated Successfully");
+  
+          window.location.reload();
+  
+          this.closeDelegationModal();
+  
+          this.fetchEmployees(
+            selectedSchema,
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+          );
+  
+        },
+  
+        error: err => {
+  
+          this.isLoading = false;
+          console.error(err);
+  
+        }
+  
+      });
+  
+  }
+  
+  openDelegationModalFromApproval(approval: any) {
+  
+    this.selectedApproval = approval;
+  
+    const resignationRequest = this.Resireq.find(
+      (req: any) => req.document_number === approval.resignation_request
+    );
+  
+      this.selectedApproval = approval;
+  
+    const approver = this.Users.find(
+      (user: any) => user.id === approval.approver
+    );
+  
+
+      this.delegationForm = {
+    request: resignationRequest ? resignationRequest.id : null,
+    deligator: approval.approver,   // directly use username
+    deligate_to: null
+  };
+  
+    this.isDelegationModalOpen = true;
+  }
+  
+    showDelegationDetails = false;
+  
+    toggleDelegationDetails() {
+      this.showDelegationDetails = !this.showDelegationDetails;
+    }
 
 
 }

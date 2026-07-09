@@ -1778,6 +1778,70 @@ getApprovalslistDocrequest(selectedSchema: string, userId: number): Observable<a
   return this.http.get(apiUrl);
 }
 
+  getAlldocumentRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/Doc-request/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+    getAllLeaveRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/emp-leave-request/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+  getAllLinEoutRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/lateinearly-request/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+  getAllLoanRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/loan-application/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+    getAllassetRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/organisation/api/asset-Request/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+  getAllairRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/airticket-request/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+  getAllAdvSalRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-request/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
+  getAllResignationRequest(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/employee/api/employee-resignation/?schema=${selectedSchema}`;
+
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+  }
+
 getApprovalDetailsDocRequest(apiUrl: string): Observable<any> {
   return this.http.get(apiUrl);
 }
