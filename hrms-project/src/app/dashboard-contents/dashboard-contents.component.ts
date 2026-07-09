@@ -187,7 +187,7 @@ EssUser(): void {
 
     // ⏳ Simulate loading time before navigation
     setTimeout(() => {
-      const url = '/main-dashboard';
+      const url = '/employee-dashboard';
       this.router.navigate([url]);
     }, 2000); // Show loader for 2 seconds
   } else {

@@ -716,36 +716,47 @@ loadExpiredDoc(): void {
    
 
 
-fetchDesignations(selectedSchema: string) {
-  this.EmployeeService.getemployees(selectedSchema).subscribe(
-    (data: any) => {
-      this.employees = data;
-      console.log('employee:', this.employees);
+     fetchDesignations(selectedSchema: string) {
 
-      if (this.employees.length === 1) {
-        this.selectedEmployeeId = this.employees[0].id;
-
-        // ✅ Store Branch ID here
-        this.selectedBranchId = this.employees[0]?.branch?.id || null;
-
-        console.log('Fetched Employee ID:', this.selectedEmployeeId);
-        console.log('Fetched Branch ID:', this.selectedBranchId);
-
-        if (selectedSchema && this.selectedEmployeeId !== null) {
-          this.loadEmpAssetsDetails(selectedSchema, this.selectedEmployeeId);
-          this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
-          this.loadEmpAirticketDetails(selectedSchema, this.selectedEmployeeId);
-          this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
-          this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
-          this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
+      this.EmployeeService.getemployees(selectedSchema).subscribe(
+        (data: any[]) => {
+    
+          console.log("All Employees", data);
+          console.log("Logged User Id", this.userId);
+    
+          // Filter employee by logged user id
+          this.employees = data.filter(emp => emp.users == this.userId);
+    
+          console.log("Filtered Employee", this.employees);
+    
+          if (this.employees.length > 0) {
+    
+            this.selectedEmployeeId = this.employees[0].id;
+            this.selectedBranchId = this.employees[0]?.branch?.id || null;
+    
+            console.log("Employee ID :", this.selectedEmployeeId);
+            console.log("Branch ID :", this.selectedBranchId);
+            if (selectedSchema && this.selectedEmployeeId !== null) {
+            this.loadEmpAssetsDetails(selectedSchema, this.selectedEmployeeId);
+            this.loadEmpLoanDetails(selectedSchema, this.selectedEmployeeId);
+            this.loadEmpAirticketDetails(selectedSchema, this.selectedEmployeeId);
+            this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
+            this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
+            this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
+    
+          } else {
+    
+            console.log("No Employee mapped to Logged User");
+    
+            this.employees = [];
+          }
         }
-      }
-    },
-    (error: any) => {
-      console.error('Error fetching employee:', error);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
     }
-  );
-}
 
 
        calculateDaysLeft(startDate: string): string {
