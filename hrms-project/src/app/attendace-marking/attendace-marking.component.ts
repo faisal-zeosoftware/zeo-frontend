@@ -363,19 +363,20 @@ async registerCheckIn(): Promise<void> {
 
     const data = {
       employee: this.employee,
-      // date: this.date,
-      // check_in_time: this.check_in_time,
-      // check_out_time: this.check_out_time,
-      // total_hours: this.total_hours,
+    
       check_in_lat: position.lat,
       check_in_lng: position.lng,
       check_in_location: address
     };
 
+    console.log('Check-In Payload:', data);
+
     this.employeeService.registerEmployeeAttendenceCheckIn(data).subscribe(
       (response) => {
+
+        console.log('Response:', response);
         alert("Check In successful");
-        window.location.reload();
+        // window.location.reload();
       },
       (error) => {
         alert("Check-In Failed");
