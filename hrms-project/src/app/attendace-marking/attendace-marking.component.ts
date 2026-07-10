@@ -337,7 +337,11 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
         });
       },
       (error) => {
-        reject("Location access denied");
+        // reject("Location access denied");
+
+        console.log(error);
+
+reject(error);
       }
     );
   });
@@ -384,7 +388,8 @@ async registerCheckIn(): Promise<void> {
     );
 
   } catch (error) {
-    alert("Please allow location access!");
+    console.log(error);
+    alert(JSON.stringify(error));
   }
 }
 
@@ -444,26 +449,6 @@ async registerCheckOut(): Promise<void> {
 
   }
 
-
-  // LoadEmployeePunching() {
-  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
-  //   console.log('schemastore',selectedSchema )
-  //   // Check if selectedSchema is available
-  //   if (selectedSchema) {
-  //     this.employeeService.getPunchings(selectedSchema).subscribe(
-  //       (result: any) => {
-  //         this.Punching = result;
-  //         console.log(' fetching Employees:');
-  
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Employees:', error);
-  //       }
-  //     );
-  //   }
-
-  // }
 
 
   // Add these to your component class
