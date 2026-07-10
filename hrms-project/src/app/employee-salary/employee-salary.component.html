@@ -336,7 +336,7 @@ placeholder="Enter amount"
               <table class="table table-striped custom-table">
                 <thead>
                   <tr>
-                    <th>No</th>
+                    <th class="sticky-left">No</th>
                     <th>Amount</th>
                     <th>Employee Code</th>
                     <th>Employee Name</th>
@@ -346,12 +346,12 @@ placeholder="Enter amount"
                     <th>Amount </th>
                     <th>Component Type  </th>
                     <th>Is Fixed</th>
-                    <th>Action</th>
+                    <th class="sticky-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let docs of filteredSalaryComponents; let i = index">
-                            <td data-label="No">{{ i + 1 }}</td>
+                     <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
                     <td data-label="Amount">{{ docs.amount }}</td>
                     <td data-label="Employee">{{ docs.employee }}</td>
                     <td data-label="Employee Name">{{ docs.emp_name }}</td>
@@ -365,7 +365,7 @@ placeholder="Enter amount"
                     <td data-label="Component Type">{{ docs.component_type }}</td>
                     <td>{{ docs.is_fixed ? 'Fixed' : 'Variable' }}</td>
             
-                    <td data-label="Action">
+                    <td class="sticky-right" data-label="Actions">
                         <button
                           mat-fab
                           color="primary"

@@ -420,10 +420,10 @@
       <table width="100%">
           <thead class="thead-dark">
             <tr>
-              <th>No</th>
-              <th> Document number  </th>
+             <th class="sticky-left">No</th>
+              <th>Document number  </th>
               <th>Branch</th>
-              <th> Document date  </th>
+              <th>Document date  </th>
               <th> Resigned on</th>
               <th>Notice period</th>
               <th>Last working date</th>
@@ -434,7 +434,7 @@
               <th>Reason for leaving</th>
               <th>Status</th>
               <th>Employee</th>
-              <th>Actions</th>
+              <th class="sticky-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -442,7 +442,7 @@
             <tr *ngFor="let docs of DocRequest;let i = index">
       
           
-        <td data-label="No">{{ i + 1 }}</td>
+        <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
         <td data-label="Document number">{{ docs.document_number }}</td>
         <td>{{ docs.branch }}</td>
         <td data-label="Document Date">{{ docs.document_date }}</td>
@@ -460,7 +460,7 @@
         <td data-label="Employee">{{ docs.employee }}</td>
    
        
-              <td data-label="Actions">
+              <td class="sticky-right" data-label="Actions">
                 <button
                   mat-fab
                   color="primary"

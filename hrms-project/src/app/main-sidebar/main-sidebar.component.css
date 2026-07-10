@@ -1331,3 +1331,42 @@ table thead th {
   background:#f4f8ff;
   transform:translateY(-2px);
 }
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.notification-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.mark-all-btn {
+  border: none;
+  background: #0D6DFD;
+  color: #e3e6e9;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.mark-all-btn:hover {
+  background: #e7f1ff;
+  color: #084298;
+}
+
+.mark-all-btn:active {
+  transform: scale(0.96);
+}

@@ -1008,13 +1008,12 @@
     </div>
   </div>
 
-  <div class="com_list  mt-4" style="border-top: white;">
-
-    <div class="table-responsive com_list table-scroll mt-4" *ngIf="hasViewPermission">
-  <table class="table table-striped custom-table" width="100%">
-    <thead>
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+    <div style="overflow-x: auto; width: 100%;">
+    <table width="100%">
+    <thead class="thead-dark">
       <tr>
-        <th>No</th>
+        <th class="sticky-left">No</th>
         <th>Title</th>
         <th>Message</th>
         <th>Send Email</th>
@@ -1027,12 +1026,12 @@
         <th>Departments</th>
         <th>Designations</th>
         <th>Categories</th>
-        <th>Actions</th>
+        <th class="sticky-right">Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let docs of LoanTypes; let i = index">
-        <td data-label="No">{{ i + 1 }}</td>
+        <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
         <td data-label="Title">{{ docs.title }}</td>
         <td data-label="Message">{{ docs.message }}</td>
         <td data-label="Send Email">{{ docs.send_email }}</td>
@@ -1061,7 +1060,7 @@
 <td data-label="Categories">
   {{ (docs.category && docs.category.length > 0) ? docs.category.join(', ') : 'Null' }}
 </td>
-        <td data-label="Action">
+        <td class="sticky-right" data-label="Actions">
           <button
             mat-fab
             color="primary"

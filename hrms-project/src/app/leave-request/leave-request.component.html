@@ -400,25 +400,23 @@
         <table class="mt-4" width="100%" *ngIf="hasViewPermission">
           <thead>
             <tr>
-              <th>No</th>
+              <th class="sticky-left">No</th>
               <th>Employee</th>
               <th>Start date</th>
               <th>End date</th>
               <th>Total Days</th>
               <th>Leave Type</th>
               <th>Reason</th>
-
               <th>Document Number</th>
               <!-- <th>Total</th> -->
               <th>Approval Status</th>
-
-              <th>Action</th>
+              <th class="sticky-right">Actions</th>
             </tr>
           </thead>
           <tbody>
               
             <tr *ngFor="let docs of LeaveRequests;let i = index">
-              <td>{{ i + 1 }}</td> 
+              <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
               <td>{{ docs.employee }}</td>
               <td>{{ docs.start_date }}</td>
               <td>{{ docs.end_date }}</td> 
@@ -432,7 +430,7 @@
                  {{ docs.status }}
             </span>
         </td>
-              <td>
+              <td class="sticky-right" data-label="Actions">
                 <button
                   mat-fab
                   color="primary"

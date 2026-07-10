@@ -301,6 +301,16 @@
           aria-labelledby="notificationDropdown"
           style="min-width: 320px; max-height: 400px; overflow-y: auto"
         >
+<li class="notification-header">
+  <strong class="notification-title">Notifications</strong>
+
+  <button
+    class="mark-all-btn"
+    *ngIf="AllNotifications.length > 0"
+    (click)="markAllAsRead($event)">
+    Mark all Read
+  </button>
+</li>
           <ng-container
             *ngIf="AllNotifications.length > 0; else noNotifications"
           >
@@ -313,16 +323,16 @@
               >
                 <div class="d-flex justify-content-between align-items-start">
                   <div>
-                    <strong *ngIf="noti.type === 'document'"
-                      >📄 Document Expired</strong
+                    <strong *ngIf="noti.type === 'expdocument'"
+                      >📝Document Expired</strong
                     >
-                    <strong *ngIf="noti.type === 'resignation'"
+                    <strong *ngIf="noti.type === 'resignationrequest'"
                       >📄 Resignation Request</strong
                     >
                     <strong *ngIf="noti.type === 'leave'"
                       >🏖️ Leave Request</strong
                     >
-                    <strong *ngIf="noti.type === 'general'"
+                    <strong *ngIf="noti.type === 'generalrequest'"
                       >📢 General Request</strong
                     >
                     <strong *ngIf="noti.type === 'docrequest'"
@@ -331,10 +341,10 @@
                     <strong *ngIf="noti.type === 'loanrequest'"
                       >💰 Loan Request</strong
                     >
-                    <strong *ngIf="noti.type === 'asset'"
+                    <strong *ngIf="noti.type === 'assetrequest'"
                       >🧰 Asset Request</strong
                     >
-                    <strong *ngIf="noti.type === 'air ticket'"
+                    <strong *ngIf="noti.type === 'airticketrequest'"
                       >✈️ AirTicket Request</strong
                     >
                     <strong *ngIf="noti.type === 'advancesalaryrequest'"
@@ -343,12 +353,12 @@
                     <strong *ngIf="noti.type === 'lateinearlyrequest'"
                       >⏱️ Late In / Early Out Request</strong
                     >
-                    <strong *ngIf="noti.type === 'delegated'"
+                    <!-- <strong *ngIf="noti.type === 'delegated'"
                       >👥 Delegation Request</strong
                     >
                    <strong *ngIf="noti.type === 'delegationres'"
                       >👥 Delegation Response</strong
-                    >
+                    > -->
                     <div class="text-muted small">
                       {{ noti.created_at | date: "medium" }}
                     </div>

@@ -75,11 +75,12 @@
       </div>
     </div>
 
-    <div class="com_list mt-4 table-scroll" *ngIf="hasViewPermission">
-      <table class="table-container" width="100%">
-        <thead>
+    <div class="com_list mt-4" *ngIf="hasViewPermission">
+      <div style="overflow-x: auto; width: 100%">
+        <table class="thead-dark">
+          <thead>
           <tr>
-            <th>No</th>
+           <th class="sticky-left">No</th>
             <th>Document Number</th>
             <th>Branch</th>
             <th>Employee</th>
@@ -92,12 +93,12 @@
             <th>Resume date</th>
             <th>Pause reason</th>
             <th>Loan type</th>
-            <th>Actions</th>
+           <th class="sticky-right">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let docs of LoanApplications; let i = index">
-            <td>{{ i + 1 }}</td>
+            <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
             <td data-label="Document Number">
               {{ docs.document_number }}
             </td>
@@ -120,7 +121,7 @@
             <td>{{ docs.pause_reason }}</td>
             <td>{{ docs.loan_type }}</td>
 
-            <td data-label="Action">
+           <td class="sticky-right" data-label="Actions">
               <ng-container *ngIf="docs.status === 'Approved'">
                 <button
                   class="btn btn-full btn-warning"
@@ -562,11 +563,13 @@
         <div class="col-md-10">
           <h2>Pause Loan Application</h2>
         </div>
-        <div class="col-md-2">
-          <span class="close pull-right" (click)="closePauseModal()"
-            >&times;</span
-          >
-        </div>
+
+      <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closePauseModal()">
+      ×
+    </span>
+  </div>
       </div>
       <hr />
 

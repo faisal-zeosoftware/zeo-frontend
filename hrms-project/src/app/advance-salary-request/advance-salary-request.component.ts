@@ -675,7 +675,7 @@ const resumeData = {
 
 this.leaveService.resumeAdvsalaryApplication(this.selectedLoanId, resumeData).subscribe(
   (response) => {
-    alert('Loan application resumed successfully!');
+    alert('Advance salary request application resumed successfully!');
     this.closeResumeModal();
     // this.loadLoanApplications();
     window.location.reload();

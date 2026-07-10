@@ -84,8 +84,8 @@
                   <th>Holiday</th>
                   <th>Weekend</th>
                   <th>Description</th>
-                  <th style="width: 80px;" *ngIf="showEditBtn || Delete">Action</th>
-                  <!-- <th class="sticky-right" style="width: 120px;">Configure</th> -->
+                  <th class="sticky-right">Action</th>
+
                 </tr>
               </thead>
               <tbody>
@@ -138,14 +138,22 @@
                       {{ leavetype.description || 'N/A' }}
                     </span>
                   </td>
-                  <td *ngIf="showEditBtn || Delete">
-                    <button style="height: 32px; width: 32px;" mat-mini-fab color="primary"
-                      *ngIf="showEditBtn" (click)="openEditLeaveTypeModal(leavetype)"
-                      class="me-2">
-                      <mat-icon style="color: white; font-size: 16px;">draw</mat-icon>
-                    </button>
-                    <mat-checkbox *ngIf="Delete" [(ngModel)]="leavetype.selected"></mat-checkbox>
-                  </td>
+   <td class="sticky-right">
+  <button
+    style="height:32px;width:32px;"
+    mat-mini-fab
+    color="primary"
+    *ngIf="showEditBtn"
+    (click)="openEditLeaveTypeModal(leavetype)"
+    class="me-2">
+    <mat-icon style="color:white;font-size:16px;">draw</mat-icon>
+  </button>
+
+  <mat-checkbox
+    *ngIf="Delete"
+    [(ngModel)]="leavetype.selected">
+  </mat-checkbox>
+</td>
                   <!-- <td class="sticky-right">
                     <button type="button" class="btn btn-primary btn-sm configure-btn"
                       (click)="openLeaveConfigurationModal(leavetype)">

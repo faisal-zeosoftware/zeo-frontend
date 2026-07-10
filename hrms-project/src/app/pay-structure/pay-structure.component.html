@@ -343,7 +343,7 @@
             <table class="table-container " width="100%">
                 <thead>
                   <tr>
-                    <th>No</th>
+                     <th class="sticky-left">No</th>
 
                     <th>work week</th>
                     <th>Salary calculation type</th>
@@ -354,11 +354,11 @@
 
                     <th>Payday type</th>
                     <th>Payday</th>
-                      <th>Payroll start month</th>
-                     <th>Branch</th>
+                    <th>Payroll start month</th>
+                    <th>Branch</th>
 
 
-      <th>Action</th>
+                    <th class="sticky-right">Actions</th>
         
                    
                   </tr>
@@ -366,7 +366,7 @@
                 <tbody>
                     
                   <tr *ngFor="let pol of overtimepol;let i = index">
-                    <td >{{ i + 1 }}</td>
+                    <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
                     <td >{{ pol.working_days }}</td> 
                     <td >{{ pol.salary_calculation_type }}</td>
                     <td >{{ pol.fixed_working_days }}</td> 
@@ -375,11 +375,11 @@
                     <td >{{ pol.cycle_end_day }}</td>
                     <td >{{ pol.payday_type }}</td>
                     <td >{{ pol.payday }}</td>
-                     <td >{{ pol.payroll_start_month }}</td>
-                     <td >{{ pol.branch }}</td>
+                    <td >{{ pol.payroll_start_month }}</td>
+                    <td >{{ pol.branch }}</td>
 
 
-                   <td data-label="Action">
+                    <td class="sticky-right" data-label="Actions">
               <button
                 mat-fab
                 color="primary"

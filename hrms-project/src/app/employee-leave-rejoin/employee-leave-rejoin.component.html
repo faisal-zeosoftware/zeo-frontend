@@ -32,18 +32,17 @@
         
   <div class="com_list mt-4" *ngIf="hasViewPermission">
     <div style="overflow-x: auto; width: 100%;">
-    <table width="100%">
+<table class="leave-table">
     <thead class="thead-dark">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th> Rejoining Date</th>
+        <tr>
+                        <th class="sticky-left">No</th>
+                        <th>Rejoining Date</th>
                         <th>Unpaid leave days </th>
                         <th>deducted</th>
                         <th>Employee</th>
                         <th>Leave request</th>
                         <th>Deduct from leave type</th>
-                        <th>Action</th>
+                        <th class="sticky-right">Actions</th>
 
             
                        
@@ -52,7 +51,7 @@
                     <tbody>
                         
                       <tr *ngFor="let docs of Rejoings;let i = index">
-                        <td>{{ i + 1 }}</td> 
+                        <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
                         <td>{{ docs.rejoining_date }}</td>
                         <td>{{ docs.unpaid_leave_days }}</td>
                         <td>{{ docs.deducted }}</td> 
@@ -60,7 +59,7 @@
                         <td>{{ docs.leave_request }}</td>
                         <td>{{ docs.deduct_from_leave_type || 'N/A' }}</td>
 
-                        <td>
+                        <td class="sticky-right" data-label="Actions">
                             <button type="button" class="btn btn-primary" (click)="openRejoinModal(docs.id)">Rejoin</button>
                         </td>
 
@@ -83,7 +82,14 @@
       <div *ngIf="isLeaveRejoinModalOpen" class="modal">
         <div class="modal-content">
        
-          <span class="close pull-right" (click)="ClosePopup()">&times;</span>
+          <!-- <span class="close pull-right" (click)="ClosePopup()">&times;</span> -->
+
+              <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="ClosePopup()">
+      ×
+    </span>
+  </div>
      
        <div *ngIf="selectedRejoin">
 

@@ -103,7 +103,7 @@
   .modal {
     display: block; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 6; /* Sit on top */
     margin-left: auto;
     margin-right: auto;
     top: 0;
@@ -148,6 +148,33 @@
     font-weight: 600;
     font-family: math;
   }
+
+  
+
+/* Sticky first column */
+.sticky-left {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+/* Sticky last column */
+.sticky-right {
+  position: sticky;
+  right: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+/* Keep header sticky columns dark */
+thead .sticky-left,
+thead .sticky-right {
+  background: #343a40;   /* same as thead-dark */
+  color: #fff;
+  z-index: 3;
+}
+
   
   
         /* Phones */

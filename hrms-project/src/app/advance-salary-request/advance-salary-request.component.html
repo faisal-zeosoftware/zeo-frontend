@@ -398,9 +398,7 @@
         <table class="thead-dark">
           <thead>
             <tr>
-              <th>No</th>
-              <th>Actions</th>
-
+              <th class="sticky-left">No</th>
               <th>Document number</th>
               <th>Branch</th>
               <th>Reason</th>
@@ -408,36 +406,15 @@
               <th>Remarks</th>
               <th>Employee</th>
               <th>Status</th>
-
               <th>Pause start date</th>
               <th>Resume date</th>
               <th>Pause reason</th>
-
-              <th>Actions</th>
+               <th class="sticky-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let docs of DocRequest; let i = index">
-              <td data-label="No">{{ i + 1 }}</td>
-              <td data-label="Action">
-                <!-- Show buttons only if the loan status is 'Approved' -->
-                <ng-container *ngIf="docs.status === 'Approved'">
-                  <button
-                    class="btn btn-full btn-warning"
-                    (click)="openPauseModal(docs)"
-                  >
-                    Pause
-                  </button>
-                </ng-container>
-                <ng-container *ngIf="docs.status === 'Paused'">
-                  <button
-                    class="btn btn-full btn-primary"
-                    (click)="openResumeModal(docs)"
-                  >
-                    Resume
-                  </button>
-                </ng-container>
-              </td>
+              <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
               <td data-label="Document number">{{ docs.document_number }}</td>
               <td data-label="branch">{{ docs.branch }}</td>
               <td data-label="Reason">{{ docs.reason }}</td>
@@ -456,22 +433,40 @@
               <td data-label="Resume date">{{ docs.resume_date }}</td>
               <td data-label="Pause reason">{{ docs.pause_reason }}</td>
 
-              <td data-label="Action">
+            <td class="sticky-right" data-label="Actions">
+              <ng-container *ngIf="docs.status === 'Approved'">
                 <button
-                  mat-fab
-                  color="primary"
-                  aria-label="Edit icon"
-                  *ngIf="showEditBtn"
-                  (click)="openEditModal(docs)"
+                  class="btn btn-full btn-warning"
+                  (click)="openPauseModal(docs)"
                 >
-                  <mat-icon style="color: white">draw</mat-icon>
+                  Pause
                 </button>
+              </ng-container>
 
-                <mat-checkbox
-                  *ngIf="Delete"
-                  [(ngModel)]="docs.selected"
-                ></mat-checkbox>
-              </td>
+              <ng-container *ngIf="docs.status === 'Paused'">
+                <button
+                  class="btn btn-full btn-primary"
+                  (click)="openResumeModal(docs)"
+                >
+                  Resume
+                </button>
+              </ng-container>
+
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+                (click)="openEditModal(docs)"
+              >
+                <mat-icon style="color: white">draw</mat-icon>
+              </button>
+
+              <mat-checkbox
+                *ngIf="Delete"
+                [(ngModel)]="docs.selected"
+              ></mat-checkbox>
+            </td>
             </tr>
           </tbody>
         </table>
@@ -482,13 +477,19 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2>Pause Loan Application</h2>
+              <h2>Pause Advance salary request Application</h2>
             </div>
-            <div class="col-md-2">
+            <!-- <div class="col-md-2">
               <span class="close pull-right" (click)="closePauseModal()"
                 >&times;</span
               >
-            </div>
+            </div> -->
+              <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closePauseModal()">
+      ×
+    </span>
+  </div>
           </div>
           <hr />
 
@@ -515,7 +516,7 @@
               </div>
               <div class="col-md-12 mt-3">
                 <button type="submit" class="btn btn-primary">
-                  Pause Loan
+                  Pause Advance salary
                 </button>
               </div>
             </div>
@@ -528,7 +529,7 @@
         <div class="modal-content">
           <div class="row">
             <div class="col-md-10">
-              <h2>Resume Loan Application</h2>
+              <h2>Resume Advance Salary Request Application</h2>
             </div>
             <div class="col-md-2">
               <span class="close pull-right" (click)="closeResumeModal()"
@@ -552,7 +553,7 @@
               </div>
               <div class="col-md-12 mt-3">
                 <button type="submit" class="btn btn-success">
-                  Resume Loan
+                  Resume Advance salary
                 </button>
               </div>
             </div>

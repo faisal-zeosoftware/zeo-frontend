@@ -1021,7 +1021,7 @@
         <table class="table table-striped custom-table">
           <thead>
             <tr>
-              <th>No</th>
+              <th class="sticky-left">No</th>
               <th>Name</th>
               <th>Component Type</th>
               <th>Payroll Category</th>
@@ -1030,12 +1030,12 @@
               <th>Formula</th>
               <th>Description</th>
               <!-- <th>Is Loan Component</th> -->
-              <th>Action</th>
+              <th class="sticky-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let docs of Salarycomponent; let i = index">
-              <td data-label="No">{{ i + 1 }}</td>
+              <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
               <td data-label="Name">{{ docs.name }}</td>
               <td data-label="Component Type">{{ docs.component_type }}</td>
               <td data-label="Payroll Category">
@@ -1055,7 +1055,7 @@
                 {{ docs.description }}
               </td>
               <!-- <td data-label="Is Loan Component">{{ docs.is_loan_component }}</td> -->
-              <td data-label="Action">
+                <td class="sticky-right" data-label="Actions">
                 <button
                   mat-fab
                   color="primary"
