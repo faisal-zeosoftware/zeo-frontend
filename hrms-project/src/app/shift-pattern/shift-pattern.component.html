@@ -96,10 +96,21 @@
                                     <div class="col-md-4">
                                         <div class="form-group mb-0">
                                             <label class="custom-form-label">Pattern Type</label>
-                                            <select class="form-control custom-select" [(ngModel)]="pattern_type" name="pattType" (change)="onChangesEveryOrTypeChange()">
+                                            <!-- <select class="form-control custom-select" [(ngModel)]="pattern_type" name="pattType" (change)="onChangesEveryOrTypeChange()">
                                                 <option value="weekly">Weekly</option>
                                                 <option value="monthly">Monthly</option>
-                                            </select>
+                                            </select> -->
+
+                                            <select
+    class="form-control custom-select"
+    [(ngModel)]="pattern_type"
+    name="pattType"
+    (change)="onPatternTypeChange()">
+
+    <option value="weekly">Weekly</option>
+    <option value="monthly">Monthly</option>
+
+</select>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -107,7 +118,14 @@
                                             <label class="custom-form-label">Rotates / Changes Every</label>
                                             <div class="d-flex align-items-center dynamic-duration-picker">
                                                 <select class="form-control custom-select compact-width mr-3" [(ngModel)]="changes_every" name="changesEvery" (change)="onChangesEveryOrTypeChange()">
-                                                    <option *ngFor="let val of [1,2,3,4,5,6]" [value]="val">{{val}}</option>
+                                                    <!-- <option *ngFor="let val of [1,2,3,4,5,6]" [value]="val">{{val}}</option> -->
+                                                     <option
+    *ngFor="let val of (pattern_type === 'weekly' ? weeklyCounts : monthlyCounts)"
+    [value]="val">
+
+    {{ val }}
+
+</option>
                                                 </select>
                                                 <span class="duration-context-badge">
                                                     {{ pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}
@@ -132,7 +150,7 @@
                                             <label class="day-label-text">{{ rule.day.substring(0,3) }}</label>
                                             <div class="select-pill-wrapper" [ngClass]="{'has-value': rule.shift_id}">
                                                 <select class="clean-hidden-select" [(ngModel)]="rule.shift_id" name="week-{{wIdx}}-day-{{dIdx}}">
-                                                    <option value="">Off</option>
+                                                   
                                                     <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
                                                 </select>
                                             </div>

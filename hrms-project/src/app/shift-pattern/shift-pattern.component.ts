@@ -747,6 +747,11 @@ deleteSelectedShiftPattern() {
 
 
 
+weeklyCounts = [1, 2, 3, 4, 5, 6];
+
+monthlyCounts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+
 
 // Restructure configuration arrays whenever pattern type or count changes
 onChangesEveryOrTypeChange() {
@@ -816,6 +821,22 @@ onChangesEveryOrTypeChange() {
   }
 
 }
+
+
+onPatternTypeChange() {
+
+  if (this.pattern_type === 'weekly' && this.changes_every > 6) {
+      this.changes_every = 1;
+  }
+
+  if (this.pattern_type === 'monthly' && this.changes_every > 12) {
+      this.changes_every = 1;
+  }
+
+  this.onChangesEveryOrTypeChange();
+}
+
+
 
 // Monthly Helper: Add date-range split criteria
 addMonthlyRule(monthIndex:number){
