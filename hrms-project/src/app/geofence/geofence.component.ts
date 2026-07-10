@@ -6,16 +6,17 @@ import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
 import { EmployeeService } from '../employee-master/employee.service';
-import {UserMasterService} from '../user-master/user-master.service';
+import { UserMasterService } from '../user-master/user-master.service';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
-import {combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import * as L from 'leaflet';
 import { fromEvent } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 
 declare var mapillary: any;
@@ -25,68 +26,69 @@ declare var mapillary: any;
   templateUrl: './geofence.component.html',
   styleUrl: './geofence.component.css'
 })
-export class GeofenceComponent implements AfterViewInit, OnDestroy{
+export class GeofenceComponent implements AfterViewInit, OnDestroy {
 
   // @ViewChild('searchBox', { static: false }) searchBox!: ElementRef;
   @ViewChild('mapContainer') mapContainer!: ElementRef;
 
   private dataSubscription?: Subscription;
+  
+  private apiUrl = `${environment.apiBaseUrl}`;
 
 
-  
-  
-    level:any='';
-    role:any='';
-    approver:any='';
-  
-  
-  geofencepol:any []=[];
-  
-    Approvers:any []=[];
-    Branches:any []=[];
-    Employees:any []=[];
 
-  
+  level: any = '';
+  role: any = '';
+  approver: any = '';
+
+
+  geofencepol: any[] = [];
+
+  Approvers: any[] = [];
+  Branches: any[] = [];
+  Employees: any[] = [];
+
+
 
   branch: number[] = [];
   employee: number[] = [];
 
-      
-         is_active:  boolean = false;
-  
-  
-  
-      Users:any []=[];
-  
-  
+
+  is_active: boolean = false;
+
+
+
+  Users: any[] = [];
+
+
   selectedFile!: File | null;
-  
+
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
-  hasViewPermission: boolean =false;
+  hasViewPermission: boolean = false;
   hasEditPermission: boolean = false;
-  
-  
-    Branchs:any []=[];
-  
-  
-    Employee: any[] = [];
-  
-  
-
-    allSelectedBrach=false;
 
 
-  
-      // @ViewChild('select') select: MatSelect | undefined;
-      @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
+  Branchs: any[] = [];
 
-      @ViewChild('selectEmp') selectEmp: MatSelect | undefined;
 
-      allSelectedEmp=false;
-  
-private map!: L.Map;
-private searchTimer: any;
+  Employee: any[] = [];
+
+
+
+  allSelectedBrach = false;
+
+
+
+  // @ViewChild('select') select: MatSelect | undefined;
+  @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
+
+  @ViewChild('selectEmp') selectEmp: MatSelect | undefined;
+
+  allSelectedEmp = false;
+
+  private map!: L.Map;
+  private searchTimer: any;
   private marker!: L.Marker;
   private circle!: L.Circle;
   private mlyViewer: any;
@@ -96,7 +98,7 @@ private searchTimer: any;
   longitude: number = 55.2708;
   radius: number = 50;
   showStreetView: boolean = false;
-  
+
   // To store the list of results
   searchResults: any[] = [];
 
@@ -107,7 +109,7 @@ private searchTimer: any;
   onSearchInput(query: string) {
     // Clear the previous timer
     if (this.searchTimer) clearTimeout(this.searchTimer);
-  
+
     // Wait 500ms after user stops typing to search
     this.searchTimer = setTimeout(() => {
       this.searchLocation(query);
@@ -119,19 +121,19 @@ private searchTimer: any;
   //     alert("Geolocation is not supported by your browser.");
   //     return;
   //   }
-  
+
   //   // Show a small loading state if you like
   //   this.isLoading = true;
-  
+
   //   navigator.geolocation.getCurrentPosition(
   //     (position) => {
   //       const lat = position.coords.latitude;
   //       const lng = position.coords.longitude;
-  
+
   //       // Move the map and marker
   //       this.map.setView([lat, lng], 17);
   //       this.updateLocation(lat, lng, "My Current Location");
-        
+
   //       this.isLoading = false;
   //     },
   //     (error) => {
@@ -147,69 +149,82 @@ private searchTimer: any;
   //   );
   // }
 
- // 1. Update the Guard to include a size refresh
+  // 1. Update the Guard to include a size refresh
 
 
 
- getCurrentLocation() {
-  // Check if the protocol is secure
-  if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-    alert("Geolocation requires a secure connection (HTTPS). Please contact your administrator or use a secure URL.");
-    return;
-  }
-
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
-    return;
-  }
-
-  this.isLoading = true;
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      this.map.setView([lat, lng], 17);
-      this.updateLocation(lat, lng, "My Current Location");
-      this.isLoading = false;
-    },
-    (error) => {
-      this.isLoading = false;
-      console.error("Geolocation Error:", error);
-      
-      if (error.code === 1) {
-        alert("Permission Denied: Please ensure your site is using HTTPS and you have allowed location access in your browser settings.");
-      } else {
-        alert("Unable to retrieve your location. Please check your GPS settings.");
-      }
-    },
-    { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-  );
-}
-
-
-
- private initMapGuard() {
-  const checkExist = setInterval(() => {
-    const mapElement = document.getElementById('map');
-    if (mapElement) {
-      this.initMap();
-      
-      // CRITICAL: Leaflet needs a moment for the modal animation to finish
-      setTimeout(() => {
-        if (this.map) {
-          this.map.invalidateSize(); 
-        }
-      }, 300); 
-      
-      clearInterval(checkExist);
+  getCurrentLocation() {
+    // Check if the protocol is secure
+    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+      alert("Geolocation requires a secure connection (HTTPS). Please contact your administrator or use a secure URL.");
+      return;
     }
-  }, 100);
-}
+
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    this.isLoading = true;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        this.map.setView([lat, lng], 17);
+        this.updateLocation(lat, lng, "My Current Location");
+        this.isLoading = false;
+      },
+      (error) => {
+        this.isLoading = false;
+        console.error("Geolocation Error:", error);
+
+        if (error.code === 1) {
+          alert("Permission Denied: Please ensure your site is using HTTPS and you have allowed location access in your browser settings.");
+        } else {
+          alert("Unable to retrieve your location. Please check your GPS settings.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  }
+
+
+
+  private initMapGuard() {
+    const checkExist = setInterval(() => {
+      const mapElement = document.getElementById('map');
+      if (mapElement) {
+        this.initMap();
+
+        // CRITICAL: Leaflet needs a moment for the modal animation to finish
+        setTimeout(() => {
+          if (this.map) {
+            this.map.invalidateSize();
+          }
+        }, 300);
+
+        clearInterval(checkExist);
+      }
+    }, 100);
+  }
 
   private initMap(): void {
-    if (this.map) return;
-    this.map = L.map('map').setView([this.latitude, this.longitude], 13);
+    // if (this.map) return;
+    // this.map = L.map('map').setView([this.latitude, this.longitude], 13);
+
+    if (this.map) {
+
+      this.map.remove();
+
+      this.map = null as any;
+
+  }
+
+  this.map = L.map('map').setView(
+      [this.latitude,this.longitude],
+      13
+  );
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap'
@@ -234,7 +249,7 @@ private searchTimer: any;
       this.searchResults = [];
       return;
     }
-  
+
     // Coordinate check (Same as before)
     const coordRegex = /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/;
     const match = query.match(coordRegex);
@@ -248,7 +263,7 @@ private searchTimer: any;
         return;
       }
     }
-  
+
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8`);
       this.searchResults = await res.json();
@@ -261,7 +276,7 @@ private searchTimer: any;
   selectResult(result: any) {
     const lat = parseFloat(result.lat);
     const lon = parseFloat(result.lon);
-    
+
     this.map.setView([lat, lon], 17);
     this.updateLocation(lat, lon, result.display_name);
     this.searchResults = []; // Clear the list after selection
@@ -276,7 +291,7 @@ private searchTimer: any;
     this.circle.setLatLng([lat, lng]);
 
     if (this.showStreetView && this.mlyViewer) {
-      this.mlyViewer.moveCloseTo(lat, lng).catch(() => {});
+      this.mlyViewer.moveCloseTo(lat, lng).catch(() => { });
     }
   }
 
@@ -303,60 +318,207 @@ private searchTimer: any;
     if (this.map) this.map.remove();
   }
 
- 
+
   isLoading = false;
 
+  // CreateGeofence() {
+  //   this.registerButtonClicked = true;
+  //   // 1. Validation
+  //   if (!this.location_name || !this.latitude || !this.longitude) {
+  //     alert('Please select a location and enter a name.');
+  //     return;
+  //   }
+
+  //   // 2. Prepare FormData
+  //   const formData = new FormData();
+  //   formData.append('location_name', this.location_name);
+  //   formData.append('latitude', this.latitude.toString());
+  //   formData.append('longitude', this.longitude.toString());
+  //   formData.append('radius', this.radius.toString());
+  //   formData.append('is_active', 'true'); // Optional: usually required by backends
+
+
+  //   this.branch.forEach((id: number) =>
+  //     formData.append('branch', id.toString())
+  //   );
+
+  //   this.employee.forEach((id: number) =>
+  //     formData.append('employee', id.toString())
+  //   );
+
+
+  //   // 3. Call Service
+  //   this.employeeService.registerGeofence(formData).subscribe({
+  //     next: (response) => {
+  //       console.log('Geofence saved successfully:', response);
+  //       alert('Geofence created successfully!');
+  //       window.location.reload();
+  //       this.resetForm();
+
+  //     },
+  //     error: (err) => {
+
+  //       console.error('Submission failed:', err);
+  //       alert('Failed to save geofence. Please check console for details.');
+  //     }
+  //   });
+  // }
+
+  // Optional helper to clear form after success
+  // resetForm() {
+  //   this.location_name = '';
+  //   this.radius = 50;
+  //   this.searchResults = [];
+  //   // Keep the map centered but you could reset coordinates if needed
+  // }
+
+
   CreateGeofence() {
-     this.registerButtonClicked = true;
-    // 1. Validation
+
+    this.registerButtonClicked = true;
+  
+    // Validation
     if (!this.location_name || !this.latitude || !this.longitude) {
       alert('Please select a location and enter a name.');
       return;
     }
   
-    // 2. Prepare FormData
+    if (!this.branch || this.branch.length === 0) {
+      alert('Please select at least one Branch.');
+      return;
+    }
+  
+    if (!this.employee || this.employee.length === 0) {
+      alert('Please select at least one Employee.');
+      return;
+    }
+  
+    this.isLoading = true;
+  
+    // Prepare FormData
     const formData = new FormData();
+  
     formData.append('location_name', this.location_name);
     formData.append('latitude', this.latitude.toString());
     formData.append('longitude', this.longitude.toString());
     formData.append('radius', this.radius.toString());
-    formData.append('is_active', 'true'); // Optional: usually required by backends
+    formData.append('is_active', 'true');
   
+    this.branch.forEach((id: number) => {
+      formData.append('branch', id.toString());
+    });
+  
+    this.employee.forEach((id: number) => {
+      formData.append('employee', id.toString());
+    });
+  
+    // ===========================
+    // UPDATE
+    // ===========================
+    if (this.editingGeofenceId) {
+  
+      this.employeeService.updateGeofence(this.editingGeofenceId, formData)
+        .subscribe({
+  
+          next: (response) => {
+  
+            console.log('Geofence Updated Successfully', response);
+  
+            alert('Geofence updated successfully.');
+  
+            this.isLoading = false;
+  
+            this.resetForm();
+  
+            this.editingGeofenceId = null;
+  
+            this.closeapplicationModal();
+  
+            // Refresh List
+            // this.fetchEmployees(this.selectedSchema, this.branchIds);
 
-    this.branch.forEach((id: number) =>
-      formData.append('branch', id.toString())
-    );
-    
-    this.employee.forEach((id: number) =>
-      formData.append('employee', id.toString())
-    );
-    
+             // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
 
-    // 3. Call Service
-    this.employeeService.registerGeofence(formData).subscribe({
-      next: (response) => {
-        console.log('Geofence saved successfully:', response);
-        alert('Geofence created successfully!');
-         window.location.reload();
-        this.resetForm();
 
-      },
-      error: (err) => {
-
-        console.error('Submission failed:', err);
-        alert('Failed to save geofence. Please check console for details.');
       }
     });
-  }
+
   
-  // Optional helper to clear form after success
-  resetForm() {
-    this.location_name = '';
-    this.radius = 50;
-    this.searchResults = [];
-    // Keep the map centered but you could reset coordinates if needed
-  }
+          },
   
+          error: (err) => {
+  
+            console.error(err);
+  
+            this.isLoading = false;
+  
+            alert('Failed to update geofence.');
+  
+          }
+  
+        });
+  
+    }
+  
+    // ===========================
+    // CREATE
+    // ===========================
+    else {
+  
+      this.employeeService.registerGeofence(formData)
+        .subscribe({
+  
+          next: (response) => {
+  
+            console.log('Geofence Created Successfully', response);
+  
+            alert('Geofence created successfully.');
+  
+            this.isLoading = false;
+  
+            this.resetForm();
+  
+            this.closeapplicationModal();
+  
+            // Refresh List
+            // this.fetchEmployees(this.selectedSchema, this.branchIds);
+
+             // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
+
+
+      }
+    });
+
+  
+          },
+  
+          error: (err) => {
+  
+            console.error(err);
+  
+            this.isLoading = false;
+  
+            alert('Failed to create geofence.');
+  
+          }
+  
+        });
+  
+    }
+  
+  }
 
 
   getBranchNames(branchIds: number[]): string {
@@ -369,52 +531,52 @@ private searchTimer: any;
 
 
   showPreviewModal = false;
-selectedPreview: any = null;
-private previewMap!: L.Map;
+  selectedPreview: any = null;
+  private previewMap!: L.Map;
 
-viewOnMap(policy: any) {
-  this.selectedPreview = policy;
-  
-  // Smoothly glide the map to the location
-  this.previewMap.flyTo([policy.latitude, policy.longitude], 17, {
-    animate: true,
-    duration: 1.5
-  });
+  viewOnMap(policy: any) {
+    this.selectedPreview = policy;
 
-  // Clear old layers
-  this.previewMap.eachLayer((layer) => {
-    if (layer instanceof L.Circle || layer instanceof L.Marker) {
-      this.previewMap.removeLayer(layer);
-    }
-  });
+    // Smoothly glide the map to the location
+    this.previewMap.flyTo([policy.latitude, policy.longitude], 17, {
+      animate: true,
+      duration: 1.5
+    });
 
-  // Create an attractive glow-boundary
-  L.circle([policy.latitude, policy.longitude], {
-    radius: policy.radius,
-    color: '#3b82f6',       // Blue stroke
-    weight: 2,
-    fillColor: '#3b82f6',   // Blue fill
-    fillOpacity: 0.15,
-    className: 'pulsing-circle' // Add a CSS pulse animation
-  }).addTo(this.previewMap);
+    // Clear old layers
+    this.previewMap.eachLayer((layer) => {
+      if (layer instanceof L.Circle || layer instanceof L.Marker) {
+        this.previewMap.removeLayer(layer);
+      }
+    });
 
-  // Add a sleek marker
-  const icon = L.divIcon({
-    className: 'custom-marker',
-    html: `<div class="marker-pin"></div>`,
-    iconSize: [30, 30],
-    iconAnchor: [15, 30]
-  });
-  
-  L.marker([policy.latitude, policy.longitude], { icon }).addTo(this.previewMap);
-}
-closePreview() {
-  this.showPreviewModal = false;
-  this.selectedPreview = null;
-  if (this.previewMap) {
-    this.previewMap.remove();
+    // Create an attractive glow-boundary
+    L.circle([policy.latitude, policy.longitude], {
+      radius: policy.radius,
+      color: '#3b82f6',       // Blue stroke
+      weight: 2,
+      fillColor: '#3b82f6',   // Blue fill
+      fillOpacity: 0.15,
+      className: 'pulsing-circle' // Add a CSS pulse animation
+    }).addTo(this.previewMap);
+
+    // Add a sleek marker
+    const icon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div class="marker-pin"></div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 30]
+    });
+
+    L.marker([policy.latitude, policy.longitude], { icon }).addTo(this.previewMap);
   }
-}
+  closePreview() {
+    this.showPreviewModal = false;
+    this.selectedPreview = null;
+    if (this.previewMap) {
+      this.previewMap.remove();
+    }
+  }
 
 
   selectedLocation: any = null;
@@ -424,7 +586,7 @@ closePreview() {
   onLocationChange(event: any) {
     const id = event.target.value;
     this.selectedLocation = this.geofencepol.find(loc => loc.id == id);
-    
+
     if (this.selectedLocation) {
       this.updateMapDisplay();
     }
@@ -434,7 +596,7 @@ closePreview() {
     const lat = this.selectedLocation.latitude;
     const lng = this.selectedLocation.longitude;
     const radius = this.selectedLocation.radius;
-  
+
     // Small delay to ensure the div is rendered before Leaflet tries to find it
     setTimeout(() => {
       if (!this.displayMap) {
@@ -442,13 +604,13 @@ closePreview() {
           zoomControl: false, // Cleaner look for short map
           attributionControl: false // Hide leaflet logo for more space
         }).setView([lat, lng], 16);
-        
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.displayMap);
         this.layerGroup.addTo(this.displayMap);
       }
-  
+
       this.layerGroup.clearLayers();
-  
+
       L.circle([lat, lng], {
         radius: radius,
         color: '#0d6efd',
@@ -457,9 +619,9 @@ closePreview() {
         fillOpacity: 0.2,
         interactive: false
       }).addTo(this.layerGroup);
-  
+
       L.marker([lat, lng], { interactive: false }).addTo(this.layerGroup);
-  
+
       this.displayMap.invalidateSize(); // CRITICAL for dynamic short maps
       this.displayMap.flyTo([lat, lng], 17);
     }, 100);
@@ -471,520 +633,693 @@ closePreview() {
   userDetails: any;
   userDetailss: any;
   schemas: string[] = []; // Array to store schema names
-    
-    constructor(
-      private leaveservice: LeaveService, 
-      private authService: AuthenticationService,
-      
-      private userService: UserMasterService,
-  
-      private http: HttpClient,
-      private DesignationService: DesignationService,
-      private sessionService: SessionService,
-      private employeeService: EmployeeService,
-      private DepartmentServiceService:DepartmentServiceService,
-      private categoryService: CatogaryService,
-  
-    ) {}
+
+  constructor(
+    private leaveservice: LeaveService,
+    private authService: AuthenticationService,
+
+    private userService: UserMasterService,
+
+    private http: HttpClient,
+    private DesignationService: DesignationService,
+    private sessionService: SessionService,
+    private employeeService: EmployeeService,
+    private DepartmentServiceService: DepartmentServiceService,
+    private categoryService: CatogaryService,
+
+  ) { }
   // ngAfterViewInit(): void {
   //   throw new Error('Method not implemented.');
   // }
-  
-    ngOnInit(): void {
-  
 
-      fromEvent(window, 'resize')
-  .pipe(debounceTime(200))
-  .subscribe(() => {
-    if (this.map) {
-      this.map.invalidateSize();
-    }
-  });
+  ngOnInit(): void {
 
-  
-       // combineLatest waits for both Schema and Branches to have a value
-       this.dataSubscription = combineLatest([
-        this.employeeService.selectedSchema$,
-        this.employeeService.selectedBranches$
-      ]).subscribe(([schema, branchIds]) => {
-        if (schema) {
-          this.fetchEmployees(schema, branchIds);  
-          
 
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(200))
+      .subscribe(() => {
+        if (this.map) {
+          this.map.invalidateSize();
         }
       });
 
-       // Listen for sidebar changes so the dropdown updates instantly
-  this.employeeService.selectedBranches$.subscribe(ids => {
-    this.loadBranch(); 
-    this.LoadEmployees();
-  });
+
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
 
 
-      // this.loadLoanTypes();
-      // this.loadLoanApprovalLevels();
-      // this.loadLoanapprover();
-  
-       this.loadUsers();
-      //  this.loadBranch();
+      }
+    });
 
-  
-      //  this.loadgeofence();
-  
-  
-      this.userId = this.sessionService.getUserId();
-      if (this.userId !== null) {
-        this.authService.getUserData(this.userId).subscribe(
-          async (userData: any) => {
-            this.userDetails = userData; // Store user details in userDetails property
-      
-      
-            console.log('User ID:', this.userId); // Log user ID
-            console.log('User Details:', this.userDetails); // Log user details
-      
-            // Check if user is_superuser is true or false
-            let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
-            const selectedSchema = this.authService.getSelectedSchema();
-            if (!selectedSchema) {
-              console.error('No schema selected.');
-              return;
-            }
-          
-          
-            if (isSuperuser) {
-              console.log('User is superuser or ESS user');
-              
-              // Grant all permissions
-              this.hasViewPermission = true;
-              this.hasAddPermission = true;
-              this.hasDeletePermission = true;
-              this.hasEditPermission = true;
-          
-              // Fetch designations without checking permissions
-              // this.fetchDesignations(selectedSchema);
-            } else {
-              console.log('User is not superuser');
-      
-              const selectedSchema = this.authService.getSelectedSchema();
-              if (selectedSchema) {
-               
-                
-                
-                try {
-                  const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
-                  console.log('Permissions data:', permissionsData);
-      
-                  if (Array.isArray(permissionsData) && permissionsData.length > 0) {
-                    const firstItem = permissionsData[0];
-      
-                    if (firstItem.is_superuser) {
-                      console.log('User is superuser according to permissions API');
-                      // Grant all permissions
-                      this.hasViewPermission = true;
-                      this.hasAddPermission = true;
-                      this.hasDeletePermission = true;
-                      this.hasEditPermission = true;
-                    } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                      const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
-                      console.log('Group Permissions:', groupPermissions);
-      
-                     
-                      this.hasAddPermission = this.checkGroupPermission('add_branchgeofence', groupPermissions);
-                      console.log('Has add permission:', this.hasAddPermission);
-                      
-                      this.hasEditPermission = this.checkGroupPermission('change_branchgeofence', groupPermissions);
-                      console.log('Has edit permission:', this.hasEditPermission);
-        
-                     this.hasDeletePermission = this.checkGroupPermission('delete_branchgeofence', groupPermissions);
-                     console.log('Has delete permission:', this.hasDeletePermission);
-        
-      
-                      this.hasViewPermission = this.checkGroupPermission('view_branchgeofence', groupPermissions);
-                      console.log('Has view permission:', this.hasViewPermission);
-      
-      
-                    } else {
-                      console.error('No groups found in data or groups array is empty.', firstItem);
-                    }
-                  } else {
-                    console.error('Permissions data is not an array or is empty.', permissionsData);
-                  }
-      
-                  // Fetching designations after checking permissions
-                  // this.fetchDesignations(selectedSchema);
-                }
-                
-                catch (error) {
-                  console.error('Error fetching permissions:', error);
-                }
-              } else {
-                console.error('No schema selected.');
-              }
-                
-            }
-          },
-          (error) => {
-            console.error('Failed to fetch user details:', error);
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.employeeService.selectedBranches$.subscribe(ids => {
+      this.loadBranch();
+      this.LoadEmployees();
+    });
+
+
+    // this.loadLoanTypes();
+    // this.loadLoanApprovalLevels();
+    // this.loadLoanapprover();
+
+    this.loadUsers();
+    //  this.loadBranch();
+
+
+    //  this.loadgeofence();
+
+
+    this.userId = this.sessionService.getUserId();
+    if (this.userId !== null) {
+      this.authService.getUserData(this.userId).subscribe(
+        async (userData: any) => {
+          this.userDetails = userData; // Store user details in userDetails property
+
+
+          console.log('User ID:', this.userId); // Log user ID
+          console.log('User Details:', this.userDetails); // Log user details
+
+          // Check if user is_superuser is true or false
+          let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
+          const selectedSchema = this.authService.getSelectedSchema();
+          if (!selectedSchema) {
+            console.error('No schema selected.');
+            return;
           }
-        );
+
+
+          if (isSuperuser) {
+            console.log('User is superuser or ESS user');
+
+            // Grant all permissions
+            this.hasViewPermission = true;
+            this.hasAddPermission = true;
+            this.hasDeletePermission = true;
+            this.hasEditPermission = true;
+
+            // Fetch designations without checking permissions
+            // this.fetchDesignations(selectedSchema);
+          } else {
+            console.log('User is not superuser');
+
+            const selectedSchema = this.authService.getSelectedSchema();
+            if (selectedSchema) {
+
+
+
+              try {
+                const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
+                console.log('Permissions data:', permissionsData);
+
+                if (Array.isArray(permissionsData) && permissionsData.length > 0) {
+                  const firstItem = permissionsData[0];
+
+                  if (firstItem.is_superuser) {
+                    console.log('User is superuser according to permissions API');
+                    // Grant all permissions
+                    this.hasViewPermission = true;
+                    this.hasAddPermission = true;
+                    this.hasDeletePermission = true;
+                    this.hasEditPermission = true;
+                  } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
+                    const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
+                    console.log('Group Permissions:', groupPermissions);
+
+
+                    this.hasAddPermission = this.checkGroupPermission('add_branchgeofence', groupPermissions);
+                    console.log('Has add permission:', this.hasAddPermission);
+
+                    this.hasEditPermission = this.checkGroupPermission('change_branchgeofence', groupPermissions);
+                    console.log('Has edit permission:', this.hasEditPermission);
+
+                    this.hasDeletePermission = this.checkGroupPermission('delete_branchgeofence', groupPermissions);
+                    console.log('Has delete permission:', this.hasDeletePermission);
+
+
+                    this.hasViewPermission = this.checkGroupPermission('view_branchgeofence', groupPermissions);
+                    console.log('Has view permission:', this.hasViewPermission);
+
+
+                  } else {
+                    console.error('No groups found in data or groups array is empty.', firstItem);
+                  }
+                } else {
+                  console.error('Permissions data is not an array or is empty.', permissionsData);
+                }
+
+                // Fetching designations after checking permissions
+                // this.fetchDesignations(selectedSchema);
+              }
+
+              catch (error) {
+                console.error('Error fetching permissions:', error);
+              }
+            } else {
+              console.error('No schema selected.');
+            }
+
+          }
+        },
+        (error) => {
+          console.error('Failed to fetch user details:', error);
+        }
+      );
     }
   }
-    
-    checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+
+  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
+  }
+
+  toggleAllSelectionEmp(): void {
+    if (this.selectEmp) {
+      if (this.allSelectedEmp) {
+
+        this.selectEmp.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectEmp.options.forEach((item: MatOption) => item.deselect());
+      }
     }
-    
-    toggleAllSelectionEmp(): void {
-      if (this.selectEmp) {
-        if (this.allSelectedEmp) {
-          
-          this.selectEmp.options.forEach((item: MatOption) => item.select());
-        } else {
-          this.selectEmp.options.forEach((item: MatOption) => item.deselect());
-        }
-      }
-    }
+  }
 
-    LoadEmployees(callback?: Function) {
-      const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-
-      console.log('schemastore',selectedSchema )
-      // Check if selectedSchema is available
-      if (selectedSchema) {
-        this.employeeService.getemployeesMasterNew(selectedSchema,savedIds).subscribe(
-          (result: any) => {
-            this.Employees = result;
-            console.log(' fetching Employees:');
-            if (callback) callback();
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
-        );
-      }
-      }
-    
-  
-  
-    
-  
-   registerButtonClicked = false;
-  
-  
-  
-  
-  
-
-      fetchEmployees(schema: string, branchIds: number[]): void {
-        this.isLoading = true;
-        this.employeeService.getGeofenceNew(schema, branchIds).subscribe({
-          next: (data: any) => {
-            // Filter active employees
-            this.geofencepol = data;
-    
-            this.isLoading = false;
-          },
-          error: (err) => {
-            console.error('Fetch error:', err);
-            this.isLoading = false;
-          }
-        });
-      }
-  
-  
-  
-    loadUsers(callback?: Function): void {
-      
+  LoadEmployees(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore', selectedSchema)
     // Check if selectedSchema is available
     if (selectedSchema) {
-      this.userService.getApprover(selectedSchema).subscribe(
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
         (result: any) => {
-          this.Users = result;
-          console.log(' fetching Companies:');
-              if (callback) callback();
-  
+          this.Employees = result;
+          console.log(' fetching Employees:');
+          if (callback) callback();
         },
         (error) => {
           console.error('Error fetching Companies:', error);
         }
       );
     }
+  }
+
+
+
+
+
+  registerButtonClicked = false;
+
+
+
+
+
+
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.employeeService.getGeofenceNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Filter active employees
+        this.geofencepol = data;
+
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+
+  loadUsers(callback?: Function): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.userService.getApprover(selectedSchema).subscribe(
+        (result: any) => {
+          this.Users = result;
+          console.log(' fetching Companies:');
+          if (callback) callback();
+
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
     }
-  
-       mapUsersNameToId() {
-  
+  }
+
+  mapUsersNameToId() {
+
     if (!this.Users || !this.editAsset?.approver) return;
-  
+
     const emp = this.Users.find(
       (e: any) => e.username === this.editAsset.approver
     );
-  
+
     if (emp) {
       this.editAsset.approver = emp.id;  // convert to ID for dropdown
     }
-  
+
     console.log("Mapped employee_id:", this.editAsset.approver);
   }
-      
-  
-  
-  
-        
+
+
+
+
+
   isgeofence: boolean = false;
-  
-  
-  
-  
-        openPopus():void{
-          this.isgeofence = true;
 
-            this.branch = [];
 
-  // ✅ Auto select first branch
-  if (this.Branches && this.Branches.length > 0) {
 
-    this.branch = [this.Branches[0].id];
+
+  openPopus(): void {
+    this.isgeofence = true;
+
+    this.branch = [];
+
+    setTimeout(()=>{
+
+      this.initMap();
+
+      this.map.invalidateSize();
+
+  },300);
+
+
+    // ✅ Auto select first branch
+    if (this.Branches && this.Branches.length > 0) {
+
+      this.branch = [this.Branches[0].id];
+
+    }
 
   }
-  
-        }
-      
-       // 2. Update your close method to destroy the map
-closeapplicationModal() {
-  this.isgeofence = false; // Hide modal
 
-  if (this.map) {
-    this.map.remove(); // This destroys the map instance correctly
-    (this.map as any) = null; // Clear the variable
-  }
-  
-  this.resetForm();
-}
-  
-  
-  
-        
-  
-  
-  
-    showEditBtn: boolean = false;
-  
-    EditShowButtons() {
-      this.showEditBtn = !this.showEditBtn;
-    }
-  
-  
-    Delete: boolean = false;
-    allSelecteds: boolean = false;
-  
-    toggleCheckboxes() {
-      this.Delete = !this.Delete;
-    }
-  
-    toggleSelectAllEmployees() {
-      this.allSelecteds = !this.allSelecteds;
-      this.geofencepol.forEach(employee => employee.selected = this.allSelecteds);
-  
-    }
-  
-    onCheckboxChange(employee: number) {
-      // No need to implement any logic here if you just want to change the style.
-      // You can add any additional logic if needed.
-    }
-  
-  
-  
-    isEditModalOpen: boolean = false;
-    editAsset: any = {}; // holds the asset being edited
-  
-openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
+  // 2. Update your close method to destroy the map
+  closeapplicationModal() {
+    this.isgeofence = false; // Hide modal
 
-  // ✅ IMPORTANT: Convert branch to array for mat-select multiple
-  if (this.editAsset.branch && !Array.isArray(this.editAsset.branch)) {
-    this.editAsset.branch = [this.editAsset.branch];
+    if(this.map){
+
+      this.map.remove();
+
+      this.map=null as any;
+
   }
 
-  this.isEditModalOpen = true;
-}
+    // if (this.map) {
+    //   this.map.remove(); // This destroys the map instance correctly
+    //   (this.map as any) = null; // Clear the variable
+    // }
 
-  
-    closeEditModal(): void {
-      this.isEditModalOpen = false;
-      this.editAsset = {};
+    this.resetForm();
+  }
+
+
+
+
+
+
+
+  showEditBtn: boolean = false;
+
+  EditShowButtons() {
+    this.showEditBtn = !this.showEditBtn;
+  }
+
+
+  Delete: boolean = false;
+  allSelecteds: boolean = false;
+
+  toggleCheckboxes() {
+    this.Delete = !this.Delete;
+  }
+
+  toggleSelectAllEmployees() {
+    this.allSelecteds = !this.allSelecteds;
+    this.geofencepol.forEach(employee => employee.selected = this.allSelecteds);
+
+  }
+
+  onCheckboxChange(employee: number) {
+    // No need to implement any logic here if you just want to change the style.
+    // You can add any additional logic if needed.
+  }
+
+
+
+  isEditModalOpen: boolean = false;
+  editAsset: any = {}; // holds the asset being edited
+
+  openEditModal(asset: any): void {
+    this.editAsset = { ...asset };
+
+    // ✅ IMPORTANT: Convert branch to array for mat-select multiple
+    if (this.editAsset.branch && !Array.isArray(this.editAsset.branch)) {
+      this.editAsset.branch = [this.editAsset.branch];
     }
-  
-  
-    deleteSelectedGeoFence() {
-      const selectedEmployeeIds = this.geofencepol
-        .filter(employee => employee.selected)
-        .map(employee => employee.id);
-  
-      if (selectedEmployeeIds.length === 0) {
-        alert('No States selected for deletion.');
-        return;
-      }
-  
-      if (confirm('Are you sure you want to delete the selected Geo Fence ?')) {
-  
+
+    this.isEditModalOpen = true;
+  }
+
+
+  closeEditModal(): void {
+    this.isEditModalOpen = false;
+    this.editAsset = {};
+
+  }
+
+
+  deleteSelectedGeoFence() {
+    const selectedEmployeeIds = this.geofencepol
+      .filter(employee => employee.selected)
+      .map(employee => employee.id);
+
+    if (selectedEmployeeIds.length === 0) {
+      alert('No States selected for deletion.');
+      return;
+    }
+
+    if (confirm('Are you sure you want to delete the selected Geo Fence ?')) {
+
       let total = selectedEmployeeIds.length;
       let completed = 0;
-  
-        selectedEmployeeIds.forEach(categoryId => {
-          this.employeeService.deleteGeofence(categoryId).subscribe(
-            () => {
-              console.log(' Geo Fence deleted successfully:', categoryId);
-              // Remove the deleted employee from the local list
-              this.geofencepol = this.geofencepol.filter(employee => employee.id !== categoryId);
-  
-                        completed++;
-  
-              if (completed === total) {          
+
+      selectedEmployeeIds.forEach(categoryId => {
+        this.employeeService.deleteGeofence(categoryId).subscribe(
+          () => {
+            console.log(' Geo Fence deleted successfully:', categoryId);
+            // Remove the deleted employee from the local list
+            this.geofencepol = this.geofencepol.filter(employee => employee.id !== categoryId);
+
+            completed++;
+
+            if (completed === total) {
               alert(' Geo Fence deleted successfully');
               window.location.reload();
-              }
-  
-            },
-            (error) => {
-              console.error('Error deleting Geo Fence:', error);
-              alert('Error deleting Geo Fence: ' + error.statusText);
             }
-          );
-        });
-      }
+
+          },
+          (error) => {
+            console.error('Error deleting Geo Fence:', error);
+            alert('Error deleting Geo Fence: ' + error.statusText);
+          }
+        );
+      });
     }
-  
-  
-updateGeoFenceing(): void {
-  if (!this.editAsset.id) {
-    alert('Missing Geo Fence ID');
-    return;
   }
 
-  // ✅ Convert branch array → single pk
-  const payload = {
-    ...this.editAsset,
-    branch: Array.isArray(this.editAsset.branch)
-      ? this.editAsset.branch[0]
-      : this.editAsset.branch
-  };
 
-  this.employeeService.updateGeofence(this.editAsset.id, payload).subscribe(
-    () => {
-      alert('Geo Fence updated successfully!');
-      this.closeEditModal();
-       // combineLatest waits for both Schema and Branches to have a value
-       this.dataSubscription = combineLatest([
-        this.employeeService.selectedSchema$,
-        this.employeeService.selectedBranches$
-      ]).subscribe(([schema, branchIds]) => {
-        if (schema) {
-          this.fetchEmployees(schema, branchIds);  
-          
-
-        }
-      });
-    },
-    (error) => {
-      console.error('Error updating Geo Fence:', error);
-
-      let errorMsg = 'Update failed';
-      if (error?.error && typeof error.error === 'object') {
-        errorMsg = Object.keys(error.error)
-          .map(key => `${key}: ${error.error[key].join(', ')}`)
-          .join('\n');
-      }
-
-      alert(errorMsg);
+  updateGeoFenceing(): void {
+    if (!this.editAsset.id) {
+      alert('Missing Geo Fence ID');
+      return;
     }
-  );
-}
 
-  
-  
-              //  loadBranch(): void {
-              
-              //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-              
-              //   console.log('schemastore',selectedSchema )
-              //   // Check if selectedSchema is available
-              //   if (selectedSchema) {
-              //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-              //       (result: any) => {
-              //         this.Branches = result;
-              //         console.log(' fetching Companies:');
-              
-              //       },
-              //       (error) => {
-              //         console.error('Error fetching Companies:', error);
-              //       }
-              //     );
-              //   }
-              //   }
+    // ✅ Convert branch array → single pk
+    const payload = {
+      ...this.editAsset,
+      branch: Array.isArray(this.editAsset.branch)
+        ? this.editAsset.branch[0]
+        : this.editAsset.branch
+    };
+
+    this.employeeService.updateGeofence(this.editAsset.id, payload).subscribe(
+      () => {
+        alert('Geo Fence updated successfully!');
+        this.closeEditModal();
+        // combineLatest waits for both Schema and Branches to have a value
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);
 
 
-loadBranch(callback?: Function): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (selectedSchema) {
-    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any[]) => {
-
-        const sidebarSelectedIds: number[] =
-          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-
-        if (sidebarSelectedIds.length > 0) {
-          this.Branches = result.filter(branch =>
-            sidebarSelectedIds.includes(branch.id)
-          );
-        } else {
-          this.Branches = result;
-        }
-
-        // ✅ FIX: auto select, DON'T overwrite array
-        if (this.Branches.length === 1) {
-          this.branch = this.Branches[0].id; // for single select
-          // OR if multi-select:
-          // this.branch = [this.Branches[0].id];
-        }
-
-        console.log('Filtered branches:', this.Branches);
-
-        if (callback) callback();
+          }
+        });
       },
       (error) => {
-        console.error('Error fetching branches:', error);
+        console.error('Error updating Geo Fence:', error);
+
+        let errorMsg = 'Update failed';
+        if (error?.error && typeof error.error === 'object') {
+          errorMsg = Object.keys(error.error)
+            .map(key => `${key}: ${error.error[key].join(', ')}`)
+            .join('\n');
+        }
+
+        alert(errorMsg);
       }
     );
   }
+
+
+
+  //  loadBranch(): void {
+
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  //   console.log('schemastore',selectedSchema )
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.Branches = result;
+  //         console.log(' fetching Companies:');
+
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  //   }
+
+
+  loadBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+
+          const sidebarSelectedIds: number[] =
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch =>
+              sidebarSelectedIds.includes(branch.id)
+            );
+          } else {
+            this.Branches = result;
+          }
+
+          // ✅ FIX: auto select, DON'T overwrite array
+          if (this.Branches.length === 1) {
+            this.branch = this.Branches[0].id; // for single select
+            // OR if multi-select:
+            // this.branch = [this.Branches[0].id];
+          }
+
+          console.log('Filtered branches:', this.Branches);
+
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
+
+
+  toggleAllSelectionBrach(): void {
+    if (this.selectBrach) {
+      if (this.allSelectedBrach) {
+        this.selectBrach.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+
+
+
+
+  editingGeofenceId: number | null = null;
+
+
+
+
+
+
+
+
+  editGeofence(data:any){
+
+    setTimeout(()=>{
+
+      this.initMap();
+
+      this.map.invalidateSize();
+
+  },300);
+
+    this.editingGeofenceId=data.id;
+    
+    this.isgeofence=true;
+    
+    this.location_name=data.location_name;
+    
+    this.latitude=data.latitude;
+    
+    this.longitude=data.longitude;
+    
+    this.radius=data.radius;
+    
+    this.branch=[...data.branch];
+    
+    this.employee=[...data.employee];
+    
+    setTimeout(()=>{
+    
+    this.map.setView(
+    [this.latitude,this.longitude],
+    17
+    );
+    
+    this.updateLocation(
+    this.latitude,
+    this.longitude
+    );
+    
+    this.updateCircle();
+    
+    },300);
+    
+    }
+
+
+
+    updateGeofence(
+
+      id:number,
+      
+      formData:FormData
+      
+      ){
+      
+      const schema=localStorage.getItem("selectedSchema");
+      
+      return this.http.put(
+      
+      `${this.apiUrl}/organisation/api/branch-geofence/${id}/?schema=${schema}`,
+      
+      formData
+      
+      );
+      
+      }
+
+
+      deleteGeofence(id:number){
+
+        if(!confirm("Delete this Geofence?")){
+        
+        return;
+        
+        }
+        
+        this.employeeService.deleteGeofence(id)
+        
+        .subscribe({
+        
+        next:()=>{
+        
+        alert("Deleted Successfully");
+        
+        this.selectedLocation=null;
+        
+        // this.fetchEmployees(
+        
+        // this.selectedSchema,
+        
+        // this.branchIds
+        
+        // );
+
+         // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
+
+
+      }
+    });
+
+        
+        },
+        
+        error:(err)=>{
+        
+        console.log(err);
+        
+        }
+        
+        });
+        
+        }
+
+
+        resetForm(){
+
+          this.editingGeofenceId=null;
+          
+          this.location_name='';
+          
+          this.latitude=0;
+          
+          this.longitude=0;
+          
+          this.radius=50;
+          
+          this.branch=[];
+          
+          this.employee=[];
+          
+          this.searchResults=[];
+          
+          }
+
+
+
+
 }
 
-            
-                  toggleAllSelectionBrach(): void {
-                    if (this.selectBrach) {
-                      if (this.allSelectedBrach) {
-                        this.selectBrach.options.forEach((item: MatOption) => item.select());
-                      } else {
-                        this.selectBrach.options.forEach((item: MatOption) => item.deselect());
-                      }
-                    }
-                  }
-              
-                }
-              
-                  
 
-            
-                    
-                  
 
-  
-  
-  
- 
+
+
+
+
+
+
+
+
 
 

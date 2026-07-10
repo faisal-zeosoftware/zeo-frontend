@@ -1526,20 +1526,32 @@ deleteEmpsalary(categoryId: number): Observable<any> {
   return this.http.delete(apiUrl);
 }
 
-deleteGeofence(categoryId: number): Observable<any> {
-  // const url = `${this.baseUrl}/Catogory/${categoryId}`;
-  // return this.http.delete(url);
+// deleteGeofence(categoryId: number): Observable<any> {
+//   // const url = `${this.baseUrl}/Catogory/${categoryId}`;
+//   // return this.http.delete(url);
 
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  if (!selectedSchema) {
-    console.error('No schema selected.');
-    return throwError('No schema selected.'); // Return an error observable if no schema is selected
+//   const selectedSchema = localStorage.getItem('selectedSchema');
+//   if (!selectedSchema) {
+//     console.error('No schema selected.');
+//     return throwError('No schema selected.'); // Return an error observable if no schema is selected
+//   }
+ 
+//   const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/${categoryId}/?schema=${selectedSchema}`;
+ 
+//   return this.http.delete(apiUrl);
+// }
+
+deleteGeofence(id:number){
+
+  const schema=localStorage.getItem("selectedSchema");
+  
+  return this.http.delete(
+  
+  `${this.apiUrl}/organisation/api/branch-geofence/${id}/?schema=${schema}`
+  
+  );
+  
   }
- 
-  const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/${categoryId}/?schema=${selectedSchema}`;
- 
-  return this.http.delete(apiUrl);
-}
 
 
 updatepayrollApprovallevel(id: number, data: any): Observable<any> {

@@ -434,7 +434,7 @@ async registerCheckOut(): Promise<void> {
         (result: any) => {
           this.Employees = result;
           console.log(' fetching Employees:');
-          if (callback) callback();
+          if (callback) callback(); 
         },
         (error) => {
           console.error('Error fetching Employees:', error);
@@ -497,6 +497,25 @@ closeFaceDashboard() {
         this.isLoading = false;
       }
     });
+  }
+
+  formatLogTime(timestamp: string): string {
+
+    if (!timestamp) {
+      return '-';
+    }
+  
+    // Remove microseconds
+    const formattedTimestamp = timestamp.replace(/\.\d+/, '');
+  
+    const date = new Date(formattedTimestamp);
+  
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  
   }
 
 
@@ -583,6 +602,9 @@ filterEmployees() {
   );
 
 }
+
+
+
   
     
 

@@ -219,7 +219,25 @@
                         [disabled]="isLoading"
                         (click)="CreateGeofence()">
                   <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-                  {{ isLoading ? 'Saving...' : 'Add Geofence' }}
+                  {{
+                    isLoading
+                    ?
+                    
+                    'Saving...'
+                    
+                    :
+                    
+                    editingGeofenceId
+                    
+                    ?
+                    
+                    'Update Geofence'
+                    
+                    :
+                    
+                    'Add Geofence'
+                    
+                    }}
                 </button>  
                       </div>
                     </div>
@@ -370,6 +388,73 @@
         <div class="row g-3" *ngIf="selectedLocation">
           <div class="col-md-5">
             <div class="card border-0 shadow-sm h-100 rounded-15">
+
+              <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          
+                  <div class="d-flex align-items-center">
+                      <div class="icon-circle bg-primary-subtle me-2">
+                          <i class="fa fa-map-marker-alt text-primary"></i>
+                      </div>
+          
+                      <div>
+                          <h6 class="mb-0 fw-bold">
+                              {{ selectedLocation.location_name.split(',')[0] }}
+                          </h6>
+          
+                          <small class="text-muted">
+                              {{ selectedLocation.location_name }}
+                          </small>
+                      </div>
+                  </div>
+          
+                  <div class="d-flex gap-2">
+          
+                    <div class="dropdown">
+
+                      <button
+                          class="btn btn-light btn-sm shadow-none"
+                          data-bs-toggle="dropdown">
+                  
+                          <i class="fa fa-ellipsis-v"></i>
+                  
+                      </button>
+                  
+                      <ul class="dropdown-menu dropdown-menu-end shadow">
+                  
+                          <li>
+                  
+                              <a class="dropdown-item"
+                                 (click)="editGeofence(selectedLocation)">
+                  
+                                  <i class="fa fa-edit text-primary me-2"></i>
+                  
+                                  Edit
+                  
+                              </a>
+                  
+                          </li>
+                  
+                          <li>
+                  
+                              <a class="dropdown-item text-danger"
+                                 (click)="deleteGeofence(selectedLocation.id)">
+                  
+                                  <i class="fa fa-trash me-2"></i>
+                  
+                                  Delete
+                  
+                              </a>
+                  
+                          </li>
+                  
+                      </ul>
+                  
+                  </div>
+          
+                  </div>
+          
+              </div>
+          
               <div class="card-body p-3">
                 <div class="d-flex align-items-center mb-3">
                   <div class="icon-circle bg-primary-subtle me-2">
@@ -411,7 +496,8 @@
                   <small class="text-muted d-block">GPS: {{selectedLocation.latitude}}, {{selectedLocation.longitude}}</small>
                 </div>
               </div>
-            </div>
+          
+          </div>
           </div>
       
           <div class="col-md-7">

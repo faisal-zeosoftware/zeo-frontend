@@ -565,26 +565,6 @@
 
         <div class="tab-content">
           <div id="signup" *ngIf="activeTab === 'signup'">
-            <!-- Your Create Salary Component content -->
-            <div class="row mb-4">
-              <!-- Quick Stats Cards -->
-              <div class="col-md-3 mb-4" *ngFor="let Empholiday of employeesec.leave_balance">
-                <div class="card h-100 border-0 shadow-sm">
-                  <div class="card-body">
-                    <h5 class="card-title">{{Empholiday.leave_type}}</h5>
-                    <div class="d-flex align-items-center" *ngIf="Empholiday.include_dashboard">
-                      <h2 class="mb-0 me-2">{{Empholiday.balance}}</h2>
-                      <span class="text-success"><i class="bi bi-arrow-up-short"></i> {{Empholiday.openings}}</span>
-                    </div>
-                    <div class="progress mt-3" style="height: 5px;">
-                      <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;" aria-valuenow="85"
-                        aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
 
             <div class="row">
               <!-- Course Schedule -->
@@ -666,6 +646,32 @@
               </div>
             
             </div>
+
+
+
+
+            <!-- Your Create Salary Component content -->
+            <div class="row mb-4">
+              <!-- Quick Stats Cards -->
+              <div class="col-md-3 mb-4" *ngFor="let Empholiday of employeesec.leave_balance">
+                <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                    <h5 class="card-title">{{Empholiday.leave_type}}</h5>
+                    <div class="d-flex align-items-center" *ngIf="Empholiday.include_dashboard">
+                      <h2 class="mb-0 me-2">{{Empholiday.balance}}</h2>
+                      <span class="text-success"><i class="bi bi-arrow-up-short"></i> {{Empholiday.openings}}</span>
+                    </div>
+                    <div class="progress mt-3" style="height: 5px;">
+                      <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;" aria-valuenow="85"
+                        aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          
 
             <div class="row">
                <div class="col-md-5 mb-4">

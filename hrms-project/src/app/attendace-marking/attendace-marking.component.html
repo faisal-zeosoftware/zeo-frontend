@@ -88,26 +88,7 @@
   </div>
 
 </div>
-          <!-- <div class="col-md-4">
-                <label>Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Payment  date"
-                [ngModelOptions]="{standalone: true}">
-          </div> -->
-
-
-          <!-- <div class="col-md-4" >  
-              <label>CheckIn time</label>
-              <input type="time"  class="form-control" required  [(ngModel)]="check_in_time"  placeholder="Enter start time "
-              [ngModelOptions]="{standalone: true}">
-         </div>
-
-          <div class="col-md-4" >  
-              <label>CheckOut time</label>
-              <input type="time"  class="form-control" required  [(ngModel)]="check_out_time"  placeholder="Enter start time "
-              [ngModelOptions]="{standalone: true}">
-         </div> -->
-
-       
+        
 
 
         </div>
@@ -283,8 +264,8 @@
                                     {{ log.log_type }}
                                   </span>
                                 </td>
-                                <td>{{ log.timestamp }}</td>
-                                <td><small>{{ log.location || 'Main Gate' }}</small></td>
+                                <td>{{ formatLogTime(log.timestamp) }}</td>
+                                <td><small>{{ log.location || 'Null' }}</small></td>
                                 <td><small class="badge-method">{{ log.is_face_verified || 'No' }}</small></td>
                               </tr>
                               <tr *ngIf="!docs.logs || docs.logs.length === 0">
