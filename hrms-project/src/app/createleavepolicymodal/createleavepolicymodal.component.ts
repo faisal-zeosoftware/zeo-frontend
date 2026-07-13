@@ -1704,13 +1704,65 @@ export class CreateleavepolicymodalComponent {
   
         };
   
-        return this.http.post(
-  
+        this.http.post(
           `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-  
           payload
-  
-        );
+        ).subscribe({
+        
+          next: (response: any) => {
+        
+            alert(
+              response?.message ||
+              response?.success ||
+              'Pay Rule Saved Successfully'
+            );
+        
+            this.currentStep = 3;
+        
+          },
+        
+          error: (err) => {
+        
+            console.error('Pay Rule Save Error:', err);
+        
+            let errorMessage = 'Pay Rule Save Failed';
+        
+            if (err?.error) {
+        
+              if (typeof err.error === 'string') {
+        
+                errorMessage = err.error;
+        
+              } else if (err.error.message) {
+        
+                errorMessage = err.error.message;
+        
+              } else if (err.error.error) {
+        
+                errorMessage = err.error.error;
+        
+              } else {
+        
+                const firstKey =
+                  Object.keys(err.error)[0];
+        
+                if (firstKey) {
+        
+                  errorMessage =
+                    err.error[firstKey][0] ||
+                    err.error[firstKey];
+        
+                }
+        
+              }
+        
+            }
+        
+            alert(errorMessage);
+        
+          }
+        
+        });
   
       });
   
