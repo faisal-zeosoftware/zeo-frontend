@@ -101,7 +101,7 @@ margin-right: 10px;
 .modal {
     display: block; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 5; /* Sit on top */
     margin-left: auto;
     margin-right: auto;
     top: 0;
@@ -278,6 +278,21 @@ input:focus-visible {
 
 .hidden-file-input {
   display: none;
+}
+
+      /* Sticky columns */
+.sticky-left {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.sticky-right {
+  position: sticky;
+  right: 0;
+  background: #fff;
+  z-index: 2;
 }
 
 

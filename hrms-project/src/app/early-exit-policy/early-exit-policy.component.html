@@ -929,7 +929,7 @@
         <table width="100%">
           <thead class="thead-dark">
             <tr>
-              <th>No</th>
+              <th class="sticky-left">No</th>
               <th>Leave Days to Deduct</th>
               <th>Occurrence Limit</th>
               <th>Penalty Type</th>
@@ -941,13 +941,13 @@
               <th>Category</th>
               <th>Designation</th>
               <th>Employee</th>
-              <th>Action</th>
+              <th class="sticky-right">Actions</th>
             </tr>
           </thead>
 
           <tbody>
             <tr *ngFor="let docs of LoanTypes; let i = index">
-              <td>{{ i + 1 }}</td>
+             <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
 
               <td>{{ docs.leave_days_to_deduct }}</td>
 
@@ -987,7 +987,7 @@
                 {{ docs.employee?.length ? docs.employee.join(", ") : "Null" }}
               </td>
 
-              <td>
+              <td class="sticky-right" data-label="Actions">
                 <button
                   mat-fab
                   color="primary"

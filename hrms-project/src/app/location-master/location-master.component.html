@@ -60,12 +60,14 @@
 
      
 
- <div class="com_list table-scroll mt-4" *ngIf="hasViewPermission">
+        <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-        <table class="table-container" width="100%">
+            <div style="overflow-x: auto; width: 100%;">
+
+          <table width="100%">
             <thead>
               <tr>
-                <th>No</th>
+                 <th class="sticky-left">No</th>
                 <th> Company</th>
                 <th>Country</th>
                 <th>State</th>
@@ -80,14 +82,14 @@
                 <th>financial year Start Date</th>
                
 
-                <th>Action</th>
+                <th class="sticky-right">Actions</th>
 
               </tr>
             </thead>
             <tbody>
                 
               <tr *ngFor="let schema of Schemas;let i = index">
-                <td>{{ i + 1 }}</td> 
+                 <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
                 <td>{{ schema.name }}</td>
                 <td>{{ schema.country }}</td>
                 <td>
@@ -109,7 +111,7 @@
               
 
                 
-                <td class="text-center">
+                <td class="sticky-right" data-label="Actions">
                   <button
                     mat-fab
                     color="primary"

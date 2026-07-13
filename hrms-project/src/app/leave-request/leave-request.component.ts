@@ -373,30 +373,32 @@ onEmployeeChange() {
   );
 }
 
-  onEmployeeChangeEdit() {
+onEmployeeChangeEdit() {
 
+  const selectedLeaveType = this.editAsset.leave_type;
 
-    if (!this.editAsset.selectedEmployee) return;
+  this.leaveService.getLeaveBalance(this.editAsset.selectedEmployee).subscribe(
+    (data: any) => {
 
-    this.leaveService.getLeaveBalance(this.editAsset.selectedEmployee).subscribe(
-      (data: any) => {
+      this.leaveBalances = data.leave_balance;
+      this.allLeaveTypes = data.available_leave_types;
 
-        this.leaveBalances = data.leave_balance;
-        this.allLeaveTypes = data.available_leave_types;
+      const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
 
-        // Filter available leave types based on the employee's leave balance
-        const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
-        this.LeaveTypes = this.allLeaveTypes.filter(lt => leaveTypeNames.includes(lt.name));
+      this.LeaveTypes = this.allLeaveTypes.filter(lt =>
+        leaveTypeNames.includes(lt.name)
+      );
 
-        console.log('Filtered Leave Types:', this.LeaveTypes);
-      },
-      (error: any) => {
-        console.error('Error fetching leave balance:', error);
-        alert('something went wrong')
+      const leave = this.LeaveTypes.find(
+        (l: any) => l.name === selectedLeaveType
+      );
+
+      if (leave) {
+        this.editAsset.leave_type = leave.id;
       }
-    );
-  }
-
+    }
+  );
+}
 
 //   LoadEmployee(callback?: Function) {
 //     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -426,7 +428,8 @@ loadEmp(callback?: Function): void {
     this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
         this.Employees = result;
-        this.filteredEmployees = result; // 👈 initialize
+        this.filteredEmployees = result; 
+         console.log(this.Employees[0]);// 👈 initialize
 
         if (callback) callback();
       },
@@ -438,15 +441,23 @@ loadEmp(callback?: Function): void {
 }
 
 mapEmpNameToId() {
+
   if (!this.Employees || !this.editAsset?.employee) return;
 
-  const emp = this.Employees.find(
-    (e: any) => e.emp_code === this.editAsset.employee
-  );
+  const emp = this.Employees.find((e: any) => {
+
+    const fullName = `${e.emp_first_name} ${e.emp_last_name}`.trim();
+
+    return fullName === this.editAsset.employee ||
+           e.emp_first_name === this.editAsset.employee;
+
+  });
 
   if (emp) {
-    this.editAsset.selectedEmployee = emp.id; // ✅ IMPORTANT
+    this.editAsset.selectedEmployee = emp.id;
   }
+
+  console.log('Selected Employee ID:', this.editAsset.selectedEmployee);
 }
   
 
@@ -591,58 +602,23 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+
+  console.log(asset);
+
   this.editAsset = { ...asset };
 
-  this.isEditModalOpen = true;
+  this.mapBranchesNameToId();
 
-  // ----------------------------
-  // 🔥 FIX EMPLOYEE
-  // ----------------------------
-  if (this.editAsset.employee) {
+  this.mapEmpNameToId();
 
-    // Case 1: object
-    if (typeof this.editAsset.employee === 'object') {
-      this.editAsset.selectedEmployee = this.editAsset.employee.id;
-    }
+  this.mapLeaveTypeNameToId();
 
-    // Case 2: string (emp_code)
-    else if (typeof this.editAsset.employee === 'string') {
-      const emp = this.Employees.find(
-        (e: any) => e.emp_code === this.editAsset.employee
-      );
-      this.editAsset.selectedEmployee = emp ? emp.id : null;
-    }
-
-    // Case 3: already id
-    else {
-      this.editAsset.selectedEmployee = this.editAsset.employee;
-    }
-  }
-
-  // ----------------------------
-  // 🔥 FIX LEAVE TYPE
-  // ----------------------------
-  if (this.editAsset.leave_type) {
-
-    // Case 1: object
-    if (typeof this.editAsset.leave_type === 'object') {
-      this.editAsset.leave_type = this.editAsset.leave_type.id;
-    }
-
-    // Case 2: string name
-    else if (typeof this.editAsset.leave_type === 'string') {
-      const lt = this.LeaveTypes.find(
-        (l: any) => l.name === this.editAsset.leave_type
-      );
-      this.editAsset.leave_type = lt ? lt.id : null;
-    }
-
-    // Case 3: already id → keep as is
-  }
+  this.onEmployeeChangeEdit();
 
   this.calculateEditTotalDays();
-}
 
+  this.isEditModalOpen = true;
+}
 closeEditModal(): void {
 this.isEditModalOpen = false;
 this.editAsset = {};

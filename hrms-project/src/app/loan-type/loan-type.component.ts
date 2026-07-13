@@ -399,7 +399,8 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
+this.editAsset = { ...asset };
+this.mapBranchesNameToId(); // copy asset data
 this.isEditModalOpen = true;
 }
 

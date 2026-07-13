@@ -746,7 +746,7 @@
         <table class="table table-striped custom-table" width="100%">
           <thead>
             <tr>
-              <th>No</th>
+              <th class="sticky-left">No</th>
               <th>Days Before Expiry</th>
               <th>Days After Expiry</th>
               <th>Branch</th>
@@ -754,12 +754,12 @@
               <th>Department</th>
               <th>Category</th>
               <th>Notify Users</th>
-              <th>Action</th>
+              <th class="sticky-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let docs of NotSettings; let i = index">
-              <td data-label="No">{{ i + 1 }}</td>
+              <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
               <td data-label="Days Before Expiry">
                 {{ docs.days_before_expiry }}
               </td>
@@ -771,7 +771,7 @@
               <td data-label="Department">{{ docs.Department }}</td>
               <td data-label="Category">{{ docs.Category }}</td>
               <td data-label="Notify Users">{{ docs.notify_users }}</td>
-              <td data-label="Action">
+              <td class="sticky-right" data-label="Actions">
                 <button
                   mat-fab
                   color="primary"

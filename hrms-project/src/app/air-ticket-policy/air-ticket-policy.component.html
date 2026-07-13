@@ -488,16 +488,16 @@
           <table width="100%" *ngIf="hasViewPermission">
             <thead>
               <tr>
-                <th>No</th>
-                <th> Name</th>
+                <th class="sticky-left">No</th>
+                <th>Name</th>
                 <th>Frequency year</th>
                 <th>Amount</th>
-                <th> Allowance Type</th>
-                <th> Country </th>
-                <th> Department </th>
-                <th> Designation </th>
+                <th>Allowance Type</th>
+                <th>Country </th>
+                <th>Department </th>
+                <th>Designation </th>
 
-                <th> Category </th>
+                <th>Category </th>
 
 
 
@@ -505,13 +505,13 @@
           
                
           
-                <th>Action</th>
+                 <th class="sticky-right">Actions</th>
               </tr>
             </thead>
           
             <tbody>
               <tr *ngFor="let docs of LoanTypes; let i = index">
-                <td>{{ i + 1 }}</td>
+                <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
                 <td>{{ docs.name }}</td>
                 <td>{{ docs.frequency_years }}</td>
                 <td>{{ docs.amount }}</td>
@@ -529,7 +529,7 @@
           
                 <!-- Dynamic custom field values -->
             
-                <td>
+               <td class="sticky-right" data-label="Actions">
                   <button
                     mat-fab
 

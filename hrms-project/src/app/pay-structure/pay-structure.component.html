@@ -250,72 +250,121 @@
                   <hr />
               
                   <form>
-                    <div class="row mb-4">
-                      <div class="col-md-12">
-                        <label class="form-label-custom">Select your work week*</label>
-                        <div class="work-week-group">
-                          <div *ngFor="let day of availableDays" 
-                               class="day-segment" 
-                               [class.active]="editAsset.working_days?.includes(day.key)"
-                               (click)="toggleEditDay(day.key)">
-                            {{ day.label }}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-              
-                    <div class="row">
-                      <div class="col-md-6">
-                        <label>Salary calculation type</label>
-                        <select class="form-control" [(ngModel)]="editAsset.salary_calculation_type" name="calc_type">
-                          <option value="CALENDAR_DAYS">Actual days in month</option>
-                          <option value="ORGANIZATION_DAYS">Organisation working days</option>
-                          <option value="FIXED_DAYS">Fixed Days</option>
+    <div class="row">
+                    
+                
 
-                        </select>
-                      </div>
-              
-                      <div class="col-md-6" *ngIf="editAsset.salary_calculation_type === 'FIXED'">
-                        <label> days</label>
-                        <input type="number" class="form-control" [(ngModel)]="editAsset.fixed_working_days" name="fixed_days">
-                      </div>
-              
-                      <div class="col-md-6">
-                        <label>Attendance cycle type</label>
-                        <select class="form-control" [(ngModel)]="editAsset.attendance_cycle_type" name="cycle_type">
-                          <option value="MONTH">Calendar Month</option>
-                          <option value="CUSTOM">Custom Cycle</option>
-                        </select>
-                      </div>
-              
-                      <div class="col-md-3" *ngIf="editAsset.attendance_cycle_type !== 'MONTH'">
-                        <label>Cycle Start</label>
-                        <input type="number" class="form-control" [(ngModel)]="editAsset.cycle_start_day" name="c_start">
-                      </div>
-                      <div class="col-md-3" *ngIf="editAsset.attendance_cycle_type !== 'MONTH'">
-                        <label>Cycle End</label>
-                        <input type="number" class="form-control" [(ngModel)]="editAsset.cycle_end_day" name="c_end">
-                      </div>
-              
+  
+ 
+      <div class="col-md-6" >
+        <label>Select Branch
+        </label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="branch"
+            name="branch"
+            [(ngModel)]="editAsset.branch"
+            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !branch}"
+          >
+          <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
+
+          </select>
+        </div>
+      </div>
+
+        
+      <div class="col-md-6">
+        <label>Salary calculation type</label>
+        <div class="custom-sel">
+          <select class="form-control"  [(ngModel)]="editAsset.salary_calculation_type" (ngModelChange)="onSalaryTypeChange()" [ngModelOptions]="{standalone: true}">
+            <option value="CALENDAR_DAYS">Actual days in month</option>
+            <option value="ORGANIZATION_DAYS">Organisation working days</option>
+            <option value="FIXED_DAYS">Fixed Days</option>
+
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6"  >
+        <label>Days</label>
+        <input type="number"
+               class="form-control"
+               [disabled]="salary_calculation_type === 'CALENDAR_DAYS'"
+               [(ngModel)]="editAsset.fixed_working_days"
+               placeholder="Enter day"
+               [ngModelOptions]="{standalone: true}">
+      </div>
+      
+  <div class="col-md-6">
+    <label>Attendance cycle type</label>
+    <div class="custom-sel">
+      <select class="form-control" [(ngModel)]="editAsset.attendance_cycle_type" [ngModelOptions]="{standalone: true}">
+        <option value="MONTH">Calendar Month</option>
+        <option value="CUSTOM">Custom Cycle</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
+
+    <div class="row">
+      <div class="col-md-6">
+                  
+        <label>Cycle start day</label>
+        <input type="number"  class="form-control" [(ngModel)]="editAsset.cycle_start_day"  placeholder="Enter cycle start day "
+         [ngModelOptions]="{standalone: true}" >
+    </div>
+    <div class="col-md-6">
+      <label>Cycle end day</label>
+      <input type="number"  class="form-control" [(ngModel)]="editAsset.cycle_end_day"  placeholder="Enter cycle end day"
+       [ngModelOptions]="{standalone: true}" >
+
+      </div>
+
+    </div>
+ 
+   
+</div>
+
+
+
+
+
+
+
+
+<!-- <div class="col-md-6" >
                    
-              
-                      <div class="col-md-6" *ngIf="editAsset.payday_type === 'FIXED_DAY'">
-                        <label>Payday</label>
-                        <input type="number" class="form-control" [(ngModel)]="editAsset.payday" name="p_day">
-                      </div>
-              
-                      <div class="col-md-6">
-                          <label>Start Month</label>
-                          <input type="month" class="form-control" [(ngModel)]="editAsset.payroll_start_month" name="start_month">
-                      </div>
-              
-                      <div class="col-md-6">
-                          <label>Branch</label>
-                          <select class="form-control" [(ngModel)]="editAsset.branch" name="branch_edit">
-                            <option *ngFor="let b of branches" [value]="b.id">{{ b.branch_name }}</option>
-                          </select>
-                      </div>
-                    </div>
+    <label>Payroll start month</label>
+   <input type="date"  class="form-control" [(ngModel)]="payroll_start_month"  placeholder="Enter payroll start month"
+    [ngModelOptions]="{standalone: true}" >
+   
+</div> -->
+
+<div class="col-md-6 mb-3">
+    <label>Start your first payroll from </label>
+    <input type="month" class="form-control" [(ngModel)]="editAsset.payroll_start_month" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !payroll_start_month}">
+</div>
+
+<div class="col-md-12 mt-2" *ngIf="payroll_start_month && payday">
+    <label class="text-muted small d-block">Select a pay date for your first payroll*</label>
+    <p class="mb-1"><strong>Pay Period: {{ formattedPayPeriod }}</strong></p>
+    
+    <div class="fake-input-display">
+        {{ calculatedPayDate }}
+        <mat-icon class="pull-right text-muted" style="font-size: 18px;">calendar_today</mat-icon>
+    </div>
+</div>
+
+     
+
+   
+   
+
+
+
+                  </div>
               
 
         <div class="row" >

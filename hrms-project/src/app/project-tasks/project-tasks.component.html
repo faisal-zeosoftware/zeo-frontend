@@ -554,7 +554,7 @@
           <table width="100%" *ngIf="hasViewPermission">
             <thead>
               <tr>
-                <th>No</th>
+                <th class="sticky-left">No</th>
                 <th>Title</th>
                 <th>Status</th>
                 <th>Start Date</th>
@@ -570,13 +570,13 @@
                 <th>Task Members</th>
 
                 <th>Documents</th>
-                <th>Action</th>
+                <th class="sticky-right">Actions</th>
               </tr>
             </thead>
           
             <tbody>
               <tr *ngFor="let docs of Tasks; let i = index">
-                <td data-label="No">{{ i + 1 }}</td>
+                <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
                 <td data-label="Title">{{ docs.title }}</td>
                 <td data-label="Status">{{ docs.status }}</td>
                 <td data-label="Start Date">{{ docs.start_date }}</td>
@@ -594,7 +594,7 @@
 
                 <!-- Dynamic custom field values -->
             
-                <td data-label="Action">
+                <td class="sticky-right" data-label="Actions">
                   <button
                     mat-fab
 

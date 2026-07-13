@@ -57,7 +57,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2>  Project Master</h2>
+                  <h2>Project Master</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -522,7 +522,7 @@
           <table width="100%" *ngIf="hasViewPermission">
             <thead>
               <tr>
-                <th>No</th>
+                <th class="sticky-left">No</th>
                 <th>Title</th>
                 <th>Status</th>
                 <th>Start Date</th>
@@ -536,13 +536,13 @@
                 <th>Members</th>
 
                 <th>Documents</th>
-                <th>Action</th>
+               <th class="sticky-right">Actions</th>
               </tr>
             </thead>
           
             <tbody>
               <tr *ngFor="let docs of LoanTypes; let i = index">
-                <td data-label="No">{{ i + 1 }}</td>
+               <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
                 <td data-label="Title">{{ docs.title }}</td>
                 <td data-label="Status">{{ docs.status }}</td>
                 <td data-label="Start Date">{{ docs.start_date }}</td>
@@ -558,7 +558,7 @@
 
                 <!-- Dynamic custom field values -->
             
-                <td data-label="Action">
+                <td class="sticky-right" data-label="Actions">
                   <button
                     mat-fab
 

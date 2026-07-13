@@ -101,7 +101,7 @@
   .modal {
     display: block; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
+    z-index: 5; /* Sit on top */
     margin-left: auto;
     margin-right: auto;
     top: 0;
@@ -146,6 +146,21 @@
     font-weight: 600;
     font-family: math;
   }
+
+  /* Sticky columns */
+.sticky-left {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.sticky-right {
+  position: sticky;
+  right: 0;
+  background: #fff;
+  z-index: 2;
+}
   
   
         /* Phones */

@@ -502,21 +502,29 @@ loadOvertimepolicy(callback?: Function): void {
   // }
 
 
-  openEditModal(asset: any): void {
-    // 1. Copy the asset data
-    this.editAsset = { ...asset };
-    
-    // 2. Ensure working_days is an array (Backend might send it as a string or array)
-    if (typeof this.editAsset.working_days === 'string') {
-      try {
-        this.editAsset.working_days = JSON.parse(this.editAsset.working_days);
-      } catch {
-        this.editAsset.working_days = [];
-      }
-    }
-  
-    this.isEditModalOpen = true;
+openEditModal(asset: any): void {
+
+  this.editAsset = { ...asset };
+
+
+  if (this.editAsset.payroll_start_month) {
+    this.editAsset.payroll_start_month =
+      this.editAsset.payroll_start_month.substring(0,7);
   }
+
+
+  if (typeof this.editAsset.working_days === 'string') {
+    try {
+      this.editAsset.working_days =
+        JSON.parse(this.editAsset.working_days);
+    } catch {
+      this.editAsset.working_days = [];
+    }
+  }
+
+
+  this.isEditModalOpen = true;
+}
 
 
   // Toggle logic specifically for the editAsset object
@@ -531,15 +539,38 @@ toggleEditDay(dayKey: string): void {
 }
 
 updatePayStr(): void {
-  // Use simple JSON object if your backend supports it, 
-  // or FormData if you prefer consistency with your Create method
+
+  let formattedPayrollDate = '';
+
+  if (this.editAsset.payroll_start_month) {
+
+    // If value is YYYY-MM from month input
+    if (this.editAsset.payroll_start_month.length === 7) {
+      formattedPayrollDate = this.editAsset.payroll_start_month + '-01';
+    } 
+    else {
+      formattedPayrollDate = this.editAsset.payroll_start_month;
+    }
+
+  }
+
+
   const payload = {
     ...this.editAsset,
-    // Ensure working_days is stringified if backend expects JSONField via FormData
-    working_days: JSON.stringify(this.editAsset.working_days) 
+
+    payroll_start_month: formattedPayrollDate,
+
+    working_days: JSON.stringify(this.editAsset.working_days)
   };
 
-  this.employeeService.updatelPayStructure(this.editAsset.id, payload).subscribe(
+
+  console.log("UPDATE PAYLOAD:", payload);
+
+
+  this.employeeService.updatelPayStructure(
+    this.editAsset.id,
+    payload
+  ).subscribe(
     (response) => {
       alert('Pay Structure updated successfully!');
       this.closeEditModal();
@@ -547,7 +578,7 @@ updatePayStr(): void {
     },
     (error) => {
       console.error('Update failed', error);
-      alert('Failed to update: ' + (error.error?.detail || 'Validation error'));
+      alert(JSON.stringify(error.error));
     }
   );
 }
