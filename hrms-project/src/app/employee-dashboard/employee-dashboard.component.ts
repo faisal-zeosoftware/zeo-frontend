@@ -18,6 +18,9 @@ import {combineLatest} from 'rxjs';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 
 
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+
   
 @Component({
   selector: 'app-employee-dashboard',
@@ -28,6 +31,10 @@ export class EmployeeDashboardComponent implements OnInit, AfterViewInit, OnDest
 
   // @ViewChild('video', { static: false }) videoElement!: ElementRef;
   @ViewChild('video') videoElement!: ElementRef<HTMLVideoElement>;
+
+  // Add these new properties inside your component class
+@ViewChild('attendanceChart') attendanceChartCanvas!: ElementRef;
+attendanceChart: any = null;
 
     private dataSubscription?: Subscription;
 
@@ -189,7 +196,7 @@ todayDate: string = '';
     this.getLocation();
     this.getLocationfacePunch();
     
-
+this.filterAttendanceChart();
 
     this.daysArray = Array.from({ length: 31 }, (_, i) => i + 1);
 
@@ -743,6 +750,8 @@ loadExpiredDoc(): void {
             this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
             this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
             this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
+
+            this.filterAttendanceChart();
     
           } else {
     
@@ -4251,6 +4260,93 @@ filterAttendance(): void {
     },
     error: (err: any) => {
       console.error(err);
+    }
+  });
+}
+
+// The automated data loading query pipeline hook
+filterAttendanceChart(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const employeeId = this.selectedEmployeeId;
+
+  if (!employeeId) {
+    console.log('Waiting for employee initialization profiles...');
+    return;
+  }
+
+  // 🕒 Instantly fetch current live system date values 
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = ('0' + (now.getMonth() + 1)).slice(-2); // Formats cleanly to "MM" string
+
+  // Calculate start and end date boundaries for the active real-time month context
+  const startDate = `${currentYear}-${currentMonth}-01`;
+  const lastDay = new Date(currentYear, now.getMonth() + 1, 0).getDate();
+  const endDate = `${currentYear}-${currentMonth}-${('0' + lastDay).slice(-2)}`;
+
+  const url = `${this.apiUrl}/calendars/api/attendance-calendar/calendar_view/?employee_id=${employeeId}&start_date=${startDate}&end_date=${endDate}&schema=${selectedSchema}`;
+
+  this.http.get<any>(url).subscribe({
+    next: (res) => {
+      if (res && res.calendar) {
+        this.processChartData(res.calendar);
+      }
+    },
+    error: (err) => {
+      console.error('Error fetching live monthly metric insights:', err);
+    }
+  });
+}
+
+processChartData(calendarData: any[]): void {
+  const counts: { [key: string]: number } = {
+    'Present': 0,
+    'Absent': 0,
+    'Leave': 0
+  };
+
+  calendarData.forEach(day => {
+    const status = day.display_status || day.status;
+    if (status.includes('Present')) counts['Present']++;
+    else if (status.includes('Leave')) counts['Leave']++;
+    else counts['Absent']++;
+  });
+
+  this.renderAttendancePieChart(counts['Present'], counts['Absent'], counts['Leave']);
+}
+
+renderAttendancePieChart(present: number, absent: number, leave: number): void {
+  if (this.attendanceChart) {
+    this.attendanceChart.destroy();
+  }
+
+  const ctx = this.attendanceChartCanvas.nativeElement.getContext('2d');
+  this.attendanceChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Present', 'Absent', 'On Leave'],
+      datasets: [{
+        data: [present, absent, leave],
+        backgroundColor: [
+          '#28a745', // Present Green
+          '#dc3545', // Absent Red
+          '#ffc107'  // Leave Yellow
+        ],
+        hoverOffset: 10
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 15,
+            padding: 20
+          }
+        }
+      }
     }
   });
 }
