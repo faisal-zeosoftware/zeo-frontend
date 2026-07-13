@@ -2578,46 +2578,63 @@ export class CreateleavepolicymodalComponent {
 
   updatePayRule(): void {
 
-    const requests = this.payRuleRows
-      .filter(row => row.id) // only rows having id
-      .map(row => {
+    const selectedSchema = this.authService.getSelectedSchema();
   
-        const payload = {
+    const requests: Observable<any>[] = [];
   
-          leave_type:
-            this.entitlementRows[0].leave_type,
+    this.payRuleRows.forEach(row => {
   
-          sequence:
-            row.sequence,
+      const payload = {
   
-          days:
-            row.days,
+        leave_type: this.entitlementRows[0].leave_type,
   
-          pay_percentage:
-            row.pay_percentage
+        sequence: row.sequence,
   
-        };
+        days: row.days,
   
-        return this.leaveService.updateLeavePayRule(
-          row.id,
-          payload
+        pay_percentage: row.pay_percentage
+  
+      };
+  
+      // Existing Row → UPDATE
+      if (row.id) {
+  
+        requests.push(
+          this.leaveService.updateLeavePayRule(
+            row.id,
+            payload
+          )
         );
   
-      });
+      }
   
-    if (requests.length === 0) {
+      // New Row → CREATE
+      else {
   
-      alert('No Pay Rules Available To Update');
+        requests.push(
   
-      return;
+          this.http.post(
   
-    }
+            `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+  
+            payload
+  
+          )
+  
+        );
+  
+      }
+  
+    });
   
     forkJoin(requests).subscribe({
   
       next: () => {
   
-        alert('All Pay Rules Updated Successfully');
+        alert('Pay Rules Saved Successfully');
+  
+        // Reload data from API so new rows receive IDs
+        // this.getLeaveTypeDetails(this.selectedLeaveTypeId);
   
       },
   
@@ -2626,9 +2643,11 @@ export class CreateleavepolicymodalComponent {
         console.error(err);
   
         alert(
+  
           err?.error?.message ||
-          err?.error?.detail ||
-          'Failed to Update Pay Rules'
+  
+          'Failed to save Pay Rules'
+  
         );
   
       }
