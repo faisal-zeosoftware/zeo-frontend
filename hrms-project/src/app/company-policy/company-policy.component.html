@@ -208,10 +208,7 @@
         </div>
   
 
-  <div class="col-md-12">
-    <label>Description</label>
-    <textarea class="form-control" [(ngModel)]="editAsset.description" [ngModelOptions]="{standalone: true}"></textarea>
-  </div>
+
 
 
 <div class="col-md-6">
@@ -267,6 +264,10 @@
       (change)="onFileSelected($event)">
 </div>
 
+  <div class="col-md-12">
+    <label>Description</label>
+    <textarea class="form-control" [(ngModel)]="editAsset.description" [ngModelOptions]="{standalone: true}"></textarea>
+  </div>
 
 </div>
   <div class="row" >

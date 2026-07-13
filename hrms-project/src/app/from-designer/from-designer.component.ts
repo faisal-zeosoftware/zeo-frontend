@@ -957,6 +957,7 @@ if (this.userId !== null) {
 
     // You can also add logic here to inform the user that the update was successful
     console.log('Field names updated:', this.empCodeFieldName, this.firstNameFieldName, this.religionFieldName,this.cntryDataType);
+      alert('Field names updated successfully!');
   }
 
   empFamilynameFieldName: string = 'Family Member Name';
@@ -1018,7 +1019,7 @@ if (this.userId !== null) {
         localStorage.setItem('empEmpdocumentFieldName', this.empEmpdocumentFieldName);
         localStorage.setItem('empEmpdocumentDatatypeFieldName', this.empEmpdocumentDatatypeFieldName);
 
-
+alert('Field names updated successfully!');
   }
 
 

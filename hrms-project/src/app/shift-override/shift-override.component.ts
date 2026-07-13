@@ -336,6 +336,34 @@ ngOnInit(): void {
     }
     }
 
+    mapShiftNameToId() {
+
+  if (!this.Shifts || !this.editoverride?.override_shift) return;
+
+
+  // already ID
+  if (typeof this.editoverride.override_shift === 'number') {
+    return;
+  }
+
+
+  const shift = this.Shifts.find(
+    (s: any) => 
+      s.name === this.editoverride.override_shift
+  );
+
+
+  if (shift) {
+    this.editoverride.override_shift = shift.id;
+  }
+
+
+  console.log(
+    "Mapped shift:",
+    this.editoverride.override_shift
+  );
+}
+
 
     // loadShiftsOverride(): void {
     
@@ -436,13 +464,24 @@ isEditModalOpen: boolean = false;
 editoverride: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editoverride = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
 
+  this.editoverride = { ...asset };
+
+  console.log("Edit employee value:", this.editoverride.employee);
+
+  this.loadEmployee(() => {
+
+    console.log("Employee list:", this.Employee);
 
     this.mapEmpNameToId();
 
-  
+    this.loadShifts(() => {
+      this.mapShiftNameToId();
+      this.isEditModalOpen = true;
+    });
+
+  });
+
 }
 
 closeEditModal(): void {
@@ -564,18 +603,49 @@ deleteSelectedShiftOverride() {
                 }
                 }
 
-     mapEmpNameToId() {
-  if (!this.Employee || !this.editoverride?.employee) return;
+mapEmpNameToId() {
 
-  const shif = this.Employee.find(
-    (s: any) => s.emp_first_name === this.editoverride.employee
-  );
-
-  if (shif) {
-    this.editoverride.employee = shif.id;  // convert to ID for dropdown
+  if (!this.Employee || !this.editoverride?.employee) {
+    return;
   }
 
-  console.log("Mapped employee_id:", this.editoverride.employee);
+  const value = String(this.editoverride.employee).trim();
+
+
+  // Already ID
+  const alreadyId = this.Employee.find(
+    (e:any) => String(e.id) === value
+  );
+
+  if (alreadyId) {
+    this.editoverride.employee = alreadyId.id;
+    return;
+  }
+
+
+  const emp = this.Employee.find((e:any) => {
+
+    const fullName =
+      `${e.emp_first_name} ${e.emp_last_name}`.trim();
+
+    return (
+      e.emp_code?.trim() === value ||
+      e.emp_first_name?.trim() === value ||
+      fullName === value
+    );
+
+  });
+
+
+  if (emp) {
+    this.editoverride.employee = emp.id;
+  }
+
+
+  console.log(
+    "Final selected employee id:",
+    this.editoverride.employee
+  );
 }
 
 

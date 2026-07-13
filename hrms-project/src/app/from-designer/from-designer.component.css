@@ -259,23 +259,37 @@ input:focus-visible {
 
 /* Default stepper style improvements */
 ::ng-deep .mat-horizontal-stepper-header-container {
-  flex-wrap: wrap; /* allows step labels to wrap instead of shrinking */
-  justify-content: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 0 10px;
 }
 
 /* Step labels text fix */
 ::ng-deep .mat-step-label {
-  white-space: normal !important; /* allow line break */
+  white-space: normal !important;
   text-align: center;
   font-size: 14px;
   font-weight: 500;
-  padding: 4px 8px;
+  line-height: 18px;
 }
 
 /* Active step label highlight */
 ::ng-deep .mat-step-header.mat-step-header-selected .mat-step-label {
+  color: #004976;
   font-weight: 600;
-  color: #004976; /* navy color like your theme */
+}
+
+/* Hide horizontal scrollbar */
+::ng-deep .mat-horizontal-stepper-header-container::-webkit-scrollbar {
+  height: 5px;
+}
+
+::ng-deep .mat-horizontal-stepper-header-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
 }
 
 /* Mobile adjustments */
@@ -293,9 +307,9 @@ input:focus-visible {
   }
 
   /* Add spacing between step headers */
-  ::ng-deep .mat-step-header {
-    width: 100%;
-    border-bottom: 1px solid #ddd;
-    padding: 6px 0;
-  }
+::ng-deep .mat-step-header {
+  flex: 1;
+  min-width: 150px;
+  text-align: center;
+}
 }

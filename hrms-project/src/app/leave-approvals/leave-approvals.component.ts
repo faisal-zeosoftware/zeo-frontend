@@ -403,9 +403,12 @@ note: string = '';  // To hold the note entered by the user
         status: 'Approved',       // Setting status to "Approved"
       };
 
+       this.isLoading = true;
+
       this.leaveService.approveApprovalRequestLeave(apiUrl, approvalData).subscribe(
         (response: any) => {
         console.log('Approval status changed to Approved:', response);
+        this.isLoading = false;
 
         // Update the selected approval status in the local UI
         if (this.selectedApproval) {
@@ -417,7 +420,7 @@ note: string = '';  // To hold the note entered by the user
         if (approvalIndex !== -1) {
           this.Approvals[approvalIndex].status = 'Approved';
         }
-
+this.isLoading = false;
         // Close the modal after successful approval
         this.isAddFieldsModalOpen = false;
         window.location.reload();
@@ -474,6 +477,7 @@ confirmRejection(approvalId: number): void {
         this.rejection_reason = '';
         this.showRejectionReason = false;
         this.isAddFieldsModalOpen = false;
+         window.location.reload();
       },
       (error) => {
         console.error('Error rejecting the approval request:', error);

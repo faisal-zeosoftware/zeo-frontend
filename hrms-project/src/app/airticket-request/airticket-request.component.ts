@@ -552,19 +552,25 @@ editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
 
+  this.editAsset = { ...asset };
+
+
   this.loadDeparmentBranch(() => {
 
     this.loadAllocations(() => {
 
       this.loademployee(() => {
 
-        this.editAsset = { ...asset };
 
         this.mapBranchesNameToId();
+
         this.mapAllocationNameToId();
+
         this.mapEmployeeNameToId();
 
+
         this.isEditModalOpen = true;
+
 
       });
 
@@ -668,7 +674,7 @@ loadAllocations(callback?: Function): void {
     this.employeeService.getairticketAllocationsNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
         this.Allocations = result;
-        console.log(' fetching Loantypes:');
+        console.log("Allocation list:", this.Allocations);
           if (callback) callback();
 
       },
@@ -680,41 +686,39 @@ loadAllocations(callback?: Function): void {
   }
 
 mapAllocationNameToId() {
-  if (!this.Allocations || !this.editAsset?.allocation) return;
 
-  let value = this.editAsset.allocation;
-
-  // Case A — Already an ID
-  if (typeof value === "number") {
-    return; // nothing to map
+  if (!this.Allocations || !this.editAsset?.allocation) {
+    return;
   }
 
-  // Case B — Value returned as "Employee - Amount"
-  const match = this.Allocations.find(
+  const value = String(this.editAsset.allocation).trim();
+
+
+  const allocation = this.Allocations.find(
     (a: any) =>
-      `${a.employee} - ${a.amount}`.trim() === String(value).trim()
+      a.policy === value ||
+      String(a.id) === value
   );
 
-  if (match) {
-    this.editAsset.allocation = match.id;
-    console.log("Mapped allocation:", this.editAsset.allocation);
-    return;
+
+  if (allocation) {
+
+    this.editAsset.allocation = allocation.id;
+
+    console.log(
+      "Mapped allocation ID:",
+      this.editAsset.allocation
+    );
+
+  } else {
+
+    console.log(
+      "Allocation not found:",
+      value
+    );
+
   }
-
-  // Case C — Value is only employee name
-  const byEmployee = this.Allocations.find(
-    (a: any) => a.employee.trim() === String(value).trim()
-  );
-
-  if (byEmployee) {
-    this.editAsset.allocation = byEmployee.id;
-    console.log("Mapped allocation:", this.editAsset.allocation);
-    return;
-  }
-
-  console.warn("No matching allocation found for:", value);
 }
-
 
 
   // loadAirticketRequest(): void {
