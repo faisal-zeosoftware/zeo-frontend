@@ -1,5 +1,5 @@
 import { style } from '@angular/animations';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, Router, NavigationEnd  } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
@@ -21,7 +21,7 @@ Chart.register(...registerables);
   templateUrl: './dashboard-contents.component.html',
   styleUrl: './dashboard-contents.component.css'
 })
-export class DashboardContentsComponent {
+export class DashboardContentsComponent implements OnInit {
 
 
   @ViewChild('attendanceChart') attendanceChartCanvas!: ElementRef;
@@ -71,6 +71,7 @@ approvalFilter: string = '';
    private route: ActivatedRoute,
    private sessionService: SessionService,
       private leaveService: LeaveService,
+      private cdr: ChangeDetectorRef,
    private DepartmentServiceService: DepartmentServiceService ,
    ) { this.router.events.subscribe(event => {
     if (event instanceof NavigationEnd) {
@@ -491,26 +492,23 @@ scrollToApprovals(): void {
 
 
   /**
-   * Automatically calculates today's date and fetches metrics for selected branches
-   */
+   * Automatically calculates today's date and fetches metrics for selected branches*/ 
+
+  
   filterAttendanceChartToday(schema: string, branchIds: number[]): void {
     if (!schema || !branchIds || branchIds.length === 0) {
-      console.log('Awaiting schema/branch context selection...');
       return;
     }
 
     this.isLoading = true;
+    this.cdr.detectChanges(); // Ensure loader state immediately renders
 
-    // 🕒 Fetch current live system day values
     const now = new Date();
     const year = now.getFullYear();
     const month = ('0' + (now.getMonth() + 1)).slice(-2);
     const day = ('0' + now.getDate()).slice(-2);
-
-    // Pin both start and end parameters exactly to today's date (YYYY-MM-DD)
     const todayStr = `${year}-${month}-${day}`;
 
-    // Map each selected branch ID to the single concurrent request bundle
     const requests = branchIds.map(id => 
       this.EmployeeService.getAttendanceCalendarAllemployee(schema, id, todayStr, todayStr)
     );
@@ -518,41 +516,40 @@ scrollToApprovals(): void {
     forkJoin(requests).subscribe({
       next: (responses: any[]) => {
         let aggregatedCalendarDays: any[] = [];
-    
         responses.forEach(res => {
-          // 🌟 FIX: Check if 'employees' array exists in the response root, then collect the object
           if (res && res.employees) {
             aggregatedCalendarDays.push(res); 
           }
         });
-    
-        console.log(`Aggregated Today (${todayStr}) Branch Dataset:`, aggregatedCalendarDays);
-        this.processChartData(aggregatedCalendarDays);
+
         this.isLoading = false;
+        // 🌟 Force Angular to render the canvas element wrap out of hidden state
+        this.cdr.detectChanges(); 
+        
+        this.processChartData(aggregatedCalendarDays);
       },
       error: (err: any) => {
         console.error('Error fetching today\'s live attendance metrics:', err);
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
-  /** Groups the current day's employee statuses
-   */
   processChartData(calendarData: any[]): void {
     const counts: { [key: string]: number } = {
       'Present': 0,
       'Absent': 0,
       'Leave': 0
     };
-  
+
     calendarData.forEach(branchResponse => {
       if (branchResponse && branchResponse.employees) {
         branchResponse.employees.forEach((emp: any) => {
           if (emp.calendar && emp.calendar.length > 0) {
             const day = emp.calendar[0];
             const status = day.display_status || day.status;
-  
+
             if (status && status.includes('Present')) {
               counts['Present']++;
             } else if (status && status.includes('Leave')) {
@@ -564,92 +561,89 @@ scrollToApprovals(): void {
         });
       }
     });
-  
-    console.log("Correctly Mapped Today's Quantities:", counts);
-    
-    // Pass the counts to the rendering method
-    this.renderAttendancePieChart(counts['Present'], counts['Absent'], counts['Leave']);
+
+    this.renderAttendanceBarChart(counts['Present'], counts['Absent'], counts['Leave']);
   }
-  
-  renderAttendancePieChart(present: number, absent: number, leave: number): void {
-    setTimeout(() => {
-      if (this.attendanceChart) {
-        this.attendanceChart.destroy();
-      }
-  
-      if (!this.attendanceChartCanvas) {
-        console.error("Canvas element handle wrapper could not be found in template DOM!");
-        return;
-      }
-  
-      const ctx = this.attendanceChartCanvas.nativeElement.getContext('2d');
-      this.attendanceChart = new Chart(ctx, {
-        type: 'bar', // 📊 Swapped from 'pie' to 'bar'
-        data: {
-          labels: ['Present', 'Absent', 'On Leave'],
-          datasets: [{
-            label: 'Employee Count',
-            data: [present, absent, leave],
-            backgroundColor: [
-              '#508D76', // Muted Slate Green (Present)
-              '#B85C5C', // Soft Slate Terracotta/Red (Absent)
-              '#D4A359'  // Muted Ochre / Slate Gold (Leave)
-            ],
-            borderColor: [
-              '#3B6E5A',
-              '#964343',
-              '#B0823E'
-            ],
-            borderWidth: 1,
-            borderRadius: 6, // 🌟 Elegant rounded tops for bars
-            borderSkipped: false,
-            barThickness: 32 // Clean, proportional bar width layout sizing
-          }]
+
+  renderAttendanceBarChart(present: number, absent: number, leave: number): void {
+    // Destroy previous chart cleanly to prevent ghost renders or overlaps
+    if (this.attendanceChart) {
+      this.attendanceChart.destroy();
+      this.attendanceChart = null;
+    }
+
+    if (!this.attendanceChartCanvas) {
+      console.warn("Retrying canvas lookup on next animation frame...");
+      requestAnimationFrame(() => this.renderAttendanceBarChart(present, absent, leave));
+      return;
+    }
+
+    const ctx = this.attendanceChartCanvas.nativeElement.getContext('2d');
+    
+    // Create new modern column bar chart instance
+    this.attendanceChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Present', 'Absent', 'On Leave'],
+        datasets: [{
+          label: 'Employee Count',
+          data: [present, absent, leave],
+          backgroundColor: [
+            'rgba(80, 141, 118, 0.85)',  // Warm Emerald / Slate Green
+            'rgba(184, 92, 92, 0.85)',   // Soft Crimson / Terracotta Red
+            'rgba(212, 163, 89, 0.85)'   // Warm Mustard Gold / Leave Ochre
+          ],
+          borderColor: [
+            '#508D76',
+            '#B85C5C',
+            '#D4A359'
+          ],
+          borderWidth: 1.5,
+          borderRadius: 8,              // Elegant rounded top columns
+          borderSkipped: false,
+          barThickness: 45              // Perfect clean column width visual balance
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false              // Hide legend because labels are self-explanatory
+          },
+          tooltip: {
+            backgroundColor: '#1e293b',  // Dark slate tooltip
+            padding: 12,
+            cornerRadius: 8,
+            titleFont: { family: "'Segoe UI', sans-serif", size: 13, },
+            bodyFont: { family: "'Segoe UI', sans-serif", size: 13 }
+          }
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false // Hide uniform dataset label since bars use individual colors
+        scales: {
+          x: {
+            grid: {
+              display: false            // No distracting vertical line patterns
             },
-            tooltip: {
-              backgroundColor: '#1e293b', // Modern dark slate tooltip window backgrounds
-              titleFont: { family: "'Segoe UI', sans-serif", size: 13 },
-              bodyFont: { family: "'Segoe UI', sans-serif", size: 13 },
-              padding: 10,
-              cornerRadius: 6
+            ticks: {
+              font: { family: "'Segoe UI', sans-serif", size: 13,},
+              color: '#64748b'
             }
           },
-          scales: {
-            x: {
-              grid: {
-                display: false // Drop vertical grid background lines for a cleaner appearance
-              },
-              ticks: {
-                font: { family: "'Segoe UI', sans-serif", size: 13,  },
-                color: '#475569'
-              }
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,              // Integer increments only (no half-employees)
+              font: { family: "'Segoe UI', sans-serif", size: 12 },
+              color: '#94a3b8'
             },
-            y: {
-              beginAtZero: true,
-              ticks: {
-                stepSize: 1, // Cleaner incremental evaluation gaps
-                font: { family: "'Segoe UI', sans-serif", size: 12 },
-                color: '#64748b'
-              },
-              grid: {
-                color: '#f1f5f9' // Soft grid lines for Y values
-              }
+            grid: {
+              color: '#f1f5f9'          // Very soft horizontal rules
             }
           }
         }
-      });
-    }, 50);
+      }
+    });
   }
-  
-
-
 
 
 
