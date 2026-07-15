@@ -107,6 +107,7 @@
 
 
 
+     
 
 
     <div class="row mt-5">
@@ -606,6 +607,33 @@
   </div>
 </div>
 
+<div class="row mt-5">
+
+
+  <div class="col-md-12 mb-4">
+    <div class="card border-0 shadow-sm">
+      
+      <div class="card-header bg-white ">
+        <h5 class="mb-0 text-dark fw-bold">Today's Branch Attendance Status</h5>
+        <span class="badge bg-light text-success border border-success-subtle">Real-time Daily View</span>
+      </div>
+
+      <div class="card-body">
+        <div *ngIf="isLoading" class="text-center ">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Syncing active dashboard...</span>
+          </div>
+          <p class="mt-2 text-muted small">Loading today's logs...</p>
+        </div>
+
+        <div [hidden]="isLoading" >
+          <canvas #attendanceChart></canvas>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 
     </div>

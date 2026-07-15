@@ -144,6 +144,20 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
   }
     
 
+
+  getAttendanceCalendarAllemployee(
+    selectedSchema: string, 
+    branchId: number, 
+    startDate: string, 
+    endDate: string
+  ): Observable<any> {
+    
+    // Explicit construction of query strings to match the required backend API signature exactly
+    const url = `${this.apiUrl}/calendars/api/attendance-calendar/calendar_view/?branch_id=${branchId}&start_date=${startDate}&end_date=${endDate}&schema=${selectedSchema}`;
+    
+    return this.http.get<any>(url);
+  }
+
   getemployeesResignationMasterNew(selectedSchema: string, branchIds: number[]): Observable<any> {
     // Converts [1,3,4] into the string "[1,3,4]" for the URL
     const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';

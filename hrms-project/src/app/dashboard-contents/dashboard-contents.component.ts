@@ -1,5 +1,5 @@
 import { style } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, Router, NavigationEnd  } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
@@ -11,6 +11,9 @@ import { combineLatest } from 'rxjs';
 import { LeaveService } from '../leave-master/leave.service';
 import { forkJoin } from 'rxjs';
 
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+
 
 
 @Component({
@@ -19,6 +22,11 @@ import { forkJoin } from 'rxjs';
   styleUrl: './dashboard-contents.component.css'
 })
 export class DashboardContentsComponent {
+
+
+  @ViewChild('attendanceChart') attendanceChartCanvas!: ElementRef;
+  attendanceChart: any = null;
+ 
 
 
   userId: number | null | undefined;
@@ -80,6 +88,11 @@ approvalFilter: string = '';
   ]).subscribe(([schema, branchIds]) => {
     if (schema) {
       this.fetchEmployees(schema, branchIds);
+
+      
+    }
+    if (schema && branchIds && branchIds.length > 0) {
+      this.filterAttendanceChartToday(schema, branchIds);
     }
   });
 
@@ -472,5 +485,140 @@ scrollToApprovals(): void {
   closemarketModal(){
     this.isAddFieldsModalOpen=false;
   }
+
+
+
+
+
+  /**
+   * Automatically calculates today's date and fetches metrics for selected branches
+   */
+  filterAttendanceChartToday(schema: string, branchIds: number[]): void {
+    if (!schema || !branchIds || branchIds.length === 0) {
+      console.log('Awaiting schema/branch context selection...');
+      return;
+    }
+
+    this.isLoading = true;
+
+    // 🕒 Fetch current live system day values
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = ('0' + (now.getMonth() + 1)).slice(-2);
+    const day = ('0' + now.getDate()).slice(-2);
+
+    // Pin both start and end parameters exactly to today's date (YYYY-MM-DD)
+    const todayStr = `${year}-${month}-${day}`;
+
+    // Map each selected branch ID to the single concurrent request bundle
+    const requests = branchIds.map(id => 
+      this.EmployeeService.getAttendanceCalendarAllemployee(schema, id, todayStr, todayStr)
+    );
+
+    forkJoin(requests).subscribe({
+      next: (responses: any[]) => {
+        let aggregatedCalendarDays: any[] = [];
+
+        responses.forEach(res => {
+          if (res && res.calendar) {
+            aggregatedCalendarDays = aggregatedCalendarDays.concat(res.calendar);
+          }
+        });
+
+        console.log(`Aggregated Today (${todayStr}) Branch Dataset:`, aggregatedCalendarDays);
+        this.processChartData(aggregatedCalendarDays);
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Error fetching today\'s live attendance metrics:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  /** Groups the current day's employee statuses
+   */
+  processChartData(calendarData: any[]): void {
+    const counts: { [key: string]: number } = {
+      'Present': 0,
+      'Absent': 0,
+      'Leave': 0
+    };
+
+    calendarData.forEach(day => {
+      const status = day.display_status || day.status;
+      if (status && status.includes('Present')) {
+        counts['Present']++;
+      } else if (status && status.includes('Leave')) {
+        counts['Leave']++;
+      } else {
+        counts['Absent']++;
+      }
+    });
+
+    this.renderAttendancePieChart(counts['Present'], counts['Absent'], counts['Leave']);
+  }
+
+  /**
+   * Visualizes today's distribution with sleek slate tones
+   */
+  renderAttendancePieChart(present: number, absent: number, leave: number): void {
+    if (this.attendanceChart) {
+      this.attendanceChart.destroy();
+    }
+
+    if (!this.attendanceChartCanvas) {
+      return;
+    }
+
+    const ctx = this.attendanceChartCanvas.nativeElement.getContext('2d');
+    this.attendanceChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Present', 'Absent', 'On Leave'],
+        datasets: [{
+          data: [present, absent, leave],
+          backgroundColor: [
+            '#508D76', // Muted Slate Green (Present)
+            '#B85C5C', // Soft Slate Terracotta/Red (Absent)
+            '#D4A359'  // Muted Ochre / Slate Gold (Leave)
+          ],
+          borderColor: [
+            '#3B6E5A',
+            '#964343',
+            '#B0823E'
+          ],
+          borderWidth: 1,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              boxWidth: 15,
+              padding: 20,
+              font: {
+                family: "'Segoe UI', 'Roboto', sans-serif",
+                size: 13
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+
+
+  
+
+
+
+
+
 
 }

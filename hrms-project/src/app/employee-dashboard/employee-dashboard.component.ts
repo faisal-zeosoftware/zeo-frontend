@@ -4327,11 +4327,18 @@ renderAttendancePieChart(present: number, absent: number, leave: number): void {
       labels: ['Present', 'Absent', 'On Leave'],
       datasets: [{
         data: [present, absent, leave],
+        // 🌟 Updated to elegant slate / muted corporate shades
         backgroundColor: [
-          '#28a745', // Present Green
-          '#dc3545', // Absent Red
-          '#ffc107'  // Leave Yellow
+          '#508D76', // Muted Slate Green (Present)
+          '#B85C5C', // Soft Slate Terracotta/Red (Absent)
+          '#D4A359'  // Muted Ochre / Slate Gold (Leave)
         ],
+        borderColor: [
+          '#3B6E5A', // Darker slate border contrast accents
+          '#964343',
+          '#B0823E'
+        ],
+        borderWidth: 1,
         hoverOffset: 10
       }]
     },
@@ -4343,7 +4350,11 @@ renderAttendancePieChart(present: number, absent: number, leave: number): void {
           position: 'bottom',
           labels: {
             boxWidth: 15,
-            padding: 20
+            padding: 20,
+            font: {
+              family: "'Segoe UI', 'Roboto', sans-serif",
+              size: 13
+            }
           }
         }
       }
