@@ -24,23 +24,34 @@
               <div class="approval_sec" *ngFor="let apr of Approvals" >
                 <h6>Leave Request Approvals</h6><hr>
                 <div class="row ">
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <h4>Leave Request</h4>
                       <h5>{{apr.leave_request}}</h5>
                     </div>
-                       <div class="col-md-2">
+                       <div class="col-md-3">
                       <h4>Employee</h4>
                       <h5>{{apr.employee_id}}</h5>
                     </div>
-                    <div class="col-md-2">
+                      <!-- NEW -->
+  <div class="col-md-3">
+    <h4>Start Date</h4>
+    <h5>{{ apr.request_details?.start_date | date:'dd-MM-yyyy' }}</h5>
+  </div>
+
+  <!-- NEW -->
+  <div class="col-md-3">
+    <h4>End Date</h4>
+    <h5>{{ apr.request_details?.end_date | date:'dd-MM-yyyy' }}</h5>
+  </div>
+                    <div class="col-md-3">
                       <h4>Status  </h4>
                       <h5>{{apr.status}} </h5>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                       <h4>Level </h4>
                       <h5>{{apr.level}}</h5>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <h4>Reason </h4>
                         <h5>{{apr.note}}</h5>
                       </div>

@@ -528,6 +528,7 @@ closeEditModal(): void {
   
     formData.append('timezone', this.editAsset.timezone || '');
     formData.append('city', this.editAsset.city || '');
+     formData.append('pincode',this.editAsset.pincode || '');
 
   
     formData.append('industry_type', this.editAsset.industry_type || '');

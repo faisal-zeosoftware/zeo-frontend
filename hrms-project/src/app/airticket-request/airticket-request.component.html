@@ -193,9 +193,11 @@
                   }"
                 >
                   <option value="">Select</option>
-                  <option *ngFor="let user of Allocations" [value]="user.id">
-                    {{ user.employee }} - {{ user.amount }}
-                  </option>
+<option 
+  *ngFor="let user of Allocations" 
+  [ngValue]="user.id">
+  {{ user.policy }} - {{ user.employee }} - {{ user.amount }}
+</option>
                 </select>
                 <div
                   *ngIf="registerButtonClicked && !allocation"
@@ -424,9 +426,11 @@
                   [ngModelOptions]="{ standalone: true }"
                 >
                   <option value="">Select</option>
-                  <option *ngFor="let user of Allocations" [value]="user.id">
-                    {{ user.employee }} - {{ user.amount }}
-                  </option>
+<option 
+  *ngFor="let user of Allocations" 
+  [ngValue]="user.id">
+  {{ user.policy }} - {{ user.employee }} - {{ user.amount }}
+</option>
                 </select>
               </div>
             </div>
