@@ -518,13 +518,14 @@ scrollToApprovals(): void {
     forkJoin(requests).subscribe({
       next: (responses: any[]) => {
         let aggregatedCalendarDays: any[] = [];
-
+    
         responses.forEach(res => {
-          if (res && res.calendar) {
-            aggregatedCalendarDays = aggregatedCalendarDays.concat(res.calendar);
+          // 🌟 FIX: Check if 'employees' array exists in the response root, then collect the object
+          if (res && res.employees) {
+            aggregatedCalendarDays.push(res); 
           }
         });
-
+    
         console.log(`Aggregated Today (${todayStr}) Branch Dataset:`, aggregatedCalendarDays);
         this.processChartData(aggregatedCalendarDays);
         this.isLoading = false;
@@ -544,76 +545,108 @@ scrollToApprovals(): void {
       'Absent': 0,
       'Leave': 0
     };
-
-    calendarData.forEach(day => {
-      const status = day.display_status || day.status;
-      if (status && status.includes('Present')) {
-        counts['Present']++;
-      } else if (status && status.includes('Leave')) {
-        counts['Leave']++;
-      } else {
-        counts['Absent']++;
+  
+    calendarData.forEach(branchResponse => {
+      if (branchResponse && branchResponse.employees) {
+        branchResponse.employees.forEach((emp: any) => {
+          if (emp.calendar && emp.calendar.length > 0) {
+            const day = emp.calendar[0];
+            const status = day.display_status || day.status;
+  
+            if (status && status.includes('Present')) {
+              counts['Present']++;
+            } else if (status && status.includes('Leave')) {
+              counts['Leave']++;
+            } else {
+              counts['Absent']++;
+            }
+          }
+        });
       }
     });
-
+  
+    console.log("Correctly Mapped Today's Quantities:", counts);
+    
+    // Pass the counts to the rendering method
     this.renderAttendancePieChart(counts['Present'], counts['Absent'], counts['Leave']);
   }
-
-  /**
-   * Visualizes today's distribution with sleek slate tones
-   */
+  
   renderAttendancePieChart(present: number, absent: number, leave: number): void {
-    if (this.attendanceChart) {
-      this.attendanceChart.destroy();
-    }
-
-    if (!this.attendanceChartCanvas) {
-      return;
-    }
-
-    const ctx = this.attendanceChartCanvas.nativeElement.getContext('2d');
-    this.attendanceChart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: ['Present', 'Absent', 'On Leave'],
-        datasets: [{
-          data: [present, absent, leave],
-          backgroundColor: [
-            '#508D76', // Muted Slate Green (Present)
-            '#B85C5C', // Soft Slate Terracotta/Red (Absent)
-            '#D4A359'  // Muted Ochre / Slate Gold (Leave)
-          ],
-          borderColor: [
-            '#3B6E5A',
-            '#964343',
-            '#B0823E'
-          ],
-          borderWidth: 1,
-          hoverOffset: 10
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              boxWidth: 15,
-              padding: 20,
-              font: {
-                family: "'Segoe UI', 'Roboto', sans-serif",
-                size: 13
+    setTimeout(() => {
+      if (this.attendanceChart) {
+        this.attendanceChart.destroy();
+      }
+  
+      if (!this.attendanceChartCanvas) {
+        console.error("Canvas element handle wrapper could not be found in template DOM!");
+        return;
+      }
+  
+      const ctx = this.attendanceChartCanvas.nativeElement.getContext('2d');
+      this.attendanceChart = new Chart(ctx, {
+        type: 'bar', // 📊 Swapped from 'pie' to 'bar'
+        data: {
+          labels: ['Present', 'Absent', 'On Leave'],
+          datasets: [{
+            label: 'Employee Count',
+            data: [present, absent, leave],
+            backgroundColor: [
+              '#508D76', // Muted Slate Green (Present)
+              '#B85C5C', // Soft Slate Terracotta/Red (Absent)
+              '#D4A359'  // Muted Ochre / Slate Gold (Leave)
+            ],
+            borderColor: [
+              '#3B6E5A',
+              '#964343',
+              '#B0823E'
+            ],
+            borderWidth: 1,
+            borderRadius: 6, // 🌟 Elegant rounded tops for bars
+            borderSkipped: false,
+            barThickness: 32 // Clean, proportional bar width layout sizing
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false // Hide uniform dataset label since bars use individual colors
+            },
+            tooltip: {
+              backgroundColor: '#1e293b', // Modern dark slate tooltip window backgrounds
+              titleFont: { family: "'Segoe UI', sans-serif", size: 13 },
+              bodyFont: { family: "'Segoe UI', sans-serif", size: 13 },
+              padding: 10,
+              cornerRadius: 6
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false // Drop vertical grid background lines for a cleaner appearance
+              },
+              ticks: {
+                font: { family: "'Segoe UI', sans-serif", size: 13,  },
+                color: '#475569'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1, // Cleaner incremental evaluation gaps
+                font: { family: "'Segoe UI', sans-serif", size: 12 },
+                color: '#64748b'
+              },
+              grid: {
+                color: '#f1f5f9' // Soft grid lines for Y values
               }
             }
           }
         }
-      }
-    });
+      });
+    }, 50);
   }
-
-
-
   
 
 
