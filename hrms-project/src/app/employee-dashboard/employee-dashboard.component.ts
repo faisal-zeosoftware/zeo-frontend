@@ -195,6 +195,7 @@ todayDate: string = '';
     this.initCamera();
     this.getLocation();
     this.getLocationfacePunch();
+    this.determineNextAlternatingPunchAction();
     
 this.filterAttendanceChart();
 
@@ -3849,6 +3850,10 @@ confirmDocRejection(approvalId: number): void {
             currentLng: number | null = null;
            
             cameraStream: MediaStream | null = null;
+
+            // 🌟 Automated Workflow Additions
+  autoCaptureTimer: any;
+  nextPunchAction: 'CHECK-IN' | 'CHECK-OUT' = 'CHECK-IN'; // Dynamic alternating toggle state
             
 // CRITICAL: Initialize camera after view is ready
 ngAfterViewInit() {
@@ -3857,6 +3862,40 @@ ngAfterViewInit() {
 
 
 
+/**
+   * Evaluates historical records to determine if the next status should alternate
+   */
+determineNextAlternatingPunchAction() {
+  const schema = localStorage.getItem('selectedSchema') || '';
+  const todayStr = new Date().toISOString().split('T')[0];
+  
+  // Call existing attendance layout service to check if employee checked in today
+  this.employeeService.getAttendanceCalendarAllemployee(schema, 1, todayStr, todayStr).subscribe({
+    next: (res: any) => {
+      let hasCheckedInToday = false;
+      
+      if (res && res.employees) {
+        const empRecord = res.employees.find((e: any) => e.employee_id === this.selectedEmployeeId);
+        if (empRecord && empRecord.calendar && empRecord.calendar.length > 0) {
+          // If status exists and isn't absent, they have checked in already
+          const status = empRecord.calendar[0].status;
+          if (status && status !== 'Absent') {
+            hasCheckedInToday = true;
+          }
+        }
+      }
+      
+      // 🔄 Alternating Rule: If already checked in today, alternate next action to Check-Out
+      this.nextPunchAction = hasCheckedInToday ? 'CHECK-OUT' : 'CHECK-IN';
+      console.log(`Determined alternating flow state: Next action is ${this.nextPunchAction}`);
+    },
+    error: () => {
+      // Fallback default state configuration rules
+      this.nextPunchAction = 'CHECK-IN';
+    }
+  });
+}
+
 // 2. Add a null check in initCamera
 initCamera() {
   if (!this.videoElement) {
@@ -3864,19 +3903,13 @@ initCamera() {
     return;
   }
 
-  // 🔴 CHECK FOR SECURE CONTEXT / API SUPPORT
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert("Camera access is only available over HTTPS or localhost. Please check your connection security.");
-    console.error("MediaDevices API not available. Are you on HTTPS?");
+    alert("Camera access is only available over HTTPS or localhost.");
     return;
   }
 
   const constraints = {
-    video: { 
-      width: { ideal: 640 }, 
-      height: { ideal: 480 }, 
-      facingMode: "user" 
-    }
+    video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" }
   };
 
   navigator.mediaDevices.getUserMedia(constraints)
@@ -3884,21 +3917,64 @@ initCamera() {
       this.cameraStream = stream;
       const video = this.videoElement.nativeElement;
       video.srcObject = stream;
-      video.onloadedmetadata = () => video.play();
+      video.onloadedmetadata = () => {
+        video.play();
+        // 🚀 START AUTOMATED COUNTDOWN: Wait 2.5 seconds for face stabilization, then auto-punch
+        this.startAutoCaptureCountdown();
+      };
     })
     .catch(err => {
-      // Handles permission denied or hardware in use
-      console.error("Camera access denied or error:", err);
-      alert("Could not access camera: " + err.name);
+      console.error("Camera access denied:", err);
     });
 }
+
+
+
+
+startAutoCaptureCountdown() {
+  if (this.autoCaptureTimer) clearTimeout(this.autoCaptureTimer);
+  
+  this.autoCaptureTimer = setTimeout(() => {
+    if (!this.capturedImage && !this.isPunching && !this.isPunchings) {
+      console.log("Triggering automated secure snapshot capture...");
+      this.executeAutoCaptureAndPunch();
+    }
+  }, 2500); // 2.5 second delay gives the employee time to look at the screen
+}
+
+executeAutoCaptureAndPunch() {
+  if (!this.videoElement || !this.videoElement.nativeElement) return;
+
+  const video = this.videoElement.nativeElement;
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx?.drawImage(video, 0, 0);
+  
+  this.capturedImage = canvas.toDataURL('image/jpeg');
+  this.stopCamera();
+
+  // ⚡ RUN AUTOMATED PUNCH ROUTE PIPELINE
+  if (this.nextPunchAction === 'CHECK-IN') {
+    this.processCheckIn();
+  } else {
+    this.processCheckOut();
+  }
+}
+
+
 // 3. Helper to stop camera
 stopCamera() {
   if (this.cameraStream) {
     this.cameraStream.getTracks().forEach(track => track.stop());
     this.cameraStream = null;
   }
+  if (this.autoCaptureTimer) {
+    clearTimeout(this.autoCaptureTimer);
+  }
 }
+
 
 capturePhoto() {
   const video = this.videoElement.nativeElement;
@@ -3912,12 +3988,14 @@ capturePhoto() {
 }
 
 retakePhoto() {
-  this.initCamera();
   this.capturedImage = null;
-  // Ensure video resumes
-  setTimeout(() => this.videoElement.nativeElement.play(), 100);
+  this.isPunching = false;
+  this.isPunchings = false;
+  // Clear out residual timers safely
+  if (this.autoCaptureTimer) clearTimeout(this.autoCaptureTimer);
+  
+  this.initCamera();
 }
-
 
 // 1. Helper to convert Base64 to a Blob (File)
 private base64ToBlob(base64: string, type: string) {
@@ -3930,7 +4008,6 @@ private base64ToBlob(base64: string, type: string) {
   return new Blob([ab], { type: type });
 }
 
-
 isPunching:boolean=false;
 
 isPunchings:boolean=false;
@@ -3938,77 +4015,55 @@ isPunchings:boolean=false;
 
 // 2. Separate Check-In Function
 async processCheckIn(): Promise<void> {
-
-  // 🔴 VALIDATIONS
-  if (!this.capturedImage) {
-    alert("Please capture photo");
-    return;
-  }
-
+  
   if (!this.selectedEmployeeId) {
     alert("Please select employee");
     return;
   }
 
-  if (!this.currentLat || !this.currentLng) {
-    alert("Location not available");
+  if (!this.capturedImage || !this.currentLat || !this.currentLng) {
+    alert("Required metrics (Image/GPS Coordinates) missing. Retrying scanner flow...");
+    this.retakePhoto();
     return;
   }
 
   try {
     this.isPunching = true;
-
-    // 🟢 Convert Base64 → Blob
     const blob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
-
-    // 🟢 Create FormData
     const formData = new FormData();
     formData.append('employee', this.selectedEmployeeId.toString());
     formData.append('check_in_image', blob, 'checkin.jpg');
-    formData.append('face_photo', blob, 'face.jpg'); // 🔥 for face verification
-    console.log("Blob size:", blob.size);
-    console.log("Captured:", this.capturedImage);
-
+    formData.append('face_photo', blob, 'face.jpg');
     formData.append('check_in_lat', this.currentLat.toString());
     formData.append('check_in_lng', this.currentLng.toString());
     formData.append('check_in_location', this.currentLocationName || '');
 
-    // 🟢 API CALL
-    this.employeeService.registerEmployeeAttendenceCheckInNew(formData)
-      .subscribe({
-        next: (res) => {
-          alert("✅ Check-In Successful");
-              this.isPunching = false;
-
-          // Reset UI
-          this.capturedImage = null;
-          this.initCamera();
-        },
-        error: (err) => {
-          console.error(err);
-          alert(this.getErrorMessage(err, 'check-in'));
-            this.isPunching = false;
-        },
-        complete: () => {
-          this.isPunching = false;
-        }
-      });
-
+    this.employeeService.registerEmployeeAttendenceCheckInNew(formData).subscribe({
+      next: (res: any) => {
+        alert("✅ Automated Check-In Successful");
+        // 🔄 Toggle next action status seamlessly
+        this.nextPunchAction = 'CHECK-OUT';
+        this.resetWorkflowAfterDelay();
+      },
+      error: (err: any) => {
+        alert("Check-In Failure: " + this.getErrorMessage(err, 'check-in'));
+        this.retakePhoto();
+      }
+    });
   } catch (error) {
-    console.error(error);
-    alert("Something went wrong");
-    this.isPunching = false;
+    this.retakePhoto();
   }
 }
 
-
-// 3. Separate Check-Out Function
 processCheckOut() {
-  if (!this.capturedImage) return alert("Please capture a photo first");
-  if (!this.selectedEmployeeId  ) {
-    alert('Please ensure Employee is loaded.');
+
+  
+  if (!this.selectedEmployeeId) {
+    alert("Please select employee");
     return;
   }
+
+  if (!this.capturedImage) return;
   this.isPunchings = true;
 
   const formData = new FormData();
@@ -4024,17 +4079,32 @@ processCheckOut() {
   formData.append('face_photo', imageBlob, 'verify.jpg');
 
   this.employeeService.registerEmployeeAttendenceCheckOutnew(formData).subscribe({
-    next: (res) => {
-      this.isPunchings = false;
-      alert("CHECK-OUT SUCCESSFUL!");
-      this.retakePhoto();
+    next: (res: any) => {
+      alert("✅ Automated Check-Out Successful");
+      // 🔄 Toggle next action status seamlessly
+      this.nextPunchAction = 'CHECK-IN';
+      this.resetWorkflowAfterDelay();
     },
-    error: (err) => {
-      this.isPunchings = false;
+    error: (err: any) => {
       alert(`Check-Out Error: ${err.error?.detail || 'Verification Failed'}`);
+      this.retakePhoto();
     }
   });
 }
+
+
+resetWorkflowAfterDelay() {
+  setTimeout(() => {
+    this.capturedImage = null;
+    this.isPunching = false;
+    this.isPunchings = false;
+    this.initCamera();
+  }, 4000);
+}
+
+
+
+
 
 
 // Optional: Helper to keep code clean
