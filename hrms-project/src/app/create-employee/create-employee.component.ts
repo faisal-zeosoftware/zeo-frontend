@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EmployeeAddMoreFieldComponent } from '../employee-add-more-field/employee-add-more-field.component';
 import { environment } from '../../environments/environment';
 import { UserMasterService } from '../user-master/user-master.service';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-create-employee',
@@ -279,6 +280,7 @@ export class CreateEmployeeComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthenticationService,
     private userService: UserMasterService,
+    private DepartmentServiceService: DepartmentServiceService,
     private ref: MatDialogRef<CreateEmployeeComponent>) { }
 
 
@@ -444,7 +446,8 @@ export class CreateEmployeeComponent implements OnInit {
     this.loadUsers();
 
     this.loadCompanies();
-    this.loadbranches();
+    // this.loadbranches();
+    this.loadDeparmentBranch();
     this.loadDepartments();
     this.loadDesignation();
     this.loadcatg();
@@ -1767,22 +1770,52 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
 
 
 
-  loadbranches(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  // loadbranches(): void {
+  //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-    console.log('schemastore', selectedSchema)
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.companyRegistrationService.getBranchesList(selectedSchema).subscribe(
-        (result: any) => {
-          this.branches = result;
-        },
-        (error: any) => {
-          console.error('Error fetching countries:', error);
+  //   console.log('schemastore', selectedSchema)
+  //   // Check if selectedSchema is available
+  //   if (selectedSchema) {
+  //     this.companyRegistrationService.getBranchesList(selectedSchema).subscribe(
+  //       (result: any) => {
+  //         this.branches = result;
+  //       },
+  //       (error: any) => {
+  //         console.error('Error fetching countries:', error);
+  //       }
+  //     );
+  //   }
+  // }
+
+  loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.branches = result; // Fallback: show all if nothing is selected in sidebar
         }
-      );
-    }
+        // Inside the subscribe block of loadDeparmentBranch
+
+
+        console.log('Filtered branches for selection:', this.branches);
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
   }
+}
 
   loadDepartments(): void {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema

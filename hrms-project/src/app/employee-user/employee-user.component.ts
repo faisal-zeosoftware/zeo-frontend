@@ -122,5 +122,6 @@ export class EmployeeUserComponent implements OnInit {
 
   ClosePopup(): void {
     this.ref.close('Closed using function');
+    window.location.reload();
   }
 }

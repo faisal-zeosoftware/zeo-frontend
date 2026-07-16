@@ -701,6 +701,7 @@ username: any;
 
   Closefamup(){
       this.ref.close('Closed using function');
+      window.location.reload();
 
   }
 

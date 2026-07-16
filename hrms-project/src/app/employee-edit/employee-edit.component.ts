@@ -16,6 +16,7 @@ import { SuccesModalComponent } from '../succes-modal/succes-modal.component';
 import { EmployeeAddMoreFieldComponent } from '../employee-add-more-field/employee-add-more-field.component';
 import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 import { UserMasterService } from '../user-master/user-master.service';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 @Component({
   selector: 'app-employee-edit',
@@ -144,6 +145,7 @@ export class EmployeeEditComponent {
     private EmployeeService: EmployeeService,
     private CountryService: CountryService,
     private CompanyRegistrationService: CompanyRegistrationService,
+    private DepartmentServiceService: DepartmentServiceService,
     private userService: UserMasterService,
 
 
@@ -168,7 +170,8 @@ ngOnInit(): void {
   // 🔹 Load all dropdown masters FIRST
   this.loadCountries();
   this.loadCompanies();
-  this.loadbranches();
+  // this.loadbranches();
+  this.loadDeparmentBranch();
   this.loadDepartments();
   this.loadDesignation();
   this.loadcatg();
@@ -778,20 +781,50 @@ loadCompanies(): void {
   
 
 
-loadbranches(): void {
-  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+// loadbranches(): void {
+//   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
 
-  console.log('schemastore',selectedSchema )
-  // Check if selectedSchema is available
+//   console.log('schemastore',selectedSchema )
+//   // Check if selectedSchema is available
+//   if (selectedSchema) {
+//   this.CompanyRegistrationService.getBranchesList(selectedSchema).subscribe(
+//     (result: any) => {
+//       this.branches = result;
+//     },
+//     (error: any) => {
+//       console.error('Error fetching countries:', error);
+//     }
+//   );
+//   }
+// }
+
+  loadDeparmentBranch(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
   if (selectedSchema) {
-  this.CompanyRegistrationService.getBranchesList(selectedSchema).subscribe(
-    (result: any) => {
-      this.branches = result;
-    },
-    (error: any) => {
-      console.error('Error fetching countries:', error);
-    }
-  );
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.branches = result; // Fallback: show all if nothing is selected in sidebar
+        }
+        // Inside the subscribe block of loadDeparmentBranch
+
+
+        console.log('Filtered branches for selection:', this.branches);
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
   }
 }
 

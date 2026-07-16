@@ -76,19 +76,23 @@
 
             <div class="col-md-6" >
                
-                <label> {{empCodeFieldName}}</label>
+                <label> {{empCodeFieldName}}
+                    <span class="required-star">*</span>
+                </label>
                <input type="text"  class="form-control" required id="emp_code" name="emp_code"  [(ngModel)]="Emp.emp_code"  placeholder="Enter emp code"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_code}">
                
-               <div *ngIf="registerButtonClicked && !emp_code" class="error-message">Department Name is required.</div>
+                <div *ngIf="registerButtonClicked && !emp_code" class="error-message">{{empCodeFieldName}} is required.</div>
           </div>
                 <div class="col-md-6" >
                    
-          <label>{{firstNameFieldName}} </label>
+          <label>{{firstNameFieldName}} 
+            <span class="required-star" >*</span>
+          </label>
          <input type="text"  class="form-control" required id="emp_first_name" name="emp_first_name"  [(ngModel)]="Emp.emp_first_name"  placeholder="Enter First Name"
           [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_first_name}">
          
-         <div *ngIf="registerButtonClicked && !emp_first_name" class="error-message">Department Name is required.</div>
+         <div *ngIf="registerButtonClicked && !emp_code" class="error-message">{{empCodeFieldName}} is required.</div>
     </div>
     
     <div class="col-md-6" >
@@ -122,7 +126,9 @@
     
     <div class="col-md-6">
                    
-        <label>{{dobFieldName}}</label>
+        <label>{{dobFieldName}}
+             <span class="required-star">*</span>
+        </label>
        <input type="date"  class="form-control" required id="emp_date_of_birth" name="emp_date_of_birth"  [(ngModel)]="Emp.emp_date_of_birth"  placeholder="Enter Date Birth"
         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_date_of_birth}">
        
@@ -149,7 +155,9 @@
      
     <div class="col-md-6">
         <div class="custom-sel">
-            <label>{{brchFieldName}}</label>
+            <label>{{brchFieldName}}
+                 <span class="required-star" >*</span>
+            </label>
             <select class="form-control" id="emp_branch_id" name="emp_branch_id" required [(ngModel)]="Emp.emp_branch_id" [ngModelOptions]="{standalone: true}"
                    >
                 <option value="">Select</option>
@@ -165,7 +173,9 @@
 
 
         <div class="custom-sel">
-            <label>{{deptFieldName}}</label>
+            <label>{{deptFieldName}}
+                 <span class="required-star" >*</span>
+            </label>
             <select class="form-control" id="country" required [(ngModel)]="Emp.emp_dept_id"  [ngModelOptions]="{standalone: true}"
              [ngClass]="{'error-field': registerButtonClicked && !emp_dept_id}" >
                 <option value="" >Select</option>
@@ -183,7 +193,9 @@
 
 
         <div class="custom-sel">
-            <label>{{desFieldName}}</label>
+            <label>{{desFieldName}}
+                 <span class="required-star" >*</span>
+            </label>
             <select class="form-control" id="country" required [(ngModel)]="Emp.emp_desgntn_id"  [ngModelOptions]="{standalone: true}"
              [ngClass]="{'error-field': registerButtonClicked && !emp_desgntn_id}" >
                 <option value="" >Select</option>
@@ -200,7 +212,9 @@
 
 
         <div class="custom-sel">
-            <label>{{catFieldName}}</label>
+            <label>{{catFieldName}}
+                  <span class="required-star" >*</span>
+            </label>
             <select class="form-control" id="emp_ctgry_id" name="emp_ctgry_id" required [(ngModel)]="Emp.emp_ctgry_id"  [ngModelOptions]="{standalone: true}"
              [ngClass]="{'error-field': registerButtonClicked && !emp_ctgry_id}" >
                 <option value="" >Select</option>
@@ -227,7 +241,9 @@
 
  <div class="col-md-6">
                    
-    <label>{{hiredFieldName}}</label>
+    <label>{{hiredFieldName}}
+        <span class="required-star" >*</span>
+    </label>
    <input type="date"  class="form-control" required id="emp_joined_date" name="emp_joined_date"  [(ngModel)]="Emp.emp_joined_date"  placeholder="Enter hired Date "
     [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_joined_date}">
    
@@ -246,7 +262,9 @@
     
     
 <div class="custom-sel">
-  <label>{{repoFieldName}}</label>
+  <label>{{repoFieldName}}
+    <span class="required-star" >*</span>
+  </label>
 <select class="form-control"
   [(ngModel)]="Emp.emp_reporting_manager"
   [ngModelOptions]="{standalone: true}">
@@ -496,7 +514,9 @@
                     
                     
                         <div class="custom-sel">
-                            <label>{{nationFieldName}}</label>
+                            <label>{{nationFieldName}}
+                                <span class="required-star" >*</span>
+                            </label>
                             <select class="form-control" id="emp_nationality" name="emp_nationality" required [(ngModel)]="Emp.emp_nationality"  [ngModelOptions]="{standalone: true}"  >
                                 <option value="" >Select</option>
                                 <option *ngFor="let emp_nationality of Nationations" [value]="emp_nationality.id">{{ emp_nationality.N_name }}</option>
