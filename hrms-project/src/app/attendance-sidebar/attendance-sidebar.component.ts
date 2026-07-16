@@ -181,6 +181,15 @@ export class AttendanceSidebarComponent {
                       this.hasViewPermissionAttendancepolicy = this.checkGroupPermission('view_attendancepolicy', groupPermissions);
                       console.log('Has view permission:', this.hasViewPermissionAttendancepolicy);
 
+                      this.hasViewPermissionAttendancevalidationpolicy = this.checkGroupPermission('view_attendancevalidationpolicy', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionAttendancevalidationpolicy);
+
+                      this.hasViewPermissionLateComingPolicy = this.checkGroupPermission('view_latecomingpolicy', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionLateComingPolicy);
+
+                       this.hasViewPermissionEarlyExitPolicy = this.checkGroupPermission('view_earlyexitpolicy', groupPermissions);
+                      console.log('Has view permission:', this.hasViewPermissionEarlyExitPolicy);
+
                       this.hasViewPermissionFaceRegister = this.checkGroupPermission('view_attendance_faceregister', groupPermissions);
                       console.log('Has view permission:', this.hasViewPermissionFaceRegister);
 

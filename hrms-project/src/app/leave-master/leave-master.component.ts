@@ -394,6 +394,10 @@ leaveApplicableTopSection!: ElementRef;
 
   }
 
+    checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
+    return groupPermissions.some(permission => permission.codename === codeName);
+  }
+
 
 
 // Toggle edit icon
@@ -594,9 +598,6 @@ this.leaveService.registerLeaveType(formData).subscribe(
   }
   
 
-  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-    return groupPermissions.some(permission => permission.codename === codeName);
-  }
 
 showPayRuleForm: boolean = false;
 

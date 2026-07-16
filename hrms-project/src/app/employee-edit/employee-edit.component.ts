@@ -167,11 +167,16 @@ export class EmployeeEditComponent {
 
 ngOnInit(): void {
 
+         // Listen for sidebar changes so the dropdown updates instantly
+       this.EmployeeService.selectedBranches$.subscribe(ids => {
+        this.LoadBranch(); 
+      });
+
   // 🔹 Load all dropdown masters FIRST
   this.loadCountries();
   this.loadCompanies();
   // this.loadbranches();
-  this.loadDeparmentBranch();
+  // this.loadDeparmentBranch();
   this.loadDepartments();
   this.loadDesignation();
   this.loadcatg();
@@ -798,7 +803,37 @@ loadCompanies(): void {
 //   }
 // }
 
-  loadDeparmentBranch(callback?: Function): void {
+//   loadDeparmentBranch(callback?: Function): void {
+//   const selectedSchema = this.authService.getSelectedSchema();
+  
+//   if (selectedSchema) {
+//     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+//       (result: any[]) => {
+//         // 1. Get the sidebar selected IDs from localStorage
+//         const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+//         // 2. Filter the API result to only include branches selected in the sidebar
+//         // If sidebar is empty, you might want to show all, or show none. 
+//         // Usually, we show only the selected ones:
+//         if (sidebarSelectedIds.length > 0) {
+//           this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+//         } else {
+//           this.branches = result; // Fallback: show all if nothing is selected in sidebar
+//         }
+//         // Inside the subscribe block of loadDeparmentBranch
+
+
+//         console.log('Filtered branches for selection:', this.branches);
+//         if (callback) callback();
+//       },
+//       (error) => {
+//         console.error('Error fetching branches:', error);
+//       }
+//     );
+//   }
+// }
+
+LoadBranch(callback?: Function) {
   const selectedSchema = this.authService.getSelectedSchema();
   
   if (selectedSchema) {
@@ -816,7 +851,10 @@ loadCompanies(): void {
           this.branches = result; // Fallback: show all if nothing is selected in sidebar
         }
         // Inside the subscribe block of loadDeparmentBranch
-
+// ✅ Auto select first branch
+if (this.branches.length > 0) {
+this.emp_branch_id = this.branches[0].id;
+}
 
         console.log('Filtered branches for selection:', this.branches);
         if (callback) callback();
