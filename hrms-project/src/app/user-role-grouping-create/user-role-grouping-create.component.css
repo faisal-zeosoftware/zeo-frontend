@@ -1,128 +1,245 @@
-/* Container */
+/* Container Design */
+.dialog-container {
+  overflow-x: hidden;
+  max-height: 85vh;
+}
+
 .cpm-sec {
-  padding: 20px;
-  background: #f9fafb;
-  border-radius: 10px;
+  padding: 10px 15px;
+  background: #fcfdfe;
+  border-radius: 12px;
 }
 
-/* Header */
+/* Header Typography */
 .cpm-sec h1 {
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 5px;
+  letter-spacing: -0.5px;
+}
+
+/* Form inputs spacing */
+.form-label {
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 10px;
-}
-
-/* Section Title */
-.head_group_list {
-  font-weight: 600;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-/* Card-style section */
-.child_per {
-  margin-top: 15px;
-  padding: 15px;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-/* Each module row */
-.row {
-  margin-bottom: 12px;
-  align-items: center;
-}
-
-/* Left main checkbox column */
-.col-md-3 {
-  font-weight: 500;
-}
-
-/* Permission box */
-.selection_checkmark_sec {
-  background: #f4f6f8;
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid #e0e0e0;
-}
-
-/* Permission grid */
-.all_selection_Sec .row {
-  margin: 0;
-}
-
-/* Individual permission checkbox */
-.all_selection_Sec .col-md-3 {
+  color: #475569;
   margin-bottom: 6px;
 }
 
-/* Checkbox label */
-.mat-mdc-checkbox label {
-  font-size: 13px !important;
-  color: #333;
+input.form-control {
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  padding: 10px 14px;
+  font-size: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  transition: all 0.2s ease-in-out;
 }
 
-/* Main checkbox label */
-.mdc-form-field label {
-  font-size: 14px !important;
+input.form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  outline: none;
+}
+
+/* Redesigned Two-Column Sidebar system */
+.module-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.sidebar-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.sidebar-item:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.sidebar-item.active {
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+}
+
+/* Dynamic Panel Workspace */
+.tab-content-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 480px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.fade-in-tab {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header Banner Inside Content Workspace */
+.section-header-banner {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 12px 16px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  margin: -16px -16px 16px -16px;
+}
+
+.banner-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Main Cards */
+.child_per {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.permission-row {
+  margin-bottom: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+}
+
+.permission-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Unified Standard Permission Container Box */
+.selection_checkmark_sec {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  transition: background 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.selection_checkmark_sec:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Master Selector Row Styling */
+.master-select-all {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.master-select-all span {
+  color: #15803d;
+  font-weight: 700;
+}
+
+/* Checkbox Material Layout Overrides */
+.mat-mdc-checkbox {
+  margin-right: 0;
+}
+
+::ng-deep .mat-mdc-checkbox .mdc-label {
+  font-size: 13px !important;
+  color: #334155 !important;
   font-weight: 500;
 }
 
-/* Hover effect */
-.selection_checkmark_sec:hover {
-  background: #eef3f7;
-}
-
-/* Close button */
-.close {
-  font-size: 22px;
+/* Close action */
+.close-btn {
+  font-size: 26px;
+  color: #64748b;
   cursor: pointer;
+  line-height: 1;
+  transition: color 0.1s ease;
 }
 
-.mat-mdc-checkbox {
-  margin-right: 8px;
+.close-btn:hover {
+  color: #ef4444;
 }
 
-
-
-
-/* Input styling */
-input.form-control {
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  padding: 8px;
-}
-
-/* Error */
+/* Error Field Handling */
 .error-field {
-  border-color: red;
+  border-color: #ef4444 !important;
 }
 
 .error-message {
   font-size: 12px;
-  color: red;
+  color: #ef4444;
+  margin-top: 4px;
+  font-weight: 500;
 }
 
-/* Divider spacing */
-hr {
-  margin: 10px 0 20px;
+/* Action button configurations */
+.btn-full {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
 }
 
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .child_per {
-    padding: 10px;
-  }
+.btn-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
 
-  .head_group_list {
-    font-size: 15px;
-  }
+.btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
 
-  .mat-mdc-checkbox label {
-    font-size: 12px !important;
+.btn-secondary {
+  background-color: #64748b;
+  border-color: #64748b;
+  color: #ffffff;
+}
+
+.btn-secondary:hover {
+  background-color: #475569;
+  border-color: #475569;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+/* Responsive Overrides */
+@media (max-width: 991px) {
+  .module-sidebar {
+    max-height: 200px;
+    margin-bottom: 20px;
   }
 }

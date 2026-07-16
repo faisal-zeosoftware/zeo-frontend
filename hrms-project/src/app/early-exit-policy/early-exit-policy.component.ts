@@ -199,17 +199,17 @@ export class EarlyExitPolicyComponent {
                         console.log('Group Permissions:', groupPermissions);
     
     
-                        this.hasAddPermission = this.checkGroupPermission('add_assettype', groupPermissions);
+                        this.hasAddPermission = this.checkGroupPermission('add_earlyexitpolicy', groupPermissions);
                         console.log('Has add permission:', this.hasAddPermission);
     
-                        this.hasEditPermission = this.checkGroupPermission('change_assettype', groupPermissions);
+                        this.hasEditPermission = this.checkGroupPermission('change_earlyexitpolicy', groupPermissions);
                         console.log('Has edit permission:', this.hasEditPermission);
     
-                        this.hasDeletePermission = this.checkGroupPermission('delete_assettype', groupPermissions);
+                        this.hasDeletePermission = this.checkGroupPermission('delete_earlyexitpolicy', groupPermissions);
                         console.log('Has delete permission:', this.hasDeletePermission);
     
     
-                        this.hasViewPermission = this.checkGroupPermission('view_assettype', groupPermissions);
+                        this.hasViewPermission = this.checkGroupPermission('view_earlyexitpolicy', groupPermissions);
                         console.log('Has view permission:', this.hasViewPermission);
     
                       } else {
