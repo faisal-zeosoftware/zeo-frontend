@@ -116,7 +116,18 @@ if (this.userId !== null) {
         this.hasEditPermission = true;
     
         // Fetch designations without checking permissions
-        this.fetchDesignations(selectedSchema);
+        // this.fetchDesignations(selectedSchema);
+
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);  
+            
+    
+          }
+        });
       } else {
         console.log('User is not superuser');
 
@@ -188,7 +199,16 @@ if (this.userId !== null) {
             }
 
             // Fetching designations after checking permissions
-            this.fetchDesignations(selectedSchema);
+            this.dataSubscription = combineLatest([
+              this.employeeService.selectedSchema$,
+              this.employeeService.selectedBranches$
+            ]).subscribe(([schema, branchIds]) => {
+              if (schema) {
+                this.fetchEmployees(schema, branchIds);  
+                
+        
+              }
+            });
           }
           
           catch (error) {
@@ -248,17 +268,17 @@ if (this.userId !== null) {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
-  fetchDesignations(selectedSchema: string) {
-    this.UserMasterService.getRoleGrouping(selectedSchema).subscribe(
-      (data: any) => {
-        this.Groups = data;
-        console.log('employee:', this.Groups);
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
-  }
+  // fetchDesignations(selectedSchema: string) {
+  //   this.UserMasterService.getRoleGrouping(selectedSchema).subscribe(
+  //     (data: any) => {
+  //       this.Groups = data;
+  //       console.log('employee:', this.Groups);
+  //     },
+  //     (error: any) => {
+  //       console.error('Error fetching categories:', error);
+  //     }
+  //   );
+  // }
 
      
 // checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -482,7 +502,16 @@ duplicateGroup(group: any): void {
       // Refresh the list
       const selectedSchema = this.authService.getSelectedSchema();
       if (selectedSchema) {
-        this.fetchDesignations(selectedSchema);
+        this.dataSubscription = combineLatest([
+          this.employeeService.selectedSchema$,
+          this.employeeService.selectedBranches$
+        ]).subscribe(([schema, branchIds]) => {
+          if (schema) {
+            this.fetchEmployees(schema, branchIds);  
+            
+    
+          }
+        });
       }
     }
   });
