@@ -1,644 +1,1009 @@
 <div mat-dialog-content class="">
-     <div class="col-md-12 text-right">
+  <div class="col-md-12 text-right">
     <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="Closefamup()">
-      ×
-    </span>
+    <span class="close-btn" (click)="Closefamup()"> × </span>
   </div>
-    <div class="cpm-sec" >
-
-
-        <!-- 
+  <div class="cpm-sec">
+    <!-- 
         <h1>Create Employee Family</h1><hr> -->
 
-        <mat-accordion class="example-headers-align">
+    <mat-accordion class="example-headers-align">
+      <mat-expansion-panel
+        [expanded]="step === 0"
+        (opened)="setStep(0)"
+        *ngIf="!showOnlySection || showOnlySection === 'family'"
+        hideToggle
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Employee Family </mat-panel-title>
+          <mat-panel-description>
+            <!-- <mat-icon>account_circle</mat-icon> -->
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="from-sec">
+          <form>
+            <div
+              *ngFor="let member of familyMembers; let i = index"
+              class="border rounded p-3 mb-3"
+            >
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <h5>Family Member {{ i + 1 }}</h5>
 
-  <mat-expansion-panel 
-    [expanded]="step === 0" 
-    (opened)="setStep(0)" 
-    *ngIf="!showOnlySection || showOnlySection === 'family'"
-    hideToggle>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Employee Family
-                    </mat-panel-title>
-                    <mat-panel-description>
-                        <!-- <mat-icon>account_circle</mat-icon> -->
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
-                <div class="from-sec">
-                    <form>
-                        <div class="row">
-                            <div class="col-md-6">
+                <button
+                  *ngIf="familyMembers.length > 1"
+                  class="btn btn-danger btn-sm"
+                  (click)="removeFamilyMember(i)"
+                >
+                  Remove
+                </button>
+              </div>
 
-                                <label> Family Member name</label>
-                                <input type="text" class="form-control" required [(ngModel)]="ef_member_name"
-                                    placeholder="Enter Member Name" [ngModelOptions]="{standalone: true}">
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label> Relationship</label>
-                                <input type="text" class="form-control" required [(ngModel)]="emp_relation"
-                                    placeholder="Enter Relationship" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-
-                            <div class="col-md-6">
-
-                                <label> Family Company Expense</label>
-                                <input type="number" class="form-control" required [(ngModel)]="ef_company_expence"
-                                    placeholder="Enter Company Expense" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label> Date of birth</label>
-                                <input type="date" class="form-control" required [(ngModel)]="ef_date_of_birth"
-                                    placeholder="Enter Date of birth" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-
-                          
-
-
-                        </div>
-
-
-                        <div class="row" >
-                            <div class="col-md-6" *ngFor="let field of custom_fieldsFam">
-                                <label>{{ field.emp_custom_field }}</label>
-                                <ng-container [ngSwitch]="field.data_type">
-                                    <!-- Dropdown -->
-                                    <select *ngSwitchCase="'dropdown'" class="form-control" 
-                                            [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}"
-                                            [required]="field.mandatory">
-                                        <option *ngFor="let value of field.dropdown_values" [value]="value">{{ value }}</option>
-                                    </select>
-                                    <!-- Radio -->
-                                <div class="col-md-4 radio-sec form-control" *ngSwitchCase="'radio'">
-                                   <div *ngFor="let value of field.radio_values" class="form-check form-check-inline">
-                                   <input type="radio" class="form-check-input"
-                                      [id]="value + field.id"
-                                      [(ngModel)]="field.field_value"
-                                      [value]="value"
-                                      [ngModelOptions]="{standalone: true}"
-                                      [required]="field.mandatory">
-                                   <label class="form-check-label" [for]="value + field.id">
-                                     {{ value }}
-                                   </label>
-                                   </div>
-                                </div>
-                                    <!-- Date -->
-                                    <input *ngSwitchCase="'date'" type="date" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                    <!-- Default for other or empty data_type -->
-                                    <input *ngSwitchDefault type="text" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                </ng-container>
-                            </div>
-                            
-                        </div>
-
-
-                    </form>
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Family Member Name</label>
+                  <input
+                    class="form-control"
+                    [(ngModel)]="member.ef_member_name"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
                 </div>
 
-                <mat-action-row>
-                    <button mat-raised-button color="primary" (click)="CreateEmployeeFamily()">Add</button>
-                </mat-action-row>
-            </mat-expansion-panel>
-
-           <mat-expansion-panel 
-    [expanded]="step === 1" 
-    (opened)="setStep(1)" 
-    *ngIf="!showOnlySection || showOnlySection === 'qualification'"
-    hideToggle>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Qualification
-                    </mat-panel-title>
-                    <mat-panel-description>
-                        <!-- <mat-icon>map</mat-icon> -->
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
-
-                <form>
-                    <div class="from-sec">
-                        <div class="row">
-                            <div class="col-md-6">
-
-                                <label>Employee Qualification</label>
-                                <input type="text" class="form-control" required [(ngModel)]="emp_qualification"
-                                    placeholder="Enter Qualification" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label>Institution name</label>
-                                <input type="text" class="form-control" required [(ngModel)]="emp_qf_instituition"
-                                    placeholder="Enter Institution Name" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-
-                            <div class="col-md-6">
-
-                                <label>Employee qualification year</label>
-                                <input type="date" class="form-control" required [(ngModel)]="emp_qf_year"
-                                    placeholder="Enter Year " [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label>Employee qualification subject</label>
-                                <input type="text" class="form-control" required [(ngModel)]="emp_qf_subject"
-                                    placeholder="Enter qualification subject " [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-
-                        </div>
-
-                        <div class="row" >
-                            <div class="col-md-6" *ngFor="let field of custom_fieldsQual">
-                                <label>{{ field.emp_custom_field }}</label>
-                                <ng-container [ngSwitch]="field.data_type">
-                                    <!-- Dropdown -->
-                                    <select *ngSwitchCase="'dropdown'" class="form-control" 
-                                            [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}"
-                                            [required]="field.mandatory">
-                                        <option *ngFor="let value of field.dropdown_values" [value]="value">{{ value }}</option>
-                                    </select>
-                                    <!-- Radio -->
-                                    <div class="radio-sec form-control" *ngSwitchCase="'radio'">
-                                        <div *ngFor="let value of field.radio_values" class="form-check">
-                                            <input type="radio" class="form-check-input" [id]="value + field.id" 
-                                                   [(ngModel)]="field.field_value" [value]="value" 
-                                                   [ngModelOptions]="{standalone: true}" [required]="field.mandatory">
-                                            <label class="form-check-label" [for]="value + field.id">{{ value }}</label>
-                                        </div>
-                                    </div>
-                                    <!-- Date -->
-                                    <input *ngSwitchCase="'date'" type="date" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                    <!-- Default for other or empty data_type -->
-                                    <input *ngSwitchDefault type="text" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                </ng-container>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </form>
-
-<mat-action-row>
-    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
-    <button mat-raised-button color="primary" (click)="createEmployeeQual()">Add</button>
-</mat-action-row>
-            </mat-expansion-panel>
-
-
-            <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)"  *ngIf="!showOnlySection || showOnlySection === 'jobhistory'" hideToggle>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Job History
-                    </mat-panel-title>
-                    <mat-panel-description>
-                        <mat-icon>map</mat-icon>
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
-
-                <form>
-                    <div class="from-sec">
-                        <div class="row">
-<div class="col-md-6">
-    <label>Employee job History From date</label>
-    <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="emp_jh_from_date"
-        [ngModelOptions]="{standalone: true}"
-        (change)="calculateExperience()">
-</div>
-
-<div class="col-md-6">
-    <label>Employee job History to date</label>
-    <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="emp_jh_end_date"
-        [ngModelOptions]="{standalone: true}"
-        (change)="calculateExperience()">
-</div>
-
-<div class="col-md-6">
-    <label>Employee Work Experience (Years)</label>
-    <input
-        type="number"
-        class="form-control"
-        [(ngModel)]="emp_jh_years_experiance"
-        [ngModelOptions]="{standalone: true}"
-        readonly>
-</div>
-
-                            <div class="col-md-6">
-
-                                <label>Company name</label>
-                                <input type="text" class="form-control" required [(ngModel)]="emp_jh_company_name"
-                                    placeholder="Enter Company Name" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-
-                          
-
-                            <div class="col-md-6">
-
-                                <label>Employee Designation</label>
-                                <input type="text" class="form-control" required [(ngModel)]="emp_jh_designation"
-                                    placeholder="Enter Designation" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-                            <div class="col-md-6">
-
-                                <label>Employee salary per month</label>
-                                <input type="number" class="form-control" required [(ngModel)]="emp_jh_leaving_salary_permonth"
-                                    placeholder="Enter salary per month" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-                            
-                            <div class="col-md-6">
-
-                                <label>Leaving reason</label>
-                                <input type="text" class="form-control" required [(ngModel)]="emp_jh_reason"
-                                    placeholder="Enter reason" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-
-
-
-                        </div>
-
-                        <div class="row" >
-                            <div class="col-md-6" *ngFor="let field of custom_fieldsJob">
-                                <label>{{ field.emp_custom_field }}</label>
-                                <ng-container [ngSwitch]="field.data_type">
-                                    <!-- Dropdown -->
-                                    <select *ngSwitchCase="'dropdown'" class="form-control" 
-                                            [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}"
-                                            [required]="field.mandatory">
-                                        <option *ngFor="let value of field.dropdown_values" [value]="value">{{ value }}</option>
-                                    </select>
-                                    <!-- Radio -->
-                                    <div class="radio-sec form-control" *ngSwitchCase="'radio'">
-                                        <div *ngFor="let value of field.radio_values" class="form-check">
-                                            <input type="radio" class="form-check-input" [id]="value + field.id" 
-                                                   [(ngModel)]="field.field_value" [value]="value" 
-                                                   [ngModelOptions]="{standalone: true}" [required]="field.mandatory">
-                                            <label class="form-check-label" [for]="value + field.id">{{ value }}</label>
-                                        </div>
-                                    </div>
-                                    <!-- Date -->
-                                    <input *ngSwitchCase="'date'" type="date" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                    <!-- Default for other or empty data_type -->
-                                    <input *ngSwitchDefault type="text" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                </ng-container>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </form>
-
-<mat-action-row>
-    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
-    <button mat-raised-button color="primary" (click)="createEmployeeJonHistory()">Add</button>
-</mat-action-row>
-            </mat-expansion-panel>
-
-            <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)"  *ngIf="!showOnlySection || showOnlySection === 'bank'" hideToggle>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Bank Details
-                    </mat-panel-title>
-                    <mat-panel-description>
-                        <!-- <mat-icon>map</mat-icon> -->
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
-
-                <form>
-                    <div class="from-sec">
-                        <div class="row">
-                            <div class="col-md-6">
-
-                                <label>Bank Name</label>
-
-                                <input type="text" class="form-control" required [(ngModel)]="bank_name"
-                                
-                                    placeholder="bank name" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label>Account Number</label>
-
-                                <input type="text" class="form-control" required [(ngModel)]="account_number"
-
-                                    placeholder="account number" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label>Iban Number</label>
-                                <input type="text" class="form-control" required [(ngModel)]="iban_number"
-                                 placeholder="iban number" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-                            
-                             <div class="col-md-6">
-
-                                <label>Route Code</label>
-                                <input type="text" class="form-control" required [(ngModel)]="route_code"
-
-                                    placeholder="route code" [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <label>Branch Name</label>
-
-                                <input type="text" class="form-control" required [(ngModel)]="branch_name"
-
-                                    placeholder="branch name" [ngModelOptions]="{standalone: true}">
-
-                                
-                            </div>
-
-
-                            <div class="col-md-6">
-
-                                <label>Bank Address</label>
-
-                                <input type="textarea" class="form-control" required [(ngModel)]="bank_address"
-
-                                    placeholder="bank Address   " [ngModelOptions]="{standalone: true}">
-
-                            </div>
-
-
-
-
-
-                                <div class="col-md-6">
-                        <label></label>
-                        <div class="check-box-selection-sec form-control mt-3">
-                          <div class="mat-set">
-                            <mat-checkbox [(ngModel)]="is_active" [ngModelOptions]="{standalone: true}">Is active</mat-checkbox>
-                          </div>
-                        </div>
+                <div class="col-md-6">
+                  <label>Relationship</label>
+                  <input
+                    class="form-control"
+                    [(ngModel)]="member.emp_relation"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <label>Company Expense</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="member.ef_company_expence"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+
+                <div class="col-md-6">
+                  <label>Date of Birth</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="member.ef_date_of_birth"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+              </div>
+
+              <!-- Custom Fields -->
+
+              <div class="row">
+                <div class="col-md-6" *ngFor="let field of custom_fieldsFam">
+                  <label>{{ field.emp_custom_field }}</label>
+                  <ng-container [ngSwitch]="field.data_type">
+                    <!-- Dropdown -->
+                    <select
+                      *ngSwitchCase="'dropdown'"
+                      class="form-control"
+                      [(ngModel)]="field.field_value"
+                      [ngModelOptions]="{ standalone: true }"
+                      [required]="field.mandatory"
+                    >
+                      <option
+                        *ngFor="let value of field.dropdown_values"
+                        [value]="value"
+                      >
+                        {{ value }}
+                      </option>
+                    </select>
+                    <!-- Radio -->
+                    <div
+                      class="col-md-4 radio-sec form-control"
+                      *ngSwitchCase="'radio'"
+                    >
+                      <div
+                        *ngFor="let value of field.radio_values"
+                        class="form-check form-check-inline"
+                      >
+                        <input
+                          type="radio"
+                          class="form-check-input"
+                          [id]="value + field.id"
+                          [(ngModel)]="field.field_value"
+                          [value]="value"
+                          [ngModelOptions]="{ standalone: true }"
+                          [required]="field.mandatory"
+                        />
+                        <label
+                          class="form-check-label"
+                          [for]="value + field.id"
+                        >
+                          {{ value }}
+                        </label>
                       </div>
-          
-
-                        </div>
                     </div>
-                </form>
+                    <!-- Date -->
+                    <input
+                      *ngSwitchCase="'date'"
+                      type="date"
+                      class="form-control"
+                      [(ngModel)]="field.field_value"
+                      [ngModelOptions]="{ standalone: true }"
+                      [required]="field.mandatory"
+                    />
+                    <!-- Default for other or empty data_type -->
+                    <input
+                      *ngSwitchDefault
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="field.field_value"
+                      [ngModelOptions]="{ standalone: true }"
+                      [required]="field.mandatory"
+                    />
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
 
-<mat-action-row>
-    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
-    <button mat-raised-button color="primary" (click)="createempbankdetails()">Add</button>
-</mat-action-row>
-            </mat-expansion-panel>
+        <mat-action-row>
+          <div class="text-end mb-3">
+            <button
+              type="button"
+              class="btn btn-success"
+              (click)="addFamilyMember()"
+            >
+              <i class="fa fa-plus"></i> Add Another
+            </button>
+          </div>
+          <div class="text-end mb-3">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="CreateEmployeeFamily()"
+            >
+              Add Family
+            </button>
+          </div>
+        </mat-action-row>
+      </mat-expansion-panel>
 
-            <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)"  *ngIf="!showOnlySection || showOnlySection === 'documents'" hideToggle>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Employee Document Upload
-                    </mat-panel-title>
-                    <mat-panel-description>
-                       
-                        <mat-icon>date_range</mat-icon>
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
+      <mat-expansion-panel
+        [expanded]="step === 1"
+        (opened)="setStep(1)"
+        *ngIf="!showOnlySection || showOnlySection === 'qualification'"
+        hideToggle
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Qualification </mat-panel-title>
+          <mat-panel-description>
+            <!-- <mat-icon>map</mat-icon> -->
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <div class="from-sec">
+        <form>
+          
+<div *ngFor="let qualification of qualifications; let i=index" class="border rounded p-3 mb-3">
 
-		<div class="row">
-                	<div class="col-md-9"></div>
-                	 <div class="col-md-2 text-end">
-		<button type="button" class="btn-Edit btn-secondary  btn"
-    			  (click)="bulkUploadDoc()">
-       			<span class="header-btn-icon">
-   			   <mat-icon>system_update_alt</mat-icon></span>
-    			  {{ ReadMore ? "Back" : "Import" }}
-   			 </button>
-  			</div>
-		</div>
-             
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5>Qualification {{i+1}}</h5>
+
+        <button
+            *ngIf="qualifications.length>1"
+            class="btn btn-danger btn-sm"
+            type="button"
+            (click)="removeQualification(i)">
+            Remove
+        </button>
+    </div>
+           <div class="row">
+
+        <div class="col-md-6">
+            <label>Employee Qualification</label>
+            <input
+                class="form-control"
+                [(ngModel)]="qualification.emp_qualification"
+                [ngModelOptions]="{standalone:true}">
+        </div>
+
+        <div class="col-md-6">
+            <label>Institution Name</label>
+            <input
+                class="form-control"
+                [(ngModel)]="qualification.emp_qf_instituition"
+                [ngModelOptions]="{standalone:true}">
+        </div>
+
+        <div class="col-md-6">
+            <label>Qualification Year</label>
+            <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="qualification.emp_qf_year"
+                [ngModelOptions]="{standalone:true}">
+        </div>
+
+        <div class="col-md-6">
+            <label>Add On Course</label>
+            <input
+                class="form-control"
+                [(ngModel)]="qualification.emp_qf_subject"
+                [ngModelOptions]="{standalone:true}">
+        </div>
+
+    </div>
 
 
-                <form (ngSubmit)="uploadEmployeeDocument()" #documentForm="ngForm" *ngIf="visibles">
-                    <div class="from-sec">
-                      
+            <div class="row">
+              <div class="col-md-6" *ngFor="let field of custom_fieldsQual">
+                <label>{{ field.emp_custom_field }}</label>
+                <ng-container [ngSwitch]="field.data_type">
+                  <!-- Dropdown -->
+                  <select
+                    *ngSwitchCase="'dropdown'"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  >
+                    <option
+                      *ngFor="let value of field.dropdown_values"
+                      [value]="value"
+                    >
+                      {{ value }}
+                    </option>
+                  </select>
+                  <!-- Radio -->
+                  <div class="radio-sec form-control" *ngSwitchCase="'radio'">
+                    <div
+                      *ngFor="let value of field.radio_values"
+                      class="form-check"
+                    >
+                      <input
+                        type="radio"
+                        class="form-check-input"
+                        [id]="value + field.id"
+                        [(ngModel)]="field.field_value"
+                        [value]="value"
+                        [ngModelOptions]="{ standalone: true }"
+                        [required]="field.mandatory"
+                      />
+                      <label
+                        class="form-check-label"
+                        [for]="value + field.id"
+                        >{{ value }}</label
+                      >
+                    </div>
+                  </div>
+                  <!-- Date -->
+                  <input
+                    *ngSwitchCase="'date'"
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  />
+                  <!-- Default for other or empty data_type -->
+                  <input
+                    *ngSwitchDefault
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  />
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </form>
+         </div>
 
-                        <div class="row">
-                            <!-- <div class="col-md-6">
+        <mat-action-row>
+          <button
+            mat-button
+            color="warn"
+            (click)="prevStep()"
+            *ngIf="!showOnlySection"
+          >
+            Previous
+          </button>
+          <div class="text-end mb-3">
+    <button
+        class="btn btn-success"
+        type="button"
+        (click)="addQualification()">
+        <i class="fa fa-plus"></i>
+        Add Another
+    </button>
+</div>
+    <div class="text-end mb-3">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="createEmployeeQual()"
+          >
+            Add Qualifications
+          </button>
+          </div>
+        </mat-action-row>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel
+        [expanded]="step === 2"
+        (opened)="setStep(2)"
+        *ngIf="!showOnlySection || showOnlySection === 'jobhistory'"
+        hideToggle
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Job History </mat-panel-title>
+          <mat-panel-description>
+            <mat-icon>map</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+     <div class="from-sec">
+        <form>
+          
+            <div *ngFor="let job of jobHistories; let i = index" class="border rounded p-3 mb-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5>Job History {{ i + 1 }}</h5>
+
+        <button
+            *ngIf="jobHistories.length > 1"
+            type="button"
+            class="btn btn-danger btn-sm"
+            (click)="removeJobHistory(i)">
+            Remove
+        </button>
+    </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>Employee job History From date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  [(ngModel)]="job.emp_jh_from_date"
+                  [ngModelOptions]="{ standalone: true }"
+                  (change)="calculateExperience(job)"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>Employee job History to date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  [(ngModel)]="job.emp_jh_end_date"
+                  [ngModelOptions]="{ standalone: true }"
+                  (change)="calculateExperience(job)"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>Employee Work Experience (Years)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="job.emp_jh_years_experiance"
+                  [ngModelOptions]="{ standalone: true }"
+                  readonly
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>Company name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  required
+                  [(ngModel)]="job.emp_jh_company_name"
+                  placeholder="Enter Company Name"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>Employee Designation</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  required
+                  [(ngModel)]="job.emp_jh_designation"
+                  placeholder="Enter Designation"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>Employee salary per month</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  required
+                  [(ngModel)]="job.emp_jh_leaving_salary_permonth"
+                  placeholder="Enter salary per month"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>Leaving reason</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  required
+                  [(ngModel)]="job.emp_jh_reason"
+                  placeholder="Enter reason"
+                  [ngModelOptions]="{ standalone: true }"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6" *ngFor="let field of job.custom_fields">
+                <label>{{ field.emp_custom_field }}</label>
+                <ng-container [ngSwitch]="field.data_type">
+                  <!-- Dropdown -->
+                  <select
+                    *ngSwitchCase="'dropdown'"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  >
+                    <option
+                      *ngFor="let value of field.dropdown_values"
+                      [value]="value"
+                    >
+                      {{ value }}
+                    </option>
+                  </select>
+                  <!-- Radio -->
+                  <div class="radio-sec form-control" *ngSwitchCase="'radio'">
+                    <div
+                      *ngFor="let value of field.radio_values"
+                      class="form-check"
+                    >
+                      <input
+                        type="radio"
+                        class="form-check-input"
+                        [id]="value + field.id"
+                        [(ngModel)]="field.field_value"
+                        [value]="value"
+                        [ngModelOptions]="{ standalone: true }"
+                        [required]="field.mandatory"
+                      />
+                      <label
+                        class="form-check-label"
+                        [for]="value + field.id"
+                        >{{ value }}</label
+                      >
+                    </div>
+                  </div>
+                  <!-- Date -->
+                  <input
+                    *ngSwitchCase="'date'"
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  />
+                  <!-- Default for other or empty data_type -->
+                  <input
+                    *ngSwitchDefault
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  />
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </form>
+        </div>
+
+        <mat-action-row>
+          <button
+            mat-button
+            color="warn"
+            (click)="prevStep()"
+            *ngIf="!showOnlySection"
+          >
+            Previous
+          </button>
+          <div class="text-end mb-3">
+    <button
+        type="button"
+        class="btn btn-success"
+        (click)="addJobHistory()">
+        <i class="fa fa-plus"></i>
+        Add Another
+    </button>
+</div>
+  <div class="text-end mb-3">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="createEmployeeJonHistory()"
+          >
+            Add Job history
+          </button>
+          </div>
+        </mat-action-row>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel
+        [expanded]="step === 3"
+        (opened)="setStep(3)"
+        *ngIf="!showOnlySection || showOnlySection === 'bank'"
+        hideToggle
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Bank Details </mat-panel-title>
+          <mat-panel-description>
+            <!-- <mat-icon>map</mat-icon> -->
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+<div class="from-sec">
+        <form>
+          
+            <div *ngFor="let bank of bankDetails; let i = index" class="border rounded p-3 mb-3">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5>Bank Detail {{ i + 1 }}</h5>
+
+    <button
+      *ngIf="bankDetails.length > 1"
+      type="button"
+      class="btn btn-danger btn-sm"
+      (click)="removeBankDetail(i)">
+      Remove
+    </button>
+  </div>
+  <div class="row">
+
+    <div class="col-md-6">
+      <label>Bank Name</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="bank.bank_name"
+        [ngModelOptions]="{standalone:true}">
+    </div>
+
+    <div class="col-md-6">
+      <label>Account Number</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="bank.account_number"
+        [ngModelOptions]="{standalone:true}">
+    </div>
+
+    <div class="col-md-6">
+      <label>IBAN Number</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="bank.iban_number"
+        [ngModelOptions]="{standalone:true}">
+    </div>
+
+    <div class="col-md-6">
+      <label>Route Code</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="bank.route_code"
+        [ngModelOptions]="{standalone:true}">
+    </div>
+
+    <div class="col-md-6">
+      <label>Branch Name</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="bank.branch_name"
+        [ngModelOptions]="{standalone:true}">
+    </div>
+
+    <div class="col-md-6">
+      <label>Bank Address</label>
+      <textarea
+        class="form-control"
+        [(ngModel)]="bank.bank_address"
+        [ngModelOptions]="{standalone:true}">
+      </textarea>
+    </div>
+
+    <div class="col-md-6">
+      <div class="check-box-selection-sec form-control mt-3">
+        <mat-checkbox
+          [(ngModel)]="bank.is_active"
+          [ngModelOptions]="{standalone:true}">
+          Is Active
+        </mat-checkbox>
+      </div>
+    </div>
+
+  </div>
+
+
+          </div>
+        </form>
+    </div>
+
+        <mat-action-row>
+          <button
+            mat-button
+            color="warn"
+            (click)="prevStep()"
+            *ngIf="!showOnlySection"
+          >
+            Previous
+          </button>
+          <div class="text-end mb-3">
+  <button
+    type="button"
+    class="btn btn-success"
+    (click)="addBankDetail()">
+    <i class="fa fa-plus"></i>
+    Add Another
+  </button>
+</div>
+      <div class="text-end mb-3">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="createempbankdetails()"
+          >
+            Add Bank Details
+          </button>
+          </div>
+        </mat-action-row>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel
+        [expanded]="step === 4"
+        (opened)="setStep(4)"
+        *ngIf="!showOnlySection || showOnlySection === 'documents'"
+        hideToggle
+      >
+        <mat-expansion-panel-header>
+          <mat-panel-title> Employee Document Upload </mat-panel-title>
+          <mat-panel-description>
+            <mat-icon>date_range</mat-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div *ngFor="let doc of documents;let i=index" class="border rounded p-3 mb-3">
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h5>
+Document {{i+1}}
+</h5>
+
+<button
+*ngIf="documents.length>1"
+class="btn btn-danger btn-sm"
+type="button"
+(click)="removeDocument(i)">
+Remove
+</button>
+
+</div>
+
+        <div class="row">
+          <div class="col-md-9"></div>
+          <div class="col-md-2 text-end">
+            <button
+              type="button"
+              class="btn-Edit btn-secondary btn"
+              (click)="bulkUploadDoc()"
+            >
+              <span class="header-btn-icon">
+                <mat-icon>system_update_alt</mat-icon></span
+              >
+              {{ ReadMore ? "Back" : "Import" }}
+            </button>
+          </div>
+        </div>
+                <form
+          (ngSubmit)="uploadEmployeeDocument()"
+          #documentForm="ngForm"
+          *ngIf="visibles"
+        >
+ <div class="from-sec">
+
+         
+            <div class="row">
+              <!-- <div class="col-md-6">
                                 <label for="emp_doc_name">Document Name:</label>
                                 <input type="text" class="form-control" id="emp_doc_name" name="emp_doc_name" [(ngModel)]="emp_doc_name" placeholder="enter document name">
                             </div> -->
-                            <div class="col-md-6">
-                                <label for="emp_doc_number">Document Number:</label>
-                                    <input type="number" class="form-control" id="emp_doc_number" name="emp_doc_number" placeholder="Enter document number" [(ngModel)]="emp_doc_number">
-                            </div>
-                            <div class="col-md-6">
-                                <label>Issued date</label>
-                                <input type="date" class="form-control" required id="emp_doc_issued_date" [(ngModel)]="emp_doc_issued_date" name="emp_doc_issued_date">
-                            </div>
-                            <div class="col-md-6">
-                                <label>Expired Date</label>
-                                <input type="date" class="form-control" required id="emp_doc_expiry_date" [(ngModel)]="emp_doc_expiry_date" name="emp_doc_expiry_date">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="emp_doc_document">Employee Document:</label>
-                                <input type="file" class="form-control" id="emp_doc_document" name="emp_doc_document" (change)="onFileSelected($event)">
-                            </div>
+              <div class="col-md-6">
+                <label for="emp_doc_number">Document Number:</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="emp_doc_number"
+                  name="emp_doc_number"
+                  placeholder="Enter document number"
+                  [(ngModel)]="doc.emp_doc_number"
+                />
+              </div>
+              <div class="col-md-6">
+                <label>Issued date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  required
+                  id="emp_doc_issued_date"
+                  [(ngModel)]="doc.emp_doc_issued_date"
+                  name="emp_doc_issued_date"
+                />
+              </div>
+              <div class="col-md-6">
+                <label>Expired Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  required
+                  id="emp_doc_expiry_date"
+                  [(ngModel)]="doc.emp_doc_expiry_date"
+                  name="emp_doc_expiry_date"
+                />
+              </div>
+              <div class="col-md-6">
+                <label for="emp_doc_document">Employee Document:</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="emp_doc_document"
+                  name="emp_doc_document"
+                  (change)="onFileSelected($event,doc)"
+                />
+              </div>
 
-                            <div class="col-md-6">
-                                <div class="custom-sel">
-                                    <label>Select Document Type</label>
-                                    <select class="form-control" required [(ngModel)]="document_type" name="document_type">
-                                        <option value="">Select</option>
-                                        <option *ngFor="let country of DocumentTypes" [value]="country.id">
-                                            {{ country.type_name }} </option>
-                                    </select>
-                                </div>
-                            </div>
-
-            
-                        </div>
-                        <div class="row" >
-                            <div class="col-md-6" *ngFor="let field of custom_fields">
-                                <label>{{ field.emp_custom_field }}</label>
-                                <ng-container [ngSwitch]="field.data_type">
-                                    <!-- Dropdown -->
-                                    <select *ngSwitchCase="'dropdown'" class="form-control" 
-                                            [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}"
-                                            [required]="field.mandatory">
-                                        <option *ngFor="let value of field.dropdown_values" [value]="value">{{ value }}</option>
-                                    </select>
-                                    <!-- Radio -->
-                                    <div class="radio-sec form-control" *ngSwitchCase="'radio'">
-                                        <div *ngFor="let value of field.radio_values" class="form-check">
-                                            <input type="radio" class="form-check-input" [id]="value + field.id" 
-                                                   [(ngModel)]="field.field_value" [value]="value" 
-                                                   [ngModelOptions]="{standalone: true}" [required]="field.mandatory">
-                                            <label class="form-check-label" [for]="value + field.id">{{ value }}</label>
-                                        </div>
-                                    </div>
-                                    <!-- Date -->
-                                    <input *ngSwitchCase="'date'" type="date" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                    <!-- Default for other or empty data_type -->
-                                    <input *ngSwitchDefault type="text" class="form-control" 
-                                           [(ngModel)]="field.field_value" [ngModelOptions]="{standalone: true}" 
-                                           [required]="field.mandatory" />
-                                </ng-container>
-                            </div>
-                            
-                        </div>
-                        
-                    </div>
-
-<mat-action-row>
-    <button mat-button color="warn" (click)="prevStep()" *ngIf="!showOnlySection">Previous</button>
-   <button mat-raised-button color="primary" type="submit">Add</button>
-</mat-action-row>
-                </form>
-                <div class="from-sec" *ngIf="visibilitys" >
-
-   <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="vn-wisteria" >
-                    <a  class="btn-wrap" (click)="downloadDocumnetExcel()">DOWNLOAD EXCEL FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
-                    </div>
+              <div class="col-md-6">
+                <div class="custom-sel">
+                  <label>Select Document Type</label>
+                  <select
+                    class="form-control"
+                    required
+                    [(ngModel)]="doc.document_type"
+                    name="document_type"
+                  >
+                    <option value="">Select</option>
+                    <option
+                      *ngFor="let country of DocumentTypes"
+                      [value]="country.id"
+                    >
+                      {{ country.type_name }}
+                    </option>
+                  </select>
                 </div>
-
-                <div class="col-md-4">
-                    <div class="vn-wisteria vn-green" >
-                        <a  class="btn-wrap"  (click)="downloadDocumnetCsv()">DOWNLOAD CSV FILE <i class="fa fa-rocket fa-lg fa-spin"></i></a>
-                        </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6" *ngFor="let field of doc.custom_fields">
+                <label>{{ field.emp_custom_field }}</label>
+                <ng-container [ngSwitch]="field.data_type">
+                  <!-- Dropdown -->
+                  <select
+                    *ngSwitchCase="'dropdown'"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  >
+                    <option
+                      *ngFor="let value of field.dropdown_values"
+                      [value]="value"
+                    >
+                      {{ value }}
+                    </option>
+                  </select>
+                  <!-- Radio -->
+                  <div class="radio-sec form-control" *ngSwitchCase="'radio'">
+                    <div
+                      *ngFor="let value of field.radio_values"
+                      class="form-check"
+                    >
+                      <input
+                        type="radio"
+                        class="form-check-input"
+                        [id]="value + field.id"
+                        [(ngModel)]="field.field_value"
+                        [value]="value"
+                        [ngModelOptions]="{ standalone: true }"
+                        [required]="field.mandatory"
+                      />
+                      <label
+                        class="form-check-label"
+                        [for]="value + field.id"
+                        >{{ value }}</label
+                      >
                     </div>
-
-                    <div class="col-md-4">
-                        <div class="vn-wisteria  vn-blue" >
-                            <a class="btn-wrap" (click)="toggleUploadForm()">
-                                DOCUMENT BULK UPLOAD <i class="fa fa-rocket fa-lg fa-spin"></i>
-                              </a>                            </div>
-                        </div>
+                  </div>
+                  <!-- Date -->
+                  <input
+                    *ngSwitchCase="'date'"
+                    type="date"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  />
+                  <!-- Default for other or empty data_type -->
+                  <input
+                    *ngSwitchDefault
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="field.field_value"
+                    [ngModelOptions]="{ standalone: true }"
+                    [required]="field.mandatory"
+                  />
+                </ng-container>
+              </div>
             </div>
+          </div>
+          
 
+          <mat-action-row>
+            <button
+              mat-button
+              color="warn"
+              (click)="prevStep()"
+              *ngIf="!showOnlySection"
+            >
+              Previous
+            </button>
+            <div class="text-end mb-3">
 
-                  
-                        
-            <div *ngIf="showUploadForm">
-                 <h1>Bulk Upload Documnet</h1>
-                   
-                    <hr>
-                    <div class="text-wrappers" >
-                     
-                         
-                        <br>
-                        <label>Select file to upload.</label>
-                        
-                  
-                        <input type="file" name="files" id="file" class="form-control" (change)="onFileChange($event)"><br>
-                        <label for="file"><span class="textLinks">Select your file</span></label>
-                        <br>
-                        
-                        </div>
-        
-                        <div class="row">
-                            <div class="col-md-8"></div>
-                            <div class="col-md-2">
-                                <button type="button" (click)="ClosePopup()" class="btn btn-danger pull-right">Cancel</button>
-        
-                            </div>
-                            <div class="col-md-2">
-                                <div class="text-right"> 
-                                    <button type="button" (click)="bulkuploaddocument()" class="btn btn-success"> Upload Document</button>
-                                </div>
-                            </div>
-                            
-                      
-                    
-                        </div>
+<button
+class="btn btn-success"
+type="button"
+(click)="addDocument()">
 
-                   </div>
-                      
-                
-                
-                </div> 
-        
-            </mat-expansion-panel>
+<i class="fa fa-plus"></i>
 
+Add Document
 
+</button>
 
-              
-
-
-
-
-        </mat-accordion>
-
-
-        <!-- Bottom buttons - HIDE when showing only one section -->
-        <div class="row" *ngIf="!showOnlySection">
-            <div class="col-md-8"></div>
-            <div class="col-md-2">
-                <button (click)="Closefamup()" class="pull-right btn btn-danger btn-full mt-4">Close</button>
+</div>
+            <div class="text-end mb-3">
+            <button mat-raised-button color="primary" type="submit">Add</button>
             </div>
-            <div class="col-md-2">
-                <button mat-raised-button color="primary" (click)="ClosePopup()" class="pull-right btn-full mt-4">Done</button>
-            </div>
+          </mat-action-row>
+        </form>
         </div>
         
-        <!-- Show only Close button when single section mode -->
-        <div class="row" *ngIf="showOnlySection">
-            <div class="col-md-10"></div>
-            <div class="col-md-2">
-                <button (click)="Closefamup()" class="pull-right btn btn-danger btn-full mt-4">Close</button>
+        <div class="from-sec" *ngIf="visibilitys">
+          <div class="row mt-4">
+            <div class="col-md-4">
+              <div class="vn-wisteria">
+                <a class="btn-wrap" (click)="downloadDocumnetExcel()"
+                  >DOWNLOAD EXCEL FILE <i class="fa fa-rocket fa-lg fa-spin"></i
+                ></a>
+              </div>
             </div>
+
+            <div class="col-md-4">
+              <div class="vn-wisteria vn-green">
+                <a class="btn-wrap" (click)="downloadDocumnetCsv()"
+                  >DOWNLOAD CSV FILE <i class="fa fa-rocket fa-lg fa-spin"></i
+                ></a>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="vn-wisteria vn-blue">
+                <a class="btn-wrap" (click)="toggleUploadForm()">
+                  DOCUMENT BULK UPLOAD
+                  <i class="fa fa-rocket fa-lg fa-spin"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="showUploadForm">
+            <h1>Bulk Upload Documnet</h1>
+
+            <hr />
+            <div class="text-wrappers">
+              <br />
+              <label>Select file to upload.</label>
+
+              <input
+                type="file"
+                name="files"
+                id="file"
+                class="form-control"
+                (change)="onFileChange($event)"
+              /><br />
+              <label for="file"
+                ><span class="textLinks">Select your file</span></label
+              >
+              <br />
+            </div>
+
+            <div class="row">
+              <div class="col-md-8"></div>
+              <div class="col-md-2">
+                <button
+                  type="button"
+                  (click)="ClosePopup()"
+                  class="btn btn-danger pull-right"
+                >
+                  Cancel
+                </button>
+              </div>
+              <div class="col-md-2">
+                <div class="text-right">
+                  <button
+                    type="button"
+                    (click)="bulkuploaddocument()"
+                    class="btn btn-success"
+                  >
+                    Upload Document
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </mat-expansion-panel>
+    </mat-accordion>
 
-
+    <!-- Bottom buttons - HIDE when showing only one section -->
+    <div class="row" *ngIf="!showOnlySection">
+      <div class="col-md-8"></div>
+      <div class="col-md-2">
+        <button
+          (click)="Closefamup()"
+          class="pull-right btn btn-danger btn-full mt-4"
+        >
+          Close
+        </button>
+      </div>
+      <div class="col-md-2">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="ClosePopup()"
+          class="pull-right btn-full mt-4"
+        >
+          Done
+        </button>
+      </div>
     </div>
-</div>
-<div mat-dialog-action>
 
+    <!-- Show only Close button when single section mode -->
+    <div class="row" *ngIf="showOnlySection">
+      <div class="col-md-10"></div>
+      <div class="col-md-2">
+        <button
+          (click)="Closefamup()"
+          class="pull-right btn btn-danger btn-full mt-4"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
+<div mat-dialog-action></div>

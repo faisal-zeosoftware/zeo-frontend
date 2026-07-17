@@ -30,6 +30,15 @@ export class EmployeeFamilyComponent {
   companies: any[] = [];
   DocumentTypes: any[] = [];
 
+  familyMembers: any[] = [
+  {
+    ef_member_name: '',
+    emp_relation: '',
+    ef_company_expence: '',
+    ef_date_of_birth: '',
+    custom_fields: []
+  }
+];
 
   ef_member_name: string = '';
   emp_relation:string ='';
@@ -37,12 +46,33 @@ export class EmployeeFamilyComponent {
   ef_date_of_birth:any='';
   // emp_id:any='';
 
+  qualifications: any[] = [
+  {
+    emp_qualification: '',
+    emp_qf_instituition: '',
+    emp_qf_year: '',
+    emp_qf_subject: '',
+    custom_fields: []
+  }
+];
 
   emp_qualification:string='';
   emp_qf_instituition:string='';
   emp_qf_year:string='';
   emp_qf_subject  :string='';
 
+  jobHistories: any[] = [
+  {
+    emp_jh_from_date: '',
+    emp_jh_end_date: '',
+    emp_jh_company_name: '',
+    emp_jh_designation: '',
+    emp_jh_leaving_salary_permonth: '',
+    emp_jh_reason: '',
+    emp_jh_years_experiance: '',
+    custom_fields: []
+  }
+];
   emp_jh_from_date:string='';
   emp_jh_end_date:string='';
   emp_jh_company_name:string='';
@@ -58,7 +88,16 @@ export class EmployeeFamilyComponent {
   reason:string='';
   employee:string='';
 
-
+documents: any[] = [
+  {
+    emp_doc_number: '',
+    emp_doc_issued_date: '',
+    emp_doc_expiry_date: '',
+    document_type: '',
+    selectedFile: null,
+    custom_fields: []
+  }
+];
   emp_doc_name: any
   emp_doc_number: any;
   emp_doc_issued_date: string = '';
@@ -70,6 +109,17 @@ export class EmployeeFamilyComponent {
   created_by:any='';
 
 
+bankDetails: any[] = [
+  {
+    bank_name: '',
+    account_number: '',
+    iban_number: '',
+    route_code: '',
+    branch_name: '',
+    bank_address: '',
+    is_active: false
+  }
+];
 
   bank_name:string='';
   branch_name:string='';
@@ -116,134 +166,153 @@ export class EmployeeFamilyComponent {
    
 
 
-   CreateEmployeeFamily(): void {
-    this.registerButtonClicked = true;
+CreateEmployeeFamily() {
+
+  this.familyMembers.forEach(member => {
+
     const familyData = {
-      ef_member_name: this.ef_member_name,
-      emp_relation: this.emp_relation,
-      ef_company_expence: this.ef_company_expence,
-      ef_date_of_birth: this.ef_date_of_birth,
+      ef_member_name: member.ef_member_name,
+      emp_relation: member.emp_relation,
+      ef_company_expence: member.ef_company_expence,
+      ef_date_of_birth: member.ef_date_of_birth
     };
 
-    this.EmployeeService.registerEmpFamilyz(this.emp_id, familyData).subscribe(
-      (response) => {
-        const createdEmployeeId = response.id; // Adjust based on your API response
-        this.EmployeeService.setEmployeeId(createdEmployeeId);
-        this.postCustomFieldValuesFam(createdEmployeeId);
-        console.log('Registration successful', response);
-        alert('Employee Family added!');
-        // this.nextStep();
-        this.step++;
+    this.EmployeeService.registerEmpFamilyz(this.emp_id, familyData)
+      .subscribe(res => {
 
-        // window.location.reload();
-        // Optionally close the dialog or reset the form
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('Enter all fields!');
-      }
-    );
-  }
+        const familyId = res.id;
 
-createEmployeeQual():void{
+        member.custom_fields.forEach((field: any) => {
 
-  this.registerButtonClicked1 = true;
-    const familyData = {
-      emp_qualification: this.emp_qualification,
-      emp_qf_instituition:this.emp_qf_instituition,
-      emp_qf_year:this.emp_qf_year,
-      emp_qf_subject:this.emp_qf_subject,
-      emp_id:this.emp_id,
+          const body = {
+            emp_custom_field: field.emp_custom_field,
+            field_value: field.field_value,
+            emp_family: familyId,
+            created_by: this.created_by
+          };
 
+          const schema = localStorage.getItem('selectedSchema');
 
-   
+          this.http.post(
+            `${this.apiUrl}/employee/api/empfamily-customfieldvalue/?schema=${schema}`,
+            body
+          ).subscribe();
 
-      // Add other form field values to the companyData object
+        });
+
+      });
+
+  });
+
+  alert('All family members added successfully');
+  window.location.reload();
+}
+
+createEmployeeQual() {
+
+  this.qualifications.forEach(qualification => {
+
+    const body = {
+      emp_qualification: qualification.emp_qualification,
+      emp_qf_instituition: qualification.emp_qf_instituition,
+      emp_qf_year: qualification.emp_qf_year,
+      emp_qf_subject: qualification.emp_qf_subject
     };
 
+    this.EmployeeService
+      .registerEmpQualificationz(this.emp_id, body)
+      .subscribe(response => {
 
-    this.EmployeeService.registerEmpQualificationz(this.emp_id, familyData).subscribe(
-      (response) => {
-        const createdEmployeeId = response.id; // Adjust based on your API response
-        this.EmployeeService.setEmployeeId(createdEmployeeId);
-        this.postCustomFieldValuesQual(createdEmployeeId);
-        this.step++;
-        
-        console.log('Registration successful', response);
-        // this.authService.login(this.cmpny_mail, this.cmpny_pincode).subscribe(
-        //   (loginResponse) => {
-        //     console.log('Login successful after registration', loginResponse);
-        //     // Optionally, you can navigate to another page or perform other actions upon successful login.
-            alert('Employee Qualification uploaded!');
-            // window.location.reload();
+        const qualificationId = response.id;
 
-       
+        qualification.custom_fields.forEach((field: any) => {
 
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
-      }
-    );
+          const customBody = {
+            emp_custom_field: field.emp_custom_field,
+            field_value: field.field_value,
+            emp_qualification: qualificationId,
+            created_by: this.created_by
+          };
 
+          const schema = localStorage.getItem('selectedSchema');
+
+          this.http.post(
+            `${this.apiUrl}/employee/api/empQualification-customfieldvalue/?schema=${schema}`,
+            customBody
+          ).subscribe();
+
+        });
+
+      });
+
+      
+
+  });
+
+  alert('Qualifications added successfully.');
+  window.location.reload();
 }
 
 
-createEmployeeJonHistory():void{
+createEmployeeJonHistory(): void {
 
-  this.registerButtonClicked2 = true;
-    const familyData = {
-      emp_jh_from_date: this.emp_jh_from_date,
-      emp_jh_end_date:this.emp_jh_end_date,
-      emp_jh_company_name:this.emp_jh_company_name,
-      emp_jh_designation:this.emp_jh_designation,
-      emp_jh_leaving_salary_permonth:this.emp_jh_leaving_salary_permonth,
+  this.jobHistories.forEach(job => {
 
-      emp_jh_reason:this.emp_jh_reason,
-      emp_jh_years_experiance:this.emp_jh_years_experiance,
-
-     emp_id:this.emp_id,
-
-
-   
-
-      // Add other form field values to the companyData object
+    const body = {
+      emp_jh_from_date: job.emp_jh_from_date,
+      emp_jh_end_date: job.emp_jh_end_date,
+      emp_jh_company_name: job.emp_jh_company_name,
+      emp_jh_designation: job.emp_jh_designation,
+      emp_jh_leaving_salary_permonth: job.emp_jh_leaving_salary_permonth,
+      emp_jh_reason: job.emp_jh_reason,
+      emp_jh_years_experiance: job.emp_jh_years_experiance
     };
 
+    this.EmployeeService.registerEmpJobHisz(this.emp_id, body)
+      .subscribe({
+        next: (response: any) => {
 
-    this.EmployeeService.registerEmpJobHisz(this.emp_id,familyData).subscribe(
-      (response) => {
-         const createdEmployeeId = response.id; // Adjust based on your API response
-        this.EmployeeService.setEmployeeId(createdEmployeeId);
-        this.postCustomFieldValuesJob(createdEmployeeId);
-        this.step++;
-        console.log('Registration successful', response);
-        // this.authService.login(this.cmpny_mail, this.cmpny_pincode).subscribe(
-        //   (loginResponse) => {
-        //     console.log('Login successful after registration', loginResponse);
-        //     // Optionally, you can navigate to another page or perform other actions upon successful login.
-            alert('Employee Job History uploaded');
-            // window.location.reload();
+          const jobId = response.id;
+          const schema = localStorage.getItem('selectedSchema');
 
-            // window.location.reload();
-        //   },
-        //   (loginError) => {
-        //     console.error('Login failed after registration', loginError);
-        //     // Handle login error after registration
-        //   }
-        // );
-        // Optionally, you can navigate to another page or perform other actions upon successful registration.
-        // alert('Company has been Register!')
-        // window.location.reload();
+          job.custom_fields.forEach((field: any) => {
 
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('enter all field!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
-      }
-    );
+            const customBody = {
+              emp_custom_field: field.emp_custom_field,
+              field_value: field.field_value,
+              emp_job_history: jobId,
+              created_by: this.created_by
+            };
+
+            this.http.post(
+              `${this.apiUrl}/employee/api/empjob-history-customfieldvalue/?schema=${schema}`,
+              customBody
+            ).subscribe({
+              error: (err) => {
+                console.error('Custom field error:', err);
+              }
+            });
+
+          });
+
+          alert('Job history added successfully.');
+          window.location.reload();
+
+        },
+        error: (error) => {
+          console.error('Error adding job history:', error);
+
+          const message =
+            error.error?.message ||
+            error.error?.detail ||
+            JSON.stringify(error.error) ||
+            'Something went wrong.';
+
+          alert(message);
+        }
+      });
+
+  });
 
 }
 
@@ -297,65 +366,64 @@ createEmployeeLeaveReq():void{
 }
 
 
-createempbankdetails():void{
+createempbankdetails(): void {
 
-  this.registerButtonClicked1 = true;
-    const familyData = {
-      bank_name:this.bank_name,
-      branch_name:this.branch_name,
-      account_number:this.account_number,
-      bank_address:this.bank_address,
-      route_code:this.route_code,
-      iban_number:this.iban_number,
-      is_active:this.is_active,
-      emp_id:this.emp_id,
+  this.bankDetails.forEach(bank => {
 
-
-   
-
-      // Add other form field values to the companyData object
+    const body = {
+      bank_name: bank.bank_name,
+      branch_name: bank.branch_name,
+      account_number: bank.account_number,
+      bank_address: bank.bank_address,
+      route_code: bank.route_code,
+      iban_number: bank.iban_number,
+      is_active: bank.is_active,
+      emp_id: this.emp_id
     };
 
+    this.EmployeeService.registerbankdetails(this.emp_id, body)
+      .subscribe({
+        next: (response: any) => {
+          console.log('Bank detail added', response);
 
-  
+          alert('Bank added successfully.');
+           
+          const createdEmployeeId = response.id;
+          this.EmployeeService.setEmployeeId(createdEmployeeId);
 
-    this.EmployeeService.registerbankdetails(this.emp_id, familyData).subscribe(
-      (response) => {
-        const createdEmployeeId = response.id; // Adjust based on your API response
-        this.EmployeeService.setEmployeeId(createdEmployeeId);
-        // this.postCustomFieldValuesQual(createdEmployeeId);
-        this.step++;
-        
-        console.log('Registration successful', response);
-        // this.authService.login(this.cmpny_mail, this.cmpny_pincode).subscribe(
-        //   (loginResponse) => {
-        //     console.log('Login successful after registration', loginResponse);
-        //     // Optionally, you can navigate to another page or perform other actions upon successful login.
-            alert('Employee bank details uploaded!');
-            // window.location.reload();
+          this.step++;
+           window.location.reload();
+        },
 
-       
+        error: (error) => {
+          console.error(error);
 
-      },
-      (error) => {
-        console.error('Registration failed', error);
-        alert('enter all field correctly!')
-        // Handle the error appropriately, e.g., show a user-friendly error message.
-      }
-    );
+          let errorMessage = 'Something went wrong.';
+
+          if (error.error && typeof error.error === 'object') {
+            errorMessage = Object.values(error.error)
+              .flat()
+              .join('\n');
+          }
+
+          alert(errorMessage);
+        }
+      });
+
+  });
 
 }
 
 
-calculateExperience(): void {
+calculateExperience(job: any): void {
 
-  if (!this.emp_jh_from_date || !this.emp_jh_end_date) {
-    this.emp_jh_years_experiance = '';
+  if (!job.emp_jh_from_date || !job.emp_jh_end_date) {
+    job.emp_jh_years_experiance = '';
     return;
   }
 
-  const from = new Date(this.emp_jh_from_date);
-  const to = new Date(this.emp_jh_end_date);
+  const from = new Date(job.emp_jh_from_date);
+  const to = new Date(job.emp_jh_end_date);
 
   let years = to.getFullYear() - from.getFullYear();
   let months = to.getMonth() - from.getMonth();
@@ -365,7 +433,7 @@ calculateExperience(): void {
     months += 12;
   }
 
-  this.emp_jh_years_experiance = `${years}.${months}`;
+  job.emp_jh_years_experiance = `${years}.${months}`;
 }
 
 
@@ -374,37 +442,72 @@ calculateExperience(): void {
 
 
 
-onFileSelected(event: any): void {
-  this.selectedFile = event.target.files[0];
+onFileSelected(event:any, doc:any){
+
+  if(event.target.files.length){
+
+      doc.selectedFile = event.target.files[0];
+
+  }
+
 }
 
-uploadEmployeeDocument(): void {
-  this.registerButtonClicked3 = true;
-  const formData = new FormData();
-  formData.append('emp_doc_document', this.selectedFile);
-  formData.append('emp_doc_number', this.emp_doc_number);
-  formData.append('emp_doc_issued_date', this.emp_doc_issued_date);
-  formData.append('emp_doc_expiry_date', this.emp_doc_expiry_date);
-  formData.append('document_type', this.document_type);
+uploadEmployeeDocument(){
 
-  this.EmployeeService.uploadEmployeeDocument(this.emp_id, formData)
-    .subscribe(
-      (response) => {
-        const createdEmployeeId = response.id; // Adjust based on your API response
-        this.EmployeeService.setEmployeeId(createdEmployeeId);
-        this.postCustomFieldValues(createdEmployeeId);
+  this.documents.forEach(doc=>{
 
-        console.log('Document upload successful', response);
-        alert('Document upload successful');
-        window.location.reload();
-      },
-      (error) => {
-        console.error('Document upload failed', error);
-        alert('Document upload failed');
-      }
-    );
+      const formData=new FormData();
+
+      formData.append('emp_doc_document',doc.selectedFile);
+
+      formData.append('emp_doc_number',doc.emp_doc_number);
+
+      formData.append('emp_doc_issued_date',doc.emp_doc_issued_date);
+
+      formData.append('emp_doc_expiry_date',doc.emp_doc_expiry_date);
+
+      formData.append('document_type',doc.document_type);
+
+      this.EmployeeService
+      .uploadEmployeeDocument(this.emp_id,formData)
+      .subscribe(response=>{
+
+          const documentId=response.id;
+
+          doc.custom_fields.forEach((field:any)=>{
+
+              const body={
+
+                  emp_custom_field:field.emp_custom_field,
+
+                  field_value:field.field_value,
+
+                  emp_documents:documentId,
+
+                  created_by:this.created_by
+
+              };
+
+              const schema=localStorage.getItem('selectedSchema');
+
+              this.http.post(
+
+              `${this.apiUrl}/employee/api/Documents-customfieldvalue/?schema=${schema}`,
+
+              body
+
+              ).subscribe();
+
+          });
+
+      });
+
+  });
+
+  alert("Documents uploaded successfully.");
+  window.location.reload();
+
 }
-
 file:any ='';
 visibilitys:boolean=false;
 visibles:boolean=true;
@@ -620,88 +723,188 @@ username: any;
   custom_fieldsJob :any[] = [];
 
 
-  loadFormFields(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-    this.EmployeeService.getFormFieldDoc(selectedSchema).subscribe(
-      (result: any) => {
-        this.custom_fields = result;
-      },
-      (error: any) => {
-        console.error('Error fetching countries:', error);
-      }
-    );
-    }
+loadFormFields(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if(selectedSchema){
+
+    this.EmployeeService.getFormFieldDoc(selectedSchema)
+    .subscribe(result=>{
+
+      this.custom_fields = result;
+
+      this.documents[0].custom_fields =
+      JSON.parse(JSON.stringify(result));
+
+    });
+
   }
 
+}
+
+addDocument(){
+
+  this.documents.push({
+
+    emp_doc_number:'',
+    emp_doc_issued_date:'',
+    emp_doc_expiry_date:'',
+    document_type:'',
+    selectedFile:null,
+    custom_fields:JSON.parse(JSON.stringify(this.custom_fields))
+
+  });
+
+}
+
+removeDocument(index:number){
+
+  if(this.documents.length>1){
+
+    this.documents.splice(index,1);
+
+  }
+
+}
+
+  addBankDetail() {
+  this.bankDetails.push({
+    bank_name: '',
+    account_number: '',
+    iban_number: '',
+    route_code: '',
+    branch_name: '',
+    bank_address: '',
+    is_active: false
+  });
+}
+
+removeBankDetail(index: number) {
+  if (this.bankDetails.length > 1) {
+    this.bankDetails.splice(index, 1);
+  }
+}
 
 
-  loadFormFieldsFam(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
+
+loadFormFieldsFam(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
     this.EmployeeService.getFormFieldFam(selectedSchema).subscribe(
       (result: any) => {
         this.custom_fieldsFam = result;
+
+        // Assign custom fields to first member
+        this.familyMembers[0].custom_fields = JSON.parse(JSON.stringify(result));
       },
-      (error: any) => {
-        console.error('Error fetching countries:', error);
+      (error) => {
+        console.error(error);
       }
     );
-    }
   }
+}
+
+addFamilyMember() {
+  this.familyMembers.push({
+    ef_member_name: '',
+    emp_relation: '',
+    ef_company_expence: '',
+    ef_date_of_birth: '',
+    custom_fields: JSON.parse(JSON.stringify(this.custom_fieldsFam))
+  });
+}
+
+removeFamilyMember(index: number) {
+  if (this.familyMembers.length > 1) {
+    this.familyMembers.splice(index, 1);
+  }
+}
 
 
-  loadFormFieldsQual(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
+loadFormFieldsQual(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
     this.EmployeeService.getFormFieldQual(selectedSchema).subscribe(
       (result: any) => {
         this.custom_fieldsQual = result;
+
+        this.qualifications[0].custom_fields =
+          JSON.parse(JSON.stringify(result));
       },
-      (error: any) => {
-        console.error('Error fetching countries:', error);
+      (error) => {
+        console.error(error);
       }
     );
-    }
   }
+}
+
+addQualification() {
+  this.qualifications.push({
+    emp_qualification: '',
+    emp_qf_instituition: '',
+    emp_qf_year: '',
+    emp_qf_subject: '',
+    custom_fields: JSON.parse(JSON.stringify(this.custom_fieldsQual))
+  });
+}
+
+removeQualification(index: number) {
+  if (this.qualifications.length > 1) {
+    this.qualifications.splice(index, 1);
+  }
+}
 
 
-  loadFormFieldsJob(): void {
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
+loadFormFieldsJob(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
     this.EmployeeService.getFormFieldJob(selectedSchema).subscribe(
       (result: any) => {
         this.custom_fieldsJob = result;
+
+        this.jobHistories[0].custom_fields =
+          JSON.parse(JSON.stringify(result));
       },
-      (error: any) => {
-        console.error('Error fetching countries:', error);
+      (error) => {
+        console.error(error);
       }
     );
-    }
   }
+}
+
+addJobHistory() {
+  this.jobHistories.push({
+    emp_jh_from_date: '',
+    emp_jh_end_date: '',
+    emp_jh_company_name: '',
+    emp_jh_designation: '',
+    emp_jh_leaving_salary_permonth: '',
+    emp_jh_reason: '',
+    emp_jh_years_experiance: '',
+    custom_fields: JSON.parse(JSON.stringify(this.custom_fieldsJob))
+  });
+}
+
+removeJobHistory(index: number) {
+  if (this.jobHistories.length > 1) {
+    this.jobHistories.splice(index, 1);
+  }
+}
 
 
   ClosePopup(){
     this.ref.close('Closed using function');
-    window.location.reload();
+    // window.location.reload();
 
   }
 
   Closefamup(){
       this.ref.close('Closed using function');
-      window.location.reload();
+      // window.location.reload();
 
   }
 

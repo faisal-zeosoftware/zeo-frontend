@@ -37,22 +37,22 @@ export class SuccesModalComponent {
   }
 
   // NO - Continue to family details (original flow)
-  onNoConnect(): void {
-    this.dialogRef.close();
+  // onNoConnect(): void {
+  //   this.dialogRef.close();
     
-    const dialogRef = this.dialog.open(EmployeeFamilyComponent, {
-      width: '80%',
-      height: '500px',
-      data: {
-        message: 'Employee created successfully!',
-        emp_id: this.data.emp_id
-      }
-    });
+  //   // const dialogRef = this.dialog.open(EmployeeFamilyComponent, {
+  //   //   width: '80%',
+  //   //   height: '500px',
+  //   //   data: {
+  //   //     message: 'Employee created successfully!',
+  //   //     emp_id: this.data.emp_id
+  //   //   }
+  //   // });
 
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('The success modal was closed');
-    });
-  }
+  //   // dialogRef.afterClosed().subscribe(() => {
+  //     console.log('The success modal was closed');
+  //   });
+  // }
 
   closeapplicationModal(): void {
     window.location.reload();

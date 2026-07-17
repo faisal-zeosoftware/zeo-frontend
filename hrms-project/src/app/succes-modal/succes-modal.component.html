@@ -1,27 +1,41 @@
-<div mat-dialog-content class="">
-    <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
+<div mat-dialog-content class="success-dialog">
 
-    <div class="success-header">
+    <button class="close-btn" (click)="closeapplicationModal()">
+        &times;
+    </button>
 
-        <div class="succes-ico d-block mx-auto">
-            <mat-icon class="mat_success">check_circle</mat-icon>
-            <h1>Successfully Added</h1>
+    <div class="success-card">
+
+        <div class="icon-wrapper">
+            <mat-icon class="success-icon">check_circle</mat-icon>
         </div>
-    </div>
-    
-    <!-- New Question Section -->
-    <div class="connect-question text-center mt-3">
-        <h3>Do you want to connect this employee to user?</h3>
-        <div class="btn-group mt-2">
-            <button type="button" class="btn btn-danger btn-no" (click)="onNoConnect()">
-                No
-            </button>
-            <button type="button" class="btn btn-success btn-yes" (click)="onYesConnect()">
-                Yes
-            </button>
+
+        <h2>Employee Added Successfully!</h2>
+
+        <p class="subtitle">
+            The employee has been added successfully.
+        </p>
+
+        <div class="question-box">
+            <h3>Do you want to connect this employee to a user account?</h3>
+
+            <div class="button-group">
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="closeapplicationModal()">
+                    No, Later
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    (click)="onYesConnect()">
+                    Yes, Connect
+                </button>
+            </div>
         </div>
+
     </div>
-</div>
-<div mat-dialog-action>
-    
+
 </div>
