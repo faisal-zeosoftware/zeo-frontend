@@ -90,7 +90,7 @@ export class CreateEmployeeComponent implements OnInit {
   work_location: any = '';
   visa_location: any = '';
   approver: number | null = null;
- 
+
   emp_profile_pic: string | undefined;
 
   is_ess: boolean = false;
@@ -267,7 +267,7 @@ export class CreateEmployeeComponent implements OnInit {
   visibility: boolean = false;
   show: boolean = false;
   createem: boolean = true;
-  
+
 
 
   constructor(private EmployeeService: EmployeeService,
@@ -297,15 +297,15 @@ export class CreateEmployeeComponent implements OnInit {
   onFileSelected(event: any) {
 
     const file = event.target.files.length > 0 ? event.target.files[0] : null;
-  
+
     if (file) {
-  
+
       const reader = new FileReader();
-  
+
       reader.onload = () => {
         this.imagePreview = reader.result;
       };
-  
+
       reader.readAsDataURL(file);
     }
   }
@@ -315,10 +315,10 @@ export class CreateEmployeeComponent implements OnInit {
 
   ngOnInit(): void {
 
-       // Listen for sidebar changes so the dropdown updates instantly
-       this.EmployeeService.selectedBranches$.subscribe(ids => {
-        this.LoadBranch(); 
-      });
+    // Listen for sidebar changes so the dropdown updates instantly
+    this.EmployeeService.selectedBranches$.subscribe(ids => {
+      this.LoadBranch();
+    });
 
 
 
@@ -578,585 +578,620 @@ export class CreateEmployeeComponent implements OnInit {
 
 
   basicSectionOpen: boolean = true;
-personalSectionOpen: boolean = false;
+  personalSectionOpen: boolean = false;
 
 
-// =========================
-// ACCORDION TOGGLE
-// =========================
-toggleSection(section: string): void {
+  // =========================
+  // ACCORDION TOGGLE
+  // =========================
+  toggleSection(section: string): void {
 
-  if (section === 'basic') {
-    this.basicSectionOpen = !this.basicSectionOpen;
-  }
-
-  if (section === 'personal') {
-    this.personalSectionOpen = !this.personalSectionOpen;
-  }
-
-}
-
-
-// =========================
-// OPEN ACCORDION + SCROLL
-// =========================
-openSectionAndScroll(fieldId: string, section: string): void {
-
-  // Open accordion section
-  if (section === 'basic') {
-    this.basicSectionOpen = true;
-  }
-
-  if (section === 'personal') {
-    this.personalSectionOpen = true;
-  }
-
-  // Wait until accordion opens
-  setTimeout(() => {
-
-    const element = document.getElementById(fieldId);
-
-    if (element) {
-
-      // Smooth scroll
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-
-      // Focus field
-      (element as HTMLElement).focus();
-
-      // Highlight effect
-      element.classList.add('highlight-error');
-
-      setTimeout(() => {
-        element.classList.remove('highlight-error');
-      }, 3000);
-
+    if (section === 'basic') {
+      this.basicSectionOpen = !this.basicSectionOpen;
     }
 
-  }, 200);
-
-}
-
-//   uploadEmployeeDocument(): void {
-//     this.registerButtonClicked = true;
-
-//     // List of required fields for validation
-//     const requiredFields = [
-//       { field: this.emp_code, fieldName: 'Employee Code' },
-//       { field: this.emp_date_of_birth, fieldName: 'Date of Birth' },
-//       { field: this.emp_branch_id, fieldName: 'Branch' },
-//       { field: this.emp_first_name, fieldName: this.firstNameFieldName, condition: this.isFirstNameMandatory },
-//       { field: this.emp_last_name, fieldName: this.lastNameFieldName, condition: this.isLastNameMandatory },
-//       { field: this.emp_gender, fieldName: this.genderFieldName, condition: this.isGenderMandatory },
-//       { field: this.emp_personal_email, fieldName: this.emailFieldName, condition: this.isEmailMandatory },
-//       { field: this.emp_mobile_number_1, fieldName: this.cmpnoFieldName, condition: this.isCmpnoMandatory },
-//       { field: this.emp_mobile_number_2, fieldName: this.pernoFieldName, condition: this.isPernoMandatory },
-//       { field: this.emp_present_address, fieldName: this.preaddressFieldName, condition: this.isPresaddMandatory },
-//       { field: this.emp_city, fieldName: this.cityFieldName, condition: this.isCityMandatory },
-//       { field: this.emp_country_id, fieldName: this.cntryFieldName, condition: this.isLCountryMandatory },
-//       { field: this.emp_dept_id, fieldName: this.deptFieldName, condition: this.isLDepartmentMandatory },
-//       { field: this.emp_date_of_confirmation, fieldName: this.hiredFieldName, condition: this.isHiringMandatory },
-//     ];
-
-
-
-//     // Validate required fields
-//     for (const field of requiredFields) {
-//       if (field.condition !== false && !field.field) {
-//         alert(`${field.fieldName} is required.`);
-//         return; // Stop execution if validation fails
-//       }
-//     }
-
-//     // Proceed to create FormData if all validations pass
-//     const formData = new FormData();
-//     if (this.selectedFile) {
-//       formData.append('emp_profile_pic', this.selectedFile);
-//     } else {
-//       formData.append('emp_profile_pic', '');
-//     }
-
-//     const selectedDate = new Date(this.emp_date_of_confirmation);
-//     const formattedDate = selectedDate.toISOString().split('T')[0]; // Converts to "YYYY-MM-DD"
-
-//     const joinedDate = new Date(this.emp_joined_date);
-//     const formattedJoinedDate = joinedDate.toISOString().split('T')[0];
-
-
-//     // Add fields to FormData
-//     formData.append('emp_code', this.emp_code);
-
-//     formData.append('emp_first_name', this.emp_first_name);
-//     formData.append('emp_last_name', this.emp_last_name);
-
-
-//     formData.append('emp_gender', this.emp_gender);
-//     formData.append('emp_date_of_birth', this.emp_date_of_birth);
-//     formData.append('emp_personal_email', this.emp_personal_email);
-//     formData.append('emp_mobile_number_1', this.emp_mobile_number_1);
-//     formData.append('emp_mobile_number_2', this.emp_mobile_number_2);
-
-//     formData.append('emp_city', this.emp_city);
-//     formData.append('emp_permenent_address', this.emp_permenent_address);
-//     formData.append('emp_present_address', this.emp_present_address);
-//     formData.append('emp_relegion', this.emp_relegion);
-//     formData.append('emp_blood_group', this.emp_blood_group);
-
-//     formData.append('emp_nationality', this.emp_nationality);
-//     formData.append('emp_marital_status', this.emp_marital_status);
-//     formData.append('emp_father_name', this.emp_father_name);
-//     formData.append('emp_mother_name', this.emp_mother_name);
-//     formData.append('emp_posting_location', this.emp_posting_location);
-
-//     // formData.append('emp_country_id', this.emp_country_id);
-//     // formData.append('emp_state_id', this.emp_state_id);
-
-
-//     formData.append('emp_company_id', this.emp_company_id);
-//     formData.append('emp_branch_id', this.emp_branch_id);
-//     formData.append('emp_dept_id', this.emp_dept_id);
-
-
-//     formData.append('person_id', this.person_id);
-//     formData.append('work_location', this.work_location);
-//     formData.append('visa_location', this.visa_location);
-//      if (this.approver !== null) {
-//       formData.append('emp_reporting_manager', this.approver.toString());
-//        }
-
-//     formData.append('emp_desgntn_id', this.emp_desgntn_id);
-//     formData.append('emp_ctgry_id', this.emp_ctgry_id);
-//     formData.append('emp_languages', this.emp_languages);
-
-//     // formData.append('emp_languages', JSON.stringify(this.emp_languages));
-//     // formData.append('emp_date_of_confirmation', this.emp_date_of_confirmation);
-//     formData.append('emp_date_of_confirmation', formattedDate);
-
-//     // formData.append('emp_joined_date', this.emp_joined_date);
-//     formData.append('emp_joined_date', formattedJoinedDate);
-
-//     formData.append('is_ess', this.is_ess ? '1' : '0');
-//     formData.append('emp_status', this.emp_status ? '1' : '0');
-//     formData.append('emp_ot_applicable', this.emp_ot_applicable.toString());
-
-//     formData.append('is_active', this.is_active.toString());
-
-//     const selectedSchema = localStorage.getItem('selectedSchema');
-//     if (!selectedSchema) {
-//       console.error('No schema selected.');
-//       alert('Please select a schema before proceeding.');
-//       return;
-//     }
-
-//     // Make the API call
-//     this.http.post(`${this.apiUrl}/employee/api/Employee/?schema=${selectedSchema}`, formData)
-//       .subscribe(
-//         (response: any) => {
-//           const createdEmployeeId = response.id; // Adjust based on your API response
-//           this.EmployeeService.setEmployeeId(createdEmployeeId);
-
-//           // Post custom field values
-//           this.postCustomFieldValues(createdEmployeeId);
-
-//           // Success modal
-//           const dialogRef = this.dialog.open(SuccesModalComponent, {
-//             width: '300px',
-//             data: {
-//               message: 'Employee created successfully!',
-//               emp_id: createdEmployeeId   // ✅ PASS IT
-//             }
-//           });
-
-          
-
-//           dialogRef.afterClosed().subscribe(() => {
-//             console.log('The success modal was closed');
-//           });
-//         },
-        
-// (error: HttpErrorResponse) => {
-//   console.error('Document upload failed', error);
-
-//   let errorMessage = 'Something went wrong.';
-
-//   if (error.error && typeof error.error === 'object') {
-//     const messages: string[] = [];
-
-//     for (const [key, value] of Object.entries(error.error)) {
-//       if (Array.isArray(value)) {
-//         // If it's an array (like DRF validation errors)
-//         messages.push(`${key}: ${value.join(', ')}`);
-//       } else if (typeof value === 'string') {
-//         // If it's a simple string message
-//         messages.push(`${key}: ${value}`);
-//       } else {
-//         // Fallback for unexpected structures
-//         messages.push(`${key}: ${JSON.stringify(value)}`);
-//       }
-//     }
-
-//     if (messages.length > 0) {
-//       errorMessage = messages.join('\n'); // Combine all messages with new lines
-//     }
-//   } else if (error.error?.detail) {
-//     // Handles backend responses like { "detail": "Something went wrong" }
-//     errorMessage = error.error.detail;
-//   }
-
-//   alert(`Registration failed!\n\n${errorMessage}`);
-// }
-
-//       );
-//   }
-
-
-uploadEmployeeDocument(): void {
-
-  this.registerButtonClicked = true;
-
-  // ================================
-  // REQUIRED FIELD VALIDATION
-  // ================================
-
-  const requiredFields = [
-
-    // BASIC DETAILS
-    {
-      field: this.emp_code,
-      fieldName: 'Employee Code',
-      section: 'basic',
-      elementId: 'emp_code'
-    },
-
-    {
-      field: this.emp_first_name,
-      fieldName: 'First Name',
-      section: 'basic',
-      elementId: 'emp_first_name'
-    },
-
-    {
-      field: this.emp_branch_id,
-      fieldName: 'Branch',
-      section: 'basic',
-      elementId: 'emp_branch_id'
-    },
-
-    {
-      field: this.emp_dept_id,
-      fieldName: 'Department',
-      section: 'basic',
-      elementId: 'emp_dept_id'
-    },
-
-    {
-      field: this.emp_desgntn_id,
-      fieldName: 'Designation',
-      section: 'basic',
-      elementId: 'emp_desgntn_id'
-    },
-
-    {
-      field: this.emp_ctgry_id,
-      fieldName: 'Category',
-      section: 'basic',
-      elementId: 'emp_ctgry_id'
-    },
-
-    
-
-    {
-      field: this.emp_joined_date,
-      fieldName: 'Join Date',
-      section: 'basic',
-      elementId: 'emp_joined_date'
-    },
-
-    // PERSONAL DETAILS
-    {
-      field: this.emp_nationality,
-      fieldName: 'Nationality',
-      section: 'personal',
-      elementId: 'emp_nationality'
+    if (section === 'personal') {
+      this.personalSectionOpen = !this.personalSectionOpen;
     }
 
-  ];
+  }
 
 
-  // ================================
-  // VALIDATION + AUTO OPEN ACCORDION
-  // ================================
+  // =========================
+  // OPEN ACCORDION + SCROLL
+  // =========================
+  openSectionAndScroll(fieldId: string, section: string): void {
 
-  for (const item of requiredFields) {
+    // Open accordion section
+    if (section === 'basic') {
+      this.basicSectionOpen = true;
+    }
 
-    if (!item.field || item.field === '' || item.field === null) {
+    if (section === 'personal') {
+      this.personalSectionOpen = true;
+    }
 
-      // OPEN REQUIRED ACCORDION
-      if (item.section === 'basic') {
-        this.basicSectionOpen = true;
+    // Wait until accordion opens
+    setTimeout(() => {
+
+      const element = document.getElementById(fieldId);
+
+      if (element) {
+
+        // Smooth scroll
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+
+        // Focus field
+        (element as HTMLElement).focus();
+
+        // Highlight effect
+        element.classList.add('highlight-error');
+
+        setTimeout(() => {
+          element.classList.remove('highlight-error');
+        }, 3000);
+
       }
 
-      if (item.section === 'personal') {
-        this.personalSectionOpen = true;
-      }
+    }, 200);
 
-      // WAIT FOR DOM RENDER
-      setTimeout(() => {
+  }
 
-        const element = document.getElementById(item.elementId);
+  //   uploadEmployeeDocument(): void {
+  //     this.registerButtonClicked = true;
 
-        if (element) {
+  //     // List of required fields for validation
+  //     const requiredFields = [
+  //       { field: this.emp_code, fieldName: 'Employee Code' },
+  //       { field: this.emp_date_of_birth, fieldName: 'Date of Birth' },
+  //       { field: this.emp_branch_id, fieldName: 'Branch' },
+  //       { field: this.emp_first_name, fieldName: this.firstNameFieldName, condition: this.isFirstNameMandatory },
+  //       { field: this.emp_last_name, fieldName: this.lastNameFieldName, condition: this.isLastNameMandatory },
+  //       { field: this.emp_gender, fieldName: this.genderFieldName, condition: this.isGenderMandatory },
+  //       { field: this.emp_personal_email, fieldName: this.emailFieldName, condition: this.isEmailMandatory },
+  //       { field: this.emp_mobile_number_1, fieldName: this.cmpnoFieldName, condition: this.isCmpnoMandatory },
+  //       { field: this.emp_mobile_number_2, fieldName: this.pernoFieldName, condition: this.isPernoMandatory },
+  //       { field: this.emp_present_address, fieldName: this.preaddressFieldName, condition: this.isPresaddMandatory },
+  //       { field: this.emp_city, fieldName: this.cityFieldName, condition: this.isCityMandatory },
+  //       { field: this.emp_country_id, fieldName: this.cntryFieldName, condition: this.isLCountryMandatory },
+  //       { field: this.emp_dept_id, fieldName: this.deptFieldName, condition: this.isLDepartmentMandatory },
+  //       { field: this.emp_date_of_confirmation, fieldName: this.hiredFieldName, condition: this.isHiringMandatory },
+  //     ];
 
-          // SCROLL TO FIELD
-          element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
 
-          // FOCUS FIELD
-          element.focus();
 
-          // RED BORDER
-          element.classList.add('shake-error');
+  //     // Validate required fields
+  //     for (const field of requiredFields) {
+  //       if (field.condition !== false && !field.field) {
+  //         alert(`${field.fieldName} is required.`);
+  //         return; // Stop execution if validation fails
+  //       }
+  //     }
 
-        }
+  //     // Proceed to create FormData if all validations pass
+  //     const formData = new FormData();
+  //     if (this.selectedFile) {
+  //       formData.append('emp_profile_pic', this.selectedFile);
+  //     } else {
+  //       formData.append('emp_profile_pic', '');
+  //     }
 
-      }, 200);
+  //     const selectedDate = new Date(this.emp_date_of_confirmation);
+  //     const formattedDate = selectedDate.toISOString().split('T')[0]; // Converts to "YYYY-MM-DD"
 
-      alert(`${item.fieldName} is required`);
+  //     const joinedDate = new Date(this.emp_joined_date);
+  //     const formattedJoinedDate = joinedDate.toISOString().split('T')[0];
+
+
+  //     // Add fields to FormData
+  //     formData.append('emp_code', this.emp_code);
+
+  //     formData.append('emp_first_name', this.emp_first_name);
+  //     formData.append('emp_last_name', this.emp_last_name);
+
+
+  //     formData.append('emp_gender', this.emp_gender);
+  //     formData.append('emp_date_of_birth', this.emp_date_of_birth);
+  //     formData.append('emp_personal_email', this.emp_personal_email);
+  //     formData.append('emp_mobile_number_1', this.emp_mobile_number_1);
+  //     formData.append('emp_mobile_number_2', this.emp_mobile_number_2);
+
+  //     formData.append('emp_city', this.emp_city);
+  //     formData.append('emp_permenent_address', this.emp_permenent_address);
+  //     formData.append('emp_present_address', this.emp_present_address);
+  //     formData.append('emp_relegion', this.emp_relegion);
+  //     formData.append('emp_blood_group', this.emp_blood_group);
+
+  //     formData.append('emp_nationality', this.emp_nationality);
+  //     formData.append('emp_marital_status', this.emp_marital_status);
+  //     formData.append('emp_father_name', this.emp_father_name);
+  //     formData.append('emp_mother_name', this.emp_mother_name);
+  //     formData.append('emp_posting_location', this.emp_posting_location);
+
+  //     // formData.append('emp_country_id', this.emp_country_id);
+  //     // formData.append('emp_state_id', this.emp_state_id);
+
+
+  //     formData.append('emp_company_id', this.emp_company_id);
+  //     formData.append('emp_branch_id', this.emp_branch_id);
+  //     formData.append('emp_dept_id', this.emp_dept_id);
+
+
+  //     formData.append('person_id', this.person_id);
+  //     formData.append('work_location', this.work_location);
+  //     formData.append('visa_location', this.visa_location);
+  //      if (this.approver !== null) {
+  //       formData.append('emp_reporting_manager', this.approver.toString());
+  //        }
+
+  //     formData.append('emp_desgntn_id', this.emp_desgntn_id);
+  //     formData.append('emp_ctgry_id', this.emp_ctgry_id);
+  //     formData.append('emp_languages', this.emp_languages);
+
+  //     // formData.append('emp_languages', JSON.stringify(this.emp_languages));
+  //     // formData.append('emp_date_of_confirmation', this.emp_date_of_confirmation);
+  //     formData.append('emp_date_of_confirmation', formattedDate);
+
+  //     // formData.append('emp_joined_date', this.emp_joined_date);
+  //     formData.append('emp_joined_date', formattedJoinedDate);
+
+  //     formData.append('is_ess', this.is_ess ? '1' : '0');
+  //     formData.append('emp_status', this.emp_status ? '1' : '0');
+  //     formData.append('emp_ot_applicable', this.emp_ot_applicable.toString());
+
+  //     formData.append('is_active', this.is_active.toString());
+
+  //     const selectedSchema = localStorage.getItem('selectedSchema');
+  //     if (!selectedSchema) {
+  //       console.error('No schema selected.');
+  //       alert('Please select a schema before proceeding.');
+  //       return;
+  //     }
+
+  //     // Make the API call
+  //     this.http.post(`${this.apiUrl}/employee/api/Employee/?schema=${selectedSchema}`, formData)
+  //       .subscribe(
+  //         (response: any) => {
+  //           const createdEmployeeId = response.id; // Adjust based on your API response
+  //           this.EmployeeService.setEmployeeId(createdEmployeeId);
+
+  //           // Post custom field values
+  //           this.postCustomFieldValues(createdEmployeeId);
+
+  //           // Success modal
+  //           const dialogRef = this.dialog.open(SuccesModalComponent, {
+  //             width: '300px',
+  //             data: {
+  //               message: 'Employee created successfully!',
+  //               emp_id: createdEmployeeId   // ✅ PASS IT
+  //             }
+  //           });
+
+
+
+  //           dialogRef.afterClosed().subscribe(() => {
+  //             console.log('The success modal was closed');
+  //           });
+  //         },
+
+  // (error: HttpErrorResponse) => {
+  //   console.error('Document upload failed', error);
+
+  //   let errorMessage = 'Something went wrong.';
+
+  //   if (error.error && typeof error.error === 'object') {
+  //     const messages: string[] = [];
+
+  //     for (const [key, value] of Object.entries(error.error)) {
+  //       if (Array.isArray(value)) {
+  //         // If it's an array (like DRF validation errors)
+  //         messages.push(`${key}: ${value.join(', ')}`);
+  //       } else if (typeof value === 'string') {
+  //         // If it's a simple string message
+  //         messages.push(`${key}: ${value}`);
+  //       } else {
+  //         // Fallback for unexpected structures
+  //         messages.push(`${key}: ${JSON.stringify(value)}`);
+  //       }
+  //     }
+
+  //     if (messages.length > 0) {
+  //       errorMessage = messages.join('\n'); // Combine all messages with new lines
+  //     }
+  //   } else if (error.error?.detail) {
+  //     // Handles backend responses like { "detail": "Something went wrong" }
+  //     errorMessage = error.error.detail;
+  //   }
+
+  //   alert(`Registration failed!\n\n${errorMessage}`);
+  // }
+
+  //       );
+  //   }
+
+
+  uploadEmployeeDocument(): void {
+
+
+    if (!this.isBranchLoaded) {
+
+      alert("Please wait. Branches are loading.");
 
       return;
     }
-  }
 
 
-  // ================================
-  // FORM DATA
-  // ================================
-
-  const formData = new FormData();
-
-  // PROFILE PIC
-  if (this.selectedFile) {
-    formData.append('emp_profile_pic', this.selectedFile);
-  } else {
-    formData.append('emp_profile_pic', '');
-  }
-
-  // DATE FORMAT
-   // DATE FORMAT
-let formattedDate = '';
-if (this.emp_date_of_confirmation && this.emp_date_of_confirmation !== '') {
-  const selectedDate = new Date(this.emp_date_of_confirmation);
-  if (!isNaN(selectedDate.getTime())) {
-    formattedDate = selectedDate.toISOString().split('T')[0];
-  }
-}
-
-let formattedJoinedDate = '';
-if (this.emp_joined_date && this.emp_joined_date !== '') {
-  const joinedDate = new Date(this.emp_joined_date);
-  if (!isNaN(joinedDate.getTime())) {
-    formattedJoinedDate = joinedDate.toISOString().split('T')[0];
-  }
-}
-
-
-
-
-  // ================================
-  // APPEND FORM DATA
-  // ================================
-
-  formData.append('emp_code', this.emp_code || '');
-
-  formData.append('emp_first_name', this.emp_first_name || '');
-  formData.append('emp_last_name', this.emp_last_name || '');
-
-  formData.append('emp_gender', this.emp_gender || '');
-  formData.append('emp_date_of_birth', this.emp_date_of_birth || '');
-
-  formData.append('emp_personal_email', this.emp_personal_email || '');
-
-  formData.append('emp_mobile_number_1', this.emp_mobile_number_1 || '');
-  formData.append('emp_mobile_number_2', this.emp_mobile_number_2 || '');
-
-  formData.append('emp_city', this.emp_city || '');
-
-  formData.append('emp_permenent_address', this.emp_permenent_address || '');
-  formData.append('emp_present_address', this.emp_present_address || '');
-
-  formData.append('emp_relegion', this.emp_relegion || '');
-  formData.append('emp_blood_group', this.emp_blood_group || '');
-
-  formData.append('emp_nationality', this.emp_nationality || '');
-
-  formData.append('emp_marital_status', this.emp_marital_status || '');
-
-  formData.append('emp_father_name', this.emp_father_name || '');
-  formData.append('emp_mother_name', this.emp_mother_name || '');
-
-  formData.append('emp_posting_location', this.emp_posting_location || '');
-
-  formData.append('emp_company_id', this.emp_company_id || '');
-
-  formData.append('emp_branch_id', this.emp_branch_id || '');
-
-  formData.append('emp_dept_id', this.emp_dept_id || '');
-
-  formData.append('emp_desgntn_id', this.emp_desgntn_id || '');
-
-  formData.append('emp_ctgry_id', this.emp_ctgry_id || '');
-
-  formData.append('attendance_source', this.attendance_source);
-
-  formData.append('person_id', this.person_id || '');
-
-  formData.append('work_location', this.work_location || '');
-
-  formData.append('visa_location', this.visa_location || '');
-
-  if (this.approver !== null) {
-    formData.append(
-      'emp_reporting_manager',
-      this.approver.toString()
-    );
-  }
-
-  formData.append('emp_languages', this.emp_languages || '');
-
-  formData.append(
-    'emp_date_of_confirmation',
-    formattedDate || ''
-  );
-
-  formData.append(
-    'emp_joined_date',
-    formattedJoinedDate || ''
-  );
-
-  formData.append(
-    'is_ess',
-    this.is_ess ? '1' : '0'
-  );
-
-  formData.append(
-    'emp_status',
-    this.emp_status ? '1' : '0'
-  );
-
-  formData.append(
-    'emp_ot_applicable',
-    this.emp_ot_applicable.toString()
-  );
-
-  formData.append(
-    'is_active',
-    this.is_active.toString()
-  );
-
-
-  // ================================
-  // SCHEMA CHECK
-  // ================================
-
-  const selectedSchema = localStorage.getItem('selectedSchema');
-
-  if (!selectedSchema) {
-
-    alert('Please select a schema before proceeding.');
-
-    return;
-  }
-
-
-  // ================================
-  // API CALL
-  // ================================
-
-  this.http.post(
-    `${this.apiUrl}/employee/api/Employee/?schema=${selectedSchema}`,
-    formData
-  )
-  .subscribe(
-
-    (response: any) => {
-
-      const createdEmployeeId = response.id;
-
-      this.EmployeeService.setEmployeeId(createdEmployeeId);
-
-      // POST CUSTOM FIELD VALUES
-      this.postCustomFieldValues(createdEmployeeId);
-
-      // SUCCESS MODAL
-      const dialogRef = this.dialog.open(
-        SuccesModalComponent,
-        {
-          width: '300px',
-          data: {
-            message: 'Employee created successfully!',
-            emp_id: createdEmployeeId
-          }
-        }
-      );
-
-      dialogRef.afterClosed().subscribe(() => {
-
-        console.log('Success modal closed');
-
-      });
-
-    },
-
-    (error: HttpErrorResponse) => {
-
-      console.error('Document upload failed', error);
-
-      let errorMessage = 'Something went wrong.';
-
-      if (error.error && typeof error.error === 'object') {
-
-        const messages: string[] = [];
-
-        for (const [key, value] of Object.entries(error.error)) {
-
-          if (Array.isArray(value)) {
-
-            messages.push(`${key}: ${value.join(', ')}`);
-
-          } else if (typeof value === 'string') {
-
-            messages.push(`${key}: ${value}`);
-
-          } else {
-
-            messages.push(`${key}: ${JSON.stringify(value)}`);
-
-          }
-
-        }
-
-        if (messages.length > 0) {
-          errorMessage = messages.join('\n');
-        }
-
-      } else if (error.error?.detail) {
-
-        errorMessage = error.error.detail;
-
+    this.registerButtonClicked = true;
+
+    // ================================
+    // REQUIRED FIELD VALIDATION
+    // ================================
+
+    const requiredFields = [
+
+      // BASIC DETAILS
+      {
+        field: this.emp_code,
+        fieldName: 'Employee Code',
+        section: 'basic',
+        elementId: 'emp_code'
+      },
+
+      {
+        field: this.emp_first_name,
+        fieldName: 'First Name',
+        section: 'basic',
+        elementId: 'emp_first_name'
+      },
+
+      {
+        field: this.emp_branch_id,
+        fieldName: 'Branch',
+        section: 'basic',
+        elementId: 'emp_branch_id'
+      },
+
+      {
+        field: this.emp_dept_id,
+        fieldName: 'Department',
+        section: 'basic',
+        elementId: 'emp_dept_id'
+      },
+
+      {
+        field: this.emp_desgntn_id,
+        fieldName: 'Designation',
+        section: 'basic',
+        elementId: 'emp_desgntn_id'
+      },
+
+      {
+        field: this.emp_ctgry_id,
+        fieldName: 'Category',
+        section: 'basic',
+        elementId: 'emp_ctgry_id'
+      },
+
+
+
+      {
+        field: this.emp_joined_date,
+        fieldName: 'Join Date',
+        section: 'basic',
+        elementId: 'emp_joined_date'
+      },
+
+      // PERSONAL DETAILS
+      {
+        field: this.emp_nationality,
+        fieldName: 'Nationality',
+        section: 'personal',
+        elementId: 'emp_nationality'
       }
 
-      alert(`Registration failed!\n\n${errorMessage}`);
+    ];
 
+
+    // ================================
+    // VALIDATION + AUTO OPEN ACCORDION
+    // ================================
+
+    for (const item of requiredFields) {
+
+      if (!item.field || item.field === '' || item.field === null) {
+
+        // OPEN REQUIRED ACCORDION
+        if (item.section === 'basic') {
+          this.basicSectionOpen = true;
+        }
+
+        if (item.section === 'personal') {
+          this.personalSectionOpen = true;
+        }
+
+        // WAIT FOR DOM RENDER
+        setTimeout(() => {
+
+          const element = document.getElementById(item.elementId);
+
+          if (element) {
+
+            // SCROLL TO FIELD
+            element.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+
+            // FOCUS FIELD
+            element.focus();
+
+            // RED BORDER
+            element.classList.add('shake-error');
+
+          }
+
+        }, 200);
+
+        alert(`${item.fieldName} is required`);
+
+        return;
+      }
     }
 
-  );
 
-}
+    // ================================
+    // FORM DATA
+    // ================================
+
+    const formData = new FormData();
+
+    // PROFILE PIC
+    if (this.selectedFile) {
+      formData.append('emp_profile_pic', this.selectedFile);
+    } else {
+      formData.append('emp_profile_pic', '');
+    }
+
+    // DATE FORMAT
+    // DATE FORMAT
+    let formattedDate = '';
+    if (this.emp_date_of_confirmation && this.emp_date_of_confirmation !== '') {
+      const selectedDate = new Date(this.emp_date_of_confirmation);
+      if (!isNaN(selectedDate.getTime())) {
+        formattedDate = selectedDate.toISOString().split('T')[0];
+      }
+    }
+
+    let formattedJoinedDate = '';
+    if (this.emp_joined_date && this.emp_joined_date !== '') {
+      const joinedDate = new Date(this.emp_joined_date);
+      if (!isNaN(joinedDate.getTime())) {
+        formattedJoinedDate = joinedDate.toISOString().split('T')[0];
+      }
+    }
+
+
+
+
+    // ================================
+    // APPEND FORM DATA
+    // ================================
+
+    formData.append('emp_code', this.emp_code || '');
+
+    formData.append('emp_first_name', this.emp_first_name || '');
+    formData.append('emp_last_name', this.emp_last_name || '');
+
+    formData.append('emp_gender', this.emp_gender || '');
+    formData.append('emp_date_of_birth', this.emp_date_of_birth || '');
+
+    formData.append('emp_personal_email', this.emp_personal_email || '');
+
+    formData.append('emp_mobile_number_1', this.emp_mobile_number_1 || '');
+    formData.append('emp_mobile_number_2', this.emp_mobile_number_2 || '');
+
+    formData.append('emp_city', this.emp_city || '');
+
+    formData.append('emp_permenent_address', this.emp_permenent_address || '');
+    formData.append('emp_present_address', this.emp_present_address || '');
+
+    formData.append('emp_relegion', this.emp_relegion || '');
+    formData.append('emp_blood_group', this.emp_blood_group || '');
+
+    formData.append('emp_nationality', this.emp_nationality || '');
+
+    formData.append('emp_marital_status', this.emp_marital_status || '');
+
+    formData.append('emp_father_name', this.emp_father_name || '');
+    formData.append('emp_mother_name', this.emp_mother_name || '');
+
+    formData.append('emp_posting_location', this.emp_posting_location || '');
+
+    formData.append('emp_company_id', this.emp_company_id || '');
+
+    if (!this.branches || this.branches.length === 0) {
+      alert("Branches are still loading. Please wait.");
+      return;
+    }
+
+    console.log("emp_branch_id:", this.emp_branch_id);
+    console.log("branches:", this.branches);
+    console.log("selectedBranchIds:", JSON.parse(localStorage.getItem('selectedBranchIds') || '[]'));
+    console.log("selectedSchema:", localStorage.getItem('selectedSchema'));
+
+    const branchExists = this.branches.some(
+      branch => Number(branch.id) === Number(this.emp_branch_id)
+    );
+
+    if (!branchExists) {
+      console.log("Current Branch:", this.emp_branch_id);
+      console.log("Available Branches:", this.branches);
+
+      alert("Selected branch is invalid. Please select the branch again.");
+
+      // Optional: automatically select the first available branch
+      this.emp_branch_id = this.branches[0].id;
+
+      return;
+    }
+
+    formData.append('emp_branch_id', this.emp_branch_id || '');
+
+    formData.append('emp_dept_id', this.emp_dept_id || '');
+
+    formData.append('emp_desgntn_id', this.emp_desgntn_id || '');
+
+    formData.append('emp_ctgry_id', this.emp_ctgry_id || '');
+
+    formData.append('attendance_source', this.attendance_source);
+
+    formData.append('person_id', this.person_id || '');
+
+    formData.append('work_location', this.work_location || '');
+
+    formData.append('visa_location', this.visa_location || '');
+
+    if (this.approver !== null) {
+      formData.append(
+        'emp_reporting_manager',
+        this.approver.toString()
+      );
+    }
+
+    formData.append('emp_languages', this.emp_languages || '');
+
+    formData.append(
+      'emp_date_of_confirmation',
+      formattedDate || ''
+    );
+
+    formData.append(
+      'emp_joined_date',
+      formattedJoinedDate || ''
+    );
+
+    formData.append(
+      'is_ess',
+      this.is_ess ? '1' : '0'
+    );
+
+    formData.append(
+      'emp_status',
+      this.emp_status ? '1' : '0'
+    );
+
+    formData.append(
+      'emp_ot_applicable',
+      this.emp_ot_applicable.toString()
+    );
+
+    formData.append(
+      'is_active',
+      this.is_active.toString()
+    );
+
+
+    // ================================
+    // SCHEMA CHECK
+    // ================================
+
+    const selectedSchema = localStorage.getItem('selectedSchema');
+
+    if (!selectedSchema) {
+
+      alert('Please select a schema before proceeding.');
+
+      return;
+    }
+
+
+    // ================================
+    // API CALL
+    // ================================
+
+    this.http.post(
+      `${this.apiUrl}/employee/api/Employee/?schema=${selectedSchema}`,
+      formData
+    )
+      .subscribe(
+
+        (response: any) => {
+
+          const createdEmployeeId = response.id;
+
+          this.EmployeeService.setEmployeeId(createdEmployeeId);
+
+          // POST CUSTOM FIELD VALUES
+          this.postCustomFieldValues(createdEmployeeId);
+
+          // SUCCESS MODAL
+          const dialogRef = this.dialog.open(
+            SuccesModalComponent,
+            {
+              width: '300px',
+              data: {
+                message: 'Employee created successfully!',
+                emp_id: createdEmployeeId
+              }
+            }
+          );
+
+          dialogRef.afterClosed().subscribe(() => {
+
+            console.log('Success modal closed');
+
+          });
+
+        },
+
+        (error: HttpErrorResponse) => {
+
+          console.error('Document upload failed', error);
+
+          let errorMessage = 'Something went wrong.';
+
+          if (error.error && typeof error.error === 'object') {
+
+            const messages: string[] = [];
+
+            for (const [key, value] of Object.entries(error.error)) {
+
+              if (Array.isArray(value)) {
+
+                messages.push(`${key}: ${value.join(', ')}`);
+
+              } else if (typeof value === 'string') {
+
+                messages.push(`${key}: ${value}`);
+
+              } else {
+
+                messages.push(`${key}: ${JSON.stringify(value)}`);
+
+              }
+
+            }
+
+            if (messages.length > 0) {
+              errorMessage = messages.join('\n');
+            }
+
+          } else if (error.error?.detail) {
+
+            errorMessage = error.error.detail;
+
+          }
+
+          alert(`Registration failed!\n\n${errorMessage}`);
+
+        }
+
+      );
+
+  }
 
 
 
@@ -1314,7 +1349,7 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
     }
 
 
-    
+
 
 
     // Load field names from localStorage
@@ -1337,11 +1372,11 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
       this.catFieldName = savedcatFieldName;
     }
 
-     // Load field names from localStorage
-     const savedrepoFieldName = localStorage.getItem('repoFieldName');
-     if (savedrepoFieldName) {
-       this.repoFieldName = savedrepoFieldName;
-     }
+    // Load field names from localStorage
+    const savedrepoFieldName = localStorage.getItem('repoFieldName');
+    if (savedrepoFieldName) {
+      this.repoFieldName = savedrepoFieldName;
+    }
 
     const savedhiredFieldName = localStorage.getItem('hiredFieldName');
     if (savedhiredFieldName) {
@@ -1609,15 +1644,15 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
       console.error('No employee selected');
       return;
     }
-  
+
     const empMasterId = this.selectedEmployeeId;
-  
+
     const customFieldValues = this.custom_fields.map(field => ({
       emp_custom_field: field.id,
       field_value: field.field_value,
       emp_master: empMasterId
     }));
-  
+
     // Post the custom field values to the backend
     this.EmployeeService.submitCustomFieldValues(customFieldValues).subscribe(
       response => {
@@ -1626,7 +1661,7 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
       },
       error => {
         console.error('Error submitting custom field values:', error);
-  
+
         // 👇 Format backend error messages
         if (error.error) {
           let messages: string[] = [];
@@ -1636,7 +1671,7 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
               messages.push(`${key}: ${error.error[key].join(', ')}`);
             }
           }
-  
+
           alert(messages.length ? messages.join('\n') : 'Failed to submit form');
         } else {
           alert('Failed to submit form');
@@ -1644,7 +1679,7 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
       }
     );
   }
-  
+
 
 
 
@@ -1675,8 +1710,8 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
       );
     }
   }
-  
-  
+
+
   loadNationality(): void {
 
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -1796,69 +1831,77 @@ if (this.emp_joined_date && this.emp_joined_date !== '') {
   //   }
   // }
 
-//   loadDeparmentBranch(callback?: Function): void {
-//   const selectedSchema = this.authService.getSelectedSchema();
-  
-//   if (selectedSchema) {
-//     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-//       (result: any[]) => {
-//         // 1. Get the sidebar selected IDs from localStorage
-//         const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  //   loadDeparmentBranch(callback?: Function): void {
+  //   const selectedSchema = this.authService.getSelectedSchema();
 
-//         // 2. Filter the API result to only include branches selected in the sidebar
-//         // If sidebar is empty, you might want to show all, or show none. 
-//         // Usually, we show only the selected ones:
-//         if (sidebarSelectedIds.length > 0) {
-//           this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-//         } else {
-//           this.branches = result; // Fallback: show all if nothing is selected in sidebar
-//         }
-//         // Inside the subscribe block of loadDeparmentBranch
+  //   if (selectedSchema) {
+  //     this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+  //       (result: any[]) => {
+  //         // 1. Get the sidebar selected IDs from localStorage
+  //         const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-
-//         console.log('Filtered branches for selection:', this.branches);
-//         if (callback) callback();
-//       },
-//       (error) => {
-//         console.error('Error fetching branches:', error);
-//       }
-//     );
-//   }
-// }
+  //         // 2. Filter the API result to only include branches selected in the sidebar
+  //         // If sidebar is empty, you might want to show all, or show none. 
+  //         // Usually, we show only the selected ones:
+  //         if (sidebarSelectedIds.length > 0) {
+  //           this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+  //         } else {
+  //           this.branches = result; // Fallback: show all if nothing is selected in sidebar
+  //         }
+  //         // Inside the subscribe block of loadDeparmentBranch
 
 
-LoadBranch(callback?: Function) {
-  const selectedSchema = this.authService.getSelectedSchema();
-  
-  if (selectedSchema) {
-    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any[]) => {
-        // 1. Get the sidebar selected IDs from localStorage
-        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  //         console.log('Filtered branches for selection:', this.branches);
+  //         if (callback) callback();
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching branches:', error);
+  //       }
+  //     );
+  //   }
+  // }
 
-        // 2. Filter the API result to only include branches selected in the sidebar
-        // If sidebar is empty, you might want to show all, or show none. 
-        // Usually, we show only the selected ones:
-        if (sidebarSelectedIds.length > 0) {
-          this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-        } else {
-          this.branches = result; // Fallback: show all if nothing is selected in sidebar
+  isBranchLoaded = false;
+
+
+  LoadBranch(callback?: Function) {
+
+    this.isBranchLoaded = false;
+    const selectedSchema = this.authService.getSelectedSchema();
+
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          this.isBranchLoaded = true;
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+            if (this.branches.length > 0) {
+              this.emp_branch_id = this.branches[0].id;
+            }
+          } else {
+            this.branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          // ✅ Auto select first branch
+          if (this.branches.length > 0) {
+            this.emp_branch_id = this.branches[0].id;
+          }
+
+          console.log('Filtered branches for selection:', this.branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
         }
-        // Inside the subscribe block of loadDeparmentBranch
-// ✅ Auto select first branch
-if (this.branches.length > 0) {
-this.emp_branch_id = this.branches[0].id;
-}
-
-        console.log('Filtered branches for selection:', this.branches);
-        if (callback) callback();
-      },
-      (error) => {
-        console.error('Error fetching branches:', error);
-      }
-    );
+      );
+    }
   }
-}
 
 
 
@@ -1958,25 +2001,25 @@ this.emp_branch_id = this.branches[0].id;
     }
   }
 
-   Users:any []=[];
+  Users: any[] = [];
 
-   loadUsers(callback?: Function): void {
-  const selectedSchema = this.authService.getSelectedSchema();
+  loadUsers(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
 
-  if (selectedSchema) {
-    this.userService.getApprover(selectedSchema).subscribe(
-      (result: any) => {
-        this.Users = result;
+    if (selectedSchema) {
+      this.userService.getApprover(selectedSchema).subscribe(
+        (result: any) => {
+          this.Users = result;
 
-        // ✅ RUN CALLBACK AFTER DATA LOAD
-        if (callback) callback();
-      },
-      (error) => {
-        console.error('Error fetching users:', error);
-      }
-    );
+          // ✅ RUN CALLBACK AFTER DATA LOAD
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching users:', error);
+        }
+      );
+    }
   }
-}
 
 
   ClosePopup() {
@@ -2078,19 +2121,19 @@ this.emp_branch_id = this.branches[0].id;
         (error: HttpErrorResponse) => {
           this.isLoading = false;
           console.error('Upload error:', error);
-        
+
           let finalMessages: string[] = [];
-        
+
           if (error.error && typeof error.error === 'object') {
-        
+
             Object.keys(error.error).forEach((sheetKey) => {
               const sheetErrors = error.error[sheetKey];
-        
+
               if (Array.isArray(sheetErrors)) {
-        
+
                 sheetErrors.forEach((errObj: any) => {
                   let message = '';
-        
+
                   // 🔥 HANDLE STRINGIFIED ARRAY ERROR
                   if (errObj.error) {
                     try {
@@ -2100,7 +2143,7 @@ this.emp_branch_id = this.branches[0].id;
                       message = errObj.error; // fallback
                     }
                   }
-        
+
                   // ✅ FORMAT MESSAGE
                   if (errObj.row !== undefined) {
                     finalMessages.push(`${sheetKey} → Row ${errObj.row}: ${message}`);
@@ -2108,19 +2151,19 @@ this.emp_branch_id = this.branches[0].id;
                     finalMessages.push(`${sheetKey}: ${message}`);
                   }
                 });
-        
+
               } else if (typeof sheetErrors === 'string') {
                 finalMessages.push(`${sheetKey}: ${sheetErrors}`);
               }
             });
-        
+
             // ✅ SHOW ALL ERRORS
             if (finalMessages.length > 0) {
               alert(finalMessages.join('\n'));
             } else {
               alert('Unknown error occurred');
             }
-        
+
           } else if (typeof error.error === 'string') {
             alert(error.error);
           } else {
