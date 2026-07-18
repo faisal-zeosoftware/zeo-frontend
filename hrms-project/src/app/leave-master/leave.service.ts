@@ -1253,61 +1253,22 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   }
 
 
-  getFixedSalaryComponents(
-    selectedSchema: string,
-    branchIds: number[]
-  ): Observable<any> {
-  
-    const branchParam =
-        branchIds.length > 0
-            ? `[${branchIds.join(',')}]`
-            : '';
-  
-    let url =
-        `${this.apiUrl}/payroll/api/salarycomponent/fixed_components/?schema=${selectedSchema}`;
-  
-    if (branchParam) {
-  
-        url += `&branch_id=${branchParam}`;
-  
-    }
-  
-    return this.http.get(url);
-  
+
+  /**
+   * 2. Fetches the metadata definition layout array list for Fixed Configuration Components
+   */
+  getFixedComponents(selectedSchema: string): Observable<any[]> {
+    const url = `${this.apiUrl}/payroll/api/salarycomponent/fixed_components/?schema=${selectedSchema}`;
+    return this.http.get<any[]>(url);
   }
-  
-  
-  
-  
-  
-  getVariableSalaryComponents(
-    selectedSchema: string,
-    branchIds: number[]
-  ): Observable<any> {
-  
-    const branchParam =
-        branchIds.length > 0
-            ? `[${branchIds.join(',')}]`
-            : '';
-  
-    let url =
-        `${this.apiUrl}/payroll/api/salarycomponent/variable_components/?schema=${selectedSchema}`;
-  
-    if (branchParam) {
-  
-        url += `&branch_id=${branchParam}`;
-  
-    }
-  
-    return this.http.get(url);
-  
+
+  /**
+   * 3. Fetches the metadata definition layout array list for Variable Configuration Components
+   */
+  getVariableComponents(selectedSchema: string): Observable<any[]> {
+    const url = `${this.apiUrl}/payroll/api/salarycomponent/variable_components/?schema=${selectedSchema}`;
+    return this.http.get<any[]>(url);
   }
-  
-
-
-
-
-
 
 
   

@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild , OnDestroy, OnInit } from '@angular/core';
 import { CountryService } from '../country.service';
 import { AuthenticationService } from '../login/authentication.service';
 import { HttpClient } from '@angular/common/http';
@@ -12,7 +12,7 @@ import { MatSelect } from '@angular/material/select';
 import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
-import {combineLatest, Observable, Subscription } from 'rxjs';
+import {combineLatest, Subscription, Observable } from 'rxjs';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 
@@ -21,7 +21,7 @@ import { environment } from '../../environments/environment';
   templateUrl: './employee-salary.component.html',
   styleUrl: './employee-salary.component.css'
 })
-export class EmployeeSalaryComponent {
+export class EmployeeSalaryComponent implements OnInit, OnDestroy {
 
   private apiUrl = `${environment.apiBaseUrl}`;
   
@@ -129,30 +129,11 @@ private DepartmentServiceService:DepartmentServiceService,
   if (schema) {
     this.fetchsalaryComp(schema, branchIds);  
     this.fetchEmployeesSalary(schema, branchIds);  
+    this.loadComponentMetadata(schema);
 
 
   }
 });
-
-const schema = this.authService.getSelectedSchema();
-
-const branchIds = JSON.parse(
-    localStorage.getItem('selectedBranchIds') || '[]'
-);
-
- // combineLatest waits for both Schema and Branches to have a value
- this.dataSubscription = combineLatest([
-  this.employeeService.selectedSchema$,
-  this.employeeService.selectedBranches$
-]).subscribe(([schema, branchIds]) => {
-  if (schema) {
-    this.fetchsalaryComp(schema, branchIds);  
-    this.fetchEmployeesSalary(schema, branchIds);  
-
-
-  }
-});
-
 
  // Listen for sidebar changes so the dropdown updates instantly
  this.employeeService.selectedBranches$.subscribe(ids => {
@@ -265,6 +246,16 @@ this.loadEmp();
       );
   }
 }
+
+
+
+ngOnDestroy(): void {
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
+  }
+
+
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
@@ -658,78 +649,39 @@ updateEmployeeSalary(): void {
 
       
   
-  fetchEmployeesSalary(schema: string, branchIds: number[]): void {
-
-    this.isLoading = true;
-
-    const request =
-        this.selectedSalaryType === 'fixed'
-            ? this.leaveservice.getFixedSalaryComponents(schema, branchIds)
-            : this.leaveservice.getVariableSalaryComponents(schema, branchIds);
-
-    request.subscribe({
-
-        next: (data: any) => {
-
-            this.filteredSalaryComponents = data;
-
-            this.isLoading = false;
-
-        },
-
-        error: err => {
-
-            console.error(err);
-
-            this.isLoading = false;
-
-        }
-
-    });
-
-}
+  // fetchEmployeesSalary(schema: string, branchIds: number[]): void {
+  //   this.isLoading = true;
+  //   this.leaveservice.getEmployeeSalaryComNew(schema, branchIds).subscribe({
+  //     next: (data: any) => {
+  //       this.EmployeeSalarycomponent = data;
   
-  selectedSalaryType = 'fixed';
-
-  //  applyFilter(): void {
-  //     if (this.selectedFixedFilter === 'all') {
-  //       this.filteredSalaryComponents = this.EmployeeSalarycomponent;
-  //     } else if (this.selectedFixedFilter === 'true') {
-  //       this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
-  //         item => item.is_fixed === true
-  //       );
-  //     } else if (this.selectedFixedFilter === 'false') {
-  //       this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
-  //         item => item.is_fixed === false
-  //       );
+  //       // APPLY FILTER AFTER FETCH
+  //       this.applyFilter();
+  
+  //       this.isLoading = false;
+  //     },
+  //     error: (err) => {
+  //       console.error('Fetch error:', err);
+  //       this.isLoading = false;
   //     }
-  //   }
-
-  onSalaryTypeChange(): void {
-
-    const schema = this.authService.getSelectedSchema();
-
-    const branchIds = JSON.parse(
-        localStorage.getItem('selectedBranchIds') || '[]'
-    );
-
-   // combineLatest waits for both Schema and Branches to have a value
- this.dataSubscription = combineLatest([
-  this.employeeService.selectedSchema$,
-  this.employeeService.selectedBranches$
-]).subscribe(([schema, branchIds]) => {
-  if (schema) {
-    this.fetchEmployeesSalary(schema, branchIds);  
+  //   });
+  // }
+  
 
 
-  }
-});
-
-}
-
-
-
-
+   applyFilter(): void {
+      if (this.selectedFixedFilter === 'all') {
+        this.filteredSalaryComponents = this.EmployeeSalarycomponent;
+      } else if (this.selectedFixedFilter === 'true') {
+        this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
+          item => item.is_fixed === true
+        );
+      } else if (this.selectedFixedFilter === 'false') {
+        this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
+          item => item.is_fixed === false
+        );
+      }
+    }
 
 
     Salarycomponent: any[] = [];
@@ -800,6 +752,145 @@ onComponentChange() {
 }
 
     
+
+
+/* Step 1: Fetches the backend employee raw assignment list*/
+  fetchEmployeesSalary(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.leaveservice.getEmployeeSalaryComNew(schema, branchIds).subscribe({
+      next: (data: any[]) => {
+        this.EmployeeSalarycomponent = data || [];
+        this.buildEmployeeMatrix();
+        this.isLoading = false;
+      },
+      error: (err: any) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+
+// Filter & Component Selectors
+selectedComponentValueType: 'fixed' | 'variable' = 'fixed';
+availableCategories: string[] = [];
+selectedPayrollCategory: string = '';
+
+// Matrix Transformed Display Arrays
+distinctEmployees: any[] = [];  
+
+
+
+
+/**
+ * Dispatches configuration metadata fetches depending on radio status changes
+ */
+/**
+ * Dispatches configuration metadata fetches depending on radio status changes
+ */
+onComponentTypeChange(): void {
+  // Reset selections on toggle
+  this.selectedPayrollCategory = '';
+  this.availableCategories = [];
+  
+  // ✅ Extract the active, dynamic schema context on-demand from authService
+  const selectedSchema = this.authService.getSelectedSchema();
+  
+  if (selectedSchema) {
+    this.loadComponentMetadata(selectedSchema);
+  } else {
+    console.warn('Cannot fetch component metadata: No dynamic schema context active.');
+  }
+}
+
+/**
+ * Fetches corresponding operational lists to feed the category dropdown
+ */
+loadComponentMetadata(schema: string): void {
+  const endpoint$: Observable<any[]> = this.selectedComponentValueType === 'fixed'
+    ? this.leaveservice.getFixedComponents(schema)
+    : this.leaveservice.getVariableComponents(schema);
+
+  endpoint$.subscribe({
+    next: (components) => {
+      if (components && Array.isArray(components)) {
+        // Map to payroll_category values and filter duplicates out
+        const categories = components.map(c => c.payroll_category).filter(Boolean);
+        this.availableCategories = Array.from(new Set(categories));
+        
+        // Auto-select first item if items exist
+        if (this.availableCategories.length > 0) {
+          this.selectedPayrollCategory = this.availableCategories[0];
+        }
+      }
+    },
+    error: (err) => console.error('Error fetching metadata list:', err)
+  });
+}
+
+/**
+ * Step 2: Transforms a flat payload into structural rows mapped uniquely by Employee Code
+ */
+buildEmployeeMatrix(): void {
+  const employeeMap = new Map<string, any>();
+
+  this.EmployeeSalarycomponent.forEach(item => {
+    const empCode = item.employee;
+    if (!employeeMap.has(empCode)) {
+      employeeMap.set(empCode, {
+        employee_code: empCode,
+        emp_name: item.emp_name,
+        department: item.department || 'N/A',
+        designation: item.designation || 'N/A',
+        selected: false,
+        // Track internal component sub-records for matching amounts instantly
+        rawAssignments: []
+      });
+    }
+    employeeMap.get(empCode).rawAssignments.push(item);
+  });
+
+  this.distinctEmployees = Array.from(employeeMap.values());
+}
+
+/**
+ * Step 3: Resolves dynamic matrix field calculations for matching elements
+ */
+getComponentAmount(employeeRow: any, category: string): string {
+  if (!category) return '-';
+  
+  // Look up within the raw assignments nested in this row's builder map
+  const match = employeeRow.rawAssignments.find((assign: any) => 
+    assign.payroll_category?.toLowerCase() === category.toLowerCase() &&
+    assign.component_value_type?.toLowerCase() === this.selectedComponentValueType.toLowerCase()
+  );
+
+  return match ? match.amount : '-';
+}
+
+/**
+ * Returns a target instance match object for structural editing procedures
+ */
+getComponentInstance(employeeRow: any, category: string): any {
+  return employeeRow.rawAssignments.find((assign: any) => 
+    assign.payroll_category?.toLowerCase() === category.toLowerCase() &&
+    assign.component_value_type?.toLowerCase() === this.selectedComponentValueType.toLowerCase()
+  );
+}
+
+// openEditModal(employeeRow: any): void {
+//   const targetInstance = this.getComponentInstance(employeeRow, this.selectedPayrollCategory);
+//   if (targetInstance) {
+//     console.log('Opening target component modal edit view:', targetInstance);
+//     // Trigger your modal action code here, passing targetInstance
+//   } else {
+//     console.warn('No active assignment record setup on this row for category: ' + this.selectedPayrollCategory);
+//   }
+// }
+
+
+
+
 
 
 
