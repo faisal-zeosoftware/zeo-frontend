@@ -12,7 +12,7 @@ import { MatSelect } from '@angular/material/select';
 import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
-import {combineLatest, Subscription } from 'rxjs';
+import {combineLatest, Observable, Subscription } from 'rxjs';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 
@@ -128,11 +128,31 @@ private DepartmentServiceService:DepartmentServiceService,
 ]).subscribe(([schema, branchIds]) => {
   if (schema) {
     this.fetchsalaryComp(schema, branchIds);  
-    this.fetchEmployeesSalaryCom(schema, branchIds);  
+    this.fetchEmployeesSalary(schema, branchIds);  
 
 
   }
 });
+
+const schema = this.authService.getSelectedSchema();
+
+const branchIds = JSON.parse(
+    localStorage.getItem('selectedBranchIds') || '[]'
+);
+
+ // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchsalaryComp(schema, branchIds);  
+    this.fetchEmployeesSalary(schema, branchIds);  
+
+
+  }
+});
+
 
  // Listen for sidebar changes so the dropdown updates instantly
  this.employeeService.selectedBranches$.subscribe(ids => {
@@ -638,39 +658,78 @@ updateEmployeeSalary(): void {
 
       
   
-  fetchEmployeesSalaryCom(schema: string, branchIds: number[]): void {
+  fetchEmployeesSalary(schema: string, branchIds: number[]): void {
+
     this.isLoading = true;
-    this.leaveservice.getEmployeeSalaryComNew(schema, branchIds).subscribe({
-      next: (data: any) => {
-        this.EmployeeSalarycomponent = data;
-  
-        // APPLY FILTER AFTER FETCH
-        this.applyFilter();
-  
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Fetch error:', err);
-        this.isLoading = false;
-      }
+
+    const request =
+        this.selectedSalaryType === 'fixed'
+            ? this.leaveservice.getFixedSalaryComponents(schema, branchIds)
+            : this.leaveservice.getVariableSalaryComponents(schema, branchIds);
+
+    request.subscribe({
+
+        next: (data: any) => {
+
+            this.filteredSalaryComponents = data;
+
+            this.isLoading = false;
+
+        },
+
+        error: err => {
+
+            console.error(err);
+
+            this.isLoading = false;
+
+        }
+
     });
-  }
+
+}
   
+  selectedSalaryType = 'fixed';
+
+  //  applyFilter(): void {
+  //     if (this.selectedFixedFilter === 'all') {
+  //       this.filteredSalaryComponents = this.EmployeeSalarycomponent;
+  //     } else if (this.selectedFixedFilter === 'true') {
+  //       this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
+  //         item => item.is_fixed === true
+  //       );
+  //     } else if (this.selectedFixedFilter === 'false') {
+  //       this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
+  //         item => item.is_fixed === false
+  //       );
+  //     }
+  //   }
+
+  onSalaryTypeChange(): void {
+
+    const schema = this.authService.getSelectedSchema();
+
+    const branchIds = JSON.parse(
+        localStorage.getItem('selectedBranchIds') || '[]'
+    );
+
+   // combineLatest waits for both Schema and Branches to have a value
+ this.dataSubscription = combineLatest([
+  this.employeeService.selectedSchema$,
+  this.employeeService.selectedBranches$
+]).subscribe(([schema, branchIds]) => {
+  if (schema) {
+    this.fetchEmployeesSalary(schema, branchIds);  
 
 
-   applyFilter(): void {
-      if (this.selectedFixedFilter === 'all') {
-        this.filteredSalaryComponents = this.EmployeeSalarycomponent;
-      } else if (this.selectedFixedFilter === 'true') {
-        this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
-          item => item.is_fixed === true
-        );
-      } else if (this.selectedFixedFilter === 'false') {
-        this.filteredSalaryComponents = this.EmployeeSalarycomponent.filter(
-          item => item.is_fixed === false
-        );
-      }
-    }
+  }
+});
+
+}
+
+
+
+
 
 
     Salarycomponent: any[] = [];

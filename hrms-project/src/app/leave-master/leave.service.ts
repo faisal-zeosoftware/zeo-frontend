@@ -1251,6 +1251,65 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
     
     return this.http.get(url);
   }
+
+
+  getFixedSalaryComponents(
+    selectedSchema: string,
+    branchIds: number[]
+  ): Observable<any> {
+  
+    const branchParam =
+        branchIds.length > 0
+            ? `[${branchIds.join(',')}]`
+            : '';
+  
+    let url =
+        `${this.apiUrl}/payroll/api/salarycomponent/fixed_components/?schema=${selectedSchema}`;
+  
+    if (branchParam) {
+  
+        url += `&branch_id=${branchParam}`;
+  
+    }
+  
+    return this.http.get(url);
+  
+  }
+  
+  
+  
+  
+  
+  getVariableSalaryComponents(
+    selectedSchema: string,
+    branchIds: number[]
+  ): Observable<any> {
+  
+    const branchParam =
+        branchIds.length > 0
+            ? `[${branchIds.join(',')}]`
+            : '';
+  
+    let url =
+        `${this.apiUrl}/payroll/api/salarycomponent/variable_components/?schema=${selectedSchema}`;
+  
+    if (branchParam) {
+  
+        url += `&branch_id=${branchParam}`;
+  
+    }
+  
+    return this.http.get(url);
+  
+  }
+  
+
+
+
+
+
+
+
   
   getPayroll(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/PayrollRun/?schema=${selectedSchema}`;

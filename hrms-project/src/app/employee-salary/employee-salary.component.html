@@ -325,14 +325,35 @@ placeholder="Enter amount"
             <div style="overflow-x: auto; width: 100%;">
                 <div class="table-responsive" *ngIf="hasViewPermission">
 
-                    <div class="mb-3">
-                      <label>Filter by Type:</label>
-                      <select class="form-control w-25" [(ngModel)]="selectedFixedFilter" (change)="applyFilter()">
-                        <option value="all">All</option>
-                        <option value="true">Fixed</option>
-                        <option value="false">Variable</option>
-                      </select>
-                    </div>
+                  <div class="mb-3 d-flex align-items-center">
+
+                    <label class="me-3"><strong>Salary Component :</strong></label>
+                
+                    <label class="me-4">
+                        <input
+                            type="radio"
+                            name="salaryType"
+                            value="fixed"
+                            [(ngModel)]="selectedSalaryType"
+                            (change)="onSalaryTypeChange()">
+                
+                        Fixed Components
+                    </label>
+                
+                    <label>
+                        <input
+                            type="radio"
+                            name="salaryType"
+                            value="variable"
+                            [(ngModel)]="selectedSalaryType"
+                            (change)="onSalaryTypeChange()">
+                
+                        Variable Components
+                    </label>
+                
+                </div>
+
+
               <table class="table table-striped custom-table">
                 <thead>
                   <tr>
