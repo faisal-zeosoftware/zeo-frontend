@@ -357,48 +357,92 @@ placeholder="Enter amount"
               <table class="table table-striped custom-table">
                 <thead>
                   <tr>
-                    <th class="sticky-left">No</th>
-                    <th>Amount</th>
-                    <th>Employee Code</th>
-                    <th>Employee Name</th>
-                    <th>Department</th>
-                    <th>Designation</th>
-                    <th>Component</th>
-                    <th>Amount </th>
-                    <th>Component Type  </th>
-                    <th>Is Fixed</th>
-                    <th class="sticky-right">Actions</th>
+                      <th class="sticky-left">No</th>
+                      <th>Code</th>
+                      <th>Component Name</th>
+                      <th>Component Type</th>
+                      <th>Payroll Category</th>
+                      <th>Value Type</th>
+                      <th>Formula</th>
+                      <th>Deduct Leave</th>
+                      <th>Show In Payslip</th>
+                      <th>Description</th>
+                      <th>Branch</th>
+                      <th class="sticky-right">Actions</th>
                   </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let docs of filteredSalaryComponents; let i = index">
-                     <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
-                    <td data-label="Amount">{{ docs.amount }}</td>
-                    <td data-label="Employee">{{ docs.employee }}</td>
-                    <td data-label="Employee Name">{{ docs.emp_name }}</td>
-                    <td data-label="Department">{{ docs.department }}</td>
-            
-                    <td data-label="Designation">{{ docs.designation }}</td>
-            
-                    <td data-label="Component">{{ docs.component }}</td>
-                    <td data-label="Amount">{{ docs.amount }}</td>
-            
-                    <td data-label="Component Type">{{ docs.component_type }}</td>
-                    <td>{{ docs.is_fixed ? 'Fixed' : 'Variable' }}</td>
-            
-                    <td class="sticky-right" data-label="Actions">
+              </thead>
+               
+              <tbody>
+
+                <tr *ngFor="let component of filteredSalaryComponents; let i = index">
+                
+                    <td class="sticky-left">
+                        {{ i + 1 }}
+                    </td>
+                
+                    <td>
+                        {{ component.code }}
+                    </td>
+                
+                    <td>
+                        {{ component.name }}
+                    </td>
+                
+                    <td>
+                        {{ component.component_type | titlecase }}
+                    </td>
+                
+                    <td>
+                        {{ component.payroll_category }}
+                    </td>
+                
+                    <td>
+                        {{ component.component_value_type | titlecase }}
+                    </td>
+                
+                    <td>
+                        {{ component.formula || '-' }}
+                    </td>
+                
+                    <td>
+                        {{ component.deduct_leave ? 'Yes' : 'No' }}
+                    </td>
+                
+                    <td>
+                        {{ component.show_in_payslip ? 'Yes' : 'No' }}
+                    </td>
+                
+                    <td>
+                        {{ component.description || '-' }}
+                    </td>
+                
+                    <td>
+                        {{ component.branch }}
+                    </td>
+                
+                    <td class="sticky-right">
+                
                         <button
-                          mat-fab
-                          color="primary"
-                          aria-label="Edit icon"
-                          *ngIf="showEditBtn"
-                          (click)="openEditModal(docs)"
-                        >
-                          <mat-icon style="color: white;">draw</mat-icon>
+                            mat-fab
+                            color="primary"
+                            *ngIf="showEditBtn"
+                            (click)="openEditModal(component)">
+                
+                            <mat-icon style="color:white">
+                                draw
+                            </mat-icon>
+                
                         </button>
-                        <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
-                      </td>
-                  </tr>
+                
+                        <mat-checkbox
+                            *ngIf="Delete"
+                            [(ngModel)]="component.selected">
+                        </mat-checkbox>
+                
+                    </td>
+                
+                </tr>
+                
                 </tbody>
               </table>
             </div>
