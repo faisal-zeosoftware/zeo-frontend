@@ -389,12 +389,14 @@ placeholder="Enter amount"
                       <td class="cell-p-sm"><span class="compact-badge-des">{{ emp.designation }}</span></td>
                       
                       <!-- Direct Cell Intersection values loop -->
-                      <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center fw-bold bg-light-cell cell-p-sm">
-                        <span [ngClass]="getComponentAmount(emp, dynamicCat) !== '-' ? 'text-success-emphasis border-flat' : 'text-muted opacity-25'">
-                          {{ getComponentAmount(emp, dynamicCat) }}
-                        </span>
-                      </td>
-                      
+                  <!-- Exact Dynamic Column Amount Data Output Cell -->
+                    <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center fw-bold bg-light-cell cell-p-sm">
+                      <!-- We pass the dynamicCat tracking variable straight into the corrected helper method -->
+                      <span [ngClass]="getComponentAmount(emp, dynamicCat) !== '-' ? 'text-success-emphasis border-flat fw-extrabold' : 'text-muted opacity-25'">
+                        {{ getComponentAmount(emp, dynamicCat) }}
+                      </span>
+                    </td>
+                                          
                       <!-- Empty state column alignment filler -->
                       <td class="text-center py-2 text-muted opacity-50 small" *ngIf="selectedPayrollCategories.length === 0">-</td>
           
