@@ -859,47 +859,29 @@ buildEmployeeMatrix(): void {
  * Step 3: Resolves dynamic matrix field calculations for matching elements
  */
 getComponentAmount(employee: any, category: string): string {
-  if (!employee || !category) return '-';
 
-  const targetCategoryKey = category.replace(/\s+/g, '').toLowerCase();
-
-  // 1. Check direct properties on the employee object
-  for (const key of Object.keys(employee)) {
-    if (key.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() === targetCategoryKey) {
-      const val = employee[key];
-      // If the property exists but is empty/null/whitespace, return a dash instead of blank
-      if (val === null || val === undefined || String(val).trim() === '') {
-        return '-';
-      }
-      return String(val);
-    }
+  if (!employee || !category) {
+    return '-';
   }
 
-  // 2. Check inner nested arrays (salaryComponents, components, etc.)
-  const nestedArray = employee.salaryComponents || employee.components || employee.salaryDetails || employee.salary_components;
-  
-  if (Array.isArray(nestedArray)) {
-    const matchedComponent = nestedArray.find((item: any) => {
-      const itemName = item.categoryName || item.componentName || item.name || item.fieldName || item.component_name || '';
-      return itemName.replace(/\s+/g, '').toLowerCase() === targetCategoryKey;
-    });
+  const match = employee.rawAssignments.find((item: any) => {
 
-    if (matchedComponent) {
-      // Look for any variation of the amount property name
-      const rawAmount = matchedComponent.amount !== undefined ? matchedComponent.amount : 
-                        (matchedComponent.value !== undefined ? matchedComponent.value : matchedComponent.component_value);
-      
-      // Crucial Fix: If found but value is empty/null, return a fallback string
-      if (rawAmount === null || rawAmount === undefined || String(rawAmount).trim() === '') {
-        return '0.00'; // Or '-' depending on your business rules
-      }
-      return String(rawAmount);
-    }
+    return (
+      item.payroll_category?.trim().toLowerCase() ===
+      category.trim().toLowerCase() &&
+      item.component_value_type?.trim().toLowerCase() ===
+      this.selectedComponentValueType.toLowerCase()
+    );
+
+  });
+
+  if (match) {
+    return match.amount;
   }
 
-  return '-'; // Fallback if the category isn't attached to this employee at all
+  return '-';
+
 }
-
 /**
  * Returns a target instance match object for structural editing procedures
  */
