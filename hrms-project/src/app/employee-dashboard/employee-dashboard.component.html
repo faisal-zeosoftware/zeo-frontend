@@ -228,6 +228,14 @@
               </li>
             </ul>
 
+            <ul *ngIf="isApprovalsDropdownOpen" class="nav drop-nav-emp flex-column  mt-1">
+              <li class="nav-item" [class.active]="activeTabNav === 'Lateinearlyoutapproval'" (click)="selectTabNav('Lateinearlyoutapproval')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Late In Early Out Approval
+                </a>
+              </li>
+            </ul>
+
           </li>
 
 
@@ -4494,7 +4502,7 @@
             placeholder="Add a Rejection Reason..."
             [ngModelOptions]="{ standalone: true }"
           ></textarea>
-
+ </div>
           <!-- <div class="col-md-12">
             <label>Leave Type</label>
             <div class="custom-sel">
@@ -4504,7 +4512,7 @@
             </div>
           </div> -->
 
-        </div>
+       
         <div class="mt-2" *ngIf="showRejectionReason">
           <button
             type="button"
@@ -4564,14 +4572,6 @@
                         <button type="button" class="btn pull-right" (click)="selectedlateinEarlyoutaprovaldetalis(apr.id)" *ngIf="hasAddPermission">View</button>
                     </div>
                   </div>
-              
-         
-                <!-- <h6> General Request - {{apr.general_request}}</h6>
-                <h6>Status - {{apr.status}}</h6>
-                <h6>Level - {{apr.level}}</h6> -->
-        
-            
-        
               </div>
             </div>
           </div>
@@ -4581,12 +4581,12 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-          <div class="col-md-6 text-right">
+          
               <!-- Styled Square Close Button -->
               <span class="close-btn" (click)="closemarketModal()"> × </span>
-            </div>
-          </div>
-  
+
+
+
       <div *ngIf="selectedApproval">
        <h6>Late In Early Out Request Approvals</h6>
         <hr>
@@ -4632,7 +4632,7 @@
             placeholder="Add a Rejection Reason..."
             [ngModelOptions]="{ standalone: true }"
           ></textarea>
-
+</div>
           <!-- <div class="col-md-12">
             <label>Leave Type</label>
             <div class="custom-sel">
@@ -4642,7 +4642,7 @@
             </div>
           </div> -->
 
-        </div>
+        
         <div class="mt-2" *ngIf="showRejectionReason">
           <button
             type="button"
@@ -4657,7 +4657,7 @@
   </div>
     
          
-        <!-- </div> -->
+        </div>
 
 
        
