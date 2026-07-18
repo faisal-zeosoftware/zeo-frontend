@@ -452,62 +452,96 @@ onFileSelected(event:any, doc:any){
 
 }
 
-uploadEmployeeDocument(){
+uploadEmployeeDocument() {
 
-  this.documents.forEach(doc=>{
+  // Validate all documents before uploading
+  // for (const doc of this.documents) {
 
-      const formData=new FormData();
+  //   if (
+  //     !doc.selectedFile ||
+  //     !doc.emp_doc_number ||
+  //     !doc.emp_doc_issued_date ||
+  //     !doc.emp_doc_expiry_date ||
+  //     !doc.document_type
+  //   ) {
+  //     alert('Please fill all required fields and select a document.');
+  //     return;
+  //   }
 
-      formData.append('emp_doc_document',doc.selectedFile);
+  // }
 
-      formData.append('emp_doc_number',doc.emp_doc_number);
+  let uploadedCount = 0;
 
-      formData.append('emp_doc_issued_date',doc.emp_doc_issued_date);
+  this.documents.forEach((doc) => {
 
-      formData.append('emp_doc_expiry_date',doc.emp_doc_expiry_date);
+    const formData = new FormData();
 
-      formData.append('document_type',doc.document_type);
+    formData.append('emp_doc_document', doc.selectedFile);
+    formData.append('emp_doc_number', doc.emp_doc_number);
+    formData.append('emp_doc_issued_date', doc.emp_doc_issued_date);
+    formData.append('emp_doc_expiry_date', doc.emp_doc_expiry_date);
+    formData.append('document_type', doc.document_type);
 
-      this.EmployeeService
-      .uploadEmployeeDocument(this.emp_id,formData)
-      .subscribe(response=>{
+    this.EmployeeService
+      .uploadEmployeeDocument(this.emp_id, formData)
+      .subscribe({
 
-          const documentId=response.id;
+        next: (response: any) => {
 
-          doc.custom_fields.forEach((field:any)=>{
+          const documentId = response.id;
+          const schema = localStorage.getItem('selectedSchema');
 
-              const body={
+          // Save custom fields
+          if (doc.custom_fields && doc.custom_fields.length > 0) {
 
-                  emp_custom_field:field.emp_custom_field,
+            doc.custom_fields.forEach((field: any) => {
 
-                  field_value:field.field_value,
-
-                  emp_documents:documentId,
-
-                  created_by:this.created_by
-
+              const body = {
+                emp_custom_field: field.emp_custom_field,
+                field_value: field.field_value,
+                emp_documents: documentId,
+                created_by: this.created_by
               };
 
-              const schema=localStorage.getItem('selectedSchema');
-
               this.http.post(
-
-              `${this.apiUrl}/employee/api/Documents-customfieldvalue/?schema=${schema}`,
-
-              body
-
+                `${this.apiUrl}/employee/api/Documents-customfieldvalue/?schema=${schema}`,
+                body
               ).subscribe();
 
-          });
+            });
+
+          }
+
+          uploadedCount++;
+
+          // Show success only after all documents are uploaded
+          if (uploadedCount === this.documents.length) {
+            alert('Documents uploaded successfully.');
+            window.location.reload();
+          }
+
+        },
+
+        error: (error) => {
+          console.error(error);
+
+          let errorMessage = 'Something went wrong.';
+
+          if (error.error && typeof error.error === 'object') {
+            errorMessage = Object.values(error.error)
+              .flat()
+              .join('\n');
+          }
+
+          alert(errorMessage);
+        }
 
       });
 
   });
 
-  alert("Documents uploaded successfully.");
-  window.location.reload();
-
 }
+
 file:any ='';
 visibilitys:boolean=false;
 visibles:boolean=true;

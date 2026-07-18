@@ -2265,6 +2265,63 @@ CreateAssetType(): void {
   }
 
 
+        SetLateInEarlyOut(): void {
+
+   if (!this.selectedEmployeeId  || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
+      
+        const formData = new FormData();
+        formData.append('date', this.date);
+        // formData.append('status', this.status);
+  
+        formData.append('request_type', this.request_type);
+        formData.append('document_number', this.document_number?.toString() || '');
+  
+        formData.append('reason', this.reason);
+
+        formData.append('employee', this.selectedEmployeeId.toString());
+      
+
+    this.isLoading = true;
+    
+    
+
+        this.leaveService.CreateLateinEarlyOutRequest(formData).subscribe(
+          (response) => {
+            this.isLoading = false;
+            console.log('Latein Early Out successful', response);
+             
+    
+    
+            alert('Latein Early Out Request has been Sent');
+    
+            window.location.reload();
+          },  
+    (error) => {
+      this.isLoading = false;
+      // same error handling as above...
+      console.error('Added failed', error);
+      let errorMessage = 'Enter all required fields!';
+
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
+      alert(errorMessage);
+    }
+        );
+      }
 
 
 
@@ -3688,6 +3745,135 @@ confirmDocRejection(approvalId: number): void {
     const apiUrl = `${this.apiUrl}/employee/api/Doc-request-approval/${approvalId}/?schema=${selectedSchema}`;
 
     this.leaveService.getApprovalDetailsDocRequest(apiUrl).subscribe(
+      (response: any) => {
+        this.selectedApproval = response;
+        this.isAddFieldsModalOpen = true; // Open the modal
+        console.log('detalis',this.selectedApproval)
+      },
+      (error) => {
+        console.error('Error fetching approval details:', error);
+      }
+    );
+  }
+}
+
+// Late in Early out Request Approvals Code 
+
+LinEoutApprovals: any[] = [];
+
+loadLinEoutReqApprovals(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
+  if (!selectedSchema) {
+    console.error('No schema found in authService');
+    return;
+  }
+
+  this.CountryService.getLinEoutReqApprovals(selectedSchema).subscribe({
+    next: (result: any) => {
+      // Logic check: many APIs return data inside a 'results' or 'data' property
+      this.LinEoutApprovals = Array.isArray(result) ? result : (result.data || []);
+      console.log('Successfully loaded approvals:', this.LinEoutApprovals);
+    },
+    error: (error) => {
+      console.error('API Error:', error);
+    }
+  });
+}
+
+approveLinEoutApproval(approvalId: number): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval/${approvalId}/approve/?schema=${selectedSchema}`;
+
+
+       // Data to be sent in the request body (including the note)
+       const approvalData = {
+        note: this.note,          // The note entered by the user
+        status: 'Approved',       // Setting status to "Approved"
+      };
+
+      this.CountryService.approveApprovalLinEoutRequest(apiUrl, approvalData).subscribe(
+        (response: any) => {
+        console.log('Approval status changed to Approved:', response);
+        window.location.reload();
+        
+ 
+
+
+        // Update the selected approval status in the local UI
+        if (this.selectedApproval) {
+          this.selectedApproval.status = 'Approved';
+        }
+
+        // Optionally, update the main approvals list if needed
+        const approvalIndex = this.LinEoutApprovals.findIndex(approval => approval.id === approvalId);
+        if (approvalIndex !== -1) {
+          this.LinEoutApprovals[approvalIndex].status = 'Approved';
+        }
+
+  
+
+        // Close the modal after successful approval
+        this.isAddFieldsModalOpen = false;
+      },
+      (error) => {
+        console.error('Error approving the approval request:', error);
+      }
+    );
+  }
+}
+
+confirmLinEoutRejection(approvalId: number): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  // Data to be sent in the request body (including the note and rejection reason)
+  const approvalData = {
+    note: this.note, // The note entered by the user
+    status: 'Rejected', // Setting status to "Rejected"
+    rejection_reason: this.rejection_reason, // Adding the rejection reason
+  };
+
+  if (selectedSchema) {
+    const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval/${approvalId}/reject/?schema=${selectedSchema}`;
+
+    this.CountryService.rejectApprovalLinEoutRequest(apiUrl, approvalData).subscribe(
+      (response: any) => {
+        console.log('Approval status changed to Rejected:', response);
+        window.location.reload();
+
+
+        // Update the selected approval status in the local UI
+        if (this.selectedApproval) {
+          this.selectedApproval.status = 'Rejected';
+        }
+
+        // Optionally, update the main approvals list if needed
+        const approvalIndex = this.LinEoutApprovals.findIndex(approval => approval.id === approvalId);
+        if (approvalIndex !== -1) {
+          this.LinEoutApprovals[approvalIndex].status = 'Rejected';
+        }
+
+        // Reset the rejection reason and close the modal
+        this.rejection_reason = '';
+        this.showRejectionReason = false;
+        this.isAddFieldsModalOpen = false;
+      },
+      (error) => {
+        console.error('Error rejecting the approval request:', error);
+      }
+    );
+  }
+}
+
+ selectedlateinEarlyoutaprovaldetalis(approvalId: number): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval/${approvalId}/?schema=${selectedSchema}`;
+
+    this.CountryService.getApprovalDetailsLinEoutRequest(apiUrl).subscribe(
       (response: any) => {
         this.selectedApproval = response;
         this.isAddFieldsModalOpen = true; // Open the modal

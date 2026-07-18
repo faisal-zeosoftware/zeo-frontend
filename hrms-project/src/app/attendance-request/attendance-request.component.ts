@@ -647,7 +647,12 @@ onBranchChange(): void {
       this.filteredEmployees = [];
     }
 
-    this.employee = '';
+   // Only clear if the selected employee doesn't belong to this branch
+const exists = this.filteredEmployees.some(emp => emp.id == this.employee);
+
+if (!exists) {
+  this.employee = '';
+}
   }
 
   if (!selectedBranchId || !selectedSchema) {

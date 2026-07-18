@@ -142,6 +142,11 @@
                   <i class="fa fa-paper-plane me-2"></i> Resignation Request
                 </a>
               </li>
+               <li class="nav-item" [class.active]="activeTabNav === 'lateinearlyoutRequest'" (click)="selectTabNav('lateinearlyoutRequest')">
+                <a class="nav-link" href="javascript:void(0)">
+                  <i class="fa fa-paper-plane me-2"></i> Late In Early Out Request
+                </a>
+              </li>
 
 
             </ul>
@@ -2942,6 +2947,148 @@
 
       </section>
 
+      <section class="content-tab  animate__animated animate__fadeIn" id="lateinearlyoutRequest"
+      *ngIf="activeTabNav === 'lateinearlyoutRequest'">
+
+       <div class="white-outer-sec">
+       <h3 class="mb-0">Late In Early Out Request</h3>
+  </div>
+
+
+        <!-- Extracurricular content here -->
+
+           <div class="white-outer-sec">
+                 <form (ngSubmit)="SetLateInEarlyOut()" enctype="multipart/form-data">
+            <div class="row">
+
+
+<div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
+
+
+
+              <div class="col-md-6">
+                <label>Date</label>
+                <input type="date" class="form-control" required [(ngModel)]="date" placeholder="Enter date"
+                       [ngModelOptions]="{standalone: true}" >
+              </div>
+
+           <div class="col-md-6">
+                <label>Request Type
+                  <span class="required-star">*</span>
+                </label>
+                <div class="custom-sel">
+                  <select class="form-control" id="request_type" name="request_type" [(ngModel)]="request_type" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}">
+                    <option  value="LATE_IN">Late Check In</option>
+                    <option  value="EARLY_OUT">Early Check Out</option>          
+                  </select>
+                </div>
+                <div *ngIf="registerButtonClicked && !request_type" class="error-message">Please Select Request type</div>
+              </div>
+
+            <!-- <div class="col-md-6">
+                <label>Status</label>
+                <div class="custom-sel">
+                  <select class="form-control" id="status" name="status" [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
+                    <option  value="PENDING">Pending</option>
+                    <option  value="APPROVED">Approved</option>
+                    <option  value="REJECTED">Rejected</option>           
+                  </select>
+                </div>
+              </div> -->
+
+
+
+              <div class="col-md-12">
+                <label>Reason</label>
+                <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}" placeholder="Enter reason"></textarea>
+              </div>
+
+ 
+        
+         
+              
+
+
+          
+
+        
+               
+         
+          
+         
+            </div>
+          
+            <div class="row" >
+              <div class="col-md-9"></div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-success btn-full mt-5">Add Late In Early Out Request</button>
+              </div>
+            </div>
+          </form>
+  
+
+        </div>
+
+        
+        <div class="white-outer-sec">
+
+
+          <div class="row">
+
+            <div class="col-md-12">
+              <div class="table-scroll">
+              
+              <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
+                <thead>
+                  <tr>
+                    <th class="text-table-header" style="width: 0;">No</th>
+                    <!-- <th class="text-table-header">Employee</th> -->
+                    <th class="text-table-header">Document number</th>
+                    <th class="text-table-header">Date</th>
+                    <th class="text-table-header">Reason</th>
+                    <th class="text-table-header">Request Type</th>
+                    <th class="text-table-header">Status</th>
+
+                    <!-- <th class="text-table-header">Payslip Component</th> -->
+                  </tr>
+                </thead>
+                <tbody class="text-table-body">
+                  
+                  <tr class="tbodytext" *ngFor="let lateinearlyoutreq of employeesec.lateinearlyout_requests; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ lateinearlyoutreq.document_number || '-' }}</td>
+                    <td>{{ lateinearlyoutreq.date }}</td>
+                    <td>{{ lateinearlyoutreq.reason }}</td>
+                    <td>{{ lateinearlyoutreq.request_type }}</td>
+                    <td>{{ lateinearlyoutreq.status }}</td>
+
+
+                  </tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+          </div>
+
+      </section>
+
 
 
 <!-- Employee Punching section -->
@@ -4373,6 +4520,144 @@
     
          
         </div>
+
+
+       
+
+
+      </section>
+
+
+   <section class="content-tab  animate__animated animate__fadeIn" id="Lateinearlyoutapproval"
+      *ngIf="activeTabNav === 'Lateinearlyoutapproval'">
+
+   <div class="white-outer-sec">
+       <h3 class="mb-0">Late In Early Out Approvals</h3>
+  </div>
+
+
+         
+           <div class="white-outer-sec">
+        <div class="row">
+            <div class="col-md-12">
+              <div class="approval_sec" *ngFor="let apr of LinEoutApprovals" >
+                <h6>Late In Early Out Request Approvals</h6><hr>
+                <div class="row ">
+                        <div class="col-md-2">
+                      <h4>Lateinearlyout request</h4>
+                      <h5>{{apr.lateinearlyout_request}}</h5>
+                    </div>
+
+                    <div class="col-md-2">
+                      <h4>Status  </h4>
+                      <h5>{{apr.status}} </h5>
+                    </div>
+                    <div class="col-md-2">
+                      <h4>Level </h4>
+                      <h5>{{apr.level}}</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <h4>Reason </h4>
+                        <h5>{{apr.note}}</h5>
+                      </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn pull-right" (click)="selectedlateinEarlyoutaprovaldetalis(apr.id)" *ngIf="hasAddPermission">View</button>
+                    </div>
+                  </div>
+              
+         
+                <!-- <h6> General Request - {{apr.general_request}}</h6>
+                <h6>Status - {{apr.status}}</h6>
+                <h6>Level - {{apr.level}}</h6> -->
+        
+            
+        
+              </div>
+            </div>
+          </div>
+  
+  
+  
+        
+<div *ngIf="isAddFieldsModalOpen" class="modal">
+    <div class="modal-content">
+          <div class="col-md-6 text-right">
+              <!-- Styled Square Close Button -->
+              <span class="close-btn" (click)="closemarketModal()"> × </span>
+            </div>
+          </div>
+  
+      <div *ngIf="selectedApproval">
+       <h6>Late In Early Out Request Approvals</h6>
+        <hr>
+        <h6>Lateinearlyout request- {{ selectedApproval.lateinearlyout_request }}</h6>
+        <h6>Status - {{ selectedApproval.status }}</h6>
+        <h6>Level - {{ selectedApproval.level }}</h6>
+  
+        <textarea
+          class="form-control"
+          [(ngModel)]="note"
+          placeholder="Add a Comment here..."
+          [ngModelOptions]="{ standalone: true }"
+        >  </textarea>
+  
+   
+  
+        <div class="row mt-2">
+          <div class="col-md-6"></div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn btn-danger btn-full"
+              (click)="showRejectionReason = true"
+            >
+              Reject
+            </button>
+          </div>
+          <div class="col-md-3">
+            <button
+              type="button"
+              class="btn btn-success btn-full"
+              (click)="approveLinEoutApproval(selectedApproval.id)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+             <!-- Additional input for rejection reason -->
+        <div *ngIf="showRejectionReason">
+          <textarea
+            class="form-control mt-2"
+            [(ngModel)]="rejection_reason"
+            placeholder="Add a Rejection Reason..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+          <!-- <div class="col-md-12">
+            <label>Leave Type</label>
+            <div class="custom-sel">
+              <select class="form-control" id="rejection_reason" name="rejection_reason" [(ngModel)]="rejection_reason" [ngModelOptions]="{standalone: true}">
+                <option *ngFor="let rejectionReason of RejectionResons" [value]="rejectionReason.id">{{ rejectionReason.reason_text }}</option>
+              </select>
+            </div>
+          </div> -->
+
+        </div>
+        <div class="mt-2" *ngIf="showRejectionReason">
+          <button
+            type="button"
+            class="btn btn-danger btn-full"
+            (click)="confirmLinEoutRejection(selectedApproval.id)"
+          >
+            Confirm Rejection
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+         
+        <!-- </div> -->
 
 
        

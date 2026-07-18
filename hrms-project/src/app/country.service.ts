@@ -763,6 +763,28 @@ deleteAirReq(categoryId: number): Observable<any> {
     
   }
 
+    getLinEoutReqApprovals(selectedSchema: string): Observable<any> {
+    const apiUrl = `${this.apiUrl}/calendars/api/lateineralyout-approval/?schema=${selectedSchema}`;
+  
+    // Fetch employees from the API
+    return this.http.get(apiUrl);
+
+    
+  }
+
+   approveApprovalLinEoutRequest(apiUrl: string, approvalData: { note: string; status: string }): Observable<any> {
+  // Sending a POST request to approve with note and status
+  return this.http.post(apiUrl, approvalData);
+}
+
+rejectApprovalLinEoutRequest(apiUrl: string, approvalData: { note: string; status: string }): Observable<any> {
+  // Sending a POST request to approve with note and status
+  return this.http.post(apiUrl, approvalData);
+}
+
+getApprovalDetailsLinEoutRequest(apiUrl: string): Observable<any> {
+  return this.http.get(apiUrl);
+}
 
     getResignationAprNoti(selectedSchema: string, branchIds: number[]): Observable<any> {
       // Converts [1,3,4] into the string "[1,3,4]" for the URL
@@ -1105,6 +1127,8 @@ registerearlyexitpolicy(companyData: any): Observable<any> {
       return this.http.get(url);
     }
   
+
+
 
   
 }

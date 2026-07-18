@@ -66,17 +66,23 @@
 }
 
 .button-group .btn {
-    min-width: 150px;
+    min-width: 108px;
     height: 46px;
     border-radius: 30px;
     font-size: 15px;
     font-weight: 500;
     transition: .3s;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
 }
 
 .btn-success {
     background: linear-gradient(135deg, #2ecc71, #27ae60);
     border: none;
+    color: #fff;
     box-shadow: 0 8px 18px rgba(46, 204, 113, .3);
 }
 
@@ -94,6 +100,7 @@
 .btn-outline-danger:hover {
     background: #dc3545;
     color: white;
+    transform: translateY(-2px);
 }
 
 .close-btn {
@@ -103,12 +110,16 @@
     width: 36px;
     height: 36px;
     border: none;
-    background: #dc3545;
+    background: #e0e0e0;
     border-radius: 50%;
-    color: white;
+    color: #666;
     font-size: 24px;
     cursor: pointer;
     transition: .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .close-btn:hover {

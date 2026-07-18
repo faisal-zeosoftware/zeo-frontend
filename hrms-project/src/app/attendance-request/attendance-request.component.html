@@ -375,7 +375,13 @@
           
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Date">{{ docs.date }}</td>
-        <td data-label="RequestType">{{ docs.request_type }}</td>
+        <td data-label="RequestType">
+           {{ docs.request_type === 'LATE_IN'
+           ? 'Late Check In'
+           : docs.request_type === 'EARLY_OUT'
+            ? 'Early Check Out'
+            : docs.request_type }}
+        </td>
         <td data-label="Employee">{{ docs.employee }}</td>
         <td data-label="Document number">{{ docs.document_number }}</td>
         <td>{{ docs.branch }}</td>
