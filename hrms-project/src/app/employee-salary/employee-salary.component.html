@@ -321,122 +321,98 @@ placeholder="Enter amount"
 
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-
-          <div class="card border-0 shadow-sm p-4 bg-white rounded">
+          <div class="card border-0 shadow-sm p-3 bg-white rounded compact-container">
             <div *ngIf="hasViewPermission">
               
-              <!-- Dashboard Filtering & Control Bar -->
-              <div class="row align-items-center mb-4 g-3 bg-light p-3 rounded border">
+              <!-- Ultra-Compact Control Header Bar -->
+              <div class="row align-items-center mb-3 g-2 bg-light p-2 rounded border mx-0">
                 
-                <!-- Radio Toggle Section Redesigned as modern Pill Button Tabs -->
+                <!-- Radio Toggle Group (Pill Buttons) -->
                 <div class="col-12 col-md-auto d-flex align-items-center">
-                  <span class="fw-bold me-3 text-secondary text-uppercase small tracking-wider">Component Class:</span>
-                  <div class="btn-group" role="group" aria-label="Component values filter selection">
+                  <span class="fw-bold me-2 text-secondary text-uppercase x-small">Type:</span>
+                  <div class="btn-group btn-group-sm" role="group">
                     <input type="radio" class="btn-check" id="fixedRadio" name="componentValueType" value="fixed" 
                            [(ngModel)]="selectedComponentValueType" (change)="onComponentTypeChange()">
-                    <label class="btn btn-outline-success px-4 fw-semibold" for="fixedRadio">
-                      <i class="bi bi-lock-fill me-1"></i> Fixed Component
-                    </label>
+                    <label class="btn btn-outline-success px-3 py-1 fw-semibold small" for="fixedRadio">Fixed</label>
           
                     <input type="radio" class="btn-check" id="variableRadio" name="componentValueType" value="variable" 
                            [(ngModel)]="selectedComponentValueType" (change)="onComponentTypeChange()">
-                    <label class="btn btn-outline-success px-4 fw-semibold" for="variableRadio">
-                      <i class="bi bi-sliders me-1"></i> Variable Element
-                    </label>
+                    <label class="btn btn-outline-success px-3 py-1 fw-semibold small" for="variableRadio">Variable</label>
                   </div>
                 </div>
           
-                <!-- Dropdown Filter Section aligned with flex metrics -->
-                <div class="col-12 col-md-5 d-flex align-items-center ms-md-auto">
-                  <label class="fw-bold me-3 text-nowrap text-secondary text-uppercase small tracking-wider mb-0" for="categoryDropdown">
-                    Payroll Category:
-                  </label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted">
-                      <i class="bi bi-search"></i>
-                    </span>
-                    <select id="categoryDropdown" class="form-select border-start-0 ps-0 fw-semibold text-dark border-secondary-subtle shadow-none" 
-                            [(ngModel)]="selectedPayrollCategory">
-                      <option value="" disabled selected>-- Select Header Layout Category --</option>
-                      <option *ngFor="let cat of availableCategories" [value]="cat">{{ cat | titlecase }}</option>
-                    </select>
-                  </div>
+                <!-- Multiple Selection Dynamic Field Control -->
+                <div class="col-12 col-md-6 d-flex align-items-center ms-md-auto">
+                  <span class="fw-bold me-2 text-secondary text-uppercase x-small text-nowrap">Categories:</span>
+                  <mat-form-field appearance="outline" class="w-100 compact-mat-select mt-3">
+                    <mat-select [(ngModel)]="selectedPayrollCategories" multiple placeholder="Select Column Fields">
+                      <mat-option *ngFor="let cat of availableCategories" [value]="cat">
+                        {{ cat | titlecase }}
+                      </mat-option>
+                  
+
+                    </mat-select>
+                  </mat-form-field>
                 </div>
               </div>
           
-              <!-- Dynamic Dashboard Layout Loading Skeleton -->
-              <div *ngIf="isLoading" class="text-center my-5 py-5">
-                <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-                <p class="text-muted fw-medium">Processing structured salary allocation matrix...</p>
-              </div>
-          
-              <!-- Main Dynamic Employee Salary Matrix View -->
-              <div class="table-responsive border rounded shadow-inner" style="max-height: 620px; overflow-y: auto;" *ngIf="!isLoading">
-                <table class="table table-hover table-striped align-middle mb-0 custom-salary-matrix">
-                  <thead class="bg-dark text-white sticky-top table-header-z">
+              <!-- Sized Matrix Table Wrapper View Container -->
+              <div class="table-responsive border rounded text-nowrap inner-scroll-container" *ngIf="!isLoading">
+                <table class="table table-sm table-hover table-striped align-middle mb-0 compact-salary-table">
+                  <thead class="bg-dark text-white sticky-top headers-z-index">
                     <tr>
-                      <th class="sticky-col-left bg-dark text-white text-center fw-bold" style="width: 60px;">No</th>
-                      <th class="fw-bold">Employee Code</th>
-                      <th class="fw-bold">Employee Name</th>
-                      <th class="fw-bold">Department</th>
-                      <th class="fw-bold">Designation</th>
+                      <th>No</th>
+                      <th>Emp Code</th>
+                      <th>Employee Name</th>
+                      <th>Department</th>
+                      <th>Designation</th>
                       
-                      <!-- Dynamic Intersected Category Column -->
-                      <th class="bg-success text-white text-center fw-extrabold text-uppercase letter-spacing-md" *ngIf="selectedPayrollCategory">
-                        {{ selectedPayrollCategory }} (Amt)
+                      <!-- Loop to generate a column for every selected category -->
+                      <th *ngFor="let dynamicCat of selectedPayrollCategories" class="bg-success text-white text-center dynamic-header-cell">
+                        {{ dynamicCat | titlecase }}
                       </th>
-                      <th class="text-muted text-center italic-placeholder" *ngIf="!selectedPayrollCategory">
-                        Select Category Header
+                      
+                      <!-- Placeholder column when nothing is selected -->
+                      <th class="text-muted text-center italic-placeholder" *ngIf="selectedPayrollCategories.length === 0">
+                        No Columns Selected
                       </th>
           
-                      <th class="sticky-col-right bg-dark text-white text-center fw-bold" style="width: 120px;">Actions</th>
+                      <th class="sticky-col-right bg-dark text-center" style="width: 90px;">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let emp of distinctEmployees; let i = index" class="salary-row">
-                      <td class="sticky-col-left text-center fw-bold text-muted" data-label="No">{{ i + 1 }}</td>
-                      <td data-label="Employee Code" class="font-monospace fw-bold text-success">{{ emp.employee_code }}</td>
-                      <td data-label="Employee Name" class="fw-bold text-dark text-capitalize">{{ emp.emp_name }}</td>
-                      <td data-label="Department">
-                        <span class="badge bg-secondary bg-opacity-10 text-secondary fw-semibold px-2 py-1.5 rounded">{{ emp.department }}</span>
-                      </td>
-                      <td data-label="Designation">
-                        <span class="badge bg-success bg-opacity-10 text-success fw-semibold px-2 py-1.5 rounded">{{ emp.designation }}</span>
-                      </td>
+                    <tr *ngFor="let emp of distinctEmployees; let i = index">
+                      <td class="sticky-col-left text-center fw-semibold text-muted bg-cell-override">{{ i + 1 }}</td>
+                      <td class="font-monospace fw-bold text-success cell-p-sm">{{ emp.employee_code }}</td>
+                      <td class="fw-semibold text-dark text-capitalize cell-p-sm">{{ emp.emp_name }}</td>
+                      <td class="cell-p-sm"><span class="compact-badge-dep">{{ emp.department }}</span></td>
+                      <td class="cell-p-sm"><span class="compact-badge-des">{{ emp.designation }}</span></td>
                       
-                      <!-- Component Calculated Cell Intersection Value Output -->
-                      <td class="text-center fw-bold fs-6 bg-light-cell transition-all" data-label="Amount">
-                        <span [ngClass]="getComponentAmount(emp, selectedPayrollCategory) !== '-' ? 'text-success-emphasis border-bottom border-success border-2' : 'text-muted opacity-50'">
-                          {{ getComponentAmount(emp, selectedPayrollCategory) }}
+                      <!-- Direct Cell Intersection values loop -->
+                      <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center fw-bold bg-light-cell cell-p-sm">
+                        <span [ngClass]="getComponentAmount(emp, dynamicCat) !== '-' ? 'text-success-emphasis border-flat' : 'text-muted opacity-25'">
+                          {{ getComponentAmount(emp, dynamicCat) }}
                         </span>
                       </td>
+                      
+                      <!-- Empty state column alignment filler -->
+                      <td class="text-center py-2 text-muted opacity-50 small" *ngIf="selectedPayrollCategories.length === 0">-</td>
           
-                      <!-- Operational Actions Column Context -->
-                      <td class="sticky-col-right text-center" data-label="Actions">
-                        <div class="d-flex align-items-center justify-content-center gap-3">
+                      <td class="sticky-col-right text-center bg-cell-override">
+                        <div class="d-flex align-items-center justify-content-center gap-2">
                           <button
-                            mat-mini-fab
+                            mat-icon-button
                             color="primary"
-                            aria-label="Edit cell entry"
-                            [disabled]="getComponentAmount(emp, selectedPayrollCategory) === '-'"
+                            [disabled]="selectedPayrollCategories.length === 0"
                             *ngIf="showEditBtn"
                             (click)="openEditModal(emp)"
-                            class="shadow-sm action-fab-btn"
-                            title="Modify active component allocation value"
+                            class="compact-action-btn"
+                            title="Modify active element configuration parameters"
                           >
-                            <mat-icon style="color: white; font-size: 18px; width: 18px; height: 18px;">edit</mat-icon>
+                            <mat-icon style="font-size: 16px; width:16px; height:16px;">edit</mat-icon>
                           </button>
-                          <mat-checkbox *ngIf="Delete" [(ngModel)]="emp.selected" color="primary" class="align-middle-checkbox"></mat-checkbox>
+                          <mat-checkbox *ngIf="Delete" [(ngModel)]="emp.selected" color="primary" class="scale-checkbox"></mat-checkbox>
                         </div>
-                      </td>
-                    </tr>
-                    
-                    <!-- Array Empty Placeholder Set State View -->
-                    <tr *ngIf="distinctEmployees.length === 0">
-                      <td colspan="7" class="text-center py-5 text-muted bg-white">
-                        <mat-icon class="fs-1 text-muted opacity-25 mb-2 d-block mx-auto">grid_off</mat-icon>
-                        <span class="fw-semibold d-block">No Active Master Base Record List Found</span>
-                        <small class="text-muted">Ensure current branch profiles match setup entries parameters.</small>
                       </td>
                     </tr>
                   </tbody>

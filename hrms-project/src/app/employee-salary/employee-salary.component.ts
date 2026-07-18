@@ -779,7 +779,8 @@ selectedPayrollCategory: string = '';
 // Matrix Transformed Display Arrays
 distinctEmployees: any[] = [];  
 
-
+// 1. Update your state property variable declaration at the top of the class:
+selectedPayrollCategories: string[] = []; // Changed from single string to array
 
 
 /**
@@ -792,6 +793,7 @@ onComponentTypeChange(): void {
   // Reset selections on toggle
   this.selectedPayrollCategory = '';
   this.availableCategories = [];
+  this.selectedPayrollCategories = []; // Reset array
   
   // ✅ Extract the active, dynamic schema context on-demand from authService
   const selectedSchema = this.authService.getSelectedSchema();
@@ -856,15 +858,13 @@ buildEmployeeMatrix(): void {
 /**
  * Step 3: Resolves dynamic matrix field calculations for matching elements
  */
-getComponentAmount(employeeRow: any, category: string): string {
-  if (!category) return '-';
+getComponentAmount(employee: any, category: string): string {
+  if (!employee || !category) return '-';
   
-  // Look up within the raw assignments nested in this row's builder map
-  const match = employeeRow.rawAssignments.find((assign: any) => 
-    assign.payroll_category?.toLowerCase() === category.toLowerCase() &&
-    assign.component_value_type?.toLowerCase() === this.selectedComponentValueType.toLowerCase()
+  // Update this logic to match how data maps to your model variations:
+  const match = employee.salaryComponents?.find(
+    (c: any) => c.categoryName?.toLowerCase() === category.toLowerCase()
   );
-
   return match ? match.amount : '-';
 }
 
