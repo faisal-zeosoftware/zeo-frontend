@@ -859,38 +859,45 @@ buildEmployeeMatrix(): void {
  * Step 3: Resolves dynamic matrix field calculations for matching elements
  */
 getComponentAmount(employee: any, category: string): string {
-  // Safe validation check inputs
   if (!employee || !category) return '-';
 
-  // 1. Normalize the selection key for accurate comparison (e.g., "BASIC SALARY" -> "basicsalary")
   const targetCategoryKey = category.replace(/\s+/g, '').toLowerCase();
 
-  // 2. Fallback Option A: Look if the category exists as a direct property on the employee object
-  // (e.g., if employee.basic_salary or employee['Basic Salary'] exists)
+  // 1. Check direct properties on the employee object
   for (const key of Object.keys(employee)) {
     if (key.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() === targetCategoryKey) {
-      return employee[key] !== null && employee[key] !== undefined ? employee[key].toString() : '-';
+      const val = employee[key];
+      // If the property exists but is empty/null/whitespace, return a dash instead of blank
+      if (val === null || val === undefined || String(val).trim() === '') {
+        return '-';
+      }
+      return String(val);
     }
   }
 
-  // 3. Fallback Option B: Look inside an array nested within the employee object (e.g., salaryComponents)
-  const nestedArray = employee.salaryComponents || employee.components || employee.salaryDetails;
+  // 2. Check inner nested arrays (salaryComponents, components, etc.)
+  const nestedArray = employee.salaryComponents || employee.components || employee.salaryDetails || employee.salary_components;
   
   if (Array.isArray(nestedArray)) {
     const matchedComponent = nestedArray.find((item: any) => {
-      // Safely grab any common nomenclature property fields for the category name
-      const itemName = item.categoryName || item.componentName || item.name || item.fieldName || '';
+      const itemName = item.categoryName || item.componentName || item.name || item.fieldName || item.component_name || '';
       return itemName.replace(/\s+/g, '').toLowerCase() === targetCategoryKey;
     });
 
     if (matchedComponent) {
-      // Safely extract the amount or value parameter matching your API structure
-      const amountValue = matchedComponent.amount !== undefined ? matchedComponent.amount : matchedComponent.value;
-      return amountValue !== null && amountValue !== undefined ? amountValue.toString() : '-';
+      // Look for any variation of the amount property name
+      const rawAmount = matchedComponent.amount !== undefined ? matchedComponent.amount : 
+                        (matchedComponent.value !== undefined ? matchedComponent.value : matchedComponent.component_value);
+      
+      // Crucial Fix: If found but value is empty/null, return a fallback string
+      if (rawAmount === null || rawAmount === undefined || String(rawAmount).trim() === '') {
+        return '0.00'; // Or '-' depending on your business rules
+      }
+      return String(rawAmount);
     }
   }
 
-  return '-'; // Fallback if no schema matches
+  return '-'; // Fallback if the category isn't attached to this employee at all
 }
 
 /**
