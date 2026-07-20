@@ -848,6 +848,7 @@ buildEmployeeMatrix(): void {
         // Track internal component sub-records for matching amounts instantly
         rawAssignments: []
       });
+      console.log(this.distinctEmployees);
     }
     employeeMap.get(empCode).rawAssignments.push(item);
   });
