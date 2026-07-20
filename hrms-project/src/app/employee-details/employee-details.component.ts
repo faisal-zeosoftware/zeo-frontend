@@ -131,7 +131,7 @@ export class EmployeeDetailsComponent implements OnInit {
         this.loadEmpSkills();
         this.loadEmpProgramSkills();
 
-        this.loadQualification();
+        this.loadEmployeeSalary();
         
         this.fetchEmployeeDocuments();
         this.loadprogramlang();
