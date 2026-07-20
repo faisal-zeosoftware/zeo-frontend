@@ -583,45 +583,102 @@
                             </mat-tab>
 
                             <mat-tab label="Salary details">
-                                <div class="tab_content  mt-3">
-                                 
-                                    <div class="tab_content mt-3" *ngIf="employeeSalary">
+                                <div class="tab_content mt-3" *ngIf="employeeSalary">
 
-                                        <div class="row">
-                                    
-                                            <div class="col-md-3">
-                                                <h2>Gross Salary</h2>
-                                                <h3>{{ employeeSalary.gross_salary }}</h3>
-                                            </div>
-                                    
-                                            <div class="col-md-3">
-                                                <h2>Total Deductions</h2>
-                                                <h3>{{ employeeSalary.total_deductions }}</h3>
-                                            </div>
-                                    
-                                            <div class="col-md-3">
-                                                <h2>Net Salary</h2>
-                                                <h3>{{ employeeSalary.net_salary }}</h3>
-                                            </div>
-                                    
+                                    <!-- Salary Summary -->
+                                    <div class="row mb-4">
+                                
+                                        <div class="col-md-6">
+                                            <h2>Gross Salary</h2>
+                                            <h3>{{ employeeSalary.gross_salary }}</h3>
                                         </div>
-                                    
-                                        <hr>
-                                    
-                                        <div class="row" *ngFor="let salary of fixedSalaryComponents">
-                                    
-                                            <div class="col-md-3">
-                                                <h2>{{ salary.component }}</h2>
-                                                <h3>{{ salary.amount }}</h3>
-                                            </div>
-                                    
+                                
+                                        <div class="col-md-6">
+                                            <h2>Net Salary</h2>
+                                            <h3>{{ employeeSalary.net_salary }}</h3>
                                         </div>
-                                    
+                                
                                     </div>
-                     </div>
-                                <!-- <div class=" mt-5" >
-                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add Language</button>
-                        </div> -->
+                                
+                                    <hr>
+                                
+                                    <!-- Salary Components Table -->
+                                    <div class="table-responsive">
+                                
+                                        <table class="table table-bordered table-striped table-hover">
+                                
+                                            <thead class="table-light">
+                                
+                                                <tr>
+                                                    <th width="8%">No</th>
+                                                    <th>Salary Component</th>
+                                                    <th>Component Type</th>
+                                                    <th>Payroll Category</th>
+                                                    <th class="text-end">Amount</th>
+                                                </tr>
+                                
+                                            </thead>
+                                
+                                            <tbody>
+                                
+                                                <tr *ngFor="let salary of fixedSalaryComponents; let i = index">
+                                
+                                                    <td>{{ i + 1 }}</td>
+                                
+                                                    <td>{{ salary.component }}</td>
+                                
+                                                    <td>{{ salary.component_type }}</td>
+                                
+                                                    <td>{{ salary.payroll_category }}</td>
+                                
+                                                    <td class="text-end">
+                                                        {{ salary.amount }}
+                                                    </td>
+                                
+                                                </tr>
+                                
+                                                <tr *ngIf="fixedSalaryComponents.length === 0">
+                                                    <td colspan="5" class="text-center">
+                                                        No Fixed Salary Components Found
+                                                    </td>
+                                                </tr>
+                                
+                                            </tbody>
+                                
+                                            <tfoot *ngIf="fixedSalaryComponents.length > 0">
+                                
+                                                <tr>
+                                
+                                                    <th colspan="4" class="text-end">
+                                                        Gross Salary
+                                                    </th>
+                                
+                                                    <th class="text-end">
+                                                        {{ employeeSalary.gross_salary }}
+                                                    </th>
+                                
+                                                </tr>
+                                
+                                                <tr>
+                                
+                                                    <th colspan="4" class="text-end">
+                                                        Net Salary
+                                                    </th>
+                                
+                                                    <th class="text-end">
+                                                        {{ employeeSalary.net_salary }}
+                                                    </th>
+                                
+                                                </tr>
+                                
+                                            </tfoot>
+                                
+                                        </table>
+                                
+                                    </div>
+                                
+                                </div>
+                          
                             </mat-tab>
 
                             <mat-tab label="Emp Payslip">
