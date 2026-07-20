@@ -2893,6 +2893,24 @@ updateGeofence(id: number, data: any): Observable<any> {
     return this.http.get(apiUrl);
   }
 
+  getEmployeeSalary(employeeId: number): Observable<any> {
+
+    const selectedSchema = localStorage.getItem('selectedSchema');
+
+    if (!selectedSchema) {
+
+        return throwError(() => new Error('No schema selected'));
+
+    }
+
+    return this.http.get(
+
+        `${this.apiUrl}/employee/api/Employee/${employeeId}/salary/?schema=${selectedSchema}`
+
+    );
+
+}
+
   getLeaveRequestById(employeeId: number): Observable<any> {
     // return this.http.get<any>(`http://localhost:8000/api/Employee/${employeeId}/emp-leave-request/`);
     // const url = `${this.baseUrl}/Employee/${employeeId}/emp_leave/`;

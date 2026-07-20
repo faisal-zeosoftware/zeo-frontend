@@ -2,19 +2,19 @@
     <div class="comapny_section" *ngIf="employee">
         <div class="header_section">
 
-<div class="row">
-    <div class="col-md-7">
+            <div class="row">
+                <div class="col-md-7">
         <h1>Employee Details</h1>
-    </div>
+                </div>
 
-    <div class="col-md-5">
+                <div class="col-md-5">
         <div class="d-flex justify-content-end align-items-center gap-2" *ngIf="!hideButton">
 
             <button
                 type="button"
                 class="btn btn-info btn-Edit"
                 (click)="openEditEmpPopuss(employee.id)">
-                <span class="header-btn-icon">
+                            <span class="header-btn-icon">
                     <mat-icon>draw</mat-icon>
                 </span>
                 Edit
@@ -24,15 +24,15 @@
                 type="button"
                 class="btn btn-success btn-Edit"
                 (click)="openEmployeeFullForm()">
-                <span class="header-btn-icon">
+                            <span class="header-btn-icon">
                     <mat-icon>person_add</mat-icon>
                 </span>
                 Add Employee Personal Details
             </button> -->
 
-        </div>
-    </div>
-</div>
+                    </div>
+                </div>
+            </div>
 
 
 
@@ -97,7 +97,7 @@
                                 <h3>{{ employee.emp_dept_id }}</h3>
                             </div>
 
-                        <div class="col-md-5">
+                            <div class="col-md-5">
                                 <h2>{{brchFieldName}}</h2>
                                 <h3>{{ employee.emp_branch_id }}</h3>
                             </div>
@@ -385,7 +385,7 @@
                                     <button type="button" class="btn-Edit btn-info btn d-block mx-auto "
                                         (click)="employeefamAdd('bank')">Add Bank</button>
                                 </div>
-                            </mat-tab>  
+                            </mat-tab>
 
 
 
@@ -422,7 +422,7 @@
 
 
 
-
+                            
                             <mat-tab label="Job History">
                                 <div class="tab_content  mt-3" *ngFor="let Jobhistory of Jobhistorys">
                                     <div class="row">
@@ -582,7 +582,49 @@
                                 <div *ngIf="!employeeDocuments.length">No employee documents available.</div>
                             </mat-tab>
 
-                            <mat-tab label="Emp Salary">
+                            <mat-tab label="Salary details">
+                                <div class="tab_content  mt-3">
+                                 
+                                    <div class="tab_content mt-3" *ngIf="employeeSalary">
+
+                                        <div class="row">
+                                    
+                                            <div class="col-md-3">
+                                                <h2>Gross Salary</h2>
+                                                <h3>{{ employeeSalary.gross_salary }}</h3>
+                                            </div>
+                                    
+                                            <div class="col-md-3">
+                                                <h2>Total Deductions</h2>
+                                                <h3>{{ employeeSalary.total_deductions }}</h3>
+                                            </div>
+                                    
+                                            <div class="col-md-3">
+                                                <h2>Net Salary</h2>
+                                                <h3>{{ employeeSalary.net_salary }}</h3>
+                                            </div>
+                                    
+                                        </div>
+                                    
+                                        <hr>
+                                    
+                                        <div class="row" *ngFor="let salary of fixedSalaryComponents">
+                                    
+                                            <div class="col-md-3">
+                                                <h2>{{ salary.component }}</h2>
+                                                <h3>{{ salary.amount }}</h3>
+                                            </div>
+                                    
+                                        </div>
+                                    
+                                    </div>
+                     </div>
+                                <!-- <div class=" mt-5" >
+                            <button type="button" class="btn-Edit btn-info btn d-block mx-auto " (click)="employeeLang()">Add Language</button>
+                        </div> -->
+                            </mat-tab>
+
+                            <mat-tab label="Emp Payslip">
                                 <div class="tab_content  mt-3">
                                  
                                     
@@ -750,15 +792,15 @@
         <button type="button"
                 class="add_openongs"
                 (click)="openingsModal(balance.id, balance.leave_type)">
-          Add leave openings
-        </button>
+              Add leave openings
+            </button>
       </div>
 
     </div>
 
   </ng-container>
 
-</div>
+  </div>
   
                 
                                 </div>
@@ -1119,6 +1161,20 @@
 
 
 
+
+
+
+            <!-- <div class="col-md-7 d-flex align-items-center justify-content-end">
+                <div class="progress-circle">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="bg" cx="50" cy="50" r="40"></circle>
+                        <circle class="progress" cx="50" cy="50" r="40"
+                            [attr.stroke-dashoffset]="getProgressOffset(getLeaveBalance(comp.id))">
+                        </circle>
+                    </svg>
+                    <div class="count">{{ getLeaveBalance(comp.id) }}</div>
+                </div>
+            </div> -->
 
 
         </div>

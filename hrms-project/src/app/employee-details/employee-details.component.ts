@@ -1046,4 +1046,45 @@ get dashboardLeaveBalances() {
 }
 
 
+
+
+
+
+
+
+employeeSalary: any = {};
+fixedSalaryComponents: any[] = [];
+
+
+loadEmployeeSalary(): void {
+
+  this.EmployeeService.getEmployeeSalary(this.employee).subscribe({
+
+    next: (response: any) => {
+
+      console.log('Employee Salary', response);
+
+      this.employeeSalary = response;
+
+      this.fixedSalaryComponents = response.components.filter(
+        (item: any) => item.component_value_type === 'fixed'
+      );
+
+    },
+
+    error: (error) => {
+
+      console.error(error);
+
+    }
+
+  });
+
+}
+
+
+
+
+
+
 }
