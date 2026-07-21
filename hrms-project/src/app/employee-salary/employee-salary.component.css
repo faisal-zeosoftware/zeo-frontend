@@ -627,4 +627,5 @@ tr:hover td, tr:hover .bg-cell-override { background-color: #f1f8f5 !important; 
 
 .table-cell-input[type=number] {
   -moz-appearance: textfield;
+  
 }
