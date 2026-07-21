@@ -1735,14 +1735,15 @@ registerGeneralreq(): void {
   this.EmployeeService.registerGeneralReq(formData).subscribe(
     (response) => {
       alert('✅ General request has been added successfully!');
-      // window.location.reload();
+ 
     const selectedSchema = this.authService.getSelectedSchema();
           if (selectedSchema) {
       this.fetchDesignations(selectedSchema);
     }
+         window.location.reload();
     },
 (error) => {
-  console.error('Leave request failed:', error);
+  console.error('General request failed:', error);
 
   let errorMessage = 'Something went wrong.';
 
@@ -1779,7 +1780,7 @@ registerGeneralreq(): void {
     }
   }
 
-  alert(`Leave request failed!\n\n${errorMessage}`);
+  alert(`General request failed!\n\n${errorMessage}`);
 }
   );
 }
@@ -1866,11 +1867,12 @@ CreateAssetType(): void {
     next: (response) => {
       console.log('Registration successful', response);
       alert('Asset request has been added!');
-      // window.location.reload();
+   
        const selectedSchema = this.authService.getSelectedSchema();
           if (selectedSchema) {
       this.fetchDesignations(selectedSchema);
     }
+       window.location.reload();
     },
     error: (error) => {
       // same error handling as above...
@@ -1956,7 +1958,7 @@ CreateAssetType(): void {
     
       is_compensatory: boolean = false;
 
-      SetLeaveApprovaLevel(): void {
+      SentAdvanceSalaryReq(): void {
         // if (!this.name || !this.code || !this.valid_to) {
         //   return;
         // }
@@ -1990,14 +1992,15 @@ CreateAssetType(): void {
     
             alert('Advanced salary Request  has been Sent');
     
-            // window.location.reload();
+           
                    const selectedSchema = this.authService.getSelectedSchema();
           if (selectedSchema) {
       this.fetchDesignations(selectedSchema);
     }
+     window.location.reload();
           },
 (error) => {
-  console.error('Leave request failed:', error);
+  console.error('Advance Salary request failed:', error);
 
   let errorMessage = 'Something went wrong.';
 
@@ -2034,7 +2037,7 @@ CreateAssetType(): void {
     }
   }
 
-  alert(`Leave request failed!\n\n${errorMessage}`);
+  alert(`Advance Salary request failed!\n\n${errorMessage}`);
 }
         );
       }
@@ -2092,10 +2095,10 @@ CreateAssetType(): void {
           if (selectedSchema) {
       this.fetchDesignations(selectedSchema);
     }
-        // window.location.reload();
+        window.location.reload();
       },
 (error) => {
-  console.error('Leave request failed:', error);
+  console.error('Loan request failed:', error);
 
   let errorMessage = 'Something went wrong.';
 
@@ -2132,7 +2135,7 @@ CreateAssetType(): void {
     }
   }
 
-  alert(`Leave request failed!\n\n${errorMessage}`);
+  alert(`Loan request failed!\n\n${errorMessage}`);
 }
  
     );
@@ -2200,6 +2203,8 @@ CreateAssetType(): void {
     formData.append('termination_type', this.termination_type);
 
     formData.append('reason_for_leaving', this.reason_for_leaving);
+
+     formData.append('branch', this.selectedBranchId.toString());
   
     formData.append('employee', this.selectedEmployeeId.toString());
 
@@ -2222,7 +2227,7 @@ CreateAssetType(): void {
         // window.location.reload();
       },  
 (error) => {
-  console.error('Leave request failed:', error);
+  console.error('Resignation request failed:', error);
 
   let errorMessage = 'Something went wrong.';
 
@@ -2259,11 +2264,26 @@ CreateAssetType(): void {
     }
   }
 
-  alert(`Leave request failed!\n\n${errorMessage}`);
+  alert(`Resignation request failed!\n\n${errorMessage}`);
 }
     );
   }
 
+
+      DocRequest: any[] = [];
+
+
+fetchResignation(schema: string, branchIds: number[]): void {
+  this.employeeService.getLateInEarlyOutNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      console.log("ESS API Response:", data);
+      this.DocRequest = data;
+    },
+    error: (err) => console.error(err)
+  });
+}
+
+  
 
         SetLateInEarlyOut(): void {
 
@@ -2298,7 +2318,7 @@ CreateAssetType(): void {
     
             alert('Latein Early Out Request has been Sent');
     
-            window.location.reload();
+            // window.location.reload();
           },  
     (error) => {
       this.isLoading = false;
@@ -2320,6 +2340,22 @@ CreateAssetType(): void {
 
       alert(errorMessage);
     }
+        );
+      }
+
+        
+    LeaveapprovalLevels: any[] = [];
+
+            LoadLeaveApprovalLevel(selectedSchema: string) {
+        this.leaveService.getDocReqApprovalLevel(selectedSchema).subscribe(
+          (data: any) => {
+            this.LeaveapprovalLevels = data;
+          
+            console.log('employee:', this.LeaveapprovalLevels);
+          },
+          (error: any) => {
+            console.error('Error fetching categories:', error);
+          }
         );
       }
 
@@ -2448,7 +2484,7 @@ CreateAssetType(): void {
         
               },
 (error) => {
-  console.error('Leave request failed:', error);
+  console.error('Airticket request failed:', error);
 
   let errorMessage = 'Something went wrong.';
 
@@ -2485,7 +2521,7 @@ CreateAssetType(): void {
     }
   }
 
-  alert(`Leave request failed!\n\n${errorMessage}`);
+  alert(`Airticket request failed!\n\n${errorMessage}`);
 }
             );
           }
@@ -2548,13 +2584,9 @@ CreateAssetType(): void {
 
     
       const formData = new FormData();
-       formData.append('document_number', this.document_number?.toString() || '');
+      formData.append('document_number', this.document_number?.toString() || '');
       formData.append('reason', this.reason);
-      // formData.append('branch', this.branch);
-
-
-  
-  
+      formData.append('branch', this.selectedBranchId.toString());
       formData.append('total', this.total);
       formData.append('remarks', this.remarks);
       formData.append('employee', this.selectedEmployeeId.toString());
@@ -2577,10 +2609,10 @@ CreateAssetType(): void {
       this.fetchDesignations(selectedSchema);
     }
   
-          // window.location.reload();
+          window.location.reload();
         },  
 (error) => {
-  console.error('Leave request failed:', error);
+  console.error('Document request failed:', error);
 
   let errorMessage = 'Something went wrong.';
 
@@ -2617,7 +2649,7 @@ CreateAssetType(): void {
     }
   }
 
-  alert(`Leave request failed!\n\n${errorMessage}`);
+  alert(`Document request failed!\n\n${errorMessage}`);
 }
       );
     }

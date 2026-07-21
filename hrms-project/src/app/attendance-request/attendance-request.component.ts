@@ -108,7 +108,7 @@ export class AttendanceRequestComponent {
   
        
         // this.LoadUsers(selectedSchema);
-        this.LoadLeaveApprovalLevel(selectedSchema);
+        // this.LoadLeaveApprovalLevel(selectedSchema);
   
         // this.LoadDocType(selectedSchema);
         // this.LoadEmployee(selectedSchema);
@@ -249,18 +249,18 @@ export class AttendanceRequestComponent {
   
     
   
-      LoadLeaveApprovalLevel(selectedSchema: string) {
-        this.leaveService.getDocReqApprovalLevel(selectedSchema).subscribe(
-          (data: any) => {
-            this.LeaveapprovalLevels = data;
+      // LoadLeaveApprovalLevel(selectedSchema: string) {
+      //   this.leaveService.getDocReqApprovalLevel(selectedSchema).subscribe(
+      //     (data: any) => {
+      //       this.LeaveapprovalLevels = data;
           
-            console.log('employee:', this.LeaveapprovalLevels);
-          },
-          (error: any) => {
-            console.error('Error fetching categories:', error);
-          }
-        );
-      }
+      //       console.log('employee:', this.LeaveapprovalLevels);
+      //     },
+      //     (error: any) => {
+      //       console.error('Error fetching categories:', error);
+      //     }
+      //   );
+      // }
     
    
     

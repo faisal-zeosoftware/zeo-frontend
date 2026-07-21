@@ -571,7 +571,7 @@
             <a href="javascript:void(0)">Documents</a>
           </li>
           <li class="tab" [class.active]="activeTab === 'salary'" (click)="selectTab('salary')">
-            <a href="javascript:void(0)">Salary</a>
+            <a href="javascript:void(0)">Salary&Payroll</a>
           </li>
           
         </ul>
@@ -1295,7 +1295,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Salary Details</h5>
+                <h5 class="mb-0">Salary & Payroll Details</h5>
 
 <button 
   class="btn btn-success btn-sm btn-export-excel"
@@ -1333,43 +1333,125 @@
                           <!-- <th class="text-table-header">Payslip Component</th> -->
                         </tr>
                       </thead>
-                      <tbody class="text-table-body">
-                        <tr class="tbodytext" *ngFor="let pay of employeesec.payslip; let i = index">
-                          <td>{{ i + 1 }}</td>
-                          <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
-                          <td>{{ pay.payroll_run?.name }}</td>
-                          <td>{{ pay.payroll_run?.year }}</td>
+<tbody *ngFor="let pay of employeesec.payslip; let i = index">
 
-                          <td>{{ pay.payroll_run?.month }}</td>
+  <!-- Main Row -->
+  <tr class="tbodytext">
+    <td>{{ i + 1 }}</td>
+    <td>{{ pay.payroll_run?.name }}</td>
+    <td>{{ pay.payroll_run?.year }}</td>
+    <td>{{ pay.payroll_run?.month }}</td>
+    <td>{{ pay.total_working_days }}</td>
+    <td>{{ pay.days_worked }}</td>
+    <td>{{ pay.payroll_run?.payment_date }}</td>
 
-                          <td>{{ pay.total_working_days }}</td>
+    <td>
+      <button
+        class="btn btn-sm btn-primary"
+        (click)="pay.showDetails = !pay.showDetails">
+        {{ pay.showDetails ? 'Hide' : 'View Salary' }}
+      </button>
+    </td>
 
-                          <td>{{ pay.days_worked }}</td>
-                          <td>{{ pay.payroll_run?.payment_date }}</td>
-                          <td data-label="Components">
-                            <ul>
-                              <li *ngFor="let comp of pay.components">
-                                <strong>{{ comp.component_name }}</strong>
-                                ({{ comp.component_type }}): {{ comp.payslip_amount }}
-                              </li>
-                            </ul>
-                          </td>
-                          <td>{{ pay.gross_salary }}</td>
-                          <td>{{ pay.net_salary }}</td>
-                          <td>
-                            <span class="pill" [ngClass]="{
-                            'pill green': pay.status === 'approved',
-                            'pill blue': pay.status === 'processed',
+    <td>{{ pay.gross_salary }}</td>
+    <td>{{ pay.net_salary }}</td>
 
-                            'pill yellow': pay.status === 'pending',
-                            'pill red': pay.status === 'rejected'
-                          }">
-                              {{ pay.status }}
-                            </span>
-                          </td>
-                          <!-- <td>{{ payslip.end_date }}</td> -->
-                        </tr>
-                      </tbody>
+                    <td>
+                    <span class="badge" [ngClass]="pay.status ? 'bg-success' : 'bg-secondary'">
+                    {{ pay.status }}
+                    </span>
+                    </td>
+  </tr>
+
+  <!-- Salary Details -->
+  <tr *ngIf="pay.showDetails">
+    <td colspan="11">
+
+      <div class="p-3 border rounded bg-light">
+
+        <!-- Salary Summary -->
+        <div class="row mb-3">
+
+          <div class="col-md-6">
+            <h6>Gross Salary</h6>
+            <h5>{{ pay.gross_salary }}</h5>
+          </div>
+
+          <div class="col-md-6">
+            <h6>Net Salary</h6>
+            <h5>{{ pay.net_salary }}</h5>
+          </div>
+
+        </div>
+
+        <table class="table table-bordered table-striped">
+
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Salary Component</th>
+              <th>Component Type</th>
+              <th>Payroll Category</th>
+              <th class="text-end">Amount</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr *ngFor="let comp of pay.components; let j = index">
+
+              <td>{{ j + 1 }}</td>
+
+              <td>{{ comp.component_name }}</td>
+
+              <td>{{ comp.component_type }}</td>
+
+              <td>{{ comp.payroll_category }}</td>
+
+              <td class="text-end">
+                {{ comp.payslip_amount }}
+              </td>
+
+            </tr>
+
+            <tr *ngIf="pay.components.length === 0">
+              <td colspan="5" class="text-center">
+                No Salary Components Found
+              </td>
+            </tr>
+
+          </tbody>
+
+          <tfoot>
+
+            <tr>
+              <th colspan="4" class="text-end">
+                Gross Salary
+              </th>
+              <th class="text-end">
+                {{ pay.gross_salary }}
+              </th>
+            </tr>
+
+            <tr>
+              <th colspan="4" class="text-end">
+                Net Salary
+              </th>
+              <th class="text-end">
+                {{ pay.net_salary }}
+              </th>
+            </tr>
+
+          </tfoot>
+
+        </table>
+
+      </div>
+
+    </td>
+  </tr>
+
+</tbody>
                     </table>
                   </div>
                 </div>
@@ -1948,21 +2030,6 @@
                           [disabled]="automaticNumbering" [ngModelOptions]="{standalone: true}" >
                   </div>
                   
-  
-                <div class="col-md-6" >
-                 
-                  <label>Reason</label>
-                 <input type="text"  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter Reason"
-                  [ngModelOptions]="{standalone: true}" >
-                 
-            </div>
-  
-  
-         
-            
-        
-      
-  
       
             <div class="col-md-6">
               <div class="custom-sel">
@@ -1991,20 +2058,22 @@
                      placeholder="Enter total"
                      [ngModelOptions]="{standalone: true}">
             </div>
-            
-
-     
-  
-  
-    
-  
-      
 
   
       <div class="col-md-6">
           <label>Request Document</label>
           <input type="file" class="form-control" (change)="onFileChange($event)">
         </div>
+
+                        <div class="col-md-6" >
+                 
+                  <label>Reason</label>
+                 <input type="text"  class="form-control" required  [(ngModel)]="reason"  placeholder="Enter Reason"
+                  [ngModelOptions]="{standalone: true}" >
+                 
+            </div>
+  
+
       <div class="col-md-12">
           <label>Remarks</label>
           <textarea class="form-control" rows="3" [(ngModel)]="remarks" [ngModelOptions]="{standalone: true}" placeholder="Enter remarks"></textarea>
@@ -2066,7 +2135,11 @@
                     <td>{{ genreq.reason }}</td>
                     <td>{{ genreq.request_type }}</td>
                     <td>{{ genreq.remarks }}</td>
-                    <td>{{ genreq.status }}</td>
+                                                         <td>
+           <span class="badge" [ngClass]="genreq.status ? 'bg-success' : 'bg-secondary'">
+                 {{ genreq.status }}
+            </span>
+        </td>
 
 
                   </tr>
@@ -2193,13 +2266,17 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.assets_requests; let i = index">
+                  <tr class="tbodytext" *ngFor="let assetreq of employeesec.assets_requests; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.document_number }}</td>
-                    <td>{{ leavereq.asset_type }}</td>
-                    <td>{{ leavereq.reason }}</td>
-                    <td>{{ leavereq.requested_asset }}</td>
-                    <td>{{ leavereq.status }}</td>
+                    <td>{{ assetreq.document_number }}</td>
+                    <td>{{ assetreq.asset_type }}</td>
+                    <td>{{ assetreq.reason }}</td>
+                    <td>{{ assetreq.requested_asset }}</td>
+                                     <td>
+           <span class="badge" [ngClass]="assetreq.status ? 'bg-success' : 'bg-secondary'">
+                 {{ assetreq.status }}
+            </span>
+        </td>
 
 
                   </tr>
@@ -2383,18 +2460,22 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.airticket_request; let i = index">
+                  <tr class="tbodytext" *ngFor="let airticketreq of employeesec.airticket_request; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.document_number }}</td>
-                    <td>{{ leavereq.allocation }}</td>
-                    <td>{{ leavereq.request_type }}</td>
-                    <td>{{ leavereq.request_date }}</td>
-                    <td>{{ leavereq.return_date }}</td>
-                    <td>{{ leavereq.departure_date }}</td>
-                    <td>{{ leavereq.origin }}</td>
-                    <td>{{ leavereq.destination }}</td>
-                    <td>{{ leavereq.notes }}</td>
-                    <td>{{ leavereq.status }}</td>
+                    <td>{{ airticketreq.document_number }}</td>
+                    <td>{{ airticketreq.allocation }}</td>
+                    <td>{{ airticketreq.request_type }}</td>
+                    <td>{{ airticketreq.request_date }}</td>
+                    <td>{{ airticketreq.return_date }}</td>
+                    <td>{{ airticketreq.departure_date }}</td>
+                    <td>{{ airticketreq.origin }}</td>
+                    <td>{{ airticketreq.destination }}</td>
+                    <td>{{ airticketreq.notes }}</td>
+                    <td>
+                    <span class="badge" [ngClass]="airticketreq.status ? 'bg-success' : 'bg-secondary'">
+                 {{ airticketreq.status }}
+            </span>
+        </td>
 
 
 
@@ -2515,14 +2596,18 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.document_requests; let i = index">
+                  <tr class="tbodytext" *ngFor="let docreq of employeesec.document_requests; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.document_number }}</td>
-                    <td>{{ leavereq.reason }}</td>
-                    <td>{{ leavereq.total }}</td>
-                    <td>{{ leavereq.remarks }}</td>
-                    <td>{{ leavereq.request_type }}</td>
-                    <td>{{ leavereq.status }}</td>
+                    <td>{{ docreq.document_number }}</td>
+                    <td>{{ docreq.reason }}</td>
+                    <td>{{ docreq.total }}</td>
+                    <td>{{ docreq.remarks }}</td>
+                    <td>{{ docreq.request_type }}</td>
+                    <td>
+                    <span class="badge" [ngClass]="docreq.status ? 'bg-success' : 'bg-secondary'">
+                    {{ docreq.status }}
+                    </span>
+                    </td>
 
                   </tr>
                 </tbody>
@@ -2545,7 +2630,7 @@
 
          
            <div class="white-outer-sec">
-         <form (ngSubmit)="SetLeaveApprovaLevel()" enctype="multipart/form-data">
+         <form (ngSubmit)="SentAdvanceSalaryReq()" enctype="multipart/form-data">
                   <div class="row">
                     <div class="col-md-6">
                       <label>Document Number</label>
@@ -2571,23 +2656,6 @@
                       <input type="text" class="form-control" required [(ngModel)]="remarks" placeholder="Enter remarks"
                              [ngModelOptions]="{standalone: true}" >
                     </div>
-                  
-
-               
-              
-            
-
-       
-
-              
-
-
-                
-
-              
-                     
-               
-                
                
                   </div>
                 
@@ -2630,13 +2698,17 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.advance_salary_requests; let i = index">
+                  <tr class="tbodytext" *ngFor="let advancesalaryreq of employeesec.advance_salary_requests; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.document_number }}</td>
-                    <td>{{ leavereq.requested_amount }}</td>
-                    <td>{{ leavereq.remarks }}</td>
-                    <td>{{ leavereq.reason }}</td>
-                    <td>{{ leavereq.status }}</td>
+                    <td>{{ advancesalaryreq.document_number }}</td>
+                    <td>{{ advancesalaryreq.requested_amount }}</td>
+                    <td>{{ advancesalaryreq.remarks }}</td>
+                    <td>{{ advancesalaryreq.reason }}</td>
+                    <td>
+                    <span class="badge" [ngClass]="advancesalaryreq.status ? 'bg-success' : 'bg-secondary'">
+                    {{ advancesalaryreq.status }}
+                    </span>
+                    </td>
 
 
                   </tr>
@@ -2779,15 +2851,19 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.loan_requests; let i = index">
+                  <tr class="tbodytext" *ngFor="let loanreq of employeesec.loan_requests; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.document_number }}</td>
-                    <td>{{ leavereq.amount_requested }}</td>
-                    <td>{{ leavereq.emi_amount }}</td>
-                    <td>{{ leavereq.loan_type }}</td>
-                    <td>{{ leavereq.remaining_balance }}</td>
-                    <td>{{ leavereq.repayment_period }}</td>
-                    <td>{{ leavereq.status }}</td>
+                    <td>{{ loanreq.document_number }}</td>
+                    <td>{{ loanreq.amount_requested }}</td>
+                    <td>{{ loanreq.emi_amount }}</td>
+                    <td>{{ loanreq.loan_type }}</td>
+                    <td>{{ loanreq.remaining_balance }}</td>
+                    <td>{{ loanreq.repayment_period }}</td>
+                   <td>
+                    <span class="badge" [ngClass]="loanreq.status ? 'bg-success' : 'bg-secondary'">
+                    {{ loanreq.status }}
+                    </span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -2872,18 +2948,6 @@
           placeholder="Enter reason for leaving">
           </textarea>
                 </div>
-  
-   
-          
-           
-                
-  
-  
-            
-  
-          
-                 
-           
             
            
               </div>
@@ -2927,16 +2991,20 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let leavereq of employeesec.resignation_requests; let i = index">
+                  <tr class="tbodytext" *ngFor="let resigreq of employeesec.resignation_requests; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ leavereq.document_date }}</td>
-                    <td>{{ leavereq.resigned_on }}</td>
-                    <td>{{ leavereq.notice_period }}</td>
-                    <td>{{ leavereq.last_working_date }}</td>
-                    <td>{{ leavereq.location }}</td>
-                    <td>{{ leavereq.termination_type }}</td>
-                    <td>{{ leavereq.reason_for_leaving }}</td>
-                    <td>{{ leavereq.status }}</td>
+                    <td>{{ resigreq.document_date }}</td>
+                    <td>{{ resigreq.resigned_on }}</td>
+                    <td>{{ resigreq.notice_period }}</td>
+                    <td>{{ resigreq.last_working_date }}</td>
+                    <td>{{ resigreq.location }}</td>
+                    <td>{{ resigreq.termination_type }}</td>
+                    <td>{{ resigreq.reason_for_leaving }}</td>
+                    <td>
+                    <span class="badge" [ngClass]="resigreq.status ? 'bg-success' : 'bg-secondary'">
+                    {{ resigreq.status }}
+                    </span>
+                    </td>
 
 
 
@@ -3009,17 +3077,6 @@
                 <div *ngIf="registerButtonClicked && !request_type" class="error-message">Please Select Request type</div>
               </div>
 
-            <!-- <div class="col-md-6">
-                <label>Status</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="status" name="status" [(ngModel)]="status" [ngModelOptions]="{standalone: true}">
-                    <option  value="PENDING">Pending</option>
-                    <option  value="APPROVED">Approved</option>
-                    <option  value="REJECTED">Rejected</option>           
-                  </select>
-                </div>
-              </div> -->
-
 
 
               <div class="col-md-12">
@@ -3027,18 +3084,7 @@
                 <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}" placeholder="Enter reason"></textarea>
               </div>
 
- 
-        
-         
-              
 
-
-          
-
-        
-               
-         
-          
          
             </div>
           
@@ -3078,13 +3124,17 @@
                 </thead>
                 <tbody class="text-table-body">
                   
-                  <tr class="tbodytext" *ngFor="let lateinearlyoutreq of employeesec.lateinearlyout_requests; let i = index">
+                  <tr class="tbodytext" *ngFor="let lateinearlyoutreq of employeesec.lateinearlyout_request; let i = index">
                     <td>{{ i + 1 }}</td>
                     <td>{{ lateinearlyoutreq.document_number || '-' }}</td>
                     <td>{{ lateinearlyoutreq.date }}</td>
                     <td>{{ lateinearlyoutreq.reason }}</td>
                     <td>{{ lateinearlyoutreq.request_type }}</td>
-                    <td>{{ lateinearlyoutreq.status }}</td>
+                    <td>
+                    <span class="badge" [ngClass]="lateinearlyoutreq.status ? 'bg-success' : 'bg-secondary'">
+                    {{ lateinearlyoutreq.status }}
+                    </span>
+                    </td>
 
 
                   </tr>
@@ -3611,7 +3661,13 @@
   <div *ngIf="isAddFieldsModalOpen" class="modal">
   
       <div class="modal-content">
-        <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+        <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
+            <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
     
         <div *ngIf="selectedApproval">
           <h6>General Request Approvals</h6><hr>
@@ -3693,7 +3749,13 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+          <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
   
       <div *ngIf="selectedApproval">
         <h6>Resignation Request Approvals</h6>
@@ -3789,6 +3851,15 @@
                       <h4>Employee</h4>
                       <h5>{{apr.employee_id}}</h5>
                     </div>
+<div class="col-md-2">
+  <h4>Start Date</h4>
+  <h5>{{ apr.request_details?.start_date }}</h5>
+</div>
+
+<div class="col-md-2">
+  <h4>End Date</h4>
+  <h5>{{ apr.request_details?.end_date }}</h5>
+</div>
                     <div class="col-md-2">
                       <h4>Status  </h4>
                       <h5>{{apr.status}} </h5>
@@ -3822,7 +3893,13 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+          <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
   
       <div *ngIf="selectedApproval">
         <h6>Leave Request Approvals</h6>
@@ -3940,7 +4017,15 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
+    <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
+
+
   
       <div *ngIf="selectedApproval">
         <h6>Advance Salary Request Approvals</h6>
@@ -4064,7 +4149,13 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
+          <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
   
       <div *ngIf="selectedApproval">
         <h6>Loan Request Approvals</h6>
@@ -4197,7 +4288,13 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+          <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
   
       <div *ngIf="selectedApproval">
         <h6>Asset Request Approvals</h6>
@@ -4326,7 +4423,13 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
+          <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
   
       <div *ngIf="selectedApproval">
         <h6>Airticket Request Approvals</h6>
@@ -4454,7 +4557,13 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-      <span class="close pull-right" (click)="closemarketModal()">&times;</span>
+          <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
+      <!-- <span class="close pull-right" (click)="closemarketModal()">&times;</span> -->
   
       <div *ngIf="selectedApproval">
         <h6>Document Request Approvals</h6>
@@ -4581,9 +4690,14 @@
         
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
-          
+              <div class="text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn text-right" (click)="closemarketModal()">
+      ×
+    </span>
+    </div>
               <!-- Styled Square Close Button -->
-              <span class="close-btn" (click)="closemarketModal()"> × </span>
+              <!-- <span class="close-btn" (click)="closemarketModal()"> × </span> -->
 
 
 
