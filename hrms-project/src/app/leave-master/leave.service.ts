@@ -82,6 +82,7 @@ export class LeaveService {
   
   }
   
+  
 
   updateLeaveResetPolicy(id: number, formData: FormData): Observable<any> {
 
@@ -111,26 +112,24 @@ getLeavePayRules(
 
 }
 
-// Update Pay Rule
-updateLeavePayRule(
-  id: number,
-  payload: any
-): Observable<any> {
 
-  const selectedSchema =
-    localStorage.getItem(
-      'selectedSchema'
-    );
-
+// Update an existing Pay Rule (PUT)
+updateLeavePayRule(id: number, payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
   return this.http.put(
-
     `${this.apiUrl}/calendars/api/leave-pay-rule/${id}/?schema=${selectedSchema}`,
-
     payload
-
   );
-
 }
+
+// Delete a Pay Rule (DELETE)
+deleteLeavePayRule(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  return this.http.delete(
+    `${this.apiUrl}/calendars/api/leave-pay-rule/${id}/?schema=${selectedSchema}`
+  );
+}
+
 
 deleteLeaveEntitlement(id: number): Observable<any> {
 
@@ -151,6 +150,13 @@ deleteLeaveReset(id: number): Observable<any> {
   );
 
 }
+
+
+
+
+
+
+
 
   requestLeaveResetPolicy(formData: FormData): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');

@@ -219,52 +219,26 @@ export class CreateleavepolicymodalComponent {
 
   ngOnInit(): void {
     // this.LoadBranch();
-
-    if (
-      this.data?.editMode &&
-      this.data?.entitlements
-    ) {
-
+    if (this.data?.editMode && this.data?.entitlements?.length) {
       this.isEditMode = true;
-
-      const firstEntitlement =
-      this.data.entitlements[0];
-
-    // fetch saved type
-    this.selectedPolicy =
-      firstEntitlement.entitlement_type;
-
-    // hide fixed/variable selection screen
-    this.showPolicySelection = false;
-
-    this.loadPolicyForEdit(
-      firstEntitlement
-    );
-
-      // Populate entitlement section
-      this.patchMultipleEntitlements(
-        this.data.entitlements
-      );
-
+  
+      const firstEntitlement = this.data.entitlements[0];
+  
+      // Fetch saved entitlement type (Fixed/Variable)
+      this.selectedPolicy = firstEntitlement.entitlement_type;
+      this.showPolicySelection = false;
+  
+      // 1. Populate ALL entitlement rows into entitlementRows array
+      this.patchMultipleEntitlements(this.data.entitlements);
+  
+      // 2. Patch Pay Rule if passed
       if (this.data.payRule) {
-
-        this.patchPayRule(
-          this.data.payRule
-        );
-
+        this.patchPayRule(this.data.payRule);
       }
-
-      // Populate applicable section
-      this.loadPolicyForEdit(
-        this.data.entitlements[0]
-      );
-
-      
-
-
-
+  
+      // 3. Load extra policy/applicable data using firstEntitlement without wiping entitlementRows
+      this.loadPolicyForEdit(firstEntitlement);
     }
-
 
 
 
@@ -1593,179 +1567,71 @@ export class CreateleavepolicymodalComponent {
 
 
 
-  submitPayRule(): void {
+// 5. Fixed submitPayRule (CREATE): Uses forkJoin to batch HTTP POSTs cleanly
+submitPayRule(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
 
-    const selectedSchema =
-      this.authService.getSelectedSchema();
-  
-    const requests =
-      this.payRuleRows.map(row => {
-  
-        const payload = {
-  
-          sequence: row.sequence,
-  
-          days: row.days,
-  
-          pay_percentage: row.pay_percentage,
-  
-          leave_type: this.selectedLeaveTypeId,
-  
-          created_by: this.userId
-  
-        };
-  
-        this.http.post(
-          `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-          payload
-        ).subscribe({
-        
-          next: (response: any) => {
-        
-            alert(
-              response?.message ||
-              response?.success ||
-              'Pay Rule Saved Successfully'
-            );
-        
-            this.currentStep = 3;
-        
-          },
-        
-          error: (err) => {
-        
-            console.error('Pay Rule Save Error:', err);
-        
-            let errorMessage = 'Pay Rule Save Failed';
-        
-            if (err?.error) {
-        
-              if (typeof err.error === 'string') {
-        
-                errorMessage = err.error;
-        
-              } else if (err.error.message) {
-        
-                errorMessage = err.error.message;
-        
-              } else if (err.error.error) {
-        
-                errorMessage = err.error.error;
-        
-              } else {
-        
-                const firstKey =
-                  Object.keys(err.error)[0];
-        
-                if (firstKey) {
-        
-                  errorMessage =
-                    err.error[firstKey][0] ||
-                    err.error[firstKey];
-        
-                }
-        
-              }
-        
-            }
-        
-            alert(errorMessage);
-        
-          }
-        
-        });
-  
-      });
-  
-  }
+  if (!this.payRuleRows.length) return;
 
+  const requests = this.payRuleRows.map(row => {
+    const payload = {
+      sequence: row.sequence,
+      days: row.days,
+      pay_percentage: row.pay_percentage,
+      leave_type: this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type,
+      created_by: this.userId
+    };
+
+    return this.http.post(
+      `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+      payload
+    );
+  });
+
+  forkJoin(requests).subscribe({
+    next: () => {
+      alert('Pay Rules Saved Successfully');
+      this.currentStep = 3; // Move to Next Step
+    },
+    error: (err) => {
+      console.error('Pay Rule Save Error:', err);
+      alert(err?.error?.message || 'Failed to save Pay Rules');
+    }
+  });
+}
  
 
 
   submitPayRuleFixed(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
 
-    const selectedSchema =
-      this.authService.getSelectedSchema();
+    if (!this.payRuleRows.length) return;
   
-    const requests =
-      this.payRuleRows.map(row => {
+    const requests = this.payRuleRows.map(row => {
+      const payload = {
+        sequence: row.sequence,
+        days: row.days,
+        pay_percentage: row.pay_percentage,
+        leave_type: this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type,
+        created_by: this.userId
+      };
   
-        const payload = {
+      return this.http.post(
+        `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+        payload
+      );
+    });
   
-          sequence: row.sequence,
-  
-          days: row.days,
-  
-          pay_percentage: row.pay_percentage,
-  
-          leave_type: this.selectedLeaveTypeId,
-  
-          created_by: this.userId
-  
-        };
-  
-        this.http.post(
-          `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-          payload
-        ).subscribe({
-        
-          next: (response: any) => {
-        
-            alert(
-              response?.message ||
-              response?.success ||
-              'Pay Rule Saved Successfully'
-            );
-        
-            this.currentStep = 3;
-        
-          },
-        
-          error: (err) => {
-        
-            console.error('Pay Rule Save Error:', err);
-        
-            let errorMessage = 'Pay Rule Save Failed';
-        
-            if (err?.error) {
-        
-              if (typeof err.error === 'string') {
-        
-                errorMessage = err.error;
-        
-              } else if (err.error.message) {
-        
-                errorMessage = err.error.message;
-        
-              } else if (err.error.error) {
-        
-                errorMessage = err.error.error;
-        
-              } else {
-        
-                const firstKey =
-                  Object.keys(err.error)[0];
-        
-                if (firstKey) {
-        
-                  errorMessage =
-                    err.error[firstKey][0] ||
-                    err.error[firstKey];
-        
-                }
-        
-              }
-        
-            }
-        
-            alert(errorMessage);
-        
-          }
-        
-        });
-  
-      });
-  
+    forkJoin(requests).subscribe({
+      next: () => {
+        alert('Pay Rules Saved Successfully');
+        this.currentStep = 3; // Move to Next Step
+      },
+      error: (err) => {
+        console.error('Pay Rule Save Error:', err);
+        alert(err?.error?.message || 'Failed to save Pay Rules');
+      }
+    });
   }
 
 
@@ -1941,54 +1807,38 @@ export class CreateleavepolicymodalComponent {
   // }
 
   loadPolicyForEdit(entitlement: any): void {
-
-    this.patchMultipleEntitlements([entitlement]);
-
+    // REMOVED: this.patchMultipleEntitlements([entitlement]); 
+    // (Rows are already patched in ngOnInit)
+  
     // Applicable Fetch
-    const selectedSchema =
-      this.authService.getSelectedSchema();
-
-    const savedIds =
-      JSON.parse(
-        localStorage.getItem(
-          'selectedBranchIds'
-        ) || '[]'
-      );
-
-    this.leaveService
-      .getLeaveApplicables(
-        selectedSchema!,
-        savedIds
-      )
-      .subscribe((result: any[]) => {
-
-        const applicable =
-          result.find(
-            x =>
-              x.leave_type ===
-              entitlement.leave_type_name
-          );
-
-        if (applicable) {
-
-          setTimeout(() => {
-
-            this.patchApplicable(
-              applicable
-            );
-
-          }, 500);
-
-        }
-
-      });
-
-    // Pay Rule Fetch
-    this.loadPayRule(
-      entitlement.leave_type
+    const selectedSchema = this.authService.getSelectedSchema();
+    const savedIds = JSON.parse(
+      localStorage.getItem('selectedBranchIds') || '[]'
     );
+  
+    this.leaveService
+      .getLeaveApplicables(selectedSchema!, savedIds)
+      .subscribe((result: any[]) => {
+        const applicable = result.find(
+          x => x.leave_type === entitlement.leave_type_name
+        );
+  
+        if (applicable) {
+          setTimeout(() => {
+            this.patchApplicable(applicable);
+          }, 500);
+        }
+      });
+  
+    // // Pay Rule Fetch
+    // this.loadPayRule(entitlement.leave_type);
 
+    // ONLY fetch from API if payRule wasn't passed via modal data
+  if (!this.data?.payRule) {
+    this.loadPayRule(entitlement.leave_type);
   }
+  }
+
 
   loadPayRule(
     leaveTypeId: number
@@ -2334,8 +2184,12 @@ export class CreateleavepolicymodalComponent {
 
 
 // Fixed Update method handling both PUT (existing) and POST (newly added rows in edit mode)
+// 3. Updated updateEntitlement method handling PUT, POST, and DELETE
 updateEntitlement(): void {
-  const requests = this.entitlementRows.map(row => {
+  const requests: Observable<any>[] = [];
+
+  // A. Process existing or newly added rows (PUT / POST)
+  this.entitlementRows.forEach(row => {
     const payload = {
       leave_type: row.leave_type,
       entitlement_type: this.selectedPolicy,
@@ -2372,26 +2226,34 @@ updateEntitlement(): void {
       } : { reset: false }
     };
 
-    // If existing record, call PUT; if new record created during edit mode, call POST
     if (row.id) {
-      return this.leaveService.updateLeaveEntitlement(row.id, payload);
+      // Existing row -> UPDATE
+      requests.push(this.leaveService.updateLeaveEntitlement(row.id, payload));
     } else {
-      return this.leaveService.registerLeaveEntitlement(payload);
+      // New row added during edit -> CREATE
+      requests.push(this.leaveService.registerLeaveEntitlement(payload));
     }
   });
 
+  // B. Process removed rows (DELETE)
+  this.deletedEntitlementIds.forEach(id => {
+    requests.push(this.leaveService.deleteLeaveEntitlement(id));
+  });
+
+  // C. Execute all requests together
   forkJoin(requests).subscribe({
     next: () => {
       alert('Leave Policy Updated Successfully');
+      this.deletedEntitlementIds = []; // reset array
       this.dialogRef.close(true);
+      window.location.reload();
     },
     error: (err) => {
       console.error('Update Error:', err);
-      alert('Update Failed');
+      alert('Error occurred while updating entitlement policy.');
     }
   });
 }
-
   // multiple entitlement save
   entitlementRows: any[] = [
     this.createEntitlementRow()
@@ -2495,16 +2357,25 @@ toggleAllSelectionCat(row: any): void {
   
   }
 
-  removeEntitlementRow(index: number): void {
+  deletedEntitlementIds: number[] = [];
 
-    if (this.entitlementRows.length > 1) {
 
-      this.entitlementRows.splice(index, 1);
-
+ // 2. Updated removeEntitlementRow method
+removeEntitlementRow(index: number): void {
+  if (this.entitlementRows.length > 1) {
+    const removedRow = this.entitlementRows[index];
+    
+    // If this row came from the database (has an ID), track it for deletion
+    if (removedRow && removedRow.id) {
+      this.deletedEntitlementIds.push(removedRow.id);
     }
 
+    // Remove from local UI array
+    this.entitlementRows.splice(index, 1);
+  } else {
+    alert('At least one entitlement row must remain.');
   }
-
+}
 
 
   applicableId: number | null = null;
@@ -2515,115 +2386,80 @@ toggleAllSelectionCat(row: any): void {
 
   payRuleId: number | null = null;
 
-  patchPayRule(data: any[]): void {
+// 2. Fixed patchPayRule: Handles both arrays and single object input cleanly
+patchPayRule(data: any): void {
+  if (!data) return;
 
-    if (!data || !data.length) {
-      return;
+  this.payRuleRows = [];
+  const rules = Array.isArray(data) ? data : [data];
+
+  rules.forEach(rule => {
+    this.payRuleRows.push({
+      id: rule.id || null,
+      sequence: rule.sequence ?? null,
+      days: rule.days ?? null,
+      pay_percentage: rule.pay_percentage ?? null
+    });
+  });
+}
+
+
+
+// 6. Fixed updatePayRule (UPDATE / CREATE / DELETE)
+
+updatePayRule(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const requests: Observable<any>[] = [];
+
+  const leaveTypeId =
+    this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type;
+
+  // Handle Updates (PUT) & New Additions (POST)
+  this.payRuleRows.forEach(row => {
+    const payload = {
+      leave_type: leaveTypeId,
+      sequence: row.sequence,
+      days: row.days,
+      pay_percentage: row.pay_percentage
+    };
+
+    if (row.id) {
+      requests.push(
+        this.leaveService.updateLeavePayRule(row.id, payload)
+      );
+    } else {
+      requests.push(
+        this.http.post(
+          `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+          payload
+        )
+      );
     }
-  
-    this.payRuleRows = [];
-  
-    data.forEach(rule => {
-  
-      this.payRuleRows.push({
-  
-        id: rule.id,
-  
-        sequence: rule.sequence,
-  
-        days: rule.days,
-  
-        pay_percentage: rule.pay_percentage
-  
-      });
-  
-    });
-  
-  }
+  });
 
+  // Handle Removed Rows (DELETE)
+  this.deletedPayRuleIds.forEach(id => {
+    requests.push(this.leaveService.deleteLeavePayRule(id));
+  });
 
+  if (!requests.length) return;
 
-  updatePayRule(): void {
-
-    const selectedSchema = this.authService.getSelectedSchema();
-  
-    const requests: Observable<any>[] = [];
-  
-    this.payRuleRows.forEach(row => {
-  
-      const payload = {
-  
-        leave_type: this.entitlementRows[0].leave_type,
-  
-        sequence: row.sequence,
-  
-        days: row.days,
-  
-        pay_percentage: row.pay_percentage
-  
-      };
-  
-      // Existing Row → UPDATE
-      if (row.id) {
-  
-        requests.push(
-          this.leaveService.updateLeavePayRule(
-            row.id,
-            payload
-          )
-        );
-  
-      }
-  
-      // New Row → CREATE
-      else {
-  
-        requests.push(
-  
-          this.http.post(
-  
-            `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-  
-            payload
-  
-          )
-  
-        );
-  
-      }
-  
-    });
-  
-    forkJoin(requests).subscribe({
-  
-      next: () => {
-  
-        alert('Pay Rules Saved Successfully');
-  
-        // Reload data from API so new rows receive IDs
-        // this.getLeaveTypeDetails(this.selectedLeaveTypeId);
-  
-      },
-  
-      error: (err) => {
-  
-        console.error(err);
-  
-        alert(
-  
-          err?.error?.message ||
-  
-          'Failed to save Pay Rules'
-  
-        );
-  
-      }
-  
-    });
-  
-  }
+  forkJoin(requests).subscribe({
+    next: () => {
+      alert('Pay Rules Updated Successfully');
+      this.deletedPayRuleIds = []; // Clear tracking array
+      this.currentStep = 3;
+    },
+    error: (err) => {
+      console.error('Pay Rule Update Error:', err);
+      alert(err?.error?.message || 'Failed to update Pay Rules');
+    }
+  });
+}
 // multiple times payrule add method
 
+// 1. Declare array to track deleted Pay Rule IDs for DB cleanup
+deletedPayRuleIds: number[] = [];
 
   payRuleRows: any[] = [
     {
@@ -2652,10 +2488,16 @@ toggleAllSelectionCat(row: any): void {
   }
 
 
-  removePayRuleRow(index: number): void {
+ // 4. Fixed removePayRuleRow: Tracks deleted IDs for DB deletion
+removePayRuleRow(index: number): void {
+  const removed = this.payRuleRows[index];
+
+  // If row exists in backend DB, keep track of its ID
+  if (removed && removed.id) {
+    this.deletedPayRuleIds.push(removed.id);
+  }
 
   this.payRuleRows.splice(index, 1);
-
 }
 
 
