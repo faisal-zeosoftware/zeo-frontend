@@ -2333,177 +2333,132 @@ export class CreateleavepolicymodalComponent {
 
 
 
-  updateEntitlement(): void {
+// Fixed Update method handling both PUT (existing) and POST (newly added rows in edit mode)
+updateEntitlement(): void {
+  const requests = this.entitlementRows.map(row => {
+    const payload = {
+      leave_type: row.leave_type,
+      entitlement_type: this.selectedPolicy,
+      min_experience: row.min_experience,
+      effective_after_unit: row.effective_after_unit,
+      effective_after_from: row.effective_after_from,
+      branches: row.branch || [],
+      departments: row.departments || [],
+      designations: row.designations || [],
+      categories: row.categories || [],
+      accrual: row.accrual,
+      accrual_rate: row.accrual_rate,
+      accrual_frequency: row.accrual_frequency,
+      accrual_month: row.accrual_month,
+      accrual_day: row.accrual_day,
+      prorate_accrual: row.prorate_accrual,
+      reset_policy: row.reset ? {
+        reset: true,
+        frequency: row.frequency,
+        month: row.month,
+        day: row.day,
+        allow_cf: row.allow_cf,
+        carry_forward_choice: row.carry_forward_choice,
+        cf_value: row.cf_value,
+        cf_unit_or_percentage: row.cf_unit_or_percentage,
+        cf_max_limit: row.cf_max_limit,
+        cf_expires_in_value: row.cf_expires_in_value,
+        cf_time_choice: row.cf_time_choice,
+        allow_encashment: row.allow_encashment,
+        encashment_value: row.encashment_value,
+        encashment_unit_or_percentage: row.encashment_unit_or_percentage,
+        encashment_max_limit: row.encashment_max_limit,
+        opening_balance: row.opening_balance
+      } : { reset: false }
+    };
 
-    const requests = this.entitlementRows.map(row => {
+    // If existing record, call PUT; if new record created during edit mode, call POST
+    if (row.id) {
+      return this.leaveService.updateLeaveEntitlement(row.id, payload);
+    } else {
+      return this.leaveService.registerLeaveEntitlement(payload);
+    }
+  });
 
-      const payload = {
-
-        leave_type: row.leave_type,
-
-        entitlement_type:
-    this.selectedPolicy,
-
-        min_experience: row.min_experience,
-
-        effective_after_unit:
-          row.effective_after_unit,
-
-        effective_after_from:
-          row.effective_after_from,
-
-        branches: row.branch,
-
-        departments: row.departments,
-
-        designations: row.designations,
-
-        categories: row.categories,
-
-        accrual: row.accrual,
-
-        accrual_rate: row.accrual_rate,
-
-        accrual_frequency: row.accrual_frequency,
-
-        accrual_month: row.accrual_month,
-
-        accrual_day: row.accrual_day,
-
-        prorate_accrual: row.prorate_accrual,
-
-        reset_policy: row.reset ? {
-
-          reset: true,
-
-          frequency: row.frequency,
-
-          month: row.month,
-
-          day: row.day,
-
-          allow_cf: row.allow_cf,
-
-          carry_forward_choice:
-            row.carry_forward_choice,
-
-          cf_value: row.cf_value,
-
-          cf_unit_or_percentage:
-            row.cf_unit_or_percentage,
-
-          cf_max_limit: row.cf_max_limit,
-
-          cf_expires_in_value:
-            row.cf_expires_in_value,
-
-          cf_time_choice:
-            row.cf_time_choice,
-
-          allow_encashment:
-            row.allow_encashment,
-
-          encashment_value:
-            row.encashment_value,
-
-          encashment_unit_or_percentage:
-            row.encashment_unit_or_percentage,
-
-          encashment_max_limit:
-            row.encashment_max_limit,
-
-          opening_balance:
-            row.opening_balance
-
-        } : null
-
-      };
-
-      return this.leaveService.updateLeaveEntitlement(
-        row.id,
-        payload
-      );
-
-    });
-
-    forkJoin(requests).subscribe({
-
-      next: () => {
-
-        alert('Leave Policy Updated Successfully');
-
-        this.dialogRef.close(true);
-
-      },
-
-      error: (err) => {
-
-        console.error(err);
-
-        alert('Update Failed');
-
-      }
-
-    });
-
-  }
+  forkJoin(requests).subscribe({
+    next: () => {
+      alert('Leave Policy Updated Successfully');
+      this.dialogRef.close(true);
+    },
+    error: (err) => {
+      console.error('Update Error:', err);
+      alert('Update Failed');
+    }
+  });
+}
 
   // multiple entitlement save
   entitlementRows: any[] = [
     this.createEntitlementRow()
   ];
 
-  createEntitlementRow() {
-    return {
+ // Complete Entitlement Row Factory Method
+createEntitlementRow() {
+  return {
+    id: null,
+    leave_type: null,
+    min_experience: 0,
+    effective_after_unit: 'months',
+    effective_after_from: 'date_of_joining',
+    branch: [],
+    departments: [],
+    designations: [],
+    categories: [],
+    accrual: false,
+    accrual_rate: 0,
+    accrual_frequency: 'months',
+    accrual_month: 'Jan',
+    accrual_day: '1st',
+    prorate_accrual: false,
+    reset: false,
+    frequency: 'years',
+    month: 'Jan',
+    day: '1st',
+    showResetMonth: true,
+    showResetDay: true,
+    allow_cf: false,
+    carry_forward_choice: null,
+    cf_value: 0,
+    cf_unit_or_percentage: 'unit',
+    cf_max_limit: 0,
+    cf_expires_in_value: 0,
+    cf_time_choice: null,
+    allow_encashment: false,
+    encashment_value: 0,
+    encashment_unit_or_percentage: 'unit',
+    encashment_max_limit: 0,
+    opening_balance: 0,
+    // Per-row Select All toggles
+    allSelectedBranch: false,
+    allSelectedDept: false,
+    allSelectedDesig: false,
+    allSelectedCat: false
+  };
+}
 
-      id: null,   // <-- ADD THIS
 
-      leave_type: null,  // <-- ADD THIS ALSO
+// Row-level "Select All" Handlers
+toggleAllSelectionBranch(row: any): void {
+  row.branch = row.allSelectedBranch ? this.branches.map(b => b.id) : [];
+}
 
-      min_experience: null,
-      effective_after_from: 'date_of_joining',
-      effective_after_unit: 'months',
+toggleAllSelectionDept(row: any): void {
+  row.departments = row.allSelectedDept ? this.Departments.map(d => d.id) : [];
+}
 
-      branch: [],
-      departments: [],
-      designations: [],
-      categories: [],
+toggleAllSelectionDesig(row: any): void {
+  row.designations = row.allSelectedDesig ? this.Designation.map(d => d.id) : [];
+}
 
-      accrual: false,
-      accrual_rate: null,
-      accrual_frequency: 'months',
-      accrual_month: null,
-      accrual_day: null,
-      prorate_type: null,
-      prorate_accrual: false,
+toggleAllSelectionCat(row: any): void {
+  row.categories = row.allSelectedCat ? this.Category.map(c => c.id) : [];
+}
 
-      showMonth: false,
-      showDay: true,
-
-      reset: false,
-      frequency: 'years',
-      month: null,
-      day: null,
-
-      showResetMonth: true,
-      showResetDay: true,
-
-      allow_cf: false,
-      carry_forward_choice: null,
-      cf_value: null,
-      cf_unit_or_percentage: null,
-      cf_max_limit: null,
-      cf_expires_in_value: null,
-      cf_time_choice: null,
-
-      allow_encashment: false,
-      encashment_value: null,
-      encashment_unit_or_percentage: null,
-      encashment_max_limit: null,
-
-      opening_balance: null
-    };
-  }
 
   // addEntitlementRow(): void {
 
@@ -2513,6 +2468,18 @@ export class CreateleavepolicymodalComponent {
 
   // }
 
+
+  // addEntitlementRow(): void {
+
+  //   const newRow =
+  //     this.createEntitlementRow();
+  
+  //     newRow.leave_type =
+  //     this.selectedLeaveTypeId as any;
+  
+  //     this.entitlementRows.push(this.createEntitlementRow());
+  
+  // }
 
   addEntitlementRow(): void {
 
