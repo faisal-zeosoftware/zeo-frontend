@@ -828,7 +828,7 @@ loadComponentMetadata(schema: string): void {
   endpoint$.subscribe({
     next: (components: any[]) => {
       if (components && Array.isArray(components)) {
-        this.allComponentsList = components; // Store full objects (containing id and payroll_category)
+        this.allComponentsList = components; // Stores objects like [{ id: 12, payroll_category: 'basic' }]
         const categories = components.map(c => c.payroll_category).filter(Boolean);
         this.availableCategories = Array.from(new Set(categories));
       }
@@ -836,7 +836,6 @@ loadComponentMetadata(schema: string): void {
     error: (err) => console.error('Error fetching metadata list:', err)
   });
 }
-
 /**
  * Step 2: Transforms a flat payload into structural rows mapped uniquely by Employee Code
  */
@@ -870,10 +869,11 @@ buildEmployeeMatrix(): void {
 
   this.EmployeeSalarycomponent.forEach(item => {
     const empCode = item.employee;
+
     if (!employeeMap.has(empCode)) {
       employeeMap.set(empCode, {
-        // Store employee database Primary Key ID (number)
-        id: item.emp_id || item.employee_id || item.employee_pk || item.id,
+        // Extract numeric PK ID if available in item
+        emp_pk_id: item.employee_id || item.emp_id || item.emp_pk || item.user_id || null, 
         employee_code: empCode,
         emp_name: item.emp_name,
         department: item.department || 'N/A',
@@ -887,6 +887,8 @@ buildEmployeeMatrix(): void {
 
   this.distinctEmployees = Array.from(employeeMap.values());
 }
+
+
 /**
  * Step 3: Resolves dynamic matrix field calculations for matching elements
  */
@@ -1011,36 +1013,40 @@ saveTableChanges(): void {
 
     const emp = this.distinctEmployees.find(e => e.employee_code === empCode);
 
-    // Find existing assignment
+    // Find assignment match
     const matchAssignment = emp?.rawAssignments?.find((item: any) => 
       item.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase() &&
       item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
     );
 
-    // Fallback lookup: Find component object from metadata list if matchAssignment doesn't exist
+    // Find component metadata object to extract its numeric PK ID
     const componentMeta = this.allComponentsList.find((c: any) => 
       c.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase()
     );
 
-    // Resolve component ID
-    const rawComponentId = matchAssignment?.component || 
-                           matchAssignment?.component_id || 
-                           matchAssignment?.salary_component || 
-                           componentMeta?.id;
+    // 1. Get Numeric PK for Component
+    const componentPk = matchAssignment?.component_id || 
+                        matchAssignment?.component_pk || 
+                        componentMeta?.id;
 
-    // Resolve employee database PK
-    const rawEmployeeId = emp?.id || matchAssignment?.employee_id || matchAssignment?.employee;
+    // 2. Get Numeric PK for Employee
+    const employeePk = emp?.emp_pk_id || 
+                       matchAssignment?.employee_id || 
+                       matchAssignment?.emp_id;
 
     const payload = {
       id: matchAssignment?.id ? Number(matchAssignment.id) : null,
-      employee: Number(rawEmployeeId), // Pass numeric PK (e.g. 42), not code string ("1003")
-      component: Number(rawComponentId), // Guarantees a valid numeric component PK
+      
+      // Ensure numeric integer PKs are sent (Fallback to raw string if backend uses UUID/String PKs)
+      employee: employeePk ? (isNaN(Number(employeePk)) ? employeePk : Number(employeePk)) : empCode,
+      component: componentPk ? (isNaN(Number(componentPk)) ? componentPk : Number(componentPk)) : categoryKey,
+
       component_value_type: this.selectedComponentValueType,
       payroll_category: matchAssignment?.payroll_category || categoryKey,
       amount: newValue === '' || newValue === null ? 0 : Number(newValue)
     };
 
-    console.log('Fixed Payload:', payload);
+    console.log('Sending Payload with PK IDs:', payload);
 
     updateRequests.push(
       this.leaveservice.updateEmployeeSalaryComponent(schema, payload)
@@ -1061,6 +1067,7 @@ saveTableChanges(): void {
     }
   });
 }
+
 /**
    * Cancels/Discards all local inline unsaved edits
    */
