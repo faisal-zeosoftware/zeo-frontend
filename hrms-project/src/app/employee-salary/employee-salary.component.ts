@@ -851,9 +851,11 @@ buildEmployeeMatrix(): void {
   const employeeMap = new Map<string, any>();
 
   this.EmployeeSalarycomponent.forEach(item => {
-    const empCode = item.employee;
+    const empCode = item.employee || item.employee;
     if (!employeeMap.has(empCode)) {
       employeeMap.set(empCode, {
+        id: item.emp_id || item.employee_id || item.id, // Primary Key for Backend
+        
         employee_code: empCode,
         emp_name: item.emp_name,
         department: item.department || 'N/A',
@@ -978,9 +980,7 @@ saveTableChanges(): void {
     return;
   }
 
-  // Get schema and fall back to empty string or handle missing schema early
   const schema = this.currentSchema || this.authService.getSelectedSchema();
-
   if (!schema) {
     alert('No active schema selected.');
     return;
@@ -990,29 +990,44 @@ saveTableChanges(): void {
   const updateRequests: Observable<any>[] = [];
 
   Object.keys(this.editedCells).forEach(cellKey => {
+    // Extract employee code and category key
     const [empCode, categoryKey] = cellKey.split('_');
     const newValue = this.editedCells[cellKey];
 
+    // Find the full employee object from your loaded array
     const emp = this.distinctEmployees.find(e => e.employee_code === empCode);
+
+    // Find the original backend component assignment record
     const matchAssignment = emp?.rawAssignments?.find((item: any) => 
       item.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase() &&
       item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
     );
 
+    // 💡 CORRECTED PAYLOAD FOR YOUR BACKEND SCHEMA
     const payload = {
-      id: matchAssignment?.id || null,
-      employee: empCode,
-      payroll_category: matchAssignment?.payroll_category || categoryKey,
+      id: matchAssignment?.id || null, // Record ID for PUT/POST
+      
+      // 1. Pass Employee Database PK ID (e.g., 45), fallback to match assignment employee PK if needed
+      employee: emp?.id || emp?.emp_id || matchAssignment?.employee_id || matchAssignment?.employee,
+
+      // 2. Pass Salary Component PK ID (Required by backend as 'component')
+      component: matchAssignment?.component || matchAssignment?.component_id || matchAssignment?.salary_component,
+
+      // Optional fields expected by backend
       component_value_type: this.selectedComponentValueType,
-      amount: newValue === '' ? 0 : Number(newValue)
+      payroll_category: matchAssignment?.payroll_category || categoryKey,
+      
+      amount: newValue === '' || newValue === null ? 0 : Number(newValue)
     };
 
-    // Passed 'schema' is now guaranteed to be a 'string'
+    console.log('Fixed Payload sent to API:', payload);
+
     updateRequests.push(
       this.leaveservice.updateEmployeeSalaryComponent(schema, payload)
     );
   });
 
+  // Execute HTTP requests via forkJoin
   forkJoin(updateRequests).subscribe({
     next: () => {
       alert('Salary components updated successfully!');
@@ -1021,8 +1036,8 @@ saveTableChanges(): void {
       this.fetchEmployeesSalary(this.currentSchema, this.currentBranchIds);
     },
     error: (err) => {
-      console.error('Failed to update salary details:', err);
-      alert(err?.error?.message || 'Failed to save changes. Please try again.');
+      console.error('API Error Response:', err);
+      alert(err?.error?.message || 'Failed to save changes. Check browser console.');
       this.isSaving = false;
     }
   });
