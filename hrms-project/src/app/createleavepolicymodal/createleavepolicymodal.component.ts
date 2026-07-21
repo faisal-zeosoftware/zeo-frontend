@@ -1568,17 +1568,24 @@ export class CreateleavepolicymodalComponent {
 
 
 // 5. Fixed submitPayRule (CREATE): Uses forkJoin to batch HTTP POSTs cleanly
+
+
 submitPayRule(): void {
   const selectedSchema = this.authService.getSelectedSchema();
+  const activeLeaveTypeId =
+    this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type;
 
-  if (!this.payRuleRows.length) return;
+  if (!this.payRuleRows.length || !activeLeaveTypeId) {
+    alert('Please select a valid Leave Type.');
+    return;
+  }
 
   const requests = this.payRuleRows.map(row => {
     const payload = {
       sequence: row.sequence,
       days: row.days,
       pay_percentage: row.pay_percentage,
-      leave_type: this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type,
+      leave_type: activeLeaveTypeId, // Guaranteed explicit leave type ID
       created_by: this.userId
     };
 
@@ -1591,7 +1598,7 @@ submitPayRule(): void {
   forkJoin(requests).subscribe({
     next: () => {
       alert('Pay Rules Saved Successfully');
-      this.currentStep = 3; // Move to Next Step
+      this.currentStep = 3;
     },
     error: (err) => {
       console.error('Pay Rule Save Error:', err);
@@ -1599,39 +1606,43 @@ submitPayRule(): void {
     }
   });
 }
- 
 
 
   submitPayRuleFixed(): void {
     const selectedSchema = this.authService.getSelectedSchema();
+  const activeLeaveTypeId =
+    this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type;
 
-    if (!this.payRuleRows.length) return;
-  
-    const requests = this.payRuleRows.map(row => {
-      const payload = {
-        sequence: row.sequence,
-        days: row.days,
-        pay_percentage: row.pay_percentage,
-        leave_type: this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type,
-        created_by: this.userId
-      };
-  
-      return this.http.post(
-        `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
-        payload
-      );
-    });
-  
-    forkJoin(requests).subscribe({
-      next: () => {
-        alert('Pay Rules Saved Successfully');
-        this.currentStep = 3; // Move to Next Step
-      },
-      error: (err) => {
-        console.error('Pay Rule Save Error:', err);
-        alert(err?.error?.message || 'Failed to save Pay Rules');
-      }
-    });
+  if (!this.payRuleRows.length || !activeLeaveTypeId) {
+    alert('Please select a valid Leave Type.');
+    return;
+  }
+
+  const requests = this.payRuleRows.map(row => {
+    const payload = {
+      sequence: row.sequence,
+      days: row.days,
+      pay_percentage: row.pay_percentage,
+      leave_type: activeLeaveTypeId, // Guaranteed explicit leave type ID
+      created_by: this.userId
+    };
+
+    return this.http.post(
+      `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
+      payload
+    );
+  });
+
+  forkJoin(requests).subscribe({
+    next: () => {
+      alert('Pay Rules Saved Successfully');
+      this.currentStep = 3;
+    },
+    error: (err) => {
+      console.error('Pay Rule Save Error:', err);
+      alert(err?.error?.message || 'Failed to save Pay Rules');
+    }
+  });
   }
 
 
@@ -1722,6 +1733,12 @@ submitPayRule(): void {
       selectedLeaveType?.enable_leave_pay_rule || false;
 
     this.selectedLeaveTypeId = row.leave_type;
+
+
+    // Clear deleted IDs array when changing context
+  this.deletedPayRuleIds = [];
+
+  
 
   }
 
@@ -1839,39 +1856,40 @@ submitPayRule(): void {
   }
   }
 
-
-  loadPayRule(
-    leaveTypeId: number
-  ): void {
+  loadPayRule(leaveTypeId: number): void {
+    if (!leaveTypeId) return;
   
-    this.leaveService
-      .getLeavePayRules(leaveTypeId)
-      .subscribe({
+    this.leaveService.getLeavePayRules(leaveTypeId).subscribe({
+      next: (res: any[]) => {
+        if (res && res.length > 0) {
+          // Strict client-side filter to guarantee only rules matching this leaveTypeId are displayed
+          const filteredRules = res.filter(
+            rule => Number(rule.leave_type) === Number(leaveTypeId)
+          );
   
-        next: (res: any) => {
-  
-          if (res && res.length > 0) {
-  
-            this.payRuleRows = res.map((rule: any) => ({
-  
-              id: rule.id,
-  
-              sequence: rule.sequence,
-  
-              days: rule.days,
-  
-              pay_percentage: rule.pay_percentage
-  
-            }));
-  
-          }
-  
+          this.payRuleRows = filteredRules.map(rule => ({
+            id: rule.id,
+            leave_type: rule.leave_type,
+            sequence: rule.sequence,
+            days: rule.days,
+            pay_percentage: rule.pay_percentage
+          }));
+        } else {
+          // Reset rows if no rules exist for this specific leave type
+          this.payRuleRows = [
+            {
+              id: null,
+              leave_type: leaveTypeId,
+              sequence: null,
+              days: null,
+              pay_percentage: null
+            }
+          ];
         }
-  
-      });
-  
+      },
+      error: (err) => console.error('Error fetching pay rules:', err)
+    });
   }
-
   updateApplicable(): void {
 
     const selectedEmployees =
@@ -2387,6 +2405,7 @@ removeEntitlementRow(index: number): void {
   payRuleId: number | null = null;
 
 // 2. Fixed patchPayRule: Handles both arrays and single object input cleanly
+
 patchPayRule(data: any): void {
   if (!data) return;
 
@@ -2396,6 +2415,8 @@ patchPayRule(data: any): void {
   rules.forEach(rule => {
     this.payRuleRows.push({
       id: rule.id || null,
+      // Target explicitly: fallback to selected leave type
+      leave_type: rule.leave_type || this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type,
       sequence: rule.sequence ?? null,
       days: rule.days ?? null,
       pay_percentage: rule.pay_percentage ?? null
@@ -2404,30 +2425,37 @@ patchPayRule(data: any): void {
 }
 
 
-
 // 6. Fixed updatePayRule (UPDATE / CREATE / DELETE)
+
 
 updatePayRule(): void {
   const selectedSchema = this.authService.getSelectedSchema();
   const requests: Observable<any>[] = [];
 
-  const leaveTypeId =
+  const activeLeaveTypeId =
     this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type;
 
-  // Handle Updates (PUT) & New Additions (POST)
+  if (!activeLeaveTypeId) {
+    alert('Invalid Leave Type');
+    return;
+  }
+
+  // 1. Process Update (PUT) and Create (POST) strictly for active leave type
   this.payRuleRows.forEach(row => {
     const payload = {
-      leave_type: leaveTypeId,
+      leave_type: row.leave_type || activeLeaveTypeId, // Explicit Leave Type
       sequence: row.sequence,
       days: row.days,
       pay_percentage: row.pay_percentage
     };
 
     if (row.id) {
+      // PUT update
       requests.push(
         this.leaveService.updateLeavePayRule(row.id, payload)
       );
     } else {
+      // POST create
       requests.push(
         this.http.post(
           `${this.apiUrl}/calendars/api/leave-pay-rule/?schema=${selectedSchema}`,
@@ -2437,7 +2465,7 @@ updatePayRule(): void {
     }
   });
 
-  // Handle Removed Rows (DELETE)
+  // 2. Process Deletions (DELETE)
   this.deletedPayRuleIds.forEach(id => {
     requests.push(this.leaveService.deleteLeavePayRule(id));
   });
@@ -2447,7 +2475,7 @@ updatePayRule(): void {
   forkJoin(requests).subscribe({
     next: () => {
       alert('Pay Rules Updated Successfully');
-      this.deletedPayRuleIds = []; // Clear tracking array
+      this.deletedPayRuleIds = []; // Clear array
       this.currentStep = 3;
     },
     error: (err) => {
@@ -2456,6 +2484,7 @@ updatePayRule(): void {
     }
   });
 }
+
 // multiple times payrule add method
 
 // 1. Declare array to track deleted Pay Rule IDs for DB cleanup
@@ -2470,22 +2499,19 @@ deletedPayRuleIds: number[] = [];
     }
   ];
 
+// 2. Attach the active leave_type when adding new empty rows dynamically
+addPayRuleRow(): void {
+  const currentLeaveTypeId =
+    this.selectedLeaveTypeId || this.entitlementRows[0]?.leave_type;
 
-  addPayRuleRow(): void {
-
-    this.payRuleRows.push({
-  
-      id: null,
-  
-      sequence: null,
-  
-      days: null,
-  
-      pay_percentage: null
-  
-    });
-  
-  }
+  this.payRuleRows.push({
+    id: null,
+    leave_type: currentLeaveTypeId,
+    sequence: null,
+    days: null,
+    pay_percentage: null
+  });
+}
 
 
  // 4. Fixed removePayRuleRow: Tracks deleted IDs for DB deletion
