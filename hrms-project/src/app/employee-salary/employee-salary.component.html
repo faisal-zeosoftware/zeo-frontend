@@ -324,10 +324,10 @@ placeholder="Enter amount"
           <div class="card border-0 shadow-sm p-3 bg-white rounded compact-container">
             <div *ngIf="hasViewPermission">
               
-              <!-- Ultra-Compact Control Header Bar -->
+              <!-- Control Header Bar -->
               <div class="row align-items-center mb-3 g-2 bg-light p-2 rounded border mx-0">
                 
-                <!-- Radio Toggle Group (Pill Buttons) -->
+                <!-- Radio Toggle Group -->
                 <div class="col-12 col-md-auto d-flex align-items-center">
                   <span class="fw-bold me-2 text-secondary text-uppercase x-small">Type:</span>
                   <div class="btn-group btn-group-sm" role="group">
@@ -340,44 +340,64 @@ placeholder="Enter amount"
                     <label class="btn btn-outline-success px-3 py-1 fw-semibold small" for="variableRadio">Variable</label>
                   </div>
                 </div>
+
+                <div class="col-md-1"></div>
           
-                <!-- Multiple Selection Dynamic Field Control -->
-                <div class="col-12 col-md-6 d-flex align-items-center ms-md-auto">
-                  <span class="fw-bold me-2 text-secondary text-uppercase x-small text-nowrap">Categories:</span>
-                  <mat-form-field appearance="outline" class="w-100 compact-mat-select mt-3">
-                    <mat-select [(ngModel)]="selectedPayrollCategories" multiple placeholder="Select Column Fields">
+                <!-- Categories Selector -->
+                <div class="col-12 col-md-5 d-flex align-items-center mt-1">
+                  <!-- <span class="fw-bold me-4 text-secondary text-uppercase x-small text-nowrap">Components</span> -->
+                  <mat-form-field appearance="outline" class="w-100 compact-mat-select mt-4">
+                    <mat-select [(ngModel)]="selectedPayrollCategories" multiple placeholder="Select Componets">
                       <mat-option *ngFor="let cat of availableCategories" [value]="cat">
                         {{ cat | titlecase }}
                       </mat-option>
-                  
-
                     </mat-select>
                   </mat-form-field>
                 </div>
+          
+                <!-- Table Save Controls (HR Spreadsheet Action Toolbar) -->
+                <div class="col-12 col-md-auto ms-auto d-flex gap-2 justify-content-end align-items-center">
+                  <button 
+                    *ngIf="hasUnsavedChanges()" 
+                    class="btn btn-sm btn-outline-secondary" 
+                    (click)="discardChanges()"
+                    [disabled]="isSaving">
+                    Discard Changes
+                  </button>
+          
+                  <button 
+                    class="btn btn-sm btn-success fw-bold px-3" 
+                    (click)="saveTableChanges()" 
+                    [disabled]="!hasUnsavedChanges() || isSaving">
+                    <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                    <i *ngIf="!isSaving" class="bi bi-check-circle me-1"></i>
+                    Save Changes
+                  </button>
+                </div>
               </div>
           
-              <!-- Sized Matrix Table Wrapper View Container -->
+              <!-- Sized Matrix Table Wrapper -->
               <div class="table-responsive border rounded text-nowrap inner-scroll-container" *ngIf="!isLoading">
                 <table class="table table-sm table-hover table-striped align-middle mb-0 compact-salary-table">
                   <thead class="bg-dark text-white sticky-top headers-z-index">
                     <tr>
-                      <th>No</th>
+                      <th class="text-center" style="width: 50px;">No</th>
                       <th>Emp Code</th>
                       <th>Employee Name</th>
                       <th>Department</th>
                       <th>Designation</th>
                       
-                      <!-- Loop to generate a column for every selected category -->
-                      <th *ngFor="let dynamicCat of selectedPayrollCategories" class="bg-success text-white text-center dynamic-header-cell">
+                      <!-- Dynamic Category Column Headers -->
+                      <th *ngFor="let dynamicCat of selectedPayrollCategories" class="bg-success text-white text-center dynamic-header-cell" style="min-width: 130px;">
                         {{ dynamicCat | titlecase }}
                       </th>
                       
-                      <!-- Placeholder column when nothing is selected -->
+                      <!-- Placeholder when no category is selected -->
                       <th class="text-muted text-center italic-placeholder" *ngIf="selectedPayrollCategories.length === 0">
                         No Columns Selected
                       </th>
           
-                      <th class="sticky-col-right bg-dark text-center" style="width: 90px;">Actions</th>
+                      <th class="sticky-col-right bg-dark text-center" style="width: 70px;">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -388,34 +408,22 @@ placeholder="Enter amount"
                       <td class="cell-p-sm"><span class="compact-badge-dep">{{ emp.department }}</span></td>
                       <td class="cell-p-sm"><span class="compact-badge-des">{{ emp.designation }}</span></td>
                       
-                      <!-- Direct Cell Intersection values loop -->
-              
-                   <!-- Data Intersection Value Cell -->
-                      <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center fw-bold bg-light-cell cell-p-sm">
-                        <span [ngClass]="(getComponentAmount(emp, dynamicCat) !== '-' && getComponentAmount(emp, dynamicCat) !== '0.00') ? 'text-success-emphasis border-flat fw-extrabold' : 'text-muted opacity-25'">
-                          <!-- If getComponentAmount somehow yields blank, the || '-' forces it to show a dash -->
-                          {{ getComponentAmount(emp, dynamicCat) || '-' }}
-                        </span>
+                      <!-- Inline-Editable Data Cells -->
+                      <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center bg-light-cell p-1">
+                        <input 
+                          type="number" 
+                          class="form-control form-control-sm text-end fw-bold table-cell-input"
+                          [ngModel]="getCellValue(emp, dynamicCat)"
+                          (ngModelChange)="onCellValueChange(emp, dynamicCat, $event)"
+                          placeholder="0.00" 
+                        />
                       </td>
-                                          
-                      <!-- Empty state column alignment filler -->
+                      
+                      <!-- Empty filler column -->
                       <td class="text-center py-2 text-muted opacity-50 small" *ngIf="selectedPayrollCategories.length === 0">-</td>
           
                       <td class="sticky-col-right text-center bg-cell-override">
-                        <div class="d-flex align-items-center justify-content-center gap-2">
-                          <button
-                            mat-icon-button
-                            color="primary"
-                            [disabled]="selectedPayrollCategories.length === 0"
-                            *ngIf="showEditBtn"
-                            (click)="openEditModal(emp)"
-                            class="compact-action-btn"
-                            title="Modify active element configuration parameters"
-                          >
-                            <mat-icon style="font-size: 16px; width:16px; height:16px;">edit</mat-icon>
-                          </button>
-                          <mat-checkbox *ngIf="Delete" [(ngModel)]="emp.selected" color="primary" class="scale-checkbox"></mat-checkbox>
-                        </div>
+                        <mat-checkbox *ngIf="Delete" [(ngModel)]="emp.selected" color="primary" class="scale-checkbox"></mat-checkbox>
                       </td>
                     </tr>
                   </tbody>

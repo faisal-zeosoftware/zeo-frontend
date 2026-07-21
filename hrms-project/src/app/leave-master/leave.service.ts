@@ -1277,6 +1277,20 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   }
 
 
+ /**
+ * Updates or creates an employee salary component assignment.
+ */
+updateEmployeeSalaryComponent(selectedSchema: string, payload: any): Observable<any> {
+  const url = `${this.apiUrl}/payroll/api/employeesalary/?schema=${selectedSchema}`;
+
+  // If payload contains an ID, update existing record via PUT
+  if (payload.id) {
+    return this.http.put(`${this.apiUrl}/payroll/api/employeesalary/${payload.id}/?schema=${selectedSchema}`, payload);
+  }
+
+  // Otherwise create a new record via POST
+  return this.http.post(url, payload);
+}
   
   getPayroll(selectedSchema: string): Observable<any> {
     const apiUrl = `${this.apiUrl}/payroll/api/PayrollRun/?schema=${selectedSchema}`;

@@ -12,7 +12,7 @@ import { MatSelect } from '@angular/material/select';
 import { DepartmentService } from '../department-report/department.service';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { CatogaryService } from '../catogary-master/catogary.service';
-import {combineLatest, Subscription, Observable } from 'rxjs';
+import {combineLatest, Subscription, Observable, forkJoin } from 'rxjs';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
 
@@ -94,7 +94,9 @@ hasImportPermission:boolean = false;
     @ViewChild('selectDes') selectDes: MatSelect | undefined;
 
 
-
+// Add these properties inside your class declaration:
+currentSchema: string = '';
+currentBranchIds: number[] = [];
   
 
 userId: number | null | undefined;
@@ -127,6 +129,12 @@ private DepartmentServiceService:DepartmentServiceService,
   this.employeeService.selectedBranches$
 ]).subscribe(([schema, branchIds]) => {
   if (schema) {
+
+    // Save to component properties so saveTableChanges can re-use them
+    this.currentSchema = schema;
+    this.currentBranchIds = branchIds || [];
+
+
     this.fetchsalaryComp(schema, branchIds);  
     this.fetchEmployeesSalary(schema, branchIds);  
     this.loadComponentMetadata(schema);
@@ -791,6 +799,7 @@ selectedPayrollCategories: string[] = []; // Changed from single string to array
  */
 onComponentTypeChange(): void {
   // Reset selections on toggle
+  this.editedCells = {}; // Reset unsaved changes on toggle
   this.selectedPayrollCategory = '';
   this.availableCategories = [];
   this.selectedPayrollCategories = []; // Reset array
@@ -822,8 +831,13 @@ loadComponentMetadata(schema: string): void {
         
         // Auto-select first item if items exist
         if (this.availableCategories.length > 0) {
+
           this.selectedPayrollCategory = this.availableCategories[0];
-        }
+      
+          // Select all categories by default
+          this.selectedPayrollCategories = [...this.availableCategories];
+      
+      }
       }
     },
     error: (err) => console.error('Error fetching metadata list:', err)
@@ -905,6 +919,122 @@ getComponentInstance(employeeRow: any, category: string): any {
 
 
 
+
+
+// Track modified values in a dictionary: { "EMP001_basic": 5000, "EMP002_hra": 2000 }
+editedCells: { [key: string]: number | string } = {};
+isSaving = false;
+
+
+/**
+   * Helper key generator for cell mapping
+   */
+getCellKey(empCode: string, category: string): string {
+  return `${empCode}_${category.trim().toLowerCase()}`;
+}
+
+/**
+   * Gets the cell value (checks edited local cache first, then falls back to backend raw assignment data)
+   */
+  getCellValue(employee: any, category: string): any {
+    const cellKey = this.getCellKey(employee.employee_code, category);
+    
+    // 1. If edited locally, return edited value
+    if (this.editedCells.hasOwnProperty(cellKey)) {
+      return this.editedCells[cellKey];
+    }
+
+    // 2. Otherwise return value from server match
+    const match = employee.rawAssignments.find((item: any) => 
+      item.payroll_category?.trim().toLowerCase() === category.trim().toLowerCase() &&
+      item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
+    );
+
+    return match ? match.amount : '';
+  }
+
+  /**
+   * Triggers when user edits a value directly inside a cell input box
+   */
+  onCellValueChange(employee: any, category: string, newValue: any): void {
+    const cellKey = this.getCellKey(employee.employee_code, category);
+    this.editedCells[cellKey] = newValue;
+  }
+
+  /**
+   * Returns true if there are pendingunsaved cell changes
+   */
+  hasUnsavedChanges(): boolean {
+    return Object.keys(this.editedCells).length > 0;
+  }
+
+
+/**
+ * Saves all inline table edits concurrently using individual requests mapped via forkJoin
+ */
+saveTableChanges(): void {
+  if (!this.hasUnsavedChanges()) {
+    alert('No changes to save.');
+    return;
+  }
+
+  // Get schema and fall back to empty string or handle missing schema early
+  const schema = this.currentSchema || this.authService.getSelectedSchema();
+
+  if (!schema) {
+    alert('No active schema selected.');
+    return;
+  }
+
+  this.isSaving = true;
+  const updateRequests: Observable<any>[] = [];
+
+  Object.keys(this.editedCells).forEach(cellKey => {
+    const [empCode, categoryKey] = cellKey.split('_');
+    const newValue = this.editedCells[cellKey];
+
+    const emp = this.distinctEmployees.find(e => e.employee_code === empCode);
+    const matchAssignment = emp?.rawAssignments?.find((item: any) => 
+      item.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase() &&
+      item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
+    );
+
+    const payload = {
+      id: matchAssignment?.id || null,
+      employee: empCode,
+      payroll_category: matchAssignment?.payroll_category || categoryKey,
+      component_value_type: this.selectedComponentValueType,
+      amount: newValue === '' ? 0 : Number(newValue)
+    };
+
+    // Passed 'schema' is now guaranteed to be a 'string'
+    updateRequests.push(
+      this.leaveservice.updateEmployeeSalaryComponent(schema, payload)
+    );
+  });
+
+  forkJoin(updateRequests).subscribe({
+    next: () => {
+      alert('Salary components updated successfully!');
+      this.editedCells = {};
+      this.isSaving = false;
+      this.fetchEmployeesSalary(this.currentSchema, this.currentBranchIds);
+    },
+    error: (err) => {
+      console.error('Failed to update salary details:', err);
+      alert(err?.error?.message || 'Failed to save changes. Please try again.');
+      this.isSaving = false;
+    }
+  });
+}
+
+
+/**
+   * Cancels/Discards all local inline unsaved edits
+   */
+discardChanges(): void {
+  this.editedCells = {};
+}
 
 
 
