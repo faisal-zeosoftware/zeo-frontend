@@ -817,27 +817,20 @@ onComponentTypeChange(): void {
 /**
  * Fetches corresponding operational lists to feed the category dropdown
  */
+// Add this property to your class:
+allComponentsList: any[] = [];
+
 loadComponentMetadata(schema: string): void {
-  const endpoint$: Observable<any[]> = this.selectedComponentValueType === 'fixed'
+  const endpoint$ = this.selectedComponentValueType === 'fixed'
     ? this.leaveservice.getFixedComponents(schema)
     : this.leaveservice.getVariableComponents(schema);
 
   endpoint$.subscribe({
-    next: (components) => {
+    next: (components: any[]) => {
       if (components && Array.isArray(components)) {
-        // Map to payroll_category values and filter duplicates out
+        this.allComponentsList = components; // Store full objects (containing id and payroll_category)
         const categories = components.map(c => c.payroll_category).filter(Boolean);
         this.availableCategories = Array.from(new Set(categories));
-        
-        // Auto-select first item if items exist
-        if (this.availableCategories.length > 0) {
-
-          this.selectedPayrollCategory = this.availableCategories[0];
-      
-          // Select all categories by default
-          this.selectedPayrollCategories = [...this.availableCategories];
-      
-      }
       }
     },
     error: (err) => console.error('Error fetching metadata list:', err)
@@ -847,6 +840,31 @@ loadComponentMetadata(schema: string): void {
 /**
  * Step 2: Transforms a flat payload into structural rows mapped uniquely by Employee Code
  */
+// buildEmployeeMatrix(): void {
+//   const employeeMap = new Map<string, any>();
+
+//   this.EmployeeSalarycomponent.forEach(item => {
+//     const empCode = item.employee;
+//     if (!employeeMap.has(empCode)) {
+//       employeeMap.set(empCode, {
+//         employee_code: empCode,
+//         emp_name: item.emp_name,
+//         department: item.department || 'N/A',
+//         designation: item.designation || 'N/A',
+//         selected: false,
+//         // Track internal component sub-records for matching amounts instantly
+//         rawAssignments: []
+//       });
+//       console.log(this.distinctEmployees);
+//     }
+//     employeeMap.get(empCode).rawAssignments.push(item);
+//   });
+
+//   this.distinctEmployees = Array.from(employeeMap.values());
+// }
+
+
+
 buildEmployeeMatrix(): void {
   const employeeMap = new Map<string, any>();
 
@@ -854,22 +872,21 @@ buildEmployeeMatrix(): void {
     const empCode = item.employee;
     if (!employeeMap.has(empCode)) {
       employeeMap.set(empCode, {
+        // Store employee database Primary Key ID (number)
+        id: item.emp_id || item.employee_id || item.employee_pk || item.id,
         employee_code: empCode,
         emp_name: item.emp_name,
         department: item.department || 'N/A',
         designation: item.designation || 'N/A',
         selected: false,
-        // Track internal component sub-records for matching amounts instantly
         rawAssignments: []
       });
-      console.log(this.distinctEmployees);
     }
     employeeMap.get(empCode).rawAssignments.push(item);
   });
 
   this.distinctEmployees = Array.from(employeeMap.values());
 }
-
 /**
  * Step 3: Resolves dynamic matrix field calculations for matching elements
  */
@@ -994,35 +1011,36 @@ saveTableChanges(): void {
 
     const emp = this.distinctEmployees.find(e => e.employee_code === empCode);
 
-    // Find original assignment record
+    // Find existing assignment
     const matchAssignment = emp?.rawAssignments?.find((item: any) => 
       item.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase() &&
       item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
     );
 
-    // Extract raw component ID
-    const rawComponentId = matchAssignment?.component_id || 
-                           matchAssignment?.component || 
-                           matchAssignment?.salary_component_id || 
-                           matchAssignment?.salary_component;
+    // Fallback lookup: Find component object from metadata list if matchAssignment doesn't exist
+    const componentMeta = this.allComponentsList.find((c: any) => 
+      c.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase()
+    );
 
-    // 💡 CAST TO NUMERIC PRIMARY KEYS (Fixes string error)
+    // Resolve component ID
+    const rawComponentId = matchAssignment?.component || 
+                           matchAssignment?.component_id || 
+                           matchAssignment?.salary_component || 
+                           componentMeta?.id;
+
+    // Resolve employee database PK
+    const rawEmployeeId = emp?.id || matchAssignment?.employee_id || matchAssignment?.employee;
+
     const payload = {
       id: matchAssignment?.id ? Number(matchAssignment.id) : null,
-      
-      // Ensure numeric PK integer for employee
-      employee: Number(emp?.id || emp?.emp_id || matchAssignment?.employee_id || matchAssignment?.employee),
-
-      // Ensure numeric PK integer for component (Crucial Fix)
-      component: rawComponentId ? Number(rawComponentId) : null,
-
+      employee: Number(rawEmployeeId), // Pass numeric PK (e.g. 42), not code string ("1003")
+      component: Number(rawComponentId), // Guarantees a valid numeric component PK
       component_value_type: this.selectedComponentValueType,
       payroll_category: matchAssignment?.payroll_category || categoryKey,
-      
       amount: newValue === '' || newValue === null ? 0 : Number(newValue)
     };
 
-    console.log('Sending Valid Payload to Backend:', payload);
+    console.log('Fixed Payload:', payload);
 
     updateRequests.push(
       this.leaveservice.updateEmployeeSalaryComponent(schema, payload)
@@ -1043,7 +1061,6 @@ saveTableChanges(): void {
     }
   });
 }
-
 /**
    * Cancels/Discards all local inline unsaved edits
    */
