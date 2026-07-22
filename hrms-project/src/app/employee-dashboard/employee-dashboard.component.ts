@@ -107,6 +107,7 @@ attendanceChart: any = null;
   DocAprNot: any[] = [];
   LoanAprNot: any[] = [];
   AdvancesalaryAprNot: any[] = [];
+  LinEoutAprNot: any[] = [];
 
 
 branchIds: number[] = [];
@@ -188,6 +189,7 @@ todayDate: string = '';
     this.loadAssetReqApprovals();
     this.loadAirticketReqApprovals();
     this.loadDocReqApprovals();
+    this.loadLinEoutReqApprovals();
     this.loadLTasks();
     this.loadProject();
     this.loadStages();
@@ -382,6 +384,7 @@ this.EmployeeService.selectedBranches$.subscribe(ids => {
   this.loadDocumentReqNotifications();
   this.loadLoanReqNotifications();
   this.loadAdvancesalaryReqNotifications();
+  this.loadLinEoutReqNotifications();
 });
 }
 
@@ -439,119 +442,102 @@ loadLeaveNotifications(callback?: Function): void {
   }
 
 
-
-
-
-
 loadAssetNotifications(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
 
   if (selectedSchema) {
-    this.EmployeeService.getAssetNotifyNew(selectedSchema, savedIds).subscribe({
-      next: (assets: any) => {
-        this.AssetAprNot = Array.isArray(assets)
-          ? assets
-              .filter((item: any) => item.message?.toLowerCase().includes('Assetapproval'))
-              .map((item) => ({ ...item, type: 'Assetapproval', highlighted: false }))
-          : [];
+    this.CountryService.getAssetaprNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (assets: any[]) => {
+        this.AssetAprNot = (assets || []).map(item => ({
+          ...item,
+          type: 'Assetapproval',
+          highlighted: false
+        }));
         this.combineNotifications();
       },
       error: (err) => {
-        console.error('❌ Error loading Asset approval notifications:', err);
+        console.error('❌ Error loading airticket approval notifications:', err);
         this.AssetAprNot = [];
         this.combineNotifications();
-      },
+      }
     });
   }
   }
 
 
-
-
-loadAirTicketNotifications(callback?: Function): void {
+  loadAirTicketNotifications(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
 
   if (selectedSchema) {
-    this.EmployeeService.getAirTicketNotifyNew(selectedSchema, savedIds).subscribe({
-      next: (airtickets: any) => {
-        this.AirticketAprNot = Array.isArray(airtickets)
-          ? airtickets
-              .filter((item: any) => item.message?.toLowerCase().includes('Airticketapproval'))
-              .map((item) => ({ ...item, type: 'Airticketapproval', highlighted: false }))
-          : [];
+    this.CountryService.getAirTicketaprNotifyNew(selectedSchema, savedIds).subscribe({
+      next: (airtickets: any[]) => {
+        this.AirticketAprNot = (airtickets || []).map(item => ({
+          ...item,
+          type: 'Airticketapproval',
+          highlighted: false
+        }));
         this.combineNotifications();
       },
       error: (err) => {
-        console.error('❌ Error loading Airticket approval notifications:', err);
+        console.error('❌ Error loading airticket approval notifications:', err);
         this.AirticketAprNot = [];
         this.combineNotifications();
-      },
+      }
     });
   }
   }
 
-
-
-loadGeneralReqNotifications(callback?: Function): void {
+  loadGeneralReqNotifications(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
 
   if (selectedSchema) {
     this.EmployeeService.getGeneralReqNotNew(selectedSchema, savedIds).subscribe({
-      next: (leaves: any) => {
-        this.GeneralAprNot = Array.isArray(leaves)
-          ? leaves
-              .filter((item: any) => item.message?.toLowerCase().includes('Genapproval'))
-              .map((item) => ({ ...item, type: 'Genapproval', highlighted: false }))
-          : [];
+      next: (leaves: any[]) => {
+        this.GeneralAprNot = (leaves || []).map(item => ({
+          ...item,
+          type: 'Genapproval',
+          highlighted: false
+        }));
         this.combineNotifications();
       },
       error: (err) => {
         console.error('❌ Error loading general approval notifications:', err);
         this.GeneralAprNot = [];
         this.combineNotifications();
-      },
+      }
     });
   }
   }
 
-
-
-
-loadDocumentReqNotifications(callback?: Function): void {
+  loadDocumentReqNotifications(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
 
   if (selectedSchema) {
     this.EmployeeService.getDocumentReqNotNew(selectedSchema, savedIds).subscribe({
-      next: (docs: any) => {
-        this.DocAprNot = Array.isArray(docs)
-          ? docs
-              .filter((item: any) => item.message?.toLowerCase().includes('Docapproval'))
-              .map((item) => ({ ...item, type: 'Docapproval', highlighted: false }))
-          : [];
+      next: (docs: any[]) => {
+        this.DocAprNot = (docs || []).map(item => ({
+          ...item,
+          type: 'Docapproval',
+          highlighted: false
+        }));
         this.combineNotifications();
       },
       error: (err) => {
-        console.error('❌ Error loading document Approval notifications:', err);
+        console.error('❌ Error loading Document approval notifications:', err);
         this.DocAprNot = [];
         this.combineNotifications();
-      },
+      }
     });
   }
   }
-
-
-
-
-
-
 
 loadLoanReqNotifications(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
@@ -577,31 +563,55 @@ loadLoanReqNotifications(callback?: Function): void {
   }
   }
 
-
-
-loadAdvancesalaryReqNotifications(callback?: Function): void {
+  loadAdvancesalaryReqNotifications(callback?: Function): void {
   const selectedSchema = this.authService.getSelectedSchema();
   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
 
   if (selectedSchema) {
     this.EmployeeService.getAdvancesalaryReqNotNew(selectedSchema, savedIds).subscribe({
-      next: (loan: any) => {
-        this.AdvancesalaryAprNot = Array.isArray(loan)
-          ? loan
-              .filter((item: any) => item.message?.toLowerCase().includes('Advsalapproval'))
-              .map((item) => ({ ...item, type: 'Advsalapproval', highlighted: false }))
-          : [];
+      next: (loan: any[]) => {
+        this.AdvancesalaryAprNot = (loan || []).map(item => ({
+          ...item,
+          type: 'Advsalapproval',
+          highlighted: false
+        }));
         this.combineNotifications();
       },
       error: (err) => {
-        console.error('❌ Error loading advance salary Approval notifications:', err);
+        console.error('❌ Error loading salary Approval notifications:', err);
         this.AdvancesalaryAprNot = [];
         this.combineNotifications();
-      },
+      }
     });
   }
   }
+
+loadLinEoutReqNotifications(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+
+  if (selectedSchema) {
+    this.CountryService.getLateinEarlyoutReqNotNew(selectedSchema, savedIds).subscribe({
+      next: (loan: any[]) => {
+        this.LinEoutAprNot = (loan || []).map(item => ({
+          ...item,
+          type: 'lateinearlyapproval',
+          highlighted: false
+        }));
+        this.combineNotifications();
+      },
+      error: (err) => {
+        console.error('❌ Error loading LateinEarlyout Approval notifications:', err);
+        this.LinEoutAprNot = [];
+        this.combineNotifications();
+      }
+    });
+  }
+  }
+
+
 
 combineNotifications(): void {
   // Load previously read notifications from localStorage
@@ -615,7 +625,8 @@ combineNotifications(): void {
     ...this.GeneralAprNot.map(item => ({ ...item, type: 'Genapproval' as const, highlighted: false })),
     ...this.DocAprNot.map(item => ({ ...item, type: 'Docapproval' as const, highlighted: false })),
     ...this.LoanAprNot.map(item => ({ ...item, type: 'Loanapproval' as const, highlighted: false })),
-    ...this.AdvancesalaryAprNot.map(item => ({ ...item, type: 'Advsalapproval' as const, highlighted: false }))
+    ...this.AdvancesalaryAprNot.map(item => ({ ...item, type: 'Advsalapproval' as const, highlighted: false })),
+    ...this.LinEoutAprNot.map(item => ({ ...item, type: 'lateinearlyapproval' as const, highlighted: false }))
   ];
 
   this.AllNotifications = allItems

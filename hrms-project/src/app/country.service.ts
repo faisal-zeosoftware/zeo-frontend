@@ -1126,6 +1126,43 @@ registerearlyexitpolicy(companyData: any): Observable<any> {
       
       return this.http.get(url);
     }
+
+      getLateinEarlyoutReqNotNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+        // Converts [1,3,4] into the string "[1,3,4]" for the URL
+        const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+        
+        let url = `${this.apiUrl}/calendars/api/lateinearlyrequest-notification/?schema=${selectedSchema}`;
+        if (branchParam) {
+          url += `&branch_id=${branchParam}`;
+        }
+        
+        return this.http.get(url);
+      }
+
+        getAssetaprNotifyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+          // Converts [1,3,4] into the string "[1,3,4]" for the URL
+          const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+          
+          let url = `${this.apiUrl}/organisation/api/asset-notification/?schema=${selectedSchema}`;
+          if (branchParam) {
+            url += `&branch_id=${branchParam}`;
+          }
+          
+          return this.http.get(url);
+        }
+
+          getAirTicketaprNotifyNew(selectedSchema: string, branchIds: number[]): Observable<any> {
+            // Converts [1,3,4] into the string "[1,3,4]" for the URL
+            const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+            
+            let url = `${this.apiUrl}/payroll/api/airticket-notification/?schema=${selectedSchema}`;
+            if (branchParam) {
+              url += `&branch_id=${branchParam}`;
+            }
+            
+            return this.http.get(url);
+          }
+    
   
 
 

@@ -779,14 +779,31 @@ updateAssetType(): void {
         window.location.reload();
       },
 
-      error: (error) => {
+     error: (error) => {
 
-        console.error('UPDATE ERROR:', error);
+           // Hide Loader
+      this.isLoading = false;
 
-        console.log(error.error);
+      console.error('API ERROR:', error);
 
-        alert('Update failed');
+      let errorMsg = 'Request failed';
+
+      if (error?.error) {
+
+        if (typeof error.error === 'string') {
+
+          errorMsg = error.error;
+
+        } else if (typeof error.error === 'object') {
+
+          errorMsg = Object.keys(error.error)
+            .map(key => `${key}: ${error.error[key]}`)
+            .join('\n');
+        }
       }
+
+      alert(errorMsg);
+    }
     });
 }
 
