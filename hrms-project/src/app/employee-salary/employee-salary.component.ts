@@ -863,59 +863,6 @@ loadComponentMetadata(schema: string): void {
     error: (err) => console.error('Error fetching metadata list:', err)
   });
 }
-/**
- * Step 2: Transforms a flat payload into structural rows mapped uniquely by Employee Code
- */
-// buildEmployeeMatrix(): void {
-//   const employeeMap = new Map<string, any>();
-
-//   this.EmployeeSalarycomponent.forEach(item => {
-//     const empCode = item.employee;
-//     if (!employeeMap.has(empCode)) {
-//       employeeMap.set(empCode, {
-//         employee_code: empCode,
-//         emp_name: item.emp_name,
-//         department: item.department || 'N/A',
-//         designation: item.designation || 'N/A',
-//         selected: false,
-//         // Track internal component sub-records for matching amounts instantly
-//         rawAssignments: []
-//       });
-//       console.log(this.distinctEmployees);
-//     }
-//     employeeMap.get(empCode).rawAssignments.push(item);
-//   });
-
-//   this.distinctEmployees = Array.from(employeeMap.values());
-// }
-
-
-
-// buildEmployeeMatrix(): void {
-//   const employeeMap = new Map<string, any>();
-
-//   this.EmployeeSalarycomponent.forEach(item => {
-//     const empCode = item.employee;
-
-//     if (!employeeMap.has(empCode)) {
-//       employeeMap.set(empCode, {
-//         emp_pk_id: item.employee_id || item.emp_id || item.emp_pk || item.user_id || null, 
-//         employee_code: empCode,
-//         emp_name: item.emp_name,
-//         department: item.department || 'N/A',
-//         designation: item.designation || 'N/A',
-//         selected: false,
-//         rawAssignments: []
-//       });
-//     }
-//     employeeMap.get(empCode).rawAssignments.push(item);
-//   });
-
-//   this.distinctEmployees = Array.from(employeeMap.values());
-
-//   // Re-apply filter in case dropdown items were pre-selected
-//   this.applyEmployeeFilter();
-// }
 
 buildEmployeeMatrix(): void {
   const employeeMap = new Map<string, any>();

@@ -1051,10 +1051,9 @@ get dashboardLeaveBalances() {
 
 
 
-
 employeeSalary: any = {};
-fixedSalaryComponents: any[] = [];
 
+fixedSalaryComponents: any[] = [];
 
 loadEmployeeSalary(): void {
 
@@ -1062,12 +1061,13 @@ loadEmployeeSalary(): void {
 
     next: (response: any) => {
 
-      console.log('Employee Salary', response);
+      console.log(response);
 
       this.employeeSalary = response;
 
       this.fixedSalaryComponents = response.components.filter(
-        (item: any) => item.component_value_type === 'fixed'
+        (component: any) =>
+          component.component_value_type.toLowerCase() === 'fixed'
       );
 
     },
@@ -1081,8 +1081,6 @@ loadEmployeeSalary(): void {
   });
 
 }
-
-
 
 
 

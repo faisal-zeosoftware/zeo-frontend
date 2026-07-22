@@ -340,7 +340,7 @@ ngOnInit(): void {
   week4_pattern:any='';
 
   departments:any='';
-  single_shift_pattern:any='';
+  shift_pattern:any='';
   categories:any='';
   designations:any='';
 
@@ -371,7 +371,7 @@ const payload = {
 
   employee: selectedEmployeeIds,
 
-  single_shift_pattern: this.single_shift_pattern || null
+  shift_pattern: this.shift_pattern || null
 };
   
     console.log('Payload:', payload);
@@ -380,7 +380,7 @@ const payload = {
       (response) => {
         console.log('Registration successful', response);
         alert('Shift has been added.');
-        window.location.reload();
+        // window.location.reload();
       },
       (error) => {
         console.error('Registration failed', error);
