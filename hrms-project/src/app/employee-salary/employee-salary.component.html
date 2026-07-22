@@ -82,7 +82,7 @@
           </label>
           <div class="custom-sel">
             <select class="form-control" id="component" name="component" [(ngModel)]="component"
-              [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !component}" (change)="onComponentChange()">
+              [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !component}" >
               <option *ngFor="let component of Salarycomponent" [value]="component.id">
                 {{ component.name }}
               </option>
@@ -92,7 +92,7 @@
         </div>
 
         <!-- Amount Field (Only Visible if is_fixed === true) -->
-<div class="col-md-6" *ngIf="showAmountField">
+<div class="col-md-6" >
 <label>Amount</label>
 <input
 type="text"
@@ -318,67 +318,120 @@ placeholder="Enter amount"
   </div>
 
 
-
         <div class="com_list mt-4" *ngIf="hasViewPermission">
 
-          <div class="card border-0 shadow-sm p-3 bg-white rounded compact-container">
-            <div *ngIf="hasViewPermission">
-              
-              <!-- Control Header Bar -->
-              <div class="row align-items-center mb-3 g-2 bg-light p-2 rounded border mx-0">
-                
-                <!-- Radio Toggle Group -->
-                <div class="col-12 col-md-auto d-flex align-items-center">
-                  <span class="fw-bold me-2 text-secondary text-uppercase x-small">Type:</span>
-                  <div class="btn-group btn-group-sm" role="group">
-                    <input type="radio" class="btn-check" id="fixedRadio" name="componentValueType" value="fixed" 
-                           [(ngModel)]="selectedComponentValueType" (change)="onComponentTypeChange()">
-                    <label class="btn btn-outline-success px-3 py-1 fw-semibold small" for="fixedRadio">Fixed</label>
-          
-                    <input type="radio" class="btn-check" id="variableRadio" name="componentValueType" value="variable" 
-                           [(ngModel)]="selectedComponentValueType" (change)="onComponentTypeChange()">
-                    <label class="btn btn-outline-success px-3 py-1 fw-semibold small" for="variableRadio">Variable</label>
-                  </div>
-                </div>
-
-                <div class="col-md-1"></div>
-          
-                <!-- Categories Selector -->
-                <div class="col-12 col-md-5 d-flex align-items-center mt-1">
-                  <!-- <span class="fw-bold me-4 text-secondary text-uppercase x-small text-nowrap">Components</span> -->
-                  <mat-form-field appearance="outline" class="w-100 compact-mat-select mt-4">
-                    <mat-select [(ngModel)]="selectedPayrollCategories" multiple placeholder="Select Componets">
-                      <mat-option *ngFor="let cat of availableCategories" [value]="cat">
-                        {{ cat | titlecase }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-          
-                <!-- Table Save Controls (HR Spreadsheet Action Toolbar) -->
-                <div class="col-12 col-md-auto ms-auto d-flex gap-2 justify-content-end align-items-center">
-                  <button 
-                    *ngIf="hasUnsavedChanges()" 
-                    class="btn btn-sm btn-outline-secondary" 
-                    (click)="discardChanges()"
-                    [disabled]="isSaving">
-                    Discard Changes
-                  </button>
-          
-                  <button 
-                    class="btn btn-sm btn-success fw-bold px-3" 
-                    (click)="saveTableChanges()" 
-                    [disabled]="!hasUnsavedChanges() || isSaving">
-                    <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
-                    <i *ngIf="!isSaving" class="bi bi-check-circle me-1"></i>
-                    Save Changes
-                  </button>
+       
+            <div class="row">
+              <div class="col-md-3">
+                <span class="fw-bold me-2 text-secondary text-uppercase x-small">Type:</span>
+                <div class="btn-group btn-group-sm" role="group">
+                  <input type="radio" class="btn-check" id="fixedRadio" name="componentValueType" value="fixed" 
+                         [(ngModel)]="selectedComponentValueType" (change)="onComponentTypeChange()">
+                  <label class="btn btn-outline-success px-3 py-1 fw-semibold small" for="fixedRadio">Fixed</label>
+        
+                  <input type="radio" class="btn-check" id="variableRadio" name="componentValueType" value="variable" 
+                         [(ngModel)]="selectedComponentValueType" (change)="onComponentTypeChange()">
+                  <label class="btn btn-outline-success px-3 py-1 fw-semibold small" for="variableRadio">Variable</label>
                 </div>
               </div>
-          
+
+
+              <div class="col-md-3">
+                <mat-form-field appearance="outline" class="w-100 compact-mat-select " style="margin-top: 5px;">
+                  <mat-select [(ngModel)]="selectedPayrollCategories" multiple placeholder="Select Componets">
+                    <mat-option *ngFor="let cat of availableCategories" [value]="cat">
+                      {{ cat | titlecase }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+
+              <div class="col-md-3">
+
+
+                <mat-form-field appearance="outline" class="w-100 compact-mat-select" style="margin-top: 5px;">
+                  <mat-select
+                    multiple
+                    [(ngModel)]="selectedEmployees"
+                    placeholder="Select Employee"
+                    (selectionChange)="applyEmployeeFilter()">
+                
+                    <!-- Optional: Action buttons to quickly clear or select all -->
+                    <mat-option (click)="selectAllEmployees()" *ngIf="selectedEmployees.length < distinctEmployees.length">
+                      <strong>Select All</strong>
+                    </mat-option>
+                    <mat-option (click)="clearEmployeeFilter()" *ngIf="selectedEmployees.length > 0">
+                      <strong>Clear All Filters</strong>
+                    </mat-option>
+                
+                    <mat-divider></mat-divider>
+                
+                    <mat-option
+                      *ngFor="let emp of distinctEmployees"
+                      [value]="emp.employee_code">
+                      {{ emp.employee_code }} - {{ emp.emp_name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+           
+              </div>
+
+
+              <div class="col-md-3 ">
+
+                <div class="d-flex justify-content-end align-items-center gap-2 mt-2">
+
+                  <button
+                  class="btn btn-outline-success"
+                  (click)="exportEmployeeSalaryExcel()"
+                  matTooltip="Export Excel">
+              
+                  <i class="fas fa-file-excel"></i>
+              
+              </button>
+
+                  <!-- Discard -->
+              
+                  <button
+                      *ngIf="hasUnsavedChanges()"
+                      class="btn btn-light border"
+                      (click)="discardChanges()"
+                      [disabled]="isSaving"
+                      matTooltip="Discard Changes">
+              
+                      <i class="fa fa-refresh"></i>
+              
+                  </button>
+              
+                  <!-- Save -->
+              
+                  <button
+                      class="btn btn-success"
+                      (click)="saveTableChanges()"
+                      [disabled]="!hasUnsavedChanges() || isSaving"
+                      matTooltip="Save Changes">
+              
+                      <span
+                          *ngIf="isSaving"
+                          class="spinner-border spinner-border-sm">
+                      </span>
+              
+                      <i    *ngIf="!isSaving" class="fas fa-save"></i>
+              
+                  </button>
+              
+              </div>
+               
+              </div>
+            </div>
+            <div *ngIf="hasViewPermission">
+              
+        
+       
               <!-- Sized Matrix Table Wrapper -->
               <div class="table-responsive border rounded text-nowrap inner-scroll-container" *ngIf="!isLoading">
-                <table class="table table-sm table-hover table-striped align-middle mb-0 compact-salary-table">
+                <table id="employeeSalaryTable" class="table table-sm table-hover table-striped align-middle mb-0 compact-salary-table">
                   <thead class="bg-dark text-white sticky-top headers-z-index">
                     <tr>
                       <th class="text-center" style="width: 50px;">No</th>
@@ -401,37 +454,37 @@ placeholder="Enter amount"
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let emp of distinctEmployees; let i = index">
-                      <td class="sticky-col-left text-center fw-semibold text-muted bg-cell-override">{{ i + 1 }}</td>
-                      <td class="font-monospace fw-bold text-success cell-p-sm">{{ emp.employee_code }}</td>
-                      <td class="fw-semibold text-dark text-capitalize cell-p-sm">{{ emp.emp_name }}</td>
-                      <td class="cell-p-sm"><span class="compact-badge-dep">{{ emp.department }}</span></td>
-                      <td class="cell-p-sm"><span class="compact-badge-des">{{ emp.designation }}</span></td>
-                      
-                      <!-- Inline-Editable Data Cells -->
-                      <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center bg-light-cell p-1">
-                        <input 
-                          type="number" 
-                          class="form-control form-control-sm text-end fw-bold table-cell-input"
-                          [ngModel]="getCellValue(emp, dynamicCat)"
-                          (ngModelChange)="onCellValueChange(emp, dynamicCat, $event)"
-                          placeholder="0.00" 
-                        />
-                      </td>
-                      
-                      <!-- Empty filler column -->
-                      <td class="text-center py-2 text-muted opacity-50 small" *ngIf="selectedPayrollCategories.length === 0">-</td>
-          
-                      <td class="sticky-col-right text-center bg-cell-override">
-                        <mat-checkbox *ngIf="Delete" [(ngModel)]="emp.selected" color="primary" class="scale-checkbox"></mat-checkbox>
-                      </td>
-                    </tr>
+                   <!-- 🟢 FIXED: Loops over filtered array -->
+<tr *ngFor="let emp of filteredEmployees; let i = index">
+  <td class="sticky-col-left text-center fw-semibold text-muted bg-cell-override">{{ i + 1 }}</td>
+  <td class="font-monospace fw-bold text-success cell-p-sm">{{ emp.employee_code }}</td>
+  <td class="fw-semibold text-dark text-capitalize cell-p-sm">{{ emp.emp_name }}</td>
+  <td class="cell-p-sm"><span class="compact-badge-dep">{{ emp.department }}</span></td>
+  <td class="cell-p-sm"><span class="compact-badge-des">{{ emp.designation }}</span></td>
+  
+  <!-- Inline-Editable Data Cells -->
+  <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center bg-light-cell p-1">
+    <input 
+      type="number" 
+      class="form-control form-control-sm text-end fw-bold table-cell-input"
+      [ngModel]="getCellValue(emp, dynamicCat)"
+      (ngModelChange)="onCellValueChange(emp, dynamicCat, $event)"
+      placeholder="0.00" 
+    />
+  </td>
+  
+  <td class="text-center py-2 text-muted opacity-50 small" *ngIf="selectedPayrollCategories.length === 0">-</td>
+
+  <td class="sticky-col-right text-center bg-cell-override">
+    <mat-checkbox *ngIf="Delete" [(ngModel)]="emp.selected" color="primary" class="scale-checkbox"></mat-checkbox>
+  </td>
+</tr>
                   </tbody>
                 </table>
               </div>
           
             </div>
-          </div>
+        
 
         </div>
         </div>

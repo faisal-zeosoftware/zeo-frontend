@@ -15,6 +15,8 @@ import { CatogaryService } from '../catogary-master/catogary.service';
 import {combineLatest, Subscription, Observable, forkJoin } from 'rxjs';
 import { CompanyRegistrationService } from '../company-registration.service';
 import { environment } from '../../environments/environment';
+import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-employee-salary',
@@ -300,7 +302,7 @@ CreatePayStructure(): void {
     (response) => {
       console.log('Registration successful', response);
       alert('Employee salary has been added');
-        window.location.reload();
+        // window.location.reload();
     },
     (error) => {
       console.error('Added failed', error);
@@ -610,27 +612,54 @@ updateEmployeeSalary(): void {
   filteredEmployees: any[] = [];
 
 
+  // loadEmp(callback?: Function): void {
+  //   const selectedSchema = this.authService.getSelectedSchema();
+  //   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+  
+  //   if (selectedSchema) {
+  //     this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+  //       (data: any) => {
+  //        // Filtering employees where is_active is null or true
+  //        this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
+  //        this.filteredEmployees = this.employees;
+          
+  //         if (callback) callback();
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching Companies:', error);
+  //       }
+  //     );
+  //   }
+  // }
+
+
+
+
   loadEmp(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();
     const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
   
-  
     if (selectedSchema) {
-      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-        (data: any) => {
-         // Filtering employees where is_active is null or true
-         this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-         this.filteredEmployees = this.employees;
+      this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe({
+        next: (data: any) => {
+          this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
           
+          // ❌ REMOVED: this.filteredEmployees = this.employees;
+          // Do not assign master employees here, let buildEmployeeMatrix handle table state!
+  
           if (callback) callback();
         },
-        (error) => {
+        error: (error) => {
           console.error('Error fetching Companies:', error);
         }
-      );
+      });
     }
   }
 
+
+
+  
   mapEmployeeToId() {
   if (!this.employees || !this.editAsset?.employee) return;
 
@@ -791,9 +820,7 @@ distinctEmployees: any[] = [];
 selectedPayrollCategories: string[] = []; // Changed from single string to array
 
 
-/**
- * Dispatches configuration metadata fetches depending on radio status changes
- */
+
 /**
  * Dispatches configuration metadata fetches depending on radio status changes
  */
@@ -872,7 +899,6 @@ buildEmployeeMatrix(): void {
 
     if (!employeeMap.has(empCode)) {
       employeeMap.set(empCode, {
-        // Extract numeric PK ID if available in item
         emp_pk_id: item.employee_id || item.emp_id || item.emp_pk || item.user_id || null, 
         employee_code: empCode,
         emp_name: item.emp_name,
@@ -886,8 +912,10 @@ buildEmployeeMatrix(): void {
   });
 
   this.distinctEmployees = Array.from(employeeMap.values());
-}
 
+  // Re-apply filter in case dropdown items were pre-selected
+  this.applyEmployeeFilter();
+}
 
 /**
  * Step 3: Resolves dynamic matrix field calculations for matching elements
@@ -1074,6 +1102,80 @@ saveTableChanges(): void {
 discardChanges(): void {
   this.editedCells = {};
 }
+
+
+
+
+// Selected employee codes array
+selectedEmployees: string[] = [];
+
+applyEmployeeFilter(): void {
+  if (!this.selectedEmployees || this.selectedEmployees.length === 0) {
+    // Show all rows
+    this.filteredEmployees = [...this.distinctEmployees];
+  } else {
+    // Show only selected employee rows
+    this.filteredEmployees = this.distinctEmployees.filter(emp =>
+      this.selectedEmployees.includes(emp.employee_code)
+    );
+  }
+}
+
+selectAllEmployees(): void {
+  this.selectedEmployees = this.distinctEmployees.map(emp => emp.employee_code);
+  this.applyEmployeeFilter();
+}
+
+clearEmployeeFilter(): void {
+  this.selectedEmployees = [];
+  this.applyEmployeeFilter();
+}
+
+
+exportEmployeeSalaryExcel(): void {
+
+  const exportData: any[] = [];
+
+  this.filteredEmployees.forEach(emp => {
+
+    const row: any = {};
+
+    row['Employee Code'] = emp.employee_code;
+    row['Employee Name'] = emp.emp_name;
+    row['Department'] = emp.department;
+    row['Designation'] = emp.designation;
+    row['Basic'] = emp.basic;
+
+
+    this.selectedPayrollCategories.forEach(category => {
+
+      row[category] = this.getCellValue(emp, category);
+
+    });
+
+    exportData.push(row);
+
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      'Employee Salary'
+  );
+
+  XLSX.writeFile(
+      workbook,
+      'Employee_Salary.xlsx'
+  );
+
+}
+
+
+
 
 
 
