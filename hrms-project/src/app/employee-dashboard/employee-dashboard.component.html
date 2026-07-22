@@ -77,6 +77,13 @@
             </ul>
          </li>
 
+     <li class="nav-item" (click)="selectTabNav('Salary')">
+      <a class="nav-link " href="javascript:void(0)">
+      <i class="bi bi-speedometer2 me-2"></i>
+      <span>Salary</span>
+      </a>     
+      </li>
+
       <li class="nav-item" (click)="selectTabNav('TimeSheet')">
       <a class="nav-link " href="javascript:void(0)">
       <i class="bi bi-speedometer2 me-2"></i>
@@ -295,85 +302,94 @@
             </button>
           </div>
 <div class="col-md-2">
-  <div class="dropdown position-relative">
+<div class="dropdown position-relative">
 
-    <!-- 🔔 Bell Button -->
-    <button
-      class="btn btn-outline-secondary position-relative"
-      type="button"
-      (click)="toggleNotification()"
+  <!-- Bell Button -->
+  <button
+    class="btn btn-light border position-relative rounded-circle"
+    type="button"
+    (click)="toggleNotification()"
+  >
+    <i class="fa fa-bell fs-5"></i>
+
+    <span
+      *ngIf="notificationCount > 0"
+      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
     >
-      <i class="fa fa-bell"></i>
+      {{ notificationCount }}
+    </span>
+  </button>
 
-      <!-- 🔴 Notification Count -->
-      <span
-        *ngIf="notificationCount > 0"
-        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+  <!-- Notification Dropdown -->
+  <div
+    class="dropdown-menu dropdown-menu-end notification-dropdown shadow border-0"
+    [class.show]="isNotificationOpen"
+  >
+
+    <!-- Header -->
+    <div class="notification-header">
+      <h6 class="mb-0">Notifications</h6>
+      <span class="badge bg-primary">{{ notificationCount }}</span>
+    </div>
+
+    <!-- Notification List -->
+    <ng-container *ngIf="AllNotifications?.length; else noNotifications">
+
+      <div
+        *ngFor="let noti of AllNotifications; let i = index"
+        class="notification-item"
+        (click)="onNotificationClick(noti)"
+        [ngClass]="{'flash-highlight': noti.highlighted}"
       >
-        {{ notificationCount }}
-      </span>
-    </button>
 
-    <!-- 📋 Dropdown -->
-    <ul
-      class="dropdown-menu dropdown-menu-end shadow"
-      [class.show]="isNotificationOpen"
-      style="min-width: 320px;
-             max-height: 400px;
-             overflow-y: auto;
-            margin-left: -300px;"
-    >
+        <div class="d-flex justify-content-between">
 
-      <!-- ✅ If Notifications Exist -->
-<ng-container *ngIf="AllNotifications && AllNotifications.length > 0; else noNotifications">
+          <div class="me-2">
 
-  <li *ngFor="let noti of AllNotifications; let i = index">
-    <a
-      class="dropdown-item py-2 px-3"
-      href="javascript:void(0)"
-      (click)="onNotificationClick(noti)"
-      [ngClass]="{ 'flash-highlight': noti.highlighted }"
-    >
-      <div class="d-flex justify-content-between align-items-start">
-        <div>
+            <div class="fw-semibold">
 
-          <strong *ngIf="noti.type === 'Resignationapproval'">📄 Resignation Approval</strong>
-          <strong *ngIf="noti.type === 'Leaveapproval'">🏖️ Leave Approval</strong>
-          <strong *ngIf="noti.type === 'Genapproval'">📢 General Approval</strong>
-          <strong *ngIf="noti.type === 'Docapproval'">🗂️ Document Approval</strong>
-          <strong *ngIf="noti.type === 'Loanapproval'">💰 Loan Approval</strong>
-          <strong *ngIf="noti.type === 'Assetapproval'">🧰 Asset Approval</strong>
-          <strong *ngIf="noti.type === 'Airticketapproval'">✈️ AirTicket Approval</strong>
-          <strong *ngIf="noti.type === 'Advsalapproval'">💵 Advance Salary Approval</strong>
+              <span *ngIf="noti.type === 'Resignationapproval'">📄 Resignation Approval</span>
+              <span *ngIf="noti.type === 'Leaveapproval'">🏖️ Leave Approval</span>
+              <span *ngIf="noti.type === 'Genapproval'">📢 General Approval</span>
+              <span *ngIf="noti.type === 'Docapproval'">🗂️ Document Approval</span>
+              <span *ngIf="noti.type === 'Loanapproval'">💰 Loan Approval</span>
+              <span *ngIf="noti.type === 'Assetapproval'">🧰 Asset Approval</span>
+              <span *ngIf="noti.type === 'Airticketapproval'">✈️ Air Ticket Approval</span>
+              <span *ngIf="noti.type === 'Advsalapproval'">💵 Advance Salary</span>
+              <span *ngIf="noti.type === 'lateinearlyapproval'">⏱️ Late In / Early Out</span>
 
-          <div class="text-muted small">
-            {{ noti.created_at | date: 'medium' }}
+            </div>
+
+            <div class="notification-message">
+              {{ noti.message }}
+            </div>
+
+            <small class="text-muted">
+              {{ noti.created_at | date:'dd MMM yyyy, hh:mm a' }}
+            </small>
+
           </div>
 
-          <div class="small mt-1 text-dark">
-            {{ noti.message }}
-          </div>
+          <span class="badge bg-primary align-self-start">
+            New
+          </span>
+
         </div>
 
-        <span class="badge bg-primary rounded-pill">New</span>
       </div>
-    </a>
 
-    <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-1" />
-  </li>
+    </ng-container>
 
-</ng-container>
+    <ng-template #noNotifications>
+      <div class="text-center text-muted p-4">
+        <i class="fa fa-bell-slash fs-2 mb-2"></i>
+        <div>No new notifications</div>
+      </div>
+    </ng-template>
 
-      <!-- ❌ No Notifications -->
-      <ng-template #noNotifications>
-        <li>
-          <div class="dropdown-item text-center text-muted py-3">
-            No new notifications
-          </div>
-        </li>
-      </ng-template>
-    </ul>
   </div>
+
+</div>
 </div>
 
 <div class="d-flex align-items-center">
@@ -571,7 +587,7 @@
             <a href="javascript:void(0)">Documents</a>
           </li>
           <li class="tab" [class.active]="activeTab === 'salary'" (click)="selectTab('salary')">
-            <a href="javascript:void(0)">Salary&Payroll</a>
+            <a href="javascript:void(0)">Payroll</a>
           </li>
           
         </ul>
@@ -1295,7 +1311,7 @@
             <!-- Your Run Employee Salary content -->
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Salary & Payroll Details</h5>
+                <h5 class="mb-0">Payroll Details</h5>
 
 <button 
   class="btn btn-success btn-sm btn-export-excel"
@@ -1326,7 +1342,6 @@
 
                           <th class="text-table-header">Day Worked</th>
                           <th class="text-table-header">Payment Date</th>
-                          <th class="text-table-header">Components </th>
                           <th class="text-table-header">Gross Salary</th>
                           <th class="text-table-header">Net Salary</th>
                           <th class="text-table-header">Status</th>
@@ -1344,15 +1359,6 @@
     <td>{{ pay.total_working_days }}</td>
     <td>{{ pay.days_worked }}</td>
     <td>{{ pay.payroll_run?.payment_date }}</td>
-
-    <td>
-      <button
-        class="btn btn-sm btn-primary"
-        (click)="pay.showDetails = !pay.showDetails">
-        {{ pay.showDetails ? 'Hide' : 'View Salary' }}
-      </button>
-    </td>
-
     <td>{{ pay.gross_salary }}</td>
     <td>{{ pay.net_salary }}</td>
 
@@ -1363,93 +1369,6 @@
                     </td>
   </tr>
 
-  <!-- Salary Details -->
-  <tr *ngIf="pay.showDetails">
-    <td colspan="11">
-
-      <div class="p-3 border rounded bg-light">
-
-        <!-- Salary Summary -->
-        <div class="row mb-3">
-
-          <div class="col-md-6">
-            <h6>Gross Salary</h6>
-            <h5>{{ pay.gross_salary }}</h5>
-          </div>
-
-          <div class="col-md-6">
-            <h6>Net Salary</h6>
-            <h5>{{ pay.net_salary }}</h5>
-          </div>
-
-        </div>
-
-        <table class="table table-bordered table-striped">
-
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Salary Component</th>
-              <th>Component Type</th>
-              <th>Payroll Category</th>
-              <th class="text-end">Amount</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <tr *ngFor="let comp of pay.components; let j = index">
-
-              <td>{{ j + 1 }}</td>
-
-              <td>{{ comp.component_name }}</td>
-
-              <td>{{ comp.component_type }}</td>
-
-              <td>{{ comp.payroll_category }}</td>
-
-              <td class="text-end">
-                {{ comp.payslip_amount }}
-              </td>
-
-            </tr>
-
-            <tr *ngIf="pay.components.length === 0">
-              <td colspan="5" class="text-center">
-                No Salary Components Found
-              </td>
-            </tr>
-
-          </tbody>
-
-          <tfoot>
-
-            <tr>
-              <th colspan="4" class="text-end">
-                Gross Salary
-              </th>
-              <th class="text-end">
-                {{ pay.gross_salary }}
-              </th>
-            </tr>
-
-            <tr>
-              <th colspan="4" class="text-end">
-                Net Salary
-              </th>
-              <th class="text-end">
-                {{ pay.net_salary }}
-              </th>
-            </tr>
-
-          </tfoot>
-
-        </table>
-
-      </div>
-
-    </td>
-  </tr>
 
 </tbody>
                     </table>
@@ -1460,190 +1379,6 @@
               </div>
             </div>
           </div>
-
-
-          <!-- <div id="asset" *ngIf="activeTab === 'asset'">
-
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
-
-              </div>
-              <div class="card-body">
-
-                <div class="tab_content mt-3" *ngFor="let member of EmpAssets">
-                  <div class="row">
-                    <div class="col-md-3">
-                      <h2>Asset Name</h2>
-                      <h3>{{ member.asset }}</h3>
-                    </div>
-                    <div class="col-md-3">
-                      <h2>Assigned Date</h2>
-                      <h3>{{ member.assigned_date }}</h3>
-                    </div>
-                    <div class="col-md-3">
-                      <h2>Return Condition</h2>
-                      <h3>{{ member.return_condition }}</h3>
-                    </div>
-                    <div class="col-md-3">
-                      <h2>Return Date</h2>
-                      <h3>{{ member.returned_date }}</h3>
-                    </div>
-
-                  </div>
-                </div>
-
-
-              </div>
-            </div>
-          </div> -->
-
-          <!-- <div id="loan" *ngIf="activeTab === 'loan'">
-        
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
-
-              </div>
-              <div class="card-body">
-
-                <div class="tab_content mt-3" >
-                  <div class="table-scroll">
-
-                    <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
-                      <thead>
-                        <tr>
-                          <th class="text-table-header" style="width: 0;">No</th>
-                          
-                          <th class="text-table-header">Amount requested</th>
-                          <th class="text-table-header">EMI Amount</th>
-
-                          <th class="text-table-header">Loan Type</th>
-                          <th class="text-table-header">Document Number</th>
-
-                          <th class="text-table-header">Repayment Period</th>
-
-                          <th class="text-table-header">Remaining Balance</th>
-                          <th class="text-table-header">applied on</th>
-                          <th class="text-table-header">applied on</th>
-                          <th class="text-table-header">Disbursement date</th>
-                          <th class="text-table-header">Status</th>
-                         
-                        </tr>
-                      </thead>
-                      <tbody class="text-table-body">
-                        <tr class="tbodytext" *ngFor="let loan of EmpLoan; let i = index">
-                          <td>{{ i + 1 }}</td>
-                          
-                          <td>{{ loan.amount_requested }}</td>
-
-                          <td>{{ loan.emi_amount }}</td>
-
-                          <td>{{ loan.loan_type }}</td>
-                          <td>{{ loan.document_number }}</td>
-                          <td>{{ loan.repayment_period }}</td>
-
-                          <td>{{ loan.remaining_balance }}</td>
-                          <td>{{ loan.applied_on }}</td>
-                      
-                          <td>{{ loan.approved_on }}</td>
-                          <td>{{ loan.disbursement_date }}</td>
-                          <td>
-                            <span class="pill" [ngClass]="{
-                              'pill green': loan.status === 'approved',
-                              'pill blue': loan.status === 'processed',
-  
-                              'pill yellow': loan.status === 'pending',
-                              'pill red': loan.status === 'rejected'
-                            }">
-                              {{ loan.status }}
-                            </span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-
-              </div>
-            </div>
-          </div> -->
-
-           <!-- <div id="advanceSalary" *ngIf="activeTab === 'advanceSalary'">
-           
-            <div class="card border-0 shadow-sm">
-              <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Details</h5>
-
-              </div>
-              <div class="card-body">
-
-                <div class="tab_content mt-3" >
-                  <div class="table-scroll">
-
-                    <table class="styled-table" width="100%" style=" border-collapse: collapse; min-width: 1200px;">
-                      <thead>
-                        <tr>
-                          <th class="text-table-header" style="width: 0;">No</th>
-                         
-                          <th class="text-table-header">Amount requested</th>
-                          <th class="text-table-header">EMI Amount</th>
-
-                          <th class="text-table-header">Loan Type</th>
-                          <th class="text-table-header">Document Number</th>
-
-                          <th class="text-table-header">Repayment Period</th>
-
-                          <th class="text-table-header">Remaining Balance</th>
-                          <th class="text-table-header">applied on</th>
-                          <th class="text-table-header">applied on</th>
-                          <th class="text-table-header">Disbursement date</th>
-                          <th class="text-table-header">Status</th>
-                     
-                        </tr>
-                      </thead>
-                      <tbody class="text-table-body">
-                        <tr class="tbodytext" *ngFor="let advanceSalary of AdvSalary; let i = index">
-                          <td>{{ i + 1 }}</td>
-                        
-                          <td>{{ advanceSalary.amount_requested }}</td>
-
-                          <td>{{ advanceSalary.emi_amount }}</td>
-
-                          <td>{{ advanceSalary.loan_type }}</td>
-                          <td>{{ advanceSalary.document_number }}</td>
-                          <td>{{ advanceSalary.repayment_period }}</td>
-
-                          <td>{{ advanceSalary.remaining_balance }}</td>
-                          <td>{{ advanceSalary.applied_on }}</td>
-                      
-                          <td>{{ advanceSalary.approved_on }}</td>
-                          <td>{{ advanceSalary.disbursement_date }}</td>
-                          <td>
-                            <span class="pill" [ngClass]="{
-                              'pill green': advanceSalary.status === 'approved',
-                              'pill blue': advanceSalary.status === 'processed',
-  
-                              'pill yellow': advanceSalary.status === 'pending',
-                              'pill red': advanceSalary.status === 'rejected'
-                            }">
-                              {{ advanceSalary.status }}
-                            </span>
-                          </td>
-                         
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-
-              </div>
-            </div>
-          </div> -->
-
-
 
         </div>
 
@@ -4954,7 +4689,7 @@
                     </div>
                     <div class="col-md-4">
                       <h2>Branch </h2>
-                      <h3>{{ advanceSalary.branch }}</h3>
+                      <h3>{{advanceSalary.branch }}</h3>
                     </div>
                     <div class="col-md-4">
                       <h2>Requested Amount</h2>
@@ -4975,6 +4710,83 @@
 
               </div>
     </div>
+
+
+   </section>
+
+        <!-- Salary section here -->
+
+      <section class="content-tab  animate__animated animate__fadeIn" id="Salary"
+      *ngIf="activeTabNav === 'Salary'">
+
+
+           
+<div class="card border-0 shadow-sm mt-4">
+  <div class="card-header bg-white">
+    <h5 class="mb-0">Salary Details</h5>
+  </div>
+
+  <div class="card-body">
+
+    <div *ngFor="let pay of employeesec.payslip" class="mb-4">
+
+      <!-- Salary Summary -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h6>Gross Salary</h6>
+          <h5>{{ pay.gross_salary }}</h5>
+        </div>
+
+        <div class="col-md-6">
+          <h6>Net Salary</h6>
+          <h5>{{ pay.net_salary }}</h5>
+        </div>
+      </div>
+
+      <!-- Salary Components -->
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Salary Component</th>
+            <th>Component Type</th>
+            <th>Payroll Category</th>
+            <th class="text-end">Amount</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let comp of pay.components; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ comp.component_name }}</td>
+            <td>{{ comp.component_type }}</td>
+            <td>{{ comp.payroll_category }}</td>
+            <td class="text-end">{{ comp.payslip_amount }}</td>
+          </tr>
+
+          <tr *ngIf="pay.components.length === 0">
+            <td colspan="5" class="text-center">
+              No Salary Components Found
+            </td>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <th colspan="4" class="text-end">Gross Salary</th>
+            <th class="text-end">{{ pay.gross_salary }}</th>
+          </tr>
+
+          <tr>
+            <th colspan="4" class="text-end">Net Salary</th>
+            <th class="text-end">{{ pay.net_salary }}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+</div>
 
 
    </section>
@@ -5111,9 +4923,11 @@
                     <td>{{ docs.task }}</td>
                     <td>{{ docs.description }}</td>
                     <td>{{ docs.project }}</td>
-                    <td>{{ docs.status|| '-' }}</td>
-
-
+                    <td>
+                    <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
+                    {{ docs.status }}
+                    </span>
+                    </td>
                   </tr>
                 </tbody>
               </table>

@@ -408,24 +408,25 @@ updateEmp(): void {
   this.EmployeeService.updateEmp(this.data.employeeId, formData).subscribe(
     (response) => {
       console.log('Employee updated successfully:', response);
-      // alert('Employee Details Edited');
+      alert('Employee Details Edited');
       // window.location.reload();
 
     this.updateCustomFieldValues();
 
 // Close the edit dialog
-this.dialogRef.close();
+// this.dialogRef.close();
+window.location.reload();
 
 // Open success dialog
-this.dialog.open(SuccesModalComponent, {
-  width: '400px',
-  disableClose: true,
-  data: {
-    message: 'Employee updated successfully!',
-    emp_id: this.data.employeeId,
-    isEdit: true   // identify edit mode
-  }
-});
+// this.dialog.open(SuccesModalComponent, {
+//   width: '400px',
+//   disableClose: true,
+//   data: {
+//     message: 'Employee updated successfully!',
+//     emp_id: this.data.employeeId,
+//     isEdit: true   // identify edit mode
+//   }
+// });
     },
     (error) => {
       console.error('Error updating employee:', error);
