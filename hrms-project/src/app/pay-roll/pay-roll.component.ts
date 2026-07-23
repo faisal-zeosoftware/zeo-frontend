@@ -39,6 +39,9 @@ export class PayRollComponent {
   month:any='';
   payment_date:any='';
 
+  document_number: number | string | null = null;
+
+  automaticNumbering: boolean = false;
 
   branch:any='';
   department:any='';
@@ -407,7 +410,7 @@ if (this.userId !== null) {
         formData.append('month', this.month);
         formData.append('payment_date', this.payment_date);
         formData.append('branch', this.branch);
-
+        formData.append('document_number', String(this.document_number ?? ''));
         formData.append('department', this.department);
         formData.append('category', this.category);
      

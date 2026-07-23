@@ -1342,8 +1342,6 @@
 
                           <th class="text-table-header">Day Worked</th>
                           <th class="text-table-header">Payment Date</th>
-                          <th class="text-table-header">Gross Salary</th>
-                          <th class="text-table-header">Net Salary</th>
                           <th class="text-table-header">Status</th>
                           <!-- <th class="text-table-header">Payslip Component</th> -->
                         </tr>
@@ -1359,14 +1357,11 @@
     <td>{{ pay.total_working_days }}</td>
     <td>{{ pay.days_worked }}</td>
     <td>{{ pay.payroll_run?.payment_date }}</td>
-    <td>{{ pay.gross_salary }}</td>
-    <td>{{ pay.net_salary }}</td>
-
-                    <td>
-                    <span class="badge" [ngClass]="pay.status ? 'bg-success' : 'bg-secondary'">
-                    {{ pay.status }}
-                    </span>
-                    </td>
+    <td>
+    <span class="badge" [ngClass]="pay.status ? 'bg-success' : 'bg-secondary'">
+    {{ pay.status }}
+    </span>
+    </td>
   </tr>
 
 
@@ -4716,81 +4711,179 @@
 
         <!-- Salary section here -->
 
-      <section class="content-tab  animate__animated animate__fadeIn" id="Salary"
-      *ngIf="activeTabNav === 'Salary'">
+<section class="content-tab animate__animated animate__fadeIn"
+         id="Salary"
+         *ngIf="activeTabNav === 'Salary'">
 
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-header bg-white">
+      <h5 class="mb-0">Salary Details</h5>
+    </div>
 
-           
-<div class="card border-0 shadow-sm mt-4">
-  <div class="card-header bg-white">
-    <h5 class="mb-0">Salary Details</h5>
-  </div>
-
-  <div class="card-body">
-
-    <div *ngFor="let pay of employeesec.payslip" class="mb-4">
+    <div class="card-body">
 
       <!-- Salary Summary -->
-      <div class="row mb-3">
+      <div class="row mb-4">
+
         <div class="col-md-6">
-          <h6>Gross Salary</h6>
-          <h5>{{ pay.gross_salary }}</h5>
+          <div class="salary-summary-card">
+            <h6>Gross Salary</h6>
+            <h3>{{ employeeSalary.gross_salary }}</h3>
+          </div>
         </div>
 
         <div class="col-md-6">
-          <h6>Net Salary</h6>
-          <h5>{{ pay.net_salary }}</h5>
+          <div class="salary-summary-card">
+            <h6>Net Salary</h6>
+            <h3>{{ employeeSalary.net_salary }}</h3>
+          </div>
+        </div>
+
+      </div>
+
+      <hr>
+
+      <div class="table-responsive">
+        <div class="table-scroll">
+
+          <table class="styled-table" width="100%">
+
+            <thead>
+              <tr>
+                <th width="8%">No</th>
+                <th>Salary Component</th>
+                <th>Component Type</th>
+                <th>Payroll Category</th>
+                <th class="text-end">Amount</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr *ngFor="let salary of fixedSalaryComponents; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ salary.component }}</td>
+                <td>{{ salary.component_type }}</td>
+                <td>{{ salary.payroll_category }}</td>
+                <td class="text-end">{{ salary.amount }}</td>
+              </tr>
+
+              <tr *ngIf="fixedSalaryComponents.length === 0">
+                <td colspan="5" class="text-center">
+                  No Fixed Salary Components Found
+                </td>
+              </tr>
+
+            </tbody>
+
+            <tfoot *ngIf="fixedSalaryComponents.length > 0">
+
+              <tr>
+                <th colspan="4" class="text-end">
+                  Gross Salary
+                </th>
+                <th class="text-end">
+                  {{ employeeSalary.gross_salary }}
+                </th>
+              </tr>
+
+              <tr>
+                <th colspan="4" class="text-end">
+                  Total Deductions
+                </th>
+                <th class="text-end">
+                  {{ employeeSalary.total_deductions }}
+                </th>
+              </tr>
+
+              <tr>
+                <th colspan="4" class="text-end">
+                  Net Salary
+                </th>
+                <th class="text-end">
+                  {{ employeeSalary.net_salary }}
+                </th>
+              </tr>
+
+            </tfoot>
+
+          </table>
+          <hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3"
+     *ngIf="showSalaryRevisions">
+
+  <h5 class="mb-0">Salary Revision History</h5>
+
+  <button
+    class="btn btn-primary btn-sm"
+    (click)="isRevisionTableVisible = !isRevisionTableVisible">
+
+    {{ isRevisionTableVisible ? 'Hide Revisions' : 'Show Revisions' }}
+
+  </button>
+
+</div>
+
+<div class="table-responsive" *ngIf="isRevisionTableVisible">
+
+  <div class="table-scroll">
+
+    <table class="styled-table salary-revision-table" width="100%">
+
+      <thead>
+
+        <tr>
+          <th>No</th>
+          <th>Component</th>
+          <th>Old Amount</th>
+          <th>New Amount</th>
+          <th>Effective Period</th>
+          <th>Revised On</th>
+          <th>Remarks</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <ng-container *ngFor="let item of salaryRevisions; let i = index">
+
+          <tr *ngFor="let revision of item.revisions; let j = index">
+
+            <td>{{ j + 1 }}</td>
+
+            <td>{{ item.component_name }}</td>
+
+            <td>{{ revision.old_amount }}</td>
+
+            <td>{{ revision.new_amount }}</td>
+
+            <td>{{ revision.effective_period || '-' }}</td>
+
+            <td>{{ revision.revised_on | date:'dd-MM-yyyy' }}</td>
+
+            <td>{{ revision.remarks || '-' }}</td>
+
+          </tr>
+
+        </ng-container>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
         </div>
       </div>
 
-      <!-- Salary Components -->
-      <table class="table table-bordered table-striped">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Salary Component</th>
-            <th>Component Type</th>
-            <th>Payroll Category</th>
-            <th class="text-end">Amount</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let comp of pay.components; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>{{ comp.component_name }}</td>
-            <td>{{ comp.component_type }}</td>
-            <td>{{ comp.payroll_category }}</td>
-            <td class="text-end">{{ comp.payslip_amount }}</td>
-          </tr>
-
-          <tr *ngIf="pay.components.length === 0">
-            <td colspan="5" class="text-center">
-              No Salary Components Found
-            </td>
-          </tr>
-        </tbody>
-
-        <tfoot>
-          <tr>
-            <th colspan="4" class="text-end">Gross Salary</th>
-            <th class="text-end">{{ pay.gross_salary }}</th>
-          </tr>
-
-          <tr>
-            <th colspan="4" class="text-end">Net Salary</th>
-            <th class="text-end">{{ pay.net_salary }}</th>
-          </tr>
-        </tfoot>
-      </table>
     </div>
-
   </div>
-</div>
 
-
-   </section>
-
+</section>
 
    <!-- Time Sheet here -->
     <section class="content-tab  animate__animated animate__fadeIn" id="TimeSheet"

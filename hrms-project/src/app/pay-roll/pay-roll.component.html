@@ -22,6 +22,37 @@
                         <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter  name"
                         [ngModelOptions]="{standalone: true}">
                     </div>
+
+                          <div class="col-md-6">
+                            <label>Branch
+                              <span class="required-star">*</span>
+                            </label>
+                            <div class="custom-sel">
+                              <select class="form-control" id="branch" name="branch" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                                <option *ngFor="let branch of Branches" [value]="branch.id">{{ branch.branch_name }}</option>
+                              </select>
+                            </div>
+                             <div *ngIf="registerButtonClicked && !branch" class="error-message"> branch is required.</div>
+                          </div>
+
+
+   <div class="col-md-6">
+  <label>Document Number</label>
+  <input 
+    type="text" 
+    class="form-control" 
+    [(ngModel)]="document_number" 
+    placeholder="Enter document number"
+    [disabled]="automaticNumbering"
+    [ngModelOptions]="{standalone: true}"
+    [required]="!automaticNumbering"  
+  >
+
+  <!-- Optional: show hint when disabled -->
+  <small *ngIf="automaticNumbering" class="text-muted">
+    Document number will be auto-generated
+  </small>
+</div>
     
                           
                  
@@ -64,17 +95,7 @@
                 [ngModelOptions]="{standalone: true}">
             </div>
     
-                          <div class="col-md-6">
-                            <label>Branch
-                              <span class="required-star">*</span>
-                            </label>
-                            <div class="custom-sel">
-                              <select class="form-control" id="branch" name="branch" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                                <option *ngFor="let branch of Branches" [value]="branch.id">{{ branch.branch_name }}</option>
-                              </select>
-                            </div>
-                             <div *ngIf="registerButtonClicked && !branch" class="error-message"> branch is required.</div>
-                          </div>
+
      
               
                           <div class="col-md-6">

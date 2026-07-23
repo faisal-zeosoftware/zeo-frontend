@@ -619,7 +619,78 @@ body {
 
 
 
+.salary-revision-table,
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
 
+.salary-revision-table thead th,
+.styled-table thead th {
+    background: whitesmoke;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    border: none;
+}
+
+.salary-revision-table tbody td,
+.styled-table tbody td {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #374151;
+    border-top: 1px solid #ececec;
+    vertical-align: middle;
+}
+
+.salary-revision-table tbody tr:nth-child(even),
+.styled-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.salary-revision-table tbody tr:hover,
+.styled-table tbody tr:hover {
+    background: #f3f4f6;
+}
+
+.salary-revision-table tfoot th,
+.styled-table tfoot th {
+    padding: 14px 16px;
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #374151;
+    border-top: 2px solid #ddd;
+}
+
+.salary-revision-table .text-end,
+.styled-table .text-end {
+    text-align: right;
+}
+
+.salary-summary-card{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.salary-summary-card h6{
+    color:#6b7280;
+    font-size:13px;
+    margin-bottom:8px;
+    text-transform:uppercase;
+}
+
+.salary-summary-card h3{
+    font-size:24px;
+    font-weight:700;
+    color:#111827;
+    margin:0;
+}
 
 .styled-table{
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -638,8 +709,8 @@ body {
   border-spacing: 0 10px;
   width: 100%;
   font-family: 'Segoe UI', sans-serif;
-  background: whitesmoke !important;
-    color: #555;
+  background: #5c1e82 !important;
+    color: #fafafa;
     text-transform: uppercase;
 }
 
@@ -685,7 +756,7 @@ body {
 
 .styled-table th {
   text-align: left;
-  color: #555;
+  color: #f6f6f6;
   font-weight: bold;
   padding: 10px;
 }

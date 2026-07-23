@@ -130,9 +130,7 @@ export class EmployeeDetailsComponent implements OnInit {
         this.loadJobHistory();
         this.loadEmpSkills();
         this.loadEmpProgramSkills();
-
         this.loadEmployeeSalary();
-        
         this.fetchEmployeeDocuments();
         this.loadprogramlang();
         this.loadMarprogramlang();
@@ -159,6 +157,7 @@ export class EmployeeDetailsComponent implements OnInit {
         this.EmployeeService.getEmployeeDetails(employeeId).subscribe(
           (details) => {
             this.employee = details;
+              this.loadSalaryRevisions(employeeId);
             // this.cdr.detectChanges(); // Manually trigger change detection
 
           },
@@ -1051,9 +1050,10 @@ get dashboardLeaveBalances() {
 
 
 
-employeeSalary: any = {};
 
+employeeSalary: any = {};
 fixedSalaryComponents: any[] = [];
+
 
 loadEmployeeSalary(): void {
 
@@ -1061,13 +1061,12 @@ loadEmployeeSalary(): void {
 
     next: (response: any) => {
 
-      console.log(response);
+      console.log('Employee Salary', response);
 
       this.employeeSalary = response;
 
       this.fixedSalaryComponents = response.components.filter(
-        (component: any) =>
-          component.component_value_type.toLowerCase() === 'fixed'
+        (item: any) => item.component_value_type === 'fixed'
       );
 
     },
@@ -1081,6 +1080,37 @@ loadEmployeeSalary(): void {
   });
 
 }
+
+
+showSalaryRevisions = false;
+isRevisionTableVisible = false;
+
+salaryRevisions: any[] = [];
+
+loadSalaryRevisions(employeeId: number) {
+
+  const fromDate = '2026-07-01';
+  const toDate = '2026-07-30';
+
+  this.EmployeeService
+      .getSalaryRevisions(employeeId, fromDate, toDate)
+      .subscribe({
+
+        next: (res) => {
+
+          this.salaryRevisions = res;
+
+          this.showSalaryRevisions =
+            res.some(item => item.revisions?.length > 0);
+
+        },
+
+        error: (err) => console.error(err)
+
+      });
+
+}
+
 
 
 

@@ -761,6 +761,8 @@ loadExpiredDoc(): void {
             this.loadEmpAirticketDetails(selectedSchema, this.selectedEmployeeId);
             this.loadEmpAdvSalaryDetails(selectedSchema, this.selectedEmployeeId);
             this.loadEmpLeaveBalance(selectedSchema, this.selectedEmployeeId);
+            this.loadEmployeeSalary(this.selectedEmployeeId);
+            this.loadSalaryRevisions(this.selectedEmployeeId);
             this.loadEmpAnnouncement(selectedSchema, this.selectedEmployeeId);
 
             this.filterAttendanceChart();
@@ -2670,6 +2672,70 @@ get dashboardLeaveBalances() {
     ?.filter((item: any) => item.include_dashboard === true);
 }
 
+
+employeeSalary: any = {};
+fixedSalaryComponents: any[] = [];
+
+loadEmployeeSalary(empId: number): void {
+
+  this.EmployeeService.getEmployeeSalary(empId).subscribe({
+
+    next: (response: any) => {
+
+      console.log('Employee Salary:', response);
+
+      this.employeeSalary = response;
+
+      this.fixedSalaryComponents = response.components?.filter(
+        (item: any) => item.component_value_type === 'fixed'
+      ) || [];
+
+    },
+
+    error: (error) => {
+      console.error(error);
+    }
+
+  });
+
+}
+
+showSalaryRevisions = false;
+isRevisionTableVisible = false;
+
+salaryRevisions: any[] = [];
+
+loadSalaryRevisions(employeeId: number): void {
+
+  const today = new Date();
+
+  const fromDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-01`;
+
+  const toDate = `${today.getFullYear()}-${String(
+    new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
+  ).padStart(2, '0')}`;
+
+  this.EmployeeService.getSalaryRevisions(employeeId, fromDate, toDate)
+    .subscribe({
+
+      next: (res: any[]) => {
+
+        console.log('Salary Revisions', res);
+
+        this.salaryRevisions = res;
+
+        this.showSalaryRevisions =
+          res.some(item => item.revisions?.length > 0);
+
+      },
+
+      error: err => {
+        console.error(err);
+      }
+
+    });
+
+}
 
 
 

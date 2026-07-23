@@ -586,26 +586,31 @@
                                 <div class="tab_content mt-3" *ngIf="employeeSalary">
 
                                     <!-- Salary Summary -->
-                                    <div class="row mb-4">
-                                
-                                        <div class="col-md-6">
-                                            <h2>Gross Salary</h2>
-                                            <h3>{{ employeeSalary.gross_salary }}</h3>
-                                        </div>
-                                
-                                        <div class="col-md-6">
-                                            <h2>Net Salary</h2>
-                                            <h3>{{ employeeSalary.net_salary }}</h3>
-                                        </div>
-                                
-                                    </div>
+<div class="row mb-4">
+
+    <div class="col-md-6">
+        <div class="salary-summary-card">
+            <h6>Gross Salary</h6>
+            <h3>{{ employeeSalary.gross_salary }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="salary-summary-card">
+            <h6>Net Salary</h6>
+            <h3>{{ employeeSalary.net_salary }}</h3>
+        </div>
+    </div>
+
+</div>
                                 
                                     <hr>
                                 
                                     <!-- Salary Components Table -->
                                     <div class="table-responsive">
                                 
-                                        <table class="table table-bordered table-striped table-hover">
+                                        <div class="table-scroll">
+  <table class="styled-table" width="100%">
                                 
                                             <thead class="table-light">
                                 
@@ -674,6 +679,67 @@
                                             </tfoot>
                                 
                                         </table>
+
+</div>
+
+                                    <hr>
+
+<div class="d-flex justify-content-between align-items-center mb-3"
+     *ngIf="showSalaryRevisions">
+
+    <h4 class="mb-0">Salary Revision History</h4>
+
+    <button class="btn btn-primary btn-sm"
+            (click)="isRevisionTableVisible = !isRevisionTableVisible">
+
+        {{ isRevisionTableVisible ? 'Hide Revisions' : 'Show Revisions' }}
+
+    </button>
+
+</div>
+
+<div class="table-responsive" *ngIf="isRevisionTableVisible">
+
+ <div class="table-scroll">
+  <table class="styled-table salary-revision-table" width="100%">
+
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Component</th>
+                <th>Old Amount</th>
+                <th>New Amount</th>
+                <th>Effective Period</th>
+                <th>Revised On</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <ng-container *ngFor="let item of salaryRevisions; let i = index">
+
+                <tr *ngFor="let revision of item.revisions">
+
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item.component_name }}</td>
+                    <td>{{ revision.old_amount }}</td>
+                    <td>{{ revision.new_amount }}</td>
+                    <td>{{ revision.effective_period || '-' }}</td>
+                    <td>{{ revision.revised_on | date:'dd-MM-yyyy' }}</td>
+                    <td>{{ revision.remarks || '-' }}</td>
+
+                </tr>
+
+            </ng-container>
+
+        </tbody>
+
+    </table>
+
+    </div>
+
+</div>
                                 
                                     </div>
                                 

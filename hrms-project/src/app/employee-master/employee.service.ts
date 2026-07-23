@@ -2911,6 +2911,24 @@ updateGeofence(id: number, data: any): Observable<any> {
 
 }
 
+getSalaryRevisions(
+  employeeId: number,
+  fromDate: string,
+  toDate: string
+): Observable<any[]> {
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    return throwError(() => new Error('No schema selected'));
+  }
+
+  return this.http.get<any[]>(
+    `${this.apiUrl}/payroll/api/salary-revisions/?employee_id=${employeeId}&from_date=${fromDate}&to_date=${toDate}&schema=${selectedSchema}`
+  );
+}
+
+
   getLeaveRequestById(employeeId: number): Observable<any> {
     // return this.http.get<any>(`http://localhost:8000/api/Employee/${employeeId}/emp-leave-request/`);
     // const url = `${this.baseUrl}/Employee/${employeeId}/emp_leave/`;
