@@ -1744,15 +1744,17 @@ updatelPayStructure(id: number, data: any): Observable<any> {
 }
 
 
-updateGeofence(id: number, data: any): Observable<any> {
-  const selectedSchema = localStorage.getItem('selectedSchema');
-  const apiUrl = `${this.apiUrl}/organisation/api/branch-geofence/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+updateGeofence(id: number, formData: FormData): Observable<any> {
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  const apiUrl =
+    `${this.apiUrl}/organisation/api/branch-geofence/${id}/?schema=${selectedSchema}`;
+
+  return this.http.put(apiUrl, formData).pipe(
     catchError((error) => {
-      console.error('Error updating asset:', error);
-      return throwError(error);
+      console.error('Error updating geofence:', error);
+      return throwError(() => error);
     })
   );
 }

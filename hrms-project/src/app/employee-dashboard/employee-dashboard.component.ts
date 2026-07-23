@@ -4306,7 +4306,7 @@ async processAttendancePunch(): Promise<void> {
         }
         this.isPunching = false;
         // Trigger standard cooldown sequence
-        this.startCooldownPeriod();
+        // this.startCooldownPeriod();
       },
       error: (err: any) => {
         console.error(this.getErrorMessage(err, 'attendance'));
