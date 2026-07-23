@@ -3756,6 +3756,14 @@ getSalaryRevisions(
     );
   }
 
+
+  registerEmployeeAttendancePunch(formData: FormData): Observable<any> {
+    const schema = localStorage.getItem('selectedSchema');
+    return this.http.post(
+      `${this.apiUrl}/calendars/api/attendance/punch/?schema=${schema}`,
+      formData
+    );
+  }
   
 // employee.service.ts
 registerEmployeeAttendenceCheckInNew(data: FormData): Observable<any> {

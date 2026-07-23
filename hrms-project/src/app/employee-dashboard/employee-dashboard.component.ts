@@ -4251,11 +4251,84 @@ executeAutoCaptureAndPunch() {
   this.stopCamera();
 
   // ⚡ RUN AUTOMATED PUNCH ROUTE PIPELINE
-  if (this.nextPunchAction === 'CHECK-IN') {
-    this.processCheckIn();
-  } else {
-    this.processCheckOut();
+  // if (this.nextPunchAction === 'CHECK-IN') {
+  //   this.processCheckIn();
+  // } else {
+  //   this.processCheckOut();
+  // }
+
+  this.processAttendancePunch();
+}
+
+
+async processAttendancePunch(): Promise<void> {
+
+  if (!this.selectedEmployeeId) {
+    alert("Please select employee");
+    return;
   }
+
+  if (!this.capturedImage || !this.currentLat || !this.currentLng) {
+    alert("Image or GPS location missing.");
+    this.retakePhoto();
+    return;
+  }
+
+  this.isPunching = true;
+
+  try {
+
+    const blob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
+
+    const formData = new FormData();
+
+    formData.append('employee', this.selectedEmployeeId.toString());
+
+    // Face Image
+    formData.append('face_photo', blob, 'face.jpg');
+
+    // Attendance Image
+    formData.append('attendance_image', blob, 'attendance.jpg');
+
+    // GPS
+    formData.append('latitude', this.currentLat.toString());
+    formData.append('longitude', this.currentLng.toString());
+
+    // Address
+    formData.append('location', this.currentLocationName || '');
+
+    this.employeeService.registerEmployeeAttendancePunch(formData).subscribe({
+
+      next: (res: any) => {
+
+        alert(res.message || "Attendance recorded successfully.");
+
+        // If backend returns next action
+        if (res.next_action) {
+          this.nextPunchAction = res.next_action;
+        }
+
+        this.resetWorkflowAfterDelay();
+
+      },
+
+      error: (err: any) => {
+
+        alert(this.getErrorMessage(err, 'attendance'));
+
+        this.retakePhoto();
+
+      }
+
+    });
+
+  }
+  catch (e) {
+
+    this.retakePhoto();
+
+  }
+
 }
 
 
