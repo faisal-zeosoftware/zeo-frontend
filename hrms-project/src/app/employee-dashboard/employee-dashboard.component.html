@@ -3000,16 +3000,32 @@
               <div class="card-body p-0">
                 <div class="row g-0" *ngIf="punchMode === 'face'">
   
+                  <!-- Camera & Stream Column -->
                   <div class="col-md-7">
                     <div style="padding: 20px;">
                       <div class="bg-dark d-flex align-items-center justify-content-center position-relative rounded overflow-hidden" style="padding: 20px; min-height: 340px;">
-                
-                        <video #video autoplay muted playsinline class="w-100 h-100 object-fit-cover" 
-                               [hidden]="capturedImage" style="max-height: 300px;"></video>
                         
-                        <img [src]="capturedImage" *ngIf="capturedImage" class="w-100 h-100 object-fit-cover" style="max-height: 300px;" />
-                
-                        <div class="scan-overlay" *ngIf="!capturedImage">
+                        <!-- Live Camera Stream -->
+                        <video 
+                          #video 
+                          autoplay 
+                          muted 
+                          playsinline 
+                          class="w-100 h-100 object-fit-cover" 
+                          [hidden]="capturedImage" 
+                          style="max-height: 300px;">
+                        </video>
+                        
+                        <!-- Captured Snapshot Preview -->
+                        <img 
+                          [src]="capturedImage" 
+                          *ngIf="capturedImage" 
+                          class="w-100 h-100 object-fit-cover" 
+                          style="max-height: 300px;" 
+                        />
+                        
+                        <!-- Live Scanning HUD Overlay -->
+                        <div class="scan-overlay" *ngIf="!capturedImage && isScannerActive">
                           <div class="scan-frame"></div>
                           <div class="scan-line"></div>
                           <div class="position-absolute top-0 start-50 translate-middle-x mt-3">
@@ -3019,58 +3035,73 @@
                           </div>
                         </div>
                 
-                        <div  *ngIf="isPunching" class="position-absolute w-100 h-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center bg-dark bg-opacity-75 text-white text-center">
+                        <!-- Cooldown / Next Employee Ready Banner -->
+                        <div *ngIf="isCooldown" class="position-absolute w-100 h-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center bg-dark bg-opacity-85 text-white text-center p-3">
+                          <div class="rounded-circle bg-success bg-opacity-25 p-3 mb-2">
+                            <i class="fa fa-check-circle text-success fs-1"></i>
+                          </div>
+                          <h5 class="fw-bold mb-1">Attendance Logged Successfully!</h5>
+                          <p class="small text-muted mb-2">Next employee scan ready in <span class="fw-bold text-warning">{{ cooldownCountdown }}s</span>...</p>
+                          <button class="btn btn-sm btn-outline-light mt-1" (click)="resetScannerImmediately()">
+                            <i class="fa fa-bolt me-1"></i> Scan Next Now
+                          </button>
+                        </div>
+                
+                        <!-- Attendance Punching API Loading Overlay -->
+                        <div *ngIf="isPunching" class="position-absolute w-100 h-100 top-0 start-0 d-flex flex-column align-items-center justify-content-center bg-dark bg-opacity-75 text-white text-center">
                           <div class="spinner-border text-success mb-2" role="status"></div>
                           <div class="fw-bold text-uppercase tracking-wider">Logging Attendance Entry...</div>
                         </div>
-                
+                        
                       </div>
-                
+                        
+                      <!-- GPS Location Verification Footer -->
                       <div class="mt-3">
                         <label class="form-label small text-uppercase fw-bold text-muted">Verified Safe Punch Context</label>
                         <div class="d-flex align-items-center p-3 bg-light rounded border">
                           <i class="fa fa-map-marker-alt text-danger me-3 fa-lg"></i>
                           <div>
-                            <div class="fw-bold small" *ngIf="currentLat">{{currentLat}}, {{currentLng}}</div>
+                            <div class="fw-bold small" *ngIf="currentLat">{{ currentLat }}, {{ currentLng }}</div>
                             <div class="fw-bold small text-muted" *ngIf="!currentLat">Acquiring Satellites...</div>
-                            <small class="text-muted d-block text-truncate" style="font-size: 11px; max-width: 400px;">{{currentLocationName}}</small>
+                            <small class="text-muted d-block text-truncate" style="font-size: 11px; max-width: 400px;">{{ currentLocationName }}</small>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                
-                  <div class="col-md-5 p-4 bg-white border-start d-flex flex-column justify-content-between">
                     
+                  <!-- Side Info & Dynamic Action Status -->
+                  <div class="col-md-5 p-4 bg-white border-start d-flex flex-column justify-content-between">
                     <div>
                       <label class="form-label small text-uppercase fw-bold text-muted d-block mb-3">Target Attendance Direction</label>
                       
-                      <div class="p-3 mb-4 rounded border d-flex align-items-center justify-content-between"
-                           [ngClass]="nextPunchAction === 'CHECK-IN' ? 'bg-success-subtle border-success-subtle text-success' : 'bg-danger-subtle border-danger-subtle text-danger'">
+                      <!-- Check-In / Check-Out Dynamic Badge -->
+                      <div 
+                        class="p-3 mb-4 rounded border d-flex align-items-center justify-content-between"
+                        [ngClass]="nextPunchAction === 'CHECK-IN' ? 'bg-success-subtle border-success-subtle text-success' : 'bg-danger-subtle border-danger-subtle text-danger'">
                         <div>
                           <small class="text-uppercase d-block fw-bold tracking-wide" style="font-size: 10px;">Next Auto Operation</small>
                           <h4 class="mb-0 fw-bold">{{ nextPunchAction }}</h4>
                         </div>
                         <i class="fa fa-2x" [ngClass]="nextPunchAction === 'CHECK-IN' ? 'fa-sign-in-alt' : 'fa-sign-out-alt'"></i>
                       </div>
-                
+                    
                       <label class="form-label small text-uppercase fw-bold text-muted">Biometric Validation Requirements</label>
                       <ul class="list-unstyled small text-muted mt-2">
                         <li class="mb-2"><i class="fa fa-check-circle text-success me-2"></i> Look straight directly at the camera frame layer</li>
                         <li class="mb-2"><i class="fa fa-check-circle text-success me-2"></i> Remove hats, large glasses, or high face shields</li>
-                        <li class="mb-2"><i class="fa fa-check-circle text-success me-2"></i> Stand completely still for the 2.5-second countdown timer</li>
+                        <li class="mb-2"><i class="fa fa-check-circle text-success me-2"></i> Stand completely still for automatic face capture</li>
                       </ul>
                     </div>
-                
+                    
                     <div class="mt-4 pt-3 border-top">
                       <button class="btn btn-light border btn-sm text-muted w-100" (click)="retakePhoto()">
-                        <i class="fa fa-redo me-1"></i> Reset Active Sensor Stream Window
+                        <i class="fa fa-redo me-1"></i> Reset Sensor Stream Window
                       </button>
                     </div>
-                
                   </div>
+                
                 </div>
-
 
             
 <!-- BARCODE MODE -->

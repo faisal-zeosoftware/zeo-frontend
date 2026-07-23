@@ -4146,6 +4146,13 @@ confirmLinEoutRejection(approvalId: number): void {
            
             cameraStream: MediaStream | null = null;
 
+            isScannerActive: boolean = false;
+  isCooldown: boolean = false;
+  
+
+  cooldownTimer: any = null;
+  cooldownCountdown: number = 5; // Seconds pause between auto scans
+
             // 🌟 Automated Workflow Additions
   autoCaptureTimer: any;
   nextPunchAction: 'CHECK-IN' | 'CHECK-OUT' = 'CHECK-IN'; // Dynamic alternating toggle state
@@ -4153,6 +4160,7 @@ confirmLinEoutRejection(approvalId: number): void {
 // CRITICAL: Initialize camera after view is ready
 ngAfterViewInit() {
   this.initCamera();
+  this.getLocationfacePunch();
 }
 
 
@@ -4227,49 +4235,51 @@ initCamera() {
 
 
 startAutoCaptureCountdown() {
-  if (this.autoCaptureTimer) clearTimeout(this.autoCaptureTimer);
-  
+  this.clearAllTimers();
+
+  // Do not initiate capture if system is processing, in cooldown, or missing valid state
+  if (this.isPunching || this.isCooldown || this.capturedImage) return;
+
   this.autoCaptureTimer = setTimeout(() => {
-    if (!this.capturedImage && !this.isPunching && !this.isPunchings) {
+    if (!this.capturedImage && !this.isPunching && !this.isCooldown) {
       console.log("Triggering automated secure snapshot capture...");
       this.executeAutoCaptureAndPunch();
     }
-  }, 2500); // 2.5 second delay gives the employee time to look at the screen
+  }, 2500); // 2.5-second face positioning delay
 }
 
 executeAutoCaptureAndPunch() {
   if (!this.videoElement || !this.videoElement.nativeElement) return;
 
   const video = this.videoElement.nativeElement;
+  
+  // Ensure video stream is actively playing before capturing
+  if (video.paused || video.ended || video.readyState < 2) {
+    this.startAutoCaptureCountdown();
+    return;
+  }
+
   const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
   const ctx = canvas.getContext('2d');
   ctx?.drawImage(video, 0, 0);
-  
-  this.capturedImage = canvas.toDataURL('image/jpeg');
-  this.stopCamera();
 
-  // ⚡ RUN AUTOMATED PUNCH ROUTE PIPELINE
-  // if (this.nextPunchAction === 'CHECK-IN') {
-  //   this.processCheckIn();
-  // } else {
-  //   this.processCheckOut();
-  // }
+  this.capturedImage = canvas.toDataURL('image/jpeg');
+  this.isScannerActive = false;
 
   this.processAttendancePunch();
 }
 
-
 async processAttendancePunch(): Promise<void> {
-
   if (!this.selectedEmployeeId) {
-    alert("Please select employee");
+    console.warn("Employee not selected. Retrying scan...");
+    this.retakePhoto();
     return;
   }
 
   if (!this.capturedImage || !this.currentLat || !this.currentLng) {
-    alert("Image or GPS location missing.");
+    console.warn("Missing GPS location or captured frame. Resetting scan...");
     this.retakePhoto();
     return;
   }
@@ -4277,72 +4287,109 @@ async processAttendancePunch(): Promise<void> {
   this.isPunching = true;
 
   try {
-
     const blob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
-
     const formData = new FormData();
 
     formData.append('employee', this.selectedEmployeeId.toString());
-
-    // Face Image
     formData.append('face_photo', blob, 'face.jpg');
-
-    // Attendance Image
     formData.append('attendance_image', blob, 'attendance.jpg');
-
-    // GPS
     formData.append('latitude', this.currentLat.toString());
     formData.append('longitude', this.currentLng.toString());
-
-    // Address
     formData.append('location', this.currentLocationName || '');
 
     this.employeeService.registerEmployeeAttendancePunch(formData).subscribe({
-
       next: (res: any) => {
-
+        
         alert(res.message || "Attendance recorded successfully.");
-
-        // If backend returns next action
         if (res.next_action) {
           this.nextPunchAction = res.next_action;
         }
-
-        this.resetWorkflowAfterDelay();
-
+        this.isPunching = false;
+        // Trigger standard cooldown sequence
+        this.startCooldownPeriod();
       },
-
       error: (err: any) => {
-
+        console.error(this.getErrorMessage(err, 'attendance'));
+        this.isPunching = false;
         alert(this.getErrorMessage(err, 'attendance'));
 
         this.retakePhoto();
-
       }
-
     });
-
-  }
-  catch (e) {
-
+  } catch (e) {
+    this.isPunching = false;
     this.retakePhoto();
-
-  }
-
-}
-
-
-// 3. Helper to stop camera
-stopCamera() {
-  if (this.cameraStream) {
-    this.cameraStream.getTracks().forEach(track => track.stop());
-    this.cameraStream = null;
-  }
-  if (this.autoCaptureTimer) {
-    clearTimeout(this.autoCaptureTimer);
   }
 }
 
+
+
+/* Enforces a cooldown delay before taking the next face punch.
+   * Prevents rapid duplicate punches while keeping camera feed continuous.
+   */
+  startCooldownPeriod() {
+    this.isCooldown = true;
+    this.cooldownCountdown = 5; // 5-second default break
+
+    const countdownInterval = setInterval(() => {
+      this.cooldownCountdown--;
+      if (this.cooldownCountdown <= 0) {
+        clearInterval(countdownInterval);
+        this.resetScannerAfterCooldown();
+      }
+    }, 1000);
+  }
+
+  resetScannerAfterCooldown() {
+    this.isCooldown = false;
+    this.capturedImage = null;
+    this.isPunching = false;
+    
+    if (this.cameraStream && this.cameraStream.active) {
+      this.isScannerActive = true;
+      this.startAutoCaptureCountdown();
+    } else {
+      this.initCamera();
+    }
+  }
+
+  resetScannerImmediately() {
+    this.clearAllTimers();
+    this.resetScannerAfterCooldown();
+  }
+
+  retakePhoto() {
+    this.clearAllTimers();
+    this.capturedImage = null;
+    this.isPunching = false;
+    this.isCooldown = false;
+    
+    if (!this.cameraStream || !this.cameraStream.active) {
+      this.initCamera();
+    } else {
+      this.isScannerActive = true;
+      this.startAutoCaptureCountdown();
+    }
+  }
+
+  private clearAllTimers() {
+    if (this.autoCaptureTimer) {
+      clearTimeout(this.autoCaptureTimer);
+      this.autoCaptureTimer = null;
+    }
+    if (this.cooldownTimer) {
+      clearTimeout(this.cooldownTimer);
+      this.cooldownTimer = null;
+    }
+  }
+
+  stopCamera() {
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(track => track.stop());
+      this.cameraStream = null;
+    }
+    this.clearAllTimers();
+  }
 
 capturePhoto() {
   const video = this.videoElement.nativeElement;
@@ -4355,15 +4402,6 @@ capturePhoto() {
   this.stopCamera();
 }
 
-retakePhoto() {
-  this.capturedImage = null;
-  this.isPunching = false;
-  this.isPunchings = false;
-  // Clear out residual timers safely
-  if (this.autoCaptureTimer) clearTimeout(this.autoCaptureTimer);
-  
-  this.initCamera();
-}
 
 // 1. Helper to convert Base64 to a Blob (File)
 private base64ToBlob(base64: string, type: string) {
@@ -4381,84 +4419,6 @@ isPunching:boolean=false;
 isPunchings:boolean=false;
 
 
-// 2. Separate Check-In Function
-async processCheckIn(): Promise<void> {
-  
-  if (!this.selectedEmployeeId) {
-    alert("Please select employee");
-    return;
-  }
-
-  if (!this.capturedImage || !this.currentLat || !this.currentLng) {
-    alert("Required metrics (Image/GPS Coordinates) missing. Retrying scanner flow...");
-    this.retakePhoto();
-    return;
-  }
-
-  try {
-    this.isPunching = true;
-    const blob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
-    const formData = new FormData();
-    formData.append('employee', this.selectedEmployeeId.toString());
-    formData.append('check_in_image', blob, 'checkin.jpg');
-    formData.append('face_photo', blob, 'face.jpg');
-    formData.append('check_in_lat', this.currentLat.toString());
-    formData.append('check_in_lng', this.currentLng.toString());
-    formData.append('check_in_location', this.currentLocationName || '');
-
-    this.employeeService.registerEmployeeAttendenceCheckInNew(formData).subscribe({
-      next: (res: any) => {
-        alert("✅ Automated Check-In Successful");
-        // 🔄 Toggle next action status seamlessly
-        this.nextPunchAction = 'CHECK-OUT';
-        this.resetWorkflowAfterDelay();
-      },
-      error: (err: any) => {
-        alert("Check-In Failure: " + this.getErrorMessage(err, 'check-in'));
-        this.retakePhoto();
-      }
-    });
-  } catch (error) {
-    this.retakePhoto();
-  }
-}
-
-processCheckOut() {
-
-  
-  if (!this.selectedEmployeeId) {
-    alert("Please select employee");
-    return;
-  }
-
-  if (!this.capturedImage) return;
-  this.isPunchings = true;
-
-  const formData = new FormData();
-  formData.append('employee', this.selectedEmployeeId.toString());
-  formData.append('date', new Date().toISOString().split('T')[0]);
-  formData.append('check_out_time', new Date().toLocaleTimeString('en-GB'));
-  formData.append('check_out_lat', this.currentLat?.toString() || '0');
-  formData.append('check_out_lng', this.currentLng?.toString() || '0');
-  formData.append('check_out_location', this.currentLocationName || "Office Main Gate");
-
-  const imageBlob = this.base64ToBlob(this.capturedImage, 'image/jpeg');
-  formData.append('check_out_image', imageBlob, 'check_out.jpg');
-  formData.append('face_photo', imageBlob, 'verify.jpg');
-
-  this.employeeService.registerEmployeeAttendenceCheckOutnew(formData).subscribe({
-    next: (res: any) => {
-      alert("✅ Automated Check-Out Successful");
-      // 🔄 Toggle next action status seamlessly
-      this.nextPunchAction = 'CHECK-IN';
-      this.resetWorkflowAfterDelay();
-    },
-    error: (err: any) => {
-      alert(`Check-Out Error: ${err.error?.detail || 'Verification Failed'}`);
-      this.retakePhoto();
-    }
-  });
-}
 
 
 resetWorkflowAfterDelay() {
@@ -4471,11 +4431,6 @@ resetWorkflowAfterDelay() {
 }
 
 
-
-
-
-
-// Optional: Helper to keep code clean
 private getErrorMessage(err: any, type: string): string {
   if (err.error) {
     if (typeof err.error === 'string') return err.error;
@@ -4483,6 +4438,10 @@ private getErrorMessage(err: any, type: string): string {
   }
   return `Failed to ${type}`;
 }
+
+
+
+
 // Stop camera when leaving page to prevent "Camera in use" errors
 ngOnDestroy() {
   if (this.cameraStream) {
@@ -4500,28 +4459,20 @@ getLocationfacePunch() {
       this.currentLat = pos.coords.latitude;
       this.currentLng = pos.coords.longitude;
 
-      // Fetch the Address Name
       try {
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${this.currentLat}&lon=${this.currentLng}`
         );
         const data = await response.json();
-        
-        // This will give you a full address string
         this.currentLocationName = data.display_name;
-        
-        console.log("Location Found:", this.currentLocationName);
       } catch (error) {
-        console.error("Error fetching location name:", error);
         this.currentLocationName = "Address not found";
       }
-    }, (error) => {
-      console.error("GPS Error:", error);
+    }, () => {
       this.currentLocationName = "Location permission denied";
     });
   }
 }
-
 
 switchMode(mode: 'face' | 'barcode') {
   this.punchMode = mode;
