@@ -446,15 +446,15 @@
               
             <tr *ngFor="let docs of LeaveRequests;let i = index">
               <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
-              <td>{{ docs.employee }}</td>
-              <td>{{ docs.start_date }}</td>
-              <td>{{ docs.end_date }}</td> 
-              <td>{{ docs.number_of_days }}</td> 
-              <td>{{ docs.leave_type }}</td>
-              <td>{{ docs.reason }}</td>
-              <td>{{ docs.document_number }}</td>
+              <td data-label="Employee">{{ docs.employee }}</td>
+              <td data-label="Start date">{{ docs.start_date }}</td>
+              <td data-label="End date">{{ docs.end_date }}</td> 
+              <td data-label="Total Days">{{ docs.number_of_days }}</td> 
+              <td data-label="Leave type">{{ docs.leave_type }}</td>
+              <td data-label="Reason">{{ docs.reason }}</td>
+              <td data-label="Document Number">{{ docs.document_number }}</td>
        
-                     <td>
+              <td data-label="Approval Status">
            <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
                  {{ docs.status }}
             </span>

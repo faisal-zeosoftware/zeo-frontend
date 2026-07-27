@@ -304,6 +304,12 @@ ngOnInit(): void {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
   
+  private autoSelectFilteredEmployees(): void {
+  this.FilteredEmployees.forEach(emp => {
+    emp.selected = true;   // Auto select all filtered employees
+  });
+  this.allEmployeesSelected = true; // Also check the "Select All" header checkbox
+}
 
         loadUsers(): void {
     
@@ -380,7 +386,7 @@ const payload = {
       (response) => {
         console.log('Registration successful', response);
         alert('Shift has been added.');
-        // window.location.reload();
+        window.location.reload();
       },
       (error) => {
         console.error('Registration failed', error);
@@ -435,48 +441,46 @@ const payload = {
 
   allEmployeesSelected = false;
 
-  applyEmployeeFilter(): void {
-
-    this.FilteredEmployees = this.Employee.filter(emp => {
-
-      const branchMatch =
-        this.selectedBranches.length === 0 ||
-        this.selectedBranches.some(id =>
-          emp.emp_branch_id === this.getBranchName(id)
-        );
-
-      const deptMatch =
-        this.selectedDepartments.length === 0 ||
-        this.selectedDepartments.some(id =>
-          emp.emp_dept_id === this.getDepartmentName(id)
-        );
-
-      const categoryMatch =
-        this.selectedCategories.length === 0 ||
-        this.selectedCategories.some(id =>
-          emp.emp_ctgry_id === this.getCategoryName(id)
-        );
-
-      const designationMatch =
-        this.selectedDesignations.length === 0 ||
-        this.selectedDesignations.some(id =>
-          emp.emp_desgntn_id === this.getDesignationName(id)
-        );
-
-      return (
-        branchMatch &&
-        deptMatch &&
-        categoryMatch &&
-        designationMatch
+applyEmployeeFilter(): void {
+  this.FilteredEmployees = this.Employee.filter(emp => {
+    const branchMatch =
+      this.selectedBranches.length === 0 ||
+      this.selectedBranches.some(id => 
+        emp.emp_branch_id === id || emp.emp_branch_id === this.getBranchName(id)
       );
 
-    });
-    this.currentPage = 1;
+    const deptMatch =
+      this.selectedDepartments.length === 0 ||
+      this.selectedDepartments.some(id =>
+        emp.emp_dept_id === id || emp.emp_dept_id === this.getDepartmentName(id)
+      );
 
-    this.updatePagination();
+    const categoryMatch =
+      this.selectedCategories.length === 0 ||
+      this.selectedCategories.some(id =>
+        emp.emp_ctgry_id === id || emp.emp_ctgry_id === this.getCategoryName(id)
+      );
 
+    const designationMatch =
+      this.selectedDesignations.length === 0 ||
+      this.selectedDesignations.some(id =>
+        emp.emp_desgntn_id === id || emp.emp_desgntn_id === this.getDesignationName(id)
+      );
 
+    return branchMatch && deptMatch && categoryMatch && designationMatch;
+  });
+
+  // === AUTO SELECT EMPLOYEES WHEN BRANCH(ES) ARE SELECTED ===
+  if (this.selectedBranches.length > 0) {
+    this.autoSelectFilteredEmployees();
+  } else {
+    // Optional: unselect all if no branch is selected
+    this.FilteredEmployees.forEach(emp => emp.selected = false);
   }
+
+  this.currentPage = 1;
+  this.updatePagination();
+}
 
   getBranchName(id: number): string {
 
@@ -1340,6 +1344,8 @@ getMonthNameFromDate(dateStr: string): string {
           }
         });
       }
+
+      
 
 
       

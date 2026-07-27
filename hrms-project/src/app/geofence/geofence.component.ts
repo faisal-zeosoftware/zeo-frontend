@@ -1308,6 +1308,31 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
 
 
 
+searchEmployee: string = '';
+
+
+filteredEmployees() {
+  if (!this.searchEmployee) {
+    return this.Employees;
+  }
+
+  const search = this.searchEmployee.toLowerCase();
+
+return this.Employees.filter(emp =>
+  emp.emp_code.toString().toLowerCase().includes(search)
+);
+}
+
+
+searchBranch: string = '';
+
+filteredBranches() {
+  const search = this.searchBranch?.toLowerCase() || '';
+
+  return this.Branches.filter(branch =>
+    (branch.branch_name || '').toLowerCase().includes(search)
+  );
+}
 
 }
 

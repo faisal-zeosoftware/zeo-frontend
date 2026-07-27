@@ -142,59 +142,96 @@
                         <input type="number" class="form-control" [(ngModel)]="radius" name="rad" (input)="updateCircle()">
                       </div>
 
-                      
-      <div class="col-md-6" >
-        <label>Branch
-            <span class="required-star">*</span>
-        </label>
-        <div class="custom-sel">
-          <div class="form-control-wrapper">
-          
+      <div class="col-md-6">
+  <label>Branch</label>
 
-            <mat-form-field>
+  <div class="custom-sel">
+    <div class="form-control-wrapper">
 
-              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}" #selectBrach multiple>
+      <mat-form-field>
+        <mat-select
+          placeholder="Select"
+          [(ngModel)]="branch"
+          [ngModelOptions]="{standalone: true}"
+          multiple>
 
-                <input type="text" placeholder="serach" class="form-control">
-
-                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            
+          <!-- Search -->
+          <div class="px-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search Branch"
+              [(ngModel)]="searchBranch"
+              [ngModelOptions]="{standalone: true}"
+              (click)="$event.stopPropagation()"
+              (keydown)="$event.stopPropagation()">
           </div>
-         <div *ngIf="registerButtonClicked && !branch" class="error-message">Select Your Branch</div>
-        </div>
 
-      </div>
+          <!-- Filtered Branches -->
+          <mat-option
+            *ngFor="let branchs of filteredBranches()"
+            [value]="branchs.id">
+            {{ branchs.branch_name }}
+          </mat-option>
+
+        </mat-select>
+      </mat-form-field>
+
+    </div>
+
+    <!-- <div *ngIf="registerButtonClicked && !branch" class="error-message">
+      Select Your Branch
+    </div> -->
+  </div>
+</div>
 
       <div class="col-md-6">
-        <label>Employee
-                <span class="required-star">*</span>
-        </label>
+        <label>Employee</label>
     
         <div class="custom-sel">
             <div class="form-control-wrapper">
           
-    
-              <mat-form-field>
-                <!-- <mat-label>Favorite food</mat-label> -->
-                <mat-select placeholder="Select" [(ngModel)]="employee" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !allSelectedEmp}" #selectEmp multiple>
-                  <div class="select-all">
-                    <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
-                      Select All
-                    </mat-checkbox>
-                  </div>
-                  <input type="text" placeholder="serach" class="form-control">
-    
-                  <mat-option *ngFor="let deparmentsec of   Employees" [value]="deparmentsec.id">
-                    {{ deparmentsec.emp_code }} 
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+<mat-form-field>
+  <mat-select
+    placeholder="Select"
+    [(ngModel)]="employee"
+    [ngModelOptions]="{standalone: true}"
+    multiple>
+
+    <!-- Select All -->
+    <div class="select-all">
+      <mat-checkbox
+        [(ngModel)]="allSelectedEmp"
+        [ngModelOptions]="{standalone: true}"
+        (change)="toggleAllSelectionEmp()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+    <!-- Search -->
+    <div class="px-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Employee"
+        [(ngModel)]="searchEmployee"
+        [ngModelOptions]="{standalone: true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+    </div>
+
+    <!-- Filtered List -->
+    <mat-option
+      *ngFor="let emp of filteredEmployees()"
+      [value]="emp.id">
+      {{ emp.emp_code }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
               
             </div>
-           <div *ngIf="registerButtonClicked && !allSelectedEmp" class="error-message">Please Select Your Employee</div>
+           <!-- <div *ngIf="registerButtonClicked && !allSelectedEmp" class="error-message">Please Select Your Employee</div> -->
           </div>
                     
     

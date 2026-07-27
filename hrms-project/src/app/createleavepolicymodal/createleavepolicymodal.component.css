@@ -374,7 +374,7 @@ h2 {
   
   
   ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
-    margin-top: -14px;
+    margin-top: 0px;
   }
   
   ::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){

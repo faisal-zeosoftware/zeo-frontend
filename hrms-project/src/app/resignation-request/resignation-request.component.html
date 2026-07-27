@@ -444,7 +444,7 @@
           
         <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
         <td data-label="Document number">{{ docs.document_number }}</td>
-        <td>{{ docs.branch }}</td>
+        <td data-label="Branch">{{ docs.branch }}</td>
         <td data-label="Document Date">{{ docs.document_date }}</td>
         <td data-label="Resigned On">{{ docs.resigned_on }}</td>
         <td data-label="Notice Period">{{ docs.notice_period }}</td>
@@ -452,7 +452,7 @@
         <td data-label="Location">{{ docs.location }}</td>
         <td data-label="Termination Type">{{ docs.termination_type }}</td>
         <td data-label="Reason for Leaving">{{ docs.reason_for_leaving }}</td>
-         <td>
+        <td data-label="status">
            <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
                  {{ docs.status }}
             </span>

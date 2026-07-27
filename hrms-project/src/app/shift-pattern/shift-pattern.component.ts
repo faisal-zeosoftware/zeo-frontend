@@ -1010,6 +1010,8 @@ registerShiftPattern() {
 
       this.closeapplicationModal();
 
+      window.location.reload();
+
       // this.();
 
     },

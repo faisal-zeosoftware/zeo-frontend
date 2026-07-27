@@ -1333,6 +1333,7 @@ export class CreateleavepolicymodalComponent {
             response?.success ||
             'Applicable Policy Saved Successfully'
           );
+          window.location.reload();
 
           // this.currentStep =
           //   this.hasPayRuleEnabled ? 4 : 3;
@@ -1545,6 +1546,7 @@ export class CreateleavepolicymodalComponent {
             response?.success ||
             'Applicable Policy Saved Successfully'
           );
+          window.location.reload();
 
           // this.currentStep =
           //   this.hasPayRuleEnabled ? 4 : 3;
@@ -1931,6 +1933,7 @@ submitPayRule(): void {
             res?.message ||
             'Applicable Updated Successfully'
           );
+          window.location.reload();
 
         },
 
@@ -1992,6 +1995,7 @@ submitPayRule(): void {
             res?.message ||
             'Applicable Updated Successfully'
           );
+          window.location.reload();
 
         },
 
