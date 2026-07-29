@@ -1,113 +1,279 @@
 .comapny_section {
 
-    margin-top: 100px;
-  
-    margin-left: 40px;
-  
-    margin-right: 20px;
-  
-  }
-  
-  .header_section {
-  
-    background: white;
-  
-    padding: 20px;
-  
-    border-bottom: 3px solid navy;
-  
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  
-    margin-bottom: 20px;
-  
-  }
+  margin-top: 100px;
 
-  .header_section h1{
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
-  
-  }
-  
-  
-  .com_list {
-  
-    background: white;
-  
-    padding: 20px;
-  
-    margin-bottom: 20px;
-  
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  
-    border-radius: 10px;
-  
-  }
-  
-  .employee-header {
-  
-    margin-bottom: 20px;
-  
-  }
-  
-  .employee-header h2 {
-  
-    font-size: 18px;
-  
-    font-weight: 600;
-  
-  }
-  
- 
-  
-  .form-control {
-  
-    height: 42px;
-  
-  }
-  
-  .btn-primary {
-  
-    height: 42px;
-  
-  }
-  
-  
-  
-  /* FullCalendar Custom */
-  
-  ::ng-deep .fc-toolbar-title {
-  
-    font-size: 22px !important;
-  
-    font-weight: 600;
-  
-  }
-  
-  ::ng-deep .fc-daygrid-event {
-  
-    border-radius: 5px;
-  
-    border: none;
-  
-    padding: 3px;
-  
-    font-size: 12px;
-  
-  }
-  
-  ::ng-deep .fc-day-today {
-  
-    background: #f3f8ff !important;
-  
-  }
-  
-  ::ng-deep .fc-button {
-  
-    background: navy !important;
-  
-    border: none !important;
-  
-  }
+  margin-left: 40px;
+
+  margin-right: 20px;
+
+}
+
+.header_section {
+
+  background: white;
+
+  padding: 20px;
+
+  border-bottom: 3px solid navy;
+
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+  margin-bottom: 20px;
+
+}
+
+.header_section h1{
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+
+}
+
+
+.com_list {
+
+  background: white;
+
+  padding: 20px;
+
+  margin-bottom: 20px;
+
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+
+  border-radius: 10px;
+
+}
+
+.employee-header {
+
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+}
+
+.employee-header h2 {
+
+  font-size: 18px;
+
+  font-weight: 600;
+  margin-bottom: 4px;
+
+}
+
+.employee-info .emp-code {
+  color: #6c757d;
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.employee-meta {
+  color: #6c757d;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Status Summary Chips */
+
+.summary-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.summary-chip .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.summary-chip .chip-label {
+  color: #495057;
+  font-weight: 500;
+}
+
+.summary-chip .chip-count {
+  background: rgba(0,0,0,0.06);
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.empty-state {
+  text-align: center;
+  color: #6c757d;
+  padding: 40px 20px;
+}
+
+
+.form-control {
+
+  height: 42px;
+
+}
+
+.btn-primary {
+
+  height: 42px;
+
+  background: #5959ac;
+
+  border-color: #5959ac;
+
+}
+
+
+/* FullCalendar Custom */
+
+::ng-deep .fc-toolbar-title {
+
+  font-size: 22px !important;
+
+  font-weight: 600;
+
+}
+
+::ng-deep .fc-daygrid-event {
+
+  border-radius: 5px;
+
+  border: none;
+
+  padding: 3px 6px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+
+}
+
+::ng-deep .fc-day-today {
+
+  background: #f3f8ff !important;
+
+}
+
+::ng-deep .fc-button {
+
+  background: navy !important;
+
+  border: none !important;
+
+}
+
+::ng-deep .fc-daygrid-day-frame {
+  padding: 4px;
+}
+
+.event-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.event-card {
+  width: 420px;
+  max-width: 95%;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+.event-header {
+  background: #5959ac;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-header h5 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.event-body {
+  padding: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row span {
+  font-weight: 500;
+}
+
+.detail-row strong {
+  color: #666;
+}
+
+
+/* Loader */
+
+.loader-container {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.loader-container.show {
+  display: flex;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e9ecef;
+  border-top-color: navy;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

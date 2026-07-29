@@ -401,11 +401,19 @@ loadOvertimepolicy(callback?: Function): void {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
+openEditModal(asset: any): void {
 
-  }
+  const selectedPolicy = this.Policyget.find(
+    p => p.name === asset.policy
+  );
+
+  this.editAsset = {
+    ...asset,
+    policy: selectedPolicy ? selectedPolicy.id : null
+  };
+
+  this.isEditModalOpen = true;
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;

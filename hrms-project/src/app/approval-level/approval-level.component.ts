@@ -677,6 +677,7 @@ updateAssetType(): void {
       alert('Approval Level updated successfully!');
       this.closeEditModal();
       this.loadApprovalLevelGen();
+      window.location.reload();
     },
     (error) => {
       console.error(error);

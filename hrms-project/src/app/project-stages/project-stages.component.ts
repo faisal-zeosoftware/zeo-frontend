@@ -485,7 +485,16 @@ ngOnInit(): void {
     editProjectStages: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editProjectStages = { ...asset }; // copy asset data
+
+  const selectedProject = this.Employees.find(
+    p => p.title === asset.project
+  );
+
+  this.editProjectStages = {
+    ...asset,
+    project: selectedProject?.id
+  };
+
   this.isEditModalOpen = true;
 }
 

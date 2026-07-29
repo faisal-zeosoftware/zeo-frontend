@@ -554,6 +554,7 @@ updateAssetType(): void {
       alert(' Request Type updated successfully!');
       this.closeEditModal();
       this.loadReqTypes(); // reload updated list
+      window.location.reload();
     },
 (error) => {
   console.error('Error updating Request Type:', error);

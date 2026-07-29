@@ -306,6 +306,7 @@ CreateAssetApproverLevel(): void {
       if (schema) {
         this.fetchEmployees(schema, branches);
       }
+      window.location.reload();
     },
     (error) => {
       console.error(error);
@@ -691,11 +692,11 @@ removeEditLevel(index: number) {
       .map(employee => employee.id);
   
     if (selectedEmployeeIds.length === 0) {
-      alert('No Loan Approval Level selected for deletion.');
+      alert('No Asset Approval Level selected for deletion.');
       return;
     }
   
-    if (confirm('Are you sure you want to delete the selected Loan Approval Level ?')) {
+    if (confirm('Are you sure you want to delete the selected Asset Approval Level ?')) {
   
       let total = selectedEmployeeIds.length;
       let completed = 0;
@@ -704,21 +705,21 @@ removeEditLevel(index: number) {
       selectedEmployeeIds.forEach(categoryId => {
         this.employeeService.deleteAssetApprovalLevel(categoryId).subscribe(
           () => {
-            console.log(' Loan Approval Level deleted successfully:', categoryId);
+            console.log(' Asset Approval Level deleted successfully:', categoryId);
             // Remove the deleted employee from the local list
             this.approvalLevels = this.approvalLevels.filter(employee => employee.id !== categoryId);
   
              completed++;
   
            if (completed === total) { 
-            alert(' Loan Approval Level  deleted successfully');
+            alert(' Asset Approval Level  deleted successfully');
             window.location.reload();
            }
   
           },
           (error) => {
-            console.error('Error deleting Loan Approval Level:', error);
-              alert('Error deleting Loan Approval Level: ' + error.statusText);
+            console.error('Error deleting Asset Approval Level:', error);
+              alert('Error deleting Asset Approval Level: ' + error.statusText);
           }
         );
       });
@@ -763,6 +764,7 @@ updateAssetType(): void {
       if (schema) {
         this.fetchEmployees(schema, branches);
       }
+     window.location.reload();
     },
     (error) => {
       console.error(error);

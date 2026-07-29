@@ -560,10 +560,25 @@ export class ProjectMasterComponent {
   isEditModalOpen: boolean = false;
   editProject: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editProject = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
-  }
+openEditModal(project: any): void {
+
+  this.editProject = {
+    ...project,
+    managers: project.managers
+      ?.map((code: string) =>
+        this.Employees.find(e => e.emp_code === code)?.id
+      )
+      .filter((id: any) => id != null),
+
+    members: project.members
+      ?.map((code: string) =>
+        this.Employees.find(e => e.emp_code === code)?.id
+      )
+      .filter((id: any) => id != null)
+  };
+
+  this.isEditModalOpen = true;
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;

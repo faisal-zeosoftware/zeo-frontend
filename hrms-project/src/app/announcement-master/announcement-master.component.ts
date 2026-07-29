@@ -632,37 +632,25 @@ export class AnnouncementMasterComponent {
 
   }
 
-  getBranchName(id: number): string {
+ getBranchName(id: number | string): string {
+  const item = this.branches.find((x: any) => +x.id === +id);
+  return item ? item.branch_name : '';
+}
 
-    const item = this.branches.find((x: { id: number; }) => x.id == id);
+getDepartmentName(id: number | string): string {
+  const item = this.Departments.find((x: any) => +x.id === +id);
+  return item ? item.dept_name : '';
+}
 
-    return item ? item.branch_name : '';
+getCategoryName(id: number | string): string {
+  const item = this.Categories.find((x: any) => +x.id === +id);
+  return item ? item.ctgry_title : '';
+}
 
-  }
-
-  getDepartmentName(id: number): string {
-
-    const item = this.Departments.find(x => x.id == id);
-
-    return item ? item.dept_name : '';
-
-  }
-
-  getCategoryName(id: number): string {
-
-    const item = this.Categories.find(x => x.id == id);
-
-    return item ? item.ctgry_title : '';
-
-  }
-
-  getDesignationName(id: number): string {
-
-    const item = this.Designations.find(x => x.id == id);
-
-    return item ? item.desgntn_job_title : '';
-
-  }
+getDesignationName(id: number | string): string {
+  const item = this.Designations.find((x: any) => +x.id === +id);
+  return item ? item.desgntn_job_title : '';
+}
 
 
   toggleSelectAllEmployees() {
@@ -1140,35 +1128,149 @@ openEditModal(asset: any): void {
 
   this.editAsset = { ...asset };
 
-  // Branches
-  this.editSelectedBranches =
-    asset.branches || [];
+  // ─── Dates must be YYYY-MM-DD for <input type="date"> ───
+  if (this.editAsset.schedule_at) {
+    this.editAsset.schedule_at = this.editAsset.schedule_at.toString().split('T')[0];
+  }
+  if (this.editAsset.expires_at) {
+    this.editAsset.expires_at = this.editAsset.expires_at.toString().split('T')[0];
+  }
 
-  // Departments
-  this.editSelectedDepartments =
-    asset.department || [];
+  // ─── Branch (API usually returns names) ───
+  // ─── Branch (API usually returns names) ───
+this.editSelectedBranches = this.branches
+  .filter((x: any) =>
+    (asset.branches || []).includes(x.branch_name) ||
+    (asset.branches || []).includes(x.id) ||
+    (asset.branches || []).includes(+x.id)
+  )
+  .map((x: any) => +x.id);
 
-  // Categories
-  this.editSelectedCategories =
-    asset.category || [];
+// ─── Department ───
+this.editSelectedDepartments = this.Departments
+  .filter((x: any) =>
+    (asset.department || []).includes(x.dept_name) ||
+    (asset.department || []).includes(x.id) ||
+    (asset.department || []).includes(+x.id)
+  )
+  .map((x: any) => +x.id);
 
-  // Designations
-  this.editSelectedDesignations =
-    asset.designation || [];
+// ─── Category ───
+this.editSelectedCategories = this.Categories
+  .filter((x: any) =>
+    (asset.category || []).includes(x.ctgry_title) ||
+    (asset.category || []).includes(x.id) ||
+    (asset.category || []).includes(+x.id)
+  )
+  .map((x: any) => +x.id);
 
-  // Employees
-  this.editFilteredEmployees =
-    this.Employee.map(emp => ({
-      ...emp,
-      selected:
-        asset.specific_employees?.includes(emp.id)
-    }));
+// ─── Designation ───
+this.editSelectedDesignations = this.Designations
+  .filter((x: any) =>
+    (asset.designation || []).includes(x.desgntn_job_title) ||
+    (asset.designation || []).includes(x.id) ||
+    (asset.designation || []).includes(+x.id)
+  )
+  .map((x: any) => +x.id);
+  
+  // ─── Employees (support both id and emp_code) ───
+  const previouslySelected = (asset.specific_employees || []).map((v: any) =>
+    typeof v === 'string' || typeof v === 'number' ? v : v?.id
+  );
+
+  this.editFilteredEmployees = this.Employee.map(emp => ({
+    ...emp,
+    selected:
+      previouslySelected.includes(emp.id) ||
+      previouslySelected.includes(+emp.id) ||
+      previouslySelected.includes(emp.emp_code)
+  }));
 
   this.editCurrentPage = 1;
+  this.editAllEmployeesSelected = false;
 
   this.applyEditEmployeeFilter();
-
   this.isEditModalOpen = true;
+}
+
+/* ─────────────── EDIT – Branch ─────────────── */
+toggleAllEditBranches(): void {
+  if (this.editSelectedBranches.length === this.branches.length) {
+    this.editSelectedBranches = [];
+  } else {
+    this.editSelectedBranches = this.branches.map((x: any) => +x.id);
+  }
+  this.applyEditEmployeeFilter();
+}
+
+isAllEditBranchesSelected(): boolean {
+  return this.branches.length > 0 &&
+         this.editSelectedBranches.length === this.branches.length;
+}
+
+isSomeEditBranchesSelected(): boolean {
+  return this.editSelectedBranches.length > 0 &&
+         this.editSelectedBranches.length < this.branches.length;
+}
+
+/* ─────────────── EDIT – Department ─────────────── */
+toggleAllEditDepartments(): void {
+  if (this.editSelectedDepartments.length === this.Departments.length) {
+    this.editSelectedDepartments = [];
+  } else {
+    this.editSelectedDepartments = this.Departments.map((x: any) => +x.id);
+  }
+  this.applyEditEmployeeFilter();
+}
+
+isAllEditDepartmentsSelected(): boolean {
+  return this.Departments.length > 0 &&
+         this.editSelectedDepartments.length === this.Departments.length;
+}
+
+isSomeEditDepartmentsSelected(): boolean {
+  return this.editSelectedDepartments.length > 0 &&
+         this.editSelectedDepartments.length < this.Departments.length;
+}
+
+/* ─────────────── EDIT – Category ─────────────── */
+toggleAllEditCategories(): void {
+  if (this.editSelectedCategories.length === this.Categories.length) {
+    this.editSelectedCategories = [];
+  } else {
+    this.editSelectedCategories = this.Categories.map((x: any) => +x.id);
+  }
+  this.applyEditEmployeeFilter();
+}
+
+isAllEditCategoriesSelected(): boolean {
+  return this.Categories.length > 0 &&
+         this.editSelectedCategories.length === this.Categories.length;
+}
+
+isSomeEditCategoriesSelected(): boolean {
+  return this.editSelectedCategories.length > 0 &&
+         this.editSelectedCategories.length < this.Categories.length;
+}
+
+/* ─────────────── EDIT – Designation ─────────────── */
+toggleAllEditDesignations(): void {
+  if (this.editSelectedDesignations.length === this.Designations.length) {
+    this.editSelectedDesignations = [];
+  } else {
+    this.editSelectedDesignations = this.Designations.map((x: any) => +x.id);
+  }
+  this.applyEditEmployeeFilter();
+}
+
+isAllEditDesignationsSelected(): boolean {
+  return this.Designations.length > 0 &&
+         this.editSelectedDesignations.length === this.Designations.length;
+}
+
+isSomeEditDesignationsSelected(): boolean {
+  return this.editSelectedDesignations.length > 0 &&
+         this.editSelectedDesignations.length < this.Designations.length;
 }
 
 applyEditEmployeeFilter(): void {

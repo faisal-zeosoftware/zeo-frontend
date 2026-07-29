@@ -448,8 +448,11 @@ isEditModalOpen: boolean = false;
 editDocReqtype: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editDocReqtype = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editDocReqtype = { ...asset };
+
+  this.mapBranchesNameToId();
+
+  this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {

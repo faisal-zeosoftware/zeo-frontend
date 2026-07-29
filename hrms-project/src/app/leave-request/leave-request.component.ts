@@ -375,7 +375,7 @@ onEmployeeChange() {
 
 onEmployeeChangeEdit() {
 
-  const selectedLeaveType = this.editAsset.leave_type;
+  const leaveName = this.editAsset.leave_type;
 
   this.leaveService.getLeaveBalance(this.editAsset.selectedEmployee).subscribe(
     (data: any) => {
@@ -383,14 +383,14 @@ onEmployeeChangeEdit() {
       this.leaveBalances = data.leave_balance;
       this.allLeaveTypes = data.available_leave_types;
 
-      const leaveTypeNames = this.leaveBalances.map(lb => lb.leave_type);
+      const names = this.leaveBalances.map((x: any) => x.leave_type);
 
-      this.LeaveTypes = this.allLeaveTypes.filter(lt =>
-        leaveTypeNames.includes(lt.name)
+      this.LeaveTypes = this.allLeaveTypes.filter((x: any) =>
+        names.includes(x.name)
       );
 
-      const leave = this.LeaveTypes.find(
-        (l: any) => l.name === selectedLeaveType
+      const leave = this.LeaveTypes.find((x: any) =>
+        x.name === leaveName
       );
 
       if (leave) {
@@ -442,22 +442,17 @@ loadEmp(callback?: Function): void {
 
 mapEmpNameToId() {
 
-  if (!this.Employees || !this.editAsset?.employee) return;
+  if (!this.Employees?.length) return;
 
-  const emp = this.Employees.find((e: any) => {
-
-    const fullName = `${e.emp_first_name} ${e.emp_last_name}`.trim();
-
-    return fullName === this.editAsset.employee ||
-           e.emp_first_name === this.editAsset.employee;
-
-  });
+  const emp = this.Employees.find((e: any) =>
+    e.emp_code === this.editAsset.employee
+  );
 
   if (emp) {
     this.editAsset.selectedEmployee = emp.id;
   }
 
-  console.log('Selected Employee ID:', this.editAsset.selectedEmployee);
+  console.log(this.editAsset.selectedEmployee);
 }
   
 
@@ -601,9 +596,7 @@ onCheckboxChange(employee:number) {
 isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
-openEditModal(asset: any): void {
-
-  console.log(asset);
+openEditModal(asset: any) {
 
   this.editAsset = { ...asset };
 
@@ -611,14 +604,13 @@ openEditModal(asset: any): void {
 
   this.mapEmpNameToId();
 
-  this.mapLeaveTypeNameToId();
+  this.calculateEditTotalDays();
 
   this.onEmployeeChangeEdit();
 
-  this.calculateEditTotalDays();
-
   this.isEditModalOpen = true;
 }
+
 closeEditModal(): void {
 this.isEditModalOpen = false;
 this.editAsset = {};

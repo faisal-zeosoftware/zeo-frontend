@@ -302,72 +302,79 @@ this.category.forEach((id: number) =>
   );
 }
 
-
 isAllBranchesSelected(): boolean {
-  return this.branch?.length === this.Branches?.length;
+  return this.editAsset.branch?.length === this.Branches.length;
 }
 
 isSomeBranchesSelected(): boolean {
-  return this.branch?.length > 0 &&
-         this.branch?.length < this.Branches?.length;
+  return (
+    this.editAsset.branch?.length > 0 &&
+    this.editAsset.branch?.length < this.Branches.length
+  );
 }
 
 toggleAllBranches(): void {
   if (this.isAllBranchesSelected()) {
-    this.branch = [];
+    this.editAsset.branch = [];
   } else {
-    this.branch = this.Branches.map(x => x.id);
+    this.editAsset.branch = this.Branches.map(x => x.id);
   }
 }
 
 isAllDepartmentsSelected(): boolean {
-  return this.department?.length === this.Departments?.length;
+  return this.editAsset.department?.length === this.Departments.length;
 }
 
 isSomeDepartmentsSelected(): boolean {
-  return this.department?.length > 0 &&
-         this.department?.length < this.Departments?.length;
+  return (
+    this.editAsset.department?.length > 0 &&
+    this.editAsset.department?.length < this.Departments.length
+  );
 }
 
 toggleAllDepartments(): void {
   if (this.isAllDepartmentsSelected()) {
-    this.department = [];
+    this.editAsset.department = [];
   } else {
-    this.department = this.Departments.map(x => x.id);
+    this.editAsset.department = this.Departments.map(x => x.id);
   }
 }
 
 isAllCategoriesSelected(): boolean {
-  return this.category?.length === this.Categories?.length;
+  return this.editAsset.category?.length === this.Categories.length;
 }
 
 isSomeCategoriesSelected(): boolean {
-  return this.category?.length > 0 &&
-         this.category?.length < this.Categories?.length;
+  return (
+    this.editAsset.category?.length > 0 &&
+    this.editAsset.category?.length < this.Categories.length
+  );
 }
 
 toggleAllCategories(): void {
   if (this.isAllCategoriesSelected()) {
-    this.category = [];
+    this.editAsset.category = [];
   } else {
-    this.category = this.Categories.map(x => x.id);
+    this.editAsset.category = this.Categories.map(x => x.id);
   }
 }
 
 isAllDesignationsSelected(): boolean {
-  return this.designation?.length === this.Designations?.length;
+  return this.editAsset.designation?.length === this.Designations.length;
 }
 
 isSomeDesignationsSelected(): boolean {
-  return this.designation?.length > 0 &&
-         this.designation?.length < this.Designations?.length;
+  return (
+    this.editAsset.designation?.length > 0 &&
+    this.editAsset.designation?.length < this.Designations.length
+  );
 }
 
 toggleAllDesignations(): void {
   if (this.isAllDesignationsSelected()) {
-    this.designation = [];
+    this.editAsset.designation = [];
   } else {
-    this.designation = this.Designations.map(x => x.id);
+    this.editAsset.designation = this.Designations.map(x => x.id);
   }
 }
 
@@ -543,12 +550,32 @@ toggleAllDesignations(): void {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
+openEditModal(asset: any): void {
 
-    this.mapUsersNameToId();
-  }
+  this.editAsset = {
+    ...asset,
+
+    branch: this.Branches
+      .filter(b => asset.branch?.includes(b.branch_name))
+      .map(b => b.id),
+
+    department: this.Departments
+      .filter(d => asset.department?.includes(d.dept_name))
+      .map(d => d.id),
+
+    category: this.Categories
+      .filter(c => asset.category?.includes(c.ctgry_title))
+      .map(c => c.id),
+
+    designation: this.Designations
+      .filter(d => asset.designation?.includes(d.desgntn_job_title))
+      .map(d => d.id)
+  };
+
+  console.log(this.editAsset);
+
+  this.isEditModalOpen = true;
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;

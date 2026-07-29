@@ -1,109 +1,164 @@
 <div class="container-fluid" *ngIf="hasViewPermission">
 
-    <div class="comapny_section">
-  
-      <!-- Header -->
-      <div class="header_section">
-        <h1>Employee Attendance Calendar</h1>
-      </div>
-  
-      <!-- Filter Section -->
-      <div class="com_list">
-  
-        <div class="row">
-  
-          <!-- Employee -->
-          <div class="col-md-4">
-  
-            <label>Select Employee</label>
-  
-            <select class="form-control"
-                    [(ngModel)]="selectedEmployeeId">
-  
-              <option value="">Select Employee</option>
-  
-              <option *ngFor="let emp of Employees"
-                      [value]="emp.id">
-  
-                {{ emp.emp_code }} 
-  
-              </option>
-  
-            </select>
-  
-          </div>
-  
-          <!-- From Date -->
-          <div class="col-md-3">
-  
-            <label>From Date</label>
-  
-            <input type="date"
-                   class="form-control"
-                   [(ngModel)]="fromDate">
-  
-          </div>
-  
-          <!-- To Date -->
-          <div class="col-md-3">
-  
-            <label>To Date</label>
-            <input type="date"
-            class="form-control"
-            [(ngModel)]="toDate"
-            [min]="fromDate"
-            [max]="todayDate">
-  
-          </div>
-  
-          <!-- Button -->
-          <div class="col-md-2 d-flex align-items-end">
-  
-            <button class="form-control btn btn-primary w-100"
-                    (click)="loadAttendanceCalendar()">
-  
-              View Calendar
-  
-            </button>
-  
-          </div>
-  
+  <div class="comapny_section">
+
+    <!-- Header -->
+    <div class="header_section">
+      <h1>Employee Attendance Calendar</h1>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="com_list">
+
+      <div class="row">
+
+        <!-- Employee -->
+        <div class="col-md-4">
+
+          <label>Select Employee</label>
+
+          <select class="form-control"
+                  [(ngModel)]="selectedEmployeeId">
+
+            <option value="">Select Employee</option>
+
+            <option *ngFor="let emp of Employees"
+                    [value]="emp.id">
+
+              {{ emp.emp_code }}
+
+            </option>
+
+          </select>
+
         </div>
-  
+
+        <!-- From Date -->
+        <div class="col-md-3">
+
+          <label>From Date</label>
+
+          <input type="date"
+                 class="form-control"
+                 [(ngModel)]="fromDate"
+                 [max]="todayDate">
+
+        </div>
+
+        <!-- To Date -->
+        <div class="col-md-3">
+
+          <label>To Date</label>
+          <input type="date"
+          class="form-control"
+          [(ngModel)]="toDate"
+          [min]="fromDate"
+          [max]="todayDate">
+
+        </div>
+
+        <!-- Button -->
+        <div class="col-md-2 d-flex align-items-end">
+
+          <button class="form-control btn btn-primary w-100"
+                  (click)="loadAttendanceCalendar()"
+                  [disabled]="isLoading">
+
+            <span *ngIf="!isLoading">View Calendar</span>
+            <span *ngIf="isLoading">Loading...</span>
+
+          </button>
+
+        </div>
+
       </div>
-  
-  
-  
-  
-  
-      <!-- Employee Details -->
-      <div class="com_list" *ngIf="attendanceData">
-  
-        <div class="employee-header">
-  
+
+    </div>
+
+
+    <!-- Employee Details + Summary + Calendar -->
+    <div class="com_list" *ngIf="attendanceData">
+
+      <div class="employee-header">
+
+        <div class="employee-info">
           <h2>
             {{ attendanceData.employee_name }}
-            ({{ attendanceData.employee_code }})
+            <span class="emp-code">({{ attendanceData.employee_code }})</span>
           </h2>
-  
+          <p class="employee-meta" *ngIf="attendanceData.branch || attendanceData.department">
+            <span *ngIf="attendanceData.branch">{{ attendanceData.branch }}</span>
+            <span *ngIf="attendanceData.branch && attendanceData.department"> &middot; </span>
+            <span *ngIf="attendanceData.department">{{ attendanceData.department }}</span>
+          </p>
         </div>
-  
-  
-  
-        <!-- Full Calendar -->
-        <full-calendar [options]="calendarOptions">
-  
-        </full-calendar>
-  
+
+        <!-- Status Summary Chips -->
+        <div class="summary-strip" *ngIf="attendanceSummary.length">
+          <div class="summary-chip" *ngFor="let s of attendanceSummary">
+            <span class="dot" [style.background]="s.color"></span>
+            <span class="chip-label">{{ s.label }}</span>
+            <span class="chip-count">{{ s.count }}</span>
+          </div>
+        </div>
+
       </div>
-  
+
+
+      <!-- Full Calendar -->
+      <full-calendar [options]="calendarOptions">
+
+      </full-calendar>
+
     </div>
-  
+
+    <!-- Empty state -->
+    <div class="com_list empty-state" *ngIf="!attendanceData && !isLoading">
+      <p>Select an employee and a date range, then click <strong>View Calendar</strong> to see attendance.</p>
+    </div>
+
   </div>
 
+</div>
 
-                              <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
+<div class="event-overlay" *ngIf="showEventCard">
+  <div class="event-card">
+
+    <div class="event-header">
+      <h5>Attendance Details</h5>
+      <button class="close-btn" (click)="closeEventCard()">&times;</button>
     </div>
-  
+
+    <div class="event-body">
+
+      <div class="detail-row">
+        <span>Status :</span>
+        <strong>{{ selectedEvent.status }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Leave Type :</span>
+        <strong>{{ selectedEvent.leave_type }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Remarks :</span>
+        <strong>{{ selectedEvent.remarks }}</strong>
+      </div>
+
+      <div class="detail-row">
+        <span>Half Day :</span>
+        <strong>{{ selectedEvent.is_half_day }}</strong>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+
+
+                            <!-- Loader -->
+  <div class="loader-container" [class.show]="isLoading">
+    <div class="loader"></div>
+  </div>

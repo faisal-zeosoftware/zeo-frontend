@@ -630,6 +630,7 @@ updateAssetType(): void {
 
       alert('Updated successfully!');
       this.closeEditModal();
+      window.location.reload();
     },
     (error) => {
       console.error('❌ ERROR:', error);

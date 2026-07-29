@@ -520,14 +520,14 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.editAsset = { ...asset };
 
-this.mapBranchNameToId();
-this.mapLoadEmpNameToId();
+  this.mapBranchesNameToId();   // <-- Correct
+  this.mapLoadEmpNameToId();
+  this.mapBranchNameToId();     // document type mapping
 
+  this.isEditModalOpen = true;
 }
-
 closeEditModal(): void {
 this.isEditModalOpen = false;
 this.editAsset = {};
@@ -766,18 +766,20 @@ loadDeparmentBranch(callback?: Function): void {
 }
 
     
-  mapBranchesNameToId() {
+mapBranchesNameToId() {
   if (!this.branches || !this.editAsset?.branch) return;
 
-  const Bran = this.branches.find(
-    (b: any) => b.branch_name === this.editAsset.branch
+  const branch = this.branches.find(
+    (b: any) =>
+      b.branch_name === this.editAsset.branch ||
+      b.id === this.editAsset.branch
   );
 
-  if (Bran) {
-    this.editAsset.branch = Bran.id;  // convert to ID for dropdown
+  if (branch) {
+    this.editAsset.branch = branch.id;
   }
 
-  console.log("Mapped employee_id:", this.editAsset.branch);
+  console.log('Mapped Branch:', this.editAsset.branch);
 }
 
 

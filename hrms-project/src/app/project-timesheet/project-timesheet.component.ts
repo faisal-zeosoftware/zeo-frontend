@@ -597,7 +597,43 @@ this.loadEmp();
 editProjectTime: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editProjectTime = { ...asset }; // copy asset data
+
+  this.editProjectTime = { ...asset };
+
+
+  // Employee name/code -> employee id
+  const employee = this.Employees.find(
+    (e: any) => e.emp_code === asset.employee
+  );
+
+  this.editProjectTime.employee = employee
+    ? employee.id
+    : asset.employee;
+
+
+
+  // Project title -> project id
+  const project = this.Projects.find(
+    (p: any) => p.title === asset.project
+  );
+
+  this.editProjectTime.project = project
+    ? project.id
+    : asset.project;
+
+
+
+  // Task title -> task id
+  const task = this.Tasks.find(
+    (t: any) => t.title === asset.task
+  );
+
+  this.editProjectTime.task = task
+    ? task.id
+    : asset.task;
+
+
+
   this.isEditModalOpen = true;
 }
 

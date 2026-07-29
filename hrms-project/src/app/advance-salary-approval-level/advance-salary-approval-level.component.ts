@@ -279,6 +279,7 @@ CreateLoanApproverLevel(): void {
     () => {
       alert('Approval Level has been added');
       this.closeapplicationModal();
+      window.location.reload();
 
       const schema = this.authService.getSelectedSchema();
       const branches = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
@@ -411,25 +412,20 @@ CreateLoanApproverLevel(): void {
 }
 
 mapBranchesNameToId() {
-  if (!this.Branches || !this.editAsset?.branch) return;
-
-  // Always convert to array
   if (!Array.isArray(this.editAsset.branch)) {
     this.editAsset.branch = [this.editAsset.branch];
   }
 
-  this.editAsset.branch = this.editAsset.branch.map((b: any) => {
+  this.editAsset.branch = this.editAsset.branch
+    .map((b: any) => {
+      if (typeof b === 'number') {
+        return b;
+      }
 
-    // already ID → keep
-    if (typeof b === 'number') return b;
-
-    // name → convert to ID
-    const found = this.Branches.find(x => x.branch_name === b);
-    return found ? found.id : null;
-
-  }).filter((id: any) => id !== null);
-
-  console.log('Mapped Branch IDs:', this.editAsset.branch);
+      const branch = this.Branches.find(x => x.branch_name === b);
+      return branch ? branch.id : null;
+    })
+    .filter((x: any) => x !== null);
 }
 
 
@@ -501,50 +497,34 @@ mapBranchesNameToId() {
 openEditModal(asset: any): void {
   this.editAsset = JSON.parse(JSON.stringify(asset));
 
-  // ✅ FIX: Ensure levels exist
-  if (!this.editAsset.levels || this.editAsset.levels.length === 0) {
-    this.editAsset.levels = [
-      {
-        level: 1,
-        role: '',
-        approver: null
-      }
-    ];
+  if (!this.editAsset.levels) {
+    this.editAsset.levels = [];
   }
 
-  // ✅ 🔥 FIX APPROVER MAPPING
+  // Approver mapping
   this.editAsset.levels.forEach((lvl: any) => {
 
     if (!lvl.approver) return;
 
-    // Case 1: object → extract id
     if (typeof lvl.approver === 'object') {
       lvl.approver = lvl.approver.id;
     }
-
-    // Case 2: string username → find ID
+    else if (typeof lvl.approver === 'string' && !isNaN(lvl.approver)) {
+      lvl.approver = Number(lvl.approver);
+    }
     else if (typeof lvl.approver === 'string') {
       const found = this.Users.find(
         (u: any) => u.username === lvl.approver
       );
       lvl.approver = found ? found.id : null;
     }
+  });
 
-    // Case 3: string number → convert to number
-    else if (typeof lvl.approver === 'string' && !isNaN(lvl.approver)) {
-      lvl.approver = Number(lvl.approver);
-    }
-
-      // ✅ Load Branches → THEN map
+  // ✅ Always load branches and map IDs
   this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
-
-    console.log('FINAL BRANCH VALUE:', this.editAsset.branch);
+    console.log('Mapped Branch:', this.editAsset.branch);
   });
-
-  });
-
-  console.log("AFTER APPROVER FIX:", this.editAsset);
 
   this.isEditModalOpen = true;
 }
@@ -635,6 +615,7 @@ updateAssetType(): void {
       () => {
         alert('Updated successfully');
         this.closeEditModal();
+        window.location.reload();
         this.fetchEmployees(
           this.authService.getSelectedSchema()!,
           JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')

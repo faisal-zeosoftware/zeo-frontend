@@ -731,22 +731,39 @@ toggleAllDesignations(): void {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-  openEditModal(asset: any): void {
-    this.editAsset = { ...asset }; // copy asset data
-    this.isEditModalOpen = true;
+openEditModal(asset: any): void {
 
+  this.editAsset = {
+    ...asset,
+    department: asset.Department || [],
+    category: asset.Category || [],
+    designation: asset.Designation || [],
+    branch: asset.branch || [],
+    notify_users: asset.notify_users || []
+  };
 
-    this.LoadUsers(() => {
+  this.isEditModalOpen = true;
 
-      this.mapUsersNameToId();
-    });
+  this.LoadUsers(() => {
+    this.mapUsersNameToId();
+  });
 
-
-
-
-
+  this.loadDeparmentBranch(() => {
     this.mapBranchesNameToId();
-  }
+  });
+
+  this.loadDEpartments(() => {
+    this.mapDepartmentsNameToId();
+  });
+
+  this.loadCAtegory(() => {
+    this.mapCategoriesNameToId();
+  });
+
+  this.loadDesignations(() => {
+    this.mapDesignationsNameToId();
+  });
+}
 
   closeEditModal(): void {
     this.isEditModalOpen = false;
@@ -919,25 +936,25 @@ toggleAllDesignations(): void {
     }
   }
 
-  loadDesignations(): void {
+loadDesignations(callback?: Function): void {
 
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  const selectedSchema = this.authService.getSelectedSchema();
 
-    console.log('schemastore', selectedSchema)
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.employeeService.getDesignations(selectedSchema).subscribe(
-        (result: any) => {
-          this.Designations = result;
-          console.log(' fetching Companies:');
+  if (selectedSchema) {
+    this.employeeService.getDesignations(selectedSchema).subscribe(
+      (result: any) => {
+        this.Designations = result;
 
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+        if (callback) {
+          callback();
         }
-      );
-    }
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   }
+}
 
   toggleAllSelectioncat(): void {
     if (this.selectCat) {
@@ -949,25 +966,25 @@ toggleAllDesignations(): void {
     }
   }
 
-  loadCAtegory(): void {
+loadCAtegory(callback?: Function): void {
 
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  const selectedSchema = this.authService.getSelectedSchema();
 
-    console.log('schemastore', selectedSchema)
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.categoryService.getcatogarys(selectedSchema).subscribe(
-        (result: any) => {
-          this.Categories = result;
-          console.log(' fetching Companies:');
+  if (selectedSchema) {
+    this.categoryService.getcatogarys(selectedSchema).subscribe(
+      (result: any) => {
+        this.Categories = result;
 
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
+        if (callback) {
+          callback();
         }
-      );
-    }
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   }
+}
 
   getBranchNames(branchIds: number[]): string {
     if (!branchIds?.length) return '-';
@@ -1006,7 +1023,63 @@ toggleAllDesignations(): void {
   }
 
 
+mapDepartmentsToId() {
+  if (!this.Departments || !this.editAsset?.department) return;
 
+  // already ids
+  if (Array.isArray(this.editAsset.department) &&
+      typeof this.editAsset.department[0] === 'number') {
+    return;
+  }
+
+  let values = this.editAsset.department;
+
+  if (typeof values === 'string') {
+    values = values.split(',').map((x: string) => x.trim());
+  }
+
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  this.editAsset.department = this.Departments
+    .filter(d => values.includes(d.dept_name))
+    .map(d => d.id);
+
+  console.log(this.editAsset.department);
+}
+
+mapCategoriesNameToId() {
+  console.log('API Category:', this.editAsset.category);
+  console.log('Master Categories:', this.Categories);
+
+  this.editAsset.category = this.Categories
+    .filter(c => this.editAsset.category.includes(c.ctgry_title))
+    .map(c => c.id);
+
+  console.log('Mapped Category IDs:', this.editAsset.category);
+}
+
+mapDesignationsNameToId() {
+  console.log('API Designation:', this.editAsset.designation);
+  console.log('Master Designations:', this.Designations);
+
+  this.editAsset.designation = this.Designations
+    .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
+    .map(d => d.id);
+
+  console.log('Mapped Designation IDs:', this.editAsset.designation);
+}
+
+mapDepartmentsNameToId() {
+
+  if (!this.Departments || !this.editAsset.department) return;
+
+  this.editAsset.department =
+    this.Departments
+      .filter(d => this.editAsset.department.includes(d.dept_name))
+      .map(d => d.id);
+}
 
 
 }

@@ -553,8 +553,44 @@ toggleSelectAllEmployees(): void {
     isEditModalOpen: boolean = false;
 editProjecttask: any = {}; // holds the asset being edited
 
-openEditModal(asset: any): void {
-  this.editProjecttask = { ...asset }; // copy asset data
+openEditModal(asset: any) {
+
+  this.editProjecttask = { ...asset };
+
+  // Convert project name to project id
+  const selectedProject = this.Projects.find(
+    (p: any) => p.title === asset.project
+  );
+
+  this.editProjecttask.project = selectedProject
+    ? selectedProject.id
+    : null;
+
+
+  // Convert stage name to stage id
+  const selectedStage = this.Stages.find(
+    (s: any) => s.title === asset.stage
+  );
+
+  this.editProjecttask.stage = selectedStage
+    ? selectedStage.id
+    : null;
+
+
+  // Managers
+  this.editProjecttask.task_managers =
+    this.Employees
+      .filter(e => asset.task_managers.includes(e.emp_code))
+      .map(e => e.id);
+
+
+  // Members
+  this.editProjecttask.task_members =
+    this.Employees
+      .filter(e => asset.task_members.includes(e.emp_code))
+      .map(e => e.id);
+
+
   this.isEditModalOpen = true;
 }
 

@@ -442,7 +442,7 @@ export class AttendanceValidationPolicyComponent {
       (response) => {
         console.log('Registration successful', response);
 
-        alert('validation policy Added ');
+        alert('Late come policy Added ');
         window.location.reload();
 
 
