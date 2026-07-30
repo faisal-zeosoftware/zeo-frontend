@@ -809,12 +809,20 @@ if (this.Branches.length > 0) {
   // }
 
 
+
+  // Search and Data Array State
+  searchQuery: string = '';
+
+  filteredPaySlips: any[] = [];  // Array rendered in *ngFor
+
   fetchLoadConfrimedPayslip(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.leaveService.getPaySlipApprovedNew(schema, branchIds).subscribe({
       next: (data: any) => {
         this.PaySlipsConfrimed = data;
-        this.filteredDocuments = this.PaySlipsConfrimed;  // Initialize filtered data
+        // this.filteredDocuments = this.PaySlipsConfrimed;  // Initialize filtered data
+
+        this.filteredPaySlips = [...this.PaySlipsConfrimed];
         console.log('Confirmed Payslips:', this.PaySlipsConfrimed);
       },
       error: (err) => {
@@ -826,6 +834,31 @@ if (this.Branches.length > 0) {
 
   
 
+
+  filterPaySlips(): void {
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      this.filteredPaySlips = [...this.PaySlipsConfrimed];
+      return;
+    }
+
+    const query = this.searchQuery.toLowerCase().trim();
+
+    this.filteredPaySlips = this.PaySlipsConfrimed.filter(payslip => {
+      const empCode = payslip.employee ? String(payslip.employee).toLowerCase() : '';
+      const payrollName = payslip.payroll_run?.name ? String(payslip.payroll_run.name).toLowerCase() : '';
+      const status = payslip.status ? String(payslip.status).toLowerCase() : '';
+      const year = payslip.payroll_run?.year ? String(payslip.payroll_run.year).toLowerCase() : '';
+      const monthName = payslip.payroll_run?.month ? this.getMonthName(payslip.payroll_run.month).toLowerCase() : '';
+
+      return (
+        empCode.includes(query) ||
+        payrollName.includes(query) ||
+        status.includes(query) ||
+        year.includes(query) ||
+        monthName.includes(query)
+      );
+    });
+  }
   // LoadPayslip(selectedSchema: string) {
   //   this.leaveService.getPaySlip(selectedSchema).subscribe(
   //     (data: any[]) => {
@@ -840,7 +873,6 @@ if (this.Branches.length > 0) {
   // }
   
 
-  searchQuery = '';
 
 
   filteredDocuments: any[] = [];  // Filtered list

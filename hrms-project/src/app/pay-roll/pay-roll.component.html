@@ -332,87 +332,122 @@
 
            
               <mat-tab label="Final Pay Sheet">
-  
                 <div class="tab_boddy mt-4" style="padding: 10px;">
-             
-                  <!-- <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search..." [(ngModel)]="searchQuery"
-                    [class.expanded]="isExpanded" (input)="filterDocuments()">
-                    <button class="search-btn" (click)="toggleSearch()">
-                      <i class="fa fa-search"></i>
-                    </button>
-                  </div> -->
-                <!-- Container for Export button and scrollable table -->
-<div class="table-container">
-  
-  <!-- Export Button on top -->
-  <div class="table-header" *ngIf="hasAddPermission">
-    <button class="btn pull-right btn-export" (click)="exportToExcel()">Export</button>
-  </div>
+                  
+                  <!-- Top Action Bar: Search Input & Export Button -->
+                    <!-- Search Input Bar -->
+                     
+                    <div class="row ">
+                      <div class="col-md-6"></div>
 
-  <!-- Scrollable Table Wrapper -->
-  <div class="table-scroll">
-    <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
-      <thead>
-        <tr>
-          <th class="text-table-header">No</th>
-          <th class="text-table-header">Employee Code</th>
-          <th class="text-table-header">Payroll Name</th>
-          <th class="text-table-header">Year</th>
-          <th class="text-table-header">Month</th>
-          <th class="text-table-header">Gross Salary</th>
-          <th class="text-table-header">Total Additions</th>
-          <th class="text-table-header">Total Deductions</th>
-          <th class="text-table-header">Net Salary</th>
-          <th class="text-table-header">Pro Rata Adjustment</th>
-          <th class="text-table-header">Working Days</th>
-          <th class="text-table-header">Days Worked</th>
-          <th class="text-table-header">Status</th>
-          <th class="text-table-header">Components</th>
-        </tr>
-      </thead>
-      <tbody class="text-table-body">
-        <tr *ngFor="let payslip of PaySlipsConfrimed; let i = index" (click)="viewPayrollDetails(payslip)">
-          <td data-label="No">{{ i + 1 }}</td>
-              <td data-label="Employee Code">{{ payslip.employee }}</td>
-              <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
-              <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
-              <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
-              <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
-              <td data-label="Total Additions">{{ payslip.total_additions }}</td>
-              <td data-label="Total Deductions">{{ payslip.total_deductions }}</td>
-              <td data-label="Net Salary">{{ payslip.net_salary }}</td>
-              <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
-              <td data-label="Working Days">{{ payslip.total_working_days }}</td>
-              <td data-label="Days Worked">{{ payslip.days_worked }}</td>
-          <td data-label="Status">
-            <span class="pill" [ngClass]="{
-              'pill green': payslip.status === 'approved',
-              'pill blue': payslip.status === 'processed',
-              'pill yellow': payslip.status === 'pending',
-              'pill red': payslip.status === 'rejected'
-            }">{{ payslip.status }}</span>
-          </td>
-          <td data-label="Components">
-            <ul>
-              <li *ngFor="let comp of payslip.components">
-                <strong>{{ comp.component_name }}</strong> 
-                ({{ comp.component_type }}): {{ comp.payslip_amount }}
-              </li>
-            </ul>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+                      <div class="col-md-4">
+                        <div class="search-container ">
+                          <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                              <i class="fa fa-search text-muted"></i>
+                            </span>
+                            <input 
+                              type="text" 
+                              class="form-control border-start-0 ps-0" 
+                              placeholder="Search by Employee, Status, Year, Month..." 
+                              [(ngModel)]="searchQuery"  
+                              (input)="filterPaySlips()">
+                            <button 
+                              *ngIf="searchQuery" 
+                              class="btn btn-outline-secondary border-start-0" 
+                              type="button" 
+                              (click)="searchQuery = ''; filterPaySlips()">
+                              <i class="fa fa-times"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
 
 
-                </div>
+                      <div class="col-md-2">
 
-                <div class="end_section"></div>
+                           <!-- Export Button -->
+                    <div class="table-header" *ngIf="hasAddPermission">
+                      <button class="btn btn-export pull-right" style="font-size: 12px;" (click)="exportToExcel()">
+                        <i class="fa-solid fa-file-export"></i> Export
+                      </button>
+                    </div>
+
+                      </div>
+                    </div>
+                   
               
-                  </mat-tab>
+                 
+              
+                  <!-- Table Container -->
+                  <div class="table-container">
+                    <div class="table-scroll">
+                      <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
+                        <thead>
+                          <tr>
+                            <th class="text-table-header">No</th>
+                            <th class="text-table-header">Employee Code</th>
+                            <th class="text-table-header">Payroll Name</th>
+                            <th class="text-table-header">Year</th>
+                            <th class="text-table-header">Month</th>
+                            <th class="text-table-header">Gross Salary</th>
+                            <th class="text-table-header">Total Additions</th>
+                            <th class="text-table-header">Total Deductions</th>
+                            <th class="text-table-header">Net Salary</th>
+                            <th class="text-table-header">Pro Rata Adjustment</th>
+                            <th class="text-table-header">Working Days</th>
+                            <th class="text-table-header">Days Worked</th>
+                            <th class="text-table-header">Status</th>
+                            <th class="text-table-header">Components</th>
+                          </tr>
+                        </thead>
+                        <tbody class="text-table-body">
+                          <!-- Iterate over filteredPaySlips array instead of main source array -->
+                          <tr *ngFor="let payslip of filteredPaySlips; let i = index" (click)="viewPayrollDetails(payslip)" style="cursor: pointer;">
+                            <td data-label="No">{{ i + 1 }}</td>
+                            <td data-label="Employee Code">{{ payslip.employee }}</td>
+                            <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
+                            <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
+                            <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
+                            <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
+                            <td data-label="Total Additions">{{ payslip.total_additions }}</td>
+                            <td data-label="Total Deductions">{{ payslip.total_deductions }}</td>
+                            <td data-label="Net Salary">{{ payslip.net_salary }}</td>
+                            <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
+                            <td data-label="Working Days">{{ payslip.total_working_days }}</td>
+                            <td data-label="Days Worked">{{ payslip.days_worked }}</td>
+                            <td data-label="Status">
+                              <span class="pill" [ngClass]="{
+                                'pill green': payslip.status === 'approved',
+                                'pill blue': payslip.status === 'processed',
+                                'pill yellow': payslip.status === 'pending',
+                                'pill red': payslip.status === 'rejected'
+                              }">{{ payslip.status }}</span>
+                            </td>
+                            <td data-label="Components">
+                              <ul class="mb-0 ps-3">
+                                <li *ngFor="let comp of payslip.components">
+                                  <strong>{{ comp.component_name }}</strong> 
+                                  ({{ comp.component_type }}): {{ comp.payslip_amount }}
+                                </li>
+                              </ul>
+                            </td>
+                          </tr>
+              
+                          <!-- Empty state when search yields no matches -->
+                          <tr *ngIf="filteredPaySlips?.length === 0">
+                            <td colspan="14" class="text-center py-4 text-muted">
+                              No payroll records match your search query.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+              
+                </div>
+                <div class="end_section"></div>
+              </mat-tab>
   
              
                   </mat-tab-group> 

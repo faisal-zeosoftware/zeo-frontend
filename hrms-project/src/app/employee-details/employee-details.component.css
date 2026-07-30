@@ -707,6 +707,7 @@ body {
 
 .styled-table thead th {
   border-spacing: 0 10px;
+  width: 100%;
   font-family: 'Segoe UI', sans-serif;
   background: #5c1e82 !important;
     color: #fafafa;
