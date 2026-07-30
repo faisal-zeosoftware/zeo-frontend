@@ -1045,36 +1045,89 @@
               <th>Component Type</th>
               <th>Payroll Category</th>
               <th>Code</th>
-              <th>Component Value Type</th>
+              <th>Branch</th>
+              <th>Value Type</th>
               <th>Formula</th>
+              <th>Deduct Leave</th>
+              <th>Show In Payslip</th>
               <th>Description</th>
-              <!-- <th>Is Loan Component</th> -->
               <th class="sticky-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let docs of Salarycomponent; let i = index">
               <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
+    
               <td data-label="Name">{{ docs.name }}</td>
-              <td data-label="Component Type">{{ docs.component_type }}</td>
+    
+              <td data-label="Component Type">
+                <span
+                  class="badge-type"
+                  [ngClass]="{
+                    'badge-addition': docs.component_type === 'addition',
+                    'badge-deduction': docs.component_type === 'deduction',
+                    'badge-others': docs.component_type === 'others'
+                  }"
+                >
+                  {{ docs.component_type }}
+                </span>
+              </td>
+    
               <td data-label="Payroll Category">
-                {{ docs.payroll_category }}
+                {{ getCategoryLabel(docs.payroll_category) }}
               </td>
-              <td data-label="Code">{{ docs.code }}</td>
-              <!-- <td data-label="Is Fixed">{{ docs.is_fixed }}</td> -->
-              <td data-label="Component Value Type">
-                {{ docs.component_value_type }}
+    
+              <td data-label="Code">
+                <code>{{ docs.code || '-' }}</code>
               </td>
-
+    
+              <td data-label="Branch">
+                {{ getBranchName(docs.branch) }}
+              </td>
+    
+              <td data-label="Value Type">
+                <span
+                  class="badge-valuetype"
+                  [ngClass]="{
+                    'badge-fixed': docs.component_value_type === 'fixed',
+                    'badge-variable': docs.component_value_type === 'variable'
+                  }"
+                >
+                  {{ docs.component_value_type }}
+                </span>
+              </td>
+    
               <td data-label="Formula">
-                {{ docs.formula || "-" }}
+                <span
+                  *ngIf="docs.formula; else noFormula"
+                  class="formula-chip"
+                  [matTooltip]="docs.formula"
+                >
+                  {{ docs.formula }}
+                </span>
+                <ng-template #noFormula>-</ng-template>
               </td>
-
+    
+              <td data-label="Deduct Leave" class="text-center">
+                <mat-icon *ngIf="docs.deduct_leave" class="icon-yes">check_circle</mat-icon>
+                <mat-icon *ngIf="!docs.deduct_leave" class="icon-no">cancel</mat-icon>
+              </td>
+    
+              <td data-label="Show In Payslip" class="text-center">
+                <mat-icon *ngIf="docs.show_in_payslip" class="icon-yes">check_circle</mat-icon>
+                <mat-icon *ngIf="!docs.show_in_payslip" class="icon-no">cancel</mat-icon>
+              </td>
+    
               <td data-label="Description">
-                {{ docs.description }}
+                <span
+                  class="desc-truncate"
+                  [matTooltip]="docs.description"
+                >
+                  {{ docs.description || '-' }}
+                </span>
               </td>
-              <!-- <td data-label="Is Loan Component">{{ docs.is_loan_component }}</td> -->
-                <td class="sticky-right" data-label="Actions">
+    
+              <td class="sticky-right" data-label="Actions">
                 <button
                   mat-fab
                   color="primary"

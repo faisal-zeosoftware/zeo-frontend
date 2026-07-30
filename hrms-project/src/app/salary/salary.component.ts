@@ -999,6 +999,18 @@ openEditModal(asset: any): void {
 
 
 
+  getBranchName(branchId: any): string {
+    if (!branchId) return '-';
+    const branch = this.branches.find(b => b.id == branchId);
+    return branch ? branch.branch_name : '-';
+  }
+  
+  getCategoryLabel(value: string): string {
+    const category = this.payrollCategories.find(c => c.value === value);
+    return category ? category.label : (value || '-');
+  }
+
+
 
 
 
