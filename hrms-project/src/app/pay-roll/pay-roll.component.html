@@ -149,7 +149,7 @@
                   <th>Year</th>
                   <th> Month</th>
                   <th>Payment Date</th>
-
+                  <th >Document Number</th>
                   <th>branch</th>
                   <th>department</th>
                   <th>category</th>
@@ -169,6 +169,8 @@
             <td data-label="Year">{{ payroll.year }}</td>
             <td data-label="Month">{{ getMonthName(payroll.month) }}</td>
             <td data-label="Payment Date">{{ payroll.payment_date }}</td>
+                        <td data-label="Payment Date">{{ payroll.document_number }}</td>
+
             <td data-label="Branch">{{ payroll.branch }}</td>
             <td data-label="Department">{{ payroll.department }}</td>
             <td data-label="Category">{{ payroll.category }}</td>
@@ -388,6 +390,8 @@
                             <th class="text-table-header">No</th>
                             <th class="text-table-header">Employee Code</th>
                             <th class="text-table-header">Payroll Name</th>
+                           
+                          
                             <th class="text-table-header">Year</th>
                             <th class="text-table-header">Month</th>
                             <th class="text-table-header">Gross Salary</th>
