@@ -317,7 +317,7 @@
                   [ngModelOptions]="{standalone: true}"
                   [ngClass]="{'error-field': registerButtonClicked && !branch_id}">
                   <option value="">Select</option>
-                  <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}
+                  <option *ngFor="let deparmentsec of branches" [ngValue]="deparmentsec.id">{{ deparmentsec.branch_name }}
                   </option>
                 </select>
                 <div *ngIf="registerButtonClicked && !branch_id" class="error-message">Please Select Your Branch</div>

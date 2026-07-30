@@ -319,7 +319,8 @@ ngOnInit(): void {
             }
             // Inside the subscribe block of loadDeparmentBranch
             if (this.branches.length === 1) {
-              this.branch_id = this.branches[0].id;
+              // this.branch_id = this.branches[0].id;
+              this.branch_id = String(this.branches[0].id);
             }
     
             console.log('Filtered branches for selection:', this.branches);
@@ -575,21 +576,35 @@ mapBranchesNameToId() {
 
 
 
-  openPopus():void{
-    this.iscreateLoanApp = true;
+  // openPopus():void{
+  //   this.iscreateLoanApp = true;
 
-                  // reset branch
-  this.branch_id = [];
+  //                 // reset branch
+  // this.branch_id = [];
 
-  // ✅ Auto select first branch
-  if (this.branches && this.branches.length > 0) {
+  // // ✅ Auto select first branch
+  // if (this.branches && this.branches.length > 0) {
 
-    this.branch_id = [this.branches[0].id];
+  //   this.branch_id = [this.branches[0].id];
 
     
 
-  }
+  // }
 
+  // }
+
+
+  openPopus(): void {
+    this.iscreateLoanApp = true;
+  
+    // reset branch
+    this.branch_id = '';
+  
+    // ✅ Auto select first branch
+    if (this.branches && this.branches.length > 0) {
+      // this.branch_id = this.branches[0].id;   // scalar, not [this.branches[0].id]
+      this.branch_id = String(this.branches[0].id);
+    }
   }
 
   closeapplicationModal():void{
