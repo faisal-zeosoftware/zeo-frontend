@@ -555,17 +555,43 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+
   this.editAsset = { ...asset };
 
-  // ✅ IMPORTANT: extract first user ID from array
-  this.editAsset.approver = asset.specific_users?.[0] || null;
+  // Branch (API returns ["Zeodemo 2"])
+  if (Array.isArray(asset.branch) && asset.branch.length > 0) {
+    const branch = this.Branches.find(
+      b => b.branch_name === asset.branch[0]
+    );
+    this.editAsset.branch = branch ? branch.id : null;
+  }
 
-  this.selectedFile = null; // reset file
+  // Department (API returns "Main")
+  const dept = this.Depts.find(
+    d => d.dept_name === asset.department
+  );
+  this.editAsset.department = dept ? dept.id : null;
+
+  // Category (API returns "3rd Category")
+  const cat = this.Cats.find(
+    c => c.ctgry_title === asset.category
+  );
+  this.editAsset.category = cat ? cat.id : null;
+
+  // Specific User (API returns ["Ronaldino"])
+  if (Array.isArray(asset.specific_users) && asset.specific_users.length > 0) {
+
+    const user = this.Users.find(
+      u => u.username === asset.specific_users[0]
+    );
+
+    this.editAsset.approver = user ? user.id : null;
+  }
+
+  this.selectedFile = null;
   this.isEditModalOpen = true;
 
-  this.mapBranchNameToId();
-  this.mapDeptNameToId();
-  this.mapCatsNameToId();
+  console.log(this.editAsset);
 }
 
 closeEditModal(): void {

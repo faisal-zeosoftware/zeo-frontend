@@ -438,13 +438,24 @@ mapBranchesNameToId() {
                   alert('Document number has been Added');
                   window.location.reload();
                 },
-                (error) => {
-                  console.error('Add failed', error);
-                  console.log('Full error response:', error);
-                  const errorMessage = error.error?.error || 'An error occurred while adding the document number. Please try again.';
-                  alert(errorMessage);
-                }
-              );
+    
+(error) => {
+  console.error('Error Adding Document Numbering:', error);
+
+  let errorMsg = 'Adding failed';
+
+  const backendError = error?.error;
+
+  if (backendError && typeof backendError === 'object') {
+    // Convert the object into a readable string
+    errorMsg = Object.keys(backendError)
+      .map(key => `${key}: ${backendError[key].join(', ')}`)
+      .join('\n');
+  }
+
+  alert(errorMsg);
+}
+);
             }
             
 

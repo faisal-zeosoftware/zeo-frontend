@@ -596,16 +596,47 @@ loadBranches(callback?: Function): void {
   
           },
   
-          (error) => {
-  
-            alert(
-              error.error?.error ||
-              'Assignment failed'
-            );
-  
-          }
-  
-        );
+(error) => {
+    console.error('Add failed', error);
+    console.log('Full error response:', error.error);
+
+    let errorMessage = 'An error occurred while assigning the Holiday Calendar. Please try again.';
+
+    if (error.error) {
+
+      // Backend returns string
+      if (typeof error.error === 'string') {
+        errorMessage = error.error;
+      }
+
+      // Backend returns object
+      else if (typeof error.error === 'object') {
+
+        // non_field_errors
+        if (error.error.non_field_errors) {
+          errorMessage = error.error.non_field_errors.join('\n');
+        }
+
+        // Field validation errors
+        else {
+          errorMessage = Object.keys(error.error)
+            .map(field => {
+              const messages = error.error[field];
+
+              if (Array.isArray(messages)) {
+                return `${field}: ${messages.join(', ')}`;
+              }
+
+              return `${field}: ${messages}`;
+            })
+            .join('\n');
+        }
+      }
+    }
+
+    alert(errorMessage);
+  }
+);
   
   }
 

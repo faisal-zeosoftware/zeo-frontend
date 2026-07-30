@@ -949,15 +949,15 @@ deletePolicy(categoryId: number): Observable<any> {
 }
 
 
-updatePolicy(id: number, data: any): Observable<any> {
+updatePolicy(id: number, data: FormData): Observable<any> {
+
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/organisation/api/policies/${id}/?schema=${selectedSchema}`;
-  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-  return this.http.put(apiUrl, data, { headers }).pipe(
+  return this.http.patch(apiUrl, data).pipe(
     catchError((error) => {
-      console.error('Error updating asset:', error);
-      return throwError(error);
+      console.error('Error updating policy:', error);
+      return throwError(() => error);
     })
   );
 }
