@@ -441,23 +441,27 @@ this.loadDeparmentBranch();
   }
 
 
-  onComponentValueTypeChange(): void {
-  if (this.component_value_type === 'variable') {
-    this.isAddFieldsModalOpen = true; // Open Formula Writer popup
-  } else {
-    this.isAddFieldsModalOpen = false; // Close popup for Fixed
-    this.formula = ''; // Optional: clear formula
-  }
-}
-
-onComponentValueTypeChangeEdit(): void {
-  if (this.editAsset.component_value_type === 'variable') {
+  openFormulaModal(): void {
     this.isAddFieldsModalOpen = true;
-  } else {
-    this.isAddFieldsModalOpen = false;
-    this.editAsset.formula = '';
   }
-}
+
+  onComponentValueTypeChange(): void {
+    if (this.component_value_type === 'variable') {
+      this.isAddFieldsModalOpen = true; // auto-open first time
+    } else {
+      this.isAddFieldsModalOpen = false;
+      this.formula = ''; // clear formula only when switching to fixed
+    }
+  }
+  
+  onComponentValueTypeChangeEdit(): void {
+    if (this.editAsset.component_value_type === 'variable') {
+      this.isAddFieldsModalOpen = true;
+    } else {
+      this.isAddFieldsModalOpen = false;
+      this.editAsset.formula = '';
+    }
+  }
 
 
 payrollCategories = [
@@ -610,24 +614,35 @@ mapBranchNameToId() {
     const placeholder = `${code}`;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-
-    this.formula =
-      this.formula.substring(0, start) +
+  
+    // Pick the correct formula holder based on which modal is open
+    const isEditing = this.isEditModalOpen;
+  
+    const currentValue = isEditing ? this.editAsset.formula : this.formula;
+  
+    const updatedValue =
+      currentValue.substring(0, start) +
       placeholder +
-      this.formula.substring(end);
-
+      currentValue.substring(end);
+  
+    if (isEditing) {
+      this.editAsset.formula = updatedValue;
+    } else {
+      this.formula = updatedValue;
+    }
+  
     setTimeout(() => {
       textarea.focus();
       textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
     }, 0);
-
+  
     // Close dropdowns after selection
     this.dropdownOpen = false;
     this.operatorDropdownOpen = false;
-    this.arithmeticDropdownOpen = false; // close the salary component dropdown if open
-
+    this.arithmeticDropdownOpen = false;
+    this.FunctionsdropdownOpen = false;
+    this.VariablesdropdownOpen = false;
   }
-
   isAddFieldsModalOpen: boolean = false;
 
 
@@ -888,12 +903,20 @@ mapBranchNameToId() {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
-openEditModal(asset: any): void {
-  this.editAsset = { ...asset };
-  this.isEditModalOpen = true;
+// openEditModal(asset: any): void {
+//   this.editAsset = { ...asset };
+//   this.isEditModalOpen = true;
 
-  this.mapBranchNameToId(); // ✅ FIX
+//   this.mapBranchNameToId(); // ✅ FIX
+// }
+
+
+openEditModal(asset: any): void {
+  this.editAsset = { ...asset, formula: asset.formula || '' };
+  this.isEditModalOpen = true;
+  this.mapBranchNameToId();
 }
+
 
   closeEditModal(): void {
     this.isEditModalOpen = false;
