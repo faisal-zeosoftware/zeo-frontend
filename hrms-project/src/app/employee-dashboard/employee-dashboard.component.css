@@ -10,6 +10,11 @@ body {
     font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif;
     background-color: #f8f9fa;
     color: #212529;
+    overflow-x: hidden;
+}
+
+html {
+    overflow-x: hidden;
 }
 
 #sidebar {
@@ -198,62 +203,7 @@ body {
     background: #a8a8a8;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 767.98px) {
-    #sidebar {
-        position: fixed;
-        z-index: 1050;
-        width: 250px;
-        left: -250px;
-    }
-    
-    #sidebar.active {
-        left: 0;
-    }
-    
-    .sidebar-backdrop {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1040;
-    }
-    
-    #sidebar.active + .sidebar-backdrop {
-        display: block;
-    }
-    
-    .toggle-sidebar {
-        display: block !important;
-    }
-}
 
-@media (min-width: 768px) {
-    .toggle-sidebar {
-        display: none !important;
-    }
-}
-
-/* Print Styles */
-@media print {
-    #sidebar, .top-header, .card-header button, .dropdown-toggle {
-        display: none !important;
-    }
-    
-    .main-content {
-        width: 100% !important;
-        margin-left: 0 !important;
-    }
-    
-    .card {
-        break-inside: avoid;
-        box-shadow: none !important;
-        border: 1px solid #dee2e6 !important;
-    }
-}
 
 /* Loading States */
 .loading {
@@ -893,18 +843,6 @@ body {
     margin-top: 10px;
   }
   
-  /* Responsive Tweaks */
-  @media (max-width: 600px) {
-    .project-card {
-      padding: 15px;
-    }
-    .project-title {
-      font-size: 1rem;
-    }
-  }
-  
-
-
 
   
   /* dashboard page styles here 
@@ -929,6 +867,7 @@ body {
     padding: 0;
     right: 0;
     left: auto;
+    z-index: 1045;
 }
 
 .notification-header {
@@ -941,6 +880,36 @@ body {
     position: sticky;
     top: 0;
     z-index: 10;
+}
+
+.notification-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-close-notification {
+    background: transparent;
+    border: none;
+    color: #6c757d;
+    font-size: 16px;
+    line-height: 1;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.btn-close-notification:hover {
+    color: #dc3545;
+}
+
+/* Invisible full-screen layer that appears only while the notification
+   panel is open — tapping anywhere on it closes the panel, the same
+   click-outside pattern used for the mobile sidebar. */
+.notification-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1030;
+    background: transparent;
 }
 
 .notification-item {
@@ -1062,60 +1031,6 @@ body {
    margin-bottom: 20px;
   }
   
-
-
-  
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
-
-    .modal-content[_ngcontent-ng-c2143647340]{
-          margin-top: 200px !important;
-    }
-  }
-  
-  /* Mobile */
-
-@media (max-width: 576px) {
-    .notification-dropdown {
-        width: 95vw;
-        right: -10px;
-    }
-}
-
-
-
-
   /* face punching style here */
 
   /* Standard Enterprise Styling */
@@ -1496,28 +1411,6 @@ body {
 
 }
 
-/* RESPONSIVE */
-
-@media(max-width: 768px) {
-
-  .leave-details {
-    grid-template-columns: 1fr;
-  }
-
-  .leave-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .timeline-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-}
-
 
 .password-modal {
 
@@ -1557,9 +1450,6 @@ body {
 
 .settings-dropdown {
   position: absolute !important;
-  right: 0 !important;
-  left: auto !important;
-  min-width: 200px;
   margin-top: 8px;
   z-index: 1050;
 }
@@ -1716,6 +1606,158 @@ body {
   border-color: #e5e7eb;
 }
 
+/* RESPONSIVE */
+
+  /* Responsive Tweaks */
+  @media (max-width: 600px) {
+    .project-card {
+      padding: 15px;
+    }
+    .project-title {
+      font-size: 1rem;
+    }
+  }
+
+  @media only screen and (max-width: 640px) {
+    table thead {
+      display: none;
+    }
+  
+    table tbody {
+      display: block;
+    }
+  
+    table tbody tr td {
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+  
+    table tbody tr {
+      margin-bottom: 20px;
+      display: block;
+      border: 1px solid #004976;
+      background: #f9f9f9;
+      overflow: hidden;
+    }
+  
+    table tbody td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      width: 30%;
+      display: flex;
+      background: #004976;
+      color: #fff;
+      padding: 15px;
+      margin-inline-end: 10px;
+    }
+
+    .modal-content[_ngcontent-ng-c2143647340]{
+          margin-top: 200px !important;
+    }
+  }
+  
+  /* Mobile */
+
+@media (max-width: 767.98px) {
+    .notification-dropdown {
+        /* Anchoring to the shrinking .dropdown parent (position:relative,
+           width:auto on mobile) made the dropdown's left/right edges drift
+           depending on where that parent ended up in the wrapped header row.
+           Anchor to the viewport instead so it's always fully on-screen. */
+        position: fixed !important;
+        top: 64px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-width: none;
+        z-index: 1045;
+    }
+
+    /* the bell's parent col-md-2 shrinks a lot on phones; let it size to content
+       instead of fighting the grid, so the bell button itself stays put */
+    .col-md-2 {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none;
+    }
+}
+
+
+@media(max-width: 768px) {
+
+  .leave-details {
+    grid-template-columns: 1fr;
+  }
+
+  .leave-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+}
+
+
+
+/* ============================================================
+   MOBILE SIDEBAR — TOGGLE BUTTON, CLOSE BUTTON, BACKDROP
+   ============================================================
+   Driven by Angular state (isSidebarOpen) rather than CSS-only
+   selectors, since the backdrop is rendered with *ngIf and the
+   sidebar's open state is bound via [class.active].
+   ============================================================ */
+
+/* Hamburger toggle button - fixed top-left, mobile only */
+.toggle-sidebar {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1060;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+/* Close (X) button inside the sidebar itself */
+.btn-close-sidebar {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 22px;
+    line-height: 1;
+    z-index: 5;
+}
+
+.btn-close-sidebar:hover {
+    color: #ffffff;
+}
+
+/* Backdrop rendered via *ngIf="isSidebarOpen" */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+}
 
 /* Animated Scanning Line Effect */
 .scan-overlay {
@@ -1760,4 +1802,125 @@ body {
   0% { opacity: 1; }
   50% { opacity: 0.5; }
   100% { opacity: 1; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+    #sidebar {
+        /* Bootstrap's .collapse class sets display:none by default, and the
+           d-md-block utility only restores display at the md breakpoint
+           (>=768px) and up. Below that, nothing overrides collapse's
+           display:none, so #sidebar never renders on mobile no matter what
+           "left" or "active" says. Force it back on here. */
+        display: block !important;
+        position: fixed;
+        top: 0;
+        z-index: 1050;
+        width: 260px;
+        left: -260px;
+        height: 100vh;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+    }
+
+    #sidebar.active {
+        left: 0;
+    }
+
+    .toggle-sidebar {
+        display: flex !important;
+    }
+
+    .btn-close-sidebar {
+        display: block !important;
+    }
+
+    /* room so page content isn't hidden under the fixed hamburger button */
+    main.col-md-9 {
+        margin-left: 0 !important;
+        padding-top: 55px !important;
+    }
+
+    /* Header stacks vertically and search/icons wrap cleanly */
+    main header.d-flex {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    main header .d-flex {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    main header .input-group {
+        width: 100%;
+        margin: 8px 0 !important;
+    }
+
+    /* tab group scrolls instead of squeezing on small screens */
+    .tab-group {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .tab {
+        flex: 0 0 auto;
+        padding: 10px 16px;
+    }
+
+    /* form rows and detail rows stack on mobile (Bootstrap col-md-* already
+       collapses to full width under 768px, this just tightens spacing) */
+    .white-outer-sec {
+        padding: 16px;
+    }
+
+    .approval_sec {
+        padding: 15px;
+    }
+
+    .leave-card {
+        padding: 16px;
+    }
+
+    /* password / approval modals fit small screens */
+    .modal-content {
+        width: 92%;
+        margin-top: 90px;
+    }
+
+    .password-modal {
+        padding: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .toggle-sidebar {
+        display: none !important;
+    }
+
+    .btn-close-sidebar {
+        display: none !important;
+    }
+
+    .sidebar-backdrop {
+        display: none !important;
+    }
+}
+
+/* Print Styles */
+@media print {
+    #sidebar, .top-header, .card-header button, .dropdown-toggle {
+        display: none !important;
+    }
+    
+    .main-content {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+    
+    .card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
 }
