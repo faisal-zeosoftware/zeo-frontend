@@ -294,7 +294,13 @@ if (this.userId !== null) {
 
 
     exportToExcel(): void {
-      const exportData = this.PaySlips.map((p, index) => {
+
+       if (!this.filteredPaySlips || this.filteredPaySlips.length === 0) {
+    alert('No payslip data to export.');
+    return;
+  }
+  
+      const exportData = this.filteredPaySlips.map((p, index) => {
         const components = p.components?.map((c: { component_name: any; component_type: any; payslip_amount: any; }) =>
           `${c.component_name} (${c.component_type}): ${c.payslip_amount}`
         ).join(' | ') || '';
