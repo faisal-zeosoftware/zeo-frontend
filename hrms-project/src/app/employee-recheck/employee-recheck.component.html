@@ -8,19 +8,46 @@
                 <hr>
                 
                 <div class="row align-items-end">
-                  <div class="col-md-10">
+                  <div class="col-md-6">
                     <label class="font-weight-bold">Select Employee</label>
                     <div class="custom-sel">
-                      <select class="form-control" [(ngModel)]="selectedEmployeeCode" [disabled]="isLoading">
-                        <option [ngValue]="null">-- Select Employee Code --</option>
-                        <option *ngFor="let employee of Employees" [value]="employee.emp_code">
-                          {{ employee.emp_code }} - {{ employee.first_name }}
-                        </option>
-                      </select>
+                      <div class="form-control-wrapper">
+                      
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-select
+      [(ngModel)]="selectedEmployeeCode"
+      [ngModelOptions]="{standalone:true}"
+      placeholder="Select Employee"
+      (closed)="employeeSearch=''"
+    >
+
+      <div class="px-2 pb-2">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search Employee"
+          [(ngModel)]="employeeSearch"
+          [ngModelOptions]="{standalone:true}"
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        />
+      </div>
+
+      <mat-option
+        *ngFor="let employee of filterEmployees()"
+        [value]="employee.id"
+      >
+        {{ employee.emp_code }}
+      </mat-option>
+
+    </mat-select>
+  </mat-form-field>
+  </div>
+
                     </div>
                   </div>
               
-                  <div class="col-md-2">
+                  <div class="col-md-3">
                     <button class="form-control btn btn-primary w-100 d-flex align-items-center justify-content-center" 
                             (click)="SendEmployeeRecheck()" 
                             [disabled]="isLoading || !selectedEmployeeCode">

@@ -71,12 +71,53 @@ table thead th {
     margin-bottom: 0px;
   }
 
+/* ================= SINGLE SELECT (Searchable Employee Dropdown) ================= */
+.modern-single-select{
+  width:100%;
+}
 
-  .form-control-wrapper {
-    display: flex;
-    flex-direction: column;
-  }
-  
+.modern-single-select .mat-mdc-text-field-wrapper{
+  background:#fff !important;
+  border-radius:12px !important;
+  border:1px solid #dbeafe !important;
+  min-height:48px !important;
+  transition:.3s;
+}
+
+.modern-single-select .mat-mdc-text-field-wrapper:hover{
+  border-color:#38bdf8 !important;
+  box-shadow:0 4px 15px rgba(56,189,248,.15);
+}
+
+.modern-single-select.mat-focused .mat-mdc-text-field-wrapper{
+  border-color:#0284c7 !important;
+  box-shadow:0 0 0 4px rgba(2,132,199,.10);
+}
+
+.modern-single-select .mat-mdc-select-value{
+  font-size:13px;
+  color:#334155;
+  font-weight:500;
+}
+
+.modern-single-select .mat-mdc-select-arrow{
+  color:#0284c7 !important;
+}
+
+/* Error state for single select */
+.modern-single-select.error-field .mat-mdc-text-field-wrapper{
+  border-color:#ef4444 !important;
+}
+
+/* Ensure mat-form-field fits in custom-sel */
+.custom-sel .modern-single-select{
+  margin-top:0;
+}
+
+.custom-sel .mat-mdc-form-field-subscript-wrapper{
+  display:none;
+}
+
   ::ng-deep .form-control-wrapper mat-form-field {
     width: 100%;
   }
@@ -170,37 +211,45 @@ input:focus-visible {
   outline: none;
 }
 
-::ng-deep .mdc-text-field--no-label{
-  border:1px solid #ced4da;
+/* Branch field same style as Select User */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
+  border: 1px solid #ced4da !important;
+  border-radius: 4px !important;
+  background-color: #fff !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  display: flex;
+  align-items: center;
+  box-shadow: none !important;
 }
 
-::ng-deep .mat-mdc-form-field-flex {
-  padding: 4px 7px;
-  height: 35px;
+/* Remove material outline */
+::ng-deep .form-control-wrapper .mdc-notched-outline {
+  display: none !important;
 }
 
-.check-box-selection-sec{
-    padding: 0px !important;
+/* Remove extra background */
+::ng-deep .form-control-wrapper .mdc-text-field--filled,
+::ng-deep .form-control-wrapper .mdc-text-field--outlined {
+  background: transparent !important;
 }
 
-/* .form-control {
-    font-size: 14px;
-} */
-
-  
-
-/* label{
-    font-size: 14px;
-} */
-
-
-.cpm-sec label{
-  font-size: 15px;
-
+/* Align text properly */
+::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
+  height: 38px !important;
+  display: flex;
+  align-items: end;
 }
 
-.cpm-sec .form-control{
-  font-size: 13px !important;
+/* Remove focus blue outline */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
+  border-color: #80bdff !important;
+  box-shadow: 0 0 0 0.1rem rgba(0,123,255,.25) !important;
+}
+
+/* Error state */
+::ng-deep .error-field .mat-mdc-text-field-wrapper {
+  border: 1px solid red !important;
 }
 
 

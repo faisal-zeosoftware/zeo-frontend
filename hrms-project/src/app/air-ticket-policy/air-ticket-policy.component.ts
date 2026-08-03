@@ -44,7 +44,8 @@ export class AirTicketPolicyComponent {
 
   eligible_departments: number[] = [];
     eligible_designations: number[] = [];
-  eligible_categories: number[] = [];  
+  eligible_categories: number[] = []; 
+  branch: number[] = [];
 
 
 
@@ -73,7 +74,7 @@ export class AirTicketPolicyComponent {
 
   use_common_workflow:  boolean = false;
 
-branch: number[] = [];
+
 
   registerButtonClicked = false;
 
@@ -89,15 +90,19 @@ branch: number[] = [];
 
 
   @ViewChild('selectDept') selectDept: MatSelect | undefined;
-    @ViewChild('selectDes') selectDes: MatSelect | undefined;
-
-      @ViewChild('selectCat') selectCat: MatSelect | undefined;
+  @ViewChild('selectDes') selectDes: MatSelect | undefined;
+  @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
+  @ViewChild('selectCat') selectCat: MatSelect | undefined;
 
 
 
   allSelecteddept=false;
   allSelectedcat=false;
   allSelectedDes=false;
+  allSelectedBrach=false;
+
+  allSelectedbR=false;
+  allSelecteddes=false;
 
 
   constructor(
@@ -138,7 +143,7 @@ ngOnInit(): void {
 
    // Listen for sidebar changes so the dropdown updates instantly
    this.employeeService.selectedBranches$.subscribe(ids => {
- 
+    this.loadDeparmentBranch();
     this.loadDEpartments();
 
 
@@ -273,7 +278,15 @@ ngOnInit(): void {
   }
   
 
-
+                toggleAllSelectionBrach(): void {
+                  if (this.selectBrach) {
+                    if (this.allSelectedBrach) {
+                      this.selectBrach.options.forEach((item: MatOption) => item.select());
+                    } else {
+                      this.selectBrach.options.forEach((item: MatOption) => item.deselect());
+                    }
+                  }
+                }
       
 
   
@@ -307,6 +320,38 @@ toggleAllSelectionDes(): void {
   }
 }
 
+
+  loadDeparmentBranch(callback?: Function): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+        (result: any[]) => {
+          // 1. Get the sidebar selected IDs from localStorage
+          const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+  
+          // 2. Filter the API result to only include branches selected in the sidebar
+          // If sidebar is empty, you might want to show all, or show none. 
+          // Usually, we show only the selected ones:
+          if (sidebarSelectedIds.length > 0) {
+            this.Branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+          } else {
+            this.Branches = result; // Fallback: show all if nothing is selected in sidebar
+          }
+          // Inside the subscribe block of loadDeparmentBranch
+          if (this.Branches.length === 1) {
+            this.branch = this.Branches[0].id;
+          }
+  
+          console.log('Filtered branches for selection:', this.Branches);
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching branches:', error);
+        }
+      );
+    }
+  }
 
  
 
@@ -522,6 +567,7 @@ mapDesigNameToId() {
               eligible_departments:this.eligible_departments,
               eligible_designations:this.eligible_designations,
               eligible_categories:this.eligible_categories,
+              branch: this.branch,
               travel_class:this.travel_class,
               is_active:this.is_active,
 
@@ -623,82 +669,84 @@ mapDesigNameToId() {
 
       }
 
-      
+
 isAllBranchesSelected(): boolean {
-  return this.editAsset.branch?.length === this.Branches.length;
+  return this.branch.length === this.Branches.length;
 }
 
 isSomeBranchesSelected(): boolean {
   return (
-    this.editAsset.branch?.length > 0 &&
-    this.editAsset.branch?.length < this.Branches.length
+    this.branch.length > 0 &&
+    this.branch.length < this.Branches.length
   );
 }
 
 toggleAllBranches(): void {
   if (this.isAllBranchesSelected()) {
-    this.editAsset.branch = [];
+    this.branch = [];
   } else {
-    this.editAsset.branch = this.Branches.map(x => x.id);
+    this.branch = this.Branches.map(x => x.id);
   }
 }
 
 isAllDepartmentsSelected(): boolean {
-  return this.editAsset.department?.length === this.Departments.length;
+  return this.eligible_departments.length === this.Departments.length;
 }
 
 isSomeDepartmentsSelected(): boolean {
   return (
-    this.editAsset.department?.length > 0 &&
-    this.editAsset.department?.length < this.Departments.length
+    this.eligible_departments.length > 0 &&
+    this.eligible_departments.length < this.Departments.length
   );
 }
 
 toggleAllDepartments(): void {
   if (this.isAllDepartmentsSelected()) {
-    this.editAsset.department = [];
+    this.eligible_departments = [];
   } else {
-    this.editAsset.department = this.Departments.map(x => x.id);
+    this.eligible_departments = this.Departments.map(x => x.id);
   }
 }
 
 isAllCategoriesSelected(): boolean {
-  return this.editAsset.category?.length === this.Categories.length;
+  return this.eligible_categories.length === this.Categories.length;
 }
 
 isSomeCategoriesSelected(): boolean {
   return (
-    this.editAsset.category?.length > 0 &&
-    this.editAsset.category?.length < this.Categories.length
+    this.eligible_categories.length > 0 &&
+    this.eligible_categories.length < this.Categories.length
   );
 }
 
 toggleAllCategories(): void {
   if (this.isAllCategoriesSelected()) {
-    this.editAsset.category = [];
+    this.eligible_categories = [];
   } else {
-    this.editAsset.category = this.Categories.map(x => x.id);
+    this.eligible_categories = this.Categories.map(x => x.id);
   }
 }
 
 isAllDesignationsSelected(): boolean {
-  return this.editAsset.designation?.length === this.Designations.length;
+  return this.eligible_designations.length === this.Designations.length;
 }
 
 isSomeDesignationsSelected(): boolean {
   return (
-    this.editAsset.designation?.length > 0 &&
-    this.editAsset.designation?.length < this.Designations.length
+    this.eligible_designations.length > 0 &&
+    this.eligible_designations.length < this.Designations.length
   );
 }
 
 toggleAllDesignations(): void {
   if (this.isAllDesignationsSelected()) {
-    this.editAsset.designation = [];
+    this.eligible_designations = [];
   } else {
-    this.editAsset.designation = this.Designations.map(x => x.id);
+    this.eligible_designations = this.Designations.map(x => x.id);
   }
 }
+
+            
 
 
 
@@ -749,6 +797,115 @@ openEditModal(asset: any): void {
   this.mapCategoryNameToId();
   this.mapDeptNameToId();
   this.mapCountryNameToId();
+}
+
+isAllBranchesSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.branch) &&
+    this.editAsset.branch.length === this.Branches.length
+  );
+}
+
+isSomeBranchesSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.branch) &&
+    this.editAsset.branch.length > 0 &&
+    this.editAsset.branch.length < this.Branches.length
+  );
+}
+
+toggleAllBranchesEdit(): void {
+  if (!Array.isArray(this.editAsset.branch)) {
+    this.editAsset.branch = [];
+  }
+
+  if (this.isAllBranchesSelectedEdit()) {
+    this.editAsset.branch = [];
+  } else {
+    this.editAsset.branch = this.Branches.map(x => x.id);
+  }
+}
+
+isAllDepartmentsSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.eligible_departments) &&
+    this.editAsset.eligible_departments.length === this.Departments.length
+  );
+}
+
+isSomeDepartmentsSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.eligible_departments) &&
+    this.editAsset.eligible_departments.length > 0 &&
+    this.editAsset.eligible_departments.length < this.Departments.length
+  );
+}
+
+toggleAllDepartmentsEdit(): void {
+  if (!Array.isArray(this.editAsset.eligible_departments)) {
+    this.editAsset.eligible_departments = [];
+  }
+
+  if (this.isAllDepartmentsSelectedEdit()) {
+    this.editAsset.eligible_departments = [];
+  } else {
+    this.editAsset.eligible_departments = this.Departments.map(x => x.id);
+  }
+}
+
+
+isAllCategoriesSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.eligible_categories) &&
+    this.editAsset.eligible_categories.length === this.Categories.length
+  );
+}
+
+isSomeCategoriesSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.eligible_categories) &&
+    this.editAsset.eligible_categories.length > 0 &&
+    this.editAsset.eligible_categories.length < this.Categories.length
+  );
+}
+
+toggleAllCategoriesEdit(): void {
+  if (!Array.isArray(this.editAsset.eligible_categories)) {
+    this.editAsset.eligible_categories = [];
+  }
+
+  if (this.isAllDepartmentsSelectedEdit()) {
+    this.editAsset.eligible_categories = [];
+  } else {
+    this.editAsset.eligible_categories = this.Categories.map(x => x.id);
+  }
+}
+
+isAllDesignationsSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.eligible_designations) &&
+    this.editAsset.eligible_designations.length === this.Designations.length
+  );
+}
+
+isSomeDesignationsSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.eligible_designations) &&
+    this.editAsset.eligible_designations.length > 0 &&
+    this.editAsset.eligible_designations.length < this.Designations.length
+  );
+}
+
+toggleAllDesignationsEdit(): void {
+  if (!Array.isArray(this.editAsset.eligible_designations)) {
+    this.editAsset.eligible_designations = [];
+  }
+
+  if (this.isAllDesignationsSelectedEdit()) {
+    this.editAsset.eligible_designations = [];
+  } else {
+    this.editAsset.eligible_designations = this.Designations.map(x => x.id);
+  }
 }
 
 

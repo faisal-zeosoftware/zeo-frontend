@@ -37,13 +37,43 @@
                           <label >Employees</label>
                              <div class="custom-sel">
                       <div class="form-control-wrapper">
-                          <mat-form-field >
-                            <mat-select [(ngModel)]="employee_ids" multiple placeholder="Select Employees">
-                              <mat-option *ngFor="let emp of Employees" [value]="emp.id">
-                                {{ emp.emp_first_name }} {{ emp.emp_last_name }}
-                              </mat-option>
-                            </mat-select>
-                          </mat-form-field>
+<mat-form-field appearance="outline" class="w-100">
+  <mat-select
+      #selectemp
+      [(ngModel)]="employee_ids"
+      [ngModelOptions]="{standalone:true}"
+      multiple
+      placeholder="Select Employees"
+      (closed)="employeeSearch=''">
+
+      <div class="px-2 pb-2">
+        <input
+          class="form-control"
+          placeholder="Search Employee"
+          [(ngModel)]="employeeSearch"
+          [ngModelOptions]="{standalone:true}"
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        />
+      </div>
+
+      <!-- Select All -->
+      <mat-option
+          (click)="toggleAllEmployees()"
+          [value]="null">
+          {{ allSelectedEmp ? 'Deselect All' : 'Select All' }}
+      </mat-option>
+
+      <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id">
+
+          {{ emp.emp_code }} - {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+
+      </mat-option>
+
+  </mat-select>
+</mat-form-field>
                           </div>
                         </div>
                       </div>

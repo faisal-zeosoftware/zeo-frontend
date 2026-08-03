@@ -19,7 +19,7 @@ import { DepartmentServiceService } from '../department-master/department-servic
 })
 export class EmployeePunchingListComponent {
 
-
+@ViewChild('selectemp') selectemp!: MatSelect;
   
   attendanceSummary: any[] = [];
 
@@ -32,8 +32,6 @@ export class EmployeePunchingListComponent {
   Categoried: any[] = [];
 
 
-
-  
 
 
   hasAddPermission: boolean = false;
@@ -497,11 +495,28 @@ allSelectedEmp = false;
   @ViewChild('selectdes') selectdes: MatSelect | undefined;
 
   @ViewChild('selectcat') selectcat: MatSelect | undefined;
-  @ViewChild('selectemp') selectemp: MatSelect | undefined;
+  // @ViewChild('selectemp') selectemp: MatSelect | undefined;
 
 
 
+toggleAllEmployees() {
 
+  if (this.allSelectedEmp) {
+
+    this.employee_ids = [];
+
+    this.selectemp.options.forEach(option => option.deselect());
+
+  } else {
+
+    this.employee_ids = this.filterEmployees().map(emp => emp.id);
+
+    this.selectemp.options.forEach(option => option.select());
+
+  }
+
+  this.allSelectedEmp = !this.allSelectedEmp;
+}
   
 
   toggleAllSelection(): void {
@@ -617,7 +632,33 @@ objectKeys(obj: any) {
 
 
 
+employeeSearch: string = '';
 
+filterEmployees(): any[] {
+
+  if (!this.employeeSearch.trim()) {
+    return this.Employees;
+  }
+
+  const search = this.employeeSearch.toLowerCase();
+
+  return this.Employees.filter(emp => {
+
+    const code = (emp.emp_code || '').toLowerCase();
+
+    const first = (emp.emp_first_name || '').toLowerCase();
+
+    const last = (emp.emp_last_name || '').toLowerCase();
+
+    const full = `${first} ${last}`.trim();
+
+    return code.includes(search) ||
+           first.includes(search) ||
+           last.includes(search) ||
+           full.includes(search);
+  });
+
+}
 
 
 

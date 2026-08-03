@@ -285,7 +285,22 @@ export class EmployeeRecheckComponent {
     });
   }
 
+employeeSearch: string = '';
 
+filterEmployees(): any[] {
+  if (!this.employeeSearch || this.employeeSearch.trim() === '') {
+    return this.Employees;
+  }
+
+  const search = this.employeeSearch.toLowerCase().trim();
+
+  return this.Employees.filter((emp: any) =>
+    emp.emp_code?.toLowerCase().includes(search) ||
+    emp.emp_name?.toLowerCase().includes(search) ||
+    emp.first_name?.toLowerCase().includes(search) ||
+    emp.last_name?.toLowerCase().includes(search)
+  );
+}
 
 
 }

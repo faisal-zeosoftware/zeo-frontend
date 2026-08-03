@@ -166,18 +166,46 @@
 
         <mat-form-field>
           <!-- <mat-label>Favorite food</mat-label> -->
-          <mat-select placeholder="Select" [(ngModel)]="task_managers" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !task_managers}" #selectMng multiple>
-            <div class="select-all">
-              <mat-checkbox [(ngModel)]="allSelectedMng" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionMng()">
-                Select All
-              </mat-checkbox>
-            </div>
-            <input type="text" placeholder="serach" class="form-control">
+<mat-select
+  placeholder="Select"
+  [(ngModel)]="task_managers"
+  [ngModelOptions]="{standalone:true}"
+  [ngClass]="{'error-field': registerButtonClicked && !task_managers}"
+  #selectMng
+  multiple
+  (closed)="managerSearch=''"
+>
 
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
-          </mat-select>
+  <mat-checkbox
+    class="select-all-checkbox"
+    [(ngModel)]="allSelectedMng"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (change)="toggleAllSelectionMng()"
+  >
+    Select All
+  </mat-checkbox>
+
+  <div class="px-2 pb-2">
+    <input
+      class="form-control"
+      type="text"
+      placeholder="Search Manager"
+      [(ngModel)]="managerSearch"
+      [ngModelOptions]="{standalone:true}"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    />
+  </div>
+
+  <mat-option
+    *ngFor="let emp of filterManagers()"
+    [value]="emp.id"
+  >
+    {{ emp.emp_code }}
+  </mat-option>
+
+</mat-select>
         </mat-form-field>
         
       </div>
@@ -203,11 +231,24 @@
                 Select All
               </mat-checkbox>
             </div>
-            <input type="text" placeholder="serach" class="form-control">
+<div class="px-2 pb-2">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Search Member"
+    [(ngModel)]="memberSearch"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  />
+</div>
 
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
+<mat-option
+  *ngFor="let food of filterMembers()"
+  [value]="food.id"
+>
+  {{ food.emp_code }}
+</mat-option>
           </mat-select>
         </mat-form-field>
         
@@ -390,25 +431,55 @@
 
 
 <div class="col-md-6" >
-    <label>Select Task Manager</label>
+    <label>Select Task Manager
+       <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <div class="form-control-wrapper">
     
 
         <mat-form-field>
           <!-- <mat-label>Favorite food</mat-label> -->
-          <mat-select placeholder="Select" [(ngModel)]="editProjecttask.task_managers" [ngModelOptions]="{standalone: true}" #selectMng multiple>
-            <div class="select-all">
-              <mat-checkbox [(ngModel)]="allSelectedMng" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionMng()">
-                Select All
-              </mat-checkbox>
-            </div>
-            <input type="text" placeholder="serach" class="form-control">
+<mat-select
+  placeholder="Select"
+  [(ngModel)]="editProjecttask.task_managers"
+  [ngModelOptions]="{standalone:true}"
+  [ngClass]="{'error-field': registerButtonClicked && !task_managers}"
+  #selectMng
+  multiple
+  (closed)="managerSearch=''"
+>
 
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
-          </mat-select>
+  <mat-checkbox
+    class="select-all-checkbox"
+    [(ngModel)]="allSelectedMng"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (change)="toggleAllSelectionMng()"
+  >
+    Select All
+  </mat-checkbox>
+
+  <div class="px-2 pb-2">
+    <input
+      class="form-control"
+      type="text"
+      placeholder="Search Manager"
+      [(ngModel)]="managerSearch"
+      [ngModelOptions]="{standalone:true}"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    />
+  </div>
+
+  <mat-option
+    *ngFor="let emp of filterManagers()"
+    [value]="emp.id"
+  >
+    {{ emp.emp_code }}
+  </mat-option>
+
+</mat-select>
         </mat-form-field>
         
       </div>
@@ -419,24 +490,39 @@
   </div>
 
 <div class="col-md-6" >
-    <label>Select Task Members</label>
+    <label>Select Task Members
+       <span class="required-star">*</span>
+    </label>
     <div class="custom-sel">
       <div class="form-control-wrapper">
     
 
         <mat-form-field>
           <!-- <mat-label>Favorite food</mat-label> -->
-          <mat-select placeholder="Select" [(ngModel)]="editProjecttask.task_members" [ngModelOptions]="{standalone: true}" #select multiple>
+          <mat-select placeholder="Select" [(ngModel)]="editProjecttask.task_members" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !task_members}" #select multiple>
             <div class="select-all">
               <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
                 Select All
               </mat-checkbox>
             </div>
-            <input type="text" placeholder="serach" class="form-control">
+<div class="px-2 pb-2">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Search Member"
+    [(ngModel)]="memberSearch"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  />
+</div>
 
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
+<mat-option
+  *ngFor="let food of filterMembers()"
+  [value]="food.id"
+>
+  {{ food.emp_code }}
+</mat-option>
           </mat-select>
         </mat-form-field>
         

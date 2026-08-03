@@ -13,26 +13,44 @@
       <div class="row">
 
         <!-- Employee -->
-        <div class="col-md-4">
+<div class="col-md-4">
+  <label>Select Employee</label>
 
-          <label>Select Employee</label>
+    <div class="custom-sel">
+    <div class="form-control-wrapper">
 
-          <select class="form-control"
-                  [(ngModel)]="selectedEmployeeId">
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-select
+      [(ngModel)]="selectedEmployeeId"
+      [ngModelOptions]="{standalone:true}"
+      placeholder="Select Employee"
+      (closed)="employeeSearch=''"
+    >
 
-            <option value="">Select Employee</option>
+      <div class="px-2 pb-2">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search Employee"
+          [(ngModel)]="employeeSearch"
+          [ngModelOptions]="{standalone:true}"
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        />
+      </div>
 
-            <option *ngFor="let emp of Employees"
-                    [value]="emp.id">
+      <mat-option
+        *ngFor="let emp of filterEmployees()"
+        [value]="emp.id"
+      >
+        {{ emp.emp_code }}
+      </mat-option>
 
-              {{ emp.emp_code }}
-
-            </option>
-
-          </select>
-
-        </div>
-
+    </mat-select>
+  </mat-form-field>
+</div>
+</div>
+</div>
         <!-- From Date -->
         <div class="col-md-3">
 

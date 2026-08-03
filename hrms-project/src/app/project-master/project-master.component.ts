@@ -716,8 +716,50 @@ openEditModal(project: any): void {
     );
   }
 
+   branchSearch: string = '';
+
+  filteredBranches() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
+  );
+
+}
 
 
+managerSearch: string = '';
+memberSearch: string = '';
+
+
+filterManagers(): any[] {
+  if (!this.managerSearch || this.managerSearch.trim() === '') {
+    return this.Employees;
+  }
+
+  const search = this.managerSearch.toLowerCase().trim();
+
+  return this.Employees.filter((emp: any) =>
+    emp.emp_code?.toLowerCase().includes(search)
+  );
+}
+
+filterMembers(): any[] {
+  if (!this.memberSearch.trim()) {
+    return this.Employees;
+  }
+
+  const search = this.memberSearch.toLowerCase().trim();
+
+  return this.Employees.filter((emp: any) =>
+    emp.emp_code?.toLowerCase().includes(search)
+  );
+}
 
 
 }

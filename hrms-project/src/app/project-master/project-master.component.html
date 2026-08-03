@@ -111,43 +111,53 @@
   </div>
           </div>
 
-          <div class="col-md-6" >
-  <label>Select Branch
-    <span class="required-star">*</span>
-  </label>
-  <div class="custom-sel">
-    <div class="form-control-wrapper">
+  <div class="col-md-6" >
+    <label>Select Branch</label>
+    <div class="custom-sel">
+      <div class="form-control-wrapper">
+    
   
-
-      <mat-form-field>
-        <!-- <mat-label>Favorite food</mat-label> -->
-        <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branches}" #selectBr multiple>
-          <div class="select-all">
-            <mat-checkbox [(ngModel)]="allSelectedBr" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBr()">
-              Select All
-            </mat-checkbox>
-            
-          </div>
-          <input type="text" placeholder="serach" class="form-control">
-
-          <mat-option *ngFor="let food of Branches"  [value]="food.id">
-            {{ food.branch_name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      
+        <mat-form-field>
+          <!-- <mat-label>Favorite food</mat-label> -->
+          <mat-select placeholder="Select" [(ngModel)]="branches" [ngModelOptions]="{standalone: true}" #selectBr multiple>
+            <div class="select-all">
+              <mat-checkbox [(ngModel)]="allSelectedBr" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBr()">
+                Select All
+              </mat-checkbox>
+            </div>
+                <!-- Search -->
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Branch"
+        [(ngModel)]="branchSearch"
+        [ngModelOptions]="{standalone:true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
     </div>
-    <div *ngIf="registerButtonClicked && (!branches || branches.length === 0)" class="error-message">
-      Please Select Branch
+
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let food of filteredBranches()"
+      [value]="food.id">
+      {{ food.branch_name }}
+    </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+      </div>
+      <div *ngIf="registerButtonClicked && (!branches || branches.length === 0)" class="error-message">
+        Please Select branches
+      </div>
     </div>
   </div>
-</div>
 
 
 
 <div class="col-md-6" >
-    <label>Select Manager
-      <span class="required-star">*</span>
+    <label>Select Task Manager
+       <span class="required-star">*</span>
     </label>
     <div class="custom-sel">
       <div class="form-control-wrapper">
@@ -155,18 +165,46 @@
 
         <mat-form-field>
           <!-- <mat-label>Favorite food</mat-label> -->
-          <mat-select placeholder="Select" [(ngModel)]="managers" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !managers}" #selectMng multiple>
-            <div class="select-all">
-              <mat-checkbox [(ngModel)]="allSelectedMng" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionMng()">
-                Select All
-              </mat-checkbox>
-            </div>
-            <input type="text" placeholder="serach" class="form-control">
+<mat-select
+  placeholder="Select"
+  [(ngModel)]="managers"
+  [ngModelOptions]="{standalone:true}"
+  [ngClass]="{'error-field': registerButtonClicked && !managers}"
+  #selectMng
+  multiple
+  (closed)="managerSearch=''"
+>
 
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
-          </mat-select>
+  <mat-checkbox
+    class="select-all-checkbox"
+    [(ngModel)]="allSelectedMng"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (change)="toggleAllSelectionMng()"
+  >
+    Select All
+  </mat-checkbox>
+
+  <div class="px-2 pb-2">
+    <input
+      class="form-control"
+      type="text"
+      placeholder="Search Manager"
+      [(ngModel)]="managerSearch"
+      [ngModelOptions]="{standalone:true}"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    />
+  </div>
+
+  <mat-option
+    *ngFor="let emp of filterManagers()"
+    [value]="emp.id"
+  >
+    {{ emp.emp_code }}
+  </mat-option>
+
+</mat-select>
         </mat-form-field>
         
       </div>
@@ -177,8 +215,8 @@
   </div>
 
 <div class="col-md-6" >
-    <label>Select Members
-      <span class="required-star">*</span>
+    <label>Select Task Members
+       <span class="required-star">*</span>
     </label>
     <div class="custom-sel">
       <div class="form-control-wrapper">
@@ -192,11 +230,24 @@
                 Select All
               </mat-checkbox>
             </div>
-            <input type="text" placeholder="serach" class="form-control">
+<div class="px-2 pb-2">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Search Member"
+    [(ngModel)]="memberSearch"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  />
+</div>
 
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
+<mat-option
+  *ngFor="let food of filterMembers()"
+  [value]="food.id"
+>
+  {{ food.emp_code }}
+</mat-option>
           </mat-select>
         </mat-form-field>
         
@@ -206,6 +257,7 @@
       </div>
     </div>
   </div>
+
 
             <div class="col-md-6" >
                
@@ -350,67 +402,7 @@
        
   </div>
 
-     
 
-
-
-<div class="col-md-6" >
-    <label>Select Manager</label>
-    <div class="custom-sel">
-      <div class="form-control-wrapper">
-    
-
-        <mat-form-field>
-          <!-- <mat-label>Favorite food</mat-label> -->
-          <mat-select placeholder="Select" [(ngModel)]="editProject.managers" [ngModelOptions]="{standalone: true}" #selectMng multiple>
-            <div class="select-all">
-              <mat-checkbox [(ngModel)]="allSelectedMng" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionMng()">
-                Select All
-              </mat-checkbox>
-            </div>
-            <input type="text" placeholder="serach" class="form-control">
-
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        
-      </div>
-      <div *ngIf="registerButtonClicked && (!managers || managers.length === 0)" class="error-message">
-        Please Select managers
-      </div>
-    </div>
-  </div>
-
-<div class="col-md-6" >
-    <label>Select Members</label>
-    <div class="custom-sel">
-      <div class="form-control-wrapper">
-    
-
-        <mat-form-field>
-          <!-- <mat-label>Favorite food</mat-label> -->
-          <mat-select placeholder="Select" [(ngModel)]="editProject.members" [ngModelOptions]="{standalone: true}" #select multiple>
-            <div class="select-all">
-              <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
-                Select All
-              </mat-checkbox>
-            </div>
-            <input type="text" placeholder="serach" class="form-control">
-
-            <mat-option *ngFor="let food of Employees" [value]="food.id">
-              {{ food.emp_code }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        
-      </div>
-      <div *ngIf="registerButtonClicked && (!members || members.length === 0)" class="error-message">
-        Please Select Members
-      </div>
-    </div>
-  </div>
   <div class="col-md-6" >
     <label>Select Branch</label>
     <div class="custom-sel">
@@ -425,11 +417,127 @@
                 Select All
               </mat-checkbox>
             </div>
-            <input type="text" placeholder="serach" class="form-control">
-  
-            <mat-option *ngFor="let food of Branches" [value]="food.id">
-              {{ food.branch_name }}
-            </mat-option>
+                <!-- Search -->
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Branch"
+        [(ngModel)]="branchSearch"
+        [ngModelOptions]="{standalone:true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+    </div>
+
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let food of filteredBranches()"
+      [value]="food.id">
+      {{ food.branch_name }}
+    </mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+      </div>
+      <div *ngIf="registerButtonClicked && (!branches || branches.length === 0)" class="error-message">
+        Please Select branches
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6" >
+    <label>Select Task Manager
+       <span class="required-star">*</span>
+    </label>
+    <div class="custom-sel">
+      <div class="form-control-wrapper">
+    
+
+        <mat-form-field>
+          <!-- <mat-label>Favorite food</mat-label> -->
+<mat-select
+  placeholder="Select"
+  [(ngModel)]="editProject.managers"
+  [ngModelOptions]="{standalone:true}"
+  [ngClass]="{'error-field': registerButtonClicked && !managers}"
+  #selectMng
+  multiple
+  (closed)="managerSearch=''"
+>
+
+  <mat-checkbox
+    class="select-all-checkbox"
+    [(ngModel)]="allSelectedMng"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (change)="toggleAllSelectionMng()"
+  >
+    Select All
+  </mat-checkbox>
+
+  <div class="px-2 pb-2">
+    <input
+      class="form-control"
+      type="text"
+      placeholder="Search Manager"
+      [(ngModel)]="managerSearch"
+      [ngModelOptions]="{standalone:true}"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    />
+  </div>
+
+  <mat-option
+    *ngFor="let emp of filterManagers()"
+    [value]="emp.id"
+  >
+    {{ emp.emp_code }}
+  </mat-option>
+
+</mat-select>
+        </mat-form-field>
+        
+      </div>
+      <div *ngIf="registerButtonClicked && (!managers || managers.length === 0)" class="error-message">
+        Please Select managers
+      </div>
+    </div>
+  </div>
+
+<div class="col-md-6" >
+    <label>Select Task Members
+       <span class="required-star">*</span>
+    </label>
+    <div class="custom-sel">
+      <div class="form-control-wrapper">
+    
+
+        <mat-form-field>
+          <!-- <mat-label>Favorite food</mat-label> -->
+          <mat-select placeholder="Select" [(ngModel)]="editProject.members" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !members}" #select multiple>
+            <div class="select-all">
+              <mat-checkbox [(ngModel)]="allSelectedEmp" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEmp()">
+                Select All
+              </mat-checkbox>
+            </div>
+<div class="px-2 pb-2">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Search Member"
+    [(ngModel)]="memberSearch"
+    [ngModelOptions]="{standalone:true}"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  />
+</div>
+
+<mat-option
+  *ngFor="let food of filterMembers()"
+  [value]="food.id"
+>
+  {{ food.emp_code }}
+</mat-option>
           </mat-select>
         </mat-form-field>
         

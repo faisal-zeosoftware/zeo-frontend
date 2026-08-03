@@ -32,44 +32,60 @@ export class PayrollDetailsComponent {
   earnings: any[] = [];
   deductions: any[] = [];
 
-  selectedPayslipDesign = 'default';  // other value could be 'design2'
+  selectedPayslipDesign = 'classic';  // other value could be 'design2'
   send_email: boolean = false;
 
   // Add to your variable declarations
 companyName: string = '';
+companyLogoUrl: string | null = null; 
 
   constructor(
     private route: ActivatedRoute,
     private leaveService: LeaveService,
     private authService: AuthenticationService,
     private employeeService: EmployeeService,
+    private http: HttpClient
 
 
   ) {}
 
 
-  ngOnInit(): void {
-
-    // Get the schema name from localStorage
+ngOnInit(): void {
   const savedSchema = localStorage.getItem('selectedSchema');
   this.companyName = savedSchema ? savedSchema : 'Your Company';
-
-    this.payslipId = this.route.snapshot.paramMap.get('id');
-    if (this.payslipId) {
-      this.leaveService.getSinglePayslip(this.payslipId).subscribe(
-        data => {
-          this.payslipDetails = data;
-  
-          // Split components into earnings and deductions
-          this.earnings = data.components.filter((comp: { component_type: string; }) => comp.component_type === 'Addition');
-          this.deductions = data.components.filter((comp: { component_type: string; }) => comp.component_type === 'Deduction');
-        },
-        error => {
-          console.error('Failed to fetch payslip details', error);
-        }
-      );
-    }
+ 
+  this.fetchCompanyLogo(savedSchema);
+ 
+  this.payslipId = this.route.snapshot.paramMap.get('id');
+  if (this.payslipId) {
+    this.leaveService.getSinglePayslip(this.payslipId).subscribe(
+      data => {
+        this.payslipDetails = data;
+        this.earnings = data.components.filter((comp: { component_type: string; }) => comp.component_type === 'Addition');
+        this.deductions = data.components.filter((comp: { component_type: string; }) => comp.component_type === 'Deduction');
+      },
+      error => {
+        console.error('Failed to fetch payslip details', error);
+      }
+    );
   }
+}
+
+// Fetches the company list and picks the logo matching the current schema
+fetchCompanyLogo(savedSchema: string | null): void {
+  this.http.get<any[]>(`${this.apiUrl}/users/api/company/`).subscribe(
+    (companies) => {
+      const currentCompany = savedSchema
+        ? companies.find(c => c.schema_name === savedSchema)
+        : companies[0];
+ 
+      this.companyLogoUrl = currentCompany?.logo || null;
+    },
+    error => {
+      console.error('Failed to fetch company logo', error);
+    }
+  );
+}
 
 
 
@@ -78,23 +94,23 @@ payslipPreferences = {
   showBranch: true,
   showDepartment: true,
   showCategory: true,
-  showLogo: false,        // New
+  // showLogo: false,        // New
   showCompanyName: true // New flag for Company Name
 };
 
-logoUrl: string | ArrayBuffer | null = null; // Holds the uploaded image data
+// logoUrl: string | ArrayBuffer | null = null; 
 
 // Method to handle image upload
-onLogoUpload(event: any): void {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.logoUrl = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
+// onLogoUpload(event: any): void {
+//   const file = event.target.files[0];
+//   if (file) {
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       this.logoUrl = reader.result;
+//     };
+//     reader.readAsDataURL(file);
+//   }
+// }
 
 
   downloadPayslip() {

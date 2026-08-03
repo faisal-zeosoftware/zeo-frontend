@@ -693,13 +693,6 @@ table th{
     padding: 10px;
   }
 
-
-
-
-  
-
-
-
   .payslip-container {
     max-width: 800px;
     margin: auto;
@@ -987,4 +980,269 @@ h3.m-0 {
   padding: 15px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
+}
+
+/* ===== Classic Payslip Design (matches PDF layout) ===== */
+
+.payslip-classic {
+  max-width: 850px;
+  margin: 20px auto;
+  padding: 30px 35px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1a1a1a;
+  font-size: 13px;
+}
+
+/* Header */
+.pc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #002b5c;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.pc-logo img {
+  max-height: 55px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.pc-company {
+  text-align: right;
+}
+
+.pc-company h1 {
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 4px 0;
+  color: #002b5c;
+}
+
+.pc-company p {
+  margin: 0;
+  font-size: 11.5px;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Title */
+.pc-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.pc-title h2 {
+  margin: 0;
+  font-size: 17px;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.pc-title p {
+  margin: 2px 0 0 0;
+  font-size: 12.5px;
+  color: #444;
+}
+
+/* Employee / IBAN info box */
+.pc-info-box {
+  display: flex;
+  border: 1px solid #333;
+  margin-bottom: 18px;
+}
+
+.pc-info-col {
+  flex: 1;
+  padding: 10px 14px;
+}
+
+.pc-info-col:first-child {
+  border-right: 1px solid #333;
+}
+
+.pc-info-row {
+  display: flex;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+}
+
+.pc-label {
+  width: 110px;
+  flex-shrink: 0;
+  color: #333;
+}
+
+.pc-value {
+  font-weight: 600;
+  color: #000;
+}
+
+/* Tables */
+.pc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 18px;
+  font-size: 12.5px;
+}
+
+.pc-table th,
+.pc-table td {
+  border: 1px solid #333;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.pc-table thead th {
+  background: #f2f2f2;
+  font-weight: 700;
+  font-size: 8.5px;
+  letter-spacing: 0.3px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.pc-summary {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.pc-summary th,
+.pc-summary td {
+  border: 1px solid #333;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+.pc-summary th {
+  font-size: 10px;
+  line-height: 1.3;
+  padding: 6px 4px;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.pc-summary td {
+  font-size: 11.5px;
+  padding: 8px 4px;
+  text-align: center;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.pc-num {
+  text-align: right;
+}
+
+.pc-total-label {
+  color: #b00020;
+  font-weight: 700;
+}
+
+/* Net salary */
+.pc-net {
+  margin-bottom: 18px;
+}
+
+.pc-net p {
+  margin: 0 0 4px 0;
+  font-size: 13.5px;
+}
+
+.pc-words {
+  font-size: 12.5px !important;
+}
+
+/* Signatures */
+.pc-signatures {
+  display: flex;
+  border: 1px solid #333;
+  margin-top: 10px;
+  margin-bottom: 16px;
+}
+
+.pc-sig-box {
+  flex: 1;
+  padding: 30px 10px 10px 10px;
+  text-align: center;
+  border-right: 1px solid #333;
+}
+
+.pc-sig-box:last-child {
+  border-right: none;
+}
+
+.pc-sig-line {
+  height: 1px;
+}
+
+.pc-sig-box p {
+  margin: 6px 0 0 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.pc-disclaimer {
+  text-align: center;
+  font-size: 10.5px;
+  font-style: italic;
+  color: #555;
+  margin: 0;
+}
+
+/* Print */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .payslip-classic, .payslip-classic * {
+    visibility: visible;
+  }
+  .payslip-classic {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: none;
+  }
+}
+
+/* Mobile */
+@media only screen and (max-width: 640px) {
+  .pc-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .pc-company {
+    text-align: center;
+    margin-top: 10px;
+  }
+  .pc-info-box {
+    flex-direction: column;
+  }
+  .pc-info-col:first-child {
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+  .pc-table {
+    font-size: 11px;
+  }
+  .pc-signatures {
+    flex-direction: column;
+  }
+  .pc-sig-box {
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+  .pc-sig-box:last-child {
+    border-bottom: none;
+  }
 }

@@ -12,7 +12,7 @@
           <div class="col-md-4">
             <div class="custom-sel ">
               <select  [(ngModel)]="selectedPayslipDesign" class="form-control ">
-                <option value="default">Default Design</option>
+                <option value="classic">Default Design</option>
                 <option value="design2">Design-2</option>
               </select>
         
@@ -42,7 +42,7 @@
       </div>
   
 
-      <div class="mt-4" *ngIf="selectedPayslipDesign === 'default'">
+      <!-- <div class="mt-4" *ngIf="selectedPayslipDesign === 'default'">
         <div class="row">
           <div class="col-md-9">
             <div class="payslip-container" *ngIf="payslipDetails" #payslipContent>
@@ -203,7 +203,213 @@
             </div>
           </div>
         </div>
+      </div> -->
+
+
+      <div class="mt-4" *ngIf="selectedPayslipDesign === 'classic'">
+  <div class="row">
+    <div class="col-md-9">
+      <div class="payslip-classic" *ngIf="payslipDetails" #payslipContent>
+
+        <!-- Header: logo left, company details right -->
+        <div class="pc-header">
+<div class="pc-logo" *ngIf="companyLogoUrl">
+  <img [src]="companyLogoUrl" alt="Company logo">
+</div>
+          <div class="pc-company" *ngIf="payslipPreferences.showCompanyName">
+            <h1>{{ companyName }}</h1>
+            <p *ngIf="payslipDetails.payroll_run?.company_address">{{ payslipDetails.payroll_run?.company_address }}</p>
+            <p *ngIf="payslipDetails.payroll_run?.company_email">{{ payslipDetails.payroll_run?.company_email }}</p>
+            <p *ngIf="payslipDetails.payroll_run?.company_trn">TRN {{ payslipDetails.payroll_run?.company_trn }}</p>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="pc-title">
+          <h2>PAY SLIP</h2>
+          <p>{{ payslipDetails.payroll_run?.month }} {{ payslipDetails.payroll_run?.year }}</p>
+        </div>
+
+        <!-- Employee / IBAN block -->
+        <div class="pc-info-box">
+          <div class="pc-info-col">
+            <div class="pc-info-row">
+              <span class="pc-label">Employee</span>
+              <span class="pc-value">: {{ payslipDetails.employee_name || payslipDetails.employee }}</span>
+            </div>
+            <div class="pc-info-row" *ngIf="payslipDetails.emirates_id !== undefined">
+              <span class="pc-label">Emirates Id</span>
+              <span class="pc-value">: {{ payslipDetails.emirates_id || '-' }}</span>
+            </div>
+            <div class="pc-info-row" *ngIf="payslipDetails.designation">
+              <span class="pc-label">Designation</span>
+              <span class="pc-value">: {{ payslipDetails.designation }}</span>
+            </div>
+            <div class="pc-info-row" *ngIf="payslipPreferences.showBranch">
+              <span class="pc-label">Branch</span>
+              <span class="pc-value">: {{ payslipDetails.payroll_run?.branch }}</span>
+            </div>
+            <div class="pc-info-row" *ngIf="payslipPreferences.showDepartment">
+              <span class="pc-label">Department</span>
+              <span class="pc-value">: {{ payslipDetails.payroll_run?.department || 'N/A' }}</span>
+            </div>
+            <div class="pc-info-row" *ngIf="payslipPreferences.showCategory">
+              <span class="pc-label">Category</span>
+              <span class="pc-value">: {{ payslipDetails.payroll_run?.category || 'N/A' }}</span>
+            </div>
+          </div>
+          <div class="pc-info-col">
+            <div class="pc-info-row">
+              <span class="pc-label">IBAN</span>
+              <span class="pc-value">: {{ payslipDetails.iban || '-' }}</span>
+            </div>
+            <div class="pc-info-row">
+              <span class="pc-label">Payment Date</span>
+              <span class="pc-value">: {{ payslipDetails.payroll_run?.payment_date }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Earnings / Deductions table -->
+        <table class="pc-table pc-earnings">
+          <thead>
+            <tr>
+              <th>Earning</th>
+              <th class="pc-num">Gross (AED)</th>
+              <th>Deduction</th>
+              <th class="pc-num">Amount (AED)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let earning of earnings; let i = index">
+              <td>{{ earning.component_name }}</td>
+              <td class="pc-num">{{ earning.structure_amount || '0.00' }}</td>
+              <td>{{ deductions[i]?.component_name || '' }}</td>
+              <td class="pc-num">{{ deductions[i]?.structure_amount || '' }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td class="pc-total-label">Total Allowance</td>
+              <td class="pc-num pc-total-label">{{ payslipDetails.total_additions }}</td>
+              <td class="pc-total-label">Total Deduction</td>
+              <td class="pc-num pc-total-label">{{ payslipDetails.total_deductions }}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Net salary -->
+        <div class="pc-net">
+          <p><strong>Net Salary</strong> : {{ payslipDetails.net_salary }}</p>
+          <p class="pc-words" *ngIf="payslipDetails.net_salary_words">
+            <strong>Amount In Words</strong> : {{ payslipDetails.net_salary_words }}
+          </p>
+        </div>
+
+        <!-- Attendance / leave summary -->
+        <table class="pc-table pc-summary">
+          <colgroup>
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.32%;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Total Days</th>
+              <th>Days Worked</th>
+              <th>Leave Balance</th>
+              <th>Leave Days</th>
+              <th>Leave Days (Unpaid)</th>
+              <th>Sick Leave</th>
+              <th>Loan Balance (AED)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ payslipDetails.total_working_days }}</td>
+              <td>{{ payslipDetails.days_worked }}</td>
+              <td>{{ payslipDetails.leave_balance || '0.00' }}</td>
+              <td>{{ payslipDetails.leave_days || '0.00' }}</td>
+              <td>{{ payslipDetails.leave_days_unpaid || '0.00' }}</td>
+              <td>{{ payslipDetails.sick_leave || '0.00' }}</td>
+              <td>{{ payslipDetails.loan_balance || '0.00' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="pc-table pc-ot">
+          <thead>
+            <tr>
+              <th>Normal Overtime Amount (AED)</th>
+              <th>Week/Public Holiday OT Amount (AED)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ payslipDetails.normal_ot || '0.00' }}</td>
+              <td>{{ payslipDetails.holiday_ot || '0.00' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Signatures -->
+        <div class="pc-signatures">
+          <div class="pc-sig-box">
+            <div class="pc-sig-line"></div>
+            <p>PREPARED BY</p>
+          </div>
+          <div class="pc-sig-box">
+            <div class="pc-sig-line"></div>
+            <p>AUTHORISED BY</p>
+          </div>
+          <div class="pc-sig-box">
+            <div class="pc-sig-line"></div>
+            <p>EMPLOYEE SIGNATURE</p>
+          </div>
+        </div>
+
+        <p class="pc-disclaimer">This pay slip is not valid unless it is signed and stamped by authorized person</p>
       </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="options-sidebar">
+        <h5 class="mb-3">Payslip Preferences</h5>
+        <hr>
+        <!-- <div class="mb-1">
+          <label class="small font-weight-bold">Company Logo</label>
+          <input type="file" (change)="onLogoUpload($event)" class="form-control-file small mb-2" accept="image/*">
+          <div class="preference-item">
+            <input type="checkbox" id="checkLogoClassic" [(ngModel)]="payslipPreferences.showLogo">
+            <label for="checkLogoClassic">Display Logo</label>
+          </div>
+        </div> -->
+        <hr>
+        <div class="preference-item">
+          <input type="checkbox" id="checkNameClassic" [(ngModel)]="payslipPreferences.showCompanyName">
+          <label for="checkNameClassic">Show Company Name</label>
+        </div>
+        <div class="preference-item">
+          <input type="checkbox" id="checkBranchClassic" [(ngModel)]="payslipPreferences.showBranch">
+          <label for="checkBranchClassic">Show Branch</label>
+        </div>
+        <div class="preference-item">
+          <input type="checkbox" id="checkDeptClassic" [(ngModel)]="payslipPreferences.showDepartment">
+          <label for="checkDeptClassic">Show Department</label>
+        </div>
+        <div class="preference-item">
+          <input type="checkbox" id="checkCatClassic" [(ngModel)]="payslipPreferences.showCategory">
+          <label for="checkCatClassic">Show Category</label>
+        </div>
+        <button class="btn btn-primary btn-block mt-4" (click)="downloadPayslip()">Save Template</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
       <div *ngIf="selectedPayslipDesign === 'design2'" class="modern-payslip mt-4" #payslipContent>

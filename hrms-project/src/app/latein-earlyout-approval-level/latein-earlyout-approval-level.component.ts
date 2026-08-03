@@ -592,6 +592,24 @@ mapBranchesNameToId() {
 
   console.log('✅ Final mapped branch:', this.editAsset.branch);
 }
+
+
+    branchSearch: string = '';
+
+filteredBranches() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
+  );
+
+}
+  
   
   
 updateAssetType(): void {
@@ -681,20 +699,24 @@ updateAssetType(): void {
         }
       }
   
-  
-        branchSearch: string = '';
+
     
-    filterEmployees() {
-  
-    if (!this.branchSearch) {
-      return this.Branches;
-    }
-  
-    return this.Branches.filter((deparmentsec: any) =>
-      deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
-    );
-  
+
+
+
+  editBranchSearch: string = '';
+
+filterededitBranches() {
+  if (!this.editBranchSearch) {
+    return this.Branches;
   }
+
+  return this.Branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.editBranchSearch.toLowerCase())
+  );
+}
 
 
       levels: any[] = [

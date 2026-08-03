@@ -72,27 +72,49 @@
 
             <div class="row">
                
-          <div class="col-md-6" >
-    <label>Select Employee
-       <span class="required-star">*</span>
-    </label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="employee"
-        name="employee"
+<div class="col-md-6">
+  <label>
+    Employee
+    <span class="required-star">*</span>
+  </label>
+  <div class="custom-sel">
+     <div class="form-control-wrapper">
+<mat-form-field appearance="outline" class="w-100">
+      <mat-select
         [(ngModel)]="employee"
-        [ngModelOptions]="{ standalone: true }"  [ngClass]="{'error-field': registerButtonClicked && !employee}"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Select Employee"
       >
-        <option *ngFor="let employees of Employees" [value]="employees.id">
-          {{ employees.emp_code }}
-        </option>
-      </select>
-    </div>
-              <div *ngIf="registerButtonClicked && !employee" class="error-message">
-    Please Select Employee
+        <!-- Search Input -->
+        <div class="px-2 pb-2">
+          <input
+            type="text"
+            placeholder="Search by Name or code"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{ standalone: true }"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+
+        <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id"
+        >
+          {{ emp.emp_code }} - {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
   </div>
+  <div
+    *ngIf="registerButtonClicked && !employee"
+    class="error-message"
+  >
+    employee is required.
+  </div>
+</div>
 
               <div class="col-md-6" >
                
@@ -233,22 +255,50 @@
 
        <div class="row">
 
-                <div class="col-md-6" >
-    <label>Select Employee</label>
-    <div class="custom-sel">
-      <select
-        class="form-control"
-        id="employee"
-        name="employee"
+
+  <div class="col-md-6">
+  <label>
+    Employee
+    <span class="required-star">*</span>
+  </label>
+  <div class="custom-sel">
+     <div class="form-control-wrapper">
+<mat-form-field appearance="outline" class="w-100">
+      <mat-select
         [(ngModel)]="editProjectTime.employee"
         [ngModelOptions]="{ standalone: true }"
+        placeholder="Select Employee"
       >
-        <option *ngFor="let employees of Employees" [value]="employees.id">
-          {{ employees.emp_code }}
-        </option>
-      </select>
-    </div>
+        <!-- Search Input -->
+        <div class="px-2 pb-2">
+          <input
+            type="text"
+            placeholder="Search by Name or code"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{ standalone: true }"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+
+        <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id"
+        >
+          {{ emp.emp_code }} - {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
+  </div>
+  <div
+    *ngIf="registerButtonClicked && !employee"
+    class="error-message"
+  >
+    employee is required.
+  </div>
+</div>
                
 
               <div class="col-md-6" >
