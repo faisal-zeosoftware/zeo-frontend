@@ -1823,6 +1823,84 @@ updateGeofence(id: number, formData: FormData): Observable<any> {
   }
 
 
+
+  registerSalarySrt(companyData: any): Observable<any> {
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    if (!selectedSchema) {
+      console.error('No schema selected.');
+      return throwError('No schema selected.'); // Return an error observable if no schema is selected
+    }
+
+
+
+    const Url = `${this.apiUrl}/payroll/api/salary-structure/?schema=${selectedSchema}`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+    return this.http.post(Url, companyData, { headers }).pipe(
+      catchError((error) => {
+        // Handle errors here (you can log, show a user-friendly message, etc.)
+        console.error('Error during company registration:', error);
+        return throwError(error);
+
+      })
+    );
+  }
+
+
+
+  // GET single salary structure by id (for edit prefill, if backend supports it — otherwise use list data)
+getSalaryStrById(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError('No schema selected.');
+  }
+
+  const Url = `${this.apiUrl}/payroll/api/salary-structure/${id}/?schema=${selectedSchema}`;
+  return this.http.get(Url).pipe(
+    catchError((error) => {
+      console.error('Error fetching salary structure:', error);
+      return throwError(error);
+    })
+  );
+}
+
+// UPDATE
+updateSalarySrt(id: number, companyData: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.');
+  }
+
+  const Url = `${this.apiUrl}/payroll/api/salary-structure/${id}/?schema=${selectedSchema}`;
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+  return this.http.put(Url, companyData, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error updating salary structure:', error);
+      return throwError(error);
+    })
+  );
+}
+
+// DELETE
+deleteSalarySrt(id: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError('No schema selected.');
+  }
+
+  const Url = `${this.apiUrl}/payroll/api/salary-structure/${id}/?schema=${selectedSchema}`;
+
+  return this.http.delete(Url).pipe(
+    catchError((error) => {
+      console.error('Error deleting salary structure:', error);
+      return throwError(error);
+    })
+  );
+}
+
   updateAssignweekCalendar(id: number, companyData: any): Observable<any> {
 
     const selectedSchema = localStorage.getItem('selectedSchema');
@@ -4274,6 +4352,20 @@ registerEmployeeAttendenceCheckInNew(data: FormData): Observable<any> {
     
     return this.http.get(url);
   }
+
+
+  getSalaryStr(selectedSchema: string, branchIds: number[]): Observable<any> {
+    // Converts [1,3,4] into the string "[1,3,4]" for the URL
+    const branchParam = branchIds.length > 0 ? `[${branchIds.join(',')}]` : '';
+    
+    let url = `${this.apiUrl}/payroll/api/salary-structure/?schema=${selectedSchema}`;
+    if (branchParam) {
+      url += `&branch_id=${branchParam}`;
+    }
+    
+    return this.http.get(url);
+  }
+  
   
 
 
@@ -6853,6 +6945,21 @@ changePassword(data: any): Observable<any> {
   );
 
 }
+
+
+rejectApprovalRequestPayslip(apiUrl: string, data: any): Observable<any> {
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+  return this.http.post(apiUrl, data, { headers }).pipe(
+    catchError((error) => {
+      console.error('Error rejecting payslip:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+
+
 
 
 

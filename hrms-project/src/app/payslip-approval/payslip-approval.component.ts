@@ -6,7 +6,7 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
-import {combineLatest, Subscription } from 'rxjs';
+import {combineLatest, forkJoin, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-payslip-approval',
@@ -87,7 +87,7 @@ export class PayslipApprovalComponent {
     if (selectedSchema) {
 
 
-      this.LoadLeaveRejectionReasons(selectedSchema);
+      // this.LoadLeaveRejectionReasons(selectedSchema);
 
 
       this.LoadEmployee(selectedSchema);
@@ -259,45 +259,20 @@ export class PayslipApprovalComponent {
   
 
 
-// Modified fetchingApprovals to accept userId
+  getMonthName(month: number): string {
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ];
+  return months[month - 1] || 'N/A';
+}
 
-// fetchingApprovals(): void {
-//   const selectedSchema = this.authService.getSelectedSchema();
-//   if (selectedSchema && this.userId) {
-//     this.EmployeeService.getApprovalslistPayslip(selectedSchema, this.userId).subscribe(
-//       (result: any[]) => {
-//         // ✅ Filter only "pending" status items and add "selected" property
-//         this.Approvals = result
-//           .filter((item: any) => item.request?.status === 'pending')
-//           .map((item: any) => ({ ...item, selected: false }));
-//       },
-//       (error) => {
-//         console.error('Error fetching approvals:', error);
-//       }
-//     );
-//   }
-// }
 
-// fetchingApprovals(): void {
-//   const selectedSchema = this.authService.getSelectedSchema();
-//   if (selectedSchema && this.userId) {
-//     this.EmployeeService.getApprovalslistPayslip(selectedSchema, this.userId).subscribe(
-//       (result: any[]) => {
-//         // Filter items where status is "pending" AND confirm_status is true
-//         this.Approvals = result
-//           .filter((item: any) =>
-//             item.request?.status === 'pending' &&
-//             item.request?.confirm_status === true
-//           )
-//           .map((item: any) => ({ ...item, selected: false }));
-//       },
-//       (error) => {
-//         console.error('Error fetching approvals:', error);
-//       }
-//     );
-//   }
-// }
 
+
+
+searchQuery: string = '';
+filteredApprovals: any[] = [];
 
 
 // isLoading: boolean = false;
@@ -313,6 +288,11 @@ fetchEmployees(schema: string, branchIds: number[]): void {
        item.request?.confirm_status === true
      )
      .map((item: any) => ({ ...item, selected: false }));
+
+      // Initialize filtered list to full set on load
+      this.filteredApprovals = [...this.Approvals];
+      this.isLoading = false;
+
     },
     error: (err) => {
       console.error('Fetch error:', err);
@@ -323,11 +303,40 @@ fetchEmployees(schema: string, branchIds: number[]): void {
 
 
 
+
+
 masterSelected = false;
 
-toggleAll(): void {
-  this.Approvals.forEach(p => p.selected = this.masterSelected);
+filterApprovals(): void {
+  const query = this.searchQuery.toLowerCase().trim();
+
+  if (!query) {
+    this.filteredApprovals = [...this.Approvals];
+    return;
+  }
+
+  this.filteredApprovals = this.Approvals.filter(p => {
+    const req = p.request;
+    return (
+      req?.employee?.toLowerCase().includes(query) ||
+      req?.payroll_run?.name?.toLowerCase().includes(query) ||
+      req?.status?.toLowerCase().includes(query) ||
+      String(req?.payroll_run?.year).includes(query) ||
+      this.getMonthName(req?.payroll_run?.month)?.toLowerCase().includes(query)
+    );
+  });
 }
+
+toggleAll(): void {
+  // Only toggle rows currently visible in the filtered/search view
+  this.filteredApprovals.forEach(p => p.selected = this.masterSelected);
+}
+
+
+
+
+
+
 
 // Approve selected payslips
 approveSelectedPayslips(): void {
@@ -453,6 +462,17 @@ scrollToBottom(): void {
           this.Approvals[approvalIndex].status = 'Approved';
         }
 
+         // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.EmployeeService.selectedSchema$,
+      this.EmployeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
+    });
         // Close the modal after successful approval
         this.isAddFieldsModalOpen = false;
       },
@@ -463,107 +483,94 @@ scrollToBottom(): void {
   }
 }
 
+ 
 
-closemarketModal(){
-  this.isAddFieldsModalOpen=false;
+
+
+
+
+
+
+
+isRejectModalOpen: boolean = false;
+rejectionReason: string = '';
+
+// Reuse the same "selected" checkbox state you already use for Approve
+getSelectedPayslips(): any[] {
+  return this.Approvals.filter(p => p.selected);
 }
 
-rejection_reason: string = ''; // New property for rejection reason
-showRejectionReason: boolean = false; // Controls whether the rejection reason input is shown
-
-// Function for handling approval rejection
-rejectApproval(approvalId: number): void {
-  this.showRejectionReason = true; // Show the rejection reason input when "Reject" is clicked
-}
-
-confirmRejection(approvalId: number): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  // Data to be sent in the request body (including the note and rejection reason)
-  const approvalData = {
-    note: this.note, // The note entered by the user
-    status: 'Rejected', // Setting status to "Rejected"
-    rejection_reason: this.rejection_reason, // Adding the rejection reason
-  };
-
-  if (selectedSchema) {
-    const apiUrl = `${this.apiUrl}/payroll/api/approval-payroll/${approvalId}/reject/?schema=${selectedSchema}`;
-
-    this.EmployeeService.rejectApprovalRequestLeave(apiUrl, approvalData).subscribe(
-      (response: any) => {
-        console.log('Approval status changed to Rejected:', response);
-
-        // Update the selected approval status in the local UI
-        if (this.selectedApproval) {
-          this.selectedApproval.status = 'Rejected';
-        }
-
-        // Optionally, update the main approvals list if needed
-        const approvalIndex = this.Approvals.findIndex(approval => approval.id === approvalId);
-        if (approvalIndex !== -1) {
-          this.Approvals[approvalIndex].status = 'Rejected';
-        }
-
-        // Reset the rejection reason and close the modal
-        this.rejection_reason = '';
-        this.showRejectionReason = false;
-        this.isAddFieldsModalOpen = false;
-      },
-      (error) => {
-        console.error('Error rejecting the approval request:', error);
-      }
-    );
+openRejectModal(): void {
+  const selected = this.getSelectedPayslips();
+  if (selected.length === 0) {
+    alert('Please select at least one payslip to reject.');
+    return;
   }
+  this.rejectionReason = '';
+  this.isRejectModalOpen = true;
 }
 
-
-LoadLeaveRejectionReasons(selectedSchema: string) {
-  this.leaveService.getLeaverejectionReasons(selectedSchema).subscribe(
-    (data: any) => {
-      this.RejectionResons = data;
-    
-      console.log('employee:', this.RejectionResons);
-    },
-    (error: any) => {
-      console.error('Error fetching categories:', error);
-    }
-  );
+closeRejectModal(): void {
+  this.isRejectModalOpen = false;
+  this.rejectionReason = '';
 }
 
-
-getMonthName(month: number): string {
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-  return months[month - 1] || 'N/A';
-}
-
-
-
-
-
-
-selectedEmployeeId: string = '';
-leaveHistory: any[] = [];
-
-
-getLeaveHistory(): void {
-  if (!this.selectedEmployeeId || !this.selectedSchema) {
-    console.warn('Employee or schema not selected.');
+confirmRejectSelectedPayslips(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  if (!selectedSchema) {
+    alert('No schema selected.');
     return;
   }
 
-  this.leaveService.getLeaveRequestHistory(this.selectedEmployeeId, this.selectedSchema).subscribe(
-    (data: any) => {
-      this.leaveHistory = data;
-      console.log('Leave History:', this.leaveHistory);
+  const selected = this.getSelectedPayslips();
+  if (selected.length === 0) {
+    alert('No payslips selected.');
+    return;
+  }
+
+  const rejectData = {
+    rejection_reason: this.rejectionReason || '', // optional — sent even if empty
+  };
+
+  // Fire one reject call per selected payslip
+  const requests = selected.map(payslip => {
+    const apiUrl = `${this.apiUrl}/payroll/api/approval-payroll/${payslip.id}/reject/?schema=${selectedSchema}`;
+    return this.EmployeeService.rejectApprovalRequestPayslip(apiUrl, rejectData);
+  });
+
+  forkJoin(requests).subscribe(
+    (responses: any[]) => {
+      console.log('Reject responses:', responses);
+      alert('Selected payslip(s) rejected successfully.');
+
+      // Update local status for immediate UI feedback
+      selected.forEach(payslip => {
+        const index = this.Approvals.findIndex(a => a.id === payslip.id);
+        if (index !== -1 && this.Approvals[index].request) {
+          this.Approvals[index].request.status = 'rejected';
+        }
+      });
+
+      this.closeRejectModal();
+       // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.EmployeeService.selectedSchema$,
+      this.EmployeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);  
+        
+
+      }
+    });
+      // Optionally remove rejected rows from the pending list entirely:
+      // this.Approvals = this.Approvals.filter(a => !selected.includes(a));
     },
-    (error: any) => {
-      console.error('Error fetching leave history:', error);
+    (error) => {
+      console.error('Error rejecting payslip(s):', error);
+      alert('Error while rejecting payslip(s).');
     }
   );
 }
-
 
 }

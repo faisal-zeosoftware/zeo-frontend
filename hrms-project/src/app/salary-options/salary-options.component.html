@@ -16,6 +16,9 @@
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul>
                   <li routerLink="/main-sidebar/salary-options/salary" *ngIf="hasViewPermissionSalary"><a ><mat-icon>attach_money</mat-icon> Salary Component</a></li>
+                  
+                  <li routerLink="/main-sidebar/salary-options/salary-structure" *ngIf="hasViewPermissionSalary"><a ><mat-icon>attach_money</mat-icon> Salary Structure</a></li>
+
                 
                   <li routerLink="/main-sidebar/salary-options/employee-salary" *ngIf="hasViewPermissionEmployeeSalary"><a ><mat-icon>attach_money</mat-icon> Employee Salary</a></li>
 

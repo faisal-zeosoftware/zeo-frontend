@@ -334,7 +334,7 @@ input:focus-visible {
       letter-spacing: 0.05em;
       text-transform: uppercase;
           font-weight: 500;
-          font-size: 0.75rem;
+          font-size:12px;
       line-height: 1rem;
       border-collapse: collapse !important; 
       border-width: 0 !important;
@@ -344,7 +344,7 @@ input:focus-visible {
   .text-table-body td{
     --tw-text-opacity: 1;
     color: rgb(55 65 81 / var(--tw-text-opacity, 1));
-    font-size: 0.875rem;
+    font-size: 12px;
     line-height: 1.25rem;
     padding-top: 1rem;
     padding-bottom: 1rem;
@@ -495,7 +495,7 @@ input:focus-visible {
     width: 100%;
     padding: 6px 0;
     text-align: left;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 1.4;
     word-break: break-word;
     border: none;
@@ -504,7 +504,7 @@ input:focus-visible {
   /* Label before value */
   table.styled-table td::before {
     content: attr(data-label);
-    font-weight: 600;
+    font-weight: 500;
     color: #ffffff;
     margin-right: 10px;
     flex: 0 0 40%; /* Label width */
@@ -533,4 +533,34 @@ input:focus-visible {
   .table-scroll {
     overflow-x: hidden !important;
   }
+}
+
+
+
+.search-container .input-group {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.search-container .form-control:focus {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.search-container .input-group-text {
+  border-right: none;
+}
+
+
+.styled-table thead th {
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.styled-table tbody td {
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
 }

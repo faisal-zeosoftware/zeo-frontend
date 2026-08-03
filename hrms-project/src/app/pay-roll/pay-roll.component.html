@@ -340,7 +340,7 @@
                     <!-- Search Input Bar -->
                      
                     <div class="row ">
-                      <div class="col-md-6"></div>
+                      <div class="col-md-4"></div>
 
                       <div class="col-md-4">
                         <div class="search-container ">
@@ -366,7 +366,7 @@
                       </div>
 
 
-                      <div class="col-md-2">
+                      <div class="col-md-4">
 
                            <!-- Export Button -->
                     <div class="table-header" *ngIf="hasAddPermission">
@@ -402,7 +402,7 @@
                             <th class="text-table-header">Working Days</th>
                             <th class="text-table-header">Days Worked</th>
                             <th class="text-table-header">Status</th>
-                            <th class="text-table-header">Components</th>
+                            <!-- <th class="text-table-header">Components</th> -->
                           </tr>
                         </thead>
                         <tbody class="text-table-body">
@@ -437,7 +437,7 @@
                               </ul>
                             </td> -->
 
-                            <td data-label="Components">
+                            <!-- <td data-label="Components">
                               <div class="component-grid">
                                 <div
                                   *ngFor="let comp of payslip.components"
@@ -453,7 +453,7 @@
                                 </div>
                                 <span *ngIf="!payslip.components?.length" class="text-muted">-</span>
                               </div>
-                            </td>
+                            </td> -->
                           </tr>
               
                           <!-- Empty state when search yields no matches -->

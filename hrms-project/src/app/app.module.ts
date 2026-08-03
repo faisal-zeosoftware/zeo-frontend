@@ -261,6 +261,7 @@ import { EmployeeUserComponent } from './employee-user/employee-user.component';
 import { AttendanceValidationPolicyComponent } from './attendance-validation-policy/attendance-validation-policy.component';
 import { LateComePolicyComponent } from './late-come-policy/late-come-policy.component';
 import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.component';
+import { SalaryStructureComponent } from './salary-structure/salary-structure.component';
 
 @NgModule({
   declarations: [
@@ -478,6 +479,7 @@ import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.
      AttendanceValidationPolicyComponent,
      LateComePolicyComponent,
      EarlyExitPolicyComponent,
+     SalaryStructureComponent,
      
      
 

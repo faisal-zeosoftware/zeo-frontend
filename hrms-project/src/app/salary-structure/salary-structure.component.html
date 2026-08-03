@@ -1,0 +1,538 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section">
+  
+  
+  
+      <div class="header_section">
+  
+        <div class="row">
+            <div class="col-md-4">
+                <h1> Salary Structure</h1>
+            </div>
+  
+            <div class="col-md-3">
+                
+                
+                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+  
+            </div>
+            <div class="col-md-5">
+                <div class="button-group pull-right">
+                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                    </mat-icon></span> Create</button>
+                  <span *ngIf="!hasAddPermission"></span>
+  
+                    <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
+                        <span class="header-btn-icon">
+                         <mat-icon>draw
+                    </mat-icon></span> Edit</button>
+                    <span *ngIf="hasEditPermission"></span>
+                    
+                    <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                        <span class="header-btn-icon">
+                            <mat-icon> delete
+                       </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+  
+                       <span *ngIf="!hasDeletePermission"></span>
+                </div>
+            </div>
+        </div>
+       
+       
+  
+    </div>
+  
+    <div class="row">
+        <div class="col-md-2">
+            
+            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+  
+        </div>
+        <div class="col-md-3">
+            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
+  
+        </div>
+    </div>
+  
+  
+  
+  
+    <div *ngIf="iscreateLoanApp" class="modal">
+        <div class="modal-content">
+          <div class="row">
+            <div class="col-md-10">
+                <h2>{{ editingId ? 'Edit Salary Structure' : 'Create Salary Structure' }}</h2>
+              </div>
+    <div class="col-md-2 text-right">
+      <!-- Styled Square Close Button -->
+      <span class="close-btn" (click)="closeapplicationModal()">
+        ×
+      </span>
+    </div>
+          </div>
+          <hr />
+      
+      
+          <form >
+  
+            <div class="row">
+
+                
+
+
+                <div class="col-md-6">
+
+                    <label>Name</label>
+                    <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter Name" 
+                    [ngModelOptions]="{standalone: true}" >
+      
+                  </div>
+
+
+                 <div class="col-md-6">
+  <label>Salary Component
+    <span class="required-star">*</span>
+  </label>
+
+  <mat-form-field
+    appearance="outline"
+    class="modern-multi-select">
+
+    <mat-select
+      multiple
+      [(ngModel)]="components"
+      [ngModelOptions]="{standalone: true}"
+      name="components">
+
+      <mat-checkbox
+        class="select-all-checkbox"
+        [checked]="isAllComponentsSelected()"
+        [indeterminate]="isSomeComponentsSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllComponents()">
+        Select All
+      </mat-checkbox>
+
+      <!-- Search -->
+      <div class="px-2 pb-2">
+        <input
+          type="text"
+          placeholder="Search Component"
+          class="form-control"
+          [(ngModel)]="componentSearch"
+          [ngModelOptions]="{ standalone: true }"
+          (click)="$event.stopPropagation()"
+          (keydown)="$event.stopPropagation()"
+        />
+      </div>
+
+      <mat-option
+        *ngFor="let component of filterComponents()"
+        [value]="component.id">
+        {{ component.name }}
+      </mat-option>
+
+    </mat-select>
+  </mat-form-field>
+</div>
+
+                  <div class="col-md-12">
+
+                    <textarea class="form-control" [(ngModel)]="description" placeholder="Enter description" 
+                    [ngModelOptions]="{standalone: true}" ></textarea>
+
+                  </div>
+
+           
+              </div>
+    <!-- FILTER SECTION -->
+  <div class="filter-card mb-4">
+  
+  
+  
+    <div class="row g-3">
+  
+      <!-- Branch -->
+       <div class="col-md-3">
+  
+      
+        <div class="filter-select-card">
+  
+          <label class="filter-title">
+            <mat-icon>apartment</mat-icon>
+            Branch
+          </label>
+        
+          <mat-form-field
+            appearance="outline"
+            class="modern-multi-select">
+        
+            <mat-select
+            multiple
+            [(ngModel)]="selectedBranches"
+            [ngModelOptions]="{standalone:true}"
+            (selectionChange)="applyEmployeeFilter()">
+          
+            <mat-checkbox
+              class="select-all-checkbox"
+              [checked]="isAllBranchesSelected()"
+              [indeterminate]="isSomeBranchesSelected()"
+              (click)="$event.stopPropagation()"
+              (change)="toggleAllBranches()">
+          
+              Select All
+          
+            </mat-checkbox>
+  
+                                                 <!-- Search -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          placeholder="Search Branch"
+                          class="form-control"
+                          [(ngModel)]="branchsearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                           (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+          
+            <mat-option
+              *ngFor="let item of filterBranches()"
+              [value]="item.id">
+          
+              {{ item.branch_name }}
+          
+            </mat-option>
+          
+          </mat-select>
+          </mat-form-field>
+        
+        </div>
+     </div>
+  
+
+  
+  
+  
+
+  
+    
+ 
+  
+  
+  
+    </div>
+  
+    <div class="employee-card">
+  
+
+  
+      <div class="table-responsive">
+    
+        <table class="employee-table">
+    
+          <thead>
+    
+            <tr>
+    
+              <th width="70">
+    
+                <mat-checkbox
+                  [(ngModel)]="allEmployeesSelected"
+                  [ngModelOptions]="{standalone:true}"
+                  (change)="toggleSelectAllEmployees()">
+                </mat-checkbox>
+    
+              </th>
+    
+              <th>Employee</th>
+              <th>Branch</th>
+              <th>Department</th>
+              <th>Category</th>
+              <th>Designation</th>
+    
+            </tr>
+    
+          </thead>
+    
+          <tbody>
+    
+            <tr *ngFor="let emp of pagedEmployees">
+    
+              <td>
+    
+                <mat-checkbox
+                  [(ngModel)]="emp.selected"
+                  [ngModelOptions]="{standalone:true}">
+                </mat-checkbox>
+    
+              </td>
+    
+              <td>
+    
+                <div class="employee-info">
+    
+                  <div class="employee-avatar-wrapper">
+                
+                    <img
+                      *ngIf="emp.emp_profile_pic"
+                      [src]="emp.emp_profile_pic"
+                      class="employee-avatar">
+                
+                    <div
+                      *ngIf="!emp.emp_profile_pic"
+                      class="employee-avatar-placeholder">
+                
+                      <mat-icon>person</mat-icon>
+                
+                    </div>
+                
+                  </div>
+                
+                  <div>
+                
+                    <div class="employee-name">
+                      {{ emp.emp_first_name }}
+                      {{ emp.emp_last_name }}
+                    </div>
+                
+                    <div class="employee-code">
+                      {{ emp.emp_code }}
+                    </div>
+                
+                  </div>
+                
+                </div>
+              </td>
+    
+              <td>
+                <span class="custom-badge blue">
+                  {{ emp.emp_branch_id }}
+                </span>
+              </td>
+    
+              <td>
+                <span class="custom-badge green">
+                  {{ emp.emp_dept_id }}
+                </span>
+              </td>
+    
+              <td>
+                <span class="custom-badge orange">
+                  {{ emp.emp_ctgry_id }}
+                </span>
+              </td>
+    
+              <td>
+                <span class="custom-badge purple">
+                  {{ emp.emp_desgntn_id }}
+                </span>
+              </td>
+    
+            </tr>
+    
+          </tbody>
+    
+        </table>
+    
+        <div class="pagination-container">
+    
+          <button
+            class="page-btn"
+            (click)="previousPage()"
+            [disabled]="currentPage === 1">
+        
+            Previous
+        
+          </button>
+        
+          <button
+            *ngFor="let page of pageNumbers"
+            class="page-number"
+            [class.active]="currentPage === page"
+            (click)="goToPage(page)">
+        
+            {{ page }}
+        
+          </button>
+        
+          <button
+            class="page-btn"
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages">
+        
+            Next
+        
+          </button>
+        
+        </div>
+    
+      </div>
+    
+    </div>
+           
+  
+  
+  </div>
+  
+  
+  
+  
+  
+  
+    
+    <div class="row">
+      <div class="col-md-8">
+    
+      </div>
+      <div class="col-md-2">
+        <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" *ngIf="hasAddPermission" 
+        (click)="closeapplicationModal()">close</button>  
+     </div>
+    
+     <div class="col-md-2">
+        <button type="button" class="btn-Create btn-full mt-5 btn-success btn"
+          *ngIf="hasAddPermission || (editingId && hasEditPermission)"
+          (click)="registerSalarystructure()">
+          {{ editingId ? 'Update' : 'Add' }}
+        </button>
+      </div>
+    </div>
+       
+      </form>
+        
+        </div>
+      </div>
+  
+    
+  
+  
+  
+      
+  
+  
+        <div class="com_list  mt-4" style="border-top: white;">
+        
+ <!-- SALARY STRUCTURE LIST -->
+<div class="employee-card mt-4">
+
+    <div class="employee-search-bar d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <mat-icon>search</mat-icon>
+        <input
+          type="text"
+          class="employee-search-input"
+          placeholder="Search Salary Structure..."
+          [(ngModel)]="searchQuery"
+          [ngModelOptions]="{standalone: true}"
+          (input)="filterDocuments()">
+      </div>
+  
+     
+    </div>
+  
+    <div class="table-responsive">
+  
+      <table class="employee-table">
+  
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Branch</th>
+            <th>Components</th>
+            <th>Employees</th>
+            <th>Description</th>
+            <th *ngIf="hasEditPermission || hasDeletePermission">Actions</th>
+          </tr>
+        </thead>
+  
+        <tbody>
+  
+          <tr *ngIf="filteredDocuments.length === 0">
+            <td colspan="6" class="text-center">No salary structures found</td>
+          </tr>
+  
+          <tr *ngFor="let doc of pagedDocuments">
+  
+            <td>{{ doc.name }}</td>
+  
+            <td>
+                <span class="custom-badge blue me-1" *ngFor="let branchId of doc.branch">
+                  {{ getBranchNameById(branchId) }}
+                </span>
+              </td>
+            <td>
+              <span class="custom-badge green me-1" *ngFor="let compId of doc.components">
+                {{ getComponentNameById(compId) }}
+              </span>
+            </td>
+  
+            <td>
+                <span class="custom-badge purple">
+                    {{ doc.employees?.length || 0 }} Employees
+                  </span>
+            </td>
+  
+            <td>{{ doc.description || '-' }}</td>
+  
+            <td *ngIf="hasEditPermission || hasDeletePermission">
+                <button *ngIf="hasEditPermission" class="btn btn-sm btn-outline-primary me-1" (click)="editSalaryStructure(doc)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  
+                  <button *ngIf="hasDeletePermission" class="btn btn-sm btn-outline-danger" (click)="deleteSalaryStructure(doc)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+            </td>
+  
+          </tr>
+  
+        </tbody>
+  
+      </table>
+  
+      <!-- Pagination -->
+      <div class="pagination-container">
+  
+        <button
+          class="page-btn"
+          (click)="previousDocPage()"
+          [disabled]="currentDocPage === 1">
+          Previous
+        </button>
+  
+        <button
+          *ngFor="let page of docPageNumbers"
+          class="page-number"
+          [class.active]="currentDocPage === page"
+          (click)="goToDocPage(page)">
+          {{ page }}
+        </button>
+  
+        <button
+          class="page-btn"
+          (click)="nextDocPage()"
+          [disabled]="currentDocPage === totalDocPages">
+          Next
+        </button>
+  
+      </div>
+  
+    </div>
+  
+  </div>
+  
+          
+          </div>
+  
+  
+  
+  </div>
+  
+  
+  </div>
+  
+     
+  
+  

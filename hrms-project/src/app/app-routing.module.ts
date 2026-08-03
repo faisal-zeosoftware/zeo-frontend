@@ -176,6 +176,7 @@ import { LeavePolicyComponent } from './leave-policy/leave-policy.component';
 import { AttendanceValidationPolicyComponent } from './attendance-validation-policy/attendance-validation-policy.component';
 import { LateComePolicyComponent } from './late-come-policy/late-come-policy.component';
 import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.component';
+import { SalaryStructureComponent } from './salary-structure/salary-structure.component';
 
 
 const routes: Routes = [
@@ -552,6 +553,10 @@ const routes: Routes = [
           {
             path: 'pay-structure',
             component: PayStructureComponent,
+          },
+          {
+            path: 'salary-structure',
+            component: SalaryStructureComponent,
           },
           {
             path: 'payroll-details/:id',
