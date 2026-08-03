@@ -42,6 +42,7 @@ branch: number[] = [];
 
 
    allSelectedBrach=false;
+   branchSearch: string = '';
 
          // @ViewChild('select') select: MatSelect | undefined;
       @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
@@ -555,6 +556,20 @@ toggleAllSelectionBrach(): void {
   this.allSelectedBrach
     ? this.selectBrach.options.forEach(o => o.select())
     : this.selectBrach.options.forEach(o => o.deselect());
+}
+
+filteredBranches() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
+  );
+
 }
 
 

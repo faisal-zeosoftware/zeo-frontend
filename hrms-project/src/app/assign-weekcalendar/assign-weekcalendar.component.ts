@@ -506,12 +506,54 @@ loadBranches(callback?: Function): void {
 
   SearchEmployee = '';
 
-  FilterEmployee() {
+FilterEmployee() {
+  const search = this.SearchEmployee.toLowerCase().trim();
+
+  if (!search) {
+    this.FilteredEmployees = [...this.Employee];
+  } else {
     this.FilteredEmployees = this.Employee.filter(emp =>
-      emp.emp_first_name.toLowerCase().includes(this.SearchEmployee.toLowerCase())
-
+      (emp.emp_first_name && emp.emp_first_name.toLowerCase().includes(search)) ||
+      (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search)) ||
+      (emp.emp_code && emp.emp_code.toLowerCase().includes(search))
     );
+  }
 
+  this.currentPage = 1;
+  this.updatePagination();
+}
+
+
+  editSearchEmployee = '';
+
+  FilterEditEmployee() {
+    const search = this.editSearchEmployee.toLowerCase().trim();
+    
+    // Get currently selected employee IDs before filtering
+    const selectedEmpIds = this.editFilteredEmployees
+      .filter(x => x.selected)
+      .map(x => x.id);
+
+    if (!search) {
+      // No search - show all employees with their selection state preserved
+      this.editFilteredEmployees = this.Employee.map(emp => ({
+        ...emp,
+        selected: selectedEmpIds.includes(emp.id)
+      }));
+    } else {
+      // Search by first name, last name, or employee code
+      this.editFilteredEmployees = this.Employee.filter(emp =>
+        (emp.emp_first_name && emp.emp_first_name.toLowerCase().includes(search)) ||
+        (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search)) ||
+        (emp.emp_code && emp.emp_code.toLowerCase().includes(search))
+      ).map(emp => ({
+        ...emp,
+        selected: selectedEmpIds.includes(emp.id)
+      }));
+    }
+
+    this.editCurrentPage = 1;
+    this.updateEditPagination();
   }
 
 
@@ -1592,6 +1634,66 @@ isSomeEditDesignationsSelected(): boolean {
 
 
 
+     branchsearch: string = '';
+
+filterBranches(): any[] {
+
+  if (!this.branchsearch || this.branchsearch.trim() === '') {
+    return this.branches;
+  }
+
+  const search = this.branchsearch.toLowerCase().trim();
+
+  return this.branches.filter((branch: any) =>
+    branch.branch_name.toLowerCase().includes(search)
+  );
+}
+
+  departmentsearch: string = '';
+
+  filterDepartment(): any[] {
+
+  if (!this.departmentsearch || this.departmentsearch.trim() === '') {
+    return this.Departments;
+  }
+
+  const search = this.departmentsearch.toLowerCase().trim();
+
+  return this.Departments.filter((department: any) =>
+    department.dept_name.toLowerCase().includes(search)
+  );
+}
+
+
+  categorysearch: string = '';
+
+  filterCategory(): any[] {
+
+  if (!this.categorysearch || this.categorysearch.trim() === '') {
+    return this.Categories;
+  }
+
+  const search = this.categorysearch.toLowerCase().trim();
+
+  return this.Categories.filter((category: any) =>
+    category.ctgry_title.toLowerCase().includes(search)
+  );
+}
+
+  designationsearch: string = '';
+
+  filterDesignation(): any[] {
+
+  if (!this.designationsearch || this.designationsearch.trim() === '') {
+    return this.Designations;
+  }
+
+  const search = this.designationsearch.toLowerCase().trim();
+
+  return this.Designations.filter((designation: any) =>
+    designation.desgntn_job_title.toLowerCase().includes(search)
+  );
+}
 
 
 }

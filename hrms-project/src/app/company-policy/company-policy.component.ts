@@ -8,6 +8,7 @@ import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
 import { UserMasterService } from '../user-master/user-master.service';
 import { combineLatest, Subscription } from 'rxjs';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 
 @Component({
@@ -16,6 +17,8 @@ import { combineLatest, Subscription } from 'rxjs';
   styleUrl: './company-policy.component.css'
 })
 export class CompanyPolicyComponent {
+  
+@ViewChild('select') select: MatSelect | undefined;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -23,7 +26,8 @@ export class CompanyPolicyComponent {
 
   title:any='';
   description:any='';
-  branch:any='';
+
+  branch: number[] = [];
 
   department:any='';
   category:any='';
@@ -35,7 +39,8 @@ export class CompanyPolicyComponent {
 
     Users: any[] = [];
 
-  approver:any='' ;
+ approver: number[] = [];
+
   Branches: any[] = [];
   Depts: any[] = [];
 
@@ -248,10 +253,16 @@ if (this.userId !== null) {
       const formData = new FormData();
       formData.append('title', this.title);
       formData.append('description', this.description);
-      formData.append('branch', this.branch);
-      if (this.approver !== null) {
-      formData.append('specific_users', this.approver.toString());
-        }
+ if (this.branch && this.branch.length > 0) {
+  this.branch.forEach((id: number) => {
+    formData.append('branch', id.toString());
+  });
+}
+if (this.approver && this.approver.length > 0) {
+  this.approver.forEach((id: number) => {
+    formData.append('specific_users', id.toString());
+  });
+}
       formData.append('department', this.department);
       formData.append('category', this.category);
 
@@ -559,12 +570,13 @@ openEditModal(asset: any): void {
   this.editAsset = { ...asset };
 
   // Branch (API returns ["Zeodemo 2"])
-  if (Array.isArray(asset.branch) && asset.branch.length > 0) {
-    const branch = this.Branches.find(
-      b => b.branch_name === asset.branch[0]
-    );
-    this.editAsset.branch = branch ? branch.id : null;
-  }
+if (Array.isArray(asset.branch)) {
+  this.editAsset.branch = this.Branches
+    .filter(b => asset.branch.includes(b.branch_name))
+    .map(b => b.id);
+} else {
+  this.editAsset.branch = [];
+}
 
   // Department (API returns "Main")
   const dept = this.Depts.find(
@@ -579,14 +591,17 @@ openEditModal(asset: any): void {
   this.editAsset.category = cat ? cat.id : null;
 
   // Specific User (API returns ["Ronaldino"])
-  if (Array.isArray(asset.specific_users) && asset.specific_users.length > 0) {
+if (Array.isArray(asset.specific_users)) {
 
-    const user = this.Users.find(
-      u => u.username === asset.specific_users[0]
-    );
+  this.editAsset.approver = this.Users
+    .filter(u => asset.specific_users.includes(u.username))
+    .map(u => u.id);
 
-    this.editAsset.approver = user ? user.id : null;
-  }
+} else {
+
+  this.editAsset.approver = [];
+
+}
 
   this.selectedFile = null;
   this.isEditModalOpen = true;
@@ -649,14 +664,22 @@ updateAssetType(): void {
 
   formData.append('title', this.editAsset.title || '');
   formData.append('description', this.editAsset.description || '');
-  formData.append('branch', this.editAsset.branch || '');
   formData.append('department', this.editAsset.department || '');
   formData.append('category', this.editAsset.category || '');
 
-  // ✅ FIX: correct field name
-  if (this.editAsset.approver) {
-    formData.append('specific_users', this.editAsset.approver.toString());
-  }
+// Branch
+if (this.editAsset.branch && this.editAsset.branch.length > 0) {
+  this.editAsset.branch.forEach((id: number) => {
+    formData.append('branch', id.toString());
+  });
+}
+
+// Specific Users
+if (this.editAsset.approver && this.editAsset.approver.length > 0) {
+  this.editAsset.approver.forEach((id: number) => {
+    formData.append('specific_users', id.toString());
+  });
+}
 
   // ✅ FIX: only send file if user selected new one
   if (this.selectedFile) {
@@ -701,6 +724,78 @@ triggerFileInput() {
 getFileName(fileUrl: string): string {
   return fileUrl.split('/').pop() || 'Existing File';
 }
+
+
+ userSearch: string = '';
+
+allUsersSelected = false;
+
+filteredUsers() {
+
+  if (!this.userSearch) {
+    return this.Users;
+  }
+
+  return this.Users.filter(user =>
+    user.username.toLowerCase().includes(this.userSearch.toLowerCase())
+  );
+
+}
+
+toggleAllUsersSelection() {
+
+  if (this.allUsersSelected) {
+
+    this.approver = this.Users.map(user => user.id);
+
+  } else {
+
+    this.approver = [];
+
+  }
+
+}
+
+  allSelected=false;
+
+   branchSearch: string = '';
+  
+  filterEmployees() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  );
+
+} 
+
+filteredBranches() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((deparmentsec: any) =>
+    deparmentsec.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
+  );
+
+}
+
+    toggleAllSelection(): void {
+      if (this.select) {
+        if (this.allSelected) {
+          
+          this.select.options.forEach((item: MatOption) => item.select());
+        } else {
+          this.select.options.forEach((item: MatOption) => item.deselect());
+        }
+      }
+    }
 
 
 }

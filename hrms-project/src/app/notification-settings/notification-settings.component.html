@@ -196,7 +196,7 @@
                     <div class="px-2 pb-2">
                       <input
                         type="text"
-                        placeholder="Search Employee"
+                        placeholder="Search Users"
                         class="form-control"
                         [(ngModel)]="employeeSearch"
                         [ngModelOptions]="{ standalone: true }"
@@ -236,34 +236,49 @@
                       <mat-icon>apartment</mat-icon>
                       Branch
                     </label>
+                <mat-form-field
+                  appearance="outline"
+                  class="modern-multi-select"
+                >
+  <mat-select
+    multiple
+    [(ngModel)]="branch"
+    [ngModelOptions]="{ standalone: true }">
 
-                    <mat-form-field
-                      appearance="outline"
-                      class="modern-multi-select"
-                    >
-                      <mat-select
-                        multiple
-                        [(ngModel)]="branch"
+    <!-- Select All -->
+    <div class="px-2">
+      <mat-checkbox
+        class="select-all-checkbox"
+        [checked]="isAllBranchesSelected()"
+        [indeterminate]="isSomeBranchesSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllBranches()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+                        <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Branch"
+                        class="form-control"
+                        [(ngModel)]="branchsearch"
                         [ngModelOptions]="{ standalone: true }"
-                      >
-                        <mat-checkbox
-                          class="select-all-checkbox"
-                          [checked]="isAllBranchesSelected()"
-                          [indeterminate]="isSomeBranchesSelected()"
-                          (click)="$event.stopPropagation()"
-                          (change)="toggleAllBranches()"
-                        >
-                          Select All
-                        </mat-checkbox>
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
 
-                        <mat-option
-                          *ngFor="let item of Branches"
-                          [value]="item.id"
-                        >
-                          {{ item.branch_name }}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let item of filterBranches()"
+      [value]="item.id">
+      {{ item.branch_name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
                   </div>
                 </div>
 
@@ -294,8 +309,21 @@
                           Select All
                         </mat-checkbox>
 
+                      <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Department"
+                        class="form-control"
+                        [(ngModel)]="departmentsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
                         <mat-option
-                          *ngFor="let item of Departments"
+                          *ngFor="let item of filterDepartment()"
                           [value]="item.id"
                         >
                           {{ item.dept_name }}
@@ -332,8 +360,21 @@
                           Select All
                         </mat-checkbox>
 
+                                              <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Category"
+                        class="form-control"
+                        [(ngModel)]="categorysearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
                         <mat-option
-                          *ngFor="let item of Categories"
+                          *ngFor="let item of filterCategory()"
                           [value]="item.id"
                         >
                           {{ item.ctgry_title }}
@@ -370,8 +411,21 @@
                           Select All
                         </mat-checkbox>
 
+                         <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Designation"
+                        class="form-control"
+                        [(ngModel)]="designationsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
                         <mat-option
-                          *ngFor="let item of Designations"
+                          *ngFor="let item of filterDesignation()"
                           [value]="item.id"
                         >
                           {{ item.desgntn_job_title }}
@@ -568,34 +622,49 @@
                       <mat-icon>apartment</mat-icon>
                       Branch
                     </label>
+                <mat-form-field
+                  appearance="outline"
+                  class="modern-multi-select"
+                >
+  <mat-select
+    multiple
+    [(ngModel)]="editAsset.branch"
+    [ngModelOptions]="{ standalone: true }">
 
-                    <mat-form-field
-                      appearance="outline"
-                      class="modern-multi-select"
-                    >
-                      <mat-select
-                        multiple
-                        [(ngModel)]="editAsset.branch"
+    <!-- Select All -->
+    <div class="px-2">
+      <mat-checkbox
+        class="select-all-checkbox"
+        [checked]="isAllBranchesSelected()"
+        [indeterminate]="isSomeBranchesSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllBranches()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+                        <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Branch"
+                        class="form-control"
+                        [(ngModel)]="branchsearch"
                         [ngModelOptions]="{ standalone: true }"
-                      >
-                        <mat-checkbox
-                          class="select-all-checkbox"
-                          [checked]="isAllBranchesSelected()"
-                          [indeterminate]="isSomeBranchesSelected()"
-                          (click)="$event.stopPropagation()"
-                          (change)="toggleAllBranches()"
-                        >
-                          Select All
-                        </mat-checkbox>
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
 
-                        <mat-option
-                          *ngFor="let item of Branches"
-                          [value]="item.id"
-                        >
-                          {{ item.branch_name }}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let item of filterBranches()"
+      [value]="item.id">
+      {{ item.branch_name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
                   </div>
                 </div>
 
@@ -626,8 +695,21 @@
                           Select All
                         </mat-checkbox>
 
+                      <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Department"
+                        class="form-control"
+                        [(ngModel)]="departmentsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
                         <mat-option
-                          *ngFor="let item of Departments"
+                          *ngFor="let item of filterDepartment()"
                           [value]="item.id"
                         >
                           {{ item.dept_name }}
@@ -664,8 +746,21 @@
                           Select All
                         </mat-checkbox>
 
+                                              <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Category"
+                        class="form-control"
+                        [(ngModel)]="categorysearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
                         <mat-option
-                          *ngFor="let item of Categories"
+                          *ngFor="let item of filterCategory()"
                           [value]="item.id"
                         >
                           {{ item.ctgry_title }}
@@ -702,8 +797,21 @@
                           Select All
                         </mat-checkbox>
 
+                         <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Designation"
+                        class="form-control"
+                        [(ngModel)]="designationsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
                         <mat-option
-                          *ngFor="let item of Designations"
+                          *ngFor="let item of filterDesignation()"
                           [value]="item.id"
                         >
                           {{ item.desgntn_job_title }}

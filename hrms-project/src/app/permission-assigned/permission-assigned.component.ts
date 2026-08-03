@@ -31,7 +31,10 @@ export class PermissionAssignedComponent {
   registerButtonClickededit = false;
 
 
-  groups:any='';
+
+  groups: number[] = [];
+
+ groupSearch: string = '';
   Groups :any[]=[];
   UserPermissions :any[]=[];
 
@@ -523,13 +526,23 @@ allSelectedEdit=false;
 
 
 toggleAllSelection(): void {
-  if (this.select) {
-    if (this.allSelected) {
-      
-      this.select.options.forEach((item: MatOption) => item.select());
-    } else {
-      this.select.options.forEach((item: MatOption) => item.deselect());
-    }
+
+  if (!this.select) {
+    return;
+  }
+
+  if (this.allSelected) {
+
+    this.groups = this.Groups.map((g: any) => g.id);
+
+    this.select.options.forEach((item: MatOption) => item.select());
+
+  } else {
+
+    this.groups = [];
+
+    this.select.options.forEach((item: MatOption) => item.deselect());
+
   }
 }
 
@@ -543,6 +556,20 @@ toggleAllSelectionEdit(): void {
       this.selectEdit.options.forEach((item: MatOption) => item.deselect());
     }
   }
+}
+
+
+filteredGroups() {
+
+  if (!this.groupSearch) {
+    return this.Groups;
+  }
+
+  const search = this.groupSearch.toLowerCase();
+
+  return this.Groups.filter((group: any) =>
+    group.name.toLowerCase().includes(search)
+  );
 }
 
 

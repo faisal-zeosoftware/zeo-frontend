@@ -107,22 +107,35 @@
     [(ngModel)]="branch"
     name="branch"
     multiple
-    #selectBrach [ngClass]="{'error-field': registerButtonClicked && !branch}"
-  >
+    #selectBrach
+    [ngClass]="{'error-field': registerButtonClicked && branch.length === 0}">
 
-    <mat-checkbox
-      class="px-2"
-      [(ngModel)]="allSelectedBrach"
-      [ngModelOptions]="{ standalone: true }"
-      (change)="toggleAllSelectionBrach()"
-    >
-      Select All
-    </mat-checkbox>
+    <!-- Select All -->
+    <div class="select-all">
+      <mat-checkbox
+        [(ngModel)]="allSelectedBrach"
+        [ngModelOptions]="{ standalone: true }"
+        (change)="toggleAllSelectionBrach()">
+        Select All
+      </mat-checkbox>
+    </div>
 
+    <!-- Search -->
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Branch"
+        [(ngModel)]="branchSearch"
+        [ngModelOptions]="{standalone:true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+    </div>
+
+    <!-- Branch List -->
     <mat-option
-      *ngFor="let b of Branches"
-      [value]="b.id"
-    >
+      *ngFor="let b of filteredBranches()"
+      [value]="b.id">
       {{ b.branch_name }}
     </mat-option>
 
@@ -200,28 +213,56 @@
                         </div>
             
       <div class="col-md-6" >
-        <label>Branch</label>
+        <label>Branch
+            <span class="required-star">*</span>
+        </label>
         <div class="custom-sel">
           <div class="form-control-wrapper">
           
 
-            <mat-form-field>
-              <!-- <mat-label>Favorite food</mat-label> -->
-              <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" #selectBrach multiple>
-                <div class="select-all">
-                  <mat-checkbox [(ngModel)]="allSelectedBrach" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionBrach()">
-                    Select All
-                  </mat-checkbox>
-                </div>
-                <input type="text" placeholder="serach" class="form-control">
+<mat-form-field appearance="outline" class="w-100">
+  <mat-select
+    placeholder="Select Branch"
+    [(ngModel)]="branch"
+    name="branch"
+    multiple
+    #selectBrach
+    [ngClass]="{'error-field': registerButtonClicked && branch.length === 0}">
 
-                <mat-option *ngFor="let branchs of Branches" [value]="branchs.id">{{ branchs.branch_name }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
+    <!-- Select All -->
+    <div class="select-all">
+      <mat-checkbox
+        [(ngModel)]="allSelectedBrach"
+        [ngModelOptions]="{ standalone: true }"
+        (change)="toggleAllSelectionBrach()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+    <!-- Search -->
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Branch"
+        [(ngModel)]="branchSearch"
+        [ngModelOptions]="{standalone:true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+    </div>
+
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let b of filteredBranches()"
+      [value]="b.id">
+      {{ b.branch_name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
             
           </div>
-         
+          <div *ngIf="registerButtonClicked && !branch" class="error-message">Please Select Branch</div>
         </div>
 
       </div>

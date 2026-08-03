@@ -73,7 +73,7 @@ export class AirTicketPolicyComponent {
 
   use_common_workflow:  boolean = false;
 
-
+branch: number[] = [];
 
   registerButtonClicked = false;
 
@@ -84,6 +84,8 @@ export class AirTicketPolicyComponent {
   Categories :any[] = [];
 
     Designations :any[] = [];
+
+      Branches:any []=[];
 
 
   @ViewChild('selectDept') selectDept: MatSelect | undefined;
@@ -621,6 +623,84 @@ mapDesigNameToId() {
 
       }
 
+      
+isAllBranchesSelected(): boolean {
+  return this.editAsset.branch?.length === this.Branches.length;
+}
+
+isSomeBranchesSelected(): boolean {
+  return (
+    this.editAsset.branch?.length > 0 &&
+    this.editAsset.branch?.length < this.Branches.length
+  );
+}
+
+toggleAllBranches(): void {
+  if (this.isAllBranchesSelected()) {
+    this.editAsset.branch = [];
+  } else {
+    this.editAsset.branch = this.Branches.map(x => x.id);
+  }
+}
+
+isAllDepartmentsSelected(): boolean {
+  return this.editAsset.department?.length === this.Departments.length;
+}
+
+isSomeDepartmentsSelected(): boolean {
+  return (
+    this.editAsset.department?.length > 0 &&
+    this.editAsset.department?.length < this.Departments.length
+  );
+}
+
+toggleAllDepartments(): void {
+  if (this.isAllDepartmentsSelected()) {
+    this.editAsset.department = [];
+  } else {
+    this.editAsset.department = this.Departments.map(x => x.id);
+  }
+}
+
+isAllCategoriesSelected(): boolean {
+  return this.editAsset.category?.length === this.Categories.length;
+}
+
+isSomeCategoriesSelected(): boolean {
+  return (
+    this.editAsset.category?.length > 0 &&
+    this.editAsset.category?.length < this.Categories.length
+  );
+}
+
+toggleAllCategories(): void {
+  if (this.isAllCategoriesSelected()) {
+    this.editAsset.category = [];
+  } else {
+    this.editAsset.category = this.Categories.map(x => x.id);
+  }
+}
+
+isAllDesignationsSelected(): boolean {
+  return this.editAsset.designation?.length === this.Designations.length;
+}
+
+isSomeDesignationsSelected(): boolean {
+  return (
+    this.editAsset.designation?.length > 0 &&
+    this.editAsset.designation?.length < this.Designations.length
+  );
+}
+
+toggleAllDesignations(): void {
+  if (this.isAllDesignationsSelected()) {
+    this.editAsset.designation = [];
+  } else {
+    this.editAsset.designation = this.Designations.map(x => x.id);
+  }
+}
+
+
 
 
 
@@ -816,7 +896,66 @@ loadCountries(callback?: Function): void {
 }
 
 
+ branchsearch: string = '';
 
-  
+filterBranches(): any[] {
+
+  if (!this.branchsearch || this.branchsearch.trim() === '') {
+    return this.Branches;
+  }
+
+  const search = this.branchsearch.toLowerCase().trim();
+
+  return this.Branches.filter((branch: any) =>
+    branch.branch_name.toLowerCase().includes(search)
+  );
+}
+
+  departmentsearch: string = '';
+
+  filterDepartment(): any[] {
+
+  if (!this.departmentsearch || this.departmentsearch.trim() === '') {
+    return this.Departments;
+  }
+
+  const search = this.departmentsearch.toLowerCase().trim();
+
+  return this.Departments.filter((eligible_departments: any) =>
+    eligible_departments.dept_name.toLowerCase().includes(search)
+  );
+}
+
+
+  categorysearch: string = '';
+
+  filterCategory(): any[] {
+
+  if (!this.categorysearch || this.categorysearch.trim() === '') {
+    return this.Categories;
+  }
+
+  const search = this.categorysearch.toLowerCase().trim();
+
+  return this.Categories.filter((eligible_categories: any) =>
+    eligible_categories.ctgry_title.toLowerCase().includes(search)
+  );
+}
+
+  designationsearch: string = '';
+
+  filterDesignation(): any[] {
+
+  if (!this.designationsearch || this.designationsearch.trim() === '') {
+    return this.Designations;
+  }
+
+  const search = this.designationsearch.toLowerCase().trim();
+
+  return this.Designations.filter((eligible_designations: any) =>
+    eligible_designations.desgntn_job_title.toLowerCase().includes(search)
+  );
+}
+ 
 
 }

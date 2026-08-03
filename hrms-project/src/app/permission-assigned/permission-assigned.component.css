@@ -204,6 +204,11 @@ margin-right: 10px;
     top: 50%;
   }
 
+
+  ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
+    margin-top: -14px;
+}
+
 ::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
 
   background-color: white;
@@ -245,70 +250,43 @@ input:focus-visible {
   outline: none;
 }
 
-/* Full width */
-::ng-deep .form-control-wrapper mat-form-field {
-  width: 100%;
-}
-
-/* Main select box style */
+/* Branch field same style as Select User */
 ::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
   border: 1px solid #ced4da !important;
   border-radius: 4px !important;
-  background: #fff !important;
-  min-height: 38px !important;
+  background-color: #fff !important;
+  height: 38px !important;
   padding: 0 12px !important;
-  box-shadow: none !important;
   display: flex;
   align-items: center;
+  box-shadow: none !important;
 }
 
-/* Remove Angular Material outline */
+/* Remove material outline */
 ::ng-deep .form-control-wrapper .mdc-notched-outline {
   display: none !important;
 }
 
-/* Remove filled background */
+/* Remove extra background */
 ::ng-deep .form-control-wrapper .mdc-text-field--filled,
 ::ng-deep .form-control-wrapper .mdc-text-field--outlined {
-  background-color: transparent !important;
+  background: transparent !important;
 }
 
-/* Align selected text */
+/* Align text properly */
 ::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
   height: 38px !important;
   display: flex;
-  align-items: center;
+  align-items: end;
 }
 
-/* Remove unwanted spacing */
-::ng-deep .form-control-wrapper .mat-mdc-form-field-infix {
-  padding: 0 !important;
-  min-height: auto !important;
-  border-top: 0 !important;
-}
-
-/* Remove internal padding */
-::ng-deep .form-control-wrapper .mdc-text-field {
-  padding: 0 !important;
-}
-
-/* Focus style like Bootstrap */
+/* Remove focus blue outline */
 ::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
   border-color: #80bdff !important;
   box-shadow: 0 0 0 0.1rem rgba(0,123,255,.25) !important;
 }
 
-/* Error border */
+/* Error state */
 ::ng-deep .error-field .mat-mdc-text-field-wrapper {
   border: 1px solid red !important;
 }
-
-/* Remove default focus outline */
-input:focus,
-input:focus-visible,
-.mat-mdc-select:focus,
-.mat-mdc-select:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-

@@ -82,20 +82,39 @@
   
   
 
-<div class="col-md-6" >
+<div class="col-md-6">
   <label>Employee
      <span class="required-star">*</span>
   </label>
   <div class="custom-sel">
-
-      <select class="form-control" id="employee_override" required [(ngModel)]="employee_override" [ngClass]="{'error-field': registerButtonClicked && !employee_override}"  [ngModelOptions]="{standalone: true}" >
-          <option value="" >Select</option>
-<option *ngFor="let emp of Employee" [ngValue]="emp.id">
-  {{ emp.emp_code }}
-</option>
-      </select> 
+      <div class="form-control-wrapper">
+<mat-form-field appearance="outline" class="w-100">
+      <mat-select
+        [(ngModel)]="employee_override"
+        [ngModelOptions]="{standalone: true}"
+        placeholder="Select Employee">
+        <!-- Search Input -->
+        <div class="px-2 pb-2">
+          <input
+            type="text"
+            placeholder="Search Employee"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{ standalone: true }"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+        <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id">
+          {{ emp.emp_code }} - {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
   <div *ngIf="registerButtonClicked && !employee_override" class="error-message">employee is required.</div>
+</div>
 </div>
   
 <div class="col-md-6" >
@@ -164,22 +183,39 @@
   
   
 
-<div class="col-md-6" >
-  <label>Employee</label>
+<div class="col-md-6">
+  <label>Employee
+     <span class="required-star">*</span>
+  </label>
   <div class="custom-sel">
-
-      <select class="form-control" id="employee_override" required [(ngModel)]="editoverride.employee"   [ngModelOptions]="{standalone: true}" >
-          <option value="" >Select</option>
-    <option *ngFor="let emp of Employee" [ngValue]="emp.id">
-  {{ emp.emp_code }}
-</option>
-      </select>
-      
-      
-     
-
-    
+      <div class="form-control-wrapper">
+<mat-form-field appearance="outline" class="w-100">
+      <mat-select
+        [(ngModel)]="editoverride.employee"
+        [ngModelOptions]="{standalone: true}"
+        placeholder="Select Employee">
+        <!-- Search Input -->
+        <div class="px-2 pb-2">
+          <input
+            type="text"
+            placeholder="Search Employee"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{ standalone: true }"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+        <mat-option
+          *ngFor="let emp of filterEmployees()"
+          [value]="emp.id">
+          {{ emp.emp_code }} - {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
+  <div *ngIf="registerButtonClicked && !employee_override" class="error-message">employee is required.</div>
+</div>
 </div>
   
 <div class="col-md-6" >

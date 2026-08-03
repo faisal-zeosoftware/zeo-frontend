@@ -91,7 +91,7 @@
 
         <form>
           <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-6">
               <div class="custom-sel">
                 <label
                   >Select Branches
@@ -125,38 +125,50 @@
               </div>
             </div>
 
-            <div class="col-md-6">
-              <div class="custom-sel">
-                <label
-                  >Employee
-                  <span class="required-star">*</span>
-                </label>
-                <select
-                  class="form-control"
-                  id="employee"
-                  required
-                  [(ngModel)]="employee"
-                  [ngModelOptions]="{ standalone: true }"
-                  [ngClass]="{
-                    'error-field': registerButtonClicked && !employee,
-                  }"
-                >
-                  <option value="">Select</option>
-                  <option
-                    *ngFor="let deparmentsec of filteredEmployees"
-                    [value]="deparmentsec.id"
-                  >
-                    {{ deparmentsec.emp_code }}
-                  </option>
-                </select>
-                <div
-                  *ngIf="registerButtonClicked && !employee"
-                  class="error-message"
-                >
-                  Employee required
-                </div>
-              </div>
-            </div>
+<div class="col-md-6">
+  <div class="custom-sel">
+    <label>
+      Employee
+      <span class="required-star">*</span>
+    </label>
+    <div class="custom-sel">
+     <div class="form-control-wrapper">
+<mat-form-field appearance="outline" class="w-100">
+      <mat-select
+        [(ngModel)]="employee"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Select Employee"
+      >
+        <!-- Search Input -->
+        <div class="px-2 pb-2">
+          <input
+            type="text"
+            placeholder="Search Employee"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{ standalone: true }"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+        <mat-option
+          *ngFor="let emp of searchFilteredEmployees()"
+          [value]="emp.id"
+        >
+          {{ emp.emp_code }} - {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    </div>
+    <div
+      *ngIf="registerButtonClicked && !employee"
+      class="error-message"
+    >
+      Employee required
+    </div>
+      </div>
+  </div>
+</div>
 
             <div class="col-md-6">
               <label>Document Number</label>
@@ -348,7 +360,7 @@
 
         <form>
           <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-6">
               <div class="custom-sel">
                 <label>Select Branches</label>
                 <select
@@ -379,23 +391,50 @@
               </div>
             </div>
 
-            <div class="col-md-6">
-              <div class="custom-sel">
-                <label>Employee</label>
-                <select
-                  class="form-control"
-                  id="employee"
-                  required
-                  [(ngModel)]="editAsset.employee"
-                  [ngModelOptions]="{ standalone: true }"
-                >
-                  <option value="">Select</option>
-                  <option *ngFor="let user of Employees" [value]="user.id">
-                    {{ user.emp_code }}
-                  </option>
-                </select>
-              </div>
-            </div>
+<div class="col-md-6">
+  <div class="custom-sel">
+    <label>
+      Employee
+      <span class="required-star">*</span>
+    </label>
+    <div class="custom-sel">
+     <div class="form-control-wrapper">
+<mat-form-field appearance="outline" class="w-100">
+      <mat-select
+        [(ngModel)]="editAsset.employee"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Select Employee"
+      >
+        <!-- Search Input -->
+        <div class="px-2 pb-2">
+          <input
+            type="text"
+            placeholder="Search Employee"
+            class="form-control"
+            [(ngModel)]="employeeSearch"
+            [ngModelOptions]="{ standalone: true }"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+        <mat-option
+          *ngFor="let emp of searchFilteredEmployees()"
+          [value]="emp.id"
+        >
+          {{ emp.emp_code }} - {{ emp.emp_first_name }} {{ emp.emp_last_name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    </div>
+    <div
+      *ngIf="registerButtonClicked && !employee"
+      class="error-message"
+    >
+      Employee required
+    </div>
+      </div>
+  </div>
+</div>
 
             <div class="col-md-6">
               <label>Document Number</label>

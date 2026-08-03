@@ -47,39 +47,50 @@
     
 
         
-    
-<div class="col-md-6">
 
-    <div class="custom-sel">
-         <label>Select Company</label>
-     <div class="form-control-wrapper">
-      
+                <div class="col-md-6">
 
-
-
-
- <mat-form-field>
- <mat-select placeholder="Select" id="tenants" multiple required [(ngModel)]="Emp.tenants"  [ngModelOptions]="{standalone: true}" #select multiple>
-     <div class="select-all">
-  <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
-     Select All
-    </mat-checkbox>
-     </div>
-    <input type="text" placeholder="serach" class="form-control">
+                                 <div class="custom-sel">
+                                         <label>Select Company
+                                            <span class="required-star">*</span>
+                                         </label>
+                                <div class="form-control-wrapper">
+                               
           
-        <mat-option
-          *ngFor="let company of companies"
-          [value]="company.id">
-          {{ company.schema_name }}
-        </mat-option>
-    </mat-select>
-</mat-form-field>
+                                <mat-form-field appearance="outline" class="w-100">
+                                    <!-- <mat-label>Favorite food</mat-label> -->
+                                    <mat-select placeholder="Select" id="tenants" multiple required [(ngModel)]="Emp.tenants"  [ngModelOptions]="{standalone: true}"  [ngClass]="{'error-field': registerButtonClicked && !tenants}" #select multiple>
+                                      <div class="select-all">
+                                        <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
+                                          Select All
+                                        </mat-checkbox>
+                                      </div>
+<input
+  type="text"
+  class="form-control"
+  placeholder="Search Company"
+  [(ngModel)]="companySearch"
+  [ngModelOptions]="{standalone: true}"
+  (click)="$event.stopPropagation()"
+  (keydown)="$event.stopPropagation()">
 
-
-</div>
-  </div>
-
-</div>
+<mat-option
+  *ngFor="let country of filteredCompanies()"
+  [value]="country.id">
+  {{ country.schema_name }}
+</mat-option>
+                                    </mat-select>
+                                  </mat-form-field>
+                                  
+                                </div>
+                                <div *ngIf="registerButtonClicked && (!tenants || tenants.length === 0)" class="error-message">
+                                 Please Select Your Company
+                                </div>
+                              </div>
+               
+                                
+            
+                </div>
 
 
             <div class="col-md-4">

@@ -209,6 +209,23 @@ ngOnInit(): void {
         }
       }
 
+        companySearch: string = '';
+
+        filteredCompanies() {
+
+  if (!this.companySearch) {
+    return this.companies;
+  }
+
+  const search = this.companySearch.toLowerCase();
+
+  return this.companies.filter((company: any) =>
+    company.schema_name.toLowerCase().includes(search)
+  );
+
+}
+
+
 
 ClosePopup(){
   this.ref.close('Closed using function');

@@ -222,7 +222,19 @@
                         >
                           Select All
                         </mat-checkbox>
-                        <mat-option *ngFor="let item of branches" [value]="item.id">
+                                                <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Branch"
+                        class="form-control"
+                        [(ngModel)]="branchsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+                        <mat-option *ngFor="let item of filterBranches()" [value]="item.id">
                           {{ item.branch_name }}
                         </mat-option>
                       </mat-select>
@@ -249,7 +261,19 @@
                         >
                           Select All
                         </mat-checkbox>
-                        <mat-option *ngFor="let item of Departments" [value]="item.id">
+                                                <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Department"
+                        class="form-control"
+                        [(ngModel)]="departmentsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+                        <mat-option *ngFor="let item of filterDepartment()" [value]="item.id">
                           {{ item.dept_name }}
                         </mat-option>
                       </mat-select>
@@ -276,7 +300,19 @@
                         >
                           Select All
                         </mat-checkbox>
-                        <mat-option *ngFor="let item of Categories" [value]="item.id">
+                                                <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Category"
+                        class="form-control"
+                        [(ngModel)]="categorysearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+                        <mat-option *ngFor="let item of filterCategory()" [value]="item.id">
                           {{ item.ctgry_title }}
                         </mat-option>
                       </mat-select>
@@ -303,7 +339,19 @@
                         >
                           Select All
                         </mat-checkbox>
-                        <mat-option *ngFor="let item of Designations" [value]="item.id">
+                                                <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Designation"
+                        class="form-control"
+                        [(ngModel)]="designationsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+                        <mat-option *ngFor="let item of filterDesignation()" [value]="item.id">
                           {{ item.desgntn_job_title }}
                         </mat-option>
                       </mat-select>
@@ -313,6 +361,17 @@
               </div>
 
               <div class="employee-card">
+                    <!-- Employee Search -->
+<div class="employee-search-bar">
+  <mat-icon>search</mat-icon>
+  <input 
+    type="text" 
+    class="employee-search-input" 
+    placeholder="Search Employee by name or code..."
+    [(ngModel)]="SearchEmployee"
+    [ngModelOptions]="{standalone: true}"
+    (input)="FilterEmployee()">
+</div>
                 <div class="table-responsive">
                   <table class="employee-table">
                     <thead>

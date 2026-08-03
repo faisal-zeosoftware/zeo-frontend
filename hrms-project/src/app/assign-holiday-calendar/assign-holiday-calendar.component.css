@@ -480,6 +480,37 @@ input:focus-visible {
   color:#64748b;
 }
 
+/* ================= EMPLOYEE SEARCH ================= */
+.employee-search-bar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:15px 20px;
+  border-bottom:1px solid #edf2f7;
+  background:#f3f3f3;
+}
+
+.employee-search-bar mat-icon{
+  color:#181717;
+  font-size:20px;
+  width:20px;
+  height:20px;
+}
+
+.employee-search-input{
+  flex:1;
+  border:none;
+  outline:none;
+  font-size:14px;
+  color:#334155;
+  background:transparent;
+}
+
+.employee-search-input::placeholder{
+  color:#000000;
+}
+
+
 /* ================= BADGES ================= */
 
 .custom-badge{

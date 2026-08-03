@@ -484,6 +484,66 @@ toggleAllDesignations(): void {
   }
 
 
+   branchsearch: string = '';
+
+filterBranches(): any[] {
+
+  if (!this.branchsearch || this.branchsearch.trim() === '') {
+    return this.branches;
+  }
+
+  const search = this.branchsearch.toLowerCase().trim();
+
+  return this.branches.filter((branch: any) =>
+    branch.branch_name.toLowerCase().includes(search)
+  );
+}
+
+  departmentsearch: string = '';
+
+  filterDepartment(): any[] {
+
+  if (!this.departmentsearch || this.departmentsearch.trim() === '') {
+    return this.Departments;
+  }
+
+  const search = this.departmentsearch.toLowerCase().trim();
+
+  return this.Departments.filter((department: any) =>
+    department.dept_name.toLowerCase().includes(search)
+  );
+}
+
+
+  categorysearch: string = '';
+
+  filterCategory(): any[] {
+
+  if (!this.categorysearch || this.categorysearch.trim() === '') {
+    return this.Categories;
+  }
+
+  const search = this.categorysearch.toLowerCase().trim();
+
+  return this.Categories.filter((category: any) =>
+    category.ctgry_title.toLowerCase().includes(search)
+  );
+}
+
+  designationsearch: string = '';
+
+  filterDesignation(): any[] {
+
+  if (!this.designationsearch || this.designationsearch.trim() === '') {
+    return this.Designations;
+  }
+
+  const search = this.designationsearch.toLowerCase().trim();
+
+  return this.Designations.filter((designation: any) =>
+    designation.desgntn_job_title.toLowerCase().includes(search)
+  );
+}
 
 
 

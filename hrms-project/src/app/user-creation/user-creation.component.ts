@@ -31,6 +31,7 @@ export class UserCreationComponent {
   companys:any[] = [];
 
   group:any[]=[];
+  companySearch: string = '';
   user_permission:any[]=[];
 
   createdUserId: any ='';
@@ -225,5 +226,19 @@ togglePassword() {
       }
     }
   }
+
+  filteredCompanies() {
+
+  if (!this.companySearch) {
+    return this.companys;
+  }
+
+  const search = this.companySearch.toLowerCase();
+
+  return this.companys.filter((company: any) =>
+    company.schema_name.toLowerCase().includes(search)
+  );
+
+}
 
 }

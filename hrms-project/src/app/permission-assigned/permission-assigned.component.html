@@ -97,21 +97,47 @@
                                 <div class="form-control-wrapper">
                               
           
-                                <mat-form-field appearance="outline">
-                                    <!-- <mat-label>Favorite food</mat-label> -->
-                                    <mat-select placeholder="Select" [(ngModel)]="groups" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !groups}" #select multiple>
-                                      <div class="select-all">
-                                        <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
-                                          Select All
-                                        </mat-checkbox>
-                                      </div>
-                                      <input type="text" placeholder="serach" class="form-control">
-          
-                                      <mat-option *ngFor="let deparmentsec of   Groups" [value]="deparmentsec.id">
-                                        {{ deparmentsec.name}} 
-                                      </mat-option>
-                                    </mat-select>
-                                  </mat-form-field>
+<mat-form-field appearance="outline" class="w-100">
+  <mat-select
+    placeholder="Select Group"
+    [(ngModel)]="groups"
+    [ngModelOptions]="{standalone: true}"
+    [ngClass]="{'error-field': registerButtonClicked && (!groups || groups.length === 0)}"
+    #select
+    multiple
+    (closed)="groupSearch = ''">
+
+    <!-- Select All -->
+    <div class="select-all">
+      <mat-checkbox
+        [(ngModel)]="allSelected"
+        [ngModelOptions]="{standalone: true}"
+        (change)="toggleAllSelection()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+    <!-- Search -->
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Group"
+        [(ngModel)]="groupSearch"
+        [ngModelOptions]="{standalone:true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+    </div>
+
+    <!-- Group List -->
+    <mat-option
+      *ngFor="let group of filteredGroups()"
+      [value]="group.id">
+      {{ group.name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
                                   
                                 </div>
                                 <div *ngIf="registerButtonClicked && (!groups || groups.length === 0)" class="error-message">
@@ -172,38 +198,73 @@
                     <div *ngIf="registerButtonClickededit && !selectedUserPermission.profile" class="error-message">Please Select a User</div>
                 </div>
             </div>
-            
-            <div class="col-md-6">
-           
 
-                <label>Select Group</label>
-                <div class="custom-sel">
-                    <div class="form-control-wrapper">
-                  
+                                    <div class="col-md-6">
+                            <label>Select Group
+                              <span class="required-star">*</span>
+                            </label>
 
-                    <mat-form-field appearance="outline">
-                        <mat-select placeholder="Select" [(ngModel)]="selectedUserPermission.groups" [ngModelOptions]="{standalone: true}" #selectEdit multiple>
-                          <div class="select-all">
-                            <mat-checkbox [(ngModel)]="allSelectedEdit" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelectionEdit()">
-                              Select All
-                            </mat-checkbox>
-                          </div>
-                          <input type="text" placeholder="serach" class="form-control">
 
-                          <mat-option *ngFor="let deparmentsec of   Groups" [value]="deparmentsec.id">
-                            {{ deparmentsec.name}} 
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                      
-                    </div>
-                    <div *ngIf="registerButtonClicked && (!groups || groups.length === 0)" class="error-message">
-                      Please Select Your groups
-                    </div>
-                  </div>
-            </div>
+
+
+                            <div class="custom-sel">
+                                <div class="form-control-wrapper">
+                              
+          
+<mat-form-field appearance="outline" class="w-100">
+  <mat-select
+    placeholder="Select Group"
+    [(ngModel)]="selectedUserPermission.groups"
+    [ngModelOptions]="{standalone: true}"
+    [ngClass]="{'error-field': registerButtonClicked && (!groups || groups.length === 0)}"
+    #select
+    multiple
+    (closed)="groupSearch = ''">
+
+    <!-- Select All -->
+    <div class="select-all">
+      <mat-checkbox
+        [(ngModel)]="allSelected"
+        [ngModelOptions]="{standalone: true}"
+        (change)="toggleAllSelection()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+    <!-- Search -->
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Group"
+        [(ngModel)]="groupSearch"
+        [ngModelOptions]="{standalone:true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+    </div>
+
+    <!-- Group List -->
+    <mat-option
+      *ngFor="let group of filteredGroups()"
+      [value]="group.id">
+      {{ group.name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
+                                  
+                                </div>
+                                <div *ngIf="registerButtonClicked && (!groups || groups.length === 0)" class="error-message">
+                                  Please Select Your groups
+                                </div>
+                              </div>
+                                        
+                    
+                        </div>
             
         </div>
+
+
   
         <div class="row">
           <div class="col-md-8"></div>

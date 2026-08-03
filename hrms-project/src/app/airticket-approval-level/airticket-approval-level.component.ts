@@ -671,19 +671,35 @@ mapBranchesNameToId() {
     }
     
     
-   branchSearch: string = '';
+//    branchSearch: string = '';
   
-  filterEmployees() {
+//   filterEmployees() {
+
+//   if (!this.branchSearch) {
+//     return this.Branches;
+//   }
+
+//   return this.Branches.filter((deparmentsec: any) =>
+//     deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+//   );
+
+// }   
+
+  branchSearch: string = '';
+
+filteredBranches() {
 
   if (!this.branchSearch) {
     return this.Branches;
   }
 
-  return this.Branches.filter((deparmentsec: any) =>
-    deparmentsec.branch_name.toLowerCase().includes(this.branchSearch.toLowerCase())
+  return this.Branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
   );
 
-}   
+}
   
 
 
