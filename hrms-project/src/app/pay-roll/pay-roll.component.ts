@@ -299,7 +299,7 @@ if (this.userId !== null) {
     alert('No payslip data to export.');
     return;
   }
-  
+
       const exportData = this.filteredPaySlips.map((p, index) => {
         const components = p.components?.map((c: { component_name: any; component_type: any; payslip_amount: any; }) =>
           `${c.component_name} (${c.component_type}): ${c.payslip_amount}`
@@ -1020,6 +1020,32 @@ resetChanges(): void {
   // this.fetchLoadPaySlip(this.selectedSchema, this.selectedBranchIds);
   // this.editedRows = [];
 }
+
+
+
+
+componentColumns: string[] = [];
+
+
+buildComponentColumns(): void {
+  const namesSet = new Set<string>();
+  this.filteredPaySlips.forEach(p => {
+    p.components?.forEach((c: any) => namesSet.add(c.component_name));
+  });
+  this.componentColumns = Array.from(namesSet).sort();
+}
+
+// Helper to look up a specific component's amount for a row
+getComponentAmount(payslip: any, componentName: string): string {
+  const match = payslip.components?.find((c: any) => c.component_name === componentName);
+  return match ? match.payslip_amount : '-';
+}
+
+
+
+
+
+
 
 
 }

@@ -428,13 +428,31 @@
                                 'pill red': payslip.status === 'rejected'
                               }">{{ payslip.status }}</span>
                             </td>
-                            <td data-label="Components">
+                            <!-- <td data-label="Components">
                               <ul class="mb-0 ps-3">
                                 <li *ngFor="let comp of payslip.components">
                                   <strong>{{ comp.component_name }}</strong> 
                                   ({{ comp.component_type }}): {{ comp.payslip_amount }}
                                 </li>
                               </ul>
+                            </td> -->
+
+                            <td data-label="Components">
+                              <div class="component-grid">
+                                <div
+                                  *ngFor="let comp of payslip.components"
+                                  class="component-chip"
+                                  [ngClass]="{
+                                    'chip-addition': comp.component_type === 'addition',
+                                    'chip-deduction': comp.component_type === 'deduction',
+                                    'chip-others': comp.component_type === 'others'
+                                  }"
+                                >
+                                  <span class="chip-name">{{ comp.component_name }}</span>
+                                  <span class="chip-amount">{{ comp.payslip_amount }}</span>
+                                </div>
+                                <span *ngIf="!payslip.components?.length" class="text-muted">-</span>
+                              </div>
                             </td>
                           </tr>
               

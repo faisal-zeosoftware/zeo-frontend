@@ -376,4 +376,141 @@ downloadSIFStyledExcel(): void {
 }
 
 
+
+// downloadSIFFile(): void {
+//   const data = this.sifData;
+//   if (!data) {
+//     alert('No SIF data available to download.');
+//     return;
+//   }
+
+//   const lines: string[] = [];
+
+//   // --- HDR record ---
+//   // ⚠️ Field order below is a placeholder based on your Excel mapping.
+//   // Confirm exact field order/count against your bank's official WPS SIF spec.
+//   const hdr = data.hdr;
+//   lines.push([
+//     'HDR',
+//     hdr['Sender ID'] || '',
+//     hdr['Employer ID'] || '',
+//     hdr['Routing Code'] || '',
+//     hdr['IBAN Number'] || '',
+//     hdr['File Creation Date'] || '',
+//     hdr['Salary Year'] || '',
+//     hdr['Salary Month'] || '',
+//     hdr['Total Employees'] || data.edr?.length || '',
+//     hdr['Total Salary Amount'] || '',
+//   ].join(','));
+
+//   // --- EDR records (one per employee) ---
+//   data.edr.forEach((edr: any) => {
+//     lines.push([
+//       'EDR',
+//       edr['Person ID'] || '',
+//       edr['Routing Code'] || '',
+//       edr['IBAN Number'] || '',
+//       edr['Pay Start Date'] || '',
+//       edr['Pay End Date'] || '',
+//       edr['Number of Days'] || '',
+//       edr['Fixed Income'] || '',
+//       edr['Variable Income'] || '',
+//       edr['Days on Leave'] || '',
+//     ].join(','));
+//   });
+
+//   // --- SCR record (summary/control) ---
+//   const scr = data.scr;
+//   lines.push([
+//     'SCR',
+//     scr['Person ID'] || '',
+//     scr['Routing Code'] || '',
+//     scr['IBAN Number'] || '',
+//     scr['Pay Start Date'] || '',
+//     scr['Pay End Date'] || '',
+//     scr['Number of Days'] || '',
+//     scr['Fixed Income'] || '',
+//     scr['Variable Income'] || '',
+//     scr['Days on Leave'] || '',
+//   ].join(','));
+
+//   // WPS SIF files conventionally use CRLF line endings
+//   const sifContent = lines.join('\r\n');
+
+//   const blob = new Blob([sifContent], { type: 'text/plain;charset=utf-8' });
+//   const fileName = `SIF_${this.selectedPayrollId}_${new Date().toISOString().slice(0, 10)}.sif`;
+
+//   FileSaver.saveAs(blob, fileName);
+// }
+
+
+downloadSIFFile(): void {
+  const data = this.sifData;
+  if (!data) {
+    alert('No SIF data available to download.');
+    return;
+  }
+
+  const lines: string[] = [];
+
+  // Optional readability header — remove before submitting to bank
+  const headerRow = [
+    'Type', 'Person ID', 'Routing Code', 'IBAN Number',
+    'Pay Start Date', 'Pay End Date', 'Number of Days',
+    'Fixed Income', 'Variable Income', 'Days on Leave'
+  ];
+  lines.push(headerRow.join(','));
+
+  // --- HDR record ---
+  const hdr = data.hdr;
+  lines.push([
+    'HDR',
+    hdr['Sender ID'] || '',
+    hdr['Employer ID'] || '',
+    hdr['Routing Code'] || '',
+    hdr['IBAN Number'] || '',
+    hdr['File Creation Date'] || '',
+    hdr['Salary Year'] || '',
+    hdr['Salary Month'] || '',
+    hdr['Total Employees'] || data.edr?.length || '',
+    hdr['Total Salary Amount'] || '',
+  ].join(','));
+
+  // --- EDR records ---
+  data.edr.forEach((edr: any) => {
+    lines.push([
+      'EDR',
+      edr['Person ID'] || '',
+      edr['Routing Code'] || '',
+      edr['IBAN Number'] || '',
+      edr['Pay Start Date'] || '',
+      edr['Pay End Date'] || '',
+      edr['Number of Days'] || '',
+      edr['Fixed Income'] || '',
+      edr['Variable Income'] || '',
+      edr['Days on Leave'] || '',
+    ].join(','));
+  });
+
+  // --- SCR record ---
+  const scr = data.scr;
+  lines.push([
+    'SCR',
+    scr['Person ID'] || '',
+    scr['Routing Code'] || '',
+    scr['IBAN Number'] || '',
+    scr['Pay Start Date'] || '',
+    scr['Pay End Date'] || '',
+    scr['Number of Days'] || '',
+    scr['Fixed Income'] || '',
+    scr['Variable Income'] || '',
+    scr['Days on Leave'] || '',
+  ].join(','));
+
+  const sifContent = lines.join('\r\n');
+  const blob = new Blob([sifContent], { type: 'text/plain;charset=utf-8' });
+  const fileName = `SIF_${this.selectedPayrollId}_${new Date().toISOString().slice(0, 10)}.sif`;
+  FileSaver.saveAs(blob, fileName);
+}
+
 }
