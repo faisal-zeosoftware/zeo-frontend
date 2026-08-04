@@ -103,17 +103,16 @@
                               Select All
                             </mat-checkbox>
                           </div>
-                              <input type="text" placeholder="Search Branch"
-                                     class="form-control"
-                                     [(ngModel)]="branchSearch"
-                                     [ngModelOptions]="{standalone: true}"
-                                     (click)="$event.stopPropagation()">
-            
-                          <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
-                            {{ deparmentsec.branch_name }} 
-                          </mat-option> -->
-                <mat-option
-          *ngFor="let deparmentsec of filterEmployees()"
+            <input type="text" placeholder="Search Branch"
+                class="form-control"
+                [(ngModel)]="branchSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                />
+
+                          <mat-option
+          *ngFor="let deparmentsec of filteredBranches()"
           [value]="deparmentsec.id">
 
           {{ deparmentsec.branch_name }}
@@ -270,17 +269,16 @@
                               Select All
                             </mat-checkbox>
                           </div>
-                              <input type="text" placeholder="Search Branch"
-                                     class="form-control"
-                                     [(ngModel)]="branchSearch"
-                                     [ngModelOptions]="{standalone: true}"
-                                     (click)="$event.stopPropagation()">
-            
-                          <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
-                            {{ deparmentsec.branch_name }} 
-                          </mat-option> -->
-                <mat-option
-          *ngFor="let deparmentsec of filterEmployees()"
+            <input type="text" placeholder="Search Branch"
+                class="form-control"
+                [(ngModel)]="branchSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                />
+
+                          <mat-option
+          *ngFor="let deparmentsec of filteredBranches()"
           [value]="deparmentsec.id">
 
           {{ deparmentsec.branch_name }}

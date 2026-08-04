@@ -599,5 +599,18 @@ allBranchSelected: boolean = false;
 
 }
 
+filteredBranches() {
+
+  if (!this.branchSearch) {
+    return this.branches;
+  }
+
+  return this.branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
+  );
+
+}
 
 }

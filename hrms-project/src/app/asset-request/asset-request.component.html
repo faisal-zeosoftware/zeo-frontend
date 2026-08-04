@@ -126,34 +126,46 @@
             </div>
 
             <div class="col-md-6">
-              <label
-                >Select Employee
+              <label>
+                Employee
                 <span class="required-star">*</span>
               </label>
               <div class="custom-sel">
-                <select
-                  class="form-control"
-                  id="employee"
-                  name="employee"
-                  [(ngModel)]="employee"
-                  [ngModelOptions]="{ standalone: true }"
-                  [ngClass]="{
-                    'error-field': registerButtonClicked && !employee,
-                  }"
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      [(ngModel)]="employee"
+                      [ngModelOptions]="{ standalone: true }"
+                      placeholder="Select Employee"
+                    >
+                      <!-- Search Input -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          placeholder="Search Employee"
+                          class="form-control"
+                          [(ngModel)]="employeeSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+                      <mat-option
+                        *ngFor="let emp of searchFilteredEmployees()"
+                        [value]="emp.id"
+                      >
+                        {{ emp.emp_code }} - {{ emp.emp_first_name }}
+                        {{ emp.emp_last_name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="registerButtonClicked && !employee"
+                  class="error-message"
                 >
-                  <option
-                    *ngFor="let deparmentsec of filteredEmployees"
-                    [value]="deparmentsec.id"
-                  >
-                    {{ deparmentsec.emp_code }}
-                  </option>
-                </select>
-              </div>
-              <div
-                *ngIf="registerButtonClicked && !employee"
-                class="error-message"
-              >
-                Employee is Required
+                  Employee required
+                </div>
               </div>
             </div>
 
@@ -323,22 +335,46 @@
             </div>
 
             <div class="col-md-6">
-              <label>Select Employee </label>
+              <label>
+                Employee
+                <span class="required-star">*</span>
+              </label>
               <div class="custom-sel">
-                <select
-                  class="form-control"
-                  id="employee"
-                  name="employee"
-                  [(ngModel)]="editAsset.employee"
-                  [ngModelOptions]="{ standalone: true }"
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      [(ngModel)]="editAsset.employee"
+                      [ngModelOptions]="{ standalone: true }"
+                      placeholder="Select Employee"
+                    >
+                      <!-- Search Input -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          placeholder="Search Employee"
+                          class="form-control"
+                          [(ngModel)]="employeeSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+                      <mat-option
+                        *ngFor="let emp of searchFilteredEmployees()"
+                        [value]="emp.id"
+                      >
+                        {{ emp.emp_code }} - {{ emp.emp_first_name }}
+                        {{ emp.emp_last_name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="registerButtonClicked && !employee"
+                  class="error-message"
                 >
-                  <option
-                    *ngFor="let employees of Employees"
-                    [value]="employees.id"
-                  >
-                    {{ employees.emp_code }}
-                  </option>
-                </select>
+                  Employee required
+                </div>
               </div>
             </div>
 
@@ -439,42 +475,42 @@
       </div>
     </div>
 
-  <div class="com_list mt-4" *ngIf="hasViewPermission">
-    <div style="overflow-x: auto; width: 100%;">
-    <table width="100%">
-    <thead class="thead-dark">
-          <tr>
-            <th class="sticky-left">No</th>
-            <th>Document Number</th>
-            <th>Branch</th>
-            <th>Employee</th>
-            <th>Asset type</th>
-            <th>Requested asset</th>
-            <th>Reason</th>
-            <th>Status</th>
-           <th class="sticky-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let docs of AssetsRequest; let i = index">
-             <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
-            <td data-label="Document Number">{{ docs.document_number }}</td>
-            <td data-label="branch">{{ docs.branch }}</td>
-            <td data-label="Employee">{{ docs.employee }}</td>
-            <td data-label="Asset type">{{ docs.asset_type }}</td>
-            <td data-label="Requested asset">{{ docs.requested_asset }}</td>
-            <td data-label="Reason">{{ docs.reason }}</td>
-            <td>
-              <span
-                class="badge"
-                [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'"
-              >
-                {{ docs.status }}
-              </span>
-            </td>
+    <div class="com_list mt-4" *ngIf="hasViewPermission">
+      <div style="overflow-x: auto; width: 100%">
+        <table width="100%">
+          <thead class="thead-dark">
+            <tr>
+              <th class="sticky-left">No</th>
+              <th>Document Number</th>
+              <th>Branch</th>
+              <th>Employee</th>
+              <th>Asset type</th>
+              <th>Requested asset</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th class="sticky-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let docs of AssetsRequest; let i = index">
+              <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
+              <td data-label="Document Number">{{ docs.document_number }}</td>
+              <td data-label="branch">{{ docs.branch }}</td>
+              <td data-label="Employee">{{ docs.employee }}</td>
+              <td data-label="Asset type">{{ docs.asset_type }}</td>
+              <td data-label="Requested asset">{{ docs.requested_asset }}</td>
+              <td data-label="Reason">{{ docs.reason }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'"
+                >
+                  {{ docs.status }}
+                </span>
+              </td>
 
-             <td class="sticky-right" data-label="Actions">
-              <!-- <button
+              <td class="sticky-right" data-label="Actions">
+                <!-- <button
                         type="button"
                         class="btn btn-success"
                         (click)="approveRequest(docs.id)"
@@ -493,29 +529,30 @@
                         Reject
                       </button> -->
 
-              <button
-                mat-fab
-                color="primary"
-                aria-label="Edit icon"
-                *ngIf="showEditBtn"
-                (click)="openEditModal(docs)"
-                style="margin-left: 5px"
-              >
-                <mat-icon style="color: white">draw</mat-icon>
-              </button>
-               <mat-checkbox
-                *ngIf="Delete"
-                [(ngModel)]="docs.selected"
-              ></mat-checkbox>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                <button
+                  mat-fab
+                  color="primary"
+                  aria-label="Edit icon"
+                  *ngIf="showEditBtn"
+                  (click)="openEditModal(docs)"
+                  style="margin-left: 5px"
+                >
+                  <mat-icon style="color: white">draw</mat-icon>
+                </button>
+                <mat-checkbox
+                  *ngIf="Delete"
+                  [(ngModel)]="docs.selected"
+                ></mat-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Loader -->
-<div class="loader-container" [class.show]="isLoading">
-  <div class="loader"></div>
+  <!-- Loader -->
+  <div class="loader-container" [class.show]="isLoading">
+    <div class="loader"></div>
+  </div>
 </div>

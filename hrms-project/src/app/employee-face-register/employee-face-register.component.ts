@@ -427,30 +427,10 @@ ngOnInit(): void {
  
 }
 
-
-
-    
-
-
-
-
-
-  
 checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
   return groupPermissions.some(permission => permission.codename === codeName);
   }
   
-  
-
-
-
-
-
-
-
-
-
-
 
   LoadEmployee(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -497,7 +477,31 @@ checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
 
   
 
+employeeSearch = '';
 
+filterEmployees(): any[] {
+
+  const search = this.employeeSearch?.trim().toLowerCase();
+
+  if (!search) {
+    return this.Employees;
+  }
+
+  return this.Employees.filter(emp => {
+
+    const code = (emp.emp_code || '').toString().toLowerCase();
+    const first = (emp.emp_first_name || '').toLowerCase();
+    const last = (emp.emp_last_name || '').toLowerCase();
+    const fullName = `${first} ${last}`;
+
+    return code.includes(search) ||
+           first.includes(search) ||
+           last.includes(search) ||
+           fullName.includes(search);
+
+  });
+
+}
 
 
     

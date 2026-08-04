@@ -1,431 +1,530 @@
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section">
-
-    
-      
-      <div class="header_section">
-
-        <div class="row">
-            <div class="col-md-4">
-                <h1> General Request Approval Level </h1>
-            </div>
-
-            <div class="col-md-3">
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-            </div>
-            <div class="col-md-5">
-                <div class="button-group pull-right">
-                    <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                    </mat-icon></span> Create</button>
-                  <span *ngIf="!hasAddPermission"></span>
-
-                    <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                        <span class="header-btn-icon">
-                         <mat-icon>draw
-                    </mat-icon></span> Edit</button>
-                    <span *ngIf="hasEditPermission"></span>
-                    <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                        <span class="header-btn-icon">
-                            <mat-icon> delete
-                       </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-
-                       <span *ngIf="!hasDeletePermission"></span>
-                </div>
-            </div>
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="row">
+        <div class="col-md-4">
+          <h1>General Request Approval Level</h1>
         </div>
-       
-       
 
+        <div class="col-md-3">
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
+            <button
+              type="button"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
+            >
+              <span class="header-btn-icon"
+                ><mat-icon>add_circle </mat-icon></span
+              >
+              Create
+            </button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
+            <span *ngIf="hasEditPermission"></span>
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
+              <span class="header-btn-icon">
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
+
+            <span *ngIf="!hasDeletePermission"></span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="row">
-        <div class="col-md-2">
-            
-            <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
-
-        </div>
-        <div class="col-md-3">
-            <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedAssetType()">Delete Selected </button>
-
-        </div>
+      <div class="col-md-2">
+        <button
+          class="mt-3 btn-danger btn"
+          style="width: 100%"
+          color="warn"
+          *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()"
+        >
+          Select All
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          class="mt-3 btn-danger btn"
+          color="warn"
+          *ngIf="Delete"
+          (click)="deleteSelectedAssetType()"
+        >
+          Delete Selected
+        </button>
+      </div>
     </div>
-  
-
-  
 
     <div *ngIf="iscreateLoanApp" class="modal">
-        <div class="modal-content">  
-          <div class="row">
-            <div class="col-md-10">
-              <h2> Create General Request Approval Level</h2>
-            </div>
-   <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div>
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Create General Request Approval Level</h2>
           </div>
-          <hr />
-      
-          <form>
-            <div class="row">
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+          </div>
+        </div>
+        <hr />
 
-              <div class="col-md-4">
-    
-                <div class="custom-sel">
-                    <label>Select Request Type
-                      <span class="required-star">*</span>
-                    </label>
-                    <select class="form-control" id="request_type" required [(ngModel)]="request_type"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}">
-                        <option value="" >Select</option>
-                        <option *ngFor="let deparmentsec of RequestType" [value]="deparmentsec.id">{{ deparmentsec.name     }} </option>
-                    </select>
-                </div>  
-        <div *ngIf="registerButtonClicked && !request_type" class="error-message">Request type is required.</div>
-            </div>
-
-             
-                
-              <div class="col-md-4">
-                <label>Branch
+        <form>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="custom-sel">
+                <label
+                  >Select Request Type
                   <span class="required-star">*</span>
                 </label>
-            
-            
-            
-            
-                <div class="custom-sel">
-                    <div class="form-control-wrapper">
-                  
-            
-                      <mat-form-field>
-                        <!-- <mat-label>Favorite food</mat-label> -->
-                                <mat-select placeholder="Select" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}" #select multiple>
-                                  <div class="select-all">
-                                    <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"  (change)="toggleAllSelection()">
-                                      Select All
-                                    </mat-checkbox>
-                                  </div>
-                                      <input type="text" placeholder="Search Branch"
-                                             class="form-control"
-                                             [(ngModel)]="branchSearch"
-                                             [ngModelOptions]="{standalone: true}"
-                                             (click)="$event.stopPropagation()">
-                    
-                                  <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
-                                    {{ deparmentsec.branch_name }} 
-                                  </mat-option> -->
-                        <mat-option
-                  *ngFor="let deparmentsec of filterEmployees()"
-                  [value]="deparmentsec.id">
-        
-                  {{ deparmentsec.branch_name }}
-        
-                </mat-option>
-                                </mat-select>
-                      </mat-form-field>
-                      
-                    </div>
-                 
-                  </div>
-                            
-            <div *ngIf="registerButtonClicked && !branch" class="error-message">Branch is required.</div>
+                <select
+                  class="form-control"
+                  id="request_type"
+                  required
+                  [(ngModel)]="request_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !request_type,
+                  }"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let deparmentsec of RequestType"
+                    [value]="deparmentsec.id"
+                  >
+                    {{ deparmentsec.name }}
+                  </option>
+                </select>
+              </div>
+              <div
+                *ngIf="registerButtonClicked && !request_type"
+                class="error-message"
+              >
+                Request type is required.
+              </div>
             </div>
-               
+
+            <div class="col-md-4">
+              <label
+                >Branch
+                <span class="required-star">*</span>
+              </label>
+
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field>
+                    <!-- <mat-label>Favorite food</mat-label> -->
+                    <mat-select
+                      placeholder="Select"
+                      [(ngModel)]="branch"
+                      [ngModelOptions]="{ standalone: true }"
+                      [ngClass]="{
+                        'error-field': registerButtonClicked && !branch,
+                      }"
+                      #select
+                      multiple
+                    >
+                      <div class="select-all">
+                        <mat-checkbox
+                          [(ngModel)]="allSelected"
+                          [ngModelOptions]="{ standalone: true }"
+                          (change)="toggleAllSelection()"
+                        >
+                          Select All
+                        </mat-checkbox>
+                      </div>
+                      <!-- Search -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Branch"
+                          [(ngModel)]="branchSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+
+                      <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
+                            {{ deparmentsec.branch_name }} 
+                          </mat-option> -->
+                      <mat-option
+                        *ngFor="let deparmentsec of filteredBranches()"
+                        [value]="deparmentsec.id"
+                      >
+                        {{ deparmentsec.branch_name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <div
+                *ngIf="registerButtonClicked && !branch"
+                class="error-message"
+              >
+                Branch is required.
+              </div>
+            </div>
+
             <div class="col-md-4">
               <label>Approval type</label>
               <span class="required-star">*</span>
               <div class="custom-sel">
                 <select
-                  class="form-control" [(ngModel)]="approval_type" [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !approval_type}">
+                  class="form-control"
+                  [(ngModel)]="approval_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !approval_type,
+                  }"
+                >
                   <option value="no_approval">No Approval</option>
                   <option value="reporting_manager">Reporting Manager</option>
                   <option value="multi_approval">Multi Approval</option>
                 </select>
               </div>
-            <div *ngIf="registerButtonClicked && !approval_type" class="error-message">Approval Type is required.</div>
+              <div
+                *ngIf="registerButtonClicked && !approval_type"
+                class="error-message"
+              >
+                Approval Type is required.
+              </div>
             </div>
 
-    
-
-            <div *ngIf="approval_type === 'multi_approval'" class="col-md-12 mt-3">
-
+            <div
+              *ngIf="approval_type === 'multi_approval'"
+              class="col-md-12 mt-3"
+            >
               <h4>Approval Levels</h4>
-            
-              <div *ngFor="let lvl of levels; let i = index" class="row level-box mb-3">
-            
+
+              <div
+                *ngFor="let lvl of levels; let i = index"
+                class="row level-box mb-3"
+              >
                 <div class="col-md-2">
                   <label>Level</label>
-                  <input type="number" class="form-control"
+                  <input
+                    type="number"
+                    class="form-control"
                     [(ngModel)]="lvl.level"
-                    [ngModelOptions]="{standalone: true}">
+                    [ngModelOptions]="{ standalone: true }"
+                  />
                 </div>
-            
+
                 <div class="col-md-3">
                   <label>Role</label>
-                  <input type="text" class="form-control"
+                  <input
+                    type="text"
+                    class="form-control"
                     [(ngModel)]="lvl.role"
-                    [ngModelOptions]="{standalone: true}">
+                    [ngModelOptions]="{ standalone: true }"
+                  />
                 </div>
-            
+
                 <div class="col-md-3">
                   <label>Approver</label>
-                  <select class="form-control"
+                  <select
+                    class="form-control"
                     [(ngModel)]="lvl.approver"
-                    [ngModelOptions]="{standalone: true}">
+                    [ngModelOptions]="{ standalone: true }"
+                  >
                     <option *ngFor="let user of Users" [value]="user.id">
                       {{ user.username }}
                     </option>
                   </select>
                 </div>
-            
+
                 <div class="col-md-2 d-flex align-items-end">
-                  <button class="form-control btn btn-danger w-100" (click)="removeLevel(i)">
+                  <button
+                    class="form-control btn btn-danger w-100"
+                    (click)="removeLevel(i)"
+                  >
                     Remove
                   </button>
                 </div>
-            
               </div>
-            
+
               <!-- Add Button -->
               <button class="btn btn-primary mt-2" (click)="addLevel()">
                 + Add Level
               </button>
-            
             </div>
-    
-      
+          </div>
+          <div class="row" *ngIf="hasAddPermission">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-danger btn"
+                (click)="closeapplicationModal()"
+              >
+                Cancel
+              </button>
+            </div>
 
- 
-    
-                    
-    
-    
-    
-    
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="registerApproveLevel()"
+              >
+                Add
+              </button>
             </div>
-            <div class="row" *ngIf="hasAddPermission">
-                <div class="col-md-8">
-                </div>
-         <div class="col-md-2">
-           <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
-         </div>
-    
-                <div class="col-md-2">
-                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerApproveLevel()">Add</button>  
-                 </div>
-    
-                 
-            </div>
+          </div>
         </form>
-    
-
-        
-        </div>
       </div>
-
-
-         <!-- Edit Modal -->
-<div *ngIf="isEditModalOpen" class="modal">
-<div class="modal-content">
-  <div class="row">
-    <div class="col-md-10">
-      <h2>Edit General Request Approval Level</h2>
     </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeEditModal()">
-      ×
-    </span>
-  </div>
-  </div>
-  <hr />
 
-  <form>
-    <div class="row">
+    <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit General Request Approval Level</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeEditModal()"> × </span>
+          </div>
+        </div>
+        <hr />
 
+        <form>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="custom-sel">
+                <label>Select Request Type</label>
+                <select
+                  class="form-control"
+                  id="request_type"
+                  required
+                  [(ngModel)]="editAsset.request_type"
+                  [ngModelOptions]="{ standalone: true }"
+                  [ngClass]="{
+                    'error-field': registerButtonClicked && !request_type,
+                  }"
+                >
+                  <option value="">Select</option>
+                  <option
+                    *ngFor="let deparmentsec of RequestType"
+                    [value]="deparmentsec.id"
+                  >
+                    {{ deparmentsec.name }}
+                  </option>
+                </select>
+                <div
+                  *ngIf="registerButtonClicked && !request_type"
+                  class="error-message"
+                >
+                  Please Select Your Req type
+                </div>
+              </div>
+            </div>
 
+            <div class="col-md-4">
+              <label>Branch</label>
 
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field>
+                    <!-- <mat-label>Favorite food</mat-label> -->
+                    <mat-select
+                      placeholder="Select"
+                      [(ngModel)]="editAsset.branch"
+                      [ngModelOptions]="{ standalone: true }"
+                      #select
+                      multiple
+                    >
+                      <div class="select-all">
+                        <mat-checkbox
+                          [(ngModel)]="allSelected"
+                          [ngModelOptions]="{ standalone: true }"
+                          (change)="toggleAllSelection()"
+                        >
+                          Select All
+                        </mat-checkbox>
+                      </div>
+                      <!-- Search -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Branch"
+                          [(ngModel)]="branchSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
 
-  
-<div class="col-md-4">
-
-    <div class="custom-sel">
-        <label>Select Request Type</label>
-        <select class="form-control" id="request_type" required [(ngModel)]="editAsset.request_type"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !request_type}" >
-            <option value="" >Select</option>
-            <option *ngFor="let deparmentsec of RequestType" [value]="deparmentsec.id">{{ deparmentsec.name     }} </option>
-        </select>
-        <div *ngIf="registerButtonClicked && !request_type" class="error-message">Please Select Your Req type</div>
-    </div>  
-
-</div>
-
-
-<div class="col-md-4">
-<label>Branch</label>
-
-
-
-
-<div class="custom-sel">
-    <div class="form-control-wrapper">
-  
-
-      <mat-form-field>
-        <!-- <mat-label>Favorite food</mat-label> -->
-                        <mat-select placeholder="Select" [(ngModel)]="editAsset.branch" [ngModelOptions]="{standalone: true}" #select multiple>
-                          <div class="select-all">
-                            <mat-checkbox [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}" (change)="toggleAllSelection()">
-                              Select All
-                            </mat-checkbox>
-                          </div>
-                              <input type="text" placeholder="Search Branch"
-                                     class="form-control"
-                                     [(ngModel)]="branchSearch"
-                                     [ngModelOptions]="{standalone: true}"
-                                     (click)="$event.stopPropagation()">
-            
-                          <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
+                      <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
                             {{ deparmentsec.branch_name }} 
                           </mat-option> -->
-                <mat-option
-          *ngFor="let deparmentsec of filterEmployees()"
-          [value]="deparmentsec.id">
+                      <mat-option
+                        *ngFor="let deparmentsec of filteredBranches()"
+                        [value]="deparmentsec.id"
+                      >
+                        {{ deparmentsec.branch_name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="
+                    registerButtonClicked &&
+                    (!editAsset.branch || editAsset.branch.length === 0)
+                  "
+                  class="error-message"
+                >
+                  Please Select Your Branch
+                </div>
+              </div>
+            </div>
 
-          {{ deparmentsec.branch_name }}
+            <div class="col-md-4">
+              <label>Approval type</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="editAsset.approval_type"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="no_approval">No Approval</option>
+                  <option value="reporting_manager">Reporting Manager</option>
+                  <option value="multi_approval">Multi Approval</option>
+                </select>
+              </div>
+            </div>
 
-        </mat-option>
-                        </mat-select>
-      </mat-form-field>
-      
+            <div
+              *ngIf="editAsset.approval_type === 'multi_approval'"
+              class="col-md-12 mt-3"
+            >
+              <h4>Edit Approval Levels</h4>
+
+              <div
+                *ngFor="let lvl of editAsset.levels; let i = index"
+                class="row level-box mb-3"
+              >
+                <div class="col-md-2">
+                  <label>Level</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="lvl.level"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+
+                <div class="col-md-3">
+                  <label>Role</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="lvl.role"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+
+                <div class="col-md-4">
+                  <label>Approver</label>
+                  <select
+                    class="form-control"
+                    [(ngModel)]="lvl.approver"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    <option value="">Select</option>
+                    <option *ngFor="let user of Users" [value]="user.id">
+                      {{ user.username }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                  <button
+                    type="button"
+                    class="form-control btn btn-danger w-100"
+                    (click)="removeEditLevel(i)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-primary mt-2"
+                (click)="addEditLevel()"
+              >
+                + Add Level
+              </button>
+            </div>
+          </div>
+          <div class="row" *ngIf="hasAddPermission">
+            <div class="col-md-8"></div>
+
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-danger btn"
+                (click)="closeEditModal()"
+              >
+                Cancel
+              </button>
+            </div>
+
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="updateAssetType()"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-<div *ngIf="registerButtonClicked && (!editAsset.branch || editAsset.branch.length === 0)"
-     class="error-message">
-     Please Select Your Branch
-</div>
-
-  </div>
-            
-
-</div>
-
-  <div class="col-md-4">
-    <label>Approval type</label>
-    <div class="custom-sel">
-      <select
-        class="form-control" [(ngModel)]="editAsset.approval_type" [ngModelOptions]="{ standalone: true }">
-        <option value="no_approval">No Approval</option>
-        <option value="reporting_manager">Reporting Manager</option>
-        <option value="multi_approval">Multi Approval</option>
-      </select>
-    </div>
-  </div>
-
-<div *ngIf="editAsset.approval_type === 'multi_approval'" class="col-md-12 mt-3">
-
-  <h4>Edit Approval Levels</h4>
-
-  <div *ngFor="let lvl of editAsset.levels; let i = index" class="row level-box mb-3">
-
-    <div class="col-md-2">
-      <label>Level</label>
-      <input type="number"
-             class="form-control"
-             [(ngModel)]="lvl.level"
-             [ngModelOptions]="{standalone: true}">
-    </div>
-
-    <div class="col-md-3">
-      <label>Role</label>
-      <input type="text"
-             class="form-control"
-             [(ngModel)]="lvl.role"
-             [ngModelOptions]="{standalone: true}">
-    </div>
-
-    <div class="col-md-4">
-      <label>Approver</label>
-      <select class="form-control"
-              [(ngModel)]="lvl.approver"
-              [ngModelOptions]="{standalone: true}">
-        <option value="">Select</option>
-        <option *ngFor="let user of Users" [value]="user.id">
-          {{ user.username }}
-        </option>
-      </select>
-    </div>
-
-    <div class="col-md-2 d-flex align-items-end">
-      <button type="button"
-              class="form-control btn btn-danger w-100"
-              (click)="removeEditLevel(i)">
-        Remove
-      </button>
-    </div>
-
-  </div>
-
-  <button type="button"
-          class="btn btn-primary mt-2"
-          (click)="addEditLevel()">
-    + Add Level
-  </button>
-
-</div>
-
-
-            
-
-
-
-
-
-    </div>
-    <div class="row" *ngIf="hasAddPermission">
-        <div class="col-md-8">
-
-        </div>
-
-         <div class="col-md-2">
-           <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
-         </div>
-
-        <div class="col-md-2">
-            <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="updateAssetType()">Update</button>  
-         </div>
-
-         
-    </div>
-</form>
-
-
-
-</div>
-</div>
-
-
-
-
 
     <div class="com_list mt-4" *ngIf="hasViewPermission">
-    <table width="100%" *ngIf="hasViewPermission">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>Level</th>
-        <th>Request Type</th>
-        <th>Approver Type</th>
-        <th>Approver</th>
-        <th>Branch</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- <tr *ngFor="let docs of ApprovalLEvel; let i = index">
+      <table width="100%" *ngIf="hasViewPermission">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Level</th>
+            <th>Request Type</th>
+            <th>Approver Type</th>
+            <th>Approver</th>
+            <th>Branch</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- <tr *ngFor="let docs of ApprovalLEvel; let i = index">
         <td data-label="No">{{ i + 1 }}</td>
         <td data-label="Level">{{ docs.level }}</td>
         <td data-label="Request Type">{{ docs.request_type }}</td>
@@ -450,60 +549,58 @@
         </td>
       </tr> -->
 
-   <tr *ngFor="let docs of ApprovalLEvel; let i = index">
-  <td>{{ i + 1 }}</td>
-  <td>
-    <div *ngFor="let lvl of docs.levels">
-      Level {{ lvl.level }}
-    </div>
-  </td>
-  <td>{{ docs.request_type }}</td>
-  <td>
-  {{
-    docs.approval_type === 'no_approval' ? 'No Approval' :
-    docs.approval_type === 'reporting_manager' ? 'Reporting Manager' :
-    docs.approval_type === 'multi_approval' ? 'Multi Approval' :
-    docs.approval_type
-  }}
-</td>
-  <td>
-    <div *ngFor="let lvl of docs.levels">
-      {{ lvl.approver }}
-    </div>
-  </td>
-  <td>
-    <span *ngFor="let b of docs.branch; let last = last">
-      {{ b }}<span *ngIf="!last">, </span>
-    </span>
-  </td>
+          <tr *ngFor="let docs of ApprovalLEvel; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>
+              <div *ngFor="let lvl of docs.levels">Level {{ lvl.level }}</div>
+            </td>
+            <td>{{ docs.request_type }}</td>
+            <td>
+              {{
+                docs.approval_type === "no_approval"
+                  ? "No Approval"
+                  : docs.approval_type === "reporting_manager"
+                    ? "Reporting Manager"
+                    : docs.approval_type === "multi_approval"
+                      ? "Multi Approval"
+                      : docs.approval_type
+              }}
+            </td>
+            <td>
+              <div *ngFor="let lvl of docs.levels">
+                {{ lvl.approver }}
+              </div>
+            </td>
+            <td>
+              <span *ngFor="let b of docs.branch; let last = last">
+                {{ b }}<span *ngIf="!last">, </span>
+              </span>
+            </td>
 
-  <td class="text-center">
-    <button
-      mat-fab
-      color="primary"
-      *ngIf="showEditBtn"
-      (click)="openEditModal(docs)"
-      style="transform: scale(0.7); margin-right: 6px;"
-    >
-      <mat-icon style="color: white;">draw</mat-icon>
-    </button>
+            <td class="text-center">
+              <button
+                mat-fab
+                color="primary"
+                *ngIf="showEditBtn"
+                (click)="openEditModal(docs)"
+                style="transform: scale(0.7); margin-right: 6px"
+              >
+                <mat-icon style="color: white">draw</mat-icon>
+              </button>
 
-    <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
-  </td>
-</tr>
-    </tbody>
-  </table>
+              <mat-checkbox
+                *ngIf="Delete"
+                [(ngModel)]="docs.selected"
+              ></mat-checkbox>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-
-
-  
-
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
 </div>
-</div>
-
-
-              <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>

@@ -796,16 +796,16 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
 
-  toggleAllSelectionEmp(): void {
-    if (this.selectEmp) {
-      if (this.allSelectedEmp) {
+  // toggleAllSelectionEmp(): void {
+  //   if (this.selectEmp) {
+  //     if (this.allSelectedEmp) {
 
-        this.selectEmp.options.forEach((item: MatOption) => item.select());
-      } else {
-        this.selectEmp.options.forEach((item: MatOption) => item.deselect());
-      }
-    }
-  }
+  //       this.selectEmp.options.forEach((item: MatOption) => item.select());
+  //     } else {
+  //       this.selectEmp.options.forEach((item: MatOption) => item.deselect());
+  //     }
+  //   }
+  // }
 
   LoadEmployees(callback?: Function) {
     const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
@@ -1144,17 +1144,35 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
   }
 
 
-  toggleAllSelectionBrach(): void {
-    if (this.selectBrach) {
-      if (this.allSelectedBrach) {
-        this.selectBrach.options.forEach((item: MatOption) => item.select());
-      } else {
-        this.selectBrach.options.forEach((item: MatOption) => item.deselect());
-      }
-    }
+toggleAllSelectionBrach(checked: boolean): void {
+
+  const filtered = this.filteredBranches();
+
+  if (checked) {
+
+    const ids = filtered.map(branch => branch.id);
+
+    this.branch = [...new Set([...this.branch, ...ids])];
+
+  } else {
+
+    const ids = filtered.map(branch => branch.id);
+
+    this.branch = this.branch.filter(id => !ids.includes(id));
+
   }
 
+  this.allSelectedBrach =
+    this.branch.length === this.Branches.length;
+}
 
+onBranchSelectionChange(): void {
+
+  this.allSelectedBrach =
+    this.branch.length === this.Branches.length &&
+    this.Branches.length > 0;
+
+}
 
 
 
@@ -1305,6 +1323,36 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
           this.searchResults=[];
           
           }
+
+          onEmployeeSelectionChange(): void {
+
+  this.allSelectedEmp =
+    this.employee.length === this.Employees.length &&
+    this.Employees.length > 0;
+
+}
+
+toggleAllSelectionEmp(checked: boolean): void {
+
+  const filtered = this.filteredEmployees();
+
+  if (checked) {
+
+    const ids = filtered.map(emp => emp.id);
+
+    this.employee = [...new Set([...this.employee, ...ids])];
+
+  } else {
+
+    const ids = filtered.map(emp => emp.id);
+
+    this.employee = this.employee.filter(id => !ids.includes(id));
+
+  }
+
+  this.allSelectedEmp =
+    this.employee.length === this.Employees.length;
+}
 
 
 

@@ -782,6 +782,20 @@ mapBranchesNameToId() {
   console.log('Mapped Branch:', this.editAsset.branch);
 }
 
+ employeeSearch: string = '';
 
+    searchFilteredEmployees(): any[] {
+    if (!this.employeeSearch || this.employeeSearch.trim() === '') {
+      return this.filteredEmployees;
+    }
+
+    const search = this.employeeSearch.toLowerCase().trim();
+
+    return this.filteredEmployees.filter((emp: any) =>
+      (emp.emp_code && emp.emp_code.toLowerCase().includes(search)) ||
+      (emp.emp_first_name && emp.emp_first_name.toLowerCase().includes(search)) ||
+      (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search))
+    );
+  }
 
 }

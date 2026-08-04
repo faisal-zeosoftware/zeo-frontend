@@ -147,6 +147,189 @@ margin-right: 10px;
   font-family: math;
 }
 
+
+   
+/* ================= SINGLE SELECT (Searchable Employee Dropdown) ================= */
+.modern-single-select{
+  width:100%;
+}
+
+.modern-single-select .mat-mdc-text-field-wrapper{
+  background:#fff !important;
+  border-radius:12px !important;
+  border:1px solid #dbeafe !important;
+  min-height:48px !important;
+  transition:.3s;
+}
+
+.modern-single-select .mat-mdc-text-field-wrapper:hover{
+  border-color:#38bdf8 !important;
+  box-shadow:0 4px 15px rgba(56,189,248,.15);
+}
+
+.modern-single-select.mat-focused .mat-mdc-text-field-wrapper{
+  border-color:#0284c7 !important;
+  box-shadow:0 0 0 4px rgba(2,132,199,.10);
+}
+
+.modern-single-select .mat-mdc-select-value{
+  font-size:13px;
+  color:#334155;
+  font-weight:500;
+}
+
+.modern-single-select .mat-mdc-select-arrow{
+  color:#0284c7 !important;
+}
+
+/* Error state for single select */
+.modern-single-select.error-field .mat-mdc-text-field-wrapper{
+  border-color:#ef4444 !important;
+}
+
+/* Ensure mat-form-field fits in custom-sel */
+.custom-sel .modern-single-select{
+  margin-top:0;
+}
+
+.custom-sel .mat-mdc-form-field-subscript-wrapper{
+  display:none;
+}
+
+  ::ng-deep .form-control-wrapper mat-form-field {
+    width: 100%;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-wrapper {
+    padding: 0;
+    margin: 0;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-flex {
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-underline {
+    display: none;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    height: auto;
+    line-height: 1.5;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select-trigger {
+    height: auto;
+    padding: 0;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select-value-text {
+    padding: 0;
+    margin: 0;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-form-field-infix {
+    padding: 0;
+    border: none;
+  }
+  
+  ::ng-deep .form-control-wrapper .mat-select-placeholder {
+    transform: translateY(-50%);
+    top: 50%;
+  }
+
+
+  ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
+    margin-top: -14px;
+}
+
+::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
+
+  background-color: white;
+}
+
+::ng-deep .form-control-wrapper .mdc-text-field{
+  padding: 0px;
+}
+
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
+  outline: none-webkit-focus-ring-color auto 0px;
+  
+
+}
+
+
+/* Remove :focus-visible style from all input elements */
+input:focus-visible {
+  outline: none;
+}
+
+/* Remove :focus-visible style from mat-select */
+.mat-select:focus-visible {
+  outline: none;
+}
+
+/* Use !important to ensure the outline is removed */
+::ng-deep .form-control-wrapper:focus-visible {
+  outline: none !important;
+}
+
+
+::ng-deep .mat-select:focus-visible {
+  outline: none;
+}
+
+/* Optionally, you can also override other styles */
+::ng-deep .mat-select:focus-visible .mat-select-value {
+  outline: none;
+}
+
+/* Branch field same style as Select User */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper {
+  border: 1px solid #ced4da !important;
+  border-radius: 4px !important;
+  background-color: #fff !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  display: flex;
+  align-items: center;
+  box-shadow: none !important;
+}
+
+/* Remove material outline */
+::ng-deep .form-control-wrapper .mdc-notched-outline {
+  display: none !important;
+}
+
+/* Remove extra background */
+::ng-deep .form-control-wrapper .mdc-text-field--filled,
+::ng-deep .form-control-wrapper .mdc-text-field--outlined {
+  background: transparent !important;
+}
+
+/* Align text properly */
+::ng-deep .form-control-wrapper .mat-mdc-select-trigger {
+  height: 38px !important;
+  display: flex;
+  align-items: end;
+}
+
+/* Remove focus blue outline */
+::ng-deep .form-control-wrapper .mat-mdc-text-field-wrapper:focus-within {
+  border-color: #80bdff !important;
+  box-shadow: 0 0 0 0.1rem rgba(0,123,255,.25) !important;
+}
+
+/* Error state */
+::ng-deep .error-field .mat-mdc-text-field-wrapper {
+  border: 1px solid red !important;
+}
+
   /* Sticky columns */
 .sticky-left {
   position: sticky;

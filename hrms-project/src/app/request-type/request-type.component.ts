@@ -21,6 +21,7 @@ declare var $: any;
 export class RequestTypeComponent    {
 
     @ViewChild('selectBrach') selectBrach: MatSelect | undefined;
+     @ViewChild('select') select: MatSelect | undefined;
 
 
   hasAddPermission: boolean = false;
@@ -634,6 +635,32 @@ mapBranchesNameToId() {
                 }
               }
 
+                  toggleAllSelection(): void {
+      if (this.select) {
+        if (this.allSelected) {
+          
+          this.select.options.forEach((item: MatOption) => item.select());
+        } else {
+          this.select.options.forEach((item: MatOption) => item.deselect());
+        }
+      }
+    }
+
+                branchSearch: string = '';
+
+filteredBranches() {
+
+  if (!this.branchSearch) {
+    return this.branches;
+  }
+
+  return this.branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
+  );
+
+}
 
       
 }

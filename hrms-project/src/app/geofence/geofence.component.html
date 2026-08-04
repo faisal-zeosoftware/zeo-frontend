@@ -148,34 +148,47 @@
   <div class="custom-sel">
     <div class="form-control-wrapper">
 
-      <mat-form-field>
-        <mat-select
-          placeholder="Select"
-          [(ngModel)]="branch"
-          [ngModelOptions]="{standalone: true}"
-          multiple>
+<mat-form-field>
+  <mat-select
+    #selectBrach
+    placeholder="Select"
+    [(ngModel)]="branch"
+    [ngModelOptions]="{standalone: true}"
+    multiple>
 
-          <!-- Search -->
-          <div class="px-2">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search Branch"
-              [(ngModel)]="searchBranch"
-              [ngModelOptions]="{standalone: true}"
-              (click)="$event.stopPropagation()"
-              (keydown)="$event.stopPropagation()">
-          </div>
+    <!-- Select All -->
+    <div class="select-all">
+      <mat-checkbox
+        [checked]="allSelectedBrach"
+        (change)="toggleAllSelectionBrach($event.checked)">
+        Select All
+      </mat-checkbox>
+    </div>
 
-          <!-- Filtered Branches -->
-          <mat-option
-            *ngFor="let branchs of filteredBranches()"
-            [value]="branchs.id">
-            {{ branchs.branch_name }}
-          </mat-option>
+    <!-- Search -->
+    <div class="px-2">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search Branch"
+        [(ngModel)]="searchBranch"
+        [ngModelOptions]="{standalone: true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()">
+    </div>
 
-        </mat-select>
-      </mat-form-field>
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let branchs of filteredBranches()"
+      [value]="branchs.id"
+      (onSelectionChange)="onBranchSelectionChange()">
+
+      {{ branchs.branch_name }}
+
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
 
     </div>
 
@@ -193,6 +206,7 @@
           
 <mat-form-field>
   <mat-select
+    #selectEmp
     placeholder="Select"
     [(ngModel)]="employee"
     [ngModelOptions]="{standalone: true}"
@@ -201,9 +215,8 @@
     <!-- Select All -->
     <div class="select-all">
       <mat-checkbox
-        [(ngModel)]="allSelectedEmp"
-        [ngModelOptions]="{standalone: true}"
-        (change)="toggleAllSelectionEmp()">
+        [checked]="allSelectedEmp"
+        (change)="toggleAllSelectionEmp($event.checked)">
         Select All
       </mat-checkbox>
     </div>
@@ -220,10 +233,11 @@
         (keydown)="$event.stopPropagation()">
     </div>
 
-    <!-- Filtered List -->
+    <!-- Employee List -->
     <mat-option
       *ngFor="let emp of filteredEmployees()"
-      [value]="emp.id">
+      [value]="emp.id"
+      (onSelectionChange)="onEmployeeSelectionChange()">
       {{ emp.emp_code }}
     </mat-option>
 

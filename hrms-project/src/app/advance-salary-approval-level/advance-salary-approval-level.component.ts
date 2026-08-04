@@ -653,6 +653,20 @@ updateAssetType(): void {
 
 }   
 
+filteredBranches() {
+
+  if (!this.branchSearch) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter((branch: any) =>
+    branch.branch_name
+      .toLowerCase()
+      .includes(this.branchSearch.toLowerCase())
+  );
+
+}
+
 
 
     levels: any[] = [

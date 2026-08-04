@@ -49,7 +49,7 @@
   table thead th {
     color: #ffffff;
     background: #004976;
-    padding: 15px;
+    /* padding: 15px; */
     border: 1px solid #ebebec;
     font-weight: 500;
   }
@@ -1099,9 +1099,8 @@ h3.m-0 {
 
 .pc-table thead th {
   background: #f2f2f2;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 8.5px;
-  letter-spacing: 0.3px;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;
@@ -1196,6 +1195,55 @@ h3.m-0 {
   font-style: italic;
   color: #555;
   margin: 0;
+}
+
+/* Print */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .payslip-classic, .payslip-classic * {
+    visibility: visible;
+  }
+  .payslip-classic {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: none;
+  }
+}
+
+/* Mobile */
+@media only screen and (max-width: 640px) {
+  .pc-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .pc-company {
+    text-align: center;
+    margin-top: 10px;
+  }
+  .pc-info-box {
+    flex-direction: column;
+  }
+  .pc-info-col:first-child {
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+  .pc-table {
+    font-size: 11px;
+  }
+  .pc-signatures {
+    flex-direction: column;
+  }
+  .pc-sig-box {
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+  .pc-sig-box:last-child {
+    border-bottom: none;
+  }
 }
 
 /* Print */

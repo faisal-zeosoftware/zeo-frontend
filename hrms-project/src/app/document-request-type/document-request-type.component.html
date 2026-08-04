@@ -82,7 +82,7 @@
     </div>
 
 
-               <div class="col-md-3">
+               <div class="col-md-6">
                 <div class="custom-sel">
                     <label>Select Branches
                        <span class="required-star">*</span>
@@ -101,10 +101,12 @@
                 class="form-control"
                 [(ngModel)]="branchSearch"
                 [ngModelOptions]="{standalone: true}"
-                (click)="$event.stopPropagation()">
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                />
 
                           <mat-option
-          *ngFor="let deparmentsec of filterEmployees()"
+          *ngFor="let deparmentsec of filteredBranches()"
           [value]="deparmentsec.id">
 
           {{ deparmentsec.branch_name }}
@@ -189,7 +191,7 @@
 <div *ngIf="registerButtonClicked && !type_name" class="error-message">Type Name is required.</div>
 </div>
 
-               <div class="col-md-3">
+               <div class="col-md-6">
                 <div class="custom-sel">
                     <label>Select Branches</label>
                      <div class="form-control-wrapper">
@@ -206,10 +208,12 @@
                 class="form-control"
                 [(ngModel)]="branchSearch"
                 [ngModelOptions]="{standalone: true}"
-                (click)="$event.stopPropagation()">
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                />
 
                           <mat-option
-          *ngFor="let deparmentsec of filterEmployees()"
+          *ngFor="let deparmentsec of filteredBranches()"
           [value]="deparmentsec.id">
 
           {{ deparmentsec.branch_name }}

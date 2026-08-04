@@ -469,25 +469,26 @@ onBranchChange(event: any): void {
 }
 
         
-            loadEmployees(callback?: Function): void {
-              const selectedSchema = this.authService.getSelectedSchema();
-              const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-            
-            
-              if (selectedSchema) {
-                this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-                  (result: any) => {
-                    this.Employees = result;
-                    this.filteredEmployees = result; // ✅ IMPORTANT
-                    
-                    if (callback) callback();
-                  },
-                  (error) => {
-                    console.error('Error fetching Companies:', error);
-                  }
-                );
-              }
-              }
+loadEmployees(callback?: Function): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+  if (selectedSchema) {
+    this.employeeService.getemployeesMasterNew(selectedSchema, savedIds)
+      .subscribe((result: any) => {
+
+        this.Employees = result;
+        this.filteredEmployees = result;
+
+        if (this.isEditModalOpen) {
+          this.mapEmployeeToId();
+        }
+
+        if (callback) callback();
+      });
+  }
+}
           
 
               
@@ -560,11 +561,15 @@ onBranchChange(event: any): void {
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
 
+  this.editAsset = { ...asset };
+
+  this.mapBranchesNameToId();
+  this.mapEmployeeToId();
   this.mapLAssetNameToId();
   this.mapAssetreqNameToId();
+
+  this.isEditModalOpen = true;
 }
 
 closeEditModal(): void {
@@ -572,6 +577,31 @@ closeEditModal(): void {
   this.editAsset = {};
 }
 
+mapEmployeeToId(): void {
+
+  if (!this.Employees.length || !this.editAsset?.employee) {
+    return;
+  }
+
+  const employee = this.Employees.find((emp: any) =>
+
+      emp.id == this.editAsset.employee ||
+
+      emp.emp_code == this.editAsset.employee ||
+
+      emp.emp_first_name == this.editAsset.employee ||
+
+      `${emp.emp_first_name} ${emp.emp_last_name}`.trim() ==
+      this.editAsset.employee
+
+  );
+
+  if (employee) {
+    this.editAsset.employee = employee.id;
+  }
+
+  console.log('Mapped Employee:', this.editAsset.employee);
+}
 
 updateAssetType(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
@@ -802,5 +832,21 @@ loadDeparmentBranch(callback?: Function): void {
 
   console.log("Mapped employee_id:", this.editAsset.branch);
 }
+
+  employeeSearch: string = '';
+
+  searchFilteredEmployees(): any[] {
+    if (!this.employeeSearch || this.employeeSearch.trim() === '') {
+      return this.Employees;
+    }
+
+    const search = this.employeeSearch.toLowerCase().trim();
+
+    return this.Employees.filter((emp: any) =>
+      (emp.emp_code && emp.emp_code.toLowerCase().includes(search)) ||
+      (emp.emp_first_name && emp.emp_first_name.toLowerCase().includes(search)) ||
+      (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search))
+    );
+  }
 
 }
