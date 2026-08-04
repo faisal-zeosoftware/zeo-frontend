@@ -10,17 +10,17 @@
        
         <div class="col-md-6">
           <div class="button-group pull-right">
-            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" disabled *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
             </mat-icon></span> Create</button>
             <span *ngIf="!hasAddPermission"></span>
 
-            <button type="button" disabled class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+            <button type="button" disabled class="btn-Edit btn-info btn" disabled (click)="EditShowButtons()" *ngIf="hasEditPermission">
               <span class="header-btn-icon">
                 <mat-icon>draw
                 </mat-icon></span> Edit</button>
             <span *ngIf="hasEditPermission"></span>
 
-            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+            <button type="button" class="btn-Delete btn btn-danger" disabled  (click)="toggleCheckboxes()"
               *ngIf="hasDeletePermission">
               <span class="header-btn-icon">
                 <mat-icon> delete
@@ -61,7 +61,7 @@
             <div class="modal-content">
               <div class="row">
                 <div class="col-md-10">
-                  <h2> Create Pay Structure</h2>
+                  <h2> Create salary component</h2>
                 </div>
   <div class="col-md-2 text-right">
     <!-- Styled Square Close Button -->
@@ -337,46 +337,81 @@ placeholder="Enter amount"
 
 
               <div class="col-md-3">
-                <mat-form-field appearance="outline" class="w-100 compact-mat-select " style="margin-top: 5px;">
-                  <mat-select [(ngModel)]="selectedPayrollCategories" multiple placeholder="Select Componets">
-                    <mat-option *ngFor="let cat of availableCategories" [value]="cat">
+                <mat-form-field appearance="outline" class="w-100 compact-mat-select" style="margin-top: 5px;">
+                  <mat-select
+                    [(ngModel)]="selectedPayrollCategories"
+                    multiple
+                    placeholder="Select Components">
+              
+                    <mat-checkbox
+                      class="select-all-checkbox"
+                      [checked]="isAllCategoriesSelected()"
+                      [indeterminate]="isSomeCategoriesSelected()"
+                      (click)="$event.stopPropagation()"
+                      (change)="toggleAllCategories()">
+                      Select All
+                    </mat-checkbox>
+              
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Component"
+                        class="form-control"
+                        [(ngModel)]="categorySearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                        (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+              
+                    <mat-option *ngFor="let cat of filterCategoryOptions()" [value]="cat">
                       {{ cat | titlecase }}
                     </mat-option>
+              
                   </mat-select>
                 </mat-form-field>
               </div>
 
-
               <div class="col-md-3">
-
-
                 <mat-form-field appearance="outline" class="w-100 compact-mat-select" style="margin-top: 5px;">
                   <mat-select
                     multiple
                     [(ngModel)]="selectedEmployees"
                     placeholder="Select Employee"
                     (selectionChange)="applyEmployeeFilter()">
-                
-                    <!-- Optional: Action buttons to quickly clear or select all -->
+              
+                    <!-- Search box -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Employee"
+                        class="form-control"
+                        [(ngModel)]="employeeSearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                        (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+              
+                    <!-- Existing quick actions -->
                     <mat-option (click)="selectAllEmployees()" *ngIf="selectedEmployees.length < distinctEmployees.length">
                       <strong>Select All</strong>
                     </mat-option>
                     <mat-option (click)="clearEmployeeFilter()" *ngIf="selectedEmployees.length > 0">
                       <strong>Clear All Filters</strong>
                     </mat-option>
-                
+              
                     <mat-divider></mat-divider>
-                
+              
                     <mat-option
-                      *ngFor="let emp of distinctEmployees"
+                      *ngFor="let emp of filterEmployeeOptions()"
                       [value]="emp.employee_code">
                       {{ emp.employee_code }} - {{ emp.emp_name }}
                     </mat-option>
+              
                   </mat-select>
                 </mat-form-field>
-           
               </div>
-
 
               <div class="col-md-3 ">
 

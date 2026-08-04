@@ -330,22 +330,7 @@ CreatePayStructure(): void {
 
     isLoading: boolean = false;
 
-    // fetchSalaryCompo(schema: string, branchIds: number[]): void {
-    //   this.isLoading = true;
-    //   this.leaveservice.getSalaryComNew(schema, branchIds).subscribe({
-    //     next: (data: any) => {
-    //       // Filter active employees
-    //       this.overtimepol = data;
   
-    //       this.isLoading = false;
-    //     },
-    //     error: (err) => {
-    //       console.error('Fetch error:', err);
-    //       this.isLoading = false;
-    //     }
-    //   });
-    // }
-
 
     onFileChange(event: any){
     this.file = event.target.files[0];
@@ -612,27 +597,6 @@ updateEmployeeSalary(): void {
   filteredEmployees: any[] = [];
 
 
-  // loadEmp(callback?: Function): void {
-  //   const selectedSchema = this.authService.getSelectedSchema();
-  //   const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-  
-  
-  //   if (selectedSchema) {
-  //     this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-  //       (data: any) => {
-  //        // Filtering employees where is_active is null or true
-  //        this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-  //        this.filteredEmployees = this.employees;
-          
-  //         if (callback) callback();
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching Companies:', error);
-  //       }
-  //     );
-  //   }
-  // }
-
 
 
 
@@ -685,24 +649,6 @@ updateEmployeeSalary(): void {
   EmployeeSalarycomponent: any[] = [];
 
       
-  
-  // fetchEmployeesSalary(schema: string, branchIds: number[]): void {
-  //   this.isLoading = true;
-  //   this.leaveservice.getEmployeeSalaryComNew(schema, branchIds).subscribe({
-  //     next: (data: any) => {
-  //       this.EmployeeSalarycomponent = data;
-  
-  //       // APPLY FILTER AFTER FETCH
-  //       this.applyFilter();
-  
-  //       this.isLoading = false;
-  //     },
-  //     error: (err) => {
-  //       console.error('Fetch error:', err);
-  //       this.isLoading = false;
-  //     }
-  //   });
-  // }
   
 
 
@@ -788,10 +734,59 @@ onComponentChange() {
   }
 }
 
-    
+    // ---------- Component dropdown: search + select all ----------
+categorySearch: string = '';
+
+filterCategoryOptions(): string[] {
+  if (!this.categorySearch) {
+    return this.availableCategories;
+  }
+  const search = this.categorySearch.toLowerCase().trim();
+  return this.availableCategories.filter(cat =>
+    cat.toLowerCase().includes(search)
+  );
+}
+
+isAllCategoriesSelected(): boolean {
+  return (
+    this.availableCategories.length > 0 &&
+    this.selectedPayrollCategories.length === this.availableCategories.length
+  );
+}
+
+isSomeCategoriesSelected(): boolean {
+  return (
+    this.selectedPayrollCategories.length > 0 &&
+    this.selectedPayrollCategories.length < this.availableCategories.length
+  );
+}
+
+toggleAllCategories(): void {
+  if (this.isAllCategoriesSelected()) {
+    this.selectedPayrollCategories = [];
+  } else {
+    this.selectedPayrollCategories = [...this.availableCategories];
+  }
+}
+
+
+// ---------- Employee dropdown: search ----------
+employeeSearch: string = '';
+
+filterEmployeeOptions(): any[] {
+  if (!this.employeeSearch) {
+    return this.distinctEmployees;
+  }
+  const search = this.employeeSearch.toLowerCase().trim();
+  return this.distinctEmployees.filter(emp =>
+    (emp.employee_code && emp.employee_code.toLowerCase().includes(search)) ||
+    (emp.emp_name && emp.emp_name.toLowerCase().includes(search))
+  );
+}
 
 
 /* Step 1: Fetches the backend employee raw assignment list*/
+
   fetchEmployeesSalary(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.leaveservice.getEmployeeSalaryComNew(schema, branchIds).subscribe({
@@ -930,15 +925,6 @@ getComponentInstance(employeeRow: any, category: string): any {
   );
 }
 
-// openEditModal(employeeRow: any): void {
-//   const targetInstance = this.getComponentInstance(employeeRow, this.selectedPayrollCategory);
-//   if (targetInstance) {
-//     console.log('Opening target component modal edit view:', targetInstance);
-//     // Trigger your modal action code here, passing targetInstance
-//   } else {
-//     console.warn('No active assignment record setup on this row for category: ' + this.selectedPayrollCategory);
-//   }
-// }
 
 
 
