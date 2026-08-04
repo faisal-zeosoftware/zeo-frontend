@@ -293,55 +293,105 @@ if (this.userId !== null) {
 
 
 
-    exportToExcel(): void {
+  //   exportToExcel(): void {
 
-       if (!this.filteredPaySlips || this.filteredPaySlips.length === 0) {
-    alert('No payslip data to export.');
-    return;
-  }
+  //      if (!this.filteredPaySlips || this.filteredPaySlips.length === 0) {
+  //   alert('No payslip data to export.');
+  //   return;
+  // }
 
-      const exportData = this.filteredPaySlips.map((p, index) => {
-        const components = p.components?.map((c: { component_name: any; component_type: any; payslip_amount: any; }) =>
-          `${c.component_name} (${c.component_type}): ${c.payslip_amount}`
-        ).join(' | ') || '';
+  //     const exportData = this.filteredPaySlips.map((p, index) => {
+  //       const components = p.components?.map((c: { component_name: any; component_type: any; payslip_amount: any; }) =>
+  //         `${c.component_name} (${c.component_type}): ${c.payslip_amount}`
+  //       ).join(' | ') || '';
     
-        return {
-          No: index + 1,
-          Employee: p.employee,
-          'Payroll Name': p.payroll_run?.name,
-          Year: p.payroll_run?.year,
-          Month: this.getMonthName(p.payroll_run?.month),
-          'Gross Salary': p.gross_salary,
-          'Net Salary': p.net_salary,
-          'Total Additions': p.total_additions,
-          'Total Deductions': p.total_deductions,
-          'Pro Rata Adjustment': p.pro_rata_adjustment,
-          // Arrears: p.arrears,
-          'Working Days': p.total_working_days,
-          'Days Worked': p.days_worked,
-          Status: p.status,
-          Components: components
-        };
-      });
+  //       return {
+  //         No: index + 1,
+  //         Employee: p.employee,
+  //         'Payroll Name': p.payroll_run?.name,
+  //         Year: p.payroll_run?.year,
+  //         Month: this.getMonthName(p.payroll_run?.month),
+  //         'Gross Salary': p.gross_salary,
+  //         'Net Salary': p.net_salary,
+  //         'Total Additions': p.total_additions,
+  //         'Total Deductions': p.total_deductions,
+  //         'Pro Rata Adjustment': p.pro_rata_adjustment,
+  //         // Arrears: p.arrears,
+  //         'Working Days': p.total_working_days,
+  //         'Days Worked': p.days_worked,
+  //         Status: p.status,
+  //         Components: components
+  //       };
+  //     });
     
-      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook: XLSX.WorkBook = {
-        Sheets: { 'Payslips': worksheet },
-        SheetNames: ['Payslips']
-      };
+  //     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  //     const workbook: XLSX.WorkBook = {
+  //       Sheets: { 'Payslips': worksheet },
+  //       SheetNames: ['Payslips']
+  //     };
     
-      const excelBuffer: any = XLSX.write(workbook, {
-        bookType: 'xlsx',
-        type: 'array'
-      });
+  //     const excelBuffer: any = XLSX.write(workbook, {
+  //       bookType: 'xlsx',
+  //       type: 'array'
+  //     });
     
-      const blobData: Blob = new Blob([excelBuffer], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-      });
+  //     const blobData: Blob = new Blob([excelBuffer], {
+  //       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  //     });
     
-      FileSaver.saveAs(blobData, `Payslips_${new Date().toISOString().slice(0,10)}.xlsx`);
+  //     FileSaver.saveAs(blobData, `Payslips_${new Date().toISOString().slice(0,10)}.xlsx`);
+  //   }
+
+  exportToExcel(exportAll: boolean = true): void {
+
+    const sourceData = exportAll ? this.PaySlipsConfrimed : this.filteredPaySlips;
+  
+    if (!sourceData || sourceData.length === 0) {
+      alert('No payslip data to export.');
+      return;
     }
-    
+  
+    const exportData = sourceData.map((p, index) => {
+      const components = p.components?.map((c: { component_name: any; component_type: any; payslip_amount: any; }) =>
+        `${c.component_name} (${c.component_type}): ${c.payslip_amount}`
+      ).join(' | ') || '';
+  
+      return {
+        No: index + 1,
+        Employee: p.employee,
+        'Payroll Name': p.payroll_run?.name,
+        Year: p.payroll_run?.year,
+        Month: this.getMonthName(p.payroll_run?.month),
+        'Gross Salary': p.gross_salary,
+        'Net Salary': p.net_salary,
+        'Total Additions': p.total_additions,
+        'Total Deductions': p.total_deductions,
+        'Pro Rata Adjustment': p.pro_rata_adjustment,
+        'Working Days': p.total_working_days,
+        'Days Worked': p.days_worked,
+        Status: p.status,
+        Components: components
+      };
+    });
+  
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Payslips': worksheet },
+      SheetNames: ['Payslips']
+    };
+  
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array'
+    });
+  
+    const blobData: Blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+  
+    const suffix = exportAll ? 'All' : 'Filtered';
+    FileSaver.saveAs(blobData, `Payslips_${suffix}_${new Date().toISOString().slice(0,10)}.xlsx`);
+  }
     
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);
@@ -814,22 +864,42 @@ if (this.Branches.length > 0) {
   //   );
   // }
 
+// ---------- Filter state ----------
+selectedStatuses: string[] = [];
+selectedYears: number[] = [];
+selectedMonths: number[] = [];
 
+statusOptions: string[] = [];
+yearOptions: number[] = [];
+monthOptions = [
+  { value: 1, label: 'January' },  { value: 2, label: 'February' },
+  { value: 3, label: 'March' },    { value: 4, label: 'April' },
+  { value: 5, label: 'May' },      { value: 6, label: 'June' },
+  { value: 7, label: 'July' },     { value: 8, label: 'August' },
+  { value: 9, label: 'September' },{ value: 10, label: 'October' },
+  { value: 11, label: 'November' },{ value: 12, label: 'December' }
+];
+
+statusSearch: string = '';
+yearSearch: string = '';
+monthSearch: string = '';
 
   // Search and Data Array State
   searchQuery: string = '';
 
   filteredPaySlips: any[] = [];  // Array rendered in *ngFor
-
   fetchLoadConfrimedPayslip(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.leaveService.getPaySlipApprovedNew(schema, branchIds).subscribe({
       next: (data: any) => {
         this.PaySlipsConfrimed = data;
-        // this.filteredDocuments = this.PaySlipsConfrimed;  // Initialize filtered data
-
         this.filteredPaySlips = [...this.PaySlipsConfrimed];
-        console.log('Confirmed Payslips:', this.PaySlipsConfrimed);
+  
+        this.statusOptions = [...new Set(this.PaySlipsConfrimed.map(p => p.status).filter(Boolean))];
+        this.yearOptions = [...new Set(this.PaySlipsConfrimed.map(p => p.payroll_run?.year).filter(Boolean))]
+          .sort((a, b) => b - a);
+  
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Fetch error:', err);
@@ -837,34 +907,124 @@ if (this.Branches.length > 0) {
       }
     });
   }
-
   
-
-
+  // ---------- Search-within-dropdown helpers ----------
+  filterStatusOptions(): string[] {
+    if (!this.statusSearch) return this.statusOptions;
+    const s = this.statusSearch.toLowerCase();
+    return this.statusOptions.filter(x => x.toLowerCase().includes(s));
+  }
+  
+  filterYearOptions(): number[] {
+    if (!this.yearSearch) return this.yearOptions;
+    return this.yearOptions.filter(y => y.toString().includes(this.yearSearch));
+  }
+  
+  filterMonthOptions(): { value: number, label: string }[] {
+    if (!this.monthSearch) return this.monthOptions;
+    const s = this.monthSearch.toLowerCase();
+    return this.monthOptions.filter(m => m.label.toLowerCase().includes(s));
+  }
+  
+  // ---------- Select All logic: Status ----------
+  isAllStatusSelected(): boolean {
+    return this.statusOptions.length > 0 && this.selectedStatuses.length === this.statusOptions.length;
+  }
+  isSomeStatusSelected(): boolean {
+    return this.selectedStatuses.length > 0 && this.selectedStatuses.length < this.statusOptions.length;
+  }
+  toggleAllStatus(): void {
+    this.selectedStatuses = this.isAllStatusSelected() ? [] : [...this.statusOptions];
+    this.filterPaySlips();
+  }
+  
+  // ---------- Select All logic: Year ----------
+  isAllYearSelected(): boolean {
+    return this.yearOptions.length > 0 && this.selectedYears.length === this.yearOptions.length;
+  }
+  isSomeYearSelected(): boolean {
+    return this.selectedYears.length > 0 && this.selectedYears.length < this.yearOptions.length;
+  }
+  toggleAllYear(): void {
+    this.selectedYears = this.isAllYearSelected() ? [] : [...this.yearOptions];
+    this.filterPaySlips();
+  }
+  
+  // ---------- Select All logic: Month ----------
+  isAllMonthSelected(): boolean {
+    return this.selectedMonths.length === this.monthOptions.length;
+  }
+  isSomeMonthSelected(): boolean {
+    return this.selectedMonths.length > 0 && this.selectedMonths.length < this.monthOptions.length;
+  }
+  toggleAllMonth(): void {
+    this.selectedMonths = this.isAllMonthSelected() ? [] : this.monthOptions.map(m => m.value);
+    this.filterPaySlips();
+  }
+  
+  // ---------- Remove single chip ----------
+  removeStatus(status: string): void {
+    this.selectedStatuses = this.selectedStatuses.filter(s => s !== status);
+    this.filterPaySlips();
+  }
+  removeYear(year: number): void {
+    this.selectedYears = this.selectedYears.filter(y => y !== year);
+    this.filterPaySlips();
+  }
+  removeMonth(month: number): void {
+    this.selectedMonths = this.selectedMonths.filter(m => m !== month);
+    this.filterPaySlips();
+  }
+  
+  // ---------- Combined filter ----------
   filterPaySlips(): void {
-    if (!this.searchQuery || this.searchQuery.trim() === '') {
-      this.filteredPaySlips = [...this.PaySlipsConfrimed];
-      return;
-    }
-
-    const query = this.searchQuery.toLowerCase().trim();
-
-    this.filteredPaySlips = this.PaySlipsConfrimed.filter(payslip => {
-      const empCode = payslip.employee ? String(payslip.employee).toLowerCase() : '';
-      const payrollName = payslip.payroll_run?.name ? String(payslip.payroll_run.name).toLowerCase() : '';
-      const status = payslip.status ? String(payslip.status).toLowerCase() : '';
-      const year = payslip.payroll_run?.year ? String(payslip.payroll_run.year).toLowerCase() : '';
-      const monthName = payslip.payroll_run?.month ? this.getMonthName(payslip.payroll_run.month).toLowerCase() : '';
-
-      return (
-        empCode.includes(query) ||
-        payrollName.includes(query) ||
-        status.includes(query) ||
-        year.includes(query) ||
-        monthName.includes(query)
-      );
+    const search = this.searchQuery.toLowerCase().trim();
+  
+    this.filteredPaySlips = this.PaySlipsConfrimed.filter(p => {
+  
+      const matchesSearch = !search ||
+        (p.employee && p.employee.toLowerCase().includes(search)) ||
+        (p.status && p.status.toLowerCase().includes(search)) ||
+        (p.payroll_run?.year && p.payroll_run.year.toString().includes(search)) ||
+        (this.getMonthName(p.payroll_run?.month)?.toLowerCase().includes(search));
+  
+      const matchesStatus = this.selectedStatuses.length === 0 ||
+        this.selectedStatuses.includes(p.status);
+  
+      const matchesYear = this.selectedYears.length === 0 ||
+        this.selectedYears.includes(p.payroll_run?.year);
+  
+      const matchesMonth = this.selectedMonths.length === 0 ||
+        this.selectedMonths.includes(p.payroll_run?.month);
+  
+      return matchesSearch && matchesStatus && matchesYear && matchesMonth;
     });
   }
+  
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.selectedStatuses = [];
+    this.selectedYears = [];
+    this.selectedMonths = [];
+    this.statusSearch = '';
+    this.yearSearch = '';
+    this.monthSearch = '';
+    this.filteredPaySlips = [...this.PaySlipsConfrimed];
+  }
+
+
+  // Filter panel visibility
+showFilterPanel: boolean = false;
+
+toggleFilterPanel(): void {
+  this.showFilterPanel = !this.showFilterPanel;
+}
+
+// Count active filters, used for badge + export button label switching
+activeFilterCount(): number {
+  return this.selectedStatuses.length + this.selectedYears.length + this.selectedMonths.length;
+}
+
   // LoadPayslip(selectedSchema: string) {
   //   this.leaveService.getPaySlip(selectedSchema).subscribe(
   //     (data: any[]) => {

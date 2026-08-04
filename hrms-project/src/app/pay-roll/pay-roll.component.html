@@ -1,77 +1,75 @@
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section" >
+  <div class="comapny_section">
 
 
 
-      <div class="tab_back ">
-        <mat-tab-group> 
-            <mat-tab label="Payroll Run">
-                
-                <div class="tab_boddy">
-                 
+    <div class="tab_back ">
+      <mat-tab-group>
+        <mat-tab label="Payroll Run">
 
-                  <!-- <h2>Payroll Run</h2><hr> -->
-      
-              
-                  <form (ngSubmit)="requestPayRoll()" enctype="multipart/form-data">
-    
-                    <div class="row">
-                     
-                      <div class="col-md-6">
-                        <label> Name</label>
-                        <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter  name"
-                        [ngModelOptions]="{standalone: true}">
-                    </div>
-
-                          <div class="col-md-6">
-                            <label>Branch
-                              <span class="required-star">*</span>
-                            </label>
-                            <div class="custom-sel">
-                              <select class="form-control" id="branch" name="branch" [(ngModel)]="branch" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch}">
-                                <option *ngFor="let branch of Branches" [value]="branch.id">{{ branch.branch_name }}</option>
-                              </select>
-                            </div>
-                             <div *ngIf="registerButtonClicked && !branch" class="error-message"> branch is required.</div>
-                          </div>
+          <div class="tab_boddy">
 
 
-   <div class="col-md-6">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
+            <!-- <h2>Payroll Run</h2><hr> -->
 
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
-    
-                          
-                 
-    
-                  <div class="col-md-6">
-                    <label> Year
-                      <span class="required-star">*</span>
-                    </label>
-                    <input type="number" class="form-control" required [(ngModel)]="year" placeholder="Enter  year"
-                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !year}">
-             <div *ngIf="registerButtonClicked && !year" class="error-message"> year is required.</div>
+
+            <form (ngSubmit)="requestPayRoll()" enctype="multipart/form-data">
+
+              <div class="row">
+
+                <div class="col-md-6">
+                  <label> Name</label>
+                  <input type="text" class="form-control" required [(ngModel)]="name" placeholder="Enter  name"
+                    [ngModelOptions]="{standalone: true}">
                 </div>
-    
+
+                <div class="col-md-6">
+                  <label>Branch
+                    <span class="required-star">*</span>
+                  </label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="branch" name="branch" [(ngModel)]="branch"
+                      [ngModelOptions]="{standalone: true}"
+                      [ngClass]="{'error-field': registerButtonClicked && !branch}">
+                      <option *ngFor="let branch of Branches" [value]="branch.id">{{ branch.branch_name }}</option>
+                    </select>
+                  </div>
+                  <div *ngIf="registerButtonClicked && !branch" class="error-message"> branch is required.</div>
+                </div>
+
+
+                <div class="col-md-6">
+                  <label>Document Number</label>
+                  <input type="text" class="form-control" [(ngModel)]="document_number"
+                    placeholder="Enter document number" [disabled]="automaticNumbering"
+                    [ngModelOptions]="{standalone: true}" [required]="!automaticNumbering">
+
+                  <!-- Optional: show hint when disabled -->
+                  <small *ngIf="automaticNumbering" class="text-muted">
+                    Document number will be auto-generated
+                  </small>
+                </div>
+
+
+
+
+                <div class="col-md-6">
+                  <label> Year
+                    <span class="required-star">*</span>
+                  </label>
+                  <input type="number" class="form-control" required [(ngModel)]="year" placeholder="Enter  year"
+                    [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !year}">
+                  <div *ngIf="registerButtonClicked && !year" class="error-message"> year is required.</div>
+                </div>
+
                 <div class="col-md-6">
                   <label>Month
                     <span class="required-star">*</span>
                   </label>
                   <div class="custom-sel">
-                    <select class="form-control" id="month" name="month" [(ngModel)]="month" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !month}">
+                    <select class="form-control" id="month" name="month" [(ngModel)]="month"
+                      [ngModelOptions]="{standalone: true}"
+                      [ngClass]="{'error-field': registerButtonClicked && !month}">
                       <option value="1">January</option>
                       <option value="2">February</option>
                       <option value="3">March</option>
@@ -86,138 +84,132 @@
                       <option value="12">December</option>
                     </select>
                   </div>
-                   <div *ngIf="registerButtonClicked && !month" class="error-message"> month is required.</div>
+                  <div *ngIf="registerButtonClicked && !month" class="error-message"> month is required.</div>
                 </div>
-                
-              <div class="col-md-6">
-                <label> Payment date</label>
-                <input type="date" class="form-control" required [(ngModel)]="payment_date" placeholder="Payment  date"
-                [ngModelOptions]="{standalone: true}">
-            </div>
-    
 
-     
-              
-                          <div class="col-md-6">
-                            <label>Department</label>
-                            <div class="custom-sel">
-                              <select class="form-control" id="department" name="department" [(ngModel)]="department" [ngModelOptions]="{standalone: true}">
-                                <option *ngFor="let dept of Departments" [value]="dept.id">{{ dept.dept_name }}</option>
-                              </select>
-                            </div>
-                          </div>
-              
-              
-             
-                  <div class="col-md-6">
-                    <label>Category</label>
-                    <div class="custom-sel">
-                      <select class="form-control" id="category" name="category" [(ngModel)]="category" [ngModelOptions]="{standalone: true}">
-                        <option *ngFor="let category of Categories" [value]="category.id">{{ category.ctgry_description
-                        }}</option>
-                      </select>
-                    </div>
+                <div class="col-md-6">
+                  <label> Payment date</label>
+                  <input type="date" class="form-control" required [(ngModel)]="payment_date"
+                    placeholder="Payment  date" [ngModelOptions]="{standalone: true}">
+                </div>
+
+
+
+
+                <div class="col-md-6">
+                  <label>Department</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="department" name="department" [(ngModel)]="department"
+                      [ngModelOptions]="{standalone: true}">
+                      <option *ngFor="let dept of Departments" [value]="dept.id">{{ dept.dept_name }}</option>
+                    </select>
                   </div>
-    
-                
-    
-                
-                        </div>
-                        
-                        <div class="row" >
-                          <div class="col-md-9"></div>
-                          <div class="col-md-3" *ngIf="hasAddPermission">
-                              <button type="submit"  class="btn btn-success btn-full mt-4">Run Payroll</button>
-              
-                          </div>
-                      </div>
-                  
-                </form>
-            
+                </div>
 
 
-                    
-            </div>
 
-
-            <div class="end_section"></div>
-            <table width="100%">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Name</th>
-                  <th>Year</th>
-                  <th> Month</th>
-                  <th>Payment Date</th>
-                  <th >Document Number</th>
-                  <th>branch</th>
-                  <th>department</th>
-                  <th>category</th>
-                  <th>status</th>
-                  <th>Action</th>
+                <div class="col-md-6">
+                  <label>Category</label>
+                  <div class="custom-sel">
+                    <select class="form-control" id="category" name="category" [(ngModel)]="category"
+                      [ngModelOptions]="{standalone: true}">
+                      <option *ngFor="let category of Categories" [value]="category.id">{{ category.ctgry_description
+                        }}</option>
+                    </select>
+                  </div>
+                </div>
 
 
 
 
-                </tr>
-              </thead>
-              <tbody>
-                  
-                  <tr *ngFor="let payroll of Payrolls;let i = index">
-                       <td data-label="No">{{ i + 1 }}</td>
-            <td data-label="Name">{{ payroll.name }}</td>
-            <td data-label="Year">{{ payroll.year }}</td>
-            <td data-label="Month">{{ getMonthName(payroll.month) }}</td>
-            <td data-label="Payment Date">{{ payroll.payment_date }}</td>
-                        <td data-label="Payment Date">{{ payroll.document_number }}</td>
-
-            <td data-label="Branch">{{ payroll.branch }}</td>
-            <td data-label="Department">{{ payroll.department }}</td>
-            <td data-label="Category">{{ payroll.category }}</td>
-            <td data-label="Status">{{ payroll.status }}</td>
-            <td data-label="Action" >
-                        <i *ngIf="hasAddPermission"
-                          class="fa-solid fa-trash"
-                          style="cursor: pointer; text-align: center;"
-                          (click)="deletePayroll(payroll.id)"
-                          title="Delete Payroll"
-                        ></i>
-                      </td>                     
-
-
-                </tr>
-            
-              </tbody>
-            </table>
-          
-          </mat-tab>
-
-          <mat-tab label="Trail Pay Sheet">
-  
-            <div class="tab_boddy mt-4" style="padding: 10px;">
-              <div class="d-flex justify-content-end mb-2">
-
-                <!-- Save Icon -->
-                <button class="icon-btn"
-                (click)="saveAllEdited()"
-                [disabled]="editedRows.length === 0 || isSaving"
-                title="Save Changes">
-        
-          <i *ngIf="!isSaving" class="fa-solid fa-floppy-disk"></i>
-          <i *ngIf="isSaving" class="fa-solid fa-spinner fa-spin"></i>
-        
-        </button>
-              
-                <!-- Reset Icon (optional but recommended) -->
-                <button class="icon-btn ms-2"
-                        (click)="resetChanges()"
-                        [disabled]="editedRows.length === 0"
-                        title="Reset Changes">
-                  <i class="fa-solid fa-rotate-left"></i>
-                </button>
-              
               </div>
-              <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+
+              <div class="row">
+                <div class="col-md-9"></div>
+                <div class="col-md-3" *ngIf="hasAddPermission">
+                  <button type="submit" class="btn btn-success btn-full mt-4">Run Payroll</button>
+
+                </div>
+              </div>
+
+            </form>
+
+
+
+
+          </div>
+
+
+          <div class="end_section"></div>
+          <table width="100%">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Name</th>
+                <th>Year</th>
+                <th> Month</th>
+                <th>Payment Date</th>
+                <th>Document Number</th>
+                <th>branch</th>
+                <th>department</th>
+                <th>category</th>
+                <th>status</th>
+                <th>Action</th>
+
+
+
+
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr *ngFor="let payroll of Payrolls;let i = index">
+                <td data-label="No">{{ i + 1 }}</td>
+                <td data-label="Name">{{ payroll.name }}</td>
+                <td data-label="Year">{{ payroll.year }}</td>
+                <td data-label="Month">{{ getMonthName(payroll.month) }}</td>
+                <td data-label="Payment Date">{{ payroll.payment_date }}</td>
+                <td data-label="Payment Date">{{ payroll.document_number }}</td>
+
+                <td data-label="Branch">{{ payroll.branch }}</td>
+                <td data-label="Department">{{ payroll.department }}</td>
+                <td data-label="Category">{{ payroll.category }}</td>
+                <td data-label="Status">{{ payroll.status }}</td>
+                <td data-label="Action">
+                  <i *ngIf="hasAddPermission" class="fa-solid fa-trash" style="cursor: pointer; text-align: center;"
+                    (click)="deletePayroll(payroll.id)" title="Delete Payroll"></i>
+                </td>
+
+
+              </tr>
+
+            </tbody>
+          </table>
+
+        </mat-tab>
+
+        <mat-tab label="Trail Pay Sheet">
+
+          <div class="tab_boddy mt-4" style="padding: 10px;">
+            <div class="d-flex justify-content-end mb-2">
+
+              <!-- Save Icon -->
+              <button class="icon-btn" (click)="saveAllEdited()" [disabled]="editedRows.length === 0 || isSaving"
+                title="Save Changes">
+
+                <i *ngIf="!isSaving" class="fa-solid fa-floppy-disk"></i>
+                <i *ngIf="isSaving" class="fa-solid fa-spinner fa-spin"></i>
+
+              </button>
+
+              <!-- Reset Icon (optional but recommended) -->
+              <button class="icon-btn ms-2" (click)="resetChanges()" [disabled]="editedRows.length === 0"
+                title="Reset Changes">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+
+            </div>
+            <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
 
               <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
                 <thead>
@@ -242,193 +234,385 @@
                     <th class="text-table-header">Components</th>
                   </tr>
                 </thead>
-              
-<tbody class="text-table-body">
-  
-  <tr *ngFor="let payslip of PaySlips; let i = index"
-    [ngClass]="{'edited-row': editedRows.includes(payslip)}">
-    <!-- Checkbox -->
-    <td data-label="Select">
-      <mat-checkbox [(ngModel)]="payslip.selected" (change)="checkIfAllSelected()"></mat-checkbox>
-    </td>
 
-    <td data-label="No">{{ i + 1 }}</td>
-    <td data-label="Employee Code">{{ payslip.employee }}</td>
-    <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
-    <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
-    <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
-    <td>
-      <input type="number" placeholder="{{ payslip.gross_salary }}"
-             [(ngModel)]="payslip.gross_salary"
-             (ngModelChange)="markAsEdited(payslip)"
-             class="form-control">
-    </td>
-    <td>
-      <input type="number" placeholder="{{ payslip.total_additions }}"
-             [(ngModel)]="payslip.total_additions"
-             (ngModelChange)="markAsEdited(payslip)"
-             class="form-control">
-    </td>
-    <td>
-      <input type="number" placeholder="{{ payslip.total_deductions }}"
-             [(ngModel)]="payslip.total_deductions"
-             (ngModelChange)="markAsEdited(payslip)"
-             class="form-control">
-    </td>
-    <td>
-      <input type="number" placeholder="{{ payslip.net_salary }}"
-             [(ngModel)]="payslip.net_salary"
-             (ngModelChange)="markAsEdited(payslip)"
-             class="form-control">
-    </td>
-    <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
-    <td data-label="Working Days">{{ payslip.total_working_days }}</td>
-    <td data-label="Days Worked">{{ payslip.days_worked }}</td>
+                <tbody class="text-table-body">
 
-    <td data-label="Status">
-      <span
-        class="pill"
-        [ngClass]="{
+                  <tr *ngFor="let payslip of PaySlips; let i = index"
+                    [ngClass]="{'edited-row': editedRows.includes(payslip)}">
+                    <!-- Checkbox -->
+                    <td data-label="Select">
+                      <mat-checkbox [(ngModel)]="payslip.selected" (change)="checkIfAllSelected()"></mat-checkbox>
+                    </td>
+
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Employee Code">{{ payslip.employee }}</td>
+                    <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
+                    <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
+                    <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
+                    <td>
+                      <input type="number" placeholder="{{ payslip.gross_salary }}" [(ngModel)]="payslip.gross_salary"
+                        (ngModelChange)="markAsEdited(payslip)" class="form-control">
+                    </td>
+                    <td>
+                      <input type="number" placeholder="{{ payslip.total_additions }}"
+                        [(ngModel)]="payslip.total_additions" (ngModelChange)="markAsEdited(payslip)"
+                        class="form-control">
+                    </td>
+                    <td>
+                      <input type="number" placeholder="{{ payslip.total_deductions }}"
+                        [(ngModel)]="payslip.total_deductions" (ngModelChange)="markAsEdited(payslip)"
+                        class="form-control">
+                    </td>
+                    <td>
+                      <input type="number" placeholder="{{ payslip.net_salary }}" [(ngModel)]="payslip.net_salary"
+                        (ngModelChange)="markAsEdited(payslip)" class="form-control">
+                    </td>
+                    <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
+                    <td data-label="Working Days">{{ payslip.total_working_days }}</td>
+                    <td data-label="Days Worked">{{ payslip.days_worked }}</td>
+
+                    <td data-label="Status">
+                      <span class="pill" [ngClass]="{
           'pill green': payslip.status === 'approved',
           'pill blue': payslip.status === 'processed',
           'pill yellow': payslip.status === 'pending',
           'pill red': payslip.status === 'rejected'
-        }"
-      >
-        {{ payslip.status }}
-      </span>
-    </td>
+        }">
+                        {{ payslip.status }}
+                      </span>
+                    </td>
 
-    <td data-label="Components">
-      <ul>
-        <li *ngFor="let comp of payslip.components">
-          <strong>{{ comp.component_name }}</strong>
-          ({{ comp.component_type }}): {{ comp.payslip_amount }}
-        </li>
-      </ul>
-    </td>
-  </tr>
-              </tbody>
+                    <td data-label="Components">
+                      <ul>
+                        <li *ngFor="let comp of payslip.components">
+                          <strong>{{ comp.component_name }}</strong>
+                          ({{ comp.component_type }}): {{ comp.payslip_amount }}
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
 
               </table>
-              </div>
-
-              <div class="row">
-                
-                <div class="col-md-2" *ngIf="hasAddPermission">
-                  <button  type="button" class="btn btn-success mt-2 btn-full" (click)="confirmSelectedPayslips()">Confirm</button>
-
-                </div>
-              </div>
-              
-
             </div>
 
-            <div class="end_section"></div>
-          
-              </mat-tab>
+            <div class="row">
+
+              <div class="col-md-2" *ngIf="hasAddPermission">
+                <button type="button" class="btn btn-success mt-2 btn-full"
+                  (click)="confirmSelectedPayslips()">Confirm</button>
+
+              </div>
+            </div>
+
+
+          </div>
+
+          <div class="end_section"></div>
+
+        </mat-tab>
 
 
 
-           
-
-           
-              <mat-tab label="Final Pay Sheet">
-                <div class="tab_boddy mt-4" style="padding: 10px;">
-                  
-                  <!-- Top Action Bar: Search Input & Export Button -->
-                    <!-- Search Input Bar -->
-                     
-                    <div class="row ">
-                      <div class="col-md-4"></div>
-
-                      <div class="col-md-4">
-                        <div class="search-container ">
-                          <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0">
-                              <i class="fa fa-search text-muted"></i>
-                            </span>
-                            <input 
-                              type="text" 
-                              class="form-control border-start-0 ps-0" 
-                              placeholder="Search by Employee, Status, Year, Month..." 
-                              [(ngModel)]="searchQuery"  
-                              (input)="filterPaySlips()">
-                            <button 
-                              *ngIf="searchQuery" 
-                              class="btn btn-outline-secondary border-start-0" 
-                              type="button" 
-                              (click)="searchQuery = ''; filterPaySlips()">
-                              <i class="fa fa-times"></i>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
 
 
-                      <div class="col-md-4">
 
-                           <!-- Export Button -->
-                    <div class="table-header" *ngIf="hasAddPermission">
-                      <button class="btn btn-export pull-right" style="font-size: 12px;" (click)="exportToExcel()">
-                        <i class="fa-solid fa-file-export"></i> Export
-                      </button>
-                    </div>
+        <mat-tab label="Final Pay Sheet">
+          <div class="tab_boddy mt-4" style="padding: 10px;">
 
-                      </div>
-                    </div>
-                   
-              
-                 
-              
-                  <!-- Table Container -->
-                  <div class="table-container">
-                    <div class="table-scroll">
-                      <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
-                        <thead>
-                          <tr>
-                            <th class="text-table-header">No</th>
-                            <th class="text-table-header">Employee Code</th>
-                            <th class="text-table-header">Payroll Name</th>
-                           
-                          
-                            <th class="text-table-header">Year</th>
-                            <th class="text-table-header">Month</th>
-                            <th class="text-table-header">Gross Salary</th>
-                            <th class="text-table-header">Total Additions</th>
-                            <th class="text-table-header">Total Deductions</th>
-                            <th class="text-table-header">Net Salary</th>
-                            <th class="text-table-header">Pro Rata Adjustment</th>
-                            <th class="text-table-header">Working Days</th>
-                            <th class="text-table-header">Days Worked</th>
-                            <th class="text-table-header">Status</th>
-                            <!-- <th class="text-table-header">Components</th> -->
-                          </tr>
-                        </thead>
-                        <tbody class="text-table-body">
-                          <!-- Iterate over filteredPaySlips array instead of main source array -->
-                          <tr *ngFor="let payslip of filteredPaySlips; let i = index" (click)="viewPayrollDetails(payslip)" style="cursor: pointer;">
-                            <td data-label="No">{{ i + 1 }}</td>
-                            <td data-label="Employee Code">{{ payslip.employee }}</td>
-                            <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
-                            <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
-                            <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
-                            <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
-                            <td data-label="Total Additions">{{ payslip.total_additions }}</td>
-                            <td data-label="Total Deductions">{{ payslip.total_deductions }}</td>
-                            <td data-label="Net Salary">{{ payslip.net_salary }}</td>
-                            <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
-                            <td data-label="Working Days">{{ payslip.total_working_days }}</td>
-                            <td data-label="Days Worked">{{ payslip.days_worked }}</td>
-                            <td data-label="Status">
-                              <span class="pill" [ngClass]="{
-                                'pill green': payslip.status === 'approved',
-                                'pill blue': payslip.status === 'processed',
-                                'pill yellow': payslip.status === 'pending',
-                                'pill red': payslip.status === 'rejected'
+            <!-- Top Action Bar: Search Input & Export Button -->
+            <!-- Search Input Bar -->
+
+        
+
+          <!-- TOP BAR: Search + Filter Icon + Export Button -->
+  <div class="top-action-bar mb-2">
+
+    <!-- Search box -->
+    <div class="search-container">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="fa fa-search text-muted"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control border-start-0 ps-0"
+          placeholder="Search by Employee, Status, Year, Month..."
+          [(ngModel)]="searchQuery"
+          (input)="filterPaySlips()">
+        <button
+          *ngIf="searchQuery"
+          class="btn btn-outline-secondary border-start-0"
+          type="button"
+          (click)="searchQuery = ''; filterPaySlips()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter toggle icon -->
+    <button
+      class="btn filter-toggle-btn"
+      [class.active]="showFilterPanel"
+      (click)="toggleFilterPanel()">
+      <i class="fa fa-filter"></i>
+      Filter
+      <span class="filter-count-badge" *ngIf="activeFilterCount() > 0">
+        {{ activeFilterCount() }}
+      </span>
+    </button>
+
+    <div class="spacer"></div>
+
+    <!-- Export button — label/action changes based on whether filters are active -->
+    <div class="table-header" *ngIf="hasAddPermission">
+      <button
+        class="btn btn-export"
+        style="font-size: 12px;"
+        (click)="exportToExcel(activeFilterCount() === 0)">
+        <i class="fa-solid fa-file-export"></i>
+        {{ activeFilterCount() > 0 ? 'Export Filtered' : 'Export All' }}
+      </button>
+    </div>
+
+  </div>
+
+  <!-- FILTER PANEL — shown only when toggled -->
+  <div class="filter-card mb-3" *ngIf="showFilterPanel">
+
+    <div class="filter-card-header">
+      <span>Filter Options</span>
+      <i class="fa fa-times close-filter-icon" (click)="toggleFilterPanel()"></i>
+    </div>
+
+    <div class="filter-export-bar">
+
+      <!-- Status Filter -->
+      <div class="filter-select-card">
+        <label class="filter-title">
+          <mat-icon>flag</mat-icon>
+          Status
+          <span class="filter-count-badge" *ngIf="selectedStatuses.length > 0">
+            {{ selectedStatuses.length }}
+          </span>
+        </label>
+
+        <mat-form-field appearance="outline" class="modern-multi-select">
+          <mat-select
+            multiple
+            [(ngModel)]="selectedStatuses"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="filterPaySlips()">
+
+            <mat-checkbox
+              class="select-all-checkbox"
+              [checked]="isAllStatusSelected()"
+              [indeterminate]="isSomeStatusSelected()"
+              (click)="$event.stopPropagation()"
+              (change)="toggleAllStatus()">
+              Select All
+            </mat-checkbox>
+
+            <div class="px-2 pb-2">
+              <input
+                type="text"
+                placeholder="Search Status"
+                class="form-control"
+                [(ngModel)]="statusSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              />
+            </div>
+
+            <mat-option *ngFor="let status of filterStatusOptions()" [value]="status">
+              {{ status }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Year Filter -->
+      <div class="filter-select-card">
+        <label class="filter-title">
+          <mat-icon>calendar_today</mat-icon>
+          Year
+          <span class="filter-count-badge" *ngIf="selectedYears.length > 0">
+            {{ selectedYears.length }}
+          </span>
+        </label>
+
+        <mat-form-field appearance="outline" class="modern-multi-select">
+          <mat-select
+            multiple
+            [(ngModel)]="selectedYears"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="filterPaySlips()">
+
+            <mat-checkbox
+              class="select-all-checkbox"
+              [checked]="isAllYearSelected()"
+              [indeterminate]="isSomeYearSelected()"
+              (click)="$event.stopPropagation()"
+              (change)="toggleAllYear()">
+              Select All
+            </mat-checkbox>
+
+            <div class="px-2 pb-2">
+              <input
+                type="text"
+                placeholder="Search Year"
+                class="form-control"
+                [(ngModel)]="yearSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              />
+            </div>
+
+            <mat-option *ngFor="let year of filterYearOptions()" [value]="year">
+              {{ year }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Month Filter -->
+      <div class="filter-select-card">
+        <label class="filter-title">
+          <mat-icon>date_range</mat-icon>
+          Month
+          <span class="filter-count-badge" *ngIf="selectedMonths.length > 0">
+            {{ selectedMonths.length }}
+          </span>
+        </label>
+
+        <mat-form-field appearance="outline" class="modern-multi-select">
+          <mat-select
+            multiple
+            [(ngModel)]="selectedMonths"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="filterPaySlips()">
+
+            <mat-checkbox
+              class="select-all-checkbox"
+              [checked]="isAllMonthSelected()"
+              [indeterminate]="isSomeMonthSelected()"
+              (click)="$event.stopPropagation()"
+              (change)="toggleAllMonth()">
+              Select All
+            </mat-checkbox>
+
+            <div class="px-2 pb-2">
+              <input
+                type="text"
+                placeholder="Search Month"
+                class="form-control"
+                [(ngModel)]="monthSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              />
+            </div>
+
+            <mat-option *ngFor="let m of filterMonthOptions()" [value]="m.value">
+              {{ m.label }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-bar-spacer"></div>
+
+   <!-- Clear Filters — standard button -->
+  <div class="filter-select-card clear-btn-wrapper">
+    <label class="filter-title invisible-label">&nbsp;</label>
+    <button
+      type="button"
+      class="btn-clear-standard"
+      [disabled]="activeFilterCount() === 0"
+      (click)="clearFilters()">
+      <i class="fa fa-rotate-left"></i>
+      Clear Filters
+    </button>
+  </div>
+
+    </div>
+
+  </div>
+
+  <!-- Active filter chips summary (shown even when panel is closed) -->
+  <div class="active-filters-row mb-2" *ngIf="activeFilterCount() > 0">
+
+    <span class="active-filter-chip" *ngFor="let s of selectedStatuses">
+      {{ s }}
+      <i class="fa fa-times" (click)="removeStatus(s)"></i>
+    </span>
+
+    <span class="active-filter-chip" *ngFor="let y of selectedYears">
+      {{ y }}
+      <i class="fa fa-times" (click)="removeYear(y)"></i>
+    </span>
+
+    <span class="active-filter-chip" *ngFor="let m of selectedMonths">
+      {{ getMonthName(m) }}
+      <i class="fa fa-times" (click)="removeMonth(m)"></i>
+    </span>
+
+  </div>
+
+            <!-- Table Container -->
+            <div class="table-container">
+              <div class="table-scroll">
+                <table class="styled-table mt-2" width="100%" style="border-collapse: collapse; min-width: 1200px;">
+                  <thead>
+                    <tr>
+                      <th class="text-table-header">No</th>
+                      <th class="text-table-header">Employee Code</th>
+                      <th class="text-table-header">Payroll Name</th>
+
+
+                      <th class="text-table-header">Year</th>
+                      <th class="text-table-header">Month</th>
+                      <th class="text-table-header">Gross Salary</th>
+                      <th class="text-table-header">Total Additions</th>
+                      <th class="text-table-header">Total Deductions</th>
+                      <th class="text-table-header">Net Salary</th>
+                      <th class="text-table-header">Pro Rata Adjustment</th>
+                      <th class="text-table-header">Working Days</th>
+                      <th class="text-table-header">Days Worked</th>
+                      <th class="text-table-header">Status</th>
+                      <!-- <th class="text-table-header">Components</th> -->
+                    </tr>
+                  </thead>
+                  <tbody class="text-table-body">
+                    <!-- Iterate over filteredPaySlips array instead of main source array -->
+                    <tr *ngFor="let payslip of filteredPaySlips; let i = index" (click)="viewPayrollDetails(payslip)"
+                      style="cursor: pointer;">
+                      <td data-label="No">{{ i + 1 }}</td>
+                      <td data-label="Employee Code">{{ payslip.employee }}</td>
+                      <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
+                      <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
+                      <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
+                      <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
+                      <td data-label="Total Additions">{{ payslip.total_additions }}</td>
+                      <td data-label="Total Deductions">{{ payslip.total_deductions }}</td>
+                      <td data-label="Net Salary">{{ payslip.net_salary }}</td>
+                      <td data-label="Pro Rata Adjustment">{{ payslip.pro_rata_adjustment }}</td>
+                      <td data-label="Working Days">{{ payslip.total_working_days }}</td>
+                      <td data-label="Days Worked">{{ payslip.days_worked }}</td>
+                      <td data-label="Status">
+                        <span class="pill" [ngClass]="{
+                                'pill green': payslip.status?.toLowerCase() === 'approved',
+                                'pill blue': payslip.status?.toLowerCase() === 'processed',
+                                'pill yellow': payslip.status?.toLowerCase() === 'pending',
+                                'pill red': payslip.status?.toLowerCase() === 'rejected'
                               }">{{ payslip.status }}</span>
-                            </td>
-                            <!-- <td data-label="Components">
+                      </td>
+                      <!-- <td data-label="Components">
                               <ul class="mb-0 ps-3">
                                 <li *ngFor="let comp of payslip.components">
                                   <strong>{{ comp.component_name }}</strong> 
@@ -437,7 +621,7 @@
                               </ul>
                             </td> -->
 
-                            <!-- <td data-label="Components">
+                      <!-- <td data-label="Components">
                               <div class="component-grid">
                                 <div
                                   *ngFor="let comp of payslip.components"
@@ -454,36 +638,33 @@
                                 <span *ngIf="!payslip.components?.length" class="text-muted">-</span>
                               </div>
                             </td> -->
-                          </tr>
-              
-                          <!-- Empty state when search yields no matches -->
-                          <tr *ngIf="filteredPaySlips?.length === 0">
-                            <td colspan="14" class="text-center py-4 text-muted">
-                              No payroll records match your search query.
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-              
-                </div>
-                <div class="end_section"></div>
-              </mat-tab>
-  
-             
-                  </mat-tab-group> 
-                  
+                    </tr>
+
+                    <!-- Empty state when search yields no matches -->
+                    <tr *ngIf="filteredPaySlips?.length === 0">
+                      <td colspan="14" class="text-center py-4 text-muted">
+                        No payroll records match your search query.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+          <div class="end_section"></div>
+        </mat-tab>
+
+
+      </mat-tab-group>
+
 
     </div>
-</div>
+  </div>
 
 </div>
 
-    <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
-    </div>
-  
-
-     
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>
