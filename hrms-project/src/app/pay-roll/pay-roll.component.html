@@ -573,8 +573,6 @@
                       <th class="text-table-header">No</th>
                       <th class="text-table-header">Employee Code</th>
                       <th class="text-table-header">Payroll Name</th>
-
-
                       <th class="text-table-header">Year</th>
                       <th class="text-table-header">Month</th>
                       <th class="text-table-header">Gross Salary</th>
@@ -585,13 +583,16 @@
                       <th class="text-table-header">Working Days</th>
                       <th class="text-table-header">Days Worked</th>
                       <th class="text-table-header">Status</th>
-                      <!-- <th class="text-table-header">Components</th> -->
+                
+                      <!-- ✅ Dynamic component columns -->
+                      <th class="text-table-header" *ngFor="let comp of componentColumns">
+                        {{ comp }}
+                      </th>
                     </tr>
                   </thead>
+                
                   <tbody class="text-table-body">
-                    <!-- Iterate over filteredPaySlips array instead of main source array -->
-                    <tr *ngFor="let payslip of filteredPaySlips; let i = index" (click)="viewPayrollDetails(payslip)"
-                      style="cursor: pointer;">
+                    <tr *ngFor="let payslip of filteredPaySlips; let i = index" (click)="viewPayrollDetails(payslip)" style="cursor: pointer;">
                       <td data-label="No">{{ i + 1 }}</td>
                       <td data-label="Employee Code">{{ payslip.employee }}</td>
                       <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
@@ -606,43 +607,22 @@
                       <td data-label="Days Worked">{{ payslip.days_worked }}</td>
                       <td data-label="Status">
                         <span class="pill" [ngClass]="{
-                                'pill green': payslip.status?.toLowerCase() === 'approved',
-                                'pill blue': payslip.status?.toLowerCase() === 'processed',
-                                'pill yellow': payslip.status?.toLowerCase() === 'pending',
-                                'pill red': payslip.status?.toLowerCase() === 'rejected'
-                              }">{{ payslip.status }}</span>
+                          'pill green': payslip.status?.toLowerCase() === 'approved',
+                          'pill blue': payslip.status?.toLowerCase() === 'processed',
+                          'pill yellow': payslip.status?.toLowerCase() === 'pending',
+                          'pill red': payslip.status?.toLowerCase() === 'rejected'
+                        }">{{ payslip.status }}</span>
                       </td>
-                      <!-- <td data-label="Components">
-                              <ul class="mb-0 ps-3">
-                                <li *ngFor="let comp of payslip.components">
-                                  <strong>{{ comp.component_name }}</strong> 
-                                  ({{ comp.component_type }}): {{ comp.payslip_amount }}
-                                </li>
-                              </ul>
-                            </td> -->
-
-                      <!-- <td data-label="Components">
-                              <div class="component-grid">
-                                <div
-                                  *ngFor="let comp of payslip.components"
-                                  class="component-chip"
-                                  [ngClass]="{
-                                    'chip-addition': comp.component_type === 'addition',
-                                    'chip-deduction': comp.component_type === 'deduction',
-                                    'chip-others': comp.component_type === 'others'
-                                  }"
-                                >
-                                  <span class="chip-name">{{ comp.component_name }}</span>
-                                  <span class="chip-amount">{{ comp.payslip_amount }}</span>
-                                </div>
-                                <span *ngIf="!payslip.components?.length" class="text-muted">-</span>
-                              </div>
-                            </td> -->
+                
+                      <!-- ✅ Dynamic component value cells -->
+                      <td *ngFor="let comp of componentColumns" [attr.data-label]="comp">
+                        {{ getComponentAmount(payslip, comp) }}
+                      </td>
+                
                     </tr>
-
-                    <!-- Empty state when search yields no matches -->
+                
                     <tr *ngIf="filteredPaySlips?.length === 0">
-                      <td colspan="14" class="text-center py-4 text-muted">
+                      <td [attr.colspan]="13 + componentColumns.length" class="text-center py-4 text-muted">
                         No payroll records match your search query.
                       </td>
                     </tr>

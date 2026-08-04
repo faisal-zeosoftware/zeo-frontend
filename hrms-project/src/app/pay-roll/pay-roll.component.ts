@@ -342,6 +342,7 @@ if (this.userId !== null) {
   //     FileSaver.saveAs(blobData, `Payslips_${new Date().toISOString().slice(0,10)}.xlsx`);
   //   }
 
+
   exportToExcel(exportAll: boolean = true): void {
 
     const sourceData = exportAll ? this.PaySlipsConfrimed : this.filteredPaySlips;
@@ -351,12 +352,23 @@ if (this.userId !== null) {
       return;
     }
   
-    const exportData = sourceData.map((p, index) => {
-      const components = p.components?.map((c: { component_name: any; component_type: any; payslip_amount: any; }) =>
-        `${c.component_name} (${c.component_type}): ${c.payslip_amount}`
-      ).join(' | ') || '';
+    // Step 1: Collect all unique component names across the export set
+    const componentNamesSet = new Set<string>();
   
-      return {
+    sourceData.forEach((p: any) => {
+      p.components?.forEach((c: any) => {
+        if (c.component_name) {
+          componentNamesSet.add(c.component_name);
+        }
+      });
+    });
+  
+    const componentNames = Array.from(componentNamesSet);
+  
+    // Step 2: Build export rows with each component as its own column
+    const exportData = sourceData.map((p: any, index: number) => {
+  
+      const baseRow: any = {
         No: index + 1,
         Employee: p.employee,
         'Payroll Name': p.payroll_run?.name,
@@ -369,9 +381,16 @@ if (this.userId !== null) {
         'Pro Rata Adjustment': p.pro_rata_adjustment,
         'Working Days': p.total_working_days,
         'Days Worked': p.days_worked,
-        Status: p.status,
-        Components: components
+        Status: p.status
       };
+  
+      // Add one column per component name, filled with this employee's amount (blank if none)
+      componentNames.forEach(name => {
+        const match = p.components?.find((c: any) => c.component_name === name);
+        baseRow[name] = match ? match.payslip_amount : '';
+      });
+  
+      return baseRow;
     });
   
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
@@ -393,6 +412,9 @@ if (this.userId !== null) {
     FileSaver.saveAs(blobData, `Payslips_${suffix}_${new Date().toISOString().slice(0,10)}.xlsx`);
   }
     
+
+
+
     checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
       return groupPermissions.some(permission => permission.codename === codeName);
       }
@@ -888,6 +910,8 @@ monthSearch: string = '';
   searchQuery: string = '';
 
   filteredPaySlips: any[] = [];  // Array rendered in *ngFor
+  
+  
   fetchLoadConfrimedPayslip(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.leaveService.getPaySlipApprovedNew(schema, branchIds).subscribe({
@@ -899,6 +923,8 @@ monthSearch: string = '';
         this.yearOptions = [...new Set(this.PaySlipsConfrimed.map(p => p.payroll_run?.year).filter(Boolean))]
           .sort((a, b) => b - a);
   
+        this.updateComponentColumns();   // ✅ build columns after data loads
+  
         this.isLoading = false;
       },
       error: (err) => {
@@ -907,6 +933,23 @@ monthSearch: string = '';
       }
     });
   }
+  
+  
+
+  // Call this whenever filteredPaySlips changes (after fetch, after filter, after search)
+updateComponentColumns(): void {
+  const namesSet = new Set<string>();
+
+  this.filteredPaySlips.forEach((p: any) => {
+    p.components?.forEach((c: any) => {
+      if (c.component_name) {
+        namesSet.add(c.component_name);
+      }
+    });
+  });
+
+  this.componentColumns = Array.from(namesSet);
+}
   
   // ---------- Search-within-dropdown helpers ----------
   filterStatusOptions(): string[] {
@@ -977,40 +1020,46 @@ monthSearch: string = '';
   }
   
   // ---------- Combined filter ----------
-  filterPaySlips(): void {
-    const search = this.searchQuery.toLowerCase().trim();
-  
-    this.filteredPaySlips = this.PaySlipsConfrimed.filter(p => {
-  
-      const matchesSearch = !search ||
-        (p.employee && p.employee.toLowerCase().includes(search)) ||
-        (p.status && p.status.toLowerCase().includes(search)) ||
-        (p.payroll_run?.year && p.payroll_run.year.toString().includes(search)) ||
-        (this.getMonthName(p.payroll_run?.month)?.toLowerCase().includes(search));
-  
-      const matchesStatus = this.selectedStatuses.length === 0 ||
-        this.selectedStatuses.includes(p.status);
-  
-      const matchesYear = this.selectedYears.length === 0 ||
-        this.selectedYears.includes(p.payroll_run?.year);
-  
-      const matchesMonth = this.selectedMonths.length === 0 ||
-        this.selectedMonths.includes(p.payroll_run?.month);
-  
-      return matchesSearch && matchesStatus && matchesYear && matchesMonth;
-    });
-  }
-  
-  clearFilters(): void {
-    this.searchQuery = '';
-    this.selectedStatuses = [];
-    this.selectedYears = [];
-    this.selectedMonths = [];
-    this.statusSearch = '';
-    this.yearSearch = '';
-    this.monthSearch = '';
-    this.filteredPaySlips = [...this.PaySlipsConfrimed];
-  }
+
+
+ filterPaySlips(): void {
+  const search = this.searchQuery.toLowerCase().trim();
+
+  this.filteredPaySlips = this.PaySlipsConfrimed.filter(p => {
+
+    const matchesSearch = !search ||
+      (p.employee && p.employee.toLowerCase().includes(search)) ||
+      (p.status && p.status.toLowerCase().includes(search)) ||
+      (p.payroll_run?.year && p.payroll_run.year.toString().includes(search)) ||
+      (this.getMonthName(p.payroll_run?.month)?.toLowerCase().includes(search));
+
+    const matchesStatus = this.selectedStatuses.length === 0 ||
+      this.selectedStatuses.includes(p.status);
+
+    const matchesYear = this.selectedYears.length === 0 ||
+      this.selectedYears.includes(p.payroll_run?.year);
+
+    const matchesMonth = this.selectedMonths.length === 0 ||
+      this.selectedMonths.includes(p.payroll_run?.month);
+
+    return matchesSearch && matchesStatus && matchesYear && matchesMonth;
+  });
+
+  this.updateComponentColumns();   // ✅ recompute columns for current filtered view
+}
+
+clearFilters(): void {
+  this.searchQuery = '';
+  this.selectedStatuses = [];
+  this.selectedYears = [];
+  this.selectedMonths = [];
+  this.statusSearch = '';
+  this.yearSearch = '';
+  this.monthSearch = '';
+  this.filteredPaySlips = [...this.PaySlipsConfrimed];
+
+  this.updateComponentColumns();   // ✅ reset columns too
+}
 
 
   // Filter panel visibility
@@ -1200,6 +1249,9 @@ getComponentAmount(payslip: any, componentName: string): string {
   const match = payslip.components?.find((c: any) => c.component_name === componentName);
   return match ? match.payslip_amount : '-';
 }
+
+
+
 
 
 

@@ -985,3 +985,33 @@ table.styled-table td {
   cursor: not-allowed;
   background: #f9fafb;
 }
+
+
+/* Reduce font size of the closed select field (selected values shown) */
+.modern-multi-select ::ng-deep .mat-mdc-select-value,
+.modern-multi-select ::ng-deep .mat-mdc-select-placeholder {
+  font-size: 12px;
+}
+
+/* Reduce font size of the option list (dropdown panel items) */
+::ng-deep .mat-mdc-option {
+  font-size: 12px;
+  min-height: 36px;   /* slightly reduce row height to match smaller text */
+  line-height: 36px;
+}
+
+/* Reduce font size of "Select All" checkbox label inside the panel */
+::ng-deep .select-all-checkbox .mdc-form-field label,
+::ng-deep .select-all-checkbox .mdc-label {
+  font-size: 12px;
+}
+
+/* Reduce font size of individual mat-option checkbox label (if using mat-pseudo-checkbox) */
+::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
+  font-size: 12px;
+}
+
+/* Reduce font size of the search input inside dropdown panels */
+::ng-deep .mat-mdc-select-panel input.form-control {
+  font-size: 12px;
+}
