@@ -2559,7 +2559,84 @@ removePayRuleRow(index: number): void {
   
   }
 
-  
+   SearchEmployee = '';
 
+  FilterEmployee() {
+  const search = this.SearchEmployee.toLowerCase().trim();
+
+  if (!search) {
+    this.FilteredEmployees = [...this.Employee];
+  } else {
+    this.FilteredEmployees = this.Employee.filter(emp =>
+      (emp.emp_first_name && emp.emp_first_name.toLowerCase().includes(search)) ||
+      (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search)) ||
+      (emp.emp_code && emp.emp_code.toLowerCase().includes(search))
+    );
+  }
+
+  this.currentPage = 1;
+  this.updatePagination();
+}
+
+  branchsearch: string = '';
+
+filterBranches(): any[] {
+
+  if (!this.branchsearch || this.branchsearch.trim() === '') {
+    return this.branches;
+  }
+
+  const search = this.branchsearch.toLowerCase().trim();
+
+  return this.branches.filter((selectedBranches: any) =>
+    selectedBranches.branch_name.toLowerCase().includes(search)
+  );
+}
+
+  departmentsearch: string = '';
+
+  filterDepartment(): any[] {
+
+  if (!this.departmentsearch || this.departmentsearch.trim() === '') {
+    return this.Departments;
+  }
+
+  const search = this.departmentsearch.toLowerCase().trim();
+
+  return this.Departments.filter((selectedDepartments: any) =>
+    selectedDepartments.dept_name.toLowerCase().includes(search)
+  );
+}
+
+
+  categorysearch: string = '';
+
+filterCategory(): any[] {
+
+  if (!this.categorysearch || this.categorysearch.trim() === '') {
+    return this.Category;
+  }
+
+  const search = this.categorysearch.toLowerCase().trim();
+
+  return this.Category.filter((item: any) =>
+    item.ctgry_title?.toLowerCase().includes(search)
+  );
+}
+
+  designationsearch: string = '';
+
+filterDesignation(): any[] {
+
+  if (!this.designationsearch || this.designationsearch.trim() === '') {
+    return this.Designation;
+  }
+
+  const search = this.designationsearch.toLowerCase().trim();
+
+  return this.Designation.filter((item: any) =>
+    item.desgntn_job_title?.toLowerCase().includes(search)
+  );
+}
 
 }

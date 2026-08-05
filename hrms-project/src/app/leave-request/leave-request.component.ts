@@ -428,8 +428,10 @@ loadEmp(callback?: Function): void {
     this.employeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
       (result: any) => {
         this.Employees = result;
-        this.filteredEmployees = result; 
-         console.log(this.Employees[0]);// 👈 initialize
+        this.filteredEmployees = result;
+
+        // ✅ ADD THIS LINE
+        this.filterEmployees();
 
         if (callback) callback();
       },
@@ -441,7 +443,6 @@ loadEmp(callback?: Function): void {
 }
 
 mapEmpNameToId() {
-
   if (!this.Employees?.length) return;
 
   const emp = this.Employees.find((e: any) =>
@@ -450,9 +451,11 @@ mapEmpNameToId() {
 
   if (emp) {
     this.editAsset.selectedEmployee = emp.id;
+    // Add this line so the input field shows the name when modal opens
+    this.editAsset.employeeSearchText = emp.emp_code + (emp.emp_name ? ' - ' + emp.emp_name : '');
+  } else {
+    this.editAsset.employeeSearchText = '';
   }
-
-  console.log(this.editAsset.selectedEmployee);
 }
   
 
@@ -761,18 +764,15 @@ calculateEditTotalDays() {
 
 
 onBranchChange(event: any): void {
-
   const selectedBranchId = event.target.value;
   const selectedSchema = localStorage.getItem('selectedSchema');
-
   this.branch = selectedBranchId;
 
-   /* ------------------ FILTER EMPLOYEES ------------------ */
+  /* ------------------ FILTER EMPLOYEES ------------------ */
   if (!selectedBranchId) {
     this.filteredEmployees = this.Employees;
     this.employee = '';
   } else {
-
     const selectedBranch = this.branches.find(
       b => Number(b.id) === Number(selectedBranchId)
     );
@@ -788,6 +788,13 @@ onBranchChange(event: any): void {
 
     this.employee = '';
   }
+
+  // ✅ ADD THIS LINE — keep searchable list in sync
+  this.filterEmployees();
+
+  // ✅ Reset employee selection when branch changes
+  this.selectedEmployee = null;
+  this.employeeSearchText = '';
 
 
   /* ------------------ DOCUMENT NUMBERING ------------------ */
@@ -862,6 +869,123 @@ onBranchChange(event: any): void {
       this.document_number = '';
     }
   });
+}
+
+// Searchable employee dropdown
+employeeSearchText: string = '';
+showEmployeeDropdown: boolean = false;
+filteredEmployeesList: any[] = [];
+
+filterEmployees(): void {
+  if (!this.employeeSearchText || this.employeeSearchText.trim() === '') {
+    this.filteredEmployeesList = [...this.filteredEmployees];
+  } else {
+    const search = this.employeeSearchText.toLowerCase().trim();
+    this.filteredEmployeesList = this.filteredEmployees.filter(emp =>
+      (emp.emp_code?.toString().toLowerCase().includes(search)) ||
+      (emp.emp_name?.toString().toLowerCase().includes(search)) ||
+      (emp.first_name?.toString().toLowerCase().includes(search)) ||
+      (emp.last_name?.toString().toLowerCase().includes(search))
+    );
+  }
+}
+
+onEmployeeFocus(): void {
+  this.filterEmployees();
+  this.showEmployeeDropdown = true;
+}
+
+toggleEmployeeDropdown(): void {
+  this.showEmployeeDropdown = !this.showEmployeeDropdown;
+  if (this.showEmployeeDropdown) {
+    this.filterEmployees();
+  }
+}
+
+hideEmployeeDropdown(): void {
+  // Use timeout so click/mousedown events fire first
+  setTimeout(() => {
+    this.showEmployeeDropdown = false;
+
+    // If user typed something but didn't select, clear invalid text
+    if (this.selectedEmployee) {
+      // Restore the selected employee's display text
+      const emp = this.filteredEmployees.find(
+        e => Number(e.id) === Number(this.selectedEmployee)
+      );
+      if (emp) {
+        this.employeeSearchText = emp.emp_code + (emp.emp_name ? ' - ' + emp.emp_name : '');
+      }
+    } else {
+      this.employeeSearchText = '';
+    }
+  }, 200);
+}
+
+selectEmployee(event: any, emp: any): void {
+  event.preventDefault();
+  this.selectedEmployee = emp.id;
+  this.employeeSearchText = emp.emp_code + (emp.emp_name ? ' - ' + emp.emp_name : '');
+  this.showEmployeeDropdown = false;
+  this.onEmployeeChange();
+}
+
+
+// Edit Modal Search Variables
+showEditEmployeeDropdown: boolean = false;
+editFilteredEmployeesList: any[] = [];
+
+filterEditEmployees(): void {
+  const searchText = this.editAsset?.employeeSearchText || '';
+  if (!searchText.trim()) {
+    this.editFilteredEmployeesList = [...this.filteredEmployees];
+  } else {
+    const search = searchText.toLowerCase().trim();
+    this.editFilteredEmployeesList = this.filteredEmployees.filter(emp =>
+      (emp.emp_code?.toString().toLowerCase().includes(search)) ||
+      (emp.emp_name?.toString().toLowerCase().includes(search)) ||
+      (emp.first_name?.toString().toLowerCase().includes(search)) ||
+      (emp.last_name?.toString().toLowerCase().includes(search))
+    );
+  }
+}
+
+onEditEmployeeFocus(): void {
+  this.filterEditEmployees();
+  this.showEditEmployeeDropdown = true;
+}
+
+toggleEditEmployeeDropdown(): void {
+  this.showEditEmployeeDropdown = !this.showEditEmployeeDropdown;
+  if (this.showEditEmployeeDropdown) {
+    this.filterEditEmployees();
+  }
+}
+
+hideEditEmployeeDropdown(): void {
+  setTimeout(() => {
+    this.showEditEmployeeDropdown = false;
+    if (this.editAsset?.selectedEmployee) {
+      const emp = this.filteredEmployees.find(
+        e => Number(e.id) === Number(this.editAsset.selectedEmployee)
+      );
+      if (emp) {
+        this.editAsset.employeeSearchText = emp.emp_code + (emp.emp_name ? ' - ' + emp.emp_name : '');
+      }
+    } else if (this.editAsset) {
+      this.editAsset.employeeSearchText = '';
+    }
+  }, 200);
+}
+
+selectEditEmployee(event: any, emp: any): void {
+  event.preventDefault();
+  this.editAsset.selectedEmployee = emp.id;
+  this.editAsset.employeeSearchText = emp.emp_code + (emp.emp_name ? ' - ' + emp.emp_name : '');
+  this.showEditEmployeeDropdown = false;
+  
+  // Trigger existing leave type load logic
+  this.onEmployeeChangeEdit(); 
 }
 
 

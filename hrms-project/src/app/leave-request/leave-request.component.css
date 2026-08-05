@@ -147,6 +147,57 @@ margin-right: 10px;
   font-family: math;
 }
 
+.searchable-select {
+  position: relative;
+}
+
+.searchable-select .form-control {
+  padding-right: 30px;
+}
+
+.searchable-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  user-select: none;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  z-index: 9999;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f6ff;
+}
+
+.dropdown-item.no-data {
+  color: #999;
+  cursor: default;
+}
+
+.dropdown-item.no-data:hover {
+  background-color: #fff;
+}
 
 /* Sticky first column */
 .sticky-left {

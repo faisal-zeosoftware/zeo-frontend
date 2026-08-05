@@ -84,26 +84,51 @@
             </div>
 
 
-                   <div class="col-md-4">
-                
-                
-                    <div class="custom-sel">
-                        <label>Employee
-                            <span class="required-star">*</span>
-                        </label>
-                             <select class="form-control"
-                               id="employee"
-                                 required
-                              [(ngModel)]="selectedEmployee"
-                              (change)="onEmployeeChange()"
-                             [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !selectedEmployee}">
-                            <option value="" >Select</option>
-                            <option *ngFor="let deparmentsec of filteredEmployees" [value]="deparmentsec.id">{{ deparmentsec.emp_code }} </option>
-                        </select>
-                       
-                    </div>
-                    <div *ngIf="registerButtonClicked && !selectedEmployee" class="error-message">Please Select Your Employee</div>
-                    </div>
+<div class="col-md-4">
+  <div class="custom-sel">
+    <label>Employee
+      <span class="required-star">*</span>
+    </label>
+
+    <!-- Searchable Employee Dropdown -->
+    <div class="searchable-select" 
+         [ngClass]="{'error-field': registerButtonClicked && !selectedEmployee}">
+      <input 
+        type="text" 
+        class="form-control" 
+        [(ngModel)]="employeeSearchText" 
+        (input)="filterEmployees()" 
+        (focus)="onEmployeeFocus()" 
+        (blur)="hideEmployeeDropdown()" 
+        placeholder="Search & Select Employee"
+        [ngModelOptions]="{standalone: true}"
+      />
+
+      <!-- Dropdown arrow -->
+      <span class="searchable-arrow" (mousedown)="$event.preventDefault(); toggleEmployeeDropdown()">▾</span>
+
+      <div class="dropdown-list" *ngIf="showEmployeeDropdown">
+        <div 
+          *ngIf="filteredEmployeesList.length === 0" 
+          class="dropdown-item no-data"
+        >
+          No employees found
+        </div>
+        <div 
+          *ngFor="let emp of filteredEmployeesList" 
+          class="dropdown-item" 
+          (mousedown)="selectEmployee($event, emp)"
+        >
+          {{ emp.emp_code }} <span *ngIf="emp.emp_name"> - {{ emp.emp_name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="registerButtonClicked && !selectedEmployee" class="error-message">
+      Please Select Your Employee
+    </div>
+  </div>
+</div>
                                 
 
 <div class="col-md-6">
@@ -277,22 +302,48 @@
                 </div>
             </div>
 
-    <div class="col-md-6">
-      <label>Employee</label>
-      <div class="custom-sel">
-<select
-  class="form-control"
-  [(ngModel)]="editAsset.selectedEmployee"
-  (change)="onEmployeeChangeEdit()"
-  [ngModelOptions]="{standalone: true}">
 
-<option *ngFor="let employee of filteredEmployees" [ngValue]="employee.id">
-  {{ employee.emp_code }}
-</option>
+   <div class="col-md-4">
+          <div class="custom-sel">
+            <label>Employee
+              <span class="required-star">*</span>
+            </label>
 
-</select>
-      </div>
-    </div>
+            <!-- Searchable Employee Dropdown for Edit Modal -->
+            <div class="searchable-select" 
+                 [ngClass]="{'error-field': registerButtonClicked && !editAsset.selectedEmployee}">
+              <input 
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="editAsset.employeeSearchText" 
+                (input)="filterEditEmployees()" 
+                (focus)="onEditEmployeeFocus()" 
+                (blur)="hideEditEmployeeDropdown()" 
+                placeholder="Search & Select Employee"
+                [ngModelOptions]="{standalone: true}"
+              />
+
+              <span class="searchable-arrow" (mousedown)="$event.preventDefault(); toggleEditEmployeeDropdown()">▾</span>
+
+              <div class="dropdown-list" *ngIf="showEditEmployeeDropdown">
+                <div *ngIf="editFilteredEmployeesList.length === 0" class="dropdown-item no-data">
+                  No employees found
+                </div>
+                <div 
+                  *ngFor="let emp of editFilteredEmployeesList" 
+                  class="dropdown-item" 
+                  (mousedown)="selectEditEmployee($event, emp)"
+                >
+                  {{ emp.emp_code }} <span *ngIf="emp.emp_name"> - {{ emp.emp_name }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="registerButtonClicked && !editAsset.selectedEmployee" class="error-message">
+              Please Select Your Employee
+            </div>
+          </div>
+        </div>
 
     <div class="col-md-6">
   <label>Document Number</label>
