@@ -851,7 +851,9 @@ loadComponentMetadata(schema: string): void {
     next: (components: any[]) => {
       if (components && Array.isArray(components)) {
         this.allComponentsList = components; // Stores objects like [{ id: 12, payroll_category: 'basic' }]
-        const categories = components.map(c => c.payroll_category).filter(Boolean);
+        // const categories = components.map(c => c.payroll_category).filter(Boolean);
+        const categories = components.map(c => c.name).filter(Boolean);
+
         this.availableCategories = Array.from(new Set(categories));
       }
     },
