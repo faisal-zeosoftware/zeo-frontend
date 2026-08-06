@@ -19,6 +19,7 @@ import { EmployeeCreateLanguageComponent } from '../employee-create-language/emp
 import { LeaveService } from '../leave-master/leave.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { DepartmentServiceService } from '../department-master/department-service.service';
 
 
 @Component({
@@ -92,6 +93,7 @@ export class EmployeeDetailsComponent implements OnInit {
 
   joinFieldName: string = 'Joining Date';
   @Input() document: any; // Input property to receive the document object
+  emp_branch_id:any='';
   // cdr: any;
   constructor(private EmployeeService:EmployeeService,
     private companyRegistrationService: CompanyRegistrationService, 
@@ -104,6 +106,9 @@ export class EmployeeDetailsComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private leaveService: LeaveService,
+    private CountryService: CountryService,
+    private CompanyRegistrationService: CompanyRegistrationService,
+    private DepartmentServiceService: DepartmentServiceService,
 
     
     ) {}
@@ -149,6 +154,14 @@ export class EmployeeDetailsComponent implements OnInit {
       this.loadLoanDetails();
 
       this.loadSalary();
+
+      this.LoadBranch()
+      this.loadDepartments();
+      this.loadDesignation();
+      this.loadcatg();
+   
+      this.loadReligoin();
+      this.loadNationality();
 
       if (employeeIdParam) {
         const employeeId = +employeeIdParam;
@@ -1111,6 +1124,380 @@ loadSalaryRevisions(employeeId: number) {
 
 }
 
+
+
+
+
+
+
+
+
+// edit section-
+isEditMode: boolean = false;
+employeeBackup: any = null;
+
+selectedFile: File | null = null;
+
+// Master lists for dropdown selections (adjust names as needed)
+branchList: any[] = [];
+departmentList: any[] = [];
+designationList: any[] = [];
+categoryList: any[] = [];
+religionList: any[] = [];
+nationalityList: any[] = [];
+
+onFileSelected(event: any): void {
+  if (event.target.files && event.target.files.length > 0) {
+    this.selectedFile = event.target.files[0];
+  }
+}
+
+saveEmployee(): void {
+  const formData = new FormData();
+
+  // Helper function to ensure we ONLY send integers for Foreign Keys
+  const getPkValue = (val: any, list: any[] = []): string => {
+    if (val === null || val === undefined) return '';
+    
+    // If it's already a number or numeric string (e.g. 1 or "1")
+    if (!isNaN(Number(val))) return val.toString();
+
+    // If it's an object with an 'id' field
+    if (typeof val === 'object' && val.id) return val.id.toString();
+
+    // If it's a string name (e.g., "Hrms"), find its ID in the master list
+    if (typeof val === 'string' && list.length > 0) {
+      const found = list.find(item => item.name.toLowerCase() === val.toLowerCase());
+      if (found) return found.id.toString();
+    }
+
+    return '';
+  };
+
+  const safeAppend = (key: string, value: any) => {
+    formData.append(key, value !== null && value !== undefined ? value.toString() : '');
+  };
+
+  const formatDate = (date: any): string => {
+    if (!date) return '';
+    const d = new Date(date);
+    return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+  };
+
+  // --- Profile Picture ---
+  if (this.selectedFile) {
+    formData.append('emp_profile_pic', this.selectedFile, this.selectedFile.name);
+  }
+
+  // --- Regular Text Fields ---
+  safeAppend('emp_code', this.employee.emp_code);
+  safeAppend('emp_first_name', this.employee.emp_first_name);
+  safeAppend('emp_last_name', this.employee.emp_last_name);
+  safeAppend('emp_gender', this.employee.emp_gender);
+  safeAppend('emp_date_of_birth', formatDate(this.employee.emp_date_of_birth));
+  safeAppend('emp_personal_email', this.employee.emp_personal_email);
+  safeAppend('emp_company_email', this.employee.emp_company_email);
+  safeAppend('emp_mobile_number_1', this.employee.emp_mobile_number_1);
+  safeAppend('emp_mobile_number_2', this.employee.emp_mobile_number_2);
+  safeAppend('emp_city', this.employee.emp_city);
+  safeAppend('emp_permenent_address', this.employee.emp_permenent_address);
+  safeAppend('emp_present_address', this.employee.emp_present_address);
+  safeAppend('emp_blood_group', this.employee.emp_blood_group);
+  safeAppend('emp_marital_status', this.employee.emp_marital_status);
+  safeAppend('emp_father_name', this.employee.emp_father_name);
+  safeAppend('emp_mother_name', this.employee.emp_mother_name);
+  safeAppend('emp_posting_location', this.employee.emp_posting_location);
+  safeAppend('work_location', this.employee.work_location);
+  safeAppend('visa_location', this.employee.visa_location);
+  safeAppend('attendance_source', this.employee.attendance_source);
+  safeAppend('person_id', this.employee.person_id);
+
+  // --- Dates ---
+  safeAppend('emp_date_of_confirmation', formatDate(this.employee.emp_date_of_confirmation));
+  safeAppend('emp_joined_date', formatDate(this.employee.emp_joined_date));
+
+  // --- Foreign Keys (Converted to PK Integers) ---
+  safeAppend('emp_company_id', getPkValue(this.employee.emp_company_id));
+  safeAppend('emp_branch_id', getPkValue(this.employee.emp_branch_id, this.branchList));
+  safeAppend('emp_relegion', getPkValue(this.employee.emp_relegion, this.religionList));
+  safeAppend('emp_nationality', getPkValue(this.employee.emp_nationality, this.nationalityList));
+  safeAppend('emp_dept_id', getPkValue(this.employee.emp_dept_id, this.departmentList));
+  safeAppend('emp_desgntn_id', getPkValue(this.employee.emp_desgntn_id, this.designationList));
+  safeAppend('emp_ctgry_id', getPkValue(this.employee.emp_ctgry_id, this.categoryList));
+
+  // Reporting Manager
+  if (!this.employee.emp_reporting_manager || this.employee.emp_reporting_manager === '0') {
+    formData.append('emp_reporting_manager', '');
+  } else {
+    safeAppend('emp_reporting_manager', getPkValue(this.employee.emp_reporting_manager));
+  }
+
+  // --- Booleans ---
+  safeAppend('is_ess', this.employee.is_ess ? '1' : '0');
+  safeAppend('emp_status', this.employee.emp_status ? '1' : '0');
+  safeAppend('emp_ot_applicable', this.employee.emp_ot_applicable ? '1' : '0');
+  safeAppend('is_active', this.employee.is_active ? '1' : '0');
+
+  // --- Submit Request ---
+  this.EmployeeService.updateEmp(this.employee.id, formData).subscribe({
+    next: (response) => {
+      alert('Employee Details Updated Successfully!');
+      this.isEditMode = false;
+      this.selectedFile = null;
+      this.ngOnInit(); // Reload details
+    },
+    error: (error) => {
+      console.error('Update Error:', error);
+      if (error.error) {
+        let messages: string[] = [];
+        for (const key in error.error) {
+          if (error.error.hasOwnProperty(key)) {
+            messages.push(`${key}: ${error.error[key].join(', ')}`);
+          }
+        }
+        alert(messages.join('\n'));
+      }
+    }
+  });
+}
+
+
+toggleEditMode(): void {
+  if (!this.isEditMode) {
+    // 1. Backup original data
+    this.employeeBackup = JSON.parse(JSON.stringify(this.employee));
+
+    // 2. Fetch master lists if they are empty
+    if (!this.departments.length) this.loadDepartments();
+    if (!this.designations.length) this.loadDesignation();
+    if (!this.catogories.length) this.loadcatg();
+    if (!this.branches.length) this.LoadBranch();
+    if (!this.Religions.length) this.loadReligoin();
+    if (!this.Nationations.length) this.loadNationality();
+
+
+
+
+    // Ensure list APIs are called if they aren't loaded yet
+    if (!this.Religions.length) this.loadReligoin();
+    if (!this.Nationations.length) this.loadNationality();
+
+    // Map Religion text to ID if needed
+    if (typeof this.employee.emp_relegion === 'string') {
+      const foundRel = this.Religions.find(r => r.religion?.toLowerCase() === this.employee.emp_relegion.toLowerCase());
+      if (foundRel) this.employee.emp_relegion = foundRel.id;
+    }
+
+    // Map Nationality text to ID if needed
+    if (typeof this.employee.emp_nationality === 'string') {
+      const foundNat = this.Nationations.find(n => n.N_name?.toLowerCase() === this.employee.emp_nationality.toLowerCase());
+      if (foundNat) this.employee.emp_nationality = foundNat.id;
+    }
+
+    // Format Date strings for HTML5 date inputs (YYYY-MM-DD)
+    if (this.employee.emp_date_of_birth) {
+      this.employee.emp_date_of_birth = this.employee.emp_date_of_birth.split('T')[0];
+    }
+    if (this.employee.emp_joined_date) {
+      this.employee.emp_joined_date = this.employee.emp_joined_date.split('T')[0];
+    }
+
+    // 3. Convert string titles to IDs if needed
+    this.mapFieldsToIds();
+  }
+  this.isEditMode = !this.isEditMode;
+}
+
+mapFieldsToIds(): void {
+  // Department
+  if (typeof this.employee.emp_dept_id === 'string') {
+    const found = this.departments.find(d => d.dept_name.toLowerCase() === this.employee.emp_dept_id.toLowerCase());
+    if (found) this.employee.emp_dept_id = found.id;
+  }
+
+  // Designation
+  if (typeof this.employee.emp_desgntn_id === 'string') {
+    const found = this.designations.find(d => d.desgntn_job_title.toLowerCase() === this.employee.emp_desgntn_id.toLowerCase());
+    if (found) this.employee.emp_desgntn_id = found.id;
+  }
+
+  // Category
+  if (typeof this.employee.emp_ctgry_id === 'string') {
+    const found = this.catogories.find(c => c.ctgry_title.toLowerCase() === this.employee.emp_ctgry_id.toLowerCase());
+    if (found) this.employee.emp_ctgry_id = found.id;
+  }
+
+  // Branch
+  if (typeof this.employee.emp_branch_id === 'string') {
+    const found = this.branches.find(b => b.branch_name.toLowerCase() === this.employee.emp_branch_id.toLowerCase());
+    if (found) this.employee.emp_branch_id = found.id;
+  }
+
+  // Religion
+  if (typeof this.employee.emp_relegion === 'string') {
+    const found = this.Religions.find(r => r.name?.toLowerCase() === this.employee.emp_relegion.toLowerCase());
+    if (found) this.employee.emp_relegion = found.id;
+  }
+
+  // Nationality
+  if (typeof this.employee.emp_nationality === 'string') {
+    const found = this.Nationations.find(n => n.N_name?.toLowerCase() === this.employee.emp_nationality.toLowerCase());
+    if (found) this.employee.emp_nationality = found.id;
+  }
+
+
+  
+}
+
+  cancelEdit(): void {
+    if (this.employeeBackup) {
+      this.employee = JSON.parse(JSON.stringify(this.employeeBackup));
+    }
+    this.isEditMode = false;
+    this.selectedFile = null;
+  }
+
+
+  branches:any[] = [];
+  departments:any[] = [];
+  designations:any[] = [];
+  catogories:any[] =[];
+
+
+  Religions: any[] = [];
+  Nationations: any[] = [];
+
+
+
+  loadReligoin(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+  
+    console.log('schemastore',selectedSchema )
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+  
+    this.CountryService.getReligionList(selectedSchema).subscribe(
+      (result: any) => {
+        this.Religions = result;
+      },
+      (error: any) => {
+        console.error('Error fetching countries:', error);
+      }
+    );
+    }
+  }
+
+  
+LoadBranch(callback?: Function) {
+  const selectedSchema = this.authService.getSelectedSchema();
+  
+  if (selectedSchema) {
+    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+      (result: any[]) => {
+        // 1. Get the sidebar selected IDs from localStorage
+        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+        // 2. Filter the API result to only include branches selected in the sidebar
+        // If sidebar is empty, you might want to show all, or show none. 
+        // Usually, we show only the selected ones:
+        if (sidebarSelectedIds.length > 0) {
+          this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
+        } else {
+          this.branches = result; // Fallback: show all if nothing is selected in sidebar
+        }
+        // Inside the subscribe block of loadDeparmentBranch
+// ✅ Auto select first branch
+if (this.branches.length > 0) {
+this.emp_branch_id = this.branches[0].id;
+}
+
+        console.log('Filtered branches for selection:', this.branches);
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching branches:', error);
+      }
+    );
+  }
+}
+
+loadDepartments(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+
+  this.CompanyRegistrationService.getDepartmentsList(selectedSchema).subscribe(
+    (result: any) => {
+      this.departments = result;
+    },
+    (error: any) => {
+      console.error('Error fetching countries:', error);
+    }
+  );
+  }
+}
+
+
+
+loadDesignation(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+  this.CompanyRegistrationService.getDesignationList(selectedSchema).subscribe(
+    (result: any) => {
+      this.designations = result;
+    },
+    (error: any) => {
+      console.error('Error fetching designations:', error);
+    }
+  );
+  }
+}
+
+
+loadcatg(): void {
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore',selectedSchema )
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+  this.CompanyRegistrationService.getcatgoriesList(selectedSchema).subscribe(
+    (result: any) => {
+      this.catogories = result;
+    },
+    (error: any) => {
+      console.error('Error fetching catogories:', error);
+    }
+  );
+  }
+}
+
+
+
+loadNationality(): void {
+
+  const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+  console.log('schemastore', selectedSchema)
+  // Check if selectedSchema is available
+  if (selectedSchema) {
+
+    this.CountryService.getNationality(selectedSchema).subscribe(
+      (result: any) => {
+        this.Nationations = result;
+      },
+      (error: any) => {
+        console.error('Error fetching countries:', error);
+      }
+    );
+  }
+}
 
 
 

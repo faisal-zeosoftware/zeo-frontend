@@ -1,42 +1,38 @@
 <div class="container">
     <div class="comapny_section" *ngIf="employee">
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-7">
+<!-- Header Section with Dynamic Action Buttons -->
+<div class="header_section">
+    <div class="row align-items-center">
+      <div class="col-md-7">
         <h1>Employee Details</h1>
-                </div>
+      </div>
 
-                <div class="col-md-5">
+      <div class="col-md-5">
         <div class="d-flex justify-content-end align-items-center gap-2" *ngIf="!hideButton">
+          
+          <!-- View Mode Button -->
+          <button *ngIf="!isEditMode" type="button" class="btn btn-info btn-Edit" (click)="toggleEditMode()">
+            <span class="header-btn-icon"><mat-icon>draw</mat-icon></span>
+            Edit
+          </button>
 
-            <button
-                type="button"
-                class="btn btn-info btn-Edit"
-                (click)="openEditEmpPopuss(employee.id)">
-                            <span class="header-btn-icon">
-                    <mat-icon>draw</mat-icon>
-                </span>
-                Edit
+          <!-- Edit Mode Buttons (Save / Cancel) -->
+          <div *ngIf="isEditMode" class="d-flex gap-2">
+            <button type="button" class="btn btn-success" (click)="saveEmployee()">
+              <span class="header-btn-icon"><mat-icon>check</mat-icon></span> Save
             </button>
-
-            <!-- <button
-                type="button"
-                class="btn btn-success btn-Edit"
-                (click)="openEmployeeFullForm()">
-                            <span class="header-btn-icon">
-                    <mat-icon>person_add</mat-icon>
-                </span>
-                Add Employee Personal Details
-            </button> -->
-
-                    </div>
-                </div>
-            </div>
-
-
+            <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
+              <span class="header-btn-icon"><mat-icon>close</mat-icon></span> Cancel
+            </button>
+          </div>
 
         </div>
+      </div>
+    </div>
+  </div>
+
+
+
         <!-- <div class="list_company_sec mt-4">
             
         </div> -->
@@ -44,240 +40,313 @@
         <div class="emp_details mt-5">
 
             <div class="row">
+                <!-- Profile Card & Image Upload -->
                 <div class="col-md-4">
-                    <div class="profile-card">
-                        <div class="profile_img_emp d-block mx-auto">
-                            <!-- <img [src]="employee.emp_profile_pic" alt="Employee Photo" style="width: 100%;"> -->
-                            <img [src]="employee.emp_profile_pic" (error)="handleImageError($event)"
-                                style="width: 150px; height: 150px;">
-                            <!-- <img *ngIf="employee.emp_profile_pic" [src]="employee.emp_profile_pic" alt="Profile Picture" class="img-fluid d-block mx-auto" style="width: 100%;"> -->
-                        </div>
-
-                        <div class="text-data text-center" style="text-align: center;">
-                            <span class="name">{{ employee.emp_first_name }} {{ employee.emp_last_name }} </span>
-                            <span class="job">{{employee.emp_desgntn_id}}
-                            </span>
-                        </div>
-
-
-
-
+                  <div class="profile-card text-center">
+                    <div class="profile_img_emp d-block mx-auto">
+                      <img [src]="employee.emp_profile_pic" (error)="handleImageError($event)"
+                           style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
                     </div>
-                </div>
-
-                <div class="col-md-8">
-                    <div class="emp_additional_details">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <h2>{{empCodeFieldName}}</h2>
-                                <h3>{{ employee.emp_code }}</h3>
-                            </div>
-
-                            <div class="col-md-4">
-                                <h2>Is Ess</h2>
-                                <h3>{{employee.is_ess}}</h3>
-                                <!-- <h2>Employee Ess User</h2>
-                                <h3>{{employee.is_ess}}</h3> -->
-                            </div>
-
-                            <div class="col-md-5">
-                                <h2>{{desFieldName}}</h2>
-                                <h3>{{ employee.emp_desgntn_id }}</h3>
-                            </div>
-                        </div>
-
-                        <div class="row mt-4">
-                            <div class="col-md-3">
-                                <h2>{{catFieldName}}</h2>
-                                <h3>{{ employee.emp_ctgry_id }}</h3>
-                            </div>
-
-                            <div class="col-md-4">
-                                <h2>{{deptFieldName}}</h2>
-                                <h3>{{ employee.emp_dept_id }}</h3>
-                            </div>
-
-                            <div class="col-md-5">
-                                <h2>{{brchFieldName}}</h2>
-                                <h3>{{ employee.emp_branch_id }}</h3>
-                            </div>
-                        </div>
-
-                        <div class="row mt-4">
-
-
-                            <div class="col-md-3">
-                                <h2>{{dobFieldName}}</h2>
-                                <h3>{{employee.emp_date_of_birth}}</h3>
-                            </div>
-
-                            <div class="col-md-4">
-                                <h2>{{nationFieldName}}</h2>
-                                <h3>{{employee.emp_nationality}}</h3>
-                            </div>
-
-                             <div class="col-md-4">
-                                <h2>{{emailFieldName}}</h2>
-                                <h3>{{employee.emp_company_email}}</h3>
-                            </div>
-
-                            
-
-                        </div>
-
-                        
-
-
+          
+                    <!-- Profile Pic File Upload in Edit Mode -->
+                    <div *ngIf="isEditMode" class="mt-2 text-start px-3">
+                      <label class="form-label text-muted small mb-1">Change Profile Picture</label>
+                      <input type="file" class="form-control form-control-sm" (change)="onFileSelected($event)" accept="image/*">
                     </div>
+          
+                    <div class="text-data text-center mt-3">
+                      <!-- View Mode Name -->
+                      <div *ngIf="!isEditMode">
+                        <span class="name">{{ employee.emp_first_name }} {{ employee.emp_last_name }}</span>
+                      </div>
+          
+                      <!-- Edit Mode Name Fields -->
+                      <div *ngIf="isEditMode" class="d-flex gap-2 justify-content-center mb-2 px-3">
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="employee.emp_first_name" placeholder="First Name">
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="employee.emp_last_name" placeholder="Last Name">
+                      </div>
+          
+                      <span class="job">{{ employee.emp_desgntn_id }}</span>
+                    </div>
+                  </div>
                 </div>
-            </div>
+          
+                <!-- Overview Info Cards -->
+              <!-- Overview Info Cards -->
+<div class="col-md-8">
+    <div class="emp_additional_details">
+      <div class="row">
+        <div class="col-md-3">
+          <h2>{{empCodeFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_code }}</h3>
+          <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_code">
+        </div>
+  
+        <div class="col-md-4">
+          <h2>Is ESS</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.is_ess }}</h3>
+          <div *ngIf="isEditMode" class="form-check mt-1">
+            <input type="checkbox" class="form-check-input" id="is_ess_check" [(ngModel)]="employee.is_ess">
+            <label class="form-check-label" for="is_ess_check">Enable ESS User</label>
+          </div>
+        </div>
+  
+        <div class="col-md-5">
+          <h2>{{desFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_desgntn_id }}</h3>
+          <!-- Changed [value] to [ngValue] -->
+          <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_desgntn_id">
+            <option [ngValue]="null" disabled>Select Designation</option>
+            <option *ngFor="let des of designations" [ngValue]="des.id">{{ des.desgntn_job_title }}</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <h2>{{catFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_ctgry_id }}</h3>
+          <!-- Changed [value] to [ngValue] -->
+          <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_ctgry_id">
+            <option [ngValue]="null" disabled>Select Category</option>
+            <option *ngFor="let cat of catogories" [ngValue]="cat.id">{{ cat.ctgry_title }}</option>
+          </select>
+        </div>
+  
+        <div class="col-md-4">
+          <h2>{{deptFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_dept_id }}</h3>
+          <!-- Changed [value] to [ngValue] -->
+          <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_dept_id">
+            <option [ngValue]="null" disabled>Select Department</option>
+            <option *ngFor="let dept of departments" [ngValue]="dept.id">{{ dept.dept_name }}</option>
+          </select>
+        </div>
+  
+        <div class="col-md-5">
+          <h2>{{brchFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_branch_id }}</h3>
+          <!-- Changed [value] to [ngValue] -->
+          <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_branch_id">
+            <option [ngValue]="null" disabled>Select Branch</option>
+            <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branch_name }}</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="row mt-4">
+        <div class="col-md-3">
+          <h2>{{dobFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_date_of_birth }}</h3>
+          <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="employee.emp_date_of_birth">
+        </div>
+  
+        <div class="col-md-4">
+          <h2>{{nationFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_nationality }}</h3>
+          <!-- Changed [value] to [ngValue] -->
+          <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_nationality">
+            <option [ngValue]="null" disabled>Select Nationality</option>
+            <option *ngFor="let country of Nationations" [ngValue]="country.id">{{ country.N_name }}</option>
+          </select>
+        </div>
+  
+        <div class="col-md-5">
+          <h2>{{emailFieldName}}</h2>
+          <h3 *ngIf="!isEditMode">{{ employee.emp_company_email }}</h3>
+          <input *ngIf="isEditMode" type="email" class="form-control" [(ngModel)]="employee.emp_company_email">
+        </div>
+      </div>
+    </div>
+  </div>
+              </div>
+
             <div class="row mt-4">
 
                 <div class="col-md-12">
                     <div class="emp_tabs">
                         <mat-tab-group class="my-tabs" animationDuration="0ms">
+                          
+                          
                             <mat-tab label="Personal Information">
-                                <div class="tab_content  mt-3">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <h2>{{firstNameFieldName}}</h2>
-                                            <h3>{{ employee.emp_first_name }} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>{{lastNameFieldName}}</h2>
-                                            <h3>{{ employee.emp_last_name }} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>{{genderFieldName}}</h2>
-                                            <h3>{{employee.emp_gender}} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>{{dobFieldName}}</h2>
-                                            <h3>{{employee.emp_date_of_birth}} </h3>
-                                        </div>
+                                <div class="tab_content mt-3">
+                              
+                                  <!-- Row 1: Basic Info -->
+                                  <div class="row g-3">
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{firstNameFieldName || 'First Name'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_first_name || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_first_name" placeholder="Enter first name">
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <h2>{{cmpnoFieldName}}</h2>
-                                            <h3>{{employee.emp_mobile_number_1}} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>{{pernoFieldName}}</h2>
-                                            <h3>{{employee.emp_mobile_number_2}} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>{{emailFieldName}}</h2>
-                                            <h3>{{employee.emp_personal_email}}</h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>{{cityFieldName}}</h2>
-                                            <h3>{{employee.emp_city}} </h3>
-                                        </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{lastNameFieldName || 'Last Name'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_last_name || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_last_name" placeholder="Enter last name">
                                     </div>
-
-
-                                    <div class="row">
-                                        <!-- <div class="col-md-3">
-                                            <h2>State</h2>
-                                            <h3>{{employee.emp_state_id}} </h3>
-                                        </div> -->
-
-                                        <div class="col-md-3">
-                                            <h2>Work Location</h2>
-                                            <h3>{{employee.work_location}} </h3>
-                                        </div> 
-
-                                        <div class="col-md-3">
-                                            <h2>Visa Location</h2>
-                                            <h3>{{employee.visa_location}} </h3>
-                                        </div> 
-
-                                        <!-- <div class="col-md-3">
-                                            <h2>{{cityFieldName}}</h2>
-                                            <h3>{{employee.emp_city}}</h3>
-                                        </div> -->
-
-                                       <div class="col-md-3">
-                                            <h2>Nationality </h2>
-                                            <h3>{{employee.emp_nationality}}</h3>
-                                        </div>
-
-
-                                        <div class="col-md-3">
-                                            <h2>{{peraddressFieldName}}</h2>
-                                            <h3> {{employee.emp_permenent_address}}</h3>
-                                        </div>
-
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{genderFieldName || 'Gender'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">
+                                        {{ employee.emp_gender === 'M' ? 'Male' : employee.emp_gender === 'F' ? 'Female' : 'Other' }}
+                                      </p>
+                                      <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_gender">
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="O">Other</option>
+                                      </select>
                                     </div>
-
-
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <h2>{{religionFieldName}}</h2>
-                                            <h3>{{employee.emp_relegion}} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>{{bloodFieldName}}</h2>
-                                            <h3>{{employee.emp_blood_group}}</h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>{{maritalFieldName}} </h2>
-                                            <h3>{{employee.emp_marital_status}}</h3>
-                                        </div>
-
-                                        <!-- <div class="col-md-3">
-                                            <h2>Languages </h2>
-                                            <h3>{{employee.emp_languages}}</h3>
-                                        </div> -->
-
-                                        <div class="col-md-3">
-                                            <h2>{{joinFieldName}} </h2>
-                                            <h3>{{employee.emp_joined_date}}</h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>OT Applicable to</h2>
-                                            <h3>{{ employee.emp_ot_applicable }} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>Reporting Manager</h2>
-                                            <h3>{{ employee.emp_reporting_manager }} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>{{preaddressFieldName}}</h2>
-                                            <h3>{{employee.emp_present_address}}</h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>Personal ID</h2>
-                                            <h3>{{employee.person_id}}</h3>
-                                        </div>
-
-
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{dobFieldName || 'Date of Birth'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_date_of_birth || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="employee.emp_date_of_birth">
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-md-3" *ngFor="let cus of employee.custom_fields">
-                                            <h2> {{cus.emp_custom_field}}</h2>
-                                            <h3>{{cus.field_value}}</h3>
-                                        </div>
+                                  </div>
+                              
+                                  <!-- Row 2: Contact & Location -->
+                                  <div class="row g-3 mt-1">
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{cmpnoFieldName || 'Company Mobile'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_mobile_number_1 || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_mobile_number_1">
                                     </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{pernoFieldName || 'Personal Mobile'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_mobile_number_2 || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_mobile_number_2">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Personal Email</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_personal_email || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="email" class="form-control" [(ngModel)]="employee.emp_personal_email">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{cityFieldName || 'City'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_city || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_city">
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Row 3: Visa, Location & Background -->
+                                  <div class="row g-3 mt-1">
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Work Location</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.work_location || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.work_location">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Visa Location</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.visa_location || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.visa_location">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Nationality</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_nationality || '-' }}</p>
+                                      <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_nationality">
+                                        <option [ngValue]="null" disabled>Select Nationality</option>
+                                        <option *ngFor="let country of Nationations" [ngValue]="country.id">{{ country.N_name }}</option>
+                                      </select>
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{religionFieldName || 'Religion'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_relegion || '-' }}</p>
+                                      <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_relegion">
+                                        <option [ngValue]="null" disabled>Select Religion</option>
+                                        <option *ngFor="let rel of Religions" [ngValue]="rel.id">{{ rel.religion }}</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Row 4: Personal Status (RESTORED) -->
+                                  <div class="row g-3 mt-1">
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{bloodFieldName || 'Blood Group'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_blood_group || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_blood_group" placeholder="e.g. O+">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{maritalFieldName || 'Marital Status'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">
+                                        {{ employee.emp_marital_status === 'S' ? 'Single' : employee.emp_marital_status === 'M' ? 'Married' : employee.emp_marital_status === 'D' ? 'Divorced' : employee.emp_marital_status === 'W' ? 'Widowed' : '-' }}
+                                      </p>
+                                      <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_marital_status">
+                                        <option value="S">Single</option>
+                                        <option value="M">Married</option>
+                                        <option value="D">Divorced</option>
+                                        <option value="W">Widowed</option>
+                                      </select>
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{joinFieldName || 'Joined Date'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_joined_date || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="employee.emp_joined_date">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Personal ID</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.person_id || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.person_id">
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Row 5: Manager & OT Settings (RESTORED) -->
+                                  <div class="row g-3 mt-1">
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Reporting Manager</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_reporting_manager || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_reporting_manager">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <label class="emp-label">OT Applicable</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">
+                                        <span class="badge" [ngClass]="employee.emp_ot_applicable ? 'bg-success' : 'bg-secondary'">
+                                          {{ employee.emp_ot_applicable ? 'Yes' : 'No' }}
+                                        </span>
+                                      </p>
+                                      <div *ngIf="isEditMode" class="form-check form-switch mt-2">
+                                        <input type="checkbox" class="form-check-input" id="ot_check" [(ngModel)]="employee.emp_ot_applicable">
+                                        <label class="form-check-label fw-bold" for="ot_check">Applicable</label>
+                                      </div>
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Row 6: Addresses -->
+                                  <div class="row g-3 mt-1">
+                                    <div class="col-md-6">
+                                      <label class="emp-label">{{peraddressFieldName || 'Permanent Address'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_permenent_address || '-' }}</p>
+                                      <textarea *ngIf="isEditMode" class="form-control" rows="2" [(ngModel)]="employee.emp_permenent_address"></textarea>
+                                    </div>
+                              
+                                    <div class="col-md-6">
+                                      <label class="emp-label">{{preaddressFieldName || 'Present Address'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_present_address || '-' }}</p>
+                                      <textarea *ngIf="isEditMode" class="form-control" rows="2" [(ngModel)]="employee.emp_present_address"></textarea>
+                                    </div>
+                                  </div>
+                              
+                                  <!-- Row 7: Dynamic Custom Fields (RESTORED) -->
+                                  <div class="row g-3 mt-1" *ngIf="employee.custom_fields && employee.custom_fields.length">
+                                    <div class="col-md-12"><hr class="my-3 text-muted"></div>
+                                    <div class="col-md-3" *ngFor="let cus of employee.custom_fields">
+                                      <label class="emp-label">{{ cus.emp_custom_field }}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ cus.field_value || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="cus.field_value">
+                                    </div>
+                                  </div>
+                              
                                 </div>
-
-
-
-
-                            </mat-tab>
-
+                              </mat-tab>
 
                             <mat-tab label="Employee Family">
                                 <div class="tab_content  mt-3" *ngFor="let member of emp_family_details">

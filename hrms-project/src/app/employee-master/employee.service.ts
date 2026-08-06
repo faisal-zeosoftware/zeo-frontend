@@ -6960,6 +6960,15 @@ rejectApprovalRequestPayslip(apiUrl: string, data: any): Observable<any> {
 
 
 
+updateEmployeeDetails(employeeId: number, payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    return throwError(() => new Error('No schema selected.'));
+  }
+
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, payload);
+}
 
 
 
