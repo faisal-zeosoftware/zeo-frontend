@@ -206,28 +206,32 @@
       </div> -->
 
 
-      <div class="mt-4" *ngIf="selectedPayslipDesign === 'classic'">
+<div class="mt-4" *ngIf="selectedPayslipDesign === 'classic'">
   <div class="row">
     <div class="col-md-9">
       <div class="payslip-classic" *ngIf="payslipDetails" #payslipContent>
 
-        <!-- Header: logo left, company details right -->
-        <div class="pc-header">
-<div class="pc-logo" *ngIf="companyLogoUrl">
-  <img [src]="companyLogoUrl" alt="Company logo">
+<!-- Header: logo left, company details right -->
+<div class="pc-header">
+  <div class="pc-logo" *ngIf="companyLogoUrl">
+    <img [src]="companyLogoUrl" alt="Company logo">
+  </div>
+  <div class="pc-company" *ngIf="payslipPreferences.showCompanyName">
+    <h1>{{ companyName }}</h1>
+    <!-- FIXED: Use companyAddress from Company API -->
+    <p *ngIf="companyAddress">{{ companyAddress }}</p>
+    <!-- FIXED: Use companyEmail from Company API (fallback to employee company email) -->
+    <p *ngIf="companyEmail">{{ companyEmail }}</p>
+    <!-- FIXED: Use companyTrn from Company API -->
+    <p *ngIf="companyTrn">TRN {{ companyTrn }}</p>
+  </div>
 </div>
-          <div class="pc-company" *ngIf="payslipPreferences.showCompanyName">
-            <h1>{{ companyName }}</h1>
-            <p *ngIf="payslipDetails.payroll_run?.company_address">{{ payslipDetails.payroll_run?.company_address }}</p>
-            <p *ngIf="payslipDetails.payroll_run?.company_email">{{ payslipDetails.payroll_run?.company_email }}</p>
-            <p *ngIf="payslipDetails.payroll_run?.company_trn">TRN {{ payslipDetails.payroll_run?.company_trn }}</p>
-          </div>
-        </div>
 
         <!-- Title -->
         <div class="pc-title">
           <h2>PAY SLIP</h2>
-          <p>{{ payslipDetails.payroll_run?.month }} {{ payslipDetails.payroll_run?.year }}</p>
+          <!-- FIXED: Use computed monthName instead of raw number -->
+          <p>{{ monthName }} {{ payslipDetails.payroll_run?.year }}</p>
         </div>
 
         <!-- Employee / IBAN block -->
@@ -235,33 +239,29 @@
           <div class="pc-info-col">
             <div class="pc-info-row">
               <span class="pc-label">Employee</span>
-              <span class="pc-value">: {{ payslipDetails.employee_name || payslipDetails.employee }}</span>
+              <!-- FIXED: Use employeeFullName instead of employee_name/employee -->
+              <span class="pc-value">: {{ employeeFullName }}</span>
             </div>
-            <div class="pc-info-row" *ngIf="payslipDetails.emirates_id !== undefined">
+            <!-- FIXED: Emirates ID from person_id -->
+            <div class="pc-info-row" *ngIf="emiratesId">
               <span class="pc-label">Emirates Id</span>
-              <span class="pc-value">: {{ payslipDetails.emirates_id || '-' }}</span>
+              <span class="pc-value">: {{ emiratesId }}</span>
             </div>
-            <div class="pc-info-row" *ngIf="payslipDetails.designation">
-              <span class="pc-label">Designation</span>
-              <span class="pc-value">: {{ payslipDetails.designation }}</span>
-            </div>
+      <!-- FIXED: Use payroll_run.designation instead of mapped designation -->
+    <div class="pc-info-row" *ngIf="payslipPreferences.showDesignation">
+      <span class="pc-label">Designation</span>
+      <span class="pc-value">: {{ payslipDetails.payroll_run?.designation }}</span>
+    </div>
+          </div>
+          <div class="pc-info-col">
             <div class="pc-info-row" *ngIf="payslipPreferences.showBranch">
               <span class="pc-label">Branch</span>
               <span class="pc-value">: {{ payslipDetails.payroll_run?.branch }}</span>
             </div>
-            <div class="pc-info-row" *ngIf="payslipPreferences.showDepartment">
-              <span class="pc-label">Department</span>
-              <span class="pc-value">: {{ payslipDetails.payroll_run?.department || 'N/A' }}</span>
-            </div>
-            <div class="pc-info-row" *ngIf="payslipPreferences.showCategory">
-              <span class="pc-label">Category</span>
-              <span class="pc-value">: {{ payslipDetails.payroll_run?.category || 'N/A' }}</span>
-            </div>
-          </div>
-          <div class="pc-info-col">
             <div class="pc-info-row">
               <span class="pc-label">IBAN</span>
-              <span class="pc-value">: {{ payslipDetails.iban || '-' }}</span>
+              <!-- FIXED: Use computed ibanNumber -->
+              <span class="pc-value">: {{ ibanNumber }}</span>
             </div>
             <div class="pc-info-row">
               <span class="pc-label">Payment Date</span>
@@ -281,11 +281,19 @@
             </tr>
           </thead>
           <tbody>
+            <!-- FIXED: Use max of earnings/deductions length for proper row rendering -->
             <tr *ngFor="let earning of earnings; let i = index">
               <td>{{ earning.component_name }}</td>
               <td class="pc-num">{{ earning.structure_amount || '0.00' }}</td>
               <td>{{ deductions[i]?.component_name || '' }}</td>
               <td class="pc-num">{{ deductions[i]?.structure_amount || '' }}</td>
+            </tr>
+            <!-- Render remaining deductions if deductions > earnings -->
+            <tr *ngFor="let deduction of deductions.slice(earnings.length); let i = index">
+              <td></td>
+              <td class="pc-num"></td>
+              <td>{{ deduction.component_name }}</td>
+              <td class="pc-num">{{ deduction.structure_amount || '' }}</td>
             </tr>
           </tbody>
           <tfoot>
@@ -332,11 +340,15 @@
             <tr>
               <td>{{ payslipDetails.total_working_days }}</td>
               <td>{{ payslipDetails.days_worked }}</td>
-              <td>{{ payslipDetails.leave_balance || '0.00' }}</td>
-              <td>{{ payslipDetails.leave_days || '0.00' }}</td>
-              <td>{{ payslipDetails.leave_days_unpaid || '0.00' }}</td>
-              <td>{{ payslipDetails.sick_leave || '0.00' }}</td>
-              <td>{{ payslipDetails.loan_balance || '0.00' }}</td>
+              <!-- FIXED: Use computed leaveBalanceTotal -->
+              <td>{{ leaveBalanceTotal | number:'1.2-2' }}</td>
+              <!-- FIXED: Use computed totalLeaveDays -->
+              <td>{{ totalLeaveDays | number:'1.2-2' }}</td>
+              <td>{{ payslipDetails.unpaid_leave_days || '0.00' }}</td>
+              <!-- FIXED: Use computed totalSickLeaveDays -->
+              <td>{{ totalSickLeaveDays | number:'1.2-2' }}</td>
+              <!-- FIXED: Use computed loanBalanceTotal -->
+              <td>{{ loanBalanceTotal | number:'1.2-2' }}</td>
             </tr>
           </tbody>
         </table>
@@ -350,6 +362,7 @@
           </thead>
           <tbody>
             <tr>
+              <!-- FIXED: OT data not in API, default to 0.00 -->
               <td>{{ payslipDetails.normal_ot || '0.00' }}</td>
               <td>{{ payslipDetails.holiday_ot || '0.00' }}</td>
             </tr>
@@ -377,36 +390,26 @@
     </div>
 
     <div class="col-md-3">
-      <div class="options-sidebar">
-        <h5 class="mb-3">Payslip Preferences</h5>
-        <hr>
-        <!-- <div class="mb-1">
-          <label class="small font-weight-bold">Company Logo</label>
-          <input type="file" (change)="onLogoUpload($event)" class="form-control-file small mb-2" accept="image/*">
-          <div class="preference-item">
-            <input type="checkbox" id="checkLogoClassic" [(ngModel)]="payslipPreferences.showLogo">
-            <label for="checkLogoClassic">Display Logo</label>
-          </div>
-        </div> -->
-        <hr>
-        <div class="preference-item">
-          <input type="checkbox" id="checkNameClassic" [(ngModel)]="payslipPreferences.showCompanyName">
-          <label for="checkNameClassic">Show Company Name</label>
-        </div>
-        <div class="preference-item">
-          <input type="checkbox" id="checkBranchClassic" [(ngModel)]="payslipPreferences.showBranch">
-          <label for="checkBranchClassic">Show Branch</label>
-        </div>
-        <div class="preference-item">
-          <input type="checkbox" id="checkDeptClassic" [(ngModel)]="payslipPreferences.showDepartment">
-          <label for="checkDeptClassic">Show Department</label>
-        </div>
-        <div class="preference-item">
-          <input type="checkbox" id="checkCatClassic" [(ngModel)]="payslipPreferences.showCategory">
-          <label for="checkCatClassic">Show Category</label>
-        </div>
-        <button class="btn btn-primary btn-block mt-4" (click)="downloadPayslip()">Save Template</button>
-      </div>
+<div class="options-sidebar">
+  <h5 class="mb-3">Payslip Preferences</h5>
+  <hr>
+  <div class="preference-item">
+    <input type="checkbox" id="checkNameClassic" [(ngModel)]="payslipPreferences.showCompanyName">
+    <label for="checkNameClassic">Show Company Name</label>
+  </div>
+  <div class="preference-item">
+    <input type="checkbox" id="checkBranchClassic" [(ngModel)]="payslipPreferences.showBranch">
+    <label for="checkBranchClassic">Show Branch</label>
+  </div>
+  <!-- FIXED: Show Designation checkbox instead of Department -->
+  <div class="preference-item">
+    <input type="checkbox" id="checkDesignationClassic" [(ngModel)]="payslipPreferences.showDesignation">
+    <label for="checkDesignationClassic">Show Designation</label>
+  </div>
+  <!-- REMOVED: Show Department checkbox -->
+  <!-- REMOVED: Show Category checkbox -->
+  <button class="btn btn-primary btn-block mt-4" (click)="downloadPayslip()">Save Template</button>
+</div>
     </div>
   </div>
 </div>
@@ -486,9 +489,12 @@
             <div class="col-md-10">
               <h2> process payroll </h2>
             </div>
-            <div class="col-md-2">
-              <span class="close pull-right" (click)="closeapplicationModal()">&times;</span>
-            </div>
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeapplicationModal()">
+      ×
+    </span>
+  </div> 
           </div>
           <hr />
       
@@ -504,7 +510,7 @@
   
 
         
-      <div class="col-md-6 mt-4">
+      <div class="col-md-6">
         <div class="check-box-selection-sec form-control">
             <div class="mat-set">
                 <mat-checkbox [(ngModel)]="send_email" [ngModelOptions]="{standalone: true}">Sent to email</mat-checkbox>
