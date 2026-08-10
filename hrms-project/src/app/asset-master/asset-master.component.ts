@@ -69,6 +69,8 @@ export class AssetMasterComponent {
 
   custom_fieldsFam :any[] = [];
 
+  editCustomFields: any[] = [];
+
 
 
   constructor(
@@ -430,10 +432,72 @@ this.loadFormFieldsFam();
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-  this.editAsset = { ...asset }; // copy asset data
-  this.isEditModalOpen = true;
+
+  this.editAsset = { ...asset };
+
+  this.editCustomFields = this.custom_fieldsFam.map((field: any) => {
+
+    const existing = field.field_values?.find(
+      (x: any) => x.asset === asset.name
+    );
+
+    return {
+      ...field,
+      value_id: existing?.id || null,
+      field_value: existing?.field_value || ''
+    };
+
+  });
 
   this.mapLAssetNameToId();
+
+  this.isEditModalOpen = true;
+
+  console.log(this.editCustomFields);
+}
+
+updateCustomFields(assetId: number) {
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  this.editCustomFields.forEach(field => {
+
+    const body = {
+      field_value: field.field_value
+    };
+
+    // Existing value -> UPDATE
+    if (field.value_id) {
+
+      this.http.put(
+        `${this.apiUrl}/organisation/api/asset-customfield-value/${field.value_id}/?schema=${selectedSchema}`,
+        body
+      ).subscribe({
+        next: res => console.log("Updated", res),
+        error: err => console.error(err)
+      });
+
+    }
+
+    // New value -> CREATE
+    else {
+
+      this.http.post(
+        `${this.apiUrl}/organisation/api/asset-customfield-value/?schema=${selectedSchema}`,
+        {
+          custom_field: field.id,
+          field_value: field.field_value,
+          asset: assetId
+        }
+      ).subscribe({
+        next: res => console.log("Created", res),
+        error: err => console.error(err)
+      });
+
+    }
+
+  });
+
 }
 
 closeEditModal(): void {
@@ -444,35 +508,40 @@ closeEditModal(): void {
 
 updateAssetType(): void {
   const selectedSchema = localStorage.getItem('selectedSchema');
+
   if (!selectedSchema || !this.editAsset.id) {
     alert('Missing schema or asset ID');
     return;
   }
 
-  this.employeeService.updateAsset(this.editAsset.id, this.editAsset).subscribe(
-    (response) => {
-      alert('Asset  updated successfully!');
+  this.employeeService.updateAsset(this.editAsset.id, this.editAsset).subscribe({
+    next: (response) => {
+
+      // Update UDF values
+      this.updateCustomFields(this.editAsset.id);
+
+      alert('Asset updated successfully!');
+
       this.closeEditModal();
-      // this.loadLAsset(); 
+
       window.location.reload();
     },
-(error) => {
-  console.error('Error updating asset:', error);
 
-  let errorMsg = 'Update failed';
+    error: (error) => {
 
-  const backendError = error?.error;
+      console.error('Error updating asset:', error);
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
+      let errorMsg = 'Update failed';
 
-  alert(errorMsg);
-}
-  );
+      if (error.error && typeof error.error === 'object') {
+        errorMsg = Object.keys(error.error)
+          .map(key => `${key}: ${Array.isArray(error.error[key]) ? error.error[key].join(', ') : error.error[key]}`)
+          .join('\n');
+      }
+
+      alert(errorMsg);
+    }
+  });
 }
 
 

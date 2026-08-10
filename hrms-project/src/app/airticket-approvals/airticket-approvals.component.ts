@@ -280,22 +280,23 @@ export class AirticketApprovalsComponent {
 
 
 
-    fetchEmployees(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.EmployeeService.getApprovalslistAirticketNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.Approvals = data;
-  
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
-    }
-
+  fetchEmployees(schema: string, branchIds: number[]): void {
+    this.isLoading = true;
+    this.EmployeeService.getApprovalslistAirticketNew(schema, branchIds).subscribe({
+      next: (data: any) => {
+        // Assign the original data to allApprovals
+        this.allApprovals = data;
+        // Initialize filteredApprovals by applying current filters
+        this.applyFilters();
+        
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Fetch error:', err);
+        this.isLoading = false;
+      }
+    });
+  }
 
     
     
@@ -764,9 +765,60 @@ selectedDelegationId: number | null = null;
     toggleDelegationDetails() {
       this.showDelegationDetails = !this.showDelegationDetails;
     }
-    
+   allApprovals: any[] = [];      // Master data from API (never modified directly)
+  filteredApprovals: any[] = []; // Display data after search/filter   
   
-  
+   // ─── Search & Filter ───
+  searchText: string = '';
+  selectedStatus: string = '';
+  showFilterMenu = false;
+
+  applyFilters(): void {
+    const search = this.searchText.trim().toLowerCase();
+
+    this.filteredApprovals = this.allApprovals.filter(apr => {
+      const matchesSearch =
+        !search ||
+        (apr.request ?? '').toLowerCase().includes(search) ||
+        (apr.status ?? '').toLowerCase().includes(search) ||
+        (apr.note ?? '').toLowerCase().includes(search) ||
+        (apr.level ?? '').toString().toLowerCase().includes(search) ||
+        (apr.approver ?? '').toString().toLowerCase().includes(search) ||
+        (apr.employee ?? '').toString().toLowerCase().includes(search); // <-- Added this line for employee
+
+      const matchesStatus =
+        !this.selectedStatus ||
+        apr.status === this.selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  getEmptyMessage(): string {
+    if (this.allApprovals.length === 0) {
+      return 'No Airticket requests found.';
+    }
+    if (this.searchText && this.selectedStatus) {
+      return `No ${this.selectedStatus.toLowerCase()} Airticket requests matching "${this.searchText}".`;
+    }
+    if (this.searchText) {
+      return `No Airticket requests matching "${this.searchText}".`;
+    }
+    if (this.selectedStatus) {
+      return `No ${this.selectedStatus.toLowerCase()} Airtickt requests found.`;
+    }
+    return 'No Airticket requests found.';
+  }
+
+  toggleFilterMenu(): void {
+    this.showFilterMenu = !this.showFilterMenu;
+  }
+
+  filterByStatus(status: string): void {
+    this.selectedStatus = status;
+    this.applyFilters();
+    this.showFilterMenu = false;
+  }
   
 
 }

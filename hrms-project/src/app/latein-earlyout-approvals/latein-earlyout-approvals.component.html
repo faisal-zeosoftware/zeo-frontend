@@ -1,39 +1,67 @@
-
 <div class="container" *ngIf="hasViewPermission">
     <div class="comapny_section" >
         <div class="com_list " >
-
     <div class="">
-
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-4">
                 <h2>Late In Early Out Approval List </h2>
-    
               </div>
-              <div class="col-md-3">
-                <!-- <button class="btn pull-right btn-export" (click)="scrollToBottom()">Employee Leave Request History</button> -->
-    
-              </div>
+                      <!-- Search Input -->
+      <div class="col-md-3">
+        <div class="form-group mb-0">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search by request, status" 
+            [(ngModel)]="searchText"
+            (ngModelChange)="applyFilters()"
+          />
+        </div>
+      </div>
+                                <!-- Status Filter Dropdown -->
+<div class="col-md-1">
+  <div class="filter-container">
+    <button
+      class="btn btn-outline-secondary"
+      (click)="toggleFilterMenu()"
+    >
+      <i class="fa fa-filter"></i>
+      Filter
+    </button>
+
+    <div class="filter-dropdown" *ngIf="showFilterMenu">
+      <button class="dropdown-item" (click)="filterByStatus('')">
+        All Statuses
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('P')">
+        Pending
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Approved')">
+        Approved
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Rejected')">
+        Rejected
+      </button>
+    </div>
+  </div>
+</div>
             </div>
-
         </div>
-
         </div>
-
 
         <div class="row">
             <div class="col-md-12">
-              <div class="approval_sec" *ngFor="let apr of Approvals" >
+              <!-- Approval Cards -->
+              <div class="approval_sec" *ngFor="let apr of filteredApprovals" >
                 <h6>Employee Late In Early Out Request Approvals</h6><hr>
                 <div class="row ">
                     <div class="col-md-3">
                       <h4>Lateinearlyout request</h4>
                       <h5>{{apr.lateinearlyout_request}}</h5>
                     </div>
-                    <!-- <div class="col-md-2">
-                      <h4>Employee</h4>
-                      <h5>{{apr.employee_id}}</h5>
-                    </div> -->
                     <div class="col-md-2">
                       <h4>Status  </h4>
                       <h5>{{apr.status}} </h5>
@@ -68,7 +96,6 @@
               </div>
             </div>
                   </div>
-              
 
                           <!-- Delegation Body -->
           <div
@@ -116,16 +143,20 @@
               </div>
             </div>
           </div>
-        
-            
-        
               </div>
-            </div>
+
+              <!-- Empty State Message -->
+              <div class="empty-state" *ngIf="filteredApprovals.length === 0 && !isLoading">
+                <div class="empty-state-content">
+                  <i class="fa fa-inbox empty-icon"></i>
+                  <h4>{{ getEmptyMessage() }}</h4>
+                  <p *ngIf="searchText || selectedStatus">Try adjusting your search or filter criteria.</p>
+                </div>
+              </div>
+          </div>
           </div>
 
-
           <!-- Modal Popup for selected approval details -->
-<!-- Modal Popup for selected approval details -->
 <div *ngIf="isAddFieldsModalOpen" class="modal">
     <div class="modal-content">
       <div *ngIf="selectedApproval">
@@ -134,7 +165,6 @@
               <h6>Late In Early Out Request Approvals</h6>
             </div>
             <div class="col-md-6 text-right">
-              <!-- Styled Square Close Button -->
               <span class="close-btn" (click)="closemarketModal()"> × </span>
             </div>
           </div>
@@ -179,9 +209,6 @@
               </button>
             </div>
           </div>
-
-   
-  
              <!-- Additional input for rejection reason -->
         <div *ngIf="showRejectionReason">
           <textarea
@@ -190,8 +217,6 @@
             placeholder="Add a Rejection Reason..."
             [ngModelOptions]="{ standalone: true }"
           ></textarea>
-
-
         </div>
         <div class="mt-2" *ngIf="showRejectionReason">
           <button
@@ -205,32 +230,6 @@
       </div>
     </div>
   </div>
-
-            <!-- <div *ngIf="isResponseModalOpen" class="modal">
-      <div class="modal-content">
-        <div class="text-right">
-          <span class="close-btn" (click)="closeResponseModal()">×</span>
-        </div>
-
-        <h5>Send Delegation Response</h5>
-        <hr />
-
-        <div class="form-group">
-          <label>Response</label>
-
-          <textarea
-            class="form-control"
-            rows="4"
-            [(ngModel)]="delegationResponse"
-            placeholder="Enter response..."
-          ></textarea>
-        </div>
-
-        <button class="btn btn-primary mt-2" (click)="sendDelegationResponse()">
-          Send Response
-        </button>
-      </div>
-    </div> -->
 
                  <div *ngIf="isDelegationModalOpen" class="modal">
       <div class="modal-content">
@@ -286,16 +285,10 @@
         </div>
       </div>
     </div>
-  
-  
-  
-
 </div>
-
 
       <!-- Loader -->
     <div class="loader-container" [class.show]="isLoading">
       <div class="loader"></div>
     </div>
   </div>
-

@@ -7,8 +7,6 @@ import { environment } from '../../environments/environment';
 import { DesignationService } from '../designation-master/designation.service';
 import { combineLatest, Subscription } from 'rxjs';
 import { UserMasterService } from '../user-master/user-master.service';
-import { DepartmentService } from '../department-report/department.service';
-
 
 @Component({
   selector: 'app-approvals',
@@ -17,13 +15,11 @@ import { DepartmentService } from '../department-report/department.service';
 })
 export class ApprovalsComponent {
 
-
   private dataSubscription?: Subscription;
 
+  private apiUrl = `${environment.apiBaseUrl}`;
 
-  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
-
-  schemas: string[] = []; // Array to store schema names
+  schemas: string[] = [];
 
   userId: number | null | undefined;
   userDetails: any;
@@ -32,12 +28,11 @@ export class ApprovalsComponent {
   selectedSchema: string | null = null;
   isLoading: boolean = false;
 
-
-  Approvals: any[] = []; // Assuming this array holds the list of expired documents
+  allApprovals: any[] = [];      // Master data from API (never modified directly)
+  filteredApprovals: any[] = []; // Display data after search/filter
 
   delegationData: any = null;
   isDelegationModalOpen: boolean = false;
-
 
   delegationForm: any = {
     start_date: '',
@@ -54,33 +49,26 @@ export class ApprovalsComponent {
   delegateTos: any[] = [];
   requests: any[] = [];
   Genreq: any[] = [];
-
   Users: any[] = [];
 
-isResponseModalOpen = false;
-
-delegationResponse = '';
-
-selectedDelegationId: number | null = null;
-
+  isResponseModalOpen = false;
+  delegationResponse = '';
+  selectedDelegationId: number | null = null;
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean = false;
   hasEditPermission: boolean = false;
 
-  constructor(private authService: AuthenticationService,
+  constructor(
+    private authService: AuthenticationService,
     private router: Router,
     private EmployeeService: EmployeeService,
     private userService: UserMasterService,
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private DesignationService: DesignationService,
-
-
-
   ) { }
-
 
   ngOnInit(): void {
 
@@ -99,10 +87,7 @@ selectedDelegationId: number | null = null;
       this.loadApprovalLevelGen();
     });
 
-    // this.fetchingApprovals();
     this.selectedSchema = this.sessionService.getSelectedSchema();
-
-    // this.hideButton = this.EmployeeService.getHideButton();
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -114,9 +99,6 @@ selectedDelegationId: number | null = null;
 
     const selectedSchema = this.authService.getSelectedSchema();
     const selectedSchemaId = this.authService.getSelectedSchemaId();
-
-
-
 
     if (selectedSchema && selectedSchemaId) {
       this.selectedSchema = selectedSchema;
@@ -130,41 +112,30 @@ selectedDelegationId: number | null = null;
     if (this.userId !== null) {
       this.authService.getUserData(this.userId).subscribe(
         async (userData: any) => {
-          this.userDetails = userData; // Store user details in userDetails property
+          this.userDetails = userData;
           this.username = this.userDetails.username;
 
+          console.log('User ID:', this.userId);
+          console.log('User Details:', this.userDetails);
 
-          console.log('User ID:', this.userId); // Log user ID
-          console.log('User Details:', this.userDetails); // Log user details
-
-          // Check if user is_superuser is true or false
-          let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
+          let isSuperuser = this.userDetails.is_superuser || false;
           const selectedSchema = this.authService.getSelectedSchema();
           if (!selectedSchema) {
             console.error('No schema selected.');
             return;
           }
 
-
           if (isSuperuser) {
             console.log('User is superuser or ESS user');
-
-            // Grant all permissions
             this.hasViewPermission = true;
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
-
-            // Fetch designations without checking permissions
-            // this.fetchDesignations(selectedSchema);
           } else {
             console.log('User is not superuser');
 
             const selectedSchema = this.authService.getSelectedSchema();
             if (selectedSchema) {
-
-
-
               try {
                 const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
                 console.log('Permissions data:', permissionsData);
@@ -174,7 +145,6 @@ selectedDelegationId: number | null = null;
 
                   if (firstItem.is_superuser) {
                     console.log('User is superuser according to permissions API');
-                    // Grant all permissions
                     this.hasViewPermission = true;
                     this.hasAddPermission = true;
                     this.hasDeletePermission = true;
@@ -182,7 +152,6 @@ selectedDelegationId: number | null = null;
                   } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                     const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                     console.log('Group Permissions:', groupPermissions);
-
 
                     this.hasAddPermission = this.checkGroupPermission('add_approval', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
@@ -193,38 +162,26 @@ selectedDelegationId: number | null = null;
                     this.hasDeletePermission = this.checkGroupPermission('delete_approval', groupPermissions);
                     console.log('Has delete permission:', this.hasDeletePermission);
 
-
                     this.hasViewPermission = this.checkGroupPermission('view_approval', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
-
-
                   } else {
                     console.error('No groups found in data or groups array is empty.', firstItem);
                   }
                 } else {
                   console.error('Permissions data is not an array or is empty.', permissionsData);
                 }
-
-                // Fetching designations after checking permissions
-                // this.fetchDesignations(selectedSchema);
-              }
-
-              catch (error) {
+              } catch (error) {
                 console.error('Error fetching permissions:', error);
               }
             } else {
               console.error('No schema selected.');
             }
-
           }
         },
         (error) => {
           console.error('Failed to fetch user details:', error);
         }
       );
-
-      // this.fetchingApprovals();
-
 
       this.authService.getUserSchema(this.userId).subscribe(
         (userData: any) => {
@@ -241,20 +198,14 @@ selectedDelegationId: number | null = null;
     }
   }
 
-
-
   loadApprovalLevelGen(): void {
-
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-
+    const selectedSchema = this.authService.getSelectedSchema();
     console.log('schemastore', selectedSchema)
-    // Check if selectedSchema is available
     if (selectedSchema) {
       this.EmployeeService.getAllgeneralRequest(selectedSchema).subscribe(
         (result: any) => {
           this.Genreq = result;
           console.log(' fetching Companies:');
-
         },
         (error) => {
           console.error('Error fetching Companies:', error);
@@ -263,25 +214,16 @@ selectedDelegationId: number | null = null;
     }
   }
 
-
-
-
-
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
     return groupPermissions.some(permission => permission.codename === codeName);
   }
-
-
-
-
 
   fetchEmployees(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.EmployeeService.getGeneralRequestApprovalsMasterNew(schema, branchIds).subscribe({
       next: (data: any) => {
-        // Filter active employees
-        this.Approvals = data;
-
+        this.allApprovals = data;
+        this.applyFilters();
         this.isLoading = false;
       },
       error: (err) => {
@@ -291,10 +233,8 @@ selectedDelegationId: number | null = null;
     });
   }
 
-
   loadUsers(): void {
     const selectedSchema = this.authService.getSelectedSchema();
-
     if (selectedSchema) {
       this.userService.getApprover(selectedSchema).subscribe(
         (result: any) => {
@@ -304,25 +244,18 @@ selectedDelegationId: number | null = null;
     }
   }
 
-
-
-
   selectedApproval: any = null;
   isAddFieldsModalOpen: boolean = false;
-  note: string = '';  // To hold the note entered by the user
+  note: string = '';
 
-
-  // Fetching approval details when an item is clicked
   selectedaprovaldetalis(approvalId: number): void {
     const selectedSchema = this.authService.getSelectedSchema();
-
     if (selectedSchema) {
       const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/?schema=${selectedSchema}`;
-
       this.EmployeeService.getApprovalDetails(apiUrl).subscribe(
         (response: any) => {
           this.selectedApproval = response;
-          this.isAddFieldsModalOpen = true; // Open the modal
+          this.isAddFieldsModalOpen = true;
           console.log('detalis', this.selectedApproval)
         },
         (error) => {
@@ -332,38 +265,28 @@ selectedDelegationId: number | null = null;
     }
   }
 
-
-
-
-  // Function for handling approval rejection
   rejectApproval(approvalId: number): void {
     const selectedSchema = this.authService.getSelectedSchema();
-
-
-    // Data to be sent in the request body (including the note)
     const approvalData = {
-      note: this.note,          // The note entered by the user
-      status: 'Rejected',       // Setting status to "Approved"
+      note: this.note,
+      status: 'Rejected',
     };
     if (selectedSchema) {
       const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/reject/?schema=${selectedSchema}`;
-
       this.EmployeeService.rejectApprovalRequest(apiUrl, approvalData).subscribe(
         (response: any) => {
           console.log('Approval status changed to Rejected:', response);
 
-          // Update the selected approval status in the local UI
+          // Update master data
+          const approvalIndex = this.allApprovals.findIndex(approval => approval.id === approvalId);
+          if (approvalIndex !== -1) {
+            this.allApprovals[approvalIndex].status = 'Rejected';
+          }
+          this.applyFilters();
+
           if (this.selectedApproval) {
             this.selectedApproval.status = 'Rejected';
           }
-
-          // Optionally, update the main approvals list if needed
-          const approvalIndex = this.Approvals.findIndex(approval => approval.id === approvalId);
-          if (approvalIndex !== -1) {
-            this.Approvals[approvalIndex].status = 'Rejected';
-          }
-
-          // Close the modal after successful approval
           this.isAddFieldsModalOpen = false;
         },
         (error) => {
@@ -371,43 +294,31 @@ selectedDelegationId: number | null = null;
         }
       );
     }
-
   }
 
-
-
-  // Function for handling approval status change to "Approved"
   approveApproval(approvalId: number): void {
     const selectedSchema = this.authService.getSelectedSchema();
-
     if (selectedSchema) {
       const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/approve/?schema=${selectedSchema}`;
-
-
-      // Data to be sent in the request body (including the note)
       const approvalData = {
-        note: this.note,          // The note entered by the user
-        status: 'Approved',       // Setting status to "Approved"
+        note: this.note,
+        status: 'Approved',
       };
-
       this.EmployeeService.approveApprovalRequest(apiUrl, approvalData).subscribe(
         (response: any) => {
           console.log('Approval status changed to Approved:', response);
 
-          // Update the selected approval status in the local UI
+          // Update master data
+          const approvalIndex = this.allApprovals.findIndex(approval => approval.id === approvalId);
+          if (approvalIndex !== -1) {
+            this.allApprovals[approvalIndex].status = 'Approved';
+          }
+          this.applyFilters();
+
           if (this.selectedApproval) {
             this.selectedApproval.status = 'Approved';
           }
-
-          // Optionally, update the main approvals list if needed
-          const approvalIndex = this.Approvals.findIndex(approval => approval.id === approvalId);
-          if (approvalIndex !== -1) {
-            this.Approvals[approvalIndex].status = 'Approved';
-          }
-
-          // Close the modal after successful approval
           this.isAddFieldsModalOpen = false;
-          window.location.reload();
         },
         (error) => {
           console.error('Error approving the approval request:', error);
@@ -420,139 +331,89 @@ selectedDelegationId: number | null = null;
     this.isAddFieldsModalOpen = false;
   }
 
-
-
-
-
-
-
-
-
-
-/////////////////////////////////// Deligation Model //////////////////////////////////
-
+  /////////////////////////////////// Delegation Model //////////////////////////////////
 
   openResponseModal(delegation: any): void {
-
-  console.log('Delegation', delegation);
-
-  this.selectedDelegationId = delegation.id;
-  this.delegationResponse = '';
-
-  this.isResponseModalOpen = true;
-}
-
-closeResponseModal(): void {
-  this.isResponseModalOpen = false;
-}
-
-sendDelegationResponse(): void {
-
-  if (!this.selectedDelegationId) {
-    return;
+    console.log('Delegation', delegation);
+    this.selectedDelegationId = delegation.id;
+    this.delegationResponse = '';
+    this.isResponseModalOpen = true;
   }
 
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (!selectedSchema) {
-    return;
+  closeResponseModal(): void {
+    this.isResponseModalOpen = false;
   }
 
-  const apiUrl =
-    `${this.apiUrl}/employee/api/delegations/${this.selectedDelegationId}/send_response/?schema=${selectedSchema}`;
-
-  const payload = {
-    response: this.delegationResponse
-  };
-
-      this.isLoading = true;
-
-  this.EmployeeService.sendDelegationResponse(apiUrl, payload)
-    .subscribe({
-      next: (res: any) => {
-              this.isLoading = false;
-
-        console.log('Response Sent', res);
-
-        alert('Response sent successfully');
-
-        this.closeResponseModal();
-
-        window.location.reload();
-      },
-      error: (err) => {
+  sendDelegationResponse(): void {
+    if (!this.selectedDelegationId) {
+      return;
+    }
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (!selectedSchema) {
+      return;
+    }
+    const apiUrl = `${this.apiUrl}/employee/api/delegations/${this.selectedDelegationId}/send_response/?schema=${selectedSchema}`;
+    const payload = {
+      response: this.delegationResponse
+    };
+    this.isLoading = true;
+    this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+      .subscribe({
+        next: (res: any) => {
           this.isLoading = false;
-        console.error(err);
-      }
-    });
-}
-
-sendDelegationResponseInline(apr: any): void {
-
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (!selectedSchema) {
-    return;
+          console.log('Response Sent', res);
+          alert('Response sent successfully');
+          this.closeResponseModal();
+          window.location.reload();
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error(err);
+        }
+      });
   }
 
-  if (!apr.responseText || !apr.responseText.trim()) {
-    alert("Please enter a response");
-    return;
+  sendDelegationResponseInline(apr: any): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (!selectedSchema) {
+      return;
+    }
+    if (!apr.responseText || !apr.responseText.trim()) {
+      alert("Please enter a response");
+      return;
+    }
+    const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${apr.id}/send_response/?schema=${selectedSchema}`;
+    const payload = {
+      deligate_response: apr.responseText.trim()
+    };
+    console.log("Sending:", payload);
+    this.isLoading = true;
+    this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+      .subscribe({
+        next: (res: any) => {
+          this.isLoading = false;
+          apr.delegation_details.response = apr.responseText;
+          apr.responseText = "";
+          alert("Response sent successfully");
+          this.fetchEmployees(
+            selectedSchema,
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+          );
+        },
+        error: err => {
+          this.isLoading = false;
+          console.log(err);
+        }
+      });
   }
 
-  const apiUrl =
-    `${this.apiUrl}/employee/api/request-approvals/${apr.id}/send_response/?schema=${selectedSchema}`;
-
-  const payload = {
-    deligate_response: apr.responseText.trim()
-  };
-
-  console.log("Sending:", payload);
-
-  this.isLoading = true;
-
-  this.EmployeeService.sendDelegationResponse(apiUrl, payload)
-    .subscribe({
-
-      next: (res: any) => {
-
-        this.isLoading = false;
-
-        apr.delegation_details.response = apr.responseText;
-        apr.responseText = "";
-
-        alert("Response sent successfully");
-
-        this.fetchEmployees(
-          selectedSchema,
-          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
-        );
-
-      },
-
-      error: err => {
-
-        this.isLoading = false;
-        console.log(err);
-
-      }
-
-    });
-
-}
-
-canShowResponse(apr: any): boolean {
-
-  return !!(
+  canShowResponse(apr: any): boolean {
+    return !!(
       apr.delegation_details &&
       apr.delegation_details.is_deligate &&
       Number(apr.delegation_details.delegate_to_id) === Number(this.userId)
-  );
-
-}
-
-
-  // Delegate Model
+    );
+  }
 
   openDelegationModal() {
     this.isDelegationModalOpen = true;
@@ -562,80 +423,53 @@ canShowResponse(apr: any): boolean {
     this.isDelegationModalOpen = false;
   }
 
- createDelegation(): void {
-
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (!selectedSchema || !this.selectedApproval) {
-    return;
+  createDelegation(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (!selectedSchema || !this.selectedApproval) {
+      return;
+    }
+    const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
+    const payload = {
+      approver: this.userId,
+      deligate_to: this.delegationForm.deligate_to
+    };
+    this.isLoading = true;
+    this.EmployeeService.createDelegation(apiUrl, payload)
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
+          alert("Delegated Successfully");
+          window.location.reload();
+          this.closeDelegationModal();
+          this.fetchEmployees(
+            selectedSchema,
+            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+          );
+        },
+        error: err => {
+          this.isLoading = false;
+          console.error(err);
+        }
+      });
   }
 
-  const apiUrl =
-    `${this.apiUrl}/employee/api/request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
-
-  const payload = {
-
-    approver: this.userId,
-    deligate_to: this.delegationForm.deligate_to
-
-  };
-
-  this.isLoading = true;
-
-  this.EmployeeService.createDelegation(apiUrl, payload)
-    .subscribe({
-
-      next: () => {
-
-        this.isLoading = false;
-
-        alert("Delegated Successfully");
-
-        window.location.reload();
-
-        this.closeDelegationModal();
-
-        this.fetchEmployees(
-          selectedSchema,
-          JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
-        );
-
-      },
-
-      error: err => {
-
-        this.isLoading = false;
-        console.error(err);
-
-      }
-
-    });
-
-}
-
-openDelegationModalFromApproval(approval: any) {
-
-  this.selectedApproval = approval;
-
-  const generalRequest = this.Genreq.find(
-    (req: any) => req.document_number === approval.general_request
-  );
-
+  openDelegationModalFromApproval(approval: any) {
     this.selectedApproval = approval;
-
-  const approver = this.Users.find(
-    (user: any) => user.id === approval.approver
-  );
-
-  this.delegationForm = {
-    request: generalRequest ? generalRequest.id : null,
-    approver: approval.approver,
-    deligator: approver ? approver.username : '',
-    deligate_to: null
-  };
-
-  this.isDelegationModalOpen = true;
-}
+    const generalRequest = this.Genreq.find(
+      (req: any) => req.document_number === approval.general_request
+    );
+    this.selectedApproval = approval;
+    const approver = this.Users.find(
+      (user: any) => user.id === approval.approver
+    );
+    this.delegationForm = {
+      request: generalRequest ? generalRequest.id : null,
+      approver: approval.approver,
+      deligator: approver ? approver.username : '',
+      deligate_to: null
+    };
+    this.isDelegationModalOpen = true;
+  }
 
   showDelegationDetails = false;
 
@@ -643,6 +477,54 @@ openDelegationModalFromApproval(approval: any) {
     this.showDelegationDetails = !this.showDelegationDetails;
   }
 
+  // ─── Search & Filter ───
+  searchText: string = '';
+  selectedStatus: string = '';
+  showFilterMenu = false;
 
+  applyFilters(): void {
+    const search = this.searchText.trim().toLowerCase();
 
+    this.filteredApprovals = this.allApprovals.filter(apr => {
+      const matchesSearch =
+        !search ||
+        (apr.general_request ?? '').toLowerCase().includes(search) ||
+        (apr.status ?? '').toLowerCase().includes(search) ||
+        (apr.note ?? '').toLowerCase().includes(search) ||
+        (apr.level ?? '').toString().toLowerCase().includes(search) ||
+        (apr.approver ?? '').toString().toLowerCase().includes(search);
+
+      const matchesStatus =
+        !this.selectedStatus ||
+        apr.status === this.selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  getEmptyMessage(): string {
+    if (this.allApprovals.length === 0) {
+      return 'No general requests found.';
+    }
+    if (this.searchText && this.selectedStatus) {
+      return `No ${this.selectedStatus.toLowerCase()} general requests matching "${this.searchText}".`;
+    }
+    if (this.searchText) {
+      return `No general requests matching "${this.searchText}".`;
+    }
+    if (this.selectedStatus) {
+      return `No ${this.selectedStatus.toLowerCase()} general requests found.`;
+    }
+    return 'No general requests found.';
+  }
+
+  toggleFilterMenu(): void {
+    this.showFilterMenu = !this.showFilterMenu;
+  }
+
+  filterByStatus(status: string): void {
+    this.selectedStatus = status;
+    this.applyFilters();
+    this.showFilterMenu = false;
+  }
 }

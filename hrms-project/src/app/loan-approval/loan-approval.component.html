@@ -3,11 +3,46 @@
     <div class="com_list">
       <div class="">
         <div class="row">
-          <div class="col-md-9">
+          <div class="col-md-4">
             <h2>Loan Approval List</h2>
           </div>
+          <!-- Search Input -->
           <div class="col-md-3">
-            <!-- <button class="btn pull-right btn-export" (click)="scrollToBottom()">Employee Leave Request History</button> -->
+            <div class="form-group mb-0">
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Search by request, status" 
+                [(ngModel)]="searchText"
+                (ngModelChange)="applyFilters()"
+              />
+            </div>
+          </div>
+          <!-- Status Filter Dropdown -->
+          <div class="col-md-1">
+            <div class="filter-container">
+              <button
+                class="btn btn-outline-secondary"
+                (click)="toggleFilterMenu()"
+              >
+                <i class="fa fa-filter"></i>
+                Filter
+              </button>
+              <div class="filter-dropdown" *ngIf="showFilterMenu">
+                <button class="dropdown-item" (click)="filterByStatus('')">
+                  All Statuses
+                </button>
+                <button class="dropdown-item" (click)="filterByStatus('Pending')">
+                  Pending
+                </button>
+                <button class="dropdown-item" (click)="filterByStatus('Approved')">
+                  Approved
+                </button>
+                <button class="dropdown-item" (click)="filterByStatus('Rejected')">
+                  Rejected
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -15,7 +50,8 @@
 
     <div class="row">
       <div class="col-md-12">
-        <div class="approval_sec" *ngFor="let apr of Approvals">
+        <!-- Approval Cards -->
+        <div class="approval_sec" *ngFor="let apr of filteredApprovals">
           <h6>Loan Request Approvals</h6>
           <hr />
           <div class="row">
@@ -48,7 +84,6 @@
                 >
                   View
                 </button>
-
                 <button
                   *ngIf="apr.is_deligate"
                   class="btn btn-secondary"
@@ -72,32 +107,26 @@
                 <strong>Request</strong>
                 <p>{{ apr.loan_request }}</p>
               </div>
-
               <div class="col-md-6">
                 <strong>Deligator</strong>
                 <p>{{ apr.approver }}</p>
               </div>
-
               <div class="col-md-6">
                 <strong>Delegate To</strong>
                 <p>{{ apr.delegation_details.delegate_to }}</p>
               </div>
-
               <div class="col-md-6">
                 <strong>Response</strong>
                 <p>{{ apr.delegation_details.response }}</p>
               </div>
-
               <div class="col-md-12 mt-3" *ngIf="canShowResponse(apr)">
                 <strong>Send Deligation Response</strong>
-
                 <textarea
                   class="form-control"
                   rows="4"
                   [(ngModel)]="apr.responseText"
                   placeholder="Enter response..."
                 ></textarea>
-
                 <button
                   class="btn btn-primary mt-2"
                   (click)="sendDelegationResponseInline(apr)"
@@ -107,20 +136,23 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- <h6> General Request - {{apr.general_request}}</h6>
-                <h6>Status - {{apr.status}}</h6>
-                <h6>Level - {{apr.level}}</h6> -->
+        <!-- Empty State Message -->
+        <div class="empty-state" *ngIf="filteredApprovals.length === 0 && !isLoading">
+          <div class="empty-state-content">
+            <i class="fa fa-inbox empty-icon"></i>
+            <h4>{{ getEmptyMessage() }}</h4>
+            <p *ngIf="searchText || selectedStatus">Try adjusting your search or filter criteria.</p>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Modal Popup for selected approval details -->
-    <!-- Modal Popup for selected approval details -->
     <div *ngIf="isAddFieldsModalOpen" class="modal">
       <div class="modal-content">
         <div class="col-md-12 text-right">
-          <!-- Styled Square Close Button -->
           <span class="close-btn" (click)="closemarketModal()"> × </span>
         </div>
 
@@ -177,15 +209,6 @@
               placeholder="Add a Rejection Reason..."
               [ngModelOptions]="{ standalone: true }"
             ></textarea>
-
-            <!-- <div class="col-md-12">
-            <label>Leave Type</label>
-            <div class="custom-sel">
-              <select class="form-control" id="rejection_reason" name="rejection_reason" [(ngModel)]="rejection_reason" [ngModelOptions]="{standalone: true}">
-                <option *ngFor="let rejectionReason of RejectionResons" [value]="rejectionReason.id">{{ rejectionReason.reason_text }}</option>
-              </select>
-            </div>
-          </div> -->
           </div>
           <div class="mt-2" *ngIf="showRejectionReason">
             <button
@@ -200,32 +223,6 @@
       </div>
     </div>
 
-    <!-- <div *ngIf="isResponseModalOpen" class="modal">
-      <div class="modal-content">
-        <div class="text-right">
-          <span class="close-btn" (click)="closeResponseModal()">×</span>
-        </div>
-
-        <h5>Send Delegation Response</h5>
-        <hr />
-
-        <div class="form-group">
-          <label>Response</label>
-
-          <textarea
-            class="form-control"
-            rows="4"
-            [(ngModel)]="delegationResponse"
-            placeholder="Enter response..."
-          ></textarea>
-        </div>
-
-        <button class="btn btn-primary mt-2" (click)="sendDelegationResponse()">
-          Send Response
-        </button>
-      </div>
-    </div> -->
-
     <div *ngIf="isDelegationModalOpen" class="modal">
       <div class="modal-content">
         <div class="text-right">
@@ -237,7 +234,6 @@
         <div class="row">
           <div class="col-md-4">
             <label>Request</label>
-
             <select
               class="form-control"
               [(ngModel)]="delegationForm.request"
@@ -248,10 +244,8 @@
               </option>
             </select>
           </div>
-
           <div class="col-md-4">
             <label>Delegator</label>
-
             <input
               type="text"
               class="form-control"
@@ -259,10 +253,8 @@
               readonly
             />
           </div>
-
           <div class="col-md-4">
             <label>Delegate To</label>
-
             <select
               class="form-control"
               [(ngModel)]="delegationForm.deligate_to"
@@ -272,14 +264,12 @@
               </option>
             </select>
           </div>
-
           <button class="btn btn-success" (click)="createDelegation()">
             Send
           </button>
         </div>
       </div>
     </div>
-    
   </div>
 
   <!-- Loader -->

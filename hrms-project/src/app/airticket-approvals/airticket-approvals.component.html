@@ -5,14 +5,52 @@
     <div class="">
 
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-4">
                 <h2>Airticket Approval List </h2>
     
               </div>
-              <div class="col-md-3">
-                <!-- <button class="btn pull-right btn-export" (click)="scrollToBottom()">Employee Leave Request History</button> -->
-    
-              </div>
+            <!-- Search Input -->
+      <div class="col-md-3">
+        <div class="form-group mb-0">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search by request, status" 
+            [(ngModel)]="searchText"
+            (ngModelChange)="applyFilters()"
+          />
+        </div>
+      </div>
+                          <!-- Status Filter Dropdown -->
+<div class="col-md-1">
+  <div class="filter-container">
+    <button
+      class="btn btn-outline-secondary"
+      (click)="toggleFilterMenu()"
+    >
+      <i class="fa fa-filter"></i>
+      Filter
+    </button>
+
+    <div class="filter-dropdown" *ngIf="showFilterMenu">
+      <button class="dropdown-item" (click)="filterByStatus('')">
+        All Statuses
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Pending')">
+        Pending
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Approved')">
+        Approved
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Rejected')">
+        Rejected
+      </button>
+    </div>
+  </div>
+</div>
             </div>
 
 
@@ -28,7 +66,7 @@
 
         <div class="row">
             <div class="col-md-12">
-              <div class="approval_sec" *ngFor="let apr of Approvals" >
+              <div class="approval_sec" *ngFor="let apr of filteredApprovals">
                 <h6>Airticket Request Approvals</h6><hr>
                 <div class="row ">
                     <div class="col-md-2">
@@ -131,6 +169,14 @@
         
               </div>
             </div>
+                    <!-- Empty State Message -->
+        <div class="empty-state" *ngIf="filteredApprovals.length === 0 && !isLoading">
+          <div class="empty-state-content">
+            <i class="fa fa-inbox empty-icon"></i>
+            <h4>{{ getEmptyMessage() }}</h4>
+            <p *ngIf="searchText || selectedStatus">Try adjusting your search or filter criteria.</p>
+          </div>
+        </div>
           </div>
 
 

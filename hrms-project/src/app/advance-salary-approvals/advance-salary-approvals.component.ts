@@ -303,12 +303,17 @@ export class AdvanceSalaryApprovalsComponent {
 fetchEmployees(schema: string, branchIds: number[]): void {
   this.isLoading = true;
   this.EmployeeService.getApprovalslistadvSalaryNew(schema, branchIds).subscribe({
-    next: (data: any) => {
-      // Filter active employees
-      this.Approvals = data;
+next: (data: any) => {
+  this.Approvals = data;
 
-      this.isLoading = false;
-    },
+  // Initialize filtered list
+  this.filteredApprovals = [...this.Approvals];
+
+  // Apply any existing search/filter
+  this.applyFilters();
+
+  this.isLoading = false;
+},
     error: (err) => {
       console.error('Fetch error:', err);
       this.isLoading = false;
@@ -781,6 +786,63 @@ selectedDelegationId: number | null = null;
     toggleDelegationDetails() {
       this.showDelegationDetails = !this.showDelegationDetails;
     }
+
+ 
+filteredApprovals: any[] = [];
+searchText: string = '';
+selectedStatus: string = '';
+
+applyFilters(): void {
+  const search = this.searchText.toLowerCase().trim();
+
+  this.filteredApprovals = this.Approvals.filter(apr => {
+    const matchesSearch =
+      !search ||
+      (apr.request || '').toLowerCase().includes(search) ||     // Fixed: was `leave_request`
+      (apr.status || '').toLowerCase().includes(search) ||
+      (apr.employee || '').toLowerCase().includes(search) ||    // Added: search by employee name
+      (apr.employee_id?.toString() || '').toLowerCase().includes(search) ||
+      (apr.approver?.toString() || '').toLowerCase().includes(search) ||
+      (apr.level?.toString() || '').toLowerCase().includes(search);  // Added: search by level
+
+    const matchesStatus =
+      !this.selectedStatus ||
+      apr.status === this.selectedStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+}
+getEmptyMessage(): string {
+  if (this.Approvals.length === 0) {
+    return 'No advance salary requests found.';
+  }
+  
+  if (this.searchText && this.selectedStatus) {
+    return `No ${this.selectedStatus.toLowerCase()} requests matching "${this.searchText}".`;
+  }
+  
+  if (this.searchText) {
+    return `No requests matching "${this.searchText}".`;
+  }
+  
+  if (this.selectedStatus) {
+    return `No ${this.selectedStatus.toLowerCase()} requests found.`;
+  }
+  
+  return 'No advance salary requests found.';
+}
+
+showFilterMenu = false;
+
+toggleFilterMenu(): void {
+  this.showFilterMenu = !this.showFilterMenu;
+}
+
+filterByStatus(status: string): void {
+  this.selectedStatus = status;
+  this.applyFilters();
+  this.showFilterMenu = false;
+}
 
 
 }

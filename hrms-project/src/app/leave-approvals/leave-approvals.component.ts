@@ -277,19 +277,25 @@ scrollToBottom(): void {
 
 fetchEmployees(schema: string, branchIds: number[]): void {
   this.isLoading = true;
+
   this.leaveService.getApprovalslistLeaveNew(schema, branchIds).subscribe({
     next: (data: any) => {
-      // Filter active employees
-           this.Approvals = data;
+      this.Approvals = data;
+
+      // Initialize filtered list
+      this.filteredApprovals = [...this.Approvals];
+
+      // Optional if you want existing search/filter to remain
+      this.applyFilters();
 
       this.isLoading = false;
     },
     error: (err) => {
-      console.error('Fetch error:', err);
+      console.error(err);
       this.isLoading = false;
     }
   });
-} 
+}
 
 
   loadApprovalLevelLeave(): void {
@@ -765,6 +771,90 @@ selectedDelegationId: number | null = null;
       this.showDelegationDetails = !this.showDelegationDetails;
     }
   
+employeeSearch: string = '';
 
+searchFilteredEmployees(): any[] {
+  if (!this.employeeSearch?.trim()) {
+    return this.Employees;
+  }
+
+  const search = this.employeeSearch.toLowerCase().trim();
+
+  return this.Employees.filter((emp: any) =>
+    (emp.emp_code || '').toLowerCase().includes(search) ||
+    (emp.emp_first_name || '').toLowerCase().includes(search) ||
+    (emp.emp_last_name || '').toLowerCase().includes(search)
+  );
+}
+
+
+filteredApprovals: any[] = [];
+
+searchText: string = '';
+selectedStatus: string = '';
+
+applyFilters(): void {
+  const search = this.searchText.toLowerCase().trim();
+
+  this.filteredApprovals = this.Approvals.filter(apr => {
+
+    const matchesSearch =
+      !search ||
+
+      (apr.leave_request || '')
+        .toLowerCase()
+        .includes(search) ||
+
+      (apr.status || '')
+        .toLowerCase()
+        .includes(search) ||
+
+      (apr.employee_id?.toString() || '')
+        .toLowerCase()
+        .includes(search) ||
+
+      (apr.approver?.toString() || '')
+        .toLowerCase()
+        .includes(search);
+
+    const matchesStatus =
+      !this.selectedStatus ||
+      apr.status === this.selectedStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+}
+
+getEmptyMessage(): string {
+  if (this.Approvals.length === 0) {
+    return 'No Leave requests found.';
+  }
+  
+  if (this.searchText && this.selectedStatus) {
+    return `No ${this.selectedStatus.toLowerCase()} requests matching "${this.searchText}".`;
+  }
+  
+  if (this.searchText) {
+    return `No requests matching "${this.searchText}".`;
+  }
+  
+  if (this.selectedStatus) {
+    return `No ${this.selectedStatus.toLowerCase()} requests found.`;
+  }
+  
+  return 'No Leave requests found.';
+}
+
+showFilterMenu = false;
+
+toggleFilterMenu(): void {
+  this.showFilterMenu = !this.showFilterMenu;
+}
+
+filterByStatus(status: string): void {
+  this.selectedStatus = status;
+  this.applyFilters();
+  this.showFilterMenu = false;
+}
 
 }

@@ -1,14 +1,60 @@
 <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
     <div class="com_list">
-      <div class="d-flex justify-content-between align-items-center">
+        <div class="row">
+            <div class="col-md-4">
         <h2>General Request Approval List</h2>
       </div>
+            <!-- Search Input -->
+      <div class="col-md-3">
+        <div class="form-group mb-0">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search by request, status" 
+            [(ngModel)]="searchText"
+            (ngModelChange)="applyFilters()"
+          />
+        </div>
+      </div>
+                    <!-- Status Filter Dropdown -->
+<div class="col-md-1">
+  <div class="filter-container">
+    <button
+      class="btn btn-outline-secondary"
+      (click)="toggleFilterMenu()"
+    >
+      <i class="fa fa-filter"></i>
+      Filter
+    </button>
+
+    <div class="filter-dropdown" *ngIf="showFilterMenu">
+      <button class="dropdown-item" (click)="filterByStatus('')">
+        All Statuses
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Pending')">
+        Pending
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Approved')">
+        Approved
+      </button>
+
+      <button class="dropdown-item" (click)="filterByStatus('Rejected')">
+        Rejected
+      </button>
     </div>
+  </div>
+</div>
+    </div>
+    </div>
+
 
     <div class="row">
       <div class="col-md-12">
-        <div class="approval_sec" *ngFor="let apr of Approvals">
+        <!-- Approval Cards -->
+        <div class="approval_sec" *ngFor="let apr of filteredApprovals">
           <h6>General Request Approvals</h6>
           <hr />
 
@@ -74,29 +120,6 @@
                 <p>{{ apr.delegation_details.delegate_to }}</p>
               </div>
 
-
-              <!-- <div class="col-md-6">
-                <strong>Active</strong>
-                <p>
-                  {{ apr.delegation_details.is_active ? "Yes" : "No" }}
-                </p>
-              </div>
-
-              <div class="col-md-6">
-                <strong>Start Date</strong>
-                <p>{{ apr.delegation_details.start_date }}</p>
-              </div>
-
-              <div class="col-md-6">
-                <strong>End Date</strong>
-                <p>{{ apr.delegation_details.end_date }}</p>
-              </div> -->
-<!-- 
-              <div class="col-md-6">
-                <strong>Reason</strong>
-                <p>{{ apr.delegation_details.reason }}</p>
-              </div> -->
-
               <div class="col-md-6">
                 <strong>Response</strong>
                 <p>{{ apr.delegation_details.response }}</p>
@@ -121,10 +144,15 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- <h6> General Request - {{apr.general_request}}</h6>
-                <h6>Status - {{apr.status}}</h6>
-                <h6>Level - {{apr.level}}</h6> -->
+        <!-- Empty State Message -->
+        <div class="empty-state" *ngIf="filteredApprovals.length === 0 && !isLoading">
+          <div class="empty-state-content">
+            <i class="fa fa-inbox empty-icon"></i>
+            <h4>{{ getEmptyMessage() }}</h4>
+            <p *ngIf="searchText || selectedStatus">Try adjusting your search or filter criteria.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -138,7 +166,6 @@
               <h6>General Request Approvals</h6>
             </div>
             <div class="col-md-6 text-right">
-              <!-- Styled Square Close Button -->
               <span class="close-btn" (click)="closemarketModal()"> × </span>
             </div>
           </div>
@@ -223,24 +250,6 @@
         <h5>Send Delegation</h5>
         <hr />
         <div class="row">
-          <!-- <div class="col-md-4">
-            <label>Start Date</label>
-            <input
-              type="date"
-              class="form-control"
-              [(ngModel)]="delegationForm.start_date"
-            />
-          </div> -->
-
-          <!-- <div class="col-md-4">
-            <label>End Date</label>
-            <input
-              type="date"
-              class="form-control"
-              [(ngModel)]="delegationForm.end_date"
-            />
-          </div> -->
-
           <div class="col-md-4">
             <label>Request</label>
 
@@ -278,31 +287,6 @@
               </option>
             </select>
           </div>
-
-
-          <!-- <div class="form-group mb-2">
-            <label>Reason</label>
-            <textarea class="form-control" [(ngModel)]="delegationForm.reason">
-            </textarea>
-          </div> -->
-
-          <!-- <div class="form-group mb-3">
-            <label>Active</label>
-            <input type="checkbox" [(ngModel)]="delegationForm.is_active" />
-          </div>
-        </div> -->
-
-          <!-- <div class="col-md-6 mt-2">
-            <div class="check-box-selection-sec form-control">
-              <div class="mat-set">
-                <mat-checkbox
-                  [(ngModel)]="delegationForm.is_active"
-                  [ngModelOptions]="{ standalone: true }"
-                  >Is Active</mat-checkbox
-                >
-              </div>
-            </div>
-          </div> -->
 
           <button class="btn btn-success" (click)="createDelegation()">
             Send

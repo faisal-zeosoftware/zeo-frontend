@@ -335,7 +335,33 @@ input:focus-visible {
    margin-bottom: 20px;
   }
   
+.filter-container {
+  position: relative;
+  display: inline-block;
+}
 
+.filter-dropdown {
+  position: absolute;
+  width: 110px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  z-index: 1000;
+}
+
+.filter-dropdown .dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 3px 15px;
+  cursor: pointer;
+}
+
+.filter-dropdown .dropdown-item:hover {
+  background: #f5f5f5;
+}
 
   
   @media only screen and (max-width: 640px) {
