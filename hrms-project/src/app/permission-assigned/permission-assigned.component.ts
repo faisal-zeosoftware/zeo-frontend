@@ -638,4 +638,18 @@ closeEditModal(): void {
   this.editAsset = {};
 }
 
+userSearch: string = '';
+
+filteredUsers(): any[] {
+  if (!this.userSearch) {
+    return this.users;
+  }
+
+  const search = this.userSearch.toLowerCase();
+
+  return this.users.filter((user: any) =>
+    user.username?.toLowerCase().includes(search)
+  );
+}
+
 }

@@ -848,6 +848,16 @@ html {
   /* dashboard page styles here 
   ----------------------------- */
 
+  .default-avatar {
+  height: 100px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 45px;
+  margin: 0 auto;
+}
+
 
   .approval_sec{
 
@@ -906,6 +916,14 @@ html {
    panel is open — tapping anywhere on it closes the panel, the same
    click-outside pattern used for the mobile sidebar. */
 .notification-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1030;
+    background: transparent;
+}
+
+/* Same click-outside pattern for the settings (Change Password) dropdown. */
+.settings-backdrop {
     position: fixed;
     inset: 0;
     z-index: 1030;
@@ -1450,6 +1468,9 @@ html {
 
 .settings-dropdown {
   position: absolute !important;
+  right: 0 !important;
+  left: auto !important;
+  min-width: 200px;
   margin-top: 8px;
   z-index: 1050;
 }
@@ -1618,42 +1639,88 @@ html {
     }
   }
 
-  @media only screen and (max-width: 640px) {
-    table thead {
+  @media only screen and (max-width: 767.98px) {
+    /* Scoped to .styled-table only — this is the class used by every
+       Payroll/Requests/Approvals/TimeSheet table, and those are the only
+       ones with data-label attributes on their <td>s. The attendance
+       calendar table (id="attendance") uses plain Bootstrap .table classes
+       and deliberately keeps its horizontal scroll instead, since it has
+       31+ day columns that would be unusable stacked as cards. */
+
+    .styled-table thead {
       display: none;
     }
-  
-    table tbody {
+
+    .styled-table tbody {
       display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #004976;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #004976;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
     }
 
-    .modal-content[_ngcontent-ng-c2143647340]{
-          margin-top: 200px !important;
+    .styled-table tbody tr {
+      margin-bottom: 16px;
+      display: block;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .styled-table tbody tr td {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border: none;
+      border-bottom: 1px solid #f1f1f1;
+      text-align: left;
+      white-space: normal;
+      font-size: 13px;
+    }
+
+    .styled-table tbody tr td:last-child {
+      border-bottom: none;
+    }
+
+    .styled-table tbody td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      width: 45%;
+      flex-shrink: 0;
+      padding-right: 10px;
+    }
+
+    /* tfoot summary rows (Gross Salary / Total Deductions / Net Salary on
+       the Payroll tab) use <th> cells, not <td> — the tbody rules above
+       don't touch them, so without this they'd still render as a raw
+       table row on mobile. Lay each row's label/value pair side by side. */
+    .styled-table tfoot tr {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      padding: 10px 12px;
+      background: #f8f9fa;
+    }
+
+    .styled-table tfoot tr th {
+      font-size: 13px;
+      padding: 2px 0;
+    }
+
+    /* The inline style="...min-width:1200px" on every .styled-table would
+       otherwise keep forcing horizontal scroll even after switching to
+       card rows. !important in a stylesheet beats a non-!important inline
+       style, so this collapses the table (and its .table-scroll wrapper,
+       which then has nothing left to scroll) back to full width. */
+    .styled-table {
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+
+    .modal-content[_ngcontent-ng-c2143647340] {
+      margin-top: 200px !important;
     }
   }
   
@@ -1674,12 +1741,42 @@ html {
         z-index: 1045;
     }
 
-    /* the bell's parent col-md-2 shrinks a lot on phones; let it size to content
-       instead of fighting the grid, so the bell button itself stays put */
-    .col-md-2 {
+    /* Settings dropdown (Change Password) had the exact same problem as the
+       notification bell — anchored to a shrinking parent near the right
+       edge, no explicit left/right, so it could render partly or fully
+       off-screen. Same viewport-anchored fix. */
+    .settings-dropdown {
+        position: fixed !important;
+        top: 64px;
+        left: 12px;
+        right: 12px;
+        margin-top: 0;
+        width: auto;
+        z-index: 1045;
+    }
+
+    /* the bell's and gear's parent wrappers shrink a lot on phones; let them
+       size to content instead of fighting the grid, so the buttons
+       themselves stay put. (Notification wrapper is col-md-4 in the
+       markup; col-md-2 covered here too in case that's used elsewhere.) */
+    .col-md-2,
+    .col-md-4 {
         flex: 0 0 auto;
         width: auto;
         max-width: none;
+    }
+
+    /* Settings + Logout row: wrap instead of overflowing/clipping on
+       narrow phones, and tighten the buttons a little so both fit. */
+    main header .d-flex.align-items-center {
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+
+    main header .d-flex.align-items-center .btn {
+        padding: 6px 10px;
+        font-size: 13px;
     }
 }
 
@@ -1757,51 +1854,6 @@ html {
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
     z-index: 1040;
-}
-
-/* Animated Scanning Line Effect */
-.scan-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.scan-frame {
-  position: absolute;
-  top: 10%;
-  left: 15%;
-  width: 70%;
-  height: 80%;
-  border: 2px dashed rgba(13, 110, 253, 0.6);
-  border-radius: 12px;
-}
-
-.scan-line {
-  position: absolute;
-  width: 70%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #0d6efd, transparent);
-  left: 15%;
-  animation: scanMove 2s infinite ease-in-out;
-}
-
-@keyframes scanMove {
-  0% { top: 12%; }
-  50% { top: 86%; }
-  100% { top: 12%; }
-}
-
-.animate-pulse {
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
 }
 
 /* Responsive Adjustments */

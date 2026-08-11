@@ -1,351 +1,433 @@
-
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section">
-
-        <div class="header_section">
-
-            <div class="row">
-                <div class="col-md-4">
-                    <h1>Assigned Permission For User</h1>
-                </div>
-
-                <div class="col-md-3">
-                    
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-                </div>
-                <div class="col-md-5">
-                    <div class="button-group pull-right">
-                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                        </mat-icon></span> Create</button>
-                      <span *ngIf="!hasAddPermission"></span>
-
-                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
-                        <span *ngIf="hasEditPermission"></span>
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                            <span class="header-btn-icon">
-                                <mat-icon> delete
-                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
-
-                           <span *ngIf="!hasDeletePermission"></span>
-                    </div>
-                </div>
-            </div>
-           
-           
-
-        </div>
-
-        <div class="row">
-            <div class="col-md-2">
-                
-                <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
-
-            </div>
-            <div class="col-md-3">
-                <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedPermissions()">Delete Selected </button>
-
-            </div>
-        </div>
-      
-
-      
-
-        <div *ngIf="iscreateLoanApp" class="modal">
-            <div class="modal-content">
-              <div class="row">
-                <div class="col-md-10">
-                  <h2>Assign User</h2>
-                </div>
-<div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div>
-              </div>
-              <hr />
-
-         <form>
-                    <div class="row">
-
-                        <div class="col-md-6">
-                            <div class="custom-sel">
-                                <label>Select User
-                                  <span class="required-star">*</span>
-                                </label>
-                                <select class="form-control" id="profile" required [(ngModel)]="profile"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !profile}">
-                                    <option *ngFor="let deparmentsec of users" [value]="deparmentsec.id">{{ deparmentsec.username }}</option>
-                                </select>
-                                <div *ngIf="registerButtonClicked && !profile" class="error-message">Please Select Your Company</div>
-                            </div>
-                        </div>
-                        
-
-                        <div class="col-md-6">
-                            <label>Select Group
-                              <span class="required-star">*</span>
-                            </label>
-
-
-
-
-                            <div class="custom-sel">
-                                <div class="form-control-wrapper">
-                              
-          
-<mat-form-field appearance="outline" class="w-100">
-  <mat-select
-    placeholder="Select Group"
-    [(ngModel)]="groups"
-    [ngModelOptions]="{standalone: true}"
-    [ngClass]="{'error-field': registerButtonClicked && (!groups || groups.length === 0)}"
-    #select
-    multiple
-    (closed)="groupSearch = ''">
-
-    <!-- Select All -->
-    <div class="select-all">
-      <mat-checkbox
-        [(ngModel)]="allSelected"
-        [ngModelOptions]="{standalone: true}"
-        (change)="toggleAllSelection()">
-        Select All
-      </mat-checkbox>
-    </div>
-
-    <!-- Search -->
-    <div class="px-2 pb-2">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search Group"
-        [(ngModel)]="groupSearch"
-        [ngModelOptions]="{standalone:true}"
-        (click)="$event.stopPropagation()"
-        (keydown)="$event.stopPropagation()">
-    </div>
-
-    <!-- Group List -->
-    <mat-option
-      *ngFor="let group of filteredGroups()"
-      [value]="group.id">
-      {{ group.name }}
-    </mat-option>
-
-  </mat-select>
-</mat-form-field>
-                                  
-                                </div>
-                                <div *ngIf="registerButtonClicked && (!groups || groups.length === 0)" class="error-message">
-                                  Please Select Your groups
-                                </div>
-                              </div>
-                                        
-                    
-                        </div>
-
-
-                    </div>
-
-
-            <div class="row">
-                <div class="col-md-8">
-                </div>
-            <div class="col-md-2">
-              <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
-            </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerUserAssignedPermission()">Add</button>  
-                 </div>
-            </div>
-            
-       
-    </form>
-
-            
-            </div>
-          </div>
-
-          <!-- Edit Modal -->
-<div *ngIf="isUserPereditModalOpen" class="modal">
-    <div class="modal-content">
+  <div class="comapny_section">
+    <div class="header_section">
       <div class="row">
-        <div class="col-md-10">
-          <h2>Edit Assigned Permission</h2>
-        </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeEditPerModal()">
-      ×
-    </span>
-  </div>
-      </div>
-      <hr />
-  
-      <form>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="custom-sel">
-                    <label>Select User</label>
-                    <select class="form-control" id="profile" required [(ngModel)]="selectedUserPermission.profile"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClickededit && !selectedUserPermission.profile}">
-                        <option value="">Select</option>
-                        <option *ngFor="let user of users" [value]="user.id">{{ user.username }}</option>
-                    </select>
-                    <div *ngIf="registerButtonClickededit && !selectedUserPermission.profile" class="error-message">Please Select a User</div>
-                </div>
-            </div>
-
-                                    <div class="col-md-6">
-                            <label>Select Group
-                              <span class="required-star">*</span>
-                            </label>
-
-
-
-
-                            <div class="custom-sel">
-                                <div class="form-control-wrapper">
-                              
-          
-<mat-form-field appearance="outline" class="w-100">
-  <mat-select
-    placeholder="Select Group"
-    [(ngModel)]="selectedUserPermission.groups"
-    [ngModelOptions]="{standalone: true}"
-    [ngClass]="{'error-field': registerButtonClicked && (!groups || groups.length === 0)}"
-    #select
-    multiple
-    (closed)="groupSearch = ''">
-
-    <!-- Select All -->
-    <div class="select-all">
-      <mat-checkbox
-        [(ngModel)]="allSelected"
-        [ngModelOptions]="{standalone: true}"
-        (change)="toggleAllSelection()">
-        Select All
-      </mat-checkbox>
-    </div>
-
-    <!-- Search -->
-    <div class="px-2 pb-2">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search Group"
-        [(ngModel)]="groupSearch"
-        [ngModelOptions]="{standalone:true}"
-        (click)="$event.stopPropagation()"
-        (keydown)="$event.stopPropagation()">
-    </div>
-
-    <!-- Group List -->
-    <mat-option
-      *ngFor="let group of filteredGroups()"
-      [value]="group.id">
-      {{ group.name }}
-    </mat-option>
-
-  </mat-select>
-</mat-form-field>
-                                  
-                                </div>
-                                <div *ngIf="registerButtonClicked && (!groups || groups.length === 0)" class="error-message">
-                                  Please Select Your groups
-                                </div>
-                              </div>
-                                        
-                    
-                        </div>
-            
+        <div class="col-md-4">
+          <h1>Assigned Permission For User</h1>
         </div>
 
-
-  
-        <div class="row">
-          <div class="col-md-8"></div>
-          <div class="col-md-2">
-              <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditPerModal()">Cancel</button>  
-            </div>
-          <div class="col-md-2">
+        <div class="col-md-3">
+          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right">
             <button
               type="button"
-              class="btn-Create btn-full mt-5 btn-success btn"
-              (click)="updateUserPermission()"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
             >
-              Update
+              <span class="header-btn-icon"
+                ><mat-icon>add_circle </mat-icon></span
+              >
+              Create
             </button>
+            <span *ngIf="!hasAddPermission"></span>
+
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
+            <span *ngIf="hasEditPermission"></span>
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
+              <span class="header-btn-icon">
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
+
+            <span *ngIf="!hasDeletePermission"></span>
           </div>
         </div>
-      </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+        <button
+          class="mt-3 btn-danger btn"
+          style="width: 100%"
+          color="warn"
+          *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()"
+        >
+          Select All
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          class="mt-3 btn-danger btn"
+          color="warn"
+          *ngIf="Delete"
+          (click)="deleteSelectedPermissions()"
+        >
+          Delete Selected
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="iscreateLoanApp" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Assign User</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <label
+                >Select User
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      placeholder="Select User"
+                      [(ngModel)]="profile"
+                      [ngModelOptions]="{ standalone: true }"
+                      [ngClass]="{
+                        'error-field': registerButtonClicked && !profile,
+                      }"
+                      (closed)="userSearch = ''"
+                    >
+                      <!-- Search User -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search User"
+                          [(ngModel)]="userSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+
+                      <!-- User List -->
+                      <mat-option
+                        *ngFor="let user of filteredUsers()"
+                        [value]="user.id"
+                      >
+                        {{ user.username }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div
+                  *ngIf="registerButtonClicked && !profile"
+                  class="error-message"
+                >
+                  Please Select Your User
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label
+                >Select Group
+                <span class="required-star">*</span>
+              </label>
+
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      placeholder="Select Group"
+                      [(ngModel)]="groups"
+                      [ngModelOptions]="{ standalone: true }"
+                      [ngClass]="{
+                        'error-field':
+                          registerButtonClicked &&
+                          (!groups || groups.length === 0),
+                      }"
+                      #select
+                      multiple
+                      (closed)="groupSearch = ''"
+                    >
+                      <!-- Select All -->
+                      <div class="select-all">
+                        <mat-checkbox
+                          [(ngModel)]="allSelected"
+                          [ngModelOptions]="{ standalone: true }"
+                          (change)="toggleAllSelection()"
+                        >
+                          Select All
+                        </mat-checkbox>
+                      </div>
+
+                      <!-- Search -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Group"
+                          [(ngModel)]="groupSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+
+                      <!-- Group List -->
+                      <mat-option
+                        *ngFor="let group of filteredGroups()"
+                        [value]="group.id"
+                      >
+                        {{ group.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="
+                    registerButtonClicked && (!groups || groups.length === 0)
+                  "
+                  class="error-message"
+                >
+                  Please Select Your groups
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-danger btn"
+                (click)="closeapplicationModal()"
+              >
+                Cancel
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="registerUserAssignedPermission()"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div *ngIf="isUserPereditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit Assigned Permission</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeEditPerModal()"> × </span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Select User</label>
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      placeholder="Select User"
+                      [(ngModel)]="selectedUserPermission.profile"
+                      [ngModelOptions]="{ standalone: true }"
+                      [ngClass]="{
+                        'error-field': registerButtonClicked && !profile,
+                      }"
+                      (closed)="userSearch = ''"
+                    >
+                      <!-- Search User -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search User"
+                          [(ngModel)]="userSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+
+                      <!-- User List -->
+                      <mat-option
+                        *ngFor="let user of filteredUsers()"
+                        [value]="user.id"
+                      >
+                        {{ user.username }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="registerButtonClicked && !profile"
+                  class="error-message"
+                >
+                  Please Select Your User
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label
+                >Select Group
+                <span class="required-star">*</span>
+              </label>
+
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      placeholder="Select Group"
+                      [(ngModel)]="selectedUserPermission.groups"
+                      [ngModelOptions]="{ standalone: true }"
+                      [ngClass]="{
+                        'error-field':
+                          registerButtonClicked &&
+                          (!groups || groups.length === 0),
+                      }"
+                      #select
+                      multiple
+                      (closed)="groupSearch = ''"
+                    >
+                      <!-- Select All -->
+                      <div class="select-all">
+                        <mat-checkbox
+                          [(ngModel)]="allSelected"
+                          [ngModelOptions]="{ standalone: true }"
+                          (change)="toggleAllSelection()"
+                        >
+                          Select All
+                        </mat-checkbox>
+                      </div>
+
+                      <!-- Search -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Group"
+                          [(ngModel)]="groupSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+
+                      <!-- Group List -->
+                      <mat-option
+                        *ngFor="let group of filteredGroups()"
+                        [value]="group.id"
+                      >
+                        {{ group.name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="
+                    registerButtonClicked && (!groups || groups.length === 0)
+                  "
+                  class="error-message"
+                >
+                  Please Select Your groups
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-danger btn"
+                (click)="closeEditPerModal()"
+              >
+                Cancel
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="updateUserPermission()"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="com_list mt-4" *ngIf="hasViewPermission">
+      <table width="100%" *ngIf="hasViewPermission">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>User</th>
+            <th>Group Name</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let per of UserPermissions; let i = index">
+            <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="User">{{ per.user }}</td>
+            <td data-label="Group Name">
+              <span *ngFor="let group of per.groups; let last = last">
+                {{ group.name }}{{ last ? "" : ", " }}
+              </span>
+            </td>
+
+            <td data-label="Action">
+              <button
+                mat-fab
+                color="primary"
+                aria-label="Edit icon"
+                *ngIf="showEditBtn"
+                (click)="openEditPerModal(per)"
+              >
+                <mat-icon style="color: white">draw</mat-icon>
+              </button>
+
+              <mat-checkbox
+                *ngIf="Delete"
+                [(ngModel)]="per.selected"
+              ></mat-checkbox>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  
-
-   <div class="com_list mt-4"  *ngIf="hasViewPermission">
-        <table width="100%" *ngIf="hasViewPermission">
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>User</th>
-        <th>Group Name</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let per of UserPermissions; let i = index">
-        <td data-label="No">{{ i + 1 }}</td>
-        <td data-label="User">{{ per.user }}</td>
-        <td data-label="Group Name">
-          <span *ngFor="let group of per.groups; let last = last">
-            {{ group.name }}{{ last ? '' : ', ' }}
-          </span>
-        </td>
-
-     <td data-label="Action">
-
-                        <button
-                          mat-fab
-                          color="primary"
-                          aria-label="Edit icon"
-                          *ngIf="showEditBtn"
-
-                          
-                          (click)="openEditPerModal(per)"
-                        >
-                          <mat-icon style="color: white;">draw</mat-icon>
-                        </button>
-
-                        <mat-checkbox *ngIf="Delete" [(ngModel)]="per.selected" ></mat-checkbox>
-
-                      </td>
-
-      </tr>
-    </tbody>
-  </table>
 </div>
-        </div>
-        </div>
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

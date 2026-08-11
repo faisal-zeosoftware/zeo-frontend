@@ -1478,6 +1478,129 @@ toggleApprovalsDropdown() {
     });
   }
 
+  // Properties
+isLeaveFormOpen: boolean = false;
+isEditingLeave: boolean = false;
+editingLeaveId: number | null = null;
+
+// Toggle form visibility
+toggleLeaveForm(): void {
+  this.isLeaveFormOpen = !this.isLeaveFormOpen;
+  if (!this.isLeaveFormOpen) {
+    this.cancelLeaveEdit();
+  }
+}
+
+// Edit leave request
+editLeaveRequest(leavereq: any, event?: Event): void {
+  if (event) event.stopPropagation();
+  
+  this.isEditingLeave = true;
+  this.editingLeaveId = leavereq.id;
+  this.isLeaveFormOpen = true;
+  
+  // Populate form fields
+  this.leave_type = leavereq.leave_type_id || leavereq.leave_type;
+  this.document_number = leavereq.document_number;
+  this.start_date = leavereq.start_date;
+  this.end_date = leavereq.end_date;
+  this.reason = leavereq.reason;
+  this.dis_half_day = leavereq.dis_half_day || false;
+  this.half_day_period = leavereq.half_day_period || '';
+  
+  // Scroll to form
+  setTimeout(() => {
+    const formElement = document.querySelector('#leaverequest form');
+    if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// Cancel edit mode
+cancelLeaveEdit(): void {
+  this.isEditingLeave = false;
+  this.editingLeaveId = null;
+  this.leave_type = '';
+  this.document_number = null;
+  this.start_date = '';
+  this.end_date = '';
+  this.reason = '';
+  this.dis_half_day = false;
+  this.half_day_period = '';
+  this.totalDays = 0;
+  this.registerButtonClicked = false;
+}
+
+// Update leave request
+updateLeaveRequest(): void {
+  if (!this.editingLeaveId) return;
+  if (!this.selectedEmployeeId) {
+    alert('Employee data not loaded.');
+    return;
+  }
+  if (!this.leave_type) {
+    alert('Please select a Leave Type.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('start_date', this.start_date);
+  formData.append('end_date', this.end_date);
+  formData.append('reason', this.reason || '');
+  formData.append('dis_half_day', String(this.dis_half_day));
+  formData.append('half_day_period', this.dis_half_day ? this.half_day_period : '');
+  formData.append('leave_type', String(this.leave_type));
+  formData.append('employee', String(this.selectedEmployeeId));
+  
+  if (this.selectedBranchId) {
+    formData.append('branch', String(this.selectedBranchId));
+  }
+
+  // Call your update API endpoint
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/calendars/api/emp-leave-request/${this.editingLeaveId}/?schema=${selectedSchema}`;
+
+  this.http.put(apiUrl, formData).subscribe({
+    next: (response) => {
+      alert('Leave Request updated successfully!');
+      this.cancelLeaveEdit();
+      this.isLeaveFormOpen = false;
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    error: (error) => {
+      console.error('Error Details:', error.error);
+      const msg = error.error?.detail || "Server Error";
+      alert("Leave Request Update Failed: " + msg);
+    }
+  });
+}
+
+// Delete leave request
+deleteLeaveRequest(leaveId: number, event?: Event): void {
+  if (event) event.stopPropagation();
+  
+  if (!confirm('Are you sure you want to delete this leave request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/calendars/api/emp-leave-request/${leaveId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe({
+    next: (response) => {
+      alert('Leave Request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    error: (error) => {
+      console.error('Error deleting leave request:', error);
+      alert('Failed to delete leave request. Please try again.');
+    }
+  });
+}
+
   getLocation(): Promise<any> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -1798,6 +1921,133 @@ registerGeneralreq(): void {
   );
 }
 
+// ========== GENERAL REQUEST PROPERTIES ==========
+isGeneralFormOpen: boolean = false;
+isEditingGeneral: boolean = false;
+editingGeneralId: number | null = null;
+
+// ========== GENERAL REQUEST METHODS ==========
+
+toggleGeneralForm(): void {
+  this.isGeneralFormOpen = !this.isGeneralFormOpen;
+  if (!this.isGeneralFormOpen) {
+    this.cancelGeneralEdit();
+  }
+}
+
+// Edit general request
+editGeneralRequest(genreq: any): void {
+  this.isEditingGeneral = true;
+  this.editingGeneralId = genreq.id;
+  this.isGeneralFormOpen = true;
+  
+  // Populate form fields
+  this.document_number = genreq.document_number;
+  this.request_type = genreq.request_type_id || genreq.request_type;
+  this.reason = genreq.reason;
+  this.remarks = genreq.remarks;
+  this.total = genreq.total;
+  
+  setTimeout(() => {
+    const formElement = document.querySelector('#generalRequest form');
+    if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// Cancel edit
+cancelGeneralEdit(): void {
+  this.isEditingGeneral = false;
+  this.editingGeneralId = null;
+  this.document_number = null;
+  this.request_type = '';
+  this.reason = '';
+  this.remarks = '';
+  this.total = '';
+  this.request_document = null;
+  this.selectedSalaryComponent = null;
+  this.registerButtonClicked = false;
+}
+
+// Update general request
+updateGeneralReq(): void {
+  if (!this.editingGeneralId) return;
+  if (!this.selectedEmployeeId || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('document_number', this.document_number?.toString() || '');
+  formData.append('reason', this.reason || '');
+  formData.append('total', this.total?.toString() || '');
+  formData.append('request_type', this.request_type || '');
+  formData.append('employee', this.selectedEmployeeId.toString());
+  formData.append('approved', this.approved ? 'true' : 'false');
+  formData.append('remarks', this.remarks || '');
+  formData.append('branch', this.selectedBranchId.toString());
+
+  if (this.request_document) {
+    formData.append('request_document', this.request_document);
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/employee/api/general-request/${this.editingGeneralId}/?schema=${selectedSchema}`;
+
+  this.http.put(apiUrl, formData).subscribe(
+    (response) => {
+      alert('✅ General request updated successfully!');
+      this.cancelGeneralEdit();
+      this.isGeneralFormOpen = false;
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('General request update failed:', error);
+      let errorMessage = 'Something went wrong.';
+      if (error.error) {
+        if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (typeof error.error === 'object') {
+          const messages: string[] = [];
+          Object.keys(error.error).forEach((field) => {
+            const value = error.error[field];
+            if (Array.isArray(value)) messages.push(`${field}: ${value.join(', ')}`);
+            else if (typeof value === 'string') messages.push(`${field}: ${value}`);
+          });
+          if (messages.length > 0) errorMessage = messages.join('\n');
+        } else if (error.error.detail) {
+          errorMessage = error.error.detail;
+        }
+      }
+      alert(`General request update failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
+// Delete general request
+deleteGeneralRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this general request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/employee/api/general-request/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ General request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting general request:', error);
+      alert('Failed to delete general request. Please try again.');
+    }
+  );
+}
+
     
           onFileChange(event: any) {
             const file = event.target.files[0];
@@ -1908,6 +2158,126 @@ CreateAssetType(): void {
     }
   });
 }
+
+// ========== ASSET REQUEST PROPERTIES ==========
+isAssetFormOpen: boolean = false;
+isEditingAsset: boolean = false;
+editingAssetId: number | null = null;
+
+
+// ========== ASSET REQUEST METHODS ==========
+
+toggleAssetForm(): void {
+  this.isAssetFormOpen = !this.isAssetFormOpen;
+  if (!this.isAssetFormOpen) {
+    this.cancelAssetEdit();
+  }
+}
+
+// Edit asset request
+editAssetRequest(assetreq: any): void {
+  this.isEditingAsset = true;
+  this.editingAssetId = assetreq.id;
+  this.isAssetFormOpen = true;
+  
+  // Populate form fields
+  this.document_number = assetreq.document_number;
+  this.asset_type = assetreq.asset_type_id || assetreq.asset_type;
+  this.requested_asset = assetreq.requested_asset_id || assetreq.requested_asset;
+  this.reason = assetreq.reason;
+  
+  setTimeout(() => {
+    const formElement = document.querySelector('#assetRequest form');
+    if (formElement) formElement.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// Cancel edit
+cancelAssetEdit(): void {
+  this.isEditingAsset = false;
+  this.editingAssetId = null;
+  this.document_number = null;
+  this.asset_type = '';
+  this.requested_asset = '';
+  this.reason = '';
+  this.registerButtonClicked = false;
+}
+
+// Update asset request
+updateAssetReq(): void {
+  if (!this.editingAssetId) return;
+  if (!this.selectedEmployeeId || !this.selectedBranchId) {
+    alert('Please ensure Employee is loaded.');
+    return;
+  }
+
+  const companyData = {
+    reason: this.reason || '',
+    asset_type: this.asset_type?.toString() || '',
+    requested_asset: this.requested_asset || '',
+    employee: this.selectedEmployeeId,
+    branch: this.selectedBranchId.toString() || '',
+    document_number: this.document_number,
+  };
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-Request/${this.editingAssetId}/?schema=${selectedSchema}`;
+
+  this.http.put(apiUrl, companyData).subscribe(
+    (response) => {
+      alert('✅ Asset request updated successfully!');
+      this.cancelAssetEdit();
+      this.isAssetFormOpen = false;
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Asset request update failed:', error);
+      let errorMessage = 'Something went wrong.';
+      if (error.error) {
+        if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (typeof error.error === 'object') {
+          const messages: string[] = [];
+          Object.keys(error.error).forEach((field) => {
+            const value = error.error[field];
+            if (Array.isArray(value)) messages.push(`${field}: ${value.join(', ')}`);
+            else if (typeof value === 'string') messages.push(`${field}: ${value}`);
+          });
+          if (messages.length > 0) errorMessage = messages.join('\n');
+        } else if (error.error.detail) {
+          errorMessage = error.error.detail;
+        }
+      }
+      alert(`Asset request update failed!\n\n${errorMessage}`);
+    }
+  );
+}
+
+// Delete asset request
+deleteAssetRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this Asset request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/organisation/api/asset-Request/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ Asset request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting asset request:', error);
+      alert('Failed to delete Asset request. Please try again.');
+    }
+  );
+}
+
 
   Assets:any []=[];
 
@@ -2055,7 +2425,37 @@ CreateAssetType(): void {
         );
       }
 
+      // Delete general request
+deleteAdvSalRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this Advance Salary request?')) {
+    return;
+  }
 
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/payroll/api/advance-salary-request/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ Advance Salary request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting Advance Salary request:', error);
+      alert('Failed to delete Advance Salary request. Please try again.');
+    }
+  );
+}
+
+
+isAdvSalFormOpen: boolean = false;
+
+toggleAdvSalForm(): void {
+  this.isAdvSalFormOpen = !this.isAdvSalFormOpen;
+  if (!this.isAdvSalFormOpen) {
+  }
+}
 
 
 
@@ -2153,6 +2553,37 @@ CreateAssetType(): void {
  
     );
   }
+
+  isLoanFormOpen: boolean = false;
+
+toggleLoanForm(): void {
+  this.isLoanFormOpen = !this.isLoanFormOpen;
+  if (!this.isLoanFormOpen) {
+  }
+}
+
+      // Delete general request
+deleteLoanRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this Loan request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/payroll/api/loan-application/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ Loan request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting Loan request:', error);
+      alert('Failed to delete Loan request. Please try again.');
+    }
+  );
+}
 
   LoanTypes:any[]=[];
 
@@ -2282,6 +2713,35 @@ CreateAssetType(): void {
     );
   }
 
+  isResignationFormOpen: boolean = false;
+
+toggleResignationForm(): void {
+  this.isResignationFormOpen = !this.isResignationFormOpen;
+  if (!this.isResignationFormOpen) {
+  }
+}
+
+deleteResignationRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this Resignation request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/employee/api/employee-resignation/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ Resignation request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting Resignation request:', error);
+      alert('Failed to delete Resignation request. Please try again.');
+    }
+  );
+}
 
       DocRequest: any[] = [];
 
@@ -2355,6 +2815,36 @@ fetchResignation(schema: string, branchIds: number[]): void {
     }
         );
       }
+
+      isLinEoutFormOpen: boolean = false;
+
+toggleLinEoutForm(): void {
+  this.isLinEoutFormOpen = !this.isLinEoutFormOpen;
+  if (!this.isLinEoutFormOpen) {
+  }
+}
+
+deleteLinEoutRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this Late In Ealry Out request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/calendars/api/lateinearly-request/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ Late In Ealry Out request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting Late In Ealry Out request:', error);
+      alert('Failed to delete Late In Ealry Out request. Please try again.');
+    }
+  );
+}
 
         
     LeaveapprovalLevels: any[] = [];
@@ -2488,7 +2978,7 @@ fetchResignation(schema: string, branchIds: number[]): void {
               (response) => {
                 console.log('Registration successful', response);
                     alert('Request sent successfuly completed');
-                    // window.location.reload();
+                    window.location.reload();
          const selectedSchema = this.authService.getSelectedSchema();
      if (selectedSchema) {
       this.fetchDesignations(selectedSchema);
@@ -2538,6 +3028,38 @@ fetchResignation(schema: string, branchIds: number[]): void {
 }
             );
           }
+
+
+isAirticketFormOpen: boolean = false;
+
+toggleAirticketForm(): void {
+  this.isAirticketFormOpen = !this.isAirticketFormOpen;
+  if (!this.isAirticketFormOpen) {
+  }
+}
+
+    deleteAirticketRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this Airticket request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/payroll/api/airticket-request/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ Airticket request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting Airticket request:', error);
+      alert('Failed to delete Airticket request. Please try again.');
+    }
+  );
+}
+    
 
  loadAllocations(callback?: Function): void {
 
@@ -2666,6 +3188,37 @@ fetchResignation(schema: string, branchIds: number[]): void {
 }
       );
     }
+
+    deleteDocumentRequest(requestId: number): void {
+  if (!confirm('Are you sure you want to delete this Document request?')) {
+    return;
+  }
+
+  const selectedSchema = this.authService.getSelectedSchema();
+  const apiUrl = `${this.apiUrl}/employee/api/Doc-request/${requestId}/?schema=${selectedSchema}`;
+
+  this.http.delete(apiUrl).subscribe(
+    (response) => {
+      alert('✅ Document request deleted successfully!');
+      if (selectedSchema) {
+        this.fetchDesignations(selectedSchema);
+      }
+    },
+    (error) => {
+      console.error('Error deleting Document request:', error);
+      alert('Failed to delete Document request. Please try again.');
+    }
+  );
+}
+
+
+isDocumentFormOpen: boolean = false;
+
+toggleDocumentForm(): void {
+  this.isDocumentFormOpen = !this.isDocumentFormOpen;
+  if (!this.isDocumentFormOpen) {
+  }
+}
 
 get dashboardLeaveBalances() {
   return this.employeesec?.leave_balance
@@ -4059,6 +4612,15 @@ confirmLinEoutRejection(approvalId: number): void {
     }
             );
           }
+
+          isTimeSheeetFormOpen: boolean = false;
+
+toggleTimeSheetForm(): void {
+  this.isTimeSheeetFormOpen = !this.isTimeSheeetFormOpen;
+  if (!this.isTimeSheeetFormOpen) {
+  }
+}
+    
 
  loadProject(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();

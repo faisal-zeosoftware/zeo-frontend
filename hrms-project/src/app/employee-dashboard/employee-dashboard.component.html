@@ -17,16 +17,29 @@
         <i class="fa fa-times"></i>
       </button>
         <div class="text-center mb-4">
-          <div class="profile-pic-container position-relative">
-            <img id="profile-pic" [src]="employeesec.emp_profile_pic" (error)="handleImageError($event)"
-              alt="Profile Picture" class="img-fluid rounded-circle">
-            <div class="upload-overlay position-absolute">
-              <label for="profile-upload" class="upload-label">
-                <i class="bi bi-camera-fill"></i>
-              </label>
-              <input type="file" id="profile-upload" accept="image/*" class="d-none">
-            </div>
-          </div>
+<div class="profile-pic-container position-relative">
+  <ng-container *ngIf="employeesec.emp_profile_pic; else defaultAvatar">
+    <img
+      id="profile-pic"
+      [src]="employeesec.emp_profile_pic"
+      (error)="handleImageError($event)"
+      alt="Profile Picture"
+      class="img-fluid rounded-circle">
+  </ng-container>
+
+  <ng-template #defaultAvatar>
+    <div class="default-avatar rounded-circle">
+      <i class="fa fa-user"></i>
+    </div>
+  </ng-template>
+
+  <div class="upload-overlay position-absolute">
+    <label for="profile-upload" class="upload-label">
+      <i class="bi bi-camera-fill"></i>
+    </label>
+    <input type="file" id="profile-upload" accept="image/*" class="d-none">
+  </div>
+</div>
           <h5 id="user-name" class="text-light mt-3">{{ employeesec.emp_first_name }} {{ employeesec.emp_last_name }}
           </h5>
           <p id="user-id" class="text-secondary small">Employee Code: {{ employeesec.emp_code }}</p>
@@ -308,13 +321,13 @@
         <h1 class="h2">Employee Dashboard</h1>
         <div class="d-flex">
 
-          <div class="input-group me-3">
+          <!-- <div class="input-group me-3">
             <input type="text" class="form-control" placeholder="Search..." aria-label="Search">
             <button class="btn btn-outline-secondary" type="button" id="search-btn">
               <i class="fa fa-search"></i>
             </button>
-          </div>
-<div class="col-md-2">
+          </div> -->
+<div class="col-md-4">
 <div class="dropdown position-relative">
 
   <!-- Bell Button -->
@@ -1380,14 +1393,14 @@
 
   <!-- Main Row -->
   <tr class="tbodytext">
-    <td>{{ i + 1 }}</td>
-    <td>{{ pay.payroll_run?.name }}</td>
-    <td>{{ pay.payroll_run?.year }}</td>
-    <td>{{ pay.payroll_run?.month }}</td>
-    <td>{{ pay.total_working_days }}</td>
-    <td>{{ pay.days_worked }}</td>
-    <td>{{ pay.payroll_run?.payment_date }}</td>
-    <td>
+    <td data-label="No">{{ i + 1 }}</td>
+    <td data-label="Name">{{ pay.payroll_run?.name }}</td>
+    <td data-label="Year">{{ pay.payroll_run?.year }}</td>
+    <td data-label="Month">{{ pay.payroll_run?.month }}</td>
+    <td data-label="Total Working Days">{{ pay.total_working_days }}</td>
+    <td data-label="Day Worked">{{ pay.days_worked }}</td>
+    <td data-label="Payment Date">{{ pay.payroll_run?.payment_date }}</td>
+    <td data-label="Status">
     <span class="badge" [ngClass]="pay.status ? 'bg-success' : 'bg-secondary'">
     {{ pay.status }}
     </span>
@@ -1411,363 +1424,274 @@
 
       <!-- Requests Sections Here -->
        
-      <section class="content-tab  animate__animated animate__fadeIn" id="leaverequest"
-        *ngIf="activeTabNav === 'leaverequest'">
-        <!-- Academic content here -->
- <div class="white-outer-sec">
-       <h3 class="mb-0">Leave Request</h3>
+<section class="content-tab animate__animated animate__fadeIn" id="leaverequest"
+  *ngIf="activeTabNav === 'leaverequest'">
+  
+  <!-- Header with + Icon on Right -->
+  <div class="white-outer-sec d-flex justify-content-between align-items-center">
+    <h3 class="mb-0">Leave Request</h3>
+    <button class="btn btn-success btn-sm" (click)="toggleLeaveForm()" title="Add Leave Request">
+      <i class="fa" [ngClass]="isLeaveFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isLeaveFormOpen ? 'Hide Form' : 'Leave Request' }}
+    </button>
   </div>
-        <div class="white-outer-sec">
-              <!-- <div class="card-header bg-white d-flex justify-content-between align-items-center"> -->
-             
 
-              <!-- </div> -->
-          <form (ngSubmit)="requestLeave()" enctype="multipart/form-data">
-            <div class="row">
-
-              
-              <div class="col-md-3">
-                <label>Leave Type</label>
-                <div class="custom-sel">
-                <select class="form-control"
-                [(ngModel)]="leave_type"
-                 required
-               [ngModelOptions]="{standalone: true}">
+  <!-- Collapsible Form -->
+  <div class="white-outer-sec" *ngIf="isLeaveFormOpen">
+    <form (ngSubmit)="isEditingLeave ? updateLeaveRequest() : requestLeave()" enctype="multipart/form-data">
+      <div class="row">
+        <div class="col-md-3">
+          <label>Leave Type</label>
+          <div class="custom-sel">
+            <select class="form-control"
+              [(ngModel)]="leave_type"
+              required
+              [ngModelOptions]="{standalone: true}">
               <option value="">-- Select Leave Type --</option>
               <option *ngFor="let lt of LeaveTypes" [value]="lt.id">
                 {{ lt.name }}
               </option>
-             </select>
-          
-                </div>
-              </div>
-
-
- <div class="col-md-3">
-  <label>Document Number</label>
-  <input 
-    type="text" 
-    class="form-control" 
-    [(ngModel)]="document_number" 
-    placeholder="Enter document number"
-    [disabled]="automaticNumbering"
-    [ngModelOptions]="{standalone: true}"
-    [required]="!automaticNumbering"  
-  >
-
-  <!-- Optional: show hint when disabled -->
-  <small *ngIf="automaticNumbering" class="text-muted">
-    Document number will be auto-generated
-  </small>
-</div>
-              
-
-              <!-- <div class="col-md-3">
-                <label>Document Number</label>
-                <input type="text" class="form-control" required [(ngModel)]="document_number" placeholder="Enter Document number"
-                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !document_number}">
-                <div *ngIf="registerButtonClicked && !document_number" class="error-message">Document number is required.</div>
-              </div> -->
-          
-
-
-            
-             
-
-
-              <div class="col-md-3">
-                <label>Start Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter Start Date" (change)="calculateTotalDays()"
-                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
-                <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
-              </div>
-          
-              <div class="col-md-3">
-                <label>End Date</label>
-                <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter End Date" (change)="calculateTotalDays()"
-                       [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
-                <div *ngIf="registerButtonClicked && !end_date" class="error-message">End Date is required.</div>
-              </div>
-
-
-              <div class="col-m-3">
-                <label>total days</label>
-                <input type="text" class="form-control" [value]="totalDays" readonly>
-              </div>
-
-
-              <div class="col-md-12">
-                <label>Reason</label>
-                <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}"></textarea>
-              </div>
-
-
-         
-
-              <!-- <div class="col-md-6">
-                <label>Approved On</label>
-                <input type="date" class="form-control" required [(ngModel)]="approved_on" placeholder="Enter date of approved on"
-                       [ngModelOptions]="{standalone: true}" >
-              </div> -->
-
-              <div class="col-md-3">
-                <label></label>
-                <div class="check-box-selection-sec form-control mt-3">
-                  <div class="mat-set">
-                    <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Half Day</mat-checkbox>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="col-md-3" *ngIf="dis_half_day">
-                <label>Half Day Period</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="half_day_period" [ngModelOptions]="{standalone: true}">
-                    <option value="first_half">First Half</option>
-                    <option value="second_half">Second Half</option>
-                  </select>
-                </div>
-              </div>
-
-
-              <!-- <div class="col-md-6">
-                <label>Created By</label>
-                <div class="custom-sel">
-                  <select class="form-control" id="approved_by" name="approved_by" [(ngModel)]="approved_by" [ngModelOptions]="{standalone: true}">
-                    <option *ngFor="let approver of Users" [value]="approver.id">{{ approver.email }}</option>
-                  </select>
-                </div>
-              </div> -->
-
-          
-         
-          
-         
-            </div>
-          
-            <div class="row">
-              <div class="col-md-9"></div>
-              <div class="col-md-3">
-                <button type="submit" class="btn btn-success btn-full mt-4">Add Leave Request</button>
-              </div>
-            </div>
-          </form>
-
+            </select>
+          </div>
         </div>
 
+        <div class="col-md-3">
+          <label>Document Number</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="document_number" 
+            placeholder="Enter document number"
+            [disabled]="automaticNumbering"
+            [ngModelOptions]="{standalone: true}"
+            [required]="!automaticNumbering"  
+          >
+          <small *ngIf="automaticNumbering" class="text-muted">
+            Document number will be auto-generated
+          </small>
+        </div>
 
-        <div class="white-outer-sec">
+        <div class="col-md-3">
+          <label>Start Date</label>
+          <input type="date" class="form-control" required [(ngModel)]="start_date" placeholder="Enter Start Date" (change)="calculateTotalDays()"
+                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !start_date}">
+          <div *ngIf="registerButtonClicked && !start_date" class="error-message">start date is required.</div>
+        </div>
 
-          <div class="leave-tracking-container">
+        <div class="col-md-3">
+          <label>End Date</label>
+          <input type="date" class="form-control" required [(ngModel)]="end_date" placeholder="Enter End Date" (change)="calculateTotalDays()"
+                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !end_date}">
+          <div *ngIf="registerButtonClicked && !end_date" class="error-message">End Date is required.</div>
+        </div>
 
-            <div class="leave-card"
-                 *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
-          
-              <!-- HEADER -->
-              <div class="leave-header">
-          
-                <div class="left-section">
-          
-                  <div class="leave-icon">
-                    <mat-icon>event_available</mat-icon>
-                  </div>
-          
-                  <div>
-                    <h4>{{ leavereq.leave_type }}</h4>
-          
-                    <span class="doc-number">
-                      {{ leavereq.document_number }}
-                    </span>
-                  </div>
-          
-                </div>
-          
-                <div class="right-section">
-          
-                  <span class="status-badge"
-                        [ngClass]="{
-                          'approved': leavereq.approvals?.[0]?.status === 'Approved',
-                          'rejected': leavereq.approvals?.[0]?.status === 'Rejected',
-                          'pending': !leavereq.approvals?.length
-                        }">
-          
-                    {{ leavereq.approvals?.[0]?.status || 'Pending' }}
-          
-                  </span>
-          
-                </div>
-          
-              </div>
-          
-              <!-- DETAILS -->
-              <div class="leave-details">
-          
-                <div class="detail-box">
-                  <label>Start Date</label>
-                  <p>{{ leavereq.start_date }}</p>
-                </div>
-          
-                <div class="detail-box">
-                  <label>End Date</label>
-                  <p>{{ leavereq.end_date }}</p>
-                </div>
-          
-                <div class="detail-box">
-                  <label>Reason</label>
-                  <p>{{ leavereq.reason }}</p>
-                </div>
-          
-              </div>
-          
-              <!-- EXPAND BUTTON -->
-              <div class="expand-section">
-          
-                <button class="expand-btn"
-                        (click)="toggleApprovalExpand(i)">
-          
-                  <mat-icon>
-                    {{ expandedApprovalIndex === i
-                        ? 'expand_less'
-                        : 'expand_more' }}
-                  </mat-icon>
-          
-                  {{
-                    expandedApprovalIndex === i
-                    ? 'Hide Approval Tracking'
-                    : 'View Approval Tracking'
-                  }}
-          
-                </button>
-          
-              </div>
-          
-              <!-- TIMELINE -->
-              <div class="timeline-wrapper"
-                   [class.expand]="expandedApprovalIndex === i">
-          
-                <div class="timeline-section">
-          
-                  <div class="timeline"
-                       *ngFor="let approval of leavereq.approvals; let last = last; let levelIndex = index">
-          
-                    <!-- LEFT -->
-                    <div class="timeline-left">
-          
-                      <div class="timeline-dot"
-                           [ngClass]="{
-                             'dot-approved': approval.status === 'Approved',
-                             'dot-rejected': approval.status === 'Rejected',
-                             'dot-pending': approval.status === 'Pending'
-                           }">
-          
-                        <mat-icon>
-                          {{
-                            approval.status === 'Approved'
-                            ? 'check'
-                            : approval.status === 'Rejected'
-                            ? 'close'
-                            : 'schedule'
-                          }}
-                        </mat-icon>
-          
-                      </div>
-          
-                      <div class="timeline-line"
-                           *ngIf="!last">
-                      </div>
-          
-                    </div>
-          
-                    <!-- RIGHT -->
-                    <div class="timeline-content animated-card">
-          
-                      <div class="timeline-header">
-          
-                        <div>
-          
-                          <h6>
-                            Level {{ approval.level }}
-                          </h6>
-          
-                          <span class="approver-name">
-                            {{ approval.approver }}
-                          </span>
-          
-                        </div>
-          
-                        <span class="timeline-status"
-                              [ngClass]="{
-                                'approved-text': approval.status === 'Approved',
-                                'rejected-text': approval.status === 'Rejected',
-                                'pending-text': approval.status === 'Pending'
-                              }">
-          
-                          {{ approval.status }}
-          
-                        </span>
-          
-                      </div>
-          
-                      <div class="timeline-date">
-                        {{ approval.created_at | date:'medium' }}
-                      </div>
-          
-                      <div *ngIf="approval.note"
-                           class="timeline-note">
-          
-                        <mat-icon>notes</mat-icon>
-          
-                        {{ approval.note }}
-          
-                      </div>
-          
-                      <div *ngIf="approval.rejection_reason"
-                           class="timeline-reject">
-          
-                        <mat-icon>warning</mat-icon>
-          
-                        {{ approval.rejection_reason }}
-          
-                      </div>
-          
-                    </div>
-          
-                  </div>
-          
-                  <!-- NO APPROVAL -->
-                  <div *ngIf="!leavereq.approvals?.length"
-                       class="pending-box">
-          
-                    <mat-icon>hourglass_empty</mat-icon>
-          
-                    Waiting for approval process...
-          
-                  </div>
-          
-                </div>
-          
-              </div>
-          
+        <div class="col-md-3">
+          <label>Total Days</label>
+          <input type="text" class="form-control" [value]="totalDays" readonly>
+        </div>
+
+        <div class="col-md-12">
+          <label>Reason</label>
+          <textarea class="form-control" [(ngModel)]="reason" [ngModelOptions]="{standalone: true}"></textarea>
+        </div>
+
+        <div class="col-md-3">
+          <label></label>
+          <div class="check-box-selection-sec form-control mt-3">
+            <div class="mat-set">
+              <mat-checkbox [(ngModel)]="dis_half_day" [ngModelOptions]="{standalone: true}">Half Day</mat-checkbox>
             </div>
-          
           </div>
-
-
+        </div>
+        
+        <div class="col-md-3" *ngIf="dis_half_day">
+          <label>Half Day Period</label>
+          <div class="custom-sel">
+            <select class="form-control" id="half_day_period" name="half_day_period" [(ngModel)]="half_day_period" [ngModelOptions]="{standalone: true}">
+              <option value="first_half">First Half</option>
+              <option value="second_half">Second Half</option>
+            </select>
           </div>
+        </div>
+      </div>
 
-      </section>
+      <div class="row">
+        <div class="col-md-9"></div>
+        <div class="col-md-3">
+          <button type="button" class="btn btn-secondary btn-full mt-4 me-2" (click)="cancelLeaveEdit()" *ngIf="isEditingLeave">Cancel</button>
+          <button type="submit" class="btn btn-success btn-full mt-4">
+            {{ isEditingLeave ? 'Update Leave Request' : 'Add Leave Request' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Leave List with Edit/Delete -->
+  <div class="white-outer-sec">
+    <div class="leave-tracking-container">
+      <div class="leave-card"
+           *ngFor="let leavereq of employeesec.leave_rqsts; let i = index">
+      
+        <!-- HEADER -->
+        <div class="leave-header">
+      
+          <div class="left-section">
+            <div class="leave-icon">
+              <mat-icon>event_available</mat-icon>
+            </div>
+            <div>
+              <h4>{{ leavereq.leave_type }}</h4>
+              <span class="doc-number">
+                {{ leavereq.document_number }}
+              </span>
+            </div>
+          </div>
+      
+          <div class="right-section">
+            <!-- Edit/Delete Buttons (only for pending status) -->
+            <!-- <button 
+              class="btn btn-sm btn-outline-primary me-2" 
+              (click)="editLeaveRequest(leavereq, $event)"
+              *ngIf="getFinalStatus(leavereq) === 'Pending'"
+              title="Edit">
+              <i class="fa fa-edit"></i>
+            </button> -->
+            <button 
+              class="btn btn-sm btn-outline-danger me-2" 
+              (click)="deleteLeaveRequest(leavereq.id, $event)"
+              *ngIf="getFinalStatus(leavereq) === 'Pending'"
+              title="Delete">
+              <i class="fa fa-trash"></i>
+            </button>
+      
+            <span class="status-badge"
+                  [ngClass]="{
+                    'approved': leavereq.approvals?.[0]?.status === 'Approved',
+                    'rejected': leavereq.approvals?.[0]?.status === 'Rejected',
+                    'pending': !leavereq.approvals?.length
+                  }">
+              {{ leavereq.approvals?.[0]?.status || 'Pending' }}
+            </span>
+          </div>
+        </div>
+      
+        <!-- DETAILS -->
+        <div class="leave-details">
+          <div class="detail-box">
+            <label>Start Date</label>
+            <p>{{ leavereq.start_date }}</p>
+          </div>
+          <div class="detail-box">
+            <label>End Date</label>
+            <p>{{ leavereq.end_date }}</p>
+          </div>
+          <div class="detail-box">
+            <label>Reason</label>
+            <p>{{ leavereq.reason }}</p>
+          </div>
+        </div>
+      
+        <!-- EXPAND BUTTON -->
+        <div class="expand-section">
+          <button class="expand-btn"
+                  (click)="toggleApprovalExpand(i)">
+            <mat-icon>
+              {{ expandedApprovalIndex === i
+                  ? 'expand_less'
+                  : 'expand_more' }}
+            </mat-icon>
+            {{
+              expandedApprovalIndex === i
+              ? 'Hide Approval Tracking'
+              : 'View Approval Tracking'
+            }}
+          </button>
+        </div>
+      
+        <!-- TIMELINE -->
+        <div class="timeline-wrapper"
+             [class.expand]="expandedApprovalIndex === i">
+          <div class="timeline-section">
+            <div class="timeline"
+                 *ngFor="let approval of leavereq.approvals; let last = last; let levelIndex = index">
+              <div class="timeline-left">
+                <div class="timeline-dot"
+                     [ngClass]="{
+                       'dot-approved': approval.status === 'Approved',
+                       'dot-rejected': approval.status === 'Rejected',
+                       'dot-pending': approval.status === 'Pending'
+                     }">
+                  <mat-icon>
+                    {{
+                      approval.status === 'Approved'
+                      ? 'check'
+                      : approval.status === 'Rejected'
+                      ? 'close'
+                      : 'schedule'
+                    }}
+                  </mat-icon>
+                </div>
+                <div class="timeline-line"
+                     *ngIf="!last">
+                </div>
+              </div>
+              <div class="timeline-content animated-card">
+                <div class="timeline-header">
+                  <div>
+                    <h6>Level {{ approval.level }}</h6>
+                    <span class="approver-name">{{ approval.approver }}</span>
+                  </div>
+                  <span class="timeline-status"
+                        [ngClass]="{
+                          'approved-text': approval.status === 'Approved',
+                          'rejected-text': approval.status === 'Rejected',
+                          'pending-text': approval.status === 'Pending'
+                        }">
+                    {{ approval.status }}
+                  </span>
+                </div>
+                <div class="timeline-date">
+                  {{ approval.created_at | date:'medium' }}
+                </div>
+                <div *ngIf="approval.note"
+                     class="timeline-note">
+                  <mat-icon>notes</mat-icon>
+                  {{ approval.note }}
+                </div>
+                <div *ngIf="approval.rejection_reason"
+                     class="timeline-reject">
+                  <mat-icon>warning</mat-icon>
+                  {{ approval.rejection_reason }}
+                </div>
+              </div>
+            </div>
+            <div *ngIf="!leavereq.approvals?.length"
+                 class="pending-box">
+              <mat-icon>hourglass_empty</mat-icon>
+              Waiting for approval process...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
       <section class="content-tab  animate__animated animate__fadeIn" id="generalRequest"
       *ngIf="activeTabNav === 'generalRequest'">
 
-       <div class="white-outer-sec">
+         <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">General Request</h3>
+        <!-- Add Button -->
+        <button class="btn btn-success btn-sm" (click)="toggleGeneralForm()" title="Add General Request">
+          <i class="fa" [ngClass]="isGeneralFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isGeneralFormOpen ? ' Close Form' : ' General Request' }}
+        </button>
   </div>
 
 
         <!-- Extracurricular content here -->
 
-           <div class="white-outer-sec">
+           <div class="white-outer-sec" *ngIf="isGeneralFormOpen">
             <form >
 
               <div class="row">
@@ -1846,15 +1770,15 @@
   
               <div class="row">
                   <div class="col-md-9">
-      
-                  </div>
-           
-                  <div class="col-md-3">
-                      <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Add General Request</button>  
-                   </div>
-  
-                   
-              </div>
+
+          
+        </div>
+
+                                    <div class="col-md-3">
+                  <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="registerGeneralreq()">Add General Request</button>  
+               </div>
+
+               </div>
               
          
       </form>
@@ -1884,22 +1808,42 @@
 
                     <th class="text-table-header">Status</th>
 
+                    <th class="text-table-header">Actions</th>
+
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
                 </thead>
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let genreq of employeesec.requests; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ genreq.document_number || '-' }}</td>
-                    <td>{{ genreq.reason }}</td>
-                    <td>{{ genreq.request_type }}</td>
-                    <td>{{ genreq.remarks }}</td>
-                                                         <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Document Number">{{ genreq.document_number || '-' }}</td>
+                    <td data-label="Reason">{{ genreq.reason }}</td>
+                    <td data-label="Request Type">{{ genreq.request_type }}</td>
+                    <td data-label="Remarks">{{ genreq.remarks }}</td>
+                    <td data-label="Status">
            <span class="badge" [ngClass]="genreq.status ? 'bg-success' : 'bg-secondary'">
                  {{ genreq.status }}
             </span>
         </td>
+                        <td data-label="Action">
+                  <!-- Edit Button -->
+                  <!-- <button 
+                    class="btn btn-sm btn-outline-primary me-1" 
+                    (click)="editGeneralRequest(genreq)"
+                    *ngIf="!genreq.status || genreq.status === 'Pending'"
+                    title="Edit">
+                    <i class="fa fa-edit"></i>
+                  </button> -->
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteGeneralRequest(genreq.id)"
+                    *ngIf="!genreq.status || genreq.status === 'Pending'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
 
 
                   </tr>
@@ -1916,11 +1860,14 @@
       *ngIf="activeTabNav === 'assetRequest'">
         <!-- Financial content here -->
 
- <div class="white-outer-sec">
+ <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">Asset Request</h3>
+           <button class="btn btn-success btn-sm" (click)="toggleAssetForm()" title="Add Asset Request">
+      <i class="fa" [ngClass]="isAssetFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isAssetFormOpen ? ' Close Form' : ' Asset Request' }}
+    </button>
   </div>
          
-           <div class="white-outer-sec">
+            <div class="white-outer-sec" *ngIf="isAssetFormOpen">
                  
         <form >
 
@@ -1987,10 +1934,10 @@
               <div class="col-md-9">
   
               </div>
-  
-              <div class="col-md-3">
+                 <div class="col-md-3">
                   <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreateAssetType()">Add Asset Request</button>  
                </div>
+  
           </div>
           
      
@@ -2020,6 +1967,7 @@
                     <th class="text-table-header"> Requested Asset</th>
 
                     <th class="text-table-header">Status</th>
+                     <th class="text-table-header">Actions</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
@@ -2027,16 +1975,35 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let assetreq of employeesec.assets_requests; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ assetreq.document_number }}</td>
-                    <td>{{ assetreq.asset_type }}</td>
-                    <td>{{ assetreq.reason }}</td>
-                    <td>{{ assetreq.requested_asset }}</td>
-                                     <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Documnet Number">{{ assetreq.document_number }}</td>
+                    <td data-label="Asset type">{{ assetreq.asset_type }}</td>
+                    <td data-label="Reason">{{ assetreq.reason }}</td>
+                    <td data-label="Requested Asset">{{ assetreq.requested_asset }}</td>
+                 <td data-label="Status">
            <span class="badge" [ngClass]="assetreq.status ? 'bg-success' : 'bg-secondary'">
                  {{ assetreq.status }}
             </span>
         </td>
+
+          <td data-label="Action">
+                  <!-- Edit Button -->
+                  <!-- <button 
+                    class="btn btn-sm btn-outline-primary me-1" 
+                    (click)="editAssetRequest(assetreq)"
+                    *ngIf="!assetreq.status || assetreq.status === 'Pending'"
+                    title="Edit">
+                    <i class="fa fa-edit"></i>
+                  </button> -->
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteAssetRequest(assetreq.id)"
+                    *ngIf="!assetreq.status || assetreq.status === 'pending'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
 
 
                   </tr>
@@ -2054,11 +2021,14 @@
       *ngIf="activeTabNav === 'airticketRequest'">
         <!-- Financial content here -->
 
- <div class="white-outer-sec">
+ <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">AirTicket Request</h3>
+      <button class="btn btn-success btn-sm" (click)="toggleAirticketForm()" title="Add Airticket Request">
+      <i class="fa" [ngClass]="isAirticketFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isAirticketFormOpen ? ' Close Form' : ' Airticket Request' }}
+    </button>
   </div>
          
-           <div class="white-outer-sec">
+           <div class="white-outer-sec" *ngIf="isAirticketFormOpen">
                  
         <form >
 
@@ -2214,6 +2184,7 @@
                     <th class="text-table-header">Destination</th>
                     <th class="text-table-header">Notes</th>
                     <th class="text-table-header">Status</th>
+                    <th class="text-table-header">Actions</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
@@ -2221,21 +2192,32 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let airticketreq of employeesec.airticket_request; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ airticketreq.document_number }}</td>
-                    <td>{{ airticketreq.allocation }}</td>
-                    <td>{{ airticketreq.request_type }}</td>
-                    <td>{{ airticketreq.request_date }}</td>
-                    <td>{{ airticketreq.return_date }}</td>
-                    <td>{{ airticketreq.departure_date }}</td>
-                    <td>{{ airticketreq.origin }}</td>
-                    <td>{{ airticketreq.destination }}</td>
-                    <td>{{ airticketreq.notes }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Document Number">{{ airticketreq.document_number }}</td>
+                    <td data-label="Allocation">{{ airticketreq.allocation }}</td>
+                    <td data-label="Request type">{{ airticketreq.request_type }}</td>
+                    <td data-label="Request date">{{ airticketreq.request_date }}</td>
+                    <td data-label="Return date">{{ airticketreq.return_date }}</td>
+                    <td data-label="Departure date">{{ airticketreq.departure_date }}</td>
+                    <td data-label="Origin">{{ airticketreq.origin }}</td>
+                    <td data-label="Destination">{{ airticketreq.destination }}</td>
+                    <td data-label="Notes">{{ airticketreq.notes }}</td>
+                    <td data-label="Status">
                     <span class="badge" [ngClass]="airticketreq.status ? 'bg-success' : 'bg-secondary'">
                  {{ airticketreq.status }}
             </span>
         </td>
+
+              <td data-label="Action">
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteAirticketRequest(airticketreq.id)"
+                    *ngIf="!airticketreq.status || airticketreq.status === 'PENDING'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
 
 
 
@@ -2254,11 +2236,14 @@
       *ngIf="activeTabNav === 'documentRequest'">
         <!-- Financial content here -->
 
- <div class="white-outer-sec">
+ <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">Document Request</h3>
+             <button class="btn btn-success btn-sm" (click)="toggleDocumentForm()" title="Add Document Request">
+      <i class="fa" [ngClass]="isDocumentFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isDocumentFormOpen ? ' Close Form' : ' Document Request' }}
+    </button>
   </div>
          
-           <div class="white-outer-sec">
+           <div class="white-outer-sec" *ngIf="isDocumentFormOpen">
                  
         <form >
 
@@ -2350,6 +2335,7 @@
                     <th class="text-table-header">Remarks</th>
                     <th class="text-table-header">Request type</th>
                     <th class="text-table-header">Status</th>
+                     <th class="text-table-header">Actions</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
@@ -2357,17 +2343,28 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let docreq of employeesec.document_requests; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ docreq.document_number }}</td>
-                    <td>{{ docreq.reason }}</td>
-                    <td>{{ docreq.total }}</td>
-                    <td>{{ docreq.remarks }}</td>
-                    <td>{{ docreq.request_type }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Document Number">{{ docreq.document_number }}</td>
+                    <td data-label="Reason">{{ docreq.reason }}</td>
+                    <td data-label="Total">{{ docreq.total }}</td>
+                    <td data-label="Remarks">{{ docreq.remarks }}</td>
+                    <td data-label="Request Type">{{ docreq.request_type }}</td>
+                    <td data-label="Status">
                     <span class="badge" [ngClass]="docreq.status ? 'bg-success' : 'bg-secondary'">
                     {{ docreq.status }}
                     </span>
                     </td>
+
+                  <td data-label="Action">
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteDocumentRequest(docreq.id)"
+                    *ngIf="!docreq.status || docreq.status === 'Pending'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
 
                   </tr>
                 </tbody>
@@ -2384,12 +2381,15 @@
       *ngIf="activeTabNav === 'advsalaryRequest'">
 
         <!-- Financial content here -->
- <div class="white-outer-sec">
+ <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">Advance Salary Request</h3>
+        <button class="btn btn-success btn-sm" (click)="toggleAdvSalForm()" title="Add Advance Salary Request">
+      <i class="fa" [ngClass]="isAdvSalFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isAdvSalFormOpen ? ' Close Form' : ' Advance Salary Request' }}
+    </button>
   </div>
 
          
-           <div class="white-outer-sec">
+           <div class="white-outer-sec" *ngIf="isAdvSalFormOpen">
          <form (ngSubmit)="SentAdvanceSalaryReq()" enctype="multipart/form-data">
                   <div class="row">
                     <div class="col-md-6">
@@ -2449,9 +2449,8 @@
                     <th class="text-table-header">Requested Amount</th>
                     <th class="text-table-header"> Remark</th>
                     <th class="text-table-header"> Reason</th>
-
-
                     <th class="text-table-header">Status</th>
+                    <th class="text-table-header">Actions</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
@@ -2459,16 +2458,27 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let advancesalaryreq of employeesec.advance_salary_requests; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ advancesalaryreq.document_number }}</td>
-                    <td>{{ advancesalaryreq.requested_amount }}</td>
-                    <td>{{ advancesalaryreq.remarks }}</td>
-                    <td>{{ advancesalaryreq.reason }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Document Number">{{ advancesalaryreq.document_number }}</td>
+                    <td data-label="Requested Amount">{{ advancesalaryreq.requested_amount }}</td>
+                    <td data-label="Remark">{{ advancesalaryreq.remarks }}</td>
+                    <td data-label="Reason">{{ advancesalaryreq.reason }}</td>
+                    <td data-label="Status">
                     <span class="badge" [ngClass]="advancesalaryreq.status ? 'bg-success' : 'bg-secondary'">
                     {{ advancesalaryreq.status }}
                     </span>
                     </td>
+
+                   <td data-label="Action">
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteAdvSalRequest(advancesalaryreq.id)"
+                    *ngIf="!advancesalaryreq.status || advancesalaryreq.status === 'Pending'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
 
 
                   </tr>
@@ -2485,13 +2495,16 @@
       <section class="content-tab  animate__animated animate__fadeIn" id="loanRequest"
       *ngIf="activeTabNav === 'loanRequest'">
 
-       <div class="white-outer-sec">
+       <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">Loan Request</h3>
+               <button class="btn btn-success btn-sm" (click)="toggleLoanForm()" title="Add Loan Request">
+      <i class="fa" [ngClass]="isLoanFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isLoanFormOpen ? ' Close Form' : ' Loan Request' }}
+    </button>
   </div>
 
         <!-- Financial content here -->
 
-           <div class="white-outer-sec">
+           <div class="white-outer-sec" *ngIf="isLoanFormOpen">
             <form (ngSubmit)="CreateLoanApplication()" enctype="multipart/form-data">
 
                 <div class="row">
@@ -2605,6 +2618,7 @@
 
 
                     <th class="text-table-header">Status</th>
+                      <th class="text-table-header">Actions</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
@@ -2612,18 +2626,28 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let loanreq of employeesec.loan_requests; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ loanreq.document_number }}</td>
-                    <td>{{ loanreq.amount_requested }}</td>
-                    <td>{{ loanreq.emi_amount }}</td>
-                    <td>{{ loanreq.loan_type }}</td>
-                    <td>{{ loanreq.remaining_balance }}</td>
-                    <td>{{ loanreq.repayment_period }}</td>
-                   <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Document Number">{{ loanreq.document_number }}</td>
+                    <td data-label="Amount Requested">{{ loanreq.amount_requested }}</td>
+                    <td data-label="Emi Amount">{{ loanreq.emi_amount }}</td>
+                    <td data-label="Loan Type">{{ loanreq.loan_type }}</td>
+                    <td data-label="Remaining Balance">{{ loanreq.remaining_balance }}</td>
+                    <td data-label="Repayment Period">{{ loanreq.repayment_period }}</td>
+                   <td data-label="Status">
                     <span class="badge" [ngClass]="loanreq.status ? 'bg-success' : 'bg-secondary'">
                     {{ loanreq.status }}
                     </span>
                     </td>
+                   <td data-label="Action">
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteLoanRequest(loanreq.id)"
+                    *ngIf="!loanreq.status || loanreq.status === 'Pending'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
                   </tr>
                 </tbody>
               </table>
@@ -2639,12 +2663,15 @@
       *ngIf="activeTabNav === 'resignationRequest'">
 
         <!-- Financial content here -->
- <div class="white-outer-sec">
+ <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">Resignation Request</h3>
+      <button class="btn btn-success btn-sm" (click)="toggleResignationForm()" title="Add Resignation Request">
+      <i class="fa" [ngClass]="isResignationFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isResignationFormOpen ? ' Close Form' : ' Resignation Request' }}
+    </button>
   </div>
 
          
-           <div class="white-outer-sec">
+                  <div class="white-outer-sec" *ngIf="isResignationFormOpen">
             <form (ngSubmit)="SetEmployeeResignation()" enctype="multipart/form-data">
               <div class="row">
   
@@ -2745,6 +2772,7 @@
                     <th class="text-table-header"> Type</th>
                     <th class="text-table-header"> Reason</th>
                     <th class="text-table-header">Status</th>
+                    <th class="text-table-header">Actions</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
@@ -2752,19 +2780,29 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let resigreq of employeesec.resignation_requests; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ resigreq.document_date }}</td>
-                    <td>{{ resigreq.resigned_on }}</td>
-                    <td>{{ resigreq.notice_period }}</td>
-                    <td>{{ resigreq.last_working_date }}</td>
-                    <td>{{ resigreq.location }}</td>
-                    <td>{{ resigreq.termination_type }}</td>
-                    <td>{{ resigreq.reason_for_leaving }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Document Number">{{ resigreq.document_date }}</td>
+                    <td data-label="Resigned On">{{ resigreq.resigned_on }}</td>
+                    <td data-label="Notice period">{{ resigreq.notice_period }}</td>
+                    <td data-label="Last Working Date">{{ resigreq.last_working_date }}</td>
+                    <td data-label="Location">{{ resigreq.location }}</td>
+                    <td data-label="Type">{{ resigreq.termination_type }}</td>
+                    <td data-label="Reason">{{ resigreq.reason_for_leaving }}</td>
+                    <td data-label="Status">
                     <span class="badge" [ngClass]="resigreq.status ? 'bg-success' : 'bg-secondary'">
                     {{ resigreq.status }}
                     </span>
                     </td>
+                   <td data-label="Action">
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteResignationRequest(resigreq.id)"
+                    *ngIf="!resigreq.status || resigreq.status === 'Pending'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
 
 
 
@@ -2786,14 +2824,17 @@
       <section class="content-tab  animate__animated animate__fadeIn" id="lateinearlyoutRequest"
       *ngIf="activeTabNav === 'lateinearlyoutRequest'">
 
-       <div class="white-outer-sec">
+       <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">Late In Early Out Request</h3>
+      <button class="btn btn-success btn-sm" (click)="toggleLinEoutForm()" title="Add LateIn EarlyOut Request">
+      <i class="fa" [ngClass]="isLinEoutFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isLinEoutFormOpen ? ' Close Form' : ' Latein EarlyOut Request' }}
+    </button>
   </div>
 
 
         <!-- Extracurricular content here -->
 
-           <div class="white-outer-sec">
+           <div class="white-outer-sec" *ngIf="isLinEoutFormOpen">
                  <form (ngSubmit)="SetLateInEarlyOut()" enctype="multipart/form-data">
             <div class="row">
 
@@ -2878,6 +2919,7 @@
                     <th class="text-table-header">Reason</th>
                     <th class="text-table-header">Request Type</th>
                     <th class="text-table-header">Status</th>
+                    <th class="text-table-header">Actions</th>
 
                     <!-- <th class="text-table-header">Payslip Component</th> -->
                   </tr>
@@ -2885,16 +2927,27 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let lateinearlyoutreq of employeesec.lateinearlyout_request; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ lateinearlyoutreq.document_number || '-' }}</td>
-                    <td>{{ lateinearlyoutreq.date }}</td>
-                    <td>{{ lateinearlyoutreq.reason }}</td>
-                    <td>{{ lateinearlyoutreq.request_type }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Document Number">{{ lateinearlyoutreq.document_number || '-' }}</td>
+                    <td data-label="Date">{{ lateinearlyoutreq.date }}</td>
+                    <td data-label="Reason">{{ lateinearlyoutreq.reason }}</td>
+                    <td data-label="Request Type">{{ lateinearlyoutreq.request_type }}</td>
+                    <td data-label="Status">
                     <span class="badge" [ngClass]="lateinearlyoutreq.status ? 'bg-success' : 'bg-secondary'">
                     {{ lateinearlyoutreq.status }}
                     </span>
                     </td>
+
+                  <td data-label="Action">
+                  <!-- Delete Button -->
+                  <button 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="deleteLinEoutRequest(lateinearlyoutreq.id)"
+                    *ngIf="!lateinearlyoutreq.status || lateinearlyoutreq.status === 'PENDING'"
+                    title="Delete">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
 
 
                   </tr>
@@ -3309,12 +3362,12 @@
 
     <tbody class="text-table-body">
       <tr *ngFor="let att of attendanceList; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ att.date }}</td>
-        <td>{{ att.check_in_time || '-' }}</td>
-        <td>{{ att.check_out_time || '-' }}</td>
-        <td>{{ att.total_hours || '-' }}</td>
-        <td>{{ att.check_in_location || '-' }}</td>
+        <td data-label="No">{{ i + 1 }}</td>
+        <td data-label="Date">{{ att.date }}</td>
+        <td data-label="Check In">{{ att.check_in_time || '-' }}</td>
+        <td data-label="Check Out">{{ att.check_out_time || '-' }}</td>
+        <td data-label="Total Hours">{{ att.total_hours || '-' }}</td>
+        <td data-label="Location">{{ att.check_in_location || '-' }}</td>
       </tr>
     </tbody>
   </table>
@@ -3332,6 +3385,7 @@
 
 
 
+<br>
 
   <div class="col-md-12 mb-4">
     <div class="card border-0 shadow-sm">
@@ -4791,15 +4845,15 @@
             <tbody>
 
               <tr *ngFor="let salary of fixedSalaryComponents; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ salary.component }}</td>
-                <td>{{ salary.component_type }}</td>
-                <td>{{ salary.payroll_category }}</td>
-                <td class="text-end">{{ salary.amount }}</td>
+                <td data-label="No">{{ i + 1 }}</td>
+                <td data-label="Salary Component">{{ salary.component }}</td>
+                <td data-label="Component Type">{{ salary.component_type }}</td>
+                <td data-label="Payroll Category">{{ salary.payroll_category }}</td>
+                <td data-label="Amount" class="text-end">{{ salary.amount }}</td>
               </tr>
 
               <tr *ngIf="fixedSalaryComponents.length === 0">
-                <td colspan="5" class="text-center">
+                <td data-label="Fixed Salary Components" colspan="5" class="text-center">
                   No Fixed Salary Components Found
                 </td>
               </tr>
@@ -4881,19 +4935,19 @@
 
           <tr *ngFor="let revision of item.revisions; let j = index">
 
-            <td>{{ j + 1 }}</td>
+            <td data-label="No">{{ j + 1 }}</td>
 
-            <td>{{ item.component_name }}</td>
+            <td data-label="Component Name">{{ item.component_name }}</td>
 
-            <td>{{ revision.old_amount }}</td>
+            <td data-label="Old Amount">{{ revision.old_amount }}</td>
 
-            <td>{{ revision.new_amount }}</td>
+            <td data-label="New Amount">{{ revision.new_amount }}</td>
 
-            <td>{{ revision.effective_period || '-' }}</td>
+            <td data-label="Effective Period">{{ revision.effective_period || '-' }}</td>
 
-            <td>{{ revision.revised_on | date:'dd-MM-yyyy' }}</td>
+            <td data-label="Revised On">{{ revision.revised_on | date:'dd-MM-yyyy' }}</td>
 
-            <td>{{ revision.remarks || '-' }}</td>
+            <td data-label="Remarks">{{ revision.remarks || '-' }}</td>
 
           </tr>
 
@@ -4922,12 +4976,15 @@
          
         <!-- Academic content here -->
 
-   <div class="white-outer-sec">
+ <div class="white-outer-sec d-flex justify-content-between align-items-center">
        <h3 class="mb-0">Time Sheet</h3>
+      <button class="btn btn-success btn-sm" (click)="toggleTimeSheetForm()" title="Add Advance Salary Request">
+      <i class="fa" [ngClass]="isTimeSheeetFormOpen ? 'fa-minus' : 'fa-plus'"></i>{{ isTimeSheeetFormOpen ? ' Close Form' : ' Time Sheet' }}
+    </button>
   </div>
 
 
-        <div class="white-outer-sec">
+         <div class="white-outer-sec" *ngIf="isTimeSheeetFormOpen">
           <form (ngSubmit)="CreateProject()" enctype="multipart/form-data">
             <div class="row">
 
@@ -5040,13 +5097,13 @@
                 <tbody class="text-table-body">
                   
                   <tr class="tbodytext" *ngFor="let docs of Timesheets; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ docs.date || '-' }}</td>
-                    <td>{{ docs.time_spent }}</td>
-                    <td>{{ docs.task }}</td>
-                    <td>{{ docs.description }}</td>
-                    <td>{{ docs.project }}</td>
-                    <td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Date">{{ docs.date || '-' }}</td>
+                    <td data-label="Time Spent">{{ docs.time_spent }}</td>
+                    <td data-label="Task">{{ docs.task }}</td>
+                    <td data-label="Description">{{ docs.description }}</td>
+                    <td data-label="Project">{{ docs.project }}</td>
+                    <td data-label="Status">
                     <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
                     {{ docs.status }}
                     </span>
