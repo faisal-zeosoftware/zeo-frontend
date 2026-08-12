@@ -347,50 +347,53 @@
                               
                                 </div>
                               </mat-tab>
-
-                            <mat-tab label="Employee Family">
-                                <div class="tab_content  mt-3" *ngFor="let member of emp_family_details">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <h2>Employee Member Name</h2>
-                                            <h3>{{ member.ef_member_name }} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>Date Of Birth</h2>
-                                            <h3>{{ member.ef_date_of_birth }} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2>Employee Relation</h2>
-                                            <h3>{{ member.emp_relation }} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>Employee Family Company Expense</h2>
-                                            <h3>{{ member.ef_company_expence }} </h3>
-                                        </div>
-
-                                         
-
-
-                                        <!-- Display each custom field -->
-                                        <ng-container *ngFor="let field of member.fam_custom_fields">
-                                            <div class="col-md-3">
-                                                <h2>{{ field.emp_custom_field }}</h2>
-                                                <h3>{{ field.field_value }}</h3>
-                                            </div>
-                                        </ng-container>
-
+                              <mat-tab label="Employee Family">
+                                <div class="tab_content mt-3" *ngFor="let member of emp_family_details; let i = index">                                  <div class="row">
+                                    <div class="col-md-3">
+                                      <h2>Employee Member Name</h2>
+                                      <h3 *ngIf="!isEditMode">{{ member.ef_member_name }}</h3>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.ef_member_name">
                                     </div>
-
-
-
-
+                              
+                                    <div class="col-md-3">
+                                      <h2>Date Of Birth</h2>
+                                      <h3 *ngIf="!isEditMode">{{ member.ef_date_of_birth }}</h3>
+                                      <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="member.ef_date_of_birth">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <h2>Employee Relation</h2>
+                                      <h3 *ngIf="!isEditMode">{{ member.emp_relation }}</h3>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.emp_relation">
+                                    </div>
+                              
+                                    <div class="col-md-3">
+                                      <h2>Company Expense</h2>
+                                      <h3 *ngIf="!isEditMode">{{ member.ef_company_expence }}</h3>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.ef_company_expence">
+                                    </div>
+                              
+                                    <ng-container *ngFor="let field of member.fam_custom_fields">
+                                      <div class="col-md-3">
+                                        <h2>{{ field.emp_custom_field }}</h2>
+                                        <h3 *ngIf="!isEditMode">{{ field.field_value }}</h3>
+                                        <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="field.field_value">
+                                      </div>
+                                    </ng-container>
+                              
+                                    <!-- optional: let them delete a row while editing -->
+                                    <div class="col-md-12 text-end" *ngIf="isEditMode">
+                                      <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeFamilyMember(member, i)">Remove</button>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div class=" mt-5">
-                                    <button type="button" class="btn-Edit btn-info btn d-block mx-auto "
-                                        (click)="employeefamAdd('family')">Add Family</button>
+                              
+                                <div class="mt-5" *ngIf="!isEditMode">
+                                  <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('family')">Add Family</button>
                                 </div>
-                            </mat-tab>
+                              </mat-tab>
+
+
 
                             <mat-tab label="Qualification">
                                 <div class="tab_content  mt-3" *ngFor="let Qualification of Qualifications">

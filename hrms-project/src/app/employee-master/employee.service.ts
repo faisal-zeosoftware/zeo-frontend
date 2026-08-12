@@ -3239,7 +3239,26 @@ getSalaryRevisions(
   }
 
 
+// Update Family Member Details
+updateEmpFamily(employeeId: number, familyId: number, familyData: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_family/${familyId}/?schema=${selectedSchema}`;
+  return this.http.put(apiUrl, familyData);
+}
 
+// Delete Family Member
+deleteEmpFamily(employeeId: number, familyId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_family/${familyId}/?schema=${selectedSchema}`;
+  return this.http.delete(apiUrl);
+}
+
+// Update Custom Field Value
+updateFamilyCustomField(customFieldValId: number, payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${customFieldValId}/?schema=${selectedSchema}`;
+  return this.http.patch(apiUrl, payload);
+}
 
   registerEmpQualification(companyData: any): Observable<any> {
     const selectedSchema = localStorage.getItem('selectedSchema');

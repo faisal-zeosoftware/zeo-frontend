@@ -20,6 +20,8 @@ import { LeaveService } from '../leave-master/leave.service';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { forkJoin, Observable, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 
 @Component({
@@ -28,14 +30,21 @@ import { DepartmentServiceService } from '../department-master/department-servic
   styleUrl: './employee-details.component.css'
 })
 export class EmployeeDetailsComponent implements OnInit {
+
+
+
+  private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
+
+
+
   Employees: any[] = [];
   employeeLeaves: any;
 
   emp_first_name: string = '';
   employee: any;
   profilePicture: any;
-  emp_family_details: any[] | undefined;
-  emp_bank_details: any[] | undefined;
+  emp_family_details: any[] = [];
+    emp_bank_details: any[] | undefined;
   emp_asset_details: any[] | undefined;
   Qualifications: any[] | undefined;
   EmpSkills: any[] | undefined;
@@ -422,6 +431,11 @@ attendanceData: any = null; // Define this at the class level
         }
       );
     }
+
+
+    empFamilyBackup: any = null;
+
+    
 
     
     loadBankDetails(): void {
@@ -1242,6 +1256,9 @@ saveEmployee(): void {
   this.EmployeeService.updateEmp(this.employee.id, formData).subscribe({
     next: (response) => {
       alert('Employee Details Updated Successfully!');
+
+      this.saveFamilyMembers();          // NEW — chain family save after employee save
+
       this.isEditMode = false;
       this.selectedFile = null;
       this.ngOnInit(); // Reload details
@@ -1262,10 +1279,13 @@ saveEmployee(): void {
 }
 
 
+
+
 toggleEditMode(): void {
   if (!this.isEditMode) {
     // 1. Backup original data
     this.employeeBackup = JSON.parse(JSON.stringify(this.employee));
+    this.empFamilyBackup = JSON.parse(JSON.stringify(this.emp_family_details)); // NEW
 
     // 2. Fetch master lists if they are empty
     if (!this.departments.length) this.loadDepartments();
@@ -1304,6 +1324,18 @@ toggleEditMode(): void {
 
     // 3. Convert string titles to IDs if needed
     this.mapFieldsToIds();
+
+
+
+     // Format family DOBs for <input type="date">
+    this.emp_family_details.forEach((m: any) => {
+      if (m.ef_date_of_birth) {
+        m.ef_date_of_birth = m.ef_date_of_birth.split('T')[0];
+      }
+    });
+
+
+
   }
   this.isEditMode = !this.isEditMode;
 }
@@ -1353,8 +1385,67 @@ mapFieldsToIds(): void {
     if (this.employeeBackup) {
       this.employee = JSON.parse(JSON.stringify(this.employeeBackup));
     }
+    if (this.empFamilyBackup) {
+      this.emp_family_details = JSON.parse(JSON.stringify(this.empFamilyBackup)); // NEW
+    }
     this.isEditMode = false;
     this.selectedFile = null;
+  }
+
+
+
+
+  saveFamilyMembers(): void {
+    const requests = (this.emp_family_details || []).map((member: any) => {
+      const payload = {
+        ef_member_name: member.ef_member_name,
+        emp_relation: member.emp_relation,
+        ef_company_expence: member.ef_company_expence,
+        ef_date_of_birth: member.ef_date_of_birth
+      };
+      return this.EmployeeService.updateEmpFamily(this.employee.id, member.id, payload); // 3 args now
+    });
+  
+    forkJoin(requests.length ? requests : [of(null)]).subscribe({
+      next: () => this.saveFamilyCustomFields(),
+      error: (err) => console.error('Family update failed', err)
+    });
+  }
+  saveFamilyCustomFields(): void {
+    const schema = localStorage.getItem('selectedSchema');
+    const calls: Observable<any>[] = [];
+  
+    this.emp_family_details.forEach((member: any) => {
+      (member.fam_custom_fields || []).forEach((field: any) => {
+        calls.push(
+          this.http.put(
+            `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
+            { field_value: field.field_value }
+          )
+        );
+      });
+    });
+  
+    forkJoin(calls.length ? calls : [of(null)]).subscribe({
+      next: () => {
+        alert('Employee & Family Details Updated Successfully!');
+        this.isEditMode = false;
+        this.selectedFile = null;
+        this.ngOnInit();
+      },
+      error: (err) => console.error('Custom field update failed', err)
+    });
+  }
+
+  deletedFamilyIds: number[] = [];
+
+  removeFamilyMember(member: any, index: number): void {
+    this.emp_family_details.splice(index, 1);
+    // if it already exists on the server, track it so saveEmployee() can delete it too
+    if (member.id) {
+      this.deletedFamilyIds = this.deletedFamilyIds || [];
+      this.deletedFamilyIds.push(member.id);
+    }
   }
 
 
