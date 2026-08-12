@@ -141,15 +141,16 @@
             [(ngModel)]="branch"
             [ngModelOptions]="{ standalone: true }"
           >
-            <mat-checkbox
-              class="select-all-checkbox"
-              [checked]="isAllBranchesSelected()"
-              [indeterminate]="isSomeBranchesSelected()"
-              (click)="$event.stopPropagation()"
-              (change)="toggleAllBranches()"
-            >
-              Select All
-            </mat-checkbox>
+<mat-checkbox
+  class="select-all-checkbox"
+  [checked]="isAllCreateBranchesSelected()"
+  [indeterminate]="isSomeCreateBranchesSelected()"
+  (click)="$event.stopPropagation()"
+  (change)="toggleAllCreateBranches()"
+>
+  Select All
+</mat-checkbox>
+
 
                                      <!-- Search -->
                     <div class="px-2 pb-2">
@@ -189,15 +190,15 @@
             [(ngModel)]="department"
             [ngModelOptions]="{ standalone: true }"
           >
-            <mat-checkbox
-              class="select-all-checkbox"
-              [checked]="isAllDepartmentsSelected()"
-              [indeterminate]="isSomeDepartmentsSelected()"
-              (click)="$event.stopPropagation()"
-              (change)="toggleAllDepartments()"
-            >
-              Select All
-            </mat-checkbox>
+<mat-checkbox
+  class="select-all-checkbox"
+  [checked]="isAllCreateDepartmentsSelected()"
+  [indeterminate]="isSomeCreateDepartmentsSelected()"
+  (click)="$event.stopPropagation()"
+  (change)="toggleAllCreateDepartments()"
+>
+  Select All
+</mat-checkbox>
 
                                      <!-- Search -->
                     <div class="px-2 pb-2">
@@ -237,15 +238,15 @@
             [(ngModel)]="category"
             [ngModelOptions]="{ standalone: true }"
           >
-            <mat-checkbox
-              class="select-all-checkbox"
-              [checked]="isAllCategoriesSelected()"
-              [indeterminate]="isSomeCategoriesSelected()"
-              (click)="$event.stopPropagation()"
-              (change)="toggleAllCategories()"
-            >
-              Select All
-            </mat-checkbox>
+<mat-checkbox
+  class="select-all-checkbox"
+  [checked]="isAllCreateCategoriesSelected()"
+  [indeterminate]="isSomeCreateCategoriesSelected()"
+  (click)="$event.stopPropagation()"
+  (change)="toggleAllCreateCategories()"
+>
+  Select All
+</mat-checkbox>
 
                                      <!-- Search -->
                     <div class="px-2 pb-2">
@@ -285,15 +286,15 @@
             [(ngModel)]="designation"
             [ngModelOptions]="{ standalone: true }"
           >
-            <mat-checkbox
-              class="select-all-checkbox"
-              [checked]="isAllDesignationsSelected()"
-              [indeterminate]="isSomeDesignationsSelected()"
-              (click)="$event.stopPropagation()"
-              (change)="toggleAllDesignations()"
-            >
-              Select All
-            </mat-checkbox>
+<mat-checkbox
+  class="select-all-checkbox"
+  [checked]="isAllCreateDesignationsSelected()"
+  [indeterminate]="isSomeCreateDesignationsSelected()"
+  (click)="$event.stopPropagation()"
+  (change)="toggleAllCreateDesignations()"
+>
+  Select All
+</mat-checkbox>
 
                                      <!-- Search -->
                     <div class="px-2 pb-2">

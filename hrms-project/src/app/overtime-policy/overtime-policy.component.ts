@@ -302,6 +302,104 @@ this.category.forEach((id: number) =>
   );
 }
 
+// ===============================
+// CREATE MODAL - BRANCH
+// ===============================
+
+isAllCreateBranchesSelected(): boolean {
+  return this.branch?.length === this.Branches.length && this.Branches.length > 0;
+}
+
+isSomeCreateBranchesSelected(): boolean {
+  return (
+    this.branch?.length > 0 &&
+    this.branch?.length < this.Branches.length
+  );
+}
+
+toggleAllCreateBranches(): void {
+  if (this.isAllCreateBranchesSelected()) {
+    this.branch = [];
+  } else {
+    this.branch = this.Branches.map(x => x.id);
+  }
+}
+
+
+// ===============================
+// CREATE MODAL - DEPARTMENT
+// ===============================
+
+isAllCreateDepartmentsSelected(): boolean {
+  return this.department?.length === this.Departments.length &&
+         this.Departments.length > 0;
+}
+
+isSomeCreateDepartmentsSelected(): boolean {
+  return (
+    this.department?.length > 0 &&
+    this.department?.length < this.Departments.length
+  );
+}
+
+toggleAllCreateDepartments(): void {
+  if (this.isAllCreateDepartmentsSelected()) {
+    this.department = [];
+  } else {
+    this.department = this.Departments.map(x => x.id);
+  }
+}
+
+
+// ===============================
+// CREATE MODAL - CATEGORY
+// ===============================
+
+isAllCreateCategoriesSelected(): boolean {
+  return this.category?.length === this.Categories.length &&
+         this.Categories.length > 0;
+}
+
+isSomeCreateCategoriesSelected(): boolean {
+  return (
+    this.category?.length > 0 &&
+    this.category?.length < this.Categories.length
+  );
+}
+
+toggleAllCreateCategories(): void {
+  if (this.isAllCreateCategoriesSelected()) {
+    this.category = [];
+  } else {
+    this.category = this.Categories.map(x => x.id);
+  }
+}
+
+
+// ===============================
+// CREATE MODAL - DESIGNATION
+// ===============================
+
+isAllCreateDesignationsSelected(): boolean {
+  return this.designation?.length === this.Designations.length &&
+         this.Designations.length > 0;
+}
+
+isSomeCreateDesignationsSelected(): boolean {
+  return (
+    this.designation?.length > 0 &&
+    this.designation?.length < this.Designations.length
+  );
+}
+
+toggleAllCreateDesignations(): void {
+  if (this.isAllCreateDesignationsSelected()) {
+    this.designation = [];
+  } else {
+    this.designation = this.Designations.map(x => x.id);
+  }
+}
+
 isAllBranchesSelected(): boolean {
   return this.editAsset.branch?.length === this.Branches.length;
 }

@@ -24,11 +24,9 @@ export class BranchEditComponent {
   states: any[] = [];
   companies: any[] = [];
 
-
   registerButtonClicked = false;
 
   Emp: any;
-
 
   branch_name: string = '';
   br_city:string ='';
@@ -45,16 +43,12 @@ export class BranchEditComponent {
 
   branch_users:any='';
   branch_logo: File | null = null;
-  // branch_logo: string | undefined;
 
   state_label: string = ''; // For dynamically storing state_label
 
-
- selectedFile: File | null = null;
-
+  selectedFile: File | null = null;
 
   schemas: string[] = []; // Array to store schema names
-
   
   userId: number | null | undefined;
   userDetails: any;
@@ -67,156 +61,159 @@ export class BranchEditComponent {
     private BranchServiceService: BranchServiceService,
     private CountryService: CountryService,
     private DepartmentServiceService: DepartmentServiceService,
-
-
     private EmployeeService : EmployeeService,
-  private sessionService: SessionService,
-
+    private sessionService: SessionService,
     private renderer: Renderer2,
     private http: HttpClient,
     private dialog: MatDialog,
     private authService: AuthenticationService,
     private dialogRef: MatDialogRef<BranchEditComponent>
-
-  ) {
-    this.BranchServiceService.getEmpById(data.employeeId).subscribe(Emp => {
-      this.Emp = Emp;
-    });
+  ) { 
+    // Removed API call from here to avoid duplicate calls with ngOnInit
   }
 
-
-
-  
   ngOnInit(): void {
     this.BranchServiceService.getEmpById(this.data.employeeId).subscribe(
       (Emp) => {
         this.Emp = Emp;
-        console.log('emp',Emp)
+        console.log('emp', Emp);
+
+        // ✅ FIX: Map fetched data to standalone ngModel variables
+        // Converting to String is important for dropdowns to match option values
+        this.br_country = Emp.br_country ? String(Emp.br_country) : '';
+        this.br_state_id = Emp.br_state_id ? String(Emp.br_state_id) : '';
+        this.br_city = Emp.br_city || '';
+        this.br_pincode = Emp.br_pincode || '';
+        this.br_branch_mail = Emp.br_branch_mail || '';
+        this.br_branch_nmbr_1 = Emp.br_branch_nmbr_1 || '';
+        this.br_branch_nmbr_2 = Emp.br_branch_nmbr_2 || '';
+
+        // ✅ FIX: If country is selected, load its states automatically so the dropdown populates
+        if (this.br_country) {
+          this.loadStatesByCountry();
+        }
       },
       (error) => {
         console.error('Error fetching Branches:', error);
       }
     );
 
-
     this.loadCountries();
-this. loadBranchUser();
+    this.loadBranchUser();
 
+    this.userId = this.sessionService.getUserId();
 
+    if (this.userId !== null) {
+      this.authService.getUserData(this.userId).subscribe(
+        (userData: any) => {
+          this.userDetails = userData;
+          this.branch_users = this.userId;
+        },
+        (error) => {
+          console.error('Failed to fetch user details:', error);
+        }
+      );
 
-this.userId = this.sessionService.getUserId();
-
-  
-if (this.userId !== null) {
-  this.authService.getUserData(this.userId).subscribe(
-    (userData: any) => {
-      this.userDetails = userData;
-      this.branch_users = this.userId; // Automatically set the owner to logged-in user ID
-
-    },
-    (error) => {
-      console.error('Failed to fetch user details:', error);
+      this.authService.getUserSchema(this.userId).subscribe(
+        (userData: any) => {
+          this.userDetailss = userData; 
+          this.schemas = userData.map((schema: any) => schema.schema_name);
+        },
+        (error) => {
+          console.error('Failed to fetch user schemas:', error);
+        }
+      );
+    } else {
+      console.error('User ID is null.');
     }
-  );
-
-  this.authService.getUserSchema(this.userId).subscribe(
-    (userData: any) => {
-      this.userDetailss = userData; // Store user schemas in userDetailss
-
-      this.schemas = userData.map((schema: any) => schema.schema_name);
-    },
-    (error) => {
-      console.error('Failed to fetch user schemas:', error);
-    }
-  );
-} else {
-  console.error('User ID is null.');
-}
-
-
- 
-
   }
   
-onFileSelected(event: any) {
-  const file = event.target.files[0];
-  if (file) {
-    this.selectedFile = file;
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
   }
-}
 
   onStateChange(event: any): void {
     this.br_state_id = Number(event);
   }
 
-
-updateBranch(): void {
-
-  const formData = new FormData();
-
-  // Format date properly
-  const formattedDate = this.formatDate(this.Emp.br_start_date);
-
-  // Append all NON-FILE fields
-  for (const key in this.Emp) {
-    if (key === "branch_logo") continue;   // Skip file field
-
-    let value = this.Emp[key];
-
-    // Convert numeric primary keys
-    if (["br_state_id", "br_created_by", "br_updated_by"].includes(key)) {
-      value = value ? Number(value) : null;
+  updateBranch(): void {
+    // ✅ FIX: Sync standalone ngModel variables back to Emp object before sending
+    if (this.Emp) {
+      this.Emp.br_country = this.br_country;
+      this.Emp.br_state_id = this.br_state_id;
+      this.Emp.br_city = this.br_city;
+      this.Emp.br_pincode = this.br_pincode;
+      this.Emp.br_branch_mail = this.br_branch_mail;
+      this.Emp.br_branch_nmbr_1 = this.br_branch_nmbr_1;
+      this.Emp.br_branch_nmbr_2 = this.br_branch_nmbr_2;
     }
 
-    // Date
-    if (key === "br_start_date") {
-      formData.append(key, formattedDate);
-    } 
-    else {
-      formData.append(key, value ?? "");
-    }
-  }
+    const formData = new FormData();
 
-  // FILE append
-  if (this.selectedFile) {
-    formData.append("branch_logo", this.selectedFile);
-  }
+    // Format date properly
+    const formattedDate = this.formatDate(this.Emp.br_start_date);
 
-  // Logged-in user
-  if (this.userId != null) {
-    formData.append("br_created_by", String(this.userId));
-    formData.append("br_updated_by", String(this.userId));
-  } else {
-    console.error("Logged-in user ID is null or undefined.");
-  }
+    // Append all NON-FILE fields
+    for (const key in this.Emp) {
+      if (key === "branch_logo") continue;   // Skip file field
 
+      let value = this.Emp[key];
 
-  this.BranchServiceService.updateBranch(this.data.employeeId, formData)
-    .subscribe(
-      (response) => {
-        console.log("Branch updated successfully:", response);
-        alert('Branch updated successfully!');
-        this.dialogRef.close();
-        window.location.reload();
-      },
-      (error) => {
-        console.error("Error updating branch:", error);
-
-        let errorMsg = "Update failed";
-        const backendError = error?.error;
-
-        if (backendError && typeof backendError === "object") {
-          errorMsg = Object.keys(backendError)
-            .map(key => `${key}: ${backendError[key].join(", ")}`)
-            .join("\n");
-        }
-
-        alert(errorMsg);
+      // Convert numeric primary keys
+      if (["br_state_id", "br_created_by", "br_updated_by"].includes(key)) {
+        value = value ? Number(value) : null;
       }
-    );
-}
 
-  // Date format function
+      // Date
+      if (key === "br_start_date") {
+        formData.append(key, formattedDate);
+      } 
+      else {
+        formData.append(key, value ?? "");
+      }
+    }
+
+    // FILE append
+    if (this.selectedFile) {
+      formData.append("branch_logo", this.selectedFile);
+    }
+
+    // Logged-in user
+    if (this.userId != null) {
+      formData.append("br_created_by", String(this.userId));
+      formData.append("br_updated_by", String(this.userId));
+    } else {
+      console.error("Logged-in user ID is null or undefined.");
+    }
+
+    this.BranchServiceService.updateBranch(this.data.employeeId, formData)
+      .subscribe(
+        (response) => {
+          console.log("Branch updated successfully:", response);
+          alert('Branch updated successfully!');
+          this.dialogRef.close();
+          window.location.reload();
+        },
+        (error) => {
+          console.error("Error updating branch:", error);
+
+          let errorMsg = "Update failed";
+          const backendError = error?.error;
+
+          if (backendError && typeof backendError === "object") {
+            errorMsg = Object.keys(backendError)
+              .map(key => `${key}: ${backendError[key].join(", ")}`)
+              .join("\n");
+          }
+
+          alert(errorMsg);
+        }
+      );
+  }
+
   formatDate(date: any): string {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -224,14 +221,6 @@ updateBranch(): void {
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-  
- 
-
-
-
-
- 
-
 
   loadCountries(): void {
     this.CountryService.getCountries().subscribe(
@@ -247,8 +236,7 @@ updateBranch(): void {
   loadStates(): void {
     this.CountryService.getAllStates().subscribe(
       (result: any) => {
-        console.log(result); // Log the API response
-        this.states = result; // Assuming the data is directly in the result without a 'data' property
+        this.states = result;
       },
       (error) => {
         console.error('Error fetching states:', error);
@@ -275,51 +263,29 @@ updateBranch(): void {
     );
   }
   
-  // loadCompanies(): void {
-  //   this.BranchServiceService.getCompany().subscribe(
-  //     (result: any) => {
-  //       this.companies = result;
-  //     },
-  //     (error: any) => {
-  //       console.error('Error fetching countries:', error);
-  //     }
-  //   );
-  // }
-
-
   loadBranchUser(): void {
     const selectedSchema = this.authService.getSelectedSchema();
-        if (selectedSchema) {
-          this.DepartmentServiceService.getUserforPermission(selectedSchema).subscribe(
-            (result: any) => {
-              this.companies = result;
-              console.log(' fetching Companies:');
-      
-            },
-            (error) => {
-              console.error('Error fetching Companies:', error);
-            }
-          );
+    if (selectedSchema) {
+      this.DepartmentServiceService.getUserforPermission(selectedSchema).subscribe(
+        (result: any) => {
+          this.companies = result;
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
         }
-   
+      );
+    }
   }
 
+  triggerFileInput() {
+    this.fileInput.nativeElement.click();
+  }
 
+  getFileName(path: string): string {
+    return path?.split('/').pop() || '';
+  }
 
-
-
-
-triggerFileInput() {
-  this.fileInput.nativeElement.click();
-}
-
-getFileName(path: string): string {
-  return path?.split('/').pop() || '';
-}
-
-
-ClosePopup(){
-  this.ref.close('Closed using function')
-}
-
+  ClosePopup(){
+    this.ref.close('Closed using function')
+  }
 }

@@ -440,7 +440,7 @@
       <table class="table table-striped custom-table" width="100%">
         <thead>
           <tr>
-            <th>No</th>
+            <th class="sticky-left">No</th>
             <th>Prefix</th>
             <th>Suffix</th>
             <th>Current No</th>
@@ -449,12 +449,13 @@
             <th>Total Length</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <th>Action</th>
+            <th>Auto Numbering</th>
+            <th class="sticky-right">Action</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let docs of docsNumbers; let i = index">
-            <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="No"  class="sticky-left">{{ i + 1 }}</td>
             <td data-label="Prefix">{{ docs.prefix }}</td>
             <td data-label="Suffix">{{ docs.suffix }}</td>
             <td data-label="Current No">{{ docs.current_number }}</td>
@@ -463,7 +464,15 @@
             <td data-label="Total Length">{{ docs.total_length }}</td>
             <td data-label="Start Date">{{ docs.start_date }}</td>
             <td data-label="End Date">{{ docs.end_date }}</td>
-            <td data-label="Action">
+            <td data-label="Auto Numbering">
+            <span
+                class="badge"
+                [ngClass]="docs.automatic_numbering ? 'bg-success' : 'bg-secondary'"
+              >
+               {{ docs.automatic_numbering }}
+              </span>
+            </td>
+            <td data-label="Action" class="sticky-right">
               <button
                 mat-fab
                 color="primary"

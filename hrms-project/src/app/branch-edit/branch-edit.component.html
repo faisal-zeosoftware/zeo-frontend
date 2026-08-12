@@ -33,93 +33,80 @@
         </div>
 
       
-        
-        <div class="col-md-6" >
-                       
-            <label>Branch City Name</label>
-           <input type="text"  class="form-control" required id="br_city" name="br_city"  [(ngModel)]="Emp.br_city"  placeholder="Enter City Name"
-            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !br_city}">
-           
-           <div *ngIf="registerButtonClicked && !br_city" class="error-message">city Name is required.</div>
+    <div class="col-md-6">
+        <div class="custom-sel">
+          <label>Country</label>
+          <select class="form-control" id="country" required [(ngModel)]="br_country" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}">
+            <option value="">Select</option>
+            <option *ngFor="let country of countries" [value]="country.id">{{ country.country_name }}</option>
+          </select>
         </div>
-        
-        <div class="col-md-6" >
-                       
-            <label>Branch pincode</label>
-           <input type="text"  class="form-control" required id="br_pincode" name="br_pincode"  [(ngModel)]="Emp.br_pincode"  placeholder="Enter pincode"
-            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !br_pincode}">
-           
-           <div *ngIf="registerButtonClicked && !br_pincode" class="error-message">Pincode Name is required.</div>
+      </div>
+
+            <!-- Dynamic State Section -->
+      <div class="col-md-6" *ngIf="states && states.length > 0">
+        <div class="custom-sel">
+          <!-- Dynamically displaying the state_label from the API response -->
+          <label>{{ state_label }}</label>
+          <select class="form-control" id="state"  [(ngModel)]="br_state_id" [ngModelOptions]="{standalone:true}">
+            <option value="">Select</option>
+            <option *ngFor="let state of states" [value]="state.id">{{ state.state_name }}</option>
+          </select>
         </div>
+      </div>
+        
+              <div class="col-md-6">
+                         
+                  
+                      <label>City
+                      </label>
+                      <input type="text" [(ngModel)]="br_city" required [ngModelOptions]="{standalone: true}" class="form-control" placeholder="enter city">
+    
+                 
+          </div>
        
-        
-        <div class="col-md-6">
-                       
-            <label>Contact</label>
-           <input type="text"  class="form-control" required id="br_branch_nmbr_1" name="br_branch_nmbr_1"  [(ngModel)]="Emp.br_branch_nmbr_1"  placeholder="Enter Contact"
-            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !br_branch_nmbr_1}">
-           
-           <div *ngIf="registerButtonClicked && !br_branch_nmbr_1" class="error-message">Contact is required.</div>
-        </div>
+          <div class="col-md-6">
+                         
+                  
+              <label>pincode
+              </label>
+              <input type="text" [(ngModel)]="br_pincode" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Branch pincode">
     
-        <div class="col-md-6">
-                       
-            <label>Contact 2</label>
-           <input type="text"  class="form-control" required id="br_branch_nmbr_2" name="br_branch_nmbr_2"  [(ngModel)]="Emp.br_branch_nmbr_2"  placeholder="Enter Contact"
-            [ngModelOptions]="{standalone: true}" >
-    
-        </div>
-        
-    
-    
-        <div class="col-md-6" >
-                       
-            <label>Email</label>
-           <input type="text"  class="form-control" required id="br_branch_mail" name="br_branch_mail"  [(ngModel)]="Emp.br_branch_mail"  placeholder="Enter Email ID"
-            [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !br_branch_mail}">
-           
-           <div *ngIf="registerButtonClicked && !br_branch_mail" class="error-message">Enter Email ID.</div>
-        </div>
-        
-
-        
-  
-         <div class="col-md-6">
-            <div class="custom-sel">
-              <label>Country</label>
-              <select class="form-control" id="country" required [(ngModel)]="Emp.br_country" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}">
-                <option value="">Select</option>
-                <option *ngFor="let country of countries" [value]="country.id">{{ country.country_name }}</option>
-              </select>
-            </div>
-          </div>
           
-          <!-- Dynamic State Section -->
-          <div class="col-md-6" *ngIf="states && states.length > 0">
-            <div class="custom-sel">
-              <!-- Dynamically displaying the state_label from the API response -->
-              <label>{{ state_label }}</label>
-              <select class="form-control" id="state" required [(ngModel)]="br_state_id" (ngModelChange)="onStateChange($event)" [ngModelOptions]="{standalone:true}">
-                <option value="">Select</option>
-                <option *ngFor="let state of states" [value]="state.id">{{ state.state_name }}</option>
-              </select>
-            </div>
           </div>
-          
-        <div class="col-md-6"  style="display: none;">
-
-
-            <div class="custom-sel">
-                <label>Select User</label>
-                <select class="form-control" id="branch_users" name="branch_users" required multiple [(ngModel)]="Emp.branch_users"  [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !branch_users}" >
-                    <option value="" >Select</option>
-                    <option *ngFor="let branch_users of companies" [value]="branch_users.id">{{ branch_users.username }}</option>
-                </select>
-                <div *ngIf="registerButtonClicked && !branch_users" class="error-message">Please Select any user</div>
-            </div>
-                        
+    
+          <div class="col-md-6">
+                         
+                  
+              <label>Email
+              </label>
+              <input type="text" [(ngModel)]="br_branch_mail" required [ngModelOptions]="{standalone: true}" class="form-control" placeholder="enter email id">
+    
+         
+    </div>
         
-        </div>
+    
+    
+    <div class="col-md-6">
+                         
+                  
+      <label>Company number 1</label>
+      <input type="text" [(ngModel)]="br_branch_nmbr_1" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Contact number" >
+    
+    
+    </div>
+        
+
+    <div class="col-md-6">
+                         
+                  
+    <label>Company number 2 (optional)</label>
+    <input type="text" [(ngModel)]="br_branch_nmbr_2" required [ngModelOptions]="{standalone: true}"  class="form-control" placeholder="enter Contact number " >
+    
+    
+    </div>
+          
+
     
 <div class="col-md-6"> 
   <label for="branch_logo">Branch Logo :</label>

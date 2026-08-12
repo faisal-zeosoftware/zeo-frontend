@@ -17,7 +17,8 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class LocationMasterComponent {
 
-   @ViewChild('logoInput') logoInput!: ElementRef;
+
+   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
 
   registerButtonClicked = false;
@@ -255,28 +256,131 @@ this.Schemas.forEach(employee => employee.selected = this.allSelecteds);
 
 
 openEditModal(asset: any): void {
-
+  // Deep copy to avoid reference issues
   this.editAsset = { ...asset };
 
-  // Load states for selected country
+  // ============================================================
+  // FIX 1: Map COUNTRY NAME (string) to COUNTRY ID (number)
+  // ============================================================
   if (this.editAsset.country) {
-    this.loadStatesByCountry();
+    const matchedCountry = this.countries.find(
+      (c: any) => c.country_name === this.editAsset.country
+    );
+    if (matchedCountry) {
+      this.editAsset.country = Number(matchedCountry.id);
+      this.editAsset.timezone = matchedCountry.timezone || this.editAsset.timezone;
+    }
   }
 
-  // Load currencies for existing country
-  const selectedCountry = this.countries.find(
-    (c: any) => c.id == this.editAsset.country
-  );
+  // ============================================================
+  // FIX 2: Map CURRENCY NAME (string) to CURRENCY ID (number)
+  // ============================================================
+  let currencyId: number | null = null;
 
-  if (selectedCountry) {
+  // Try from currency_details first (but it has no id in your API!)
+  // So we match by currency_name instead
+  if (this.editAsset.currency_details && this.editAsset.currency_details.currency_name) {
+    const matchedCurrency = this.Currencies.find(
+      (c: any) => c.currency_name === this.editAsset.currency_details.currency_name
+    );
+    if (matchedCurrency) {
+      currencyId = Number(matchedCurrency.id);
+    }
+  }
+  
+  // Fallback: try direct currency field (string name like "Dirham")
+  if (!currencyId && this.editAsset.currency) {
+    const matchedCurrency = this.Currencies.find(
+      (c: any) => c.currency_name === this.editAsset.currency
+    );
+    if (matchedCurrency) {
+      currencyId = Number(matchedCurrency.id);
+    }
+  }
 
-    this.Currencies = selectedCountry.currency || [];
+  // ============================================================
+  // FIX 3: Map STATE NAME to STATE ID
+  // ============================================================
+  if (this.editAsset.country) {
+    this.countryService.getStatesByCountryId(this.editAsset.country).subscribe(
+      (result: any) => {
+        this.states = result.states || [];
+        this.state_label = result.state_label || 'State';
 
+        // Map state name to state id
+        if (this.editAsset.state && typeof this.editAsset.state === 'string') {
+          const matchedState = this.states.find(
+            (s: any) => s.state_name === this.editAsset.state
+          );
+          if (matchedState) {
+            this.editAsset.state = Number(matchedState.id);
+          }
+        } else if (this.editAsset.state) {
+          this.editAsset.state = Number(this.editAsset.state);
+        }
+      },
+      (error) => {
+        console.error('Error fetching states:', error);
+        this.states = [];
+      }
+    );
+  }
+
+  // ============================================================
+  // FIX 4: Set currency AFTER currencies are loaded
+  // ============================================================
+  // If Currencies already loaded, set now. Otherwise load them.
+  if (this.Currencies && this.Currencies.length > 0) {
+    if (currencyId) {
+      this.editAsset.currency = currencyId;
+    }
+  } else {
+    this.loadCurrencies(() => {
+      // Re-try matching after currencies load
+      if (!currencyId && this.editAsset.currency_details?.currency_name) {
+        const matched = this.Currencies.find(
+          (c: any) => c.currency_name === this.editAsset.currency_details.currency_name
+        );
+        if (matched) currencyId = Number(matched.id);
+      }
+      if (!currencyId && this.editAsset.currency) {
+        const matched = this.Currencies.find(
+          (c: any) => c.currency_name === this.editAsset.currency
+        );
+        if (matched) currencyId = Number(matched.id);
+      }
+      if (currencyId) {
+        this.editAsset.currency = currencyId;
+      }
+    });
+  }
+
+  // If currencies already available, assign now
+  if (this.Currencies.length > 0 && currencyId) {
+    this.editAsset.currency = currencyId;
   }
 
   this.isEditModalOpen = true;
 }
 
+loadCurrenciesForCountry(countryId: number): void {
+  this.countryService.getCurrencies().subscribe(
+    (result: any) => {
+      this.Currencies = result || [];
+      // Re-assign currency to trigger change detection after currencies load
+      if (this.editAsset.currency) {
+        const currentCurrency = this.editAsset.currency;
+        setTimeout(() => {
+          this.editAsset.currency = Number(currentCurrency);
+        }, 0);
+      }
+    },
+    (error) => {
+      console.error('Error fetching currencies:', error);
+      this.Currencies = [];
+    }
+  );
+}
 closeEditModal(): void {
    this.isEditModalOpen = false;
      this.editAsset = {};
@@ -618,38 +722,39 @@ closeEditModal(): void {
 
 
 onCountryChange(): void {
-
   if (this.editAsset.country !== undefined) {
-
-    // Load states
+    // Load states for new country
     this.loadStatesByCountry();
 
-    // Find selected country
+    // Find selected country object
     const selectedCountry = this.countries.find(
-      (c: any) => c.id == this.editAsset.country
+      (c: any) => Number(c.id) === Number(this.editAsset.country)
     );
 
     if (selectedCountry) {
+      // Update timezone
+      this.editAsset.timezone = selectedCountry.timezone || '';
 
-      // Set timezone
-      this.editAsset.timezone = selectedCountry.timezone;
-
-      // Load currencies
-      this.Currencies = selectedCountry.currency || [];
-
-      // Auto select first currency if empty
-      if (!this.editAsset.currency && this.Currencies.length > 0) {
-
+      // Update currencies from country data (if available)
+      if (selectedCountry.currency && selectedCountry.currency.length > 0) {
+        this.Currencies = selectedCountry.currency;
+        // Auto-select first currency
         this.editAsset.currency = this.Currencies[0].id;
-
+      } else {
+        // Fallback: load all currencies
+        this.loadCurrencies(() => {
+          // Optionally auto-select if only one matches country
+        });
       }
 
+      // Clear state when country changes
+      this.editAsset.state = '';
     } else {
-
       this.editAsset.timezone = '';
       this.Currencies = [];
       this.editAsset.currency = '';
-
+      this.states = [];
+      this.editAsset.state = '';
     }
   }
 }
@@ -678,13 +783,19 @@ onStateChange(event: any): void {
 
 
 
-loadCurrencies(): void {
+loadCurrencies(callback?: () => void): void {
   this.countryService.getCurrencies().subscribe(
     (result: any) => {
-      this.Currencies = result;
+      this.Currencies = result || [];
+      console.log('Currencies loaded:', this.Currencies);
+      if (callback) {
+        callback();
+      }
     },
     (error) => {
       console.error('Error fetching Currencies:', error);
+      this.Currencies = [];
+      if (callback) callback();
     }
   );
 }
@@ -742,9 +853,10 @@ loadCurrencies(): void {
 
 
 
-triggerLogoInput() {
-  this.logoInput.nativeElement.click();
+triggerLogoInput(): void {
+  this.fileInput.nativeElement.click();
 }
+
 onLogoSelected(event: any) {
   const file = event.target.files[0];
   if (file) {
