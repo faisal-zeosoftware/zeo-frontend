@@ -40,6 +40,7 @@ export class BranchEditComponent {
   br_country:any ='';
   branch_code:any='';
   probation_period_days:any='';
+  branch_address:any='';
 
   branch_users:any='';
   branch_logo: File | null = null;
@@ -87,6 +88,8 @@ export class BranchEditComponent {
         this.br_branch_mail = Emp.br_branch_mail || '';
         this.br_branch_nmbr_1 = Emp.br_branch_nmbr_1 || '';
         this.br_branch_nmbr_2 = Emp.br_branch_nmbr_2 || '';
+        this.branch_address = Emp.branch_address || '';
+
 
         // ✅ FIX: If country is selected, load its states automatically so the dropdown populates
         if (this.br_country) {
@@ -149,6 +152,8 @@ export class BranchEditComponent {
       this.Emp.br_branch_mail = this.br_branch_mail;
       this.Emp.br_branch_nmbr_1 = this.br_branch_nmbr_1;
       this.Emp.br_branch_nmbr_2 = this.br_branch_nmbr_2;
+            this.Emp.branch_address = this.branch_address;
+
     }
 
     const formData = new FormData();

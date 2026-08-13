@@ -15,132 +15,92 @@ import { EmployeeService } from '../employee-master/employee.service';
   selector: 'app-branch-master',
   template: ` <div class="container" *ngIf="hasViewPermission">
   <div class="comapny_section">
-      <div class="header_section mt-4">
 
+      <!-- ============ YOUR ORIGINAL HEADER SECTION — UNCHANGED ============ -->
+      <div class="header_section mt-4">
           <div class="row">
               <div class="col-md-3">
                   <h1 title="change Branch"> Branch details</h1>
-                  
               </div>
               <div class="col-md-4">
-                     
-              
                      <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search by branch or code"    [(ngModel)]="searchQuery" (input)="filterEmployees()">
-                        <button class="search-btn" >
+                        <input type="text" class="search-input" placeholder="Search by branch or code" [(ngModel)]="searchQuery" (input)="filterEmployees()">
+                        <button class="search-btn">
                           <i class="fa fa-search"></i>
                         </button>
                       </div>
-
                 </div>
               <div class="col-md-5">
                   <div class="button-group pull-right">
-                      <button type="button" (click)="openPopus()"  class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-                      </mat-icon></span> Create</button>
+                      <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle</mat-icon></span> Create</button>
                       <span *ngIf="!hasAddPermission"></span>
-                      <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission">
-                            <span class="header-btn-icon">
-                             <mat-icon>draw
-                        </mat-icon></span> Edit</button>
+                      <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
+                            <span class="header-btn-icon"><mat-icon>draw</mat-icon></span> Edit</button>
                         <span *ngIf="hasEditPermission"></span>
                       <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
-                      <span class="header-btn-icon">
-                          <mat-icon> delete
-                     </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                      <span class="header-btn-icon"><mat-icon>delete</mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
                      <span *ngIf="!hasDeletePermission"></span>
                   </div>
               </div>
           </div>
-         
-         
-
       </div>
+      <!-- ============ END HEADER — UNCHANGED ============ -->
+
       <div class="row">
-      <div class="col-md-2">
-          
-          <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
-
-      </div>
-      <div class="col-md-3">
-          <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedEmployees()">Delete Selected </button>
-
-      </div>
-  </div>
-      <!-- <div class="list_company_sec mt-4" >
-          
-      </div> -->
-<div  >
-      <div class="row mt-4">
-          <div class="col-md-12 col-12">
-              <div class="row">
-              <div class="col-md-2">
-              <p>Br Code</p>
-              </div>
-                  <div class="col-md-3">
-                      <p>Branches</p>
-                  </div>
-
-                  <div class="col-md-2">
-                      <p>City</p>
-                  </div>
-                  <div class="col-md-3">
-                      <p>Email ID</p>
-                  </div>
-                  <div class="col-md-2">
-                  <p>Contact</p>
-              </div>
-              </div>
-              <div class="com_list" *ngFor="let branchsec of filteredEmployees" [ngClass]="{ 'selected-item': branchsec.selected }">
-              <mat-checkbox *ngIf="Delete" [(ngModel)]="branchsec.selected" (change)="onCheckboxChange(branchsec.id)"></mat-checkbox>
-
-                <div class="row">
-                <div class="col-md-2">
-                <h2 class="text-center">{{ branchsec.branch_code }}</h2>
-                </div>
-                 
-                  <div class="col-md-3" >
-                  <h2 class="text-center" >{{ branchsec.branch_name }}</h2>
-                                 </div>
-
-                  <div class="col-md-2">
-                      <h2 class="text-center">{{ branchsec.br_city }}</h2>
-                  </div>
-                  <div class="col-md-3">
-                      <h2 class="text-center">{{ branchsec.br_branch_mail }} </h2>
-                  </div>
-
-                  <div class="col-md-2">
-                      <h2 class="text-center">{{ branchsec.br_branch_nmbr_1 }} </h2>
-                  </div>
-                
-                  
-
-                </div>
-                <div class="row mt-2">
-                <div class="col-md-10">
-                </div>
-                <div class="col-md-2">
-                 <button mat-fab class="btn_ed pull-right" style="color:white" color="primary" aria-label="Example icon button with a delete icon" (click)="openEditPopuss(branchsec.id)" *ngIf="showEditBtn"><mat-icon>draw</mat-icon></button>
-
-                </div>
-                </div>
-              </div>
-
-
-
-              
-</div>
-              
+          <div class="col-md-2">
+              <button class="mt-3 btn-danger btn" style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+          </div>
+          <div class="col-md-3">
+              <button class="mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedEmployees()">Delete Selected</button>
           </div>
       </div>
+
+      <!-- ============ NEW: CARD GRID INSTEAD OF TABLE/STACKED LIST ============ -->
+      <div class="branch-grid mt-4">
+       <div class="branch-card"
+     *ngFor="let branchsec of filteredEmployees"
+     [ngClass]="{ 'selected-card': branchsec.selected }">
+
+  <mat-checkbox *ngIf="Delete" class="card-checkbox"
+                [(ngModel)]="branchsec.selected"
+                (change)="onCheckboxChange(branchsec.id)"></mat-checkbox>
+
+  <button mat-fab class="card-edit-btn" *ngIf="showEditBtn" (click)="openEditPopuss(branchsec.id)">
+    <mat-icon>draw</mat-icon>
+  </button>
+
+  <div class="card-top">
+    <div class="branch-avatar">{{ branchsec.branch_name?.charAt(0) }}</div>
+    <div class="card-code">{{ branchsec.branch_code }}</div>
+  </div>
+
+  <h2 class="card-branch-name">{{ branchsec.branch_name }}</h2>
+  <p class="card-city"><mat-icon>location_on</mat-icon> {{ branchsec.br_city || '-' }}</p>
+
+  <div class="card-divider"></div>
+
+  <div class="card-detail-row">
+    <mat-icon>mail</mat-icon>
+    <span>{{ branchsec.br_branch_mail || '-' }}</span>
+  </div>
+  <div class="card-detail-row">
+    <mat-icon>call</mat-icon>
+    <span>{{ branchsec.br_branch_nmbr_1 || '-' }}</span>
+  </div>
+  <div class="card-detail-row address-row">
+    <mat-icon>home_pin</mat-icon>
+    <span class="address-text">{{ branchsec.branch_address || '-' }}</span>
+  </div>
+
 </div>
-    
+      </div>
+
   </div>
 
   <div *ngIf="!hasViewPermission">
-    <!-- Message for users without permission -->
-    <p class="text-center " style="margin-top: 150px;" >You don't have permission to view this component.</p>
+    <p class="text-center" style="margin-top: 150px;">You don't have permission to view this component.</p>
   </div>
+</div>
 `,
   styleUrl: './branch-master.component.css'
 })

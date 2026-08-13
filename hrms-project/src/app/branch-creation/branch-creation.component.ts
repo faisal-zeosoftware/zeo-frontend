@@ -47,6 +47,8 @@ br_company_id:any='';
 branch_code:any='';
 probation_period_days:any='';
 branch_users:any='';
+branch_address:any='';
+
 branch_logo: File | null = null;
 
 
@@ -159,6 +161,8 @@ registerBranch(): void {
   formData.append('branch_code', this.branch_code || '');
   formData.append('br_branch_mail', this.br_branch_mail || '');
   formData.append('br_branch_nmbr_1', this.br_branch_nmbr_1 || '');
+  formData.append('branch_address', this.branch_address || '');
+
   
   // ✅ Only append state if selected
   if (this.br_state_id) {
