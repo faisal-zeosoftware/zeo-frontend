@@ -348,7 +348,8 @@
                                 </div>
                               </mat-tab>
                               <mat-tab label="Employee Family">
-                                <div class="tab_content mt-3" *ngFor="let member of emp_family_details; let i = index">                                  <div class="row">
+                                <div class="tab_content mt-3" *ngFor="let member of emp_family_details; let i = index">        
+                                    <div class="row">
                                     <div class="col-md-3">
                                       <h2>Employee Member Name</h2>
                                       <h3 *ngIf="!isEditMode">{{ member.ef_member_name }}</h3>
@@ -395,86 +396,93 @@
 
 
 
-                            <mat-tab label="Qualification">
-                                <div class="tab_content  mt-3" *ngFor="let Qualification of Qualifications">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <h2>Employee Qualification</h2>
-                                            <h3>{{ Qualification.emp_qualification }} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>Year</h2>
-                                            <h3>{{ Qualification.emp_qf_year }} </h3>
-                                        </div>
+<mat-tab label="Qualification">
+    <div class="tab_content mt-3" *ngFor="let Qualification of Qualifications; let i = index">
+        <div class="row">
+            <div class="col-md-3">
+                <h2>Employee Qualification</h2>
+                <h3 *ngIf="!isEditMode">{{ Qualification.emp_qualification }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Qualification.emp_qualification">
+            </div>
+            <div class="col-md-3">
+                <h2>Year</h2>
+                <h3 *ngIf="!isEditMode">{{ Qualification.emp_qf_year }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Qualification.emp_qf_year">
+            </div>
+            <div class="col-md-3">
+                <h2>Subject</h2>
+                <h3 *ngIf="!isEditMode">{{ Qualification.emp_qf_subject }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Qualification.emp_qf_subject">
+            </div>
+            <div class="col-md-3">
+                <h2>Institution</h2>
+                <h3 *ngIf="!isEditMode">{{ Qualification.emp_qf_instituition }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Qualification.emp_qf_instituition">
+            </div>
 
-                                        <div class="col-md-3">
-                                            <h2>Subject</h2>
-                                            <h3>{{ Qualification.emp_qf_subject }} </h3>
-                                        </div>
+            <ng-container *ngFor="let field of Qualification.qualification_fields">
+                <div class="col-md-3">
+                    <h2>{{ field.emp_custom_field }}</h2>
+                    <h3 *ngIf="!isEditMode">{{ field.field_value }}</h3>
+                    <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="field.field_value">
+                </div>
+            </ng-container>
 
-
-                                        <div class="col-md-3">
-                                            <h2>Institution</h2>
-                                            <h3>{{ Qualification.emp_qf_instituition }} </h3>
-                                        </div>
-
-                                        <!-- Display each custom field -->
-                                        <ng-container *ngFor="let field of Qualification.qualification_fields">
-                                            <div class="col-md-3">
-                                                <h2>{{ field.emp_custom_field }}</h2>
-                                                <h3>{{ field.field_value }}</h3>
-                                            </div>
-                                        </ng-container>
-                                    </div>
-                                </div>
-                                <div class=" mt-5">
-                                    <button type="button" class="btn-Edit btn-info btn d-block mx-auto "
-                                        (click)="employeefamAdd('qualification')">Add Qualification</button>
-                                </div>
-                            </mat-tab>
+            <div class="col-md-12 text-end" *ngIf="isEditMode">
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeQualification(Qualification, i)">Remove</button>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5" *ngIf="!isEditMode">
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('qualification')">Add Qualification</button>
+    </div>
+</mat-tab>
 
                             <!-- --------------------------------------------------------->
                             
-                            <mat-tab label="Employee Bank details">
-                                <div class="tab_content  mt-3" *ngFor="let member of emp_bank_details">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <h2>Bank Name</h2>
-                                            <h3>{{member.bank_name }} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>Branch Name</h2>
-                                            <h3>{{member.branch_name }} </h3>
-                                        </div>
+<mat-tab label="Employee Bank details">
+    <div class="tab_content mt-3" *ngFor="let member of emp_bank_details; let i = index">
+        <div class="row">
+            <div class="col-md-3">
+                <h2>Bank Name</h2>
+                <h3 *ngIf="!isEditMode">{{ member.bank_name }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.bank_name">
+            </div>
+            <div class="col-md-3">
+                <h2>Branch Name</h2>
+                <h3 *ngIf="!isEditMode">{{ member.branch_name }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.branch_name">
+            </div>
+            <div class="col-md-3">
+                <h2>Account Number</h2>
+                <h3 *ngIf="!isEditMode">{{ member.account_number }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.account_number">
+            </div>
+            <div class="col-md-3">
+                <h2>Bank Address</h2>
+                <h3 *ngIf="!isEditMode">{{ member.bank_address }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.bank_address">
+            </div>
+            <div class="col-md-3">
+                <h2>Route Code</h2>
+                <h3 *ngIf="!isEditMode">{{ member.route_code }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.route_code">
+            </div>
+            <div class="col-md-3">
+                <h2>Iban Number</h2>
+                <h3 *ngIf="!isEditMode">{{ member.iban_number }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="member.iban_number">
+            </div>
 
-                                        <div class="col-md-3">
-                                            <h2>Account Number</h2>
-                                            <h3>{{ member.account_number }} </h3>
-                                        </div>
-                                         <div class="col-md-3">
-                                            <h2>Bank Address</h2>
-                                            <h3>{{ member.bank_address }} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>Route Code</h2>
-                                            <h3>{{ member.route_code }} </h3>
-                                        </div>
-                                         <div class="col-md-3">
-                                            <h2>Iban Number</h2>
-                                            <h3>{{ member.iban_number }} </h3>
-                                        </div>
-
-
-
-                               </div>
-
-
-                                </div>
-                                <div class=" mt-5">
-                                    <button type="button" class="btn-Edit btn-info btn d-block mx-auto "
-                                        (click)="employeefamAdd('bank')">Add Bank</button>
-                                </div>
-                            </mat-tab>
+            <div class="col-md-12 text-end" *ngIf="isEditMode">
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeBankDetail(member, i)">Remove</button>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5" *ngIf="!isEditMode">
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('bank')">Add Bank</button>
+    </div>
+</mat-tab>
 
 
 
@@ -491,63 +499,62 @@
                                         </ng-container> -->
 
                             
-                            <mat-tab label="Job History">
-                                <div class="tab_content  mt-3" *ngFor="let Jobhistory of Jobhistorys">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <h2>Company Name</h2>
-                                            <h3>{{ Jobhistory.emp_jh_company_name }}</h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>Designation</h2>
-                                            <h3>{{ Jobhistory.emp_jh_designation }} </h3>
-                                        </div>
+<mat-tab label="Job History">
+    <div class="tab_content mt-3" *ngFor="let Jobhistory of Jobhistorys; let i = index">
+        <div class="row">
+            <div class="col-md-3">
+                <h2>Company Name</h2>
+                <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_company_name }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_company_name">
+            </div>
+            <div class="col-md-3">
+                <h2>Designation</h2>
+                <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_designation }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_designation">
+            </div>
+            <div class="col-md-3">
+                <h2>From Date</h2>
+                <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_from_date }}</h3>
+                <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="Jobhistory.emp_jh_from_date">
+            </div>
+            <div class="col-md-3">
+                <h2>End Date</h2>
+                <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_end_date }}</h3>
+                <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="Jobhistory.emp_jh_end_date">
+            </div>
+            <div class="col-md-3">
+                <h2>Last Leaving Salary Per Month</h2>
+                <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_leaving_salary_permonth }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_leaving_salary_permonth">
+            </div>
+            <div class="col-md-3">
+                <h2>Leaving Reason</h2>
+                <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_reason }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_reason">
+            </div>
+            <div class="col-md-3">
+                <h2>Total Experience</h2>
+                <h3 *ngIf="!isEditMode">{{ Jobhistory.emp_jh_years_experiance }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="Jobhistory.emp_jh_years_experiance">
+            </div>
 
-                                        <div class="col-md-3">
-                                            <h2>From Date</h2>
-                                            <h3>{{ Jobhistory.emp_jh_from_date }} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2>End Date</h2>
-                                            <h3>{{ Jobhistory.emp_jh_end_date }} </h3>
-                                        </div>
+            <ng-container *ngFor="let field of Jobhistory.job_history_custom_fields">
+                <div class="col-md-3">
+                    <h2>{{ field.emp_custom_field }}</h2>
+                    <h3 *ngIf="!isEditMode">{{ field.field_value }}</h3>
+                    <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="field.field_value">
+                </div>
+            </ng-container>
 
-                                        <div class="col-md-3">
-                                            <h2>Last Leaving Salary Per Month</h2>
-                                            <h3>{{ Jobhistory.emp_jh_leaving_salary_permonth }} </h3>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h2> Leaving Reason</h2>
-                                            <h3>{{ Jobhistory.emp_jh_reason }} </h3>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <h2> Total Experiance</h2>
-                                            <h3>{{ Jobhistory.emp_jh_years_experiance }} </h3>
-                                        </div>
-
-
-                                        <!-- Display each custom field -->
-                                        <ng-container *ngFor="let field of Jobhistory.job_history_custom_fields">
-                                            <div class="col-md-3">
-                                                <h2>{{ field.emp_custom_field }}</h2>
-                                                <h3>{{ field.field_value }}</h3>
-                                            </div>
-                                        </ng-container>
-
-                                    </div>
-
-
-
-                                    
-
-
-                                </div>
-                                <div class=" mt-5">
-                                    <button type="button" class="btn-Edit btn-info btn d-block mx-auto "
-                                        (click)="employeefamAdd('jobhistory')">Add Job History</button>
-                                </div>
-                            </mat-tab>
+            <div class="col-md-12 text-end" *ngIf="isEditMode">
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeJobHistory(Jobhistory, i)">Remove</button>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5" *ngIf="!isEditMode">
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('jobhistory')">Add Job History</button>
+    </div>
+</mat-tab>
                             <!-- <mat-tab label="Leave Request">
                         <div class="tab_content  mt-3"  *ngFor="let Leavereq of LeaveRequests">
                             <div class="row">
@@ -582,80 +589,70 @@
                     </mat-tab> -->
 
 
-                            <mat-tab label="Emp Documents">
-                                <div class="tab_content mt-3">
-                                    <div class="row mt-3" *ngFor="let document of employee.emp_documents">
+<mat-tab label="Emp Documents">
+    <div class="tab_content mt-3">
+        <div class="row mt-3" *ngFor="let document of employeeDocuments; let i = index">
 
-                                        <!-- Document Number -->
-                                        <div class="col-md-2">
-                                            <h2>Document Number</h2>
-                                            <h3>{{ document.emp_doc_number }}</h3>
-                                        </div>
+            <div class="col-md-3">
+                <h2>Document Number</h2>
+                <h3 *ngIf="!isEditMode">{{ document.emp_doc_number }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="document.emp_doc_number">
+            </div>
 
-                                        <!-- Issue Date -->
-                                        <div class="col-md-2">
-                                            <h2>Issue Date</h2>
-                                            <h3>{{ document.emp_doc_issued_date }}</h3>
-                                        </div>
+            <div class="col-md-2">
+                <h2>Issue Date</h2>
+                <h3 *ngIf="!isEditMode">{{ document.emp_doc_issued_date }}</h3>
+                <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="document.emp_doc_issued_date">
+            </div>
 
-                                        <!-- Expiry Date -->
-                                        <div class="col-md-2">
-                                            <h2>Expiry Date</h2>
-                                            <h3>{{ document.emp_doc_expiry_date }}</h3>
-                                        </div>
+            <div class="col-md-2">
+                <h2>Expiry Date</h2>
+                <h3 *ngIf="!isEditMode">{{ document.emp_doc_expiry_date }}</h3>
+                <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="document.emp_doc_expiry_date">
+            </div>
 
-                                        <!-- Type -->
-                                        <div class="col-md-2">
-                                            <h2>Type</h2>
-                                            <h3>{{ document.document_type }}</h3>
-                                        </div>
+            <div class="col-md-2">
+                <h2>Type</h2>
+                <h3 *ngIf="!isEditMode">{{ document.document_type }}</h3>
+                <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="document.document_type">
+            </div>
 
-                                        <!-- Status -->
-                                        <div class="col-md-1">
-                                            <h2>Status</h2>
-                                            <h3>{{ document.is_active ? 'Active' : 'Inactive' }}</h3>
-                                        </div>
+            <div class="col-md-1">
+                <h2>Status</h2>
+                <h3 *ngIf="!isEditMode">{{ document.is_active ? 'Active' : 'Inactive' }}</h3>
+                <div *ngIf="isEditMode" class="form-check form-switch mt-2">
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="document.is_active">
+                </div>
+            </div>
 
-                                  
-<!-- Employee Document -->
-<div class="col-md-3">
-    <h2>Employee Document</h2>
+            <div class="col-md-3">
+                <h2>Employee Document</h2>
+                <div *ngIf="document.emp_doc_document">
+                    <a [href]="document.emp_doc_document" target="_blank" rel="noopener" class="btn btn-primary btn-sm">View Document</a>
+                </div>
+                <div *ngIf="!document.emp_doc_document">No Document Available</div>
+                <input *ngIf="isEditMode" type="file" class="form-control mt-2" (change)="onDocFileSelected($event, document)">
+            </div>
 
-    <div *ngIf="document.emp_doc_document">
-        <a
-            [href]="document.emp_doc_document"
-            target="_blank"
-            rel="noopener"
-            class="btn btn-primary btn-sm">
-            View Document
-        </a>
+            <ng-container *ngFor="let field of document.doc_custom_fields">
+                <div class="col-md-3">
+                    <h2>{{ field.emp_custom_field }}</h2>
+                    <h3 *ngIf="!isEditMode">{{ field.field_value }}</h3>
+                    <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="field.field_value">
+                </div>
+            </ng-container>
+
+            <div class="col-md-12 text-end" *ngIf="isEditMode">
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeDocument(document, i)">Remove</button>
+            </div>
+        </div>
     </div>
 
-    <div *ngIf="!document.emp_doc_document">
-        No Document Available
+    <div class="mt-5">
+        <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('documents')">Add Document</button>
     </div>
-</div>
-
-                                        <!-- Display each custom field -->
-                                        <ng-container *ngFor="let field of document.doc_custom_fields">
-                                            <div class="col-md-3">
-                                                <h2>{{ field.emp_custom_field }}</h2>
-                                                <h3>{{ field.field_value }}</h3>
-                                            </div>
-                                        </ng-container>
-
-                                    </div>
-                                </div>
-
-                                <!-- Add Document Button -->
-                                <div class="mt-5">
-                                    <button type="button" class="btn-Edit btn-info btn d-block mx-auto"
-                                        (click)="employeefamAdd('documents')">Add Document</button>
-                                </div>
-
-                                <!-- No Documents Message -->
-                                <div *ngIf="!employeeDocuments.length">No employee documents available.</div>
-                            </mat-tab>
+    <div *ngIf="!employeeDocuments.length">No employee documents available.</div>
+</mat-tab>
 
                             <mat-tab label="Salary details">
                                 <div class="tab_content mt-3" *ngIf="employeeSalary">

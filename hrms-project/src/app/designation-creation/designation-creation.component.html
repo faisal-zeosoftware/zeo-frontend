@@ -127,7 +127,7 @@
    
 </div>
 
-    <div class="col-md-6">
+              <div class="col-md-6">
       <label>Branch
         <span class="required-star">*</span>
       </label>
@@ -144,11 +144,18 @@
                               Select All
                             </mat-checkbox>
                           </div>
-                              <input type="text" placeholder="Search Branch"
-                                     class="form-control"
-                                     [(ngModel)]="branchSearch"
-                                     [ngModelOptions]="{standalone: true}"
-                                     (click)="$event.stopPropagation()">
+                                                <!-- Search -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          class="form-control"
+                          placeholder="Search Branch"
+                          [(ngModel)]="branchSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
             
                           <!-- <mat-option *ngFor="let deparmentsec of   Branches" [value]="deparmentsec.id">
                             {{ deparmentsec.branch_name }} 

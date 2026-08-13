@@ -722,7 +722,107 @@ removeLevel(index: number) {
   this.levels.splice(index, 1);
 }
 
+searchQuery: string = '';
+
+get filteredapprovalLevels(): any[] {
+
+  // No search → show everything
+  if (!this.searchQuery || !this.searchQuery.trim()) {
+    return this.approvalLevels;
+  }
+
+  // Normalize search
+  const search = this.searchQuery
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' ');
+
+  return this.approvalLevels.filter((docs: any) => {
+
+    // -----------------------------
+    // BRANCH
+    // -----------------------------
+    let branchText = '';
+
+    if (Array.isArray(docs.branch)) {
+      branchText = docs.branch
+        .map((branch: any) => String(branch))
+        .join(' ');
+    } else {
+      branchText = String(docs.branch ?? '');
+    }
 
 
+    // -----------------------------
+    // LEVELS / ROLES / APPROVERS
+    // -----------------------------
+    let levelsText = '';
 
+    if (Array.isArray(docs.levels)) {
+
+      levelsText = docs.levels
+        .map((lvl: any) => {
+
+          return [
+            // What is displayed in table
+            `Level ${lvl.level ?? ''}`,
+
+            // Role
+            lvl.role ?? '',
+
+            // Approver
+            lvl.approver ?? ''
+          ].join(' ');
+
+        })
+        .join(' ');
+    }
+
+
+    // -----------------------------
+    // APPROVAL TYPE
+    // -----------------------------
+    let approvalTypeText = '';
+
+    switch (docs.approval_type) {
+
+      case 'no_approval':
+        approvalTypeText = 'No Approval';
+        break;
+
+      case 'reporting_manager':
+        approvalTypeText = 'Reporting Manager';
+        break;
+
+      case 'multi_approval':
+        approvalTypeText = 'Multi Approval';
+        break;
+
+      default:
+        approvalTypeText = String(docs.approval_type ?? '');
+    }
+
+
+    // -----------------------------
+    // CREATE COMPLETE SEARCH TEXT
+    // -----------------------------
+    const searchableText = [
+      branchText,
+      levelsText,
+      approvalTypeText
+    ]
+      .join(' ')
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+
+    // -----------------------------
+    // SEARCH
+    // -----------------------------
+    return searchableText.includes(search);
+
+  });
+}
 }

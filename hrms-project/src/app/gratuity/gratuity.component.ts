@@ -473,8 +473,22 @@ updateAssetType(): void {
   );
 }
 
+    searchQuery: string = '';
 
+  get filteredLoanTypes(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.LoanTypes;
+  }
 
+  const search = this.searchQuery.toLowerCase().trim();
 
+  return this.LoanTypes.filter((docs: any) =>
+    String(docs.minimum_value ?? '').toLowerCase().includes(search) ||
+    String(docs.maximum_value ?? '').toLowerCase().includes(search) ||
+    String(docs.resignation_days ?? '').toLowerCase().includes(search) ||
+    String(docs.termination_days ?? '').toLowerCase().includes(search) ||
+    String(docs.is_active ?? '').toLowerCase().includes(search)
+  );
+}
 
 }

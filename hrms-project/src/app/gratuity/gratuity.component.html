@@ -8,9 +8,19 @@
                 </div>
                 <div class="col-md-3">
                     
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+<div class="search-container">
+    <input
+        type="text"
+        class="search-input"
+        placeholder="Search..."
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+    >
 
-                </div>
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
                 <div class="col-md-5">
                     <div class="button-group pull-right">
                         <button *ngIf="hasAddPermission" type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><mat-icon>add_circle
@@ -69,7 +79,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let docs of LoanTypes; let i = index">
+        <tr *ngFor="let docs of filteredLoanTypes; let i = index">
           <td data-label="No">{{ i + 1 }}</td>
           <td data-label="Minimum Value">{{ docs.minimum_value }}</td>
           <td data-label="Maximum Value">{{ docs.maximum_value }}</td>
