@@ -71,6 +71,7 @@ export class ResignationRequestComponent {
      branches:any []=[];
 
     filteredEmployees: any[] = [];
+    searchQuery: string = '';
 
       attachment: File | null = null;
 
@@ -981,6 +982,7 @@ loadDeparmentBranch(selectedBranchIds: number[] = []): void {
 }
 
 
+// Employee Search 
 
   searchFilteredEmployees(): any[] {
     if (!this.employeeSearch || this.employeeSearch.trim() === '') {
@@ -995,5 +997,29 @@ loadDeparmentBranch(selectedBranchIds: number[] = []): void {
       (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search))
     );
   }
+
+  // Main Table Search
+  
+  get filteredDocRequests(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.DocRequest;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.DocRequest.filter((docs: any) =>
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.branch ?? '').toLowerCase().includes(search) ||
+    String(docs.document_date ?? '').toLowerCase().includes(search) ||
+    String(docs.resigned_on ?? '').toLowerCase().includes(search) ||
+    String(docs.notice_period ?? '').toLowerCase().includes(search) ||
+    String(docs.last_working_date ?? '').toLowerCase().includes(search) ||
+    String(docs.location ?? '').toLowerCase().includes(search) ||
+    String(docs.termination_type ?? '').toLowerCase().includes(search) ||
+    String(docs.reason_for_leaving ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search)
+  );
+}
 
 }

@@ -44,7 +44,7 @@ export class EmployeeDetailsComponent implements OnInit {
   employee: any;
   profilePicture: any;
   emp_family_details: any[] = [];
-    emp_bank_details: any[] | undefined;
+  emp_bank_details: any[] | undefined;
   emp_asset_details: any[] | undefined;
   Qualifications: any[] | undefined;
   EmpSkills: any[] | undefined;
@@ -1278,6 +1278,10 @@ saveEmployee(): void {
   });
 }
 
+qualificationBackup: any = null;
+bankDetailsBackup: any = null;
+jobHistoryBackup: any = null;
+documentsBackup: any = null;
 
 
 
@@ -1285,7 +1289,11 @@ toggleEditMode(): void {
   if (!this.isEditMode) {
     // 1. Backup original data
     this.employeeBackup = JSON.parse(JSON.stringify(this.employee));
-    this.empFamilyBackup = JSON.parse(JSON.stringify(this.emp_family_details)); // NEW
+    this.empFamilyBackup = JSON.parse(JSON.stringify(this.emp_family_details));
+    this.qualificationBackup = JSON.parse(JSON.stringify(this.Qualifications || []));
+    this.bankDetailsBackup = JSON.parse(JSON.stringify(this.emp_bank_details || []));
+    this.jobHistoryBackup = JSON.parse(JSON.stringify(this.Jobhistorys || []));
+    this.documentsBackup = JSON.parse(JSON.stringify(this.employeeDocuments || [])); // NEW
 
     // 2. Fetch master lists if they are empty
     if (!this.departments.length) this.loadDepartments();
@@ -1381,16 +1389,28 @@ mapFieldsToIds(): void {
   
 }
 
-  cancelEdit(): void {
-    if (this.employeeBackup) {
-      this.employee = JSON.parse(JSON.stringify(this.employeeBackup));
-    }
-    if (this.empFamilyBackup) {
-      this.emp_family_details = JSON.parse(JSON.stringify(this.empFamilyBackup)); // NEW
-    }
-    this.isEditMode = false;
-    this.selectedFile = null;
+cancelEdit(): void {
+  if (this.employeeBackup) {
+    this.employee = JSON.parse(JSON.stringify(this.employeeBackup));
   }
+  if (this.empFamilyBackup) {
+    this.emp_family_details = JSON.parse(JSON.stringify(this.empFamilyBackup));
+  }
+  if (this.qualificationBackup) {
+    this.Qualifications = JSON.parse(JSON.stringify(this.qualificationBackup));
+  }
+  if (this.bankDetailsBackup) {
+    this.emp_bank_details = JSON.parse(JSON.stringify(this.bankDetailsBackup));
+  }
+  if (this.jobHistoryBackup) {
+    this.Jobhistorys = JSON.parse(JSON.stringify(this.jobHistoryBackup));
+  }
+  if (this.documentsBackup) {
+    this.employeeDocuments = JSON.parse(JSON.stringify(this.documentsBackup));
+  }
+  this.isEditMode = false;
+  this.selectedFile = null;
+}
 
 
 
@@ -1411,6 +1431,83 @@ mapFieldsToIds(): void {
       error: (err) => console.error('Family update failed', err)
     });
   }
+
+saveQualifications(): void {
+  const requests = (this.Qualifications || []).map((q: any) =>
+    this.EmployeeService.updateQualification(this.employee.id, q.id, {
+      emp_qualification: q.emp_qualification,
+      emp_qf_year: q.emp_qf_year,
+      emp_qf_subject: q.emp_qf_subject,
+      emp_qf_instituition: q.emp_qf_instituition
+    })
+  );
+  forkJoin(requests.length ? requests : [of(null)]).subscribe({
+    next: () => this.saveBankDetails(),
+    error: (err) => console.error('Qualification update failed', err)
+  });
+}
+
+
+saveBankDetails(): void {
+  const requests = (this.emp_bank_details || []).map((b: any) =>
+    this.EmployeeService.updateBankDetail(this.employee.id, b.id, {
+      bank_name: b.bank_name,
+      branch_name: b.branch_name,
+      account_number: b.account_number,
+      bank_address: b.bank_address,
+      route_code: b.route_code,
+      iban_number: b.iban_number
+    })
+  );
+  forkJoin(requests.length ? requests : [of(null)]).subscribe({
+    next: () => this.saveJobHistory(),
+    error: (err) => console.error('Bank details update failed', err)
+  });
+}
+
+saveJobHistory(): void {
+  const requests = (this.Jobhistorys || []).map((j: any) =>
+    this.EmployeeService.updateJobHistory(this.employee.id, j.id, {
+      emp_jh_company_name: j.emp_jh_company_name,
+      emp_jh_designation: j.emp_jh_designation,
+      emp_jh_from_date: j.emp_jh_from_date,
+      emp_jh_end_date: j.emp_jh_end_date,
+      emp_jh_leaving_salary_permonth: j.emp_jh_leaving_salary_permonth,
+      emp_jh_reason: j.emp_jh_reason,
+      emp_jh_years_experiance: j.emp_jh_years_experiance
+    })
+  );
+  forkJoin(requests.length ? requests : [of(null)]).subscribe({
+    next: () => this.saveDocuments(),
+    error: (err) => console.error('Job history update failed', err)
+  });
+}
+
+saveDocuments(): void {
+  const requests = (this.employeeDocuments || []).map((d: any) => {
+    const formData = new FormData();
+    formData.append('emp_doc_number', d.emp_doc_number || '');
+    formData.append('emp_doc_issued_date', d.emp_doc_issued_date || '');
+    formData.append('emp_doc_expiry_date', d.emp_doc_expiry_date || '');
+    formData.append('document_type', d.document_type || '');
+    formData.append('is_active', d.is_active ? '1' : '0');
+    if (d._newFile) {
+      formData.append('emp_doc_document', d._newFile, d._newFile.name);
+    }
+    return this.EmployeeService.updateDocument(this.employee.id, d.id, formData);
+  });
+  forkJoin(requests.length ? requests : [of(null)]).subscribe({
+    next: () => this.saveFamilyMembers(),
+    error: (err) => console.error('Document update failed', err)
+  });
+}
+
+onDocFileSelected(event: any, document: any): void {
+  if (event.target.files && event.target.files.length > 0) {
+    document._newFile = event.target.files[0];
+  }
+}
+
   saveFamilyCustomFields(): void {
     const schema = localStorage.getItem('selectedSchema');
     const calls: Observable<any>[] = [];
@@ -1438,6 +1535,10 @@ mapFieldsToIds(): void {
   }
 
   deletedFamilyIds: number[] = [];
+  deletedQualificationIds: number[] = [];
+  deletedBankIds: number[] = [];
+  deletedJobHistoryIds: number[] = [];
+  deletedDocumentIds: number[] = [];
 
   removeFamilyMember(member: any, index: number): void {
     this.emp_family_details.splice(index, 1);
@@ -1447,6 +1548,26 @@ mapFieldsToIds(): void {
       this.deletedFamilyIds.push(member.id);
     }
   }
+
+  removeQualification(item: any, index: number): void {
+  this.Qualifications?.splice(index, 1);
+  if (item.id) { this.deletedQualificationIds.push(item.id); }
+}
+
+removeBankDetail(item: any, index: number): void {
+  this.emp_bank_details?.splice(index, 1);
+  if (item.id) { this.deletedBankIds.push(item.id); }
+}
+
+removeJobHistory(item: any, index: number): void {
+  this.Jobhistorys?.splice(index, 1);
+  if (item.id) { this.deletedJobHistoryIds.push(item.id); }
+}
+
+removeDocument(item: any, index: number): void {
+  this.employeeDocuments.splice(index, 1);
+  if (item.id) { this.deletedDocumentIds.push(item.id); }
+}
 
 
   branches:any[] = [];
