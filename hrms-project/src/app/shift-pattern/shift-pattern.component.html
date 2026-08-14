@@ -101,35 +101,21 @@
                                                 <option value="monthly">Monthly</option>
                                             </select> -->
 
-                                            <select
-    class="form-control custom-select"
-    [(ngModel)]="pattern_type"
-    name="pattType"
-    (change)="onPatternTypeChange()">
-
-    <option value="weekly">Weekly</option>
-    <option value="monthly">Monthly</option>
-
-</select>
+                                            <select class="form-control custom-select" [(ngModel)]="pattern_type" name="pattType" (change)="onPatternTypeChange()">
+                                                <option value="weekly">Weekly</option>
+                                                <option value="monthly">Monthly</option>
+                                                <option value="rotating">Rotating</option>
+                                            </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" *ngIf="pattern_type !== 'rotating'">
                                         <div class="form-group mb-0">
                                             <label class="custom-form-label">Rotates / Changes Every</label>
                                             <div class="d-flex align-items-center dynamic-duration-picker">
                                                 <select class="form-control custom-select compact-width mr-3" [(ngModel)]="changes_every" name="changesEvery" (change)="onChangesEveryOrTypeChange()">
-                                                    <!-- <option *ngFor="let val of [1,2,3,4,5,6]" [value]="val">{{val}}</option> -->
-                                                     <option
-    *ngFor="let val of (pattern_type === 'weekly' ? weeklyCounts : monthlyCounts)"
-    [value]="val">
-
-    {{ val }}
-
-</option>
+                                                    <option *ngFor="let val of (pattern_type === 'weekly' ? weeklyCounts : monthlyCounts)" [value]="val">{{ val }}</option>
                                                 </select>
-                                                <span class="duration-context-badge">
-                                                    {{ pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}
-                                                </span>
+                                                <span class="duration-context-badge">{{ pattern_type === 'weekly' ? 'Week(s)' : 'Month(s)' }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -226,6 +212,51 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div *ngIf="pattern_type === 'rotating'" class="animated-fade-in">
+                                <div class="structure-week-card mb-3">
+                            
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="custom-form-label">Working Days <span class="required-star">*</span></label>
+                                            <select class="form-control custom-select" [(ngModel)]="rotating_work_days" name="rotWorkDays" (change)="onRotatingCountChange()">
+                                                <option *ngFor="let val of rotatingDayCounts" [value]="val">{{ val }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="custom-form-label">Off Days <span class="required-star">*</span></label>
+                                            <select class="form-control custom-select" [(ngModel)]="rotating_off_days" name="rotOffDays">
+                                                <option *ngFor="let val of rotatingOffCounts" [value]="val">{{ val }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                            
+                                    <div class="week-card-header">
+                                        <span class="week-indicator-tag"><i class="fa fa-sync mr-2"></i>Shift for Each Working Day</span>
+                                    </div>
+                            
+                                    <div class="week-days-horizontal-strip">
+                                        <div *ngFor="let seq of rotating_shift_sequence; let sIdx = index" class="day-input-cell">
+                                            <label class="day-label-text">Day {{ sIdx + 1 }}</label>
+                                            <div class="select-pill-wrapper" [ngClass]="{'has-value': rotating_shift_sequence[sIdx]}">
+                                                <select class="clean-hidden-select" [(ngModel)]="rotating_shift_sequence[sIdx]" name="rot-seq-{{sIdx}}">
+                                                    <option [ngValue]="null">-- Select --</option>
+                                                    <option *ngFor="let shift of Shifts" [value]="shift.id">{{ shift.name }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                            
+                                    <p class="text-muted mt-3" style="font-size: 13px;">
+                                        <i class="fa fa-info-circle mr-1"></i>
+                                        Cycle length: {{ rotating_work_days }} working day(s) + {{ rotating_off_days }} off day(s) = {{ (rotating_work_days||0) + (rotating_off_days||0) }} day cycle, repeating continuously.
+                                    </p>
+                            
+                                </div>
+                            </div>
+
+
+
                         </form>
                     </div>
                     

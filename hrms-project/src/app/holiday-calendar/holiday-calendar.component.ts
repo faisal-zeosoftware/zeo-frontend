@@ -34,6 +34,8 @@ export class HolidayCalendarComponent {
   description:any='';
   start_date:any='';
   end_date:any='';
+  note:any='';
+
   year:any='';
   calendar_title:any='';
 
@@ -421,6 +423,7 @@ openEditModal(detail: any): void {
       end_date: this.end_date,
       restricted: this.restricted,
       calendar: this.selectedCalendarId,
+      note:this.note,
     };
 
     this.countryService.registerHolidayCalendar(companyData).subscribe(

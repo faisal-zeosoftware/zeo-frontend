@@ -472,8 +472,9 @@
       <thead class="table custom-table">
         <tr>
           <th>Description</th>
-          <th>Start</th>
-          <th>End</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Note</th>
           <!-- <th>Restricted</th> -->
           <th class="text-center">Action</th>
         </tr>
@@ -485,6 +486,7 @@
           <td>{{ h.description }}</td>
           <td>{{ h.start_date }}</td>
           <td>{{ h.end_date }}</td>
+          <td>{{ h.note }}</td>
           <!-- <td>
             <span class="badge"
                   [ngClass]="h.restricted ? 'badge-danger' : 'badge-success'">
@@ -531,20 +533,26 @@
 
     <div class="row">
 
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label>Description</label>
         <input type="text" [(ngModel)]="editHolidayData.description" class="form-control">
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label>Start Date</label>
         <input type="date" [(ngModel)]="editHolidayData.start_date" class="form-control">
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label>End Date</label>
         <input type="date" [(ngModel)]="editHolidayData.end_date" class="form-control">
       </div>
+
+      <div class="col-md-12">
+        <label>Note</label>
+        <textarea class="form-control" placeholder="enter note" [(ngModel)]="editHolidayData.note" required [ngModelOptions]="{standalone: true}"></textarea>
+     </div>
+    
 
       <!-- <div class="col-md-6 mt-4">
         <label>
@@ -578,22 +586,29 @@
     <h3>Add Holiday</h3> <hr>
 
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label>Description</label>
         <input type="text" [(ngModel)]="description" class="form-control" [ngModelOptions]="{standalone: true}">
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label>Start Date</label>
         <input type="date" [(ngModel)]="start_date" class="form-control" [ngModelOptions]="{standalone: true}">
       </div>
 
 
-      <div class="col-md-6">
+      <div class="col-md-4">
         <label>End Date</label>
         <input type="date" [(ngModel)]="end_date" class="form-control" [ngModelOptions]="{standalone: true}">
     
       </div>
+
+                
+    <div class="col-md-12">
+      <label>Note</label>
+      <textarea class="form-control" placeholder="enter  note" [(ngModel)]="note" required [ngModelOptions]="{standalone: true}"></textarea>
+   </div>
+  
 
 <!--   
       <div class="col-md-6 mt-4">

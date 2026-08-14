@@ -59,7 +59,7 @@ export class ShiftPatternComponent {
 ShiftsPattern: any[] = [];
 
 
-  pattern_type: 'weekly' | 'monthly' = 'weekly';
+pattern_type: 'weekly' | 'monthly' | 'rotating' = 'weekly';
   changes_every: number = 1;
   
   // Array structures holding the dynamic UI rules
@@ -597,6 +597,16 @@ ngOnInit(): void {
         this.weeks=[];
     
         this.months=[];
+
+
+
+
+
+           // NEW
+    this.rotating_work_days = 1;
+    this.rotating_off_days = 1;
+    this.rotating_shift_sequence = [null];
+
     
         this.onChangesEveryOrTypeChange();
     
@@ -747,7 +757,7 @@ deleteSelectedShiftPattern() {
 
 
 
-weeklyCounts = [1, 2, 3, 4, 5, 6];
+weeklyCounts = [1, 2, 3, 4, 5];
 
 monthlyCounts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -833,10 +843,13 @@ onPatternTypeChange() {
       this.changes_every = 1;
   }
 
-  this.onChangesEveryOrTypeChange();
+  if (this.pattern_type === 'rotating') {
+      this.changes_every = 1; // not used for rotating, but keep payload consistent
+      this.onRotatingCountChange();
+  } else {
+      this.onChangesEveryOrTypeChange();
+  }
 }
-
-
 
 // Monthly Helper: Add date-range split criteria
 addMonthlyRule(monthIndex:number){
@@ -898,134 +911,64 @@ registerShiftPattern() {
   this.registerButtonClicked = true;
 
   if (!this.Patern_name) {
-
     alert('Pattern Name is required');
-
     return;
-
   }
-
-  let patternConfig: any = {};
 
   if (this.pattern_type == 'weekly') {
 
     const invalid = this.weeks.some(week =>
       week.rules.some((rule: any) => !rule.shift_id)
     );
-
     if (invalid) {
-
       alert('Please select shift for all weekdays');
-
       return;
-
     }
 
-    patternConfig = {
-
-      weeks: this.weeks.map((week: any) => ({
-
-        sequence: week.sequence,
-
-        rules: week.rules.map((rule: any) => ({
-
-          day: rule.day,
-
-          shift_id: Number(rule.shift_id)
-
-        }))
-
-      }))
-
-    };
-
-  }
-
-  else {
+  } else if (this.pattern_type == 'monthly') {
 
     const invalid = this.months.some(month =>
-      month.rules.some((rule: any) =>
-        !rule.from ||
-        !rule.to ||
-        !rule.shift_id
-      )
+      month.rules.some((rule: any) => !rule.from || !rule.to || !rule.shift_id)
     );
-
     if (invalid) {
-
       alert('Please complete all monthly rules');
-
       return;
-
     }
 
-    patternConfig = {
+  } else if (this.pattern_type == 'rotating') {
 
-      months: this.months.map((month: any) => ({
+    if (!this.rotating_work_days || this.rotating_work_days < 1) {
+      alert('Please specify working days');
+      return;
+    }
 
-        sequence: month.sequence,
+    if (this.rotating_off_days === null || this.rotating_off_days === undefined || this.rotating_off_days < 0) {
+      alert('Please specify off days');
+      return;
+    }
 
-        rules: month.rules.map((rule: any) => ({
-
-          from:
-            rule.from === 'last_day'
-              ? 'last_day'
-              : Number(rule.from),
-
-          to:
-            rule.to === 'last_day'
-              ? 'last_day'
-              : Number(rule.to),
-
-          shift_id: Number(rule.shift_id)
-
-        }))
-
-      }))
-
-    };
+    const invalidSeq = this.rotating_shift_sequence.some((id: any) => !id);
+    if (invalidSeq || this.rotating_shift_sequence.length !== Number(this.rotating_work_days)) {
+      alert('Please assign a shift for every working day');
+      return;
+    }
 
   }
 
-  const payload = {
-
-    name: this.Patern_name,
-
-    pattern_type: this.pattern_type,
-
-    changes_every: Number(this.changes_every),
-
-    pattern_config: patternConfig
-
-  };
+  const payload = this.buildPayload();
 
   console.log(payload);
 
   this.employeeService.registerWeeklyShifts(payload).subscribe(
-
     (res: any) => {
-
       alert('Shift Pattern Created Successfully');
-      
-
       this.closeapplicationModal();
-
-      window.location.reload();
-
-      // this.();
-
     },
-
     error => {
-
       this.handleBackendErrors(error);
-
     }
-
   );
-
 }
-
 
 
 
@@ -1132,29 +1075,30 @@ saveShiftPattern(){
 openEditModal(pattern:any){
 
   this.isEditMode=true;
-
   this.editingPatternId=pattern.id;
-
   this.iscreateLoanApp=true;
-
   this.Patern_name=pattern.name;
-
   this.pattern_type=pattern.pattern_type;
-
   this.changes_every=pattern.changes_every;
 
   if(pattern.pattern_type=="weekly"){
-
       this.loadWeeklyPattern(pattern);
-
-  }else{
-
+  } else if(pattern.pattern_type=="monthly"){
       this.loadMonthlyPattern(pattern);
-
+  } else if(pattern.pattern_type=="rotating"){
+      this.loadRotatingPattern(pattern);
   }
-
 }
 
+
+loadRotatingPattern(pattern: any): void {
+  const rot = pattern.pattern_config?.rotating || {};
+  this.rotating_work_days = rot.work_days ?? pattern.work_days ?? 1;
+  this.rotating_off_days = rot.off_days ?? pattern.off_days ?? 0;
+  this.rotating_shift_sequence = rot.shift_sequence
+      ? [...rot.shift_sequence]
+      : new Array(this.rotating_work_days).fill(null);
+}
 
 loadWeeklyPattern(pattern:any){
 
@@ -1258,68 +1202,52 @@ updateShiftPattern() {
 
 buildPayload(){
 
-  let patternConfig={};
+  let patternConfig: any = {};
 
-  if(this.pattern_type=="weekly"){
+  if (this.pattern_type == "weekly") {
 
-      patternConfig={
-
-          weeks:this.weeks.map(w=>({
-
-              sequence:w.sequence,
-
-              rules:w.rules.map((r:any)=>({
-
-                  day:r.day,
-
-                  shift_id:Number(r.shift_id)
-
+      patternConfig = {
+          weeks: this.weeks.map((w: any) => ({
+              sequence: w.sequence,
+              rules: w.rules.map((r: any) => ({
+                  day: r.day,
+                  shift_id: Number(r.shift_id)
               }))
-
           }))
+      };
 
+  } else if (this.pattern_type == "monthly") {
+
+      patternConfig = {
+          months: this.months.map((m: any) => ({
+              sequence: m.sequence,
+              rules: m.rules.map((r: any) => ({
+                  from: r.from,
+                  to: r.to,
+                  shift_id: Number(r.shift_id)
+              }))
+          }))
+      };
+
+  } else if (this.pattern_type == "rotating") {
+
+      patternConfig = {
+          rotating: {
+              work_days: Number(this.rotating_work_days),
+              off_days: Number(this.rotating_off_days),
+              shift_sequence: this.rotating_shift_sequence.map((id: any) => Number(id))
+          }
       };
 
   }
 
-  else{
-
-      patternConfig={
-
-          months:this.months.map(m=>({
-
-              sequence:m.sequence,
-
-              rules:m.rules.map((r:any)=>({
-
-                  from:r.from,
-
-                  to:r.to,
-
-                  shift_id:Number(r.shift_id)
-
-              }))
-
-          }))
-
-      };
-
-  }
-
-  return{
-
-      name:this.Patern_name,
-
-      pattern_type:this.pattern_type,
-
-      changes_every:this.changes_every,
-
-      pattern_config:patternConfig
-
+  return {
+      name: this.Patern_name,
+      pattern_type: this.pattern_type,
+      changes_every: Number(this.changes_every),
+      pattern_config: patternConfig
   };
-
 }
-
 
 
 
@@ -1365,61 +1293,45 @@ deleteShiftPattern(pattern: any) {
 clonePattern(pattern: any) {
 
   this.isEditMode = false;
-
   this.editingPatternId = null;
-
   this.iscreateLoanApp = true;
-
-  // Pattern Name
   this.Patern_name = pattern.name + ' - Copy';
-
   this.pattern_type = pattern.pattern_type;
-
   this.changes_every = pattern.changes_every;
 
   if (pattern.pattern_type === 'weekly') {
-
     this.weeks = pattern.pattern_config.weeks.map((week: any) => ({
-
       sequence: week.sequence,
-
-      rules: week.rules.map((rule: any) => ({
-
-        day: rule.day,
-
-        shift_id: rule.shift_id
-
-      }))
-
+      rules: week.rules.map((rule: any) => ({ day: rule.day, shift_id: rule.shift_id }))
     }));
-
-  }
-
-  else {
-
+  } else if (pattern.pattern_type === 'monthly') {
     this.months = pattern.pattern_config.months.map((month: any) => ({
-
       sequence: month.sequence,
-
-      rules: month.rules.map((rule: any) => ({
-
-        from: rule.from,
-
-        to: rule.to,
-
-        shift_id: rule.shift_id
-
-      }))
-
+      rules: month.rules.map((rule: any) => ({ from: rule.from, to: rule.to, shift_id: rule.shift_id }))
     }));
-
+  } else if (pattern.pattern_type === 'rotating') {
+    this.loadRotatingPattern(pattern);
   }
-
 }
 
+rotating_work_days: number = 1;
+rotating_off_days: number = 1;
+rotating_shift_sequence: any[] = [null];
+
+rotatingDayCounts = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+rotatingOffCounts = [0,1,2,3,4,5,6,7];
 
 
+onRotatingCountChange() {
+  const target = Number(this.rotating_work_days) || 0;
 
+  while (this.rotating_shift_sequence.length < target) {
+    this.rotating_shift_sequence.push(null);
+  }
+  while (this.rotating_shift_sequence.length > target) {
+    this.rotating_shift_sequence.pop();
+  }
+}
 
 
 }
