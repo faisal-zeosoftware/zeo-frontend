@@ -810,6 +810,29 @@ loadDeparmentBranch(callback?: Function): void {
     );
   }
 
+    searchQuery: string = '';
+  get filteredLoanApplications(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.LoanApplications;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.LoanApplications.filter((docs: any) =>
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.branch ?? '').toLowerCase().includes(search) ||
+    String(docs.amount_requested ?? '').toLowerCase().includes(search) ||
+    String(docs.repayment_period ?? '').toLowerCase().includes(search) ||
+    String(docs.emi_amount ?? '').toLowerCase().includes(search) ||
+    String(docs.remaining_balance ?? '').toLowerCase().includes(search) ||
+    String(docs.pause_start_date ?? '').toLowerCase().includes(search) ||
+    String(docs.resume_date ?? '').toLowerCase().includes(search) ||
+    String(docs.pause_reason ?? '').toLowerCase().includes(search) ||
+    String(docs.loan_type ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search)
+  );
+}
 
 }
 

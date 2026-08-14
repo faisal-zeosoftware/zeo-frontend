@@ -811,6 +811,25 @@ onRequestTypeChange(event: any): void {
     );
   }
 
+        searchQuery: string = '';
+  get filteredGeneralReq(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.GeneralReq;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.GeneralReq.filter((docs: any) =>
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.branch ?? '').toLowerCase().includes(search) ||
+    String(docs.request_type ?? '').toLowerCase().includes(search) ||
+    String(docs.total ?? '').toLowerCase().includes(search) ||
+    String(docs.reason ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search)
+  );
+}
+
 }
 
 

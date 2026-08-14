@@ -888,6 +888,30 @@ mapBranchesNameToId() {
   console.log(this.editAsset.branch);
 }
 
+    searchQuery: string = '';
+  get filteredRequests(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.Requests;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.Requests.filter((docs: any) =>
+    String(docs.allocation ?? '').toLowerCase().includes(search) ||
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.branch ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search) ||
+    String(docs.request_type ?? '').toLowerCase().includes(search) ||
+    String(docs.request_date ?? '').toLowerCase().includes(search) ||
+    String(docs.departure_date ?? '').toLowerCase().includes(search) ||
+    String(docs.return_date ?? '').toLowerCase().includes(search) ||
+    String(docs.approved_date ?? '').toLowerCase().includes(search) ||
+    String(docs.destination ?? '').toLowerCase().includes(search) ||
+    String(docs.notes ?? '').toLowerCase().includes(search) ||
+    String(docs.origin ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) 
+  );
+}
 
 
 }

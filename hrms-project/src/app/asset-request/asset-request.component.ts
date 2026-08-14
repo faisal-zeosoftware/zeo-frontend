@@ -849,4 +849,23 @@ loadDeparmentBranch(callback?: Function): void {
     );
   }
 
+      searchQuery: string = '';
+  get filteredAssetsRequest(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.AssetsRequest;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.AssetsRequest.filter((docs: any) =>
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.branch ?? '').toLowerCase().includes(search) ||
+    String(docs.asset_type ?? '').toLowerCase().includes(search) ||
+    String(docs.requested_asset ?? '').toLowerCase().includes(search) ||
+    String(docs.reason ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search)
+  );
+}
+
 }

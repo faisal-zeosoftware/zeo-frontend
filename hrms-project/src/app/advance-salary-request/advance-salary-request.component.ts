@@ -880,6 +880,7 @@ this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).s
   console.log("Mapped employee_id:", this.editAsset.branch);
 }
 
+// Search Employee
   employeeSearch: string = '';
 
   searchFilteredEmployees(): any[] {
@@ -895,5 +896,24 @@ this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).s
       (emp.emp_last_name && emp.emp_last_name.toLowerCase().includes(search))
     );
   }
+
+    searchQuery: string = '';
+  get filteredDocRequest(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.DocRequest;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.DocRequest.filter((docs: any) =>
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.branch ?? '').toLowerCase().includes(search) ||
+    String(docs.requested_amount ?? '').toLowerCase().includes(search) ||
+    String(docs.remarks ?? '').toLowerCase().includes(search) ||
+    String(docs.reason ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search)
+  );
+}
 
 }

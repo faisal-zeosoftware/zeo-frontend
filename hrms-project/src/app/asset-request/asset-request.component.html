@@ -6,9 +6,22 @@
           <h1>Asset Request</h1>
         </div>
 
-        <div class="col-md-3">
-          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-        </div>
+     <div class="col-md-3">
+                    
+<div class="search-container">
+    <input
+        type="text"
+        class="search-input"
+        placeholder="Search..."
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+    >
+
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+</div>
         <div class="col-md-5">
           <div class="button-group pull-right">
             <button
@@ -492,7 +505,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let docs of AssetsRequest; let i = index">
+            <tr *ngFor="let docs of filteredAssetsRequest; let i = index">
               <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
               <td data-label="Document Number">{{ docs.document_number }}</td>
               <td data-label="branch">{{ docs.branch }}</td>

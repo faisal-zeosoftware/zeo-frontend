@@ -798,4 +798,23 @@ mapBranchesNameToId() {
     );
   }
 
+        searchQuery: string = '';
+  get filteredDocRequest(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.DocRequest;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.DocRequest.filter((docs: any) =>
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.branch ?? '').toLowerCase().includes(search) ||
+    String(docs.request_type ?? '').toLowerCase().includes(search) ||
+    String(docs.remarks ?? '').toLowerCase().includes(search) ||
+    String(docs.reason ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search)
+  );
+}
+
 }

@@ -5,9 +5,22 @@
         <div class="col-md-4">
           <h1>Document Request</h1>
         </div>
-        <div class="col-md-3">
-          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-        </div>
+     <div class="col-md-3">
+                    
+<div class="search-container">
+    <input
+        type="text"
+        class="search-input"
+        placeholder="Search..."
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+    >
+
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+</div>
         <div class="col-md-5">
           <div class="button-group pull-right">
             <button
@@ -471,7 +484,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let docs of DocRequest; let i = index">
+          <tr *ngFor="let docs of filteredDocRequest; let i = index">
             <td data-label="No">{{ i + 1 }}</td>
             <td data-label="Document number">{{ docs.document_number }}</td>
             <td>{{ docs.branch }}</td>

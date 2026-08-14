@@ -988,5 +988,24 @@ selectEditEmployee(event: any, emp: any): void {
   this.onEmployeeChangeEdit(); 
 }
 
+  searchQuery: string = '';
+  get filteredLeaveRequests(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.LeaveRequests;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.LeaveRequests.filter((docs: any) =>
+    String(docs.document_number ?? '').toLowerCase().includes(search) ||
+    String(docs.reason ?? '').toLowerCase().includes(search) ||
+    String(docs.leave_type ?? '').toLowerCase().includes(search) ||
+    String(docs.number_of_days ?? '').toLowerCase().includes(search) ||
+    String(docs.end_date ?? '').toLowerCase().includes(search) ||
+    String(docs.start_date ?? '').toLowerCase().includes(search) ||
+    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.employee ?? '').toLowerCase().includes(search)
+  );
+}
 
 }

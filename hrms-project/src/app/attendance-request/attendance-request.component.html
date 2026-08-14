@@ -9,11 +9,22 @@
                 <h1>Latein Earlyout Request</h1>
             </div>
 
-            <div class="col-md-3">
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+     <div class="col-md-3">
+                    
+<div class="search-container">
+    <input
+        type="text"
+        class="search-input"
+        placeholder="Search..."
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+    >
 
-            </div>
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+</div>
             <div class="col-md-5">
                 <div class="button-group pull-right">
                     <button *ngIf="hasAddPermission" type="button" (click)="openPopus()" class="btn-Create btn btn-success " ><span class="header-btn-icon"><mat-icon>add_circle
@@ -418,7 +429,7 @@
           </thead>
           <tbody>
               
-            <tr *ngFor="let docs of DocRequest;let i = index">
+            <tr *ngFor="let docs of filteredDocRequest;let i = index">
       
           
         <td data-label="No">{{ i + 1 }}</td>

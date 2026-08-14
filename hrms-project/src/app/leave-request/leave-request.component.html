@@ -7,11 +7,22 @@
             <div class="col-md-4">
                 <h1> Employee Leave Request</h1>
             </div>
-            <div class="col-md-3">
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+               <div class="col-md-3">
+                    
+<div class="search-container">
+    <input
+        type="text"
+        class="search-input"
+        placeholder="Search..."
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+    >
 
-            </div>
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+                </div>
             <div class="col-md-5">
                 <div class="button-group pull-right">
                     <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission" ><span class="header-btn-icon"><mat-icon>add_circle
@@ -481,29 +492,29 @@
           <thead>
             <tr>
               <th class="sticky-left">No</th>
+              <th>Document Number</th>
               <th>Employee</th>
               <th>Start date</th>
               <th>End date</th>
               <th>Total Days</th>
               <th>Leave Type</th>
               <th>Reason</th>
-              <th>Document Number</th>
-              <!-- <th>Total</th> -->
               <th>Approval Status</th>
               <th class="sticky-right">Actions</th>
             </tr>
           </thead>
           <tbody>
               
-            <tr *ngFor="let docs of LeaveRequests;let i = index">
+            <tr *ngFor="let docs of filteredLeaveRequests;let i = index">
               <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
+              <td data-label="Document Number">{{ docs.document_number }}</td>
               <td data-label="Employee">{{ docs.employee }}</td>
               <td data-label="Start date">{{ docs.start_date }}</td>
               <td data-label="End date">{{ docs.end_date }}</td> 
               <td data-label="Total Days">{{ docs.number_of_days }}</td> 
               <td data-label="Leave type">{{ docs.leave_type }}</td>
               <td data-label="Reason">{{ docs.reason }}</td>
-              <td data-label="Document Number">{{ docs.document_number }}</td>
+              
        
               <td data-label="Approval Status">
            <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">

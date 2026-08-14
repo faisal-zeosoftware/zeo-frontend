@@ -778,7 +778,40 @@ onEmployeeChange(): void {
     );
   }
   
-  
+searchQuery: string = '';
+
+get filteredDocRequest(): any[] {
+  if (!this.searchQuery || this.searchQuery.trim() === '') {
+    return this.DocRequest;
+  }
+
+  const search = this.searchQuery.toLowerCase().trim();
+
+  return this.DocRequest.filter((docs: any) => {
+
+    const requestType = String(docs.request_type ?? '').toLowerCase();
+
+    // Convert request type to the same text shown in the table
+    const requestTypeDisplay =
+      requestType === 'late_in'
+        ? 'late check in'
+        : requestType === 'early_out'
+          ? 'early check out'
+          : requestType;
+
+    return (
+      String(docs.document_number ?? '').toLowerCase().includes(search) ||
+      String(docs.branch ?? '').toLowerCase().includes(search) ||
+      String(docs.date ?? '').toLowerCase().includes(search) ||
+      requestType.includes(search) ||
+      requestTypeDisplay.includes(search) ||
+      String(docs.requested_asset ?? '').toLowerCase().includes(search) ||
+      String(docs.reason ?? '').toLowerCase().includes(search) ||
+      String(docs.status ?? '').toLowerCase().includes(search) ||
+      String(docs.employee ?? '').toLowerCase().includes(search)
+    );
+  });
+}
   }
 
 
