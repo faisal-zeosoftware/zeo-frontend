@@ -520,11 +520,11 @@ isLoading: boolean = false;
 fetchEmployeesLeaveApprovalLevel(schema: string, branchIds: number[]): void {
   this.isLoading = true;
   this.leaveService.getLeaveRequestNew(schema, branchIds).subscribe({
-    next: (data: any) => {
-      // Filter active employees
-           this.LeaveRequests = data;
-
+      next: (data: any) => {
+      this.LeaveRequests = data;
       this.isLoading = false;
+      this.currentPage = 1;        // ← reset to page 1
+      this.updatePagination();      // ← apply pagination
     },
     error: (err) => {
       console.error('Fetch error:', err);
@@ -989,7 +989,15 @@ selectEditEmployee(event: any, emp: any): void {
 }
 
   searchQuery: string = '';
-  get filteredLeaveRequests(): any[] {
+
+
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedLeaveRequests: any[] = [];
+
+/** Filtered list based on search (replaces old getter) */
+get filteredLeaveRequests(): any[] {
   if (!this.searchQuery || this.searchQuery.trim() === '') {
     return this.LeaveRequests;
   }
@@ -1007,5 +1015,47 @@ selectEditEmployee(event: any, emp: any): void {
     String(docs.employee ?? '').toLowerCase().includes(search)
   );
 }
+
+get totalPages(): number {
+  return Math.ceil(this.filteredLeaveRequests.length / this.itemsPerPage);
+}
+
+get pageNumbers(): number[] {
+  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+}
+
+updatePagination(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.pagedLeaveRequests = this.filteredLeaveRequests.slice(startIndex, endIndex);
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+// Reset to page 1 when search changes
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.updatePagination();
+}
+// ====================================================
+
+
 
 }

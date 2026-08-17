@@ -15,6 +15,7 @@
         placeholder="Search..."
         [(ngModel)]="searchQuery"
         [ngModelOptions]="{standalone: true}"
+        (ngModelChange)="onSearchChange()"
     >
 
     <button class="search-btn" type="button">
@@ -505,8 +506,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let docs of filteredAssetsRequest; let i = index">
-              <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
+            <tr *ngFor="let docs of pagedAssetRequests; let i = index">
+               <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
               <td data-label="Document Number">{{ docs.document_number }}</td>
               <td data-label="branch">{{ docs.branch }}</td>
               <td data-label="Employee">{{ docs.employee }}</td>
@@ -560,6 +561,37 @@
             </tr>
           </tbody>
         </table>
+      </div>
+                                 <div class="pagination-container">
+  
+        <button
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+        <button
+          *ngFor="let page of pageNumbers"
+          class="page-number"
+          [class.active]="currentPage === page"
+          (click)="goToPage(page)">
+      
+          {{ page }}
+      
+        </button>
+      
+        <button
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
       </div>
     </div>
   </div>

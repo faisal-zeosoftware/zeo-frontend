@@ -412,12 +412,12 @@ this.Delete = !this.Delete;
       fetchEmployees(schema: string, branchIds: number[]): void {
         this.isLoading = true;
         this.employeeService.getLoanApplicationsNew(schema, branchIds).subscribe({
-          next: (data: any) => {
-            // Filter active employees
-                 this.LoanApplications = data;
-      
-            this.isLoading = false;
-          },
+        next: (data: any) => {
+        this.LoanApplications = data;
+        this.isLoading = false;
+        this.currentPage = 1;        // ← reset to page 1
+        this.updatePagination();      // ← apply pagination
+    },
           error: (err) => {
             console.error('Fetch error:', err);
             this.isLoading = false;
@@ -811,7 +811,37 @@ loadDeparmentBranch(callback?: Function): void {
   }
 
     searchQuery: string = '';
-  get filteredLoanApplications(): any[] {
+//   get filteredLoanApplications(): any[] {
+//   if (!this.searchQuery || this.searchQuery.trim() === '') {
+//     return this.LoanApplications;
+//   }
+
+//   const search = this.searchQuery.toLowerCase().trim();
+
+//   return this.LoanApplications.filter((docs: any) =>
+//     String(docs.document_number ?? '').toLowerCase().includes(search) ||
+//     String(docs.branch ?? '').toLowerCase().includes(search) ||
+//     String(docs.amount_requested ?? '').toLowerCase().includes(search) ||
+//     String(docs.repayment_period ?? '').toLowerCase().includes(search) ||
+//     String(docs.emi_amount ?? '').toLowerCase().includes(search) ||
+//     String(docs.remaining_balance ?? '').toLowerCase().includes(search) ||
+//     String(docs.pause_start_date ?? '').toLowerCase().includes(search) ||
+//     String(docs.resume_date ?? '').toLowerCase().includes(search) ||
+//     String(docs.pause_reason ?? '').toLowerCase().includes(search) ||
+//     String(docs.loan_type ?? '').toLowerCase().includes(search) ||
+//     String(docs.status ?? '').toLowerCase().includes(search) ||
+//     String(docs.employee ?? '').toLowerCase().includes(search)
+//   );
+// }
+
+
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedLoanRequests: any[] = [];
+
+/** Filtered list based on search (replaces old getter) */
+get filteredLoanApplications(): any[] {
   if (!this.searchQuery || this.searchQuery.trim() === '') {
     return this.LoanApplications;
   }
@@ -833,6 +863,47 @@ loadDeparmentBranch(callback?: Function): void {
     String(docs.employee ?? '').toLowerCase().includes(search)
   );
 }
+
+get totalPages(): number {
+  return Math.ceil(this.filteredLoanApplications.length / this.itemsPerPage);
+}
+
+get pageNumbers(): number[] {
+  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+}
+
+updatePagination(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.pagedLoanRequests = this.filteredLoanApplications.slice(startIndex, endIndex);
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+// Reset to page 1 when search changes
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.updatePagination();
+}
+// ====================================================
+
 
 }
 

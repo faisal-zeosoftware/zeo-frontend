@@ -373,13 +373,20 @@ LoadDocRequest(selectedSchema: string, branchIds: number[] = []) {
 
   this.leaveService.getDocRequest(selectedSchema, branchIds).subscribe(
 
-    (data: any) => {
+    // (data: any) => {
 
+    //   this.DocRequest = data;
+
+    //   this.isLoading = false;
+
+    //   console.log('DocRequest:', this.DocRequest);
+    // },
+
+          (data: any) => {
       this.DocRequest = data;
-
       this.isLoading = false;
-
-      console.log('DocRequest:', this.DocRequest);
+      this.currentPage = 1;        // ← reset to page 1
+      this.updatePagination();      // ← apply pagination
     },
 
     (error: any) => {
@@ -799,7 +806,31 @@ mapBranchesNameToId() {
   }
 
         searchQuery: string = '';
-  get filteredDocRequest(): any[] {
+//   get filteredDocRequest(): any[] {
+//   if (!this.searchQuery || this.searchQuery.trim() === '') {
+//     return this.DocRequest;
+//   }
+
+//   const search = this.searchQuery.toLowerCase().trim();
+
+//   return this.DocRequest.filter((docs: any) =>
+//     String(docs.document_number ?? '').toLowerCase().includes(search) ||
+//     String(docs.branch ?? '').toLowerCase().includes(search) ||
+//     String(docs.request_type ?? '').toLowerCase().includes(search) ||
+//     String(docs.remarks ?? '').toLowerCase().includes(search) ||
+//     String(docs.reason ?? '').toLowerCase().includes(search) ||
+//     String(docs.status ?? '').toLowerCase().includes(search) ||
+//     String(docs.employee ?? '').toLowerCase().includes(search)
+//   );
+// }
+
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedDocRequests: any[] = [];
+
+/** Filtered list based on search (replaces old getter) */
+get filteredDocRequest(): any[] {
   if (!this.searchQuery || this.searchQuery.trim() === '') {
     return this.DocRequest;
   }
@@ -816,5 +847,45 @@ mapBranchesNameToId() {
     String(docs.employee ?? '').toLowerCase().includes(search)
   );
 }
+
+get totalPages(): number {
+  return Math.ceil(this.filteredDocRequest.length / this.itemsPerPage);
+}
+
+get pageNumbers(): number[] {
+  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+}
+
+updatePagination(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.pagedDocRequests = this.filteredDocRequest.slice(startIndex, endIndex);
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+// Reset to page 1 when search changes
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.updatePagination();
+}
+// =====
 
 }

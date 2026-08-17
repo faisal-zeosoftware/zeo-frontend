@@ -18,6 +18,7 @@
         placeholder="Search..."
         [(ngModel)]="searchQuery"
         [ngModelOptions]="{standalone: true}"
+         (ngModelChange)="onSearchChange()"
     >
 
     <button class="search-btn" type="button">
@@ -429,10 +430,10 @@
           </thead>
           <tbody>
               
-            <tr *ngFor="let docs of filteredDocRequest;let i = index">
+            <tr *ngFor="let docs of pagedDocRequests;let i = index">
       
           
-        <td data-label="No">{{ i + 1 }}</td>
+         <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
         <td data-label="Date">{{ docs.date }}</td>
         <td data-label="RequestType">
            {{ docs.request_type === 'LATE_IN'
@@ -472,7 +473,37 @@
         
           </tbody>
         </table>
-
+      <div class="pagination-container">
+  
+        <button
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+        <button
+          *ngFor="let page of pageNumbers"
+          class="page-number"
+          [class.active]="currentPage === page"
+          (click)="goToPage(page)">
+      
+          {{ page }}
+      
+        </button>
+      
+        <button
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
+      </div>
 </div>
 
   

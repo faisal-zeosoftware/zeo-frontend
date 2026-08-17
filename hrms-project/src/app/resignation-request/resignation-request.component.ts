@@ -401,21 +401,21 @@ if (this.userId !== null) {
     // }
   
 
-    fetchResignation(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.employeeService.getEmpResignationMasterNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-               this.DocRequest = data;
-
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
+fetchResignation(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getEmpResignationMasterNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.DocRequest = data;
+      this.isLoading = false;
+      this.currentPage = 1;        // ← reset to page 1
+      this.updatePagination();      // ← apply pagination
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
     }
+  });
+}
   
 
 
@@ -998,9 +998,14 @@ loadDeparmentBranch(selectedBranchIds: number[] = []): void {
     );
   }
 
-  // Main Table Search
   
-  get filteredDocRequests(): any[] {
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedDocRequests: any[] = [];
+
+/** Filtered list based on search (replaces old getter) */
+get filteredDocRequests(): any[] {
   if (!this.searchQuery || this.searchQuery.trim() === '') {
     return this.DocRequest;
   }
@@ -1021,5 +1026,48 @@ loadDeparmentBranch(selectedBranchIds: number[] = []): void {
     String(docs.employee ?? '').toLowerCase().includes(search)
   );
 }
+
+get totalPages(): number {
+  return Math.ceil(this.filteredDocRequests.length / this.itemsPerPage);
+}
+
+get pageNumbers(): number[] {
+  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+}
+
+updatePagination(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.pagedDocRequests = this.filteredDocRequests.slice(startIndex, endIndex);
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+// Reset to page 1 when search changes
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.updatePagination();
+}
+// ====================================================
+
+
+
 
 }

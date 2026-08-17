@@ -322,14 +322,184 @@ isEditModalOpen: boolean = false;
 editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
-this.editAsset = { ...asset }; // copy asset data
-this.isEditModalOpen = true;
+  this.isEditModalOpen = true;
 
-// Map employee name → ID
-  this.mapEmployeeNameToId();
-  this.mapBranchesNameToId();
-  this.mapRequestTypeNameToId();
+  // Copy the selected record
+  this.editAsset = { ...asset };
 
+  console.log('Original edit asset:', this.editAsset);
+
+  // Reset search
+  this.employeeSearch = '';
+
+  // Make sure master data is loaded before mapping IDs
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    console.error('No schema selected');
+    return;
+  }
+
+  // Load employees first
+  this.employeeService
+    .getemployeesMasterNew(
+      selectedSchema,
+      JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+    )
+    .subscribe({
+      next: (employees: any[]) => {
+        this.employees = employees || [];
+
+        console.log('Employees loaded for edit:', this.employees);
+
+        // Map branch
+        this.mapEditBranchToId();
+
+        // Filter employees according to edit branch
+        this.filterEditEmployees();
+
+        // Map employee to ID
+        this.mapEditEmployeeToId();
+
+        // Map request type
+        this.mapRequestTypeNameToId();
+
+        console.log('Final editAsset:', this.editAsset);
+        console.log('Filtered edit employees:', this.filteredEmployees);
+      },
+      error: (error) => {
+        console.error('Failed to load employees:', error);
+      }
+    });
+}
+
+mapEditBranchToId(): void {
+  if (!this.editAsset?.branch || !this.branches?.length) {
+    return;
+  }
+
+  // Already an ID
+  const branchById = this.branches.find(
+    (b: any) => String(b.id) === String(this.editAsset.branch)
+  );
+
+  if (branchById) {
+    this.editAsset.branch = branchById.id;
+    return;
+  }
+
+  // API returned branch name
+  const branchByName = this.branches.find(
+    (b: any) =>
+      String(b.branch_name).trim().toLowerCase() ===
+      String(this.editAsset.branch).trim().toLowerCase()
+  );
+
+  if (branchByName) {
+    this.editAsset.branch = branchByName.id;
+  }
+
+  console.log('Mapped edit branch:', this.editAsset.branch);
+}
+
+filterEditEmployees(): void {
+  const branchId = this.editAsset?.branch;
+
+  if (!branchId) {
+    this.filteredEmployees = [...this.employees];
+    return;
+  }
+
+  const selectedBranch = this.branches.find(
+    (b: any) => Number(b.id) === Number(branchId)
+  );
+
+  if (!selectedBranch) {
+    this.filteredEmployees = [...this.employees];
+    return;
+  }
+
+  this.filteredEmployees = this.employees.filter((emp: any) =>
+    String(emp.emp_branch_id).trim().toLowerCase() ===
+    String(selectedBranch.branch_name).trim().toLowerCase()
+  );
+
+  console.log(
+    'Employees for edit branch:',
+    selectedBranch.branch_name,
+    this.filteredEmployees
+  );
+}
+
+mapEditEmployeeToId(): void {
+  if (!this.editAsset?.employee || !this.employees?.length) {
+    console.warn('Employee or employee list is missing');
+    return;
+  }
+
+  const employeeValue = String(this.editAsset.employee)
+    .trim()
+    .toLowerCase();
+
+  // Already an employee ID
+  let emp = this.employees.find(
+    (e: any) => String(e.id) === employeeValue
+  );
+
+  // Employee code
+  if (!emp) {
+    emp = this.employees.find(
+      (e: any) =>
+        String(e.emp_code || '').trim().toLowerCase() === employeeValue
+    );
+  }
+
+  // First name
+  if (!emp) {
+    emp = this.employees.find(
+      (e: any) =>
+        String(e.emp_first_name || '').trim().toLowerCase() === employeeValue
+    );
+  }
+
+  // Full name
+  if (!emp) {
+    emp = this.employees.find((e: any) => {
+      const fullName =
+        `${e.emp_first_name || ''} ${e.emp_last_name || ''}`
+          .trim()
+          .toLowerCase();
+
+      return fullName === employeeValue;
+    });
+  }
+
+  // "CODE - FirstName LastName"
+  if (!emp) {
+    emp = this.employees.find((e: any) => {
+      const displayName =
+        `${e.emp_code || ''} - ${e.emp_first_name || ''} ${e.emp_last_name || ''}`
+          .trim()
+          .toLowerCase();
+
+      return displayName === employeeValue;
+    });
+  }
+
+  if (emp) {
+    this.editAsset.employee = emp.id;
+
+    console.log('Employee mapped successfully:', {
+      original: employeeValue,
+      employeeId: emp.id,
+      employee: emp
+    });
+  } else {
+    console.warn(
+      'Could not find employee:',
+      this.editAsset.employee
+    );
+  }
 }
 
 closeEditModal(): void {
@@ -812,7 +982,32 @@ onRequestTypeChange(event: any): void {
   }
 
         searchQuery: string = '';
-  get filteredGeneralReq(): any[] {
+//   get filteredGeneralReq(): any[] {
+//   if (!this.searchQuery || this.searchQuery.trim() === '') {
+//     return this.GeneralReq;
+//   }
+
+//   const search = this.searchQuery.toLowerCase().trim();
+
+//   return this.GeneralReq.filter((docs: any) =>
+//     String(docs.document_number ?? '').toLowerCase().includes(search) ||
+//     String(docs.branch ?? '').toLowerCase().includes(search) ||
+//     String(docs.request_type ?? '').toLowerCase().includes(search) ||
+//     String(docs.total ?? '').toLowerCase().includes(search) ||
+//     String(docs.reason ?? '').toLowerCase().includes(search) ||
+//     String(docs.status ?? '').toLowerCase().includes(search) ||
+//     String(docs.employee ?? '').toLowerCase().includes(search)
+//   );
+// }
+
+
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedLoanRequests: any[] = [];
+
+/** Filtered list based on search (replaces old getter) */
+get filteredGeneralReq(): any[] {
   if (!this.searchQuery || this.searchQuery.trim() === '') {
     return this.GeneralReq;
   }
@@ -822,13 +1017,53 @@ onRequestTypeChange(event: any): void {
   return this.GeneralReq.filter((docs: any) =>
     String(docs.document_number ?? '').toLowerCase().includes(search) ||
     String(docs.branch ?? '').toLowerCase().includes(search) ||
-    String(docs.request_type ?? '').toLowerCase().includes(search) ||
-    String(docs.total ?? '').toLowerCase().includes(search) ||
+    String(docs.asset_type ?? '').toLowerCase().includes(search) ||
+    String(docs.requested_asset ?? '').toLowerCase().includes(search) ||
     String(docs.reason ?? '').toLowerCase().includes(search) ||
     String(docs.status ?? '').toLowerCase().includes(search) ||
     String(docs.employee ?? '').toLowerCase().includes(search)
   );
 }
+
+get totalPages(): number {
+  return Math.ceil(this.filteredGeneralReq.length / this.itemsPerPage);
+}
+
+get pageNumbers(): number[] {
+  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+}
+
+updatePagination(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.pagedLoanRequests = this.filteredGeneralReq.slice(startIndex, endIndex);
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+// Reset to page 1 when search changes
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.updatePagination();
+}
+// =====
 
 }
 

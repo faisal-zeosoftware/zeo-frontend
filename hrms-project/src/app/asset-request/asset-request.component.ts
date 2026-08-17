@@ -240,12 +240,13 @@ this.loadUsers();
     fetchEmployees(schema: string, branchIds: number[]): void {
       this.isLoading = true;
       this.employeeService.getAssetRequestNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-               this.AssetsRequest = data;
-    
-          this.isLoading = false;
-        },
+
+      next: (data: any) => {
+      this.AssetsRequest = data;
+      this.isLoading = false;
+      this.currentPage = 1;        // ← reset to page 1
+      this.updatePagination();      // ← apply pagination
+    },
         error: (err) => {
           console.error('Fetch error:', err);
           this.isLoading = false;
@@ -850,7 +851,31 @@ loadDeparmentBranch(callback?: Function): void {
   }
 
       searchQuery: string = '';
-  get filteredAssetsRequest(): any[] {
+//   get filteredAssetsRequest(): any[] {
+//   if (!this.searchQuery || this.searchQuery.trim() === '') {
+//     return this.AssetsRequest;
+//   }
+
+//   const search = this.searchQuery.toLowerCase().trim();
+
+//   return this.AssetsRequest.filter((docs: any) =>
+//     String(docs.document_number ?? '').toLowerCase().includes(search) ||
+//     String(docs.branch ?? '').toLowerCase().includes(search) ||
+//     String(docs.asset_type ?? '').toLowerCase().includes(search) ||
+//     String(docs.requested_asset ?? '').toLowerCase().includes(search) ||
+//     String(docs.reason ?? '').toLowerCase().includes(search) ||
+//     String(docs.status ?? '').toLowerCase().includes(search) ||
+//     String(docs.employee ?? '').toLowerCase().includes(search)
+//   );
+// }
+
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedAssetRequests: any[] = [];
+
+/** Filtered list based on search (replaces old getter) */
+get filteredAssetsRequest(): any[] {
   if (!this.searchQuery || this.searchQuery.trim() === '') {
     return this.AssetsRequest;
   }
@@ -867,5 +892,46 @@ loadDeparmentBranch(callback?: Function): void {
     String(docs.employee ?? '').toLowerCase().includes(search)
   );
 }
+
+get totalPages(): number {
+  return Math.ceil(this.filteredAssetsRequest.length / this.itemsPerPage);
+}
+
+get pageNumbers(): number[] {
+  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+}
+
+updatePagination(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.pagedAssetRequests = this.filteredAssetsRequest.slice(startIndex, endIndex);
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+// Reset to page 1 when search changes
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.updatePagination();
+}
+// ====================================================
+
 
 }

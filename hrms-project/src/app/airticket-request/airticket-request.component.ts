@@ -761,12 +761,13 @@ mapAllocationNameToId() {
   fetchEmployees(schema: string, branchIds: number[]): void {
     this.isLoading = true;
     this.employeeService.getairticketrequestNew(schema, branchIds).subscribe({
-      next: (data: any) => {
-        // Filter active employees
-        this.Requests = data;
-         this.isLoading = false;
 
-      },
+            next: (data: any) => {
+      this.Requests = data;
+      this.isLoading = false;
+      this.currentPage = 1;        // ← reset to page 1
+      this.updatePagination();      // ← apply pagination
+    },
       error: (err) => {
         console.error('Fetch error:', err);
         this.isLoading = false;
@@ -889,7 +890,37 @@ mapBranchesNameToId() {
 }
 
     searchQuery: string = '';
-  get filteredRequests(): any[] {
+//   get filteredRequests(): any[] {
+//   if (!this.searchQuery || this.searchQuery.trim() === '') {
+//     return this.Requests;
+//   }
+
+//   const search = this.searchQuery.toLowerCase().trim();
+
+//   return this.Requests.filter((docs: any) =>
+//     String(docs.allocation ?? '').toLowerCase().includes(search) ||
+//     String(docs.document_number ?? '').toLowerCase().includes(search) ||
+//     String(docs.branch ?? '').toLowerCase().includes(search) ||
+//     String(docs.employee ?? '').toLowerCase().includes(search) ||
+//     String(docs.request_type ?? '').toLowerCase().includes(search) ||
+//     String(docs.request_date ?? '').toLowerCase().includes(search) ||
+//     String(docs.departure_date ?? '').toLowerCase().includes(search) ||
+//     String(docs.return_date ?? '').toLowerCase().includes(search) ||
+//     String(docs.approved_date ?? '').toLowerCase().includes(search) ||
+//     String(docs.destination ?? '').toLowerCase().includes(search) ||
+//     String(docs.notes ?? '').toLowerCase().includes(search) ||
+//     String(docs.origin ?? '').toLowerCase().includes(search) ||
+//     String(docs.status ?? '').toLowerCase().includes(search) 
+//   );
+// }
+
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedRequests: any[] = [];
+
+/** Filtered list based on search (replaces old getter) */
+get filteredRequests(): any[] {
   if (!this.searchQuery || this.searchQuery.trim() === '') {
     return this.Requests;
   }
@@ -912,6 +943,46 @@ mapBranchesNameToId() {
     String(docs.status ?? '').toLowerCase().includes(search) 
   );
 }
+
+get totalPages(): number {
+  return Math.ceil(this.filteredRequests.length / this.itemsPerPage);
+}
+
+get pageNumbers(): number[] {
+  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+}
+
+updatePagination(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.pagedRequests = this.filteredRequests.slice(startIndex, endIndex);
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+// Reset to page 1 when search changes
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.updatePagination();
+}
+// ====================================================
 
 
 }
