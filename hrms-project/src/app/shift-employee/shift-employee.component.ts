@@ -250,6 +250,15 @@ export class ShiftEmployeeComponent {
         .filter(x => x.selected)
         .map(x => x.id);
 
+
+
+const employeeOffsetsPayload: { [key: number]: number } = {};
+if (this.selectedPatternType === 'rotating') {
+  selectedEmployeeIds.forEach(id => {
+    employeeOffsetsPayload[id] = this.employeeOffsets[id] ?? 0;
+  });
+}
+
     const payload: any = {
       start_date: this.start_date || null,
       end_date: this.end_date || null,
@@ -260,7 +269,9 @@ export class ShiftEmployeeComponent {
       categories: this.selectedCategories,
       designations: this.selectedDesignations,
       employee: selectedEmployeeIds,
-      shift_pattern: this.shift_pattern || null
+      shift_pattern: this.shift_pattern || null,
+      employee_offsets: employeeOffsetsPayload   // <-- new
+
     };
 
     if (this.isEditMode && this.editingId) {
@@ -363,6 +374,14 @@ export class ShiftEmployeeComponent {
     }
     this.allEmployeesSelected = false;
     this.currentPage = 1;
+
+      // NEW
+  this.selectedPatternObj = null;
+  this.selectedPatternType = '';
+  this.employeeOffsets = {};
+
+
+
   }
   // ==================== END MODIFIED ====================
 
@@ -371,19 +390,29 @@ export class ShiftEmployeeComponent {
     this.isEditMode = true;
     this.editingId = shift.id;
     this.registerButtonClicked = false;
-
-    // Populate basic fields
+  
     this.start_date = shift.start_date || '';
     this.end_date = shift.end_date || '';
     this.schedule_name = shift.schedule_name || '';
     this.shift_pattern = shift.shift_pattern ? String(shift.shift_pattern) : '';
+  
+    // NEW: restore pattern type + offsets
+    this.selectedPatternObj = this.ShiftsPattern.find(p => p.id == shift.shift_pattern) || null;
+    this.selectedPatternType = this.selectedPatternObj?.pattern_type || '';
+    this.buildRotatingCycleOptions();   // build BEFORE restoring offsets
 
-    // Populate multi-select filters
+    this.employeeOffsets = {};
+    if (shift.employee_offsets) {
+      Object.keys(shift.employee_offsets).forEach(key => {
+        this.employeeOffsets[+key] = shift.employee_offsets[key];
+      });
+    }
+  
     this.selectedBranches = shift.branches || [];
     this.selectedDepartments = shift.departments || [];
     this.selectedCategories = shift.categories || [];
     this.selectedDesignations = shift.designations || [];
-
+  
     const setupAndOpen = () => {
       this.applyEmployeeFilter();
       const selectedEmployeeIds = shift.employee || [];
@@ -394,7 +423,7 @@ export class ShiftEmployeeComponent {
       this.updatePagination();
       this.iscreateEmployeeShift = true;
     };
-
+  
     if (this.Employee.length === 0) {
       this.loadEmp(() => setupAndOpen());
     } else {
@@ -1169,5 +1198,67 @@ filterBranches(): any[] {
 
 
 
+
+
+
+
+// new properties
+selectedPatternObj: any = null;
+selectedPatternType: string = '';
+employeeOffsets: { [empId: number]: number } = {};
+
+rotatingCycleOptions: { label: string; value: number }[] = [];
+
+
+onShiftPatternChange(): void {
+  this.selectedPatternObj = this.ShiftsPattern.find(p => p.id == this.shift_pattern) || null;
+  this.selectedPatternType = this.selectedPatternObj?.pattern_type || '';
+  this.buildRotatingCycleOptions();
+}
+
+buildRotatingCycleOptions(): void {
+  this.rotatingCycleOptions = [];
+
+  if (!this.selectedPatternObj || this.selectedPatternObj.pattern_type !== 'rotating') {
+    return;
+  }
+
+  const rotCfg = this.selectedPatternObj.pattern_config?.rotating;
+  if (!rotCfg) return;
+
+  const shiftSeq: number[] = rotCfg.shift_sequence || [];
+  const offDays: number = rotCfg.off_days || 0;
+
+  let dayNum = 1;
+
+  // Working days, taken directly from shift_sequence
+  shiftSeq.forEach((shiftId: number) => {
+    this.rotatingCycleOptions.push({
+      label: `Day ${dayNum} - ${this.getShiftName(shiftId)}`,
+      value: dayNum - 1   // 0-based offset, matches backend's offset_days
+    });
+    dayNum++;
+  });
+
+  // Off days, appended after the work days in the cycle
+  for (let i = 0; i < offDays; i++) {
+    this.rotatingCycleOptions.push({
+      label: `Day ${dayNum} - Off`,
+      value: dayNum - 1
+    });
+    dayNum++;
+  }
+}
+
+getShiftName(shiftId: number): string {
+  const shift = this.Shifts.find((s: any) => s.id == shiftId);
+  return shift ? shift.name : `Shift ${shiftId}`;
+}
+
+onEmployeeCheckboxChange(emp: any): void {
+  if (emp.selected && this.employeeOffsets[emp.id] === undefined) {
+    this.employeeOffsets[emp.id] = 0;
+  }
+}
 
 }

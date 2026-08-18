@@ -188,10 +188,11 @@
               <label>Shift Pattern</label>
               <div class="custom-sel">
                 <select
-                  class="form-control"
-                  [(ngModel)]="shift_pattern"
-                  [ngModelOptions]="{ standalone: true }"
-                >
+                class="form-control"
+                [(ngModel)]="shift_pattern"
+                [ngModelOptions]="{ standalone: true }"
+                (change)="onShiftPatternChange()"
+              >
                   <option value="">Select</option>
                   <option *ngFor="let pattern of ShiftsPattern" [value]="pattern.id">
                     {{ pattern.name }}
@@ -388,15 +389,17 @@
                         <th>Department</th>
                         <th>Category</th>
                         <th>Designation</th>
-                      </tr>
+                        <th *ngIf="selectedPatternType === 'rotating'">Starting Day in Cycle</th>
+                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let emp of pagedEmployees">
                         <td>
                           <mat-checkbox
-                            [(ngModel)]="emp.selected"
-                            [ngModelOptions]="{ standalone: true }"
-                          ></mat-checkbox>
+  [(ngModel)]="emp.selected"
+  [ngModelOptions]="{ standalone: true }"
+  (change)="onEmployeeCheckboxChange(emp)"
+></mat-checkbox>
                         </td>
                         <td>
                           <div class="employee-info">
@@ -416,6 +419,20 @@
                         <td><span class="custom-badge green">{{ emp.emp_dept_id }}</span></td>
                         <td><span class="custom-badge orange">{{ emp.emp_ctgry_id }}</span></td>
                         <td><span class="custom-badge purple">{{ emp.emp_desgntn_id }}</span></td>
+                        <td *ngIf="selectedPatternType === 'rotating'">
+                          <select
+                            class="form-control form-control-sm"
+                            style="width: 180px;"
+                            [(ngModel)]="employeeOffsets[emp.id]"
+                            [ngModelOptions]="{ standalone: true }"
+                            [disabled]="!emp.selected"
+                          >
+                            <option [ngValue]="0">Day 1 (default)</option>
+                            <option *ngFor="let opt of rotatingCycleOptions" [ngValue]="opt.value">
+                              {{ opt.label }}
+                            </option>
+                          </select>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
