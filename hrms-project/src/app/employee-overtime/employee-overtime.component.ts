@@ -5,16 +5,21 @@ import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
 import { DesignationService } from '../designation-master/designation.service';
 import { EmployeeService } from '../employee-master/employee.service';
-import {combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
+import { CompanyRegistrationService } from '../company-registration.service';
+import { environment } from '../../environments/environment';
 @Component({
   selector: 'app-employee-overtime',
   templateUrl: './employee-overtime.component.html',
   styleUrl: './employee-overtime.component.css'
 })
+
 export class EmployeeOvertimeComponent {
 
 
   private dataSubscription?: Subscription;
+
+  private apiUrl = `${environment.apiBaseUrl}`;
 
 
 
@@ -28,7 +33,7 @@ export class EmployeeOvertimeComponent {
   rate_multiplier: any = '';
   employee: any = '';
 
-    ot_type:any='';
+  ot_type: any = '';
 
   approved_by: any = '';
 
@@ -49,6 +54,7 @@ export class EmployeeOvertimeComponent {
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean = false;
   hasEditPermission: boolean = false;
+  hasImportPermission: boolean = false;
 
   userId: number | null | undefined;
   userDetails: any;
@@ -59,8 +65,10 @@ export class EmployeeOvertimeComponent {
   selectedFile: File | null = null;
 
 
+
   constructor(
     private http: HttpClient,
+    private companyRegistrationService: CompanyRegistrationService,
     private authService: AuthenticationService,
     private sessionService: SessionService,
     private leaveService: LeaveService,
@@ -71,21 +79,21 @@ export class EmployeeOvertimeComponent {
 
   ngOnInit(): void {
 
- // combineLatest waits for both Schema and Branches to have a value
- this.dataSubscription = combineLatest([
-  this.employeeService.selectedSchema$,
-  this.employeeService.selectedBranches$
-]).subscribe(([schema, branchIds]) => {
-  if (schema) {
-    this.fetchEmployees(schema, branchIds);  
-    
+    // combineLatest waits for both Schema and Branches to have a value
+    this.dataSubscription = combineLatest([
+      this.employeeService.selectedSchema$,
+      this.employeeService.selectedBranches$
+    ]).subscribe(([schema, branchIds]) => {
+      if (schema) {
+        this.fetchEmployees(schema, branchIds);
 
-  }
-});
 
- // Listen for sidebar changes so the dropdown updates instantly
+      }
+    });
+
+    // Listen for sidebar changes so the dropdown updates instantly
     this.employeeService.selectedBranches$.subscribe(ids => {
- 
+
       this.LoadEmployee();
     });
 
@@ -130,6 +138,7 @@ export class EmployeeOvertimeComponent {
             this.hasAddPermission = true;
             this.hasDeletePermission = true;
             this.hasEditPermission = true;
+            this.hasImportPermission = true;
 
             // Fetch designations without checking permissions
             // this.fetchDesignations(selectedSchema);
@@ -172,6 +181,9 @@ export class EmployeeOvertimeComponent {
 
                     this.hasViewPermission = this.checkGroupPermission('view_employeeovertime', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
+
+                    this.hasImportPermission = this.checkGroupPermission('import_employeeovertime', groupPermissions);
+                    console.log('Has edit permission:', this.hasImportPermission);
 
 
                   } else {
@@ -262,7 +274,7 @@ export class EmployeeOvertimeComponent {
         (result: any) => {
           this.Employees = result;
           console.log(' fetching Employees:');
-             if (callback) callback();
+          if (callback) callback();
 
         },
         (error) => {
@@ -274,18 +286,18 @@ export class EmployeeOvertimeComponent {
   }
 
   mapEmployeeNameToId() {
-  if (!this.Employees || !this.editAsset?.employee) return;
+    if (!this.Employees || !this.editAsset?.employee) return;
 
-  const emp = this.Employees.find(
-    (e: any) => e.emp_code === this.editAsset.employee
-  );
+    const emp = this.Employees.find(
+      (e: any) => e.emp_code === this.editAsset.employee
+    );
 
-  if (emp) {
-    this.editAsset.employee = emp.id;  // convert to ID for dropdown
+    if (emp) {
+      this.editAsset.employee = emp.id;  // convert to ID for dropdown
+    }
+
+    console.log("Mapped employee_id:", this.editAsset.employee);
   }
-
-  console.log("Mapped employee_id:", this.editAsset.employee);
-}
 
 
 
@@ -298,34 +310,34 @@ export class EmployeeOvertimeComponent {
     console.log('schemastore', selectedSchema)
     // Check if selectedSchema is available
     if (selectedSchema) {
-    this.leaveService.getApproverUsers(selectedSchema).subscribe(
-      (data: any) => {
-        this.Users = data;
+      this.leaveService.getApproverUsers(selectedSchema).subscribe(
+        (data: any) => {
+          this.Users = data;
 
-        console.log('employee:', this.LeaveTypes);
-             if (callback) callback();
-      },
-      (error: any) => {
-        console.error('Error fetching categories:', error);
-      }
-    );
+          console.log('employee:', this.LeaveTypes);
+          if (callback) callback();
+        },
+        (error: any) => {
+          console.error('Error fetching categories:', error);
+        }
+      );
+    }
   }
-}
 
   mapUsersNameToId() {
-    
-  if (!this.Users || !this.editAsset?.approved_by) return;
 
-  const use = this.Users.find(
-    (u: any) => u.username === this.editAsset.approved_by
-  );
+    if (!this.Users || !this.editAsset?.approved_by) return;
 
-  if (use) {
-    this.editAsset.approved_by = use.id;  // convert to ID for dropdown
+    const use = this.Users.find(
+      (u: any) => u.username === this.editAsset.approved_by
+    );
+
+    if (use) {
+      this.editAsset.approved_by = use.id;  // convert to ID for dropdown
+    }
+
+    console.log("Mapped employee_id:", this.editAsset.approved_by);
   }
-
-  console.log("Mapped employee_id:", this.editAsset.approved_by);
-}
 
 
 
@@ -368,25 +380,25 @@ export class EmployeeOvertimeComponent {
 
         window.location.reload();
       },
-              (error) => {
-                console.error('Add failed', error);
-  let errorMessage = 'Enter all required fields!';
+      (error) => {
+        console.error('Add failed', error);
+        let errorMessage = 'Enter all required fields!';
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
-        const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        // ✅ Handle backend validation or field-specific errors
+        if (error.error && typeof error.error === 'object') {
+          const messages: string[] = [];
+          for (const [key, value] of Object.entries(error.error)) {
+            if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+            else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+            else messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+          if (messages.length > 0) errorMessage = messages.join('\n');
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
         }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
-      }
 
-      alert(errorMessage);
-    }
+        alert(errorMessage);
+      }
     );
   }
 
@@ -424,7 +436,6 @@ export class EmployeeOvertimeComponent {
   }
 
 
-
   // File selection
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
@@ -433,10 +444,149 @@ export class EmployeeOvertimeComponent {
 
 
 
+bulkuploaddocument(): void {
+
+  const formData = new FormData();
+
+  // Append only the file you actually want to upload
+  if (this.selectedFiles) {
+    formData.append('file', this.selectedFiles);
+  }
+
+  if (this.file) {
+    formData.append('file', this.file);
+  }
+
+  formData.append('date', this.date || '');
+  formData.append('ot_type', this.ot_type || '');
+  formData.append('slab', this.slab || '');
+  formData.append('hours', this.hours || '');
+  formData.append('approved_by', this.approved_by || '');
+  formData.append('employee', this.employee || '');
+
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema) {
+    alert('No schema selected.');
+    return;
+  }
+
+  /** 🔥 START LOADER */
+  this.isLoading = true;
+
+  this.http.post(
+    `${this.apiUrl}/calendars/api/Emp-bulkupload-overtime/bulk_upload/?schema=${selectedSchema}`,
+    formData
+  ).subscribe({
+
+    next: (response: any) => {
+
+      console.log('Bulk upload successful:', response);
+
+      this.isLoading = false;
+
+      alert('Bulk upload successful');
+
+      window.location.reload();
+    },
+
+
+        error:  (error) => {
+      console.error('Added failed', error);
+
+      let errorMessage = 'Employee Overtime required fields!';
+
+      // ✅ Handle backend validation or field-specific errors
+      if (error.error && typeof error.error === 'object') {
+        const messages: string[] = [];
+        for (const [key, value] of Object.entries(error.error)) {
+          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
+          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
+          else messages.push(`${key}: ${JSON.stringify(value)}`);
+        }
+        if (messages.length > 0) errorMessage = messages.join('\n');
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
+      }
+
+      alert(errorMessage);
+    }
+});
+}
+
+
+  selectedFiles!: File;
+  file: any = '';
+  
+onFileChange(event: Event): void {
+  const input = event.target as HTMLInputElement;
+
+  if (input.files && input.files.length > 0) {
+    this.selectedFile = input.files[0];
+
+    console.log('Selected file:', this.selectedFile);
+    console.log('File name:', this.selectedFile.name);
+  } else {
+    this.selectedFile = null;
+  }
+}
+
+
+  isBulkuploadCatogaryModalOpen: boolean = false;
+
+
+  OpenBulkuploadModal(): void {
+    this.isBulkuploadCatogaryModalOpen = true;
+  }
+
+  closeBulkuploadModal(): void {
+    this.isBulkuploadCatogaryModalOpen = false;
+
+  }
+
+  showUploadForm: boolean = false;
+
+  toggleUploadForm(): void {
+    this.showUploadForm = !this.showUploadForm;
+  }
+
+
+  closeUploadForm(): void {
+    this.showUploadForm = false;
+  }
+
+
+  downloadEmpOverExcel(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (!selectedSchema) return;
+
+    this.companyRegistrationService.downloadEmployeeOvertimeExcel(selectedSchema).subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'EmployeeOverTime_template.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
 
 
 
 
+
+  downloadEmpOverCsv(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+    if (!selectedSchema) return;
+
+    this.companyRegistrationService.downloadEmployeeOvertimeCsv(selectedSchema).subscribe((blob: Blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'EmployeeOverTime_template.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
 
 
   iscreateLoanApp: boolean = false;
@@ -549,28 +699,28 @@ export class EmployeeOvertimeComponent {
         this.closeEditModal();
         window.location.reload();
       },
-(error) => {
-  console.error('Error updating Employee Overtime:', error);
+      (error) => {
+        console.error('Error updating Employee Overtime:', error);
 
-  let errorMsg = 'Update failed';
+        let errorMsg = 'Update failed';
 
-  const backendError = error?.error;
+        const backendError = error?.error;
 
-  if (backendError && typeof backendError === 'object') {
-    // Convert the object into a readable string
-    errorMsg = Object.keys(backendError)
-      .map(key => `${key}: ${backendError[key].join(', ')}`)
-      .join('\n');
-  }
+        if (backendError && typeof backendError === 'object') {
+          // Convert the object into a readable string
+          errorMsg = Object.keys(backendError)
+            .map(key => `${key}: ${backendError[key].join(', ')}`)
+            .join('\n');
+        }
 
-  alert(errorMsg);
-}
+        alert(errorMsg);
+      }
     );
   }
 
-  employeeSearch: string = ''; 
+  employeeSearch: string = '';
 
-    filterEmployees(): any[] {
+  filterEmployees(): any[] {
     if (!this.employeeSearch || this.employeeSearch.trim() === '') {
       return this.Employees;
     }
