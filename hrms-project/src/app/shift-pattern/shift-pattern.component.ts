@@ -48,7 +48,7 @@ export class ShiftPatternComponent {
   sunday_shift:any='';
 
 
-
+  created_by:any='';
 
 
   Users:any []=[];
@@ -158,10 +158,11 @@ ngOnInit(): void {
     this.authService.getUserData(this.userId).subscribe(
       async (userData: any) => {
         this.userDetails = userData; // Store user details in userDetails property
-        // this.created_by = this.userId; // Automatically set the owner to logged-in user ID
+        this.created_by = this.userId; // Automatically set the owner to logged-in user ID
   
         console.log('User ID:', this.userId); // Log user ID
         console.log('User Details:', this.userDetails); // Log user details
+
   
         // Check if user is_superuser is true or false
         let isSuperuser = this.userDetails.is_superuser || false; // Default to false if is_superuser is undefined
@@ -266,23 +267,7 @@ ngOnInit(): void {
 }
 
 
-// checkViewPermission(permissions: any[]): boolean {
-//   const requiredPermission = 'add_requesttype' ||'change_requesttype' ||'delete_requesttype' ||'view_requesttype';
-  
-  
-//   // Check user permissions
-//   if (permissions.some(permission => permission.codename === requiredPermission)) {
-//     return true;
-//   }
-  
-//   // Check group permissions (if applicable)
-//   // Replace `// TODO: Implement group permission check`
-//   // with your logic to retrieve and check group permissions
-//   // (consider using a separate service or approach)
-//   return false; // Replace with actual group permission check
-//   }
-  
-  
+
   
   
   checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
@@ -1245,6 +1230,8 @@ buildPayload(){
       name: this.Patern_name,
       pattern_type: this.pattern_type,
       changes_every: Number(this.changes_every),
+      created_by: Number(this.created_by || this.userId), // Automatically attaches logged-in user ID
+      created_at: new Date().toISOString(), // Optional: automatically sends current creation timestamp
       pattern_config: patternConfig
   };
 }
