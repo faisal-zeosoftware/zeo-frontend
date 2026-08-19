@@ -1,295 +1,222 @@
 <!-- Sidebar -->
 <nav
   id="sidebarMenu"
-  class="d-lg-block sidebar sidebar-dark"
+  class="sidebar sidebar-dark"
   [class.menu-open]="isMenuOpen"
   [class.menu-close]="!isMenuOpen"
 >
-  <div class="position-sticky">
-    <div class="list-group list-group-flush mt-5">
+  <div class="sidebar-wrapper">
+    <div class="sidebar-brand-title" *ngIf="isMenuOpen">
+      <span>HRMS PORTAL</span>
+    </div>
+
+    <div class="nav-menu-list">
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
-        aria-current="true"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         routerLink="/main-sidebar/dashboard-contents"
       >
-        <span
-          ><mat-icon>home</mat-icon>
-          <span class="sidenav-opt"> Dashboard</span></span
-        >
+        <mat-icon class="nav-icon">dashboard</mat-icon>
+        <span class="sidenav-opt">Dashboard</span>
       </a>
+
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
-        aria-current="true"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         routerLink="/main-sidebar/sub-sidebar/employee-master"
         (click)="onToolbarMenuToggle()"
       >
-        <span
-          ><mat-icon>peoples</mat-icon>
-          <span class="sidenav-opt"> Employee Management</span></span
-        >
+        <mat-icon class="nav-icon">people_alt</mat-icon>
+        <span class="sidenav-opt">Employee Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/leave-options/leave-master"
       >
-        <span
-          ><mat-icon>logout</mat-icon>
-          <span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/leave-options/leave-master"
-          >
-            Leave Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">event_available</mat-icon>
+        <span class="sidenav-opt">Leave Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/salary-options/salary"
       >
-        <span
-          ><mat-icon>currency_exchange</mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/salary-options/salary"
-          >
-            Payroll Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">account_balance_wallet</mat-icon>
+        <span class="sidenav-opt">Payroll Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/loan-sidebar/loan-type"
       >
-        <span
-          ><mat-icon>real_estate_agent </mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/loan-sidebar/loan-type"
-          >
-            Loan Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">request_quote</mat-icon>
+        <span class="sidenav-opt">Loan Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/asset-options"
       >
-        <span
-          ><mat-icon>work_update </mat-icon
-          ><span class="sidenav-opt" routerLink="/main-sidebar/asset-options">
-            Asset Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">inventory_2</mat-icon>
+        <span class="sidenav-opt">Asset Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/general-sidebar"
       >
-        <span
-          ><mat-icon>work_update </mat-icon
-          ><span class="sidenav-opt" routerLink="/main-sidebar/general-sidebar"
-            >General Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">tune</mat-icon>
+        <span class="sidenav-opt">General Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/attendance-sidebar/attendace-marking"
       >
-        <span
-          ><mat-icon>work_update </mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/attendance-sidebar/attendace-marking"
-          >
-            Attendance Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">fact_check</mat-icon>
+        <span class="sidenav-opt">Attendance Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/document-folders"
       >
-        <span
-          ><mat-icon>library_books </mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/document-folders"
-          >
-            Document Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">folder_shared</mat-icon>
+        <span class="sidenav-opt">Document Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/project-options"
       >
-        <span
-          ><mat-icon>timelapse </mat-icon
-          ><span class="sidenav-opt" routerLink="/main-sidebar/project-options">
-            Project Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">assignment_turned_in</mat-icon>
+        <span class="sidenav-opt">Project Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/air-ticket-options"
       >
-        <span
-          ><mat-icon>airplane_ticket </mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/air-ticket-options"
-          >
-            Air Ticket Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">flight_takeoff</mat-icon>
+        <span class="sidenav-opt">Air Ticket Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/shift-options"
       >
-        <span
-          ><mat-icon>transfer_within_a_station </mat-icon
-          ><span class="sidenav-opt" routerLink="/main-sidebar/shift-options">
-            Shift Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">published_with_changes</mat-icon>
+        <span class="sidenav-opt">Shift Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         *ngIf="!hideButton"
         routerLink="/main-sidebar/report-options/report-generate"
         (click)="onToolbarMenuToggle()"
       >
-        <span
-          ><mat-icon>stacked_bar_chart</mat-icon>
-          <span class="sidenav-opt">Report Management</span></span
-        >
+        <mat-icon class="nav-icon">insights</mat-icon>
+        <span class="sidenav-opt">Report Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         *ngIf="!hideButton"
         routerLink="/main-sidebar/settings/branch-master"
         (click)="onToolbarMenuToggle()"
       >
-        <span
-          ><mat-icon>settings</mat-icon>
-          <span class="sidenav-opt"> Settings</span></span
-        >
+        <mat-icon class="nav-icon">settings</mat-icon>
+        <span class="sidenav-opt">Settings</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/dashboard-contents"
       >
-        <span
-          ><mat-icon> speed </mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/dashboard-contents"
-          >
-            Performance Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">speed</mat-icon>
+        <span class="sidenav-opt">Performance Management</span>
       </a>
 
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/dashboard-contents"
       >
-        <span
-          ><mat-icon> group_add </mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/dashboard-contents"
-          >
-            Recruitmemt Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">person_add_alt_1</mat-icon>
+        <span class="sidenav-opt">Recruitment Management</span>
       </a>
+
       <a
-        routerLinkActive="active"
-        class="list-group-item list-group-item-action py-2 ripple"
+        routerLinkActive="active-link"
+        class="nav-item-link"
         (click)="onToolbarMenuToggle()"
+        routerLink="/main-sidebar/dashboard-contents"
       >
-        <span
-          ><mat-icon>book_ribbon </mat-icon
-          ><span
-            class="sidenav-opt"
-            routerLink="/main-sidebar/dashboard-contents"
-            >Learning Management</span
-          ></span
-        >
+        <mat-icon class="nav-icon">school</mat-icon>
+        <span class="sidenav-opt">Learning Management</span>
       </a>
     </div>
   </div>
 </nav>
 
 <!-- Navbar -->
-<nav
-  id="main-navbar"
-  class="navbar navbar-expand-lg navbar-light bg-white fixed-top"
->
-  <!-- Container wrapper -->
-  <div class="container-fluid lap_view">
-    <!-- logo -->
+<nav id="main-navbar" class="navbar navbar-expand-lg hrms-navbar fixed-top">
+  <!-- Desktop Container wrapper -->
+  <div class="container-fluid lap_view d-flex justify-content-between align-items-center">
+    <!-- Logo -->
     <div class="nav_mov">
-      <a class="navbar-brand">
+      <a class="navbar-brand d-flex align-items-center m-0">
         <img
           src="assets/zeo_logo_new.png"
-          height="70"
-          width="100%"
-          alt="MDB Logo"
+          height="40"
+          alt="HRMS Logo"
           loading="lazy"
         />
       </a>
     </div>
 
-    <ul class="navbar-nav ms-auto d-flex flex-row">
+    <!-- Right-aligned Header Actions -->
+    <ul class="navbar-nav d-flex flex-row align-items-center gap-3 m-0 p-0">
       <!-- 🔔 Notification Dropdown -->
       <li class="nav-item dropdown" *ngIf="AllNotifications">
         <a
-          class="nav-link me-5 me-lg-0 dropdown-toggle hidden-arrow"
+          class="nav-link dropdown-toggle hidden-arrow header-icon-btn p-0"
           id="notificationDropdown"
           data-bs-toggle="dropdown"
           aria-expanded="false"
-          style="cursor: pointer; position: relative"
+          role="button"
         >
-          <div class="notiicon position-relative">
-            <mat-icon class="mt-2">notifications</mat-icon>
+          <div class="notiicon position-relative d-flex align-items-center justify-content-center">
+            <mat-icon>notifications_none</mat-icon>
             <span
               *ngIf="notificationCount > 0"
-              class="badge rounded-pill bg-danger position-absolute translate-middle"
-              style="font-size: 11px; left: 70%; top: 5px"
+              class="badge rounded-pill bg-danger position-absolute noti-badge"
             >
               {{ notificationCount }}
             </span>
@@ -297,23 +224,22 @@
         </a>
 
         <ul
-          class="dropdown-menu dropdown-menu-end shadow p-2"
+          class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0 rounded-3 overflow-hidden"
           aria-labelledby="notificationDropdown"
-          style="min-width: 320px; max-height: 400px; overflow-y: auto"
+          style="min-width: 340px; max-height: 420px; overflow-y: auto;"
         >
-<li class="notification-header">
-  <strong class="notification-title">Notifications</strong>
+          <li class="notification-header">
+            <strong class="notification-title">Notifications</strong>
+            <button
+              class="mark-all-btn"
+              *ngIf="AllNotifications.length > 0"
+              (click)="markAllAsRead($event)"
+            >
+              Mark all Read
+            </button>
+          </li>
 
-  <button
-    class="mark-all-btn"
-    *ngIf="AllNotifications.length > 0"
-    (click)="markAllAsRead($event)">
-    Mark all Read
-  </button>
-</li>
-          <ng-container
-            *ngIf="AllNotifications.length > 0; else noNotifications"
-          >
+          <ng-container *ngIf="AllNotifications.length > 0; else noNotifications">
             <li *ngFor="let noti of AllNotifications; let i = index">
               <a
                 class="dropdown-item py-2 px-3"
@@ -321,46 +247,20 @@
                 (click)="onNotificationClick(noti)"
                 [ngClass]="{ 'flash-highlight': noti.highlighted }"
               >
-                <div class="d-flex justify-content-between align-items-start">
+                <div class="d-flex justify-content-between align-items-start gap-2">
                   <div>
-                    <strong *ngIf="noti.type === 'expdocument'"
-                      >📝Document Expired</strong
-                    >
-                    <strong *ngIf="noti.type === 'resignationrequest'"
-                      >📄 Resignation Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'leave'"
-                      >🏖️ Leave Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'generalrequest'"
-                      >📢 General Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'docrequest'"
-                      >🗂️ Document Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'loanrequest'"
-                      >💰 Loan Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'assetrequest'"
-                      >🧰 Asset Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'airticketrequest'"
-                      >✈️ AirTicket Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'advancesalaryrequest'"
-                      >💵 Advance Salary Request</strong
-                    >
-                    <strong *ngIf="noti.type === 'lateinearlyrequest'"
-                      >⏱️ Late In / Early Out Request</strong
-                    >
-                    <!-- <strong *ngIf="noti.type === 'delegated'"
-                      >👥 Delegation Request</strong
-                    >
-                   <strong *ngIf="noti.type === 'delegationres'"
-                      >👥 Delegation Response</strong
-                    > -->
+                    <strong *ngIf="noti.type === 'expdocument'">📝 Document Expired</strong>
+                    <strong *ngIf="noti.type === 'resignationrequest'">📄 Resignation Request</strong>
+                    <strong *ngIf="noti.type === 'leave'">🏖️ Leave Request</strong>
+                    <strong *ngIf="noti.type === 'generalrequest'">📢 General Request</strong>
+                    <strong *ngIf="noti.type === 'docrequest'">🗂️ Document Request</strong>
+                    <strong *ngIf="noti.type === 'loanrequest'">💰 Loan Request</strong>
+                    <strong *ngIf="noti.type === 'assetrequest'">🧰 Asset Request</strong>
+                    <strong *ngIf="noti.type === 'airticketrequest'">✈️ AirTicket Request</strong>
+                    <strong *ngIf="noti.type === 'advancesalaryrequest'">💵 Advance Salary Request</strong>
+                    <strong *ngIf="noti.type === 'lateinearlyrequest'">⏱️ Late In / Early Out Request</strong>
                     <div class="text-muted small">
-                      {{ noti.created_at | date: "medium" }}
+                      {{ noti.created_at | date : "medium" }}
                     </div>
                     <div class="small mt-1 text-wrap text-dark">
                       {{ noti.message }}
@@ -369,16 +269,13 @@
                   <span class="badge bg-primary rounded-pill">New</span>
                 </div>
               </a>
-              <hr
-                *ngIf="i < AllNotifications.length - 1"
-                class="dropdown-divider my-1"
-              />
+              <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-0" />
             </li>
           </ng-container>
 
           <ng-template #noNotifications>
             <li>
-              <a class="dropdown-item text-center text-muted py-3">
+              <a class="dropdown-item text-center text-muted py-4">
                 No new notifications
               </a>
             </li>
@@ -386,22 +283,19 @@
         </ul>
       </li>
 
-      <!-- select company -->
-
-      <li class="nav-item dropdown" *ngIf="schemas.length > 0">
+      <!-- Select Company Dropdown -->
+      <li class="nav-item position-relative" *ngIf="schemas.length > 0">
         <div
           class="Company_pro company_bor"
           #dropdownContainer
           (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen"
         >
           <div class="cmp_drop">
-            <mat-icon>business</mat-icon>
-            <!-- <h1>{{ selectedSchema || 'Select Company' }}</h1> -->
+            <mat-icon class="cmp-icon">business</mat-icon>
             <h1>{{ selectedSchemaNameDisplay || "Select Company" }}</h1>
             <mat-icon
-              [style.transform]="
-                isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-              "
+              class="chevron-arrow"
+              [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'"
             >
               expand_more
             </mat-icon>
@@ -412,12 +306,8 @@
             [class.show]="isCompanyDropdownOpen"
             (click)="$event.stopPropagation()"
           >
-            <!-- 🔥 SPINNER OVERLAY (CORRECT PLACE) -->
             <div class="spinner-overlay" *ngIf="isLoadingEss">
-              <mat-progress-spinner
-                diameter="30"
-                mode="indeterminate"
-              ></mat-progress-spinner>
+              <mat-progress-spinner diameter="30" mode="indeterminate"></mat-progress-spinner>
             </div>
 
             <div class="menu-header">
@@ -426,45 +316,14 @@
             </div>
 
             <div class="scrollable-content">
-              <div
-                class="schema-item"
-                *ngFor="let data of userDetailss; let i = index"
-              >
+              <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
                 <div class="schema-row" (click)="toggleSchema(i, $event)">
-                  <!-- <div class="schema-info">
-              <div class="avatar">{{ data.name | slice:0:1 }}</div>
-              <span class="company-name">{{ data.name }}</span>
-            </div> -->
-
-                  <div class="schema-info">
-                    <div class="avatar">
-                      {{ data.name | slice: 0 : 1 }}
-                    </div>
-
-                    <span class="company-name">
-                      {{ data.name }}
-                    </span>
-
-                    <!-- Notification Bell -->
-                    <!-- <div
-              class="notification-wrapper"
-              *ngIf="data.notification_count > 0"
-              (click)="openNotificationModal(data, $event)">
-            
-              <mat-icon class="notification-bell">
-                notifications
-              </mat-icon>
-            
-              <span class="notification-count">
-                {{ data.notification_count > 99 ? '99+' : data.notification_count }}
-              </span>
-            
-            </div> -->
+                  <div class="schema-info d-flex align-items-center gap-2">
+                    <div class="avatar">{{ data.name | slice : 0 : 1 }}</div>
+                    <span class="company-name">{{ data.name }}</span>
                   </div>
-                  <mat-icon style="color: black">
-                    {{
-                      expandedSchemaIndex === i ? "expand_less" : "expand_more"
-                    }}
+                  <mat-icon style="color: #475569">
+                    {{ expandedSchemaIndex === i ? "expand_less" : "expand_more" }}
                   </mat-icon>
                 </div>
 
@@ -472,49 +331,34 @@
                   <div
                     class="branch-option multi-select"
                     *ngFor="let branch of data.branches"
-                    (click)="
-                      !isLoadingEss &&
-                        toggleBranchSelection(data, branch, $event)
-                    "
+                    (click)="!isLoadingEss && toggleBranchSelection(data, branch, $event)"
                   >
-                    <div class="branch-left">
+                    <div class="branch-left d-flex align-items-center gap-2">
                       <mat-icon class="check-box">
                         {{
-                          selectedSchema === data.schema_name &&
-                          selectedBranchIds.includes(branch.id)
+                          selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
                             ? "check_box"
                             : "check_box_outline_blank"
                         }}
                       </mat-icon>
-
                       <span
                         class="branch-name"
                         [class.selected-text]="
-                          selectedSchema === data.schema_name &&
-                          selectedBranchIds.includes(branch.id)
+                          selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
                         "
                       >
                         {{ branch.branch_name }}
                       </span>
                     </div>
 
-                    <!-- Notification Bell -->
-
                     <div
                       class="notification-wrapper"
                       *ngIf="branch.notification_count > 0"
                       (click)="openBranchNotificationModal(branch, $event)"
                     >
-                      <mat-icon class="notification-bell">
-                        notifications
-                      </mat-icon>
-
+                      <mat-icon class="notification-bell">notifications</mat-icon>
                       <span class="notification-count">
-                        {{
-                          branch.notification_count > 99
-                            ? "99+"
-                            : branch.notification_count
-                        }}
+                        {{ branch.notification_count > 99 ? "99+" : branch.notification_count }}
                       </span>
                     </div>
                   </div>
@@ -525,61 +369,8 @@
         </div>
       </li>
 
-      <!-- Notification Modal -->
-
-      <div class="notification-modal-overlay" *ngIf="isNotificationModalOpen">
-        <div class="notification-modal">
-          <div class="modal-header">
-            <h3>Notifications</h3>
-
-            <span class="close-btn" (click)="closeNotificationModal()">
-              ×
-            </span>
-          </div>
-          <div class="company-title">
-            {{ selectedBranchNotification?.branch_name }}
-          </div>
-          <div *ngIf="notificationList.length > 0">
-            <div
-              class="notification-card clickable-card"
-              *ngFor="let item of notificationList"
-              (click)="onBranchNotificationClick(item)"
-            >
-              <div class="notification-icon">
-                <mat-icon> notifications_active </mat-icon>
-              </div>
-
-              <div class="notification-content">
-                <div class="notification-top">
-                  <h5>
-                    {{ item.title }}
-                  </h5>
-
-                  <span class="notification-type">
-                    {{ item.type }}
-                  </span>
-                </div>
-
-                <p>
-                  {{ item.message }}
-                </p>
-
-                <small>
-                  {{ item.created_at | date: "medium" }}
-                </small>
-              </div>
-            </div>
-          </div>
-
-          <div class="empty-notification" *ngIf="notificationList.length === 0">
-            No Notifications Found
-          </div>
-        </div>
-      </div>
-
-      <!-- Admin logo -->
-
-      <li>
+      <!-- Admin Profile Display -->
+      <li class="nav-item">
         <div class="user_logged_outer" *ngIf="userDetails">
           <div class="user_logged_in">
             <mat-icon>person</mat-icon>
@@ -590,96 +381,72 @@
         </div>
       </li>
 
-      <!-- logout button -->
-      <li class="nav-item dropdown">
-        <a
-          class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"
-          id="navbarDropdownMenuLink"
-          role="button"
-          data-mdb-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <button
-            type="button"
-            (click)="logout()"
-            class="btn btn-danger"
-            style="border-radius: 0px"
-          >
-            Logout
-          </button>
-        </a>
+      <!-- Logout Button -->
+      <li class="nav-item">
+        <button type="button" (click)="logout()" class="btn btn-logout m-0">
+          <mat-icon class="logout-btn-icon">logout</mat-icon>
+          <span>Logout</span>
+        </button>
       </li>
     </ul>
   </div>
 
-  <!-- ------------------------------------------ Mobile view ------------------------------------------------ -->
+  <!-- Mobile View -->
+  <div class="container-fluid mobview d-lg-none">
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <button
+        type="button"
+        class="btn btn-collapse menu_mob p-0 border-0 background-transparent"
+        (click)="toggleSidebarMenu()"
+      >
+        <span *ngIf="!isMenuOpen">☰</span>
+        <span *ngIf="isMenuOpen">✕</span>
+      </button>
 
-  <div class="container-fluid mobview">
-    <!-- menu open close button -->
-
-    <button
-      type="button"
-      class="btn btn-collapse menu_mob"
-      (click)="toggleSidebarMenu()"
-    >
-      <span *ngIf="!isMenuOpen">☰</span>
-      <span *ngIf="isMenuOpen">X</span>
-    </button>
-
-    <div class="row">
-      <!-- logo -->
-
-      <div class="col-md-4 col-9">
-        <div class="nav_mov">
-          <a class="navbar-brand">
-            <img
-              src="assets/zeo_logo_new.png"
-              class="img-fluid"
-              alt="MDB Logo"
-              loading="lazy"
-            />
-          </a>
-        </div>
-      </div>
-
-      <!-- notification -->
-
-      <div class="col-md-1 col-3">
-        <a
-          class="nav-link me-3 me-lg-0 dropdown-toggle hidden-arrow pull-right"
-          role="button"
-          data-mdb-toggle="dropdown"
-          aria-expanded="false"
-          style="cursor: pointer"
-        >
-          <div class="notiicon">
-            <mat-icon class="mt-2">notifications</mat-icon>
-          </div>
-          <span
-            class="badge rounded-pill badge-notification bg-danger"
-            *ngIf="expiredDocumentsCount > 0"
-            style="position: absolute; margin-left: -10px; color: white"
-            >{{ expiredDocumentsCount }}</span
-          >
+      <div class="nav_mov">
+        <a class="navbar-brand m-0">
+          <img
+            src="assets/zeo_logo_new.png"
+            height="32"
+            alt="HRMS Logo"
+            loading="lazy"
+          />
         </a>
       </div>
 
-      <!-- select company -->
+      <div class="d-flex align-items-center gap-2">
+        <!-- Mobile Notifications -->
+        <a
+          class="nav-link hidden-arrow position-relative p-0"
+          role="button"
+          data-mdb-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <div class="notiicon text-white">
+            <mat-icon>notifications</mat-icon>
+          </div>
+          <span
+            class="badge rounded-pill bg-danger position-absolute"
+            *ngIf="expiredDocumentsCount > 0"
+            style="top: -4px; right: -4px; font-size: 9px;"
+          >
+            {{ expiredDocumentsCount }}
+          </span>
+        </a>
 
-      <div class="col-md-3 col-5">
+        <!-- Mobile Company Dropdown -->
         <div
-          class="Company_pro company_bor"
+          class="Company_pro company_bor position-relative"
           (click)="isCompanyDropdownOpen = !isCompanyDropdownOpen"
         >
           <div class="cmp_drop">
-            <mat-icon>business</mat-icon>
-            <h1>{{ selectedSchema || "Select Company" }}</h1>
+            <mat-icon class="cmp-icon">business</mat-icon>
             <mat-icon
-              [style.transform]="
-                isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-              "
-              >expand_more</mat-icon
+              class="chevron-arrow"
+              [style.transform]="isCompanyDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'"
             >
+              expand_more
+            </mat-icon>
           </div>
           <div
             class="standard-dropdown"
@@ -692,18 +459,15 @@
             </div>
 
             <div class="scrollable-content">
-              <div
-                class="schema-item"
-                *ngFor="let data of userDetailss; let i = index"
-              >
+              <div class="schema-item" *ngFor="let data of userDetailss; let i = index">
                 <div class="schema-row" (click)="toggleSchema(i, $event)">
-                  <div class="schema-info">
-                    <div class="avatar">{{ data.name | slice: 0 : 1 }}</div>
+                  <div class="schema-info d-flex align-items-center gap-2">
+                    <div class="avatar">{{ data.name | slice : 0 : 1 }}</div>
                     <span class="company-name">{{ data.name }}</span>
                   </div>
-                  <mat-icon>{{
-                    expandedSchemaIndex === i ? "expand_less" : "expand_more"
-                  }}</mat-icon>
+                  <mat-icon>
+                    {{ expandedSchemaIndex === i ? "expand_less" : "expand_more" }}
+                  </mat-icon>
                 </div>
                 <div class="branch-wrapper" *ngIf="expandedSchemaIndex === i">
                   <div
@@ -713,18 +477,15 @@
                   >
                     <mat-icon class="check-box">
                       {{
-                        selectedSchema === data.schema_name &&
-                        selectedBranchIds.includes(branch.id)
+                        selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
                           ? "check_box"
                           : "check_box_outline_blank"
                       }}
                     </mat-icon>
-
                     <span
                       class="branch-name"
                       [class.selected-text]="
-                        selectedSchema === data.schema_name &&
-                        selectedBranchIds.includes(branch.id)
+                        selectedSchema === data.schema_name && selectedBranchIds.includes(branch.id)
                       "
                     >
                       {{ branch.branch_name }}
@@ -733,54 +494,51 @@
                 </div>
               </div>
             </div>
-
-            <!-- <div class="dropdown-footer">
-              <button class="btn-apply" (click)="applySelection()">Apply Selection</button>
-            </div> -->
           </div>
         </div>
-      </div>
-
-      <!-- Admin logo -->
-
-      <div class="col-md-2 col-4">
-        <div class="user_logged_outer" *ngIf="userDetails">
-          <div class="user_logged_in">
-            <mat-icon>person</mat-icon>
-          </div>
-          <div class="user_logged_out">
-            <h1>{{ userDetails.username }}</h1>
-          </div>
-        </div>
-      </div>
-
-      <!-- logout button -->
-
-      <div class="col-md-2 col-3">
-        <a
-          class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"
-          id="navbarDropdownMenuLink"
-          role="button"
-          data-mdb-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <button
-            type="button"
-            (click)="logout()"
-            class="btn btn-danger mt-2 btn-full"
-            style="border-radius: 0px"
-          >
-            Logout
-          </button>
-        </a>
       </div>
     </div>
   </div>
 </nav>
 
+<!-- Notification Modal Overlay -->
+<div class="notification-modal-overlay" *ngIf="isNotificationModalOpen">
+  <div class="notification-modal">
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h3 class="m-0">Notifications</h3>
+      <span class="close-btn" (click)="closeNotificationModal()">&times;</span>
+    </div>
+    <div class="company-title fw-bold my-2">
+      {{ selectedBranchNotification?.branch_name }}
+    </div>
+    <div *ngIf="notificationList.length > 0">
+      <div
+        class="notification-card clickable-card d-flex gap-3 align-items-start p-2 border-bottom"
+        *ngFor="let item of notificationList"
+        (click)="onBranchNotificationClick(item)"
+      >
+        <div class="notification-icon">
+          <mat-icon>notifications_active</mat-icon>
+        </div>
+        <div class="notification-content">
+          <div class="notification-top d-flex justify-content-between">
+            <h5 class="m-0 fs-6 fw-bold">{{ item.title }}</h5>
+            <span class="notification-type badge bg-secondary">{{ item.type }}</span>
+          </div>
+          <p class="m-0 text-muted small">{{ item.message }}</p>
+          <small class="text-black-50">{{ item.created_at | date : "medium" }}</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-notification text-center py-4 text-muted" *ngIf="notificationList.length === 0">
+      No Notifications Found
+    </div>
+  </div>
+</div>
+
 <router-outlet></router-outlet>
 
-<!-- Loader -->
 <!-- Loader -->
 <div class="loader-container" [class.show]="isLoading">
   <div class="loader"></div>
