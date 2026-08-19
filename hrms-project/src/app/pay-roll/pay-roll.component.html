@@ -141,50 +141,96 @@
 
 
           <div class="end_section"></div>
-          <table width="100%">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Name</th>
-                <th>Year</th>
-                <th> Month</th>
-                <th>Payment Date</th>
-                <th>Document Number</th>
-                <th>branch</th>
-                <th>department</th>
-                <th>category</th>
-                <th>status</th>
-                <th>Action</th>
+<div class="payroll-table-wrapper">
+  <table class="payroll-run-table">
+    <thead>
+      <tr>
+        <th class="sticky-left">No</th>
+        <th>Name</th>
+        <th>Year</th>
+        <th>Month</th>
+        <th>Payment Date</th>
+        <th>Document Number</th>
+        <th>Branch</th>
+        <th>Department</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th class="sticky-right">Actions</th>
+      </tr>
+    </thead>
 
+    <tbody>
+      <tr *ngFor="let payroll of Payrolls; let i = index">
 
+        <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
 
+        <td data-label="Name">
+          {{ payroll.name }}
+        </td>
 
-              </tr>
-            </thead>
-            <tbody>
+        <td data-label="Year">
+          {{ payroll.year }}
+        </td>
 
-              <tr *ngFor="let payroll of Payrolls;let i = index">
-                <td data-label="No">{{ i + 1 }}</td>
-                <td data-label="Name">{{ payroll.name }}</td>
-                <td data-label="Year">{{ payroll.year }}</td>
-                <td data-label="Month">{{ getMonthName(payroll.month) }}</td>
-                <td data-label="Payment Date">{{ payroll.payment_date }}</td>
-                <td data-label="Payment Date">{{ payroll.document_number }}</td>
+        <td data-label="Month">
+          {{ getMonthName(payroll.month) }}
+        </td>
 
-                <td data-label="Branch">{{ payroll.branch }}</td>
-                <td data-label="Department">{{ payroll.department }}</td>
-                <td data-label="Category">{{ payroll.category }}</td>
-                <td data-label="Status">{{ payroll.status }}</td>
-                <td data-label="Action">
-                  <i *ngIf="hasAddPermission" class="fa-solid fa-trash" style="cursor: pointer; text-align: center;"
-                    (click)="deletePayroll(payroll.id)" title="Delete Payroll"></i>
-                </td>
+        <td data-label="Payment Date">
+          {{ payroll.payment_date }}
+        </td>
 
+        <td data-label="Document Number">
+          {{ payroll.document_number }}
+        </td>
 
-              </tr>
+        <td data-label="Branch">
+          {{ payroll.branch }}
+        </td>
 
-            </tbody>
-          </table>
+        <td data-label="Department">
+          {{ payroll.department }}
+        </td>
+
+        <td data-label="Category">
+          {{ payroll.category }}
+        </td>
+
+        <td data-label="Status">
+          <span
+            class="payroll-status"
+            [ngClass]="{
+              'status-success': payroll.status === 'Completed' || payroll.status === 'Success',
+              'status-pending': payroll.status === 'Pending',
+              'status-failed': payroll.status === 'Failed'
+            }">
+            {{ payroll.status }}
+          </span>
+        </td>
+
+        <td class="sticky-right" data-label="Actions">
+          <button
+            *ngIf="hasDeletePermission"
+            type="button"
+            class="payroll-delete-btn"
+            (click)="deletePayroll(payroll.id)"
+            title="Delete Payroll">
+
+            <i class="fa-solid fa-trash"></i>
+
+          </button>
+        </td>
+
+      </tr>
+
+      <tr *ngIf="!Payrolls || Payrolls.length === 0">
+        <td colspan="11" class="payroll-empty">
+          No payroll records found.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
         </mat-tab>
 

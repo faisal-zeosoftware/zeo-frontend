@@ -1,208 +1,458 @@
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section" >
-        <div class="com_list " >
-    <div class="">
-        <div class="row">
-            <div class="col-md-4">
-                <h2>Late In Early Out Approval List </h2>
-              </div>
-                      <!-- Search Input -->
-      <div class="col-md-3">
-        <div class="form-group mb-0 search-wrapper">
-          <input 
-            type="text" 
-            class="form-control search-input"
-            placeholder="Search by request, status" 
-            [(ngModel)]="searchText"
-            (ngModelChange)="applyFilters()"
-          />
-    <button class="search-btn" type="button">
-      <i class="fa fa-search"></i>
-    </button>
+
+  <div class="comapny_section">
+
+    <!-- ================= HEADER CARD ================= -->
+
+    <div class="header-card">
+
+      <div class="row align-items-center">
+
+        <!-- Title -->
+        <div class="col-md-4">
+          <h2 class="page-title">
+            Late In Early Out Approvals
+          </h2>
         </div>
-      </div>
-                                <!-- Status Filter Dropdown -->
-<div class="col-md-1">
-  <div class="filter-container">
-    <button
-      class="btn btn-outline-secondary"
-      (click)="toggleFilterMenu()"
-    >
-      <i class="fa fa-filter"></i>
-      Filter
-    </button>
 
-    <div class="filter-dropdown" *ngIf="showFilterMenu">
-      <button class="dropdown-item" (click)="filterByStatus('')">
-        All Statuses
-      </button>
+        <!-- Search -->
+        <div class="col-md-4">
 
-      <button class="dropdown-item" (click)="filterByStatus('P')">
-        Pending
-      </button>
+          <div class="search-wrapper">
 
-      <button class="dropdown-item" (click)="filterByStatus('Approved')">
-        Approved
-      </button>
+            <input
+              type="text"
+              class="form-control search-input"
+              placeholder="Search by request, employee, status..."
+              [(ngModel)]="searchText"
+              (ngModelChange)="applyFilters()"
+            />
 
-      <button class="dropdown-item" (click)="filterByStatus('Rejected')">
-        Rejected
-      </button>
-    </div>
-  </div>
+            <button
+              class="search-btn"
+              type="button"
+            >
+              <i class="fa fa-search"></i>
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Filter -->
+        <div class="col-md-4 text-md-right">
+
+          <div class="filter-container">
+
+<button
+  type="button"
+  class="btn btn-filter"
+  (click)="toggleFilterMenu()"
+>
+  <i class="fa fa-filter"></i>
+
+  {{ selectedStatus || 'All Statuses' }}
+</button>
+<div
+  class="filter-dropdown"
+  *ngIf="showFilterMenu"
+>
+
+  <button
+    type="button"
+    class="dropdown-item"
+    (click)="filterByStatus('')"
+  >
+    All Statuses
+  </button>
+
+  <button
+    type="button"
+    class="dropdown-item"
+    (click)="filterByStatus('Pending')"
+  >
+    Pending
+  </button>
+
+  <button
+    type="button"
+    class="dropdown-item"
+    (click)="filterByStatus('Approved')"
+  >
+    Approved
+  </button>
+
+  <button
+    type="button"
+    class="dropdown-item"
+    (click)="filterByStatus('Rejected')"
+  >
+    Rejected
+  </button>
+
 </div>
-            </div>
+
+          </div>
+
         </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= APPROVAL CARDS ================= -->
+
+<div class="approval-list">
+
+  <!-- ================= APPROVAL CARD ================= -->
+  <div
+    class="approval-card"
+    *ngFor="let apr of filteredApprovals"
+  >
+
+    <!-- CARD HEADER -->
+    <div class="card-header-row">
+
+      <div>
+        <h5 class="request-title">
+          {{ apr.lateinearlyout_request || 'Late In / Early Out Request' }}
+        </h5>
+
+        <small>
+          Employee Late In / Early Out Request
+        </small>
+      </div>
+
+      <!-- STATUS -->
+      <div
+        class="status-badge"
+        [ngClass]="getStatusClass(apr.status)"
+      >
+        {{ getStatusLabel(apr.status) }}
+      </div>
+
+    </div>
+
+
+    <!-- CARD BODY -->
+    <div class="card-body-row">
+
+      <!-- Request -->
+      <div class="info-item">
+        <span class="label">
+          Late In / Early Out Request
+        </span>
+
+        <span class="value">
+          {{ apr.lateinearlyout_request || '—' }}
+        </span>
+      </div>
+
+
+      <!-- Approver -->
+      <div
+        class="info-item"
+        *ngIf="apr.approver"
+      >
+        <span class="label">
+          Approver
+        </span>
+
+        <span class="value">
+          {{ apr.approver || '—' }}
+        </span>
+      </div>
+
+
+      <!-- Level -->
+      <div class="info-item">
+
+        <span class="label">
+          Level
+        </span>
+
+        <span class="value">
+          {{ apr.level || '—' }}
+        </span>
+
+      </div>
+
+
+      <!-- Reason -->
+      <div class="info-item">
+
+        <span class="label">
+          Reason / Note
+        </span>
+
+        <span class="value">
+          {{ apr.note || '—' }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- ACTIONS -->
+    <div class="card-actions">
+
+      <button
+        type="button"
+        class="btn btn-view"
+        (click)="selectedaprovaldetalis(apr.id)"
+      >
+        <i class="fa fa-eye"></i>
+        View
+      </button>
+
+
+      <button
+        *ngIf="apr.is_deligate"
+        type="button"
+        class="btn btn-delegate"
+        (click)="apr.showDelegation = !apr.showDelegation"
+      >
+
+        <i class="fa fa-exchange"></i>
+
+        {{
+          apr.showDelegation
+            ? 'Hide Details'
+            : 'Delegation Details'
+        }}
+
+      </button>
+
+    </div>
+
+
+    <!-- DELEGATION DETAILS -->
+    <div
+      *ngIf="apr.delegation_details && apr.showDelegation"
+      class="delegation-section"
+    >
+
+      <div class="row">
+
+        <div class="col-md-6">
+
+          <div class="del-item">
+
+            <strong>
+              Request
+            </strong>
+
+            <p>
+              {{ apr.lateinearlyout_request || '—' }}
+            </p>
+
+          </div>
+
         </div>
 
-        <div class="row">
-            <div class="col-md-12">
-              <!-- Approval Cards -->
-              <div class="approval_sec" *ngFor="let apr of filteredApprovals" >
-                <h6>Employee Late In Early Out Request Approvals</h6><hr>
-                <div class="row ">
-                    <div class="col-md-3">
-                      <h4>Lateinearlyout request</h4>
-                      <h5>{{apr.lateinearlyout_request}}</h5>
-                    </div>
-                    <div class="col-md-2">
-                      <h4>Status  </h4>
-                      <h5>{{apr.status}} </h5>
-                    </div>
-                    <div class="col-md-2">
-                      <h4>Level </h4>
-                      <h5>{{apr.level}}</h5>
-                    </div>
-                    <div class="col-md-2">
-                        <h4>Reason </h4>
-                        <h5>{{apr.note}}</h5>
-                      </div>
-            <div class="col-md-2">
-              <div class="action-buttons">
-                <button
-                  style="color: white"
-                  class="btn btn-info"
-                  (click)="selectedaprovaldetalis(apr.id)"
-                >
-                  View
-                </button>
 
-                <button
-                  *ngIf="apr.is_deligate"
-                  class="btn btn-secondary"
-                  (click)="apr.showDelegation = !apr.showDelegation"
-                >
-                  {{
-                    apr.showDelegation ? "Hide Details" : "Delegation Details"
-                  }}
-                </button>
-              </div>
-            </div>
-                  </div>
+        <div class="col-md-6">
 
-                          <!-- Delegation Body -->
-          <div
-            *ngIf="apr.delegation_details && apr.showDelegation"
-            class="delegation-card"
+          <div class="del-item">
+
+            <strong>
+              Delegator
+            </strong>
+
+            <p>
+              {{ apr.approver || '—' }}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-md-6">
+
+          <div class="del-item">
+
+            <strong>
+              Delegate To
+            </strong>
+
+            <p>
+              {{ apr.delegation_details.delegate_to || '—' }}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-md-6">
+
+          <div class="del-item">
+
+            <strong>
+              Response
+            </strong>
+
+            <p>
+              {{ apr.delegation_details.response || '—' }}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- RESPONSE -->
+        <div
+          class="col-md-12 mt-3"
+          *ngIf="canShowResponse(apr)"
+        >
+
+          <strong>
+            Send Delegation Response
+          </strong>
+
+          <textarea
+            class="form-control mt-2"
+            rows="3"
+            [(ngModel)]="apr.responseText"
+            placeholder="Enter your response..."
+          ></textarea>
+
+          <button
+            type="button"
+            class="btn btn-primary btn-sm mt-2"
+            (click)="sendDelegationResponseInline(apr)"
           >
-            <div class="row">
+            Send Response
+          </button>
 
-              <div class="col-md-6">
-                <strong>Request</strong>
-                <p>{{ apr.lateinearlyout_request }}</p>
-              </div>
+        </div>
 
-              <div class="col-md-6">
-                <strong>Deligator</strong>
-                <p>{{ apr.approver }}</p>
-              </div>
+      </div>
 
-              <div class="col-md-6">
-                <strong>Delegate To</strong>
-                <p>{{ apr.delegation_details.delegate_to }}</p>
-              </div>
+    </div>
 
-               <div class="col-md-6">
-                <strong>Response</strong>
-                <p>{{ apr.delegation_details.response }}</p>
-              </div>
+  </div>
 
-              <div class="col-md-12 mt-3" *ngIf="canShowResponse(apr)">
-                <strong>Send Deligation Response</strong>
 
-                <textarea
-                  class="form-control"
-                  rows="4"
-                  [(ngModel)]="apr.responseText"
-                  placeholder="Enter response..."
-                ></textarea>
+  <!-- EMPTY STATE -->
+  <div
+    class="empty-state"
+    *ngIf="filteredApprovals.length === 0 && !isLoading"
+  >
 
-                <button
-                  class="btn btn-primary mt-2"
-                  (click)="sendDelegationResponseInline(apr)"
-                >
-                  Send Response
-                </button>
-              </div>
-            </div>
-          </div>
-              </div>
+    <i class="fa fa-inbox empty-icon"></i>
 
-              <!-- Empty State Message -->
-              <div class="empty-state" *ngIf="filteredApprovals.length === 0 && !isLoading">
-                <div class="empty-state-content">
-                  <i class="fa fa-inbox empty-icon"></i>
-                  <h4>{{ getEmptyMessage() }}</h4>
-                  <p *ngIf="searchText || selectedStatus">Try adjusting your search or filter criteria.</p>
-                </div>
-              </div>
-          </div>
-          </div>
+    <h4>
+      {{ getEmptyMessage() }}
+    </h4>
 
-          <!-- Modal Popup for selected approval details -->
-<div *ngIf="isAddFieldsModalOpen" class="modal">
-    <div class="modal-content">
-      <div *ngIf="selectedApproval">
+    <p *ngIf="searchText || selectedStatus">
+      Try adjusting your search or filter criteria.
+    </p>
+
+  </div>
+
+</div>
+
+
+    <!-- ================= APPROVAL DETAILS MODAL ================= -->
+
+    <div
+      *ngIf="isAddFieldsModalOpen"
+      class="modal"
+    >
+
+      <div class="modal-content">
+
+        <div class="text-right">
+
+          <span
+            class="close-btn"
+            (click)="closemarketModal()"
+          >
+            ×
+          </span>
+
+        </div>
+
+
+        <div *ngIf="selectedApproval">
+
+          <h6>
+            Late In Early Out Request Approvals
+          </h6>
+
+          <hr />
+
+          <h6>
+            Late In Early Out Request -
+            {{ selectedApproval.lateinearlyout_request }}
+          </h6>
+
+          <h6>
+            Status -
+            {{ selectedApproval.status === 'P'
+              ? 'Pending'
+              : selectedApproval.status }}
+          </h6>
+
+          <h6>
+            Level -
+            {{ selectedApproval.level }}
+          </h6>
+
+
+          <textarea
+            class="form-control"
+            [(ngModel)]="note"
+            placeholder="Add a Comment here..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+
           <div class="row mt-2">
-            <div class="col-md-6">
-              <h6>Late In Early Out Request Approvals</h6>
-            </div>
-            <div class="col-md-6 text-right">
-              <span class="close-btn" (click)="closemarketModal()"> × </span>
-            </div>
-          </div>
-        <hr>
-        <h6>Lateinearlyout request- {{ selectedApproval.lateinearlyout_request }}</h6>
-        <h6>Status - {{ selectedApproval.status }}</h6>
-        <h6>Level - {{ selectedApproval.level }}</h6>
 
-        <textarea
-          class="form-control"
-          [(ngModel)]="note"
-          placeholder="Add a Comment here..."
-          [ngModelOptions]="{ standalone: true }"
-        > </textarea>
+            <!-- Delegate -->
 
-                   <div class="row mt-2">
             <div class="col-md-3">
+
               <button
-                class="btn btn-primary"
+                type="button"
+                class="btn btn-primary btn-full"
                 (click)="openDelegationModalFromApproval(selectedApproval)"
               >
                 Delegate
               </button>
+
             </div>
+
+
             <div class="col-md-3"></div>
+
+
+            <!-- Reject -->
+
             <div class="col-md-3">
+
               <button
                 type="button"
-                class="btn btn btn-danger btn-full"
+                class="btn btn-danger btn-full"
                 (click)="rejectApproval(selectedApproval.id)"
               >
                 Reject
               </button>
+
             </div>
+
+
+            <!-- Approve -->
+
             <div class="col-md-3">
+
               <button
                 type="button"
                 class="btn btn-success btn-full"
@@ -210,88 +460,179 @@
               >
                 Approve
               </button>
+
             </div>
+
           </div>
-             <!-- Additional input for rejection reason -->
-        <div *ngIf="showRejectionReason">
-          <textarea
-            class="form-control mt-2"
-            [(ngModel)]="rejection_reason"
-            placeholder="Add a Rejection Reason..."
-            [ngModelOptions]="{ standalone: true }"
-          ></textarea>
-        </div>
-        <div class="mt-2" *ngIf="showRejectionReason">
-          <button
-            type="button"
-            class="btn btn-danger btn-full"
-            (click)="confirmRejection(selectedApproval.id)"
+
+
+          <!-- Rejection Reason -->
+
+          <div *ngIf="showRejectionReason">
+
+            <textarea
+              class="form-control mt-2"
+              [(ngModel)]="rejection_reason"
+              placeholder="Add a Rejection Reason..."
+              [ngModelOptions]="{ standalone: true }"
+            ></textarea>
+
+          </div>
+
+
+          <div
+            class="mt-2"
+            *ngIf="showRejectionReason"
           >
-            Confirm Rejection
-          </button>
+
+            <button
+              type="button"
+              class="btn btn-danger btn-full"
+              (click)="confirmRejection(selectedApproval.id)"
+            >
+              Confirm Rejection
+            </button>
+
+          </div>
+
         </div>
+
       </div>
-    </div>
-  </div>
 
-                 <div *ngIf="isDelegationModalOpen" class="modal">
+    </div>
+
+
+    <!-- ================= DELEGATION MODAL ================= -->
+
+    <div
+      *ngIf="isDelegationModalOpen"
+      class="modal"
+    >
+
       <div class="modal-content">
+
         <div class="text-right">
-          <span class="close-btn" (click)="closeDelegationModal()"> × </span>
+
+          <span
+            class="close-btn"
+            (click)="closeDelegationModal()"
+          >
+            ×
+          </span>
+
         </div>
 
-        <h5>Send Delegation</h5>
+
+        <h5>
+          Send Delegation
+        </h5>
+
         <hr />
+
+
         <div class="row">
 
+          <!-- Request -->
+
           <div class="col-md-4">
-            <label>Request</label>
+
+            <label>
+              Request
+            </label>
 
             <select
               class="form-control"
               [(ngModel)]="delegationForm.request"
               disabled
             >
-              <option *ngFor="let req of LinEoutreq" [value]="req.id">
-                {{ req.document_number }} - {{ req.request_type }}
+
+              <option
+                *ngFor="let req of LinEoutreq"
+                [value]="req.id"
+              >
+                {{ req.document_number }}
+                -
+                {{ req.request_type }}
               </option>
+
             </select>
+
           </div>
 
-<div class="col-md-4">
-  <label>Delegator</label>
 
-  <input
-    type="text"
-    class="form-control"
-    [value]="delegationForm.deligator"
-    readonly
-  />
-</div>
+          <!-- Delegator -->
 
           <div class="col-md-4">
-            <label>Delegate To</label>
+
+            <label>
+              Delegator
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="delegationForm.deligator"
+              readonly
+            />
+
+          </div>
+
+
+          <!-- Delegate To -->
+
+          <div class="col-md-4">
+
+            <label>
+              Delegate To
+            </label>
 
             <select
               class="form-control"
               [(ngModel)]="delegationForm.deligate_to"
             >
-              <option *ngFor="let user of Users" [ngValue]="user.id">
+
+              <option
+                *ngFor="let user of Users"
+                [ngValue]="user.id"
+              >
                 {{ user.username }}
               </option>
+
             </select>
+
           </div>
 
-                    <button class="btn btn-success" (click)="createDelegation()">
-            Send
-          </button>
-        </div>
-      </div>
-    </div>
-</div>
 
-      <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
+          <!-- Send -->
+
+          <div class="col-md-12 mt-3 text-right">
+
+            <button
+              type="button"
+              class="btn btn-success"
+              (click)="createDelegation()"
+            >
+              Send
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
+
   </div>
+
+
+  <!-- ================= LOADER ================= -->
+
+  <div
+    class="loader-container"
+    [class.show]="isLoading"
+  >
+    <div class="loader"></div>
+  </div>
+
+</div>

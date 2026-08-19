@@ -567,9 +567,77 @@ export class LateinEarlyoutApprovalsComponent {
     this.showFilterMenu = !this.showFilterMenu;
   }
 
-  filterByStatus(status: string): void {
-    this.selectedStatus = status;
-    this.applyFilters();
-    this.showFilterMenu = false;
+filterByStatus(status: string): void {
+  this.selectedStatus = status;
+
+  this.showFilterMenu = false;
+
+  this.applyFilters();
+}
+
+normalizeStatus(status: any): string {
+
+  if (status === null || status === undefined) {
+    return '';
   }
+
+  const value = String(status)
+    .trim()
+    .toLowerCase();
+
+  switch (value) {
+
+    case 'p':
+    case 'pending':
+      return 'pending';
+
+    case 'a':
+    case 'approved':
+      return 'approved';
+
+    case 'r':
+    case 'rejected':
+      return 'rejected';
+
+    default:
+      return value;
+  }
+}
+
+getStatusLabel(status: any): string {
+
+  switch (this.normalizeStatus(status)) {
+
+    case 'pending':
+      return 'Pending';
+
+    case 'approved':
+      return 'Approved';
+
+    case 'rejected':
+      return 'Rejected';
+
+    default:
+      return status || 'Unknown';
+  }
+
+}
+getStatusClass(status: any): string {
+
+  switch (this.normalizeStatus(status)) {
+
+    case 'pending':
+      return 'status-pending';
+
+    case 'approved':
+      return 'status-approved';
+
+    case 'rejected':
+      return 'status-rejected';
+
+    default:
+      return '';
+  }
+
+}
 }

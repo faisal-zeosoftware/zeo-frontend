@@ -658,6 +658,7 @@ onFileSelected(event:any){
             // Filter out the deleted payroll from the list
             this.Payrolls = this.Payrolls.filter(p => p.id !== payrollId);
             console.log('Payroll deleted successfully');
+            window.location.reload();
           },
           (error) => {
             console.error('Failed to delete payroll', error);
@@ -1252,7 +1253,83 @@ getComponentAmount(payslip: any, componentName: string): string {
 
 
 
+searchText: string = '';
+selectedStatus: string = '';
+selectedYear: string = '';
+selectedMonth: string = '';
 
+
+availableYears: any[] = [];
+
+months = [
+  { value: 1, name: 'January' },
+  { value: 2, name: 'February' },
+  { value: 3, name: 'March' },
+  { value: 4, name: 'April' },
+  { value: 5, name: 'May' },
+  { value: 6, name: 'June' },
+  { value: 7, name: 'July' },
+  { value: 8, name: 'August' },
+  { value: 9, name: 'September' },
+  { value: 10, name: 'October' },
+  { value: 11, name: 'November' },
+  { value: 12, name: 'December' }
+];
+
+applyFilters(): void {
+
+  const search = this.searchText.trim().toLowerCase();
+
+  this.filteredPaySlips = this.PaySlips.filter((payslip: any) => {
+
+    const employee = String(payslip.employee || '').toLowerCase();
+
+    const payrollName = String(
+      payslip.payroll_run?.name || ''
+    ).toLowerCase();
+
+    const status = String(
+      payslip.status || ''
+    ).toLowerCase();
+
+    const year = String(
+      payslip.payroll_run?.year || ''
+    );
+
+    const month = String(
+      payslip.payroll_run?.month || ''
+    );
+
+    // Search
+    const matchesSearch =
+      !search ||
+      employee.includes(search) ||
+      payrollName.includes(search) ||
+      status.includes(search);
+
+    // Status
+    const matchesStatus =
+      !this.selectedStatus ||
+      status === this.selectedStatus.toLowerCase();
+
+    // Year
+    const matchesYear =
+      !this.selectedYear ||
+      year === String(this.selectedYear);
+
+    // Month
+    const matchesMonth =
+      !this.selectedMonth ||
+      month === String(this.selectedMonth);
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesYear &&
+      matchesMonth
+    );
+  });
+}
 
 
 

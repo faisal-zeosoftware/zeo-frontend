@@ -1,442 +1,900 @@
-<div class="container" >
-    <div class="comapny_section" *ngIf="hasViewPermission">
-        <div class="com_list " >
-    <div class="">
+<div class="container">
+
+  <div class="comapny_section" *ngIf="hasViewPermission">
+
+    <!-- ==========================================
+         MAIN APPROVAL LIST
+    =========================================== -->
+
+    <div class="com_list">
+
+      <!-- Header -->
+      <div class="row align-items-center">
+
+        <!-- Title -->
+        <div class="col-md-4">
+
+          <h2>
+            Leave Approval List
+          </h2>
+
+        </div>
+
+
+        <!-- Search -->
+        <div class="col-md-4">
+
+          <div class="search-wrapper">
+
+            <input
+              type="text"
+              class="form-control search-input"
+              placeholder="Search by request, status..."
+              [(ngModel)]="searchText"
+              (ngModelChange)="applyFilters()"
+            />
+
+            <button
+              class="search-btn"
+              type="button"
+            >
+              <i class="fa fa-search"></i>
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- Filter -->
+        <div class="col-md-2">
+
+          <div class="filter-container">
+
+            <button
+              type="button"
+              class="btn btn-filter"
+              (click)="toggleFilterMenu()"
+            >
+
+              <i class="fa fa-filter"></i>
+
+              {{ selectedStatus || 'All Statuses' }}
+
+            </button>
+
+
+            <div
+              class="filter-dropdown"
+              *ngIf="showFilterMenu"
+            >
+
+              <button
+                type="button"
+                class="dropdown-item"
+                (click)="filterByStatus('')"
+              >
+                All Statuses
+              </button>
+
+              <button
+                type="button"
+                class="dropdown-item"
+                (click)="filterByStatus('Pending')"
+              >
+                Pending
+              </button>
+
+              <button
+                type="button"
+                class="dropdown-item"
+                (click)="filterByStatus('Approved')"
+              >
+                Approved
+              </button>
+
+              <button
+                type="button"
+                class="dropdown-item"
+                (click)="filterByStatus('Rejected')"
+              >
+                Rejected
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- History Button -->
+        <div class="col-md-2 text-right">
+
+          <button
+            type="button"
+            class="btn btn-export"
+            (click)="scrollToBottom()"
+          >
+            Leave History
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         APPROVAL CARDS
+    =========================================== -->
+
+    <div class="approval-list">
+
+      <!-- Card -->
+      <div
+        class="approval-card"
+        *ngFor="let apr of filteredApprovals"
+      >
+
+        <!-- =====================================
+             CARD HEADER
+        ====================================== -->
+
+        <div class="card-header-row">
+
+          <div>
+
+            <h5 class="request-title">
+              {{ apr.leave_request }}
+            </h5>
+
+            <small>
+              Leave Request Approval
+            </small>
+
+          </div>
+
+
+          <!-- Status -->
+          <div
+            class="status-badge"
+            [ngClass]="{
+              'status-pending': apr.status === 'Pending',
+              'status-approved': apr.status === 'Approved',
+              'status-rejected': apr.status === 'Rejected'
+            }"
+          >
+
+            {{ apr.status }}
+
+          </div>
+
+        </div>
+
+
+        <!-- =====================================
+             CARD BODY
+        ====================================== -->
+
+        <div class="card-body-row">
+
+
+          <!-- Employee -->
+
+          <div class="info-item">
+
+            <span class="label">
+              Employee
+            </span>
+
+            <span class="value">
+              {{ apr.employee_id }}
+            </span>
+
+          </div>
+
+
+          <!-- Start Date -->
+
+          <div class="info-item">
+
+            <span class="label">
+              Start Date
+            </span>
+
+            <span class="value">
+              {{ apr.request_details?.start_date | date:'dd-MM-yyyy' }}
+            </span>
+
+          </div>
+
+
+          <!-- End Date -->
+
+          <div class="info-item">
+
+            <span class="label">
+              End Date
+            </span>
+
+            <span class="value">
+              {{ apr.request_details?.end_date | date:'dd-MM-yyyy' }}
+            </span>
+
+          </div>
+
+
+          <!-- Level -->
+
+          <div class="info-item">
+
+            <span class="label">
+              Level
+            </span>
+
+            <span class="value">
+              {{ apr.level }}
+            </span>
+
+          </div>
+
+
+          <!-- Reason -->
+
+          <div class="info-item">
+
+            <span class="label">
+              Reason
+            </span>
+
+            <span class="value">
+              {{ apr.note || '—' }}
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- =====================================
+             ACTION BUTTONS
+        ====================================== -->
+
+        <div class="card-actions">
+
+          <!-- View -->
+
+          <button
+            type="button"
+            class="btn btn-view"
+            (click)="selectedaprovaldetalis(apr.id)"
+          >
+
+            <i class="fa fa-eye"></i>
+
+            View
+
+          </button>
+
+
+          <!-- Delegation -->
+
+          <button
+            *ngIf="apr.is_deligate"
+            type="button"
+            class="btn btn-delegate"
+            (click)="apr.showDelegation = !apr.showDelegation"
+          >
+
+            <i class="fa fa-exchange"></i>
+
+            {{
+              apr.showDelegation
+                ? 'Hide Details'
+                : 'Delegation Details'
+            }}
+
+          </button>
+
+        </div>
+
+
+        <!-- =====================================
+             DELEGATION DETAILS
+        ====================================== -->
+
+        <div
+          *ngIf="apr.delegation_details && apr.showDelegation"
+          class="delegation-section"
+        >
+
+          <div class="row">
+
+
+            <!-- Request -->
+
+            <div class="col-md-6">
+
+              <div class="del-item">
+
+                <strong>
+                  Request
+                </strong>
+
+                <p>
+                  {{ apr.leave_request }}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- Delegator -->
+
+            <div class="col-md-6">
+
+              <div class="del-item">
+
+                <strong>
+                  Delegator
+                </strong>
+
+                <p>
+                  {{ apr.approver }}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- Delegate To -->
+
+            <div class="col-md-6">
+
+              <div class="del-item">
+
+                <strong>
+                  Delegate To
+                </strong>
+
+                <p>
+                  {{ apr.delegation_details.delegate_to }}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- Response -->
+
+            <div class="col-md-6">
+
+              <div class="del-item">
+
+                <strong>
+                  Response
+                </strong>
+
+                <p>
+                  {{ apr.delegation_details.response || '—' }}
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- Send Response -->
+
+            <div
+              class="col-md-12 mt-3"
+              *ngIf="canShowResponse(apr)"
+            >
+
+              <strong>
+                Send Delegation Response
+              </strong>
+
+
+              <textarea
+                class="form-control mt-2"
+                rows="3"
+                [(ngModel)]="apr.responseText"
+                placeholder="Enter response..."
+              ></textarea>
+
+
+              <button
+                type="button"
+                class="btn btn-primary mt-2"
+                (click)="sendDelegationResponseInline(apr)"
+              >
+
+                Send Response
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =====================================
+           EMPTY STATE
+      ====================================== -->
+
+      <div
+        class="empty-state"
+        *ngIf="filteredApprovals.length === 0 && !isLoading"
+      >
+
+        <div class="empty-state-content">
+
+          <i class="fa fa-inbox empty-icon"></i>
+
+          <h4>
+            {{ getEmptyMessage() }}
+          </h4>
+
+          <p *ngIf="searchText || selectedStatus">
+            Try adjusting your search or filter criteria.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         EMPLOYEE LEAVE REQUEST HISTORY
+    =========================================== -->
+
+    <div
+      class="com_list mt-4"
+      #bottomOfPage
+    >
+
+      <h2>
+        Employee Leave Request History
+      </h2>
+
+
+      <!-- Employee Selection -->
 
       <div class="row">
-        <div class="col-md-3">
-          <h2>Leave Approval List </h2>
 
-          </div>
-                <!-- Search Input -->
-<div class="col-md-3">
-  <div class="form-group mb-0 search-wrapper">
-    <input
-      type="text"
-      class="form-control search-input"
-      placeholder="Search by request, status"
-      [(ngModel)]="searchText"
-      (ngModelChange)="applyFilters()"
-    />
+        <div class="col-md-6">
 
-    <button class="search-btn" type="button">
-      <i class="fa fa-search"></i>
-    </button>
-  </div>
-</div>
-
-              <!-- Status Filter Dropdown -->
-<div class="col-md-1">
-  <div class="filter-container">
-    <button
-      class="btn btn-outline-secondary"
-      (click)="toggleFilterMenu()"
-    >
-      <i class="fa fa-filter"></i>
-      Filter
-    </button>
-
-    <div class="filter-dropdown" *ngIf="showFilterMenu">
-      <button class="dropdown-item" (click)="filterByStatus('')">
-        All Statuses
-      </button>
-
-      <button class="dropdown-item" (click)="filterByStatus('Pending')">
-        Pending
-      </button>
-
-      <button class="dropdown-item" (click)="filterByStatus('Approved')">
-        Approved
-      </button>
-
-      <button class="dropdown-item" (click)="filterByStatus('Rejected')">
-        Rejected
-      </button>
-    </div>
-  </div>
-</div>
-          <div class="col-md-5">
-            <button class="btn pull-right btn-export" (click)="scrollToBottom()">Employee Leave Request History</button>
-
-          </div>
-        </div>
-
-        </div>
-
-        </div>
+          <label>
+            Employee
+          </label>
 
 
-        <div class="row">
-            <div class="col-md-12">
-              <div class="approval_sec" *ngFor="let apr of filteredApprovals">
-                <h6>Leave Request Approvals</h6><hr>
-                <div class="row ">
-                    <div class="col-md-3">
-                      <h4>Leave Request</h4>
-                      <h5>{{apr.leave_request}}</h5>
-                    </div>
-                       <div class="col-md-3">
-                      <h4>Employee</h4>
-                      <h5>{{apr.employee_id}}</h5>
-                    </div>
-                      <!-- NEW -->
-  <div class="col-md-3">
-    <h4>Start Date</h4>
-    <h5>{{ apr.request_details?.start_date | date:'dd-MM-yyyy' }}</h5>
-  </div>
+          <div class="custom-sel">
 
-  <!-- NEW -->
-  <div class="col-md-3">
-    <h4>End Date</h4>
-    <h5>{{ apr.request_details?.end_date | date:'dd-MM-yyyy' }}</h5>
-  </div>
-                    <div class="col-md-3">
-                      <h4>Status  </h4>
-                      <h5>{{apr.status}} </h5>
-                    </div>
-                    <div class="col-md-3">
-                      <h4>Level </h4>
-                      <h5>{{apr.level}}</h5>
-                    </div>
-                    <div class="col-md-3">
-                        <h4>Reason </h4>
-                        <h5>{{apr.note}}</h5>
-                      </div>
-            <div class="col-md-2">
-              <div class="action-buttons">
-                <button
-                  style="color: white"
-                  class="btn btn-info"
-                  (click)="selectedaprovaldetalis(apr.id)"
+            <div class="form-control-wrapper">
+
+              <mat-form-field
+                appearance="outline"
+                class="w-100"
+              >
+
+                <mat-select
+                  [(ngModel)]="selectedEmployeeId"
+                  (selectionChange)="getLeaveHistory()"
+                  [ngModelOptions]="{standalone: true}"
                 >
-                  View
-                </button>
 
-                <button
-                  *ngIf="apr.is_deligate"
-                  class="btn btn-secondary"
-                  (click)="apr.showDelegation = !apr.showDelegation"
-                >
-                  {{
-                    apr.showDelegation ? "Hide Details" : "Delegation Details"
-                  }}
-                </button>
-              </div>
-            </div>
+                  <!-- Search Employee -->
+
+                  <div class="px-2 pb-2">
+
+                    <input
+                      type="text"
+                      placeholder="Search Employee"
+                      class="form-control"
+                      [(ngModel)]="employeeSearch"
+                      [ngModelOptions]="{standalone: true}"
+                      (click)="$event.stopPropagation()"
+                      (keydown)="$event.stopPropagation()"
+                    />
+
                   </div>
 
-                                          <!-- Delegation Body -->
-          <div
-            *ngIf="apr.delegation_details && apr.showDelegation"
-            class="delegation-card"
-          >
-            <div class="row">
 
-              <div class="col-md-6">
-                <strong>Request</strong>
-                <p>{{ apr.leave_request }}</p>
-              </div>
+                  <!-- Employees -->
 
-              <div class="col-md-6">
-                <strong>Deligator</strong>
-                <p>{{ apr.approver }}</p>
-              </div>
+                  <mat-option
+                    *ngFor="let employee of searchFilteredEmployees()"
+                    [value]="employee.id"
+                  >
 
-              <div class="col-md-6">
-                <strong>Delegate To</strong>
-                <p>{{ apr.delegation_details.delegate_to }}</p>
-              </div>
+                    {{ employee.emp_code }}
+                    -
+                    {{ employee.emp_first_name }}
+                    {{ employee.emp_last_name }}
 
-               <div class="col-md-6">
-                <strong>Response</strong>
-                <p>{{ apr.delegation_details.response }}</p>
-              </div>
+                  </mat-option>
 
-              <div class="col-md-12 mt-3" *ngIf="canShowResponse(apr)">
-                <strong>Send Deligation Response</strong>
+                </mat-select>
 
-                <textarea
-                  class="form-control"
-                  rows="4"
-                  [(ngModel)]="apr.responseText"
-                  placeholder="Enter response..."
-                ></textarea>
+              </mat-form-field>
 
-                <button
-                  class="btn btn-primary mt-2"
-                  (click)="sendDelegationResponseInline(apr)"
-                >
-                  Send Response
-                </button>
-              </div>
             </div>
-          </div>
-              
-         
-                <!-- <h6> General Request - {{apr.general_request}}</h6>
-                <h6>Status - {{apr.status}}</h6>
-                <h6>Level - {{apr.level}}</h6> -->
-        
-            
-        
-              </div>
-            </div>
-                        <!-- Empty State Message -->
-<div class="empty-state" *ngIf="filteredApprovals.length === 0 && !isLoading">
-  <div class="empty-state-content">
-    <i class="fa fa-inbox empty-icon"></i>
-    <h4>{{ getEmptyMessage() }}</h4>
-    <p *ngIf="searchText">Try adjusting your search or filter criteria.</p>
-  </div>
-</div>
+
           </div>
 
-          <div class="com_list mt-4" #bottomOfPage>
-            <h2>Employee leave request history</h2>
-            <div class="row">
-                          <div class="col-md-6">
-              <label>
-                Employee
-              </label>
-              <div class="custom-sel">
-                <div class="form-control-wrapper">
-                  <mat-form-field appearance="outline" class="w-100">
-<mat-select
-    [(ngModel)]="selectedEmployeeId"
-    (selectionChange)="getLeaveHistory()"
-    [ngModelOptions]="{standalone: true}">
-                      <!-- Search Input -->
-                      <div class="px-2 pb-2">
-                        <input
-                          type="text"
-                          placeholder="Search Employee"
-                          class="form-control"
-                          [(ngModel)]="employeeSearch"
-                          [ngModelOptions]="{ standalone: true }"
-                          (click)="$event.stopPropagation()"
-                          (keydown)="$event.stopPropagation()"
-                        />
-                      </div>
-                      <mat-option
-                        *ngFor="let employee of searchFilteredEmployees()"
-                        [value]="employee.id"
-                      >
-                        {{ employee.emp_code }} - {{ employee.emp_first_name }}
-                        {{ employee.emp_last_name }}
-                      </mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-            </div>
-          
-            <!-- Leave request history table -->
-            <div class="row mt-4" *ngIf="leaveHistory.length > 0">
-              <div class="col-md-12">
-                <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th>Leave Type</th>
-                      <th>Start Date</th>
-                      <th>End Date</th>
-                      <th>Reason</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let leave of leaveHistory">
-                      <td>{{ leave.leave_type }}</td>
-                      <td>{{ leave.start_date }}</td>
-                      <td>{{ leave.end_date }}</td>
-                      <td>{{ leave.reason }}</td>
-                      <td>{{ leave.status }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          
+        </div>
 
-          <!-- Modal Popup for selected approval details -->
-<!-- Modal Popup for selected approval details -->
-<div *ngIf="isAddFieldsModalOpen" class="modal">
-    <div class="modal-content">
-    <div class="col-md-12 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closemarketModal()">
-      ×
-    </span>
-  </div>
-  
-      <div *ngIf="selectedApproval">
-        <h6>Leave Request Approvals</h6>
-        <hr>
-        <h6>Leave Request - {{ selectedApproval.leave_request }}</h6>
-        <h6>Status - {{ selectedApproval.status }}</h6>
-        <h6>Level - {{ selectedApproval.level }}</h6>
-  
-        <textarea
-          class="form-control"
-          [(ngModel)]="note"
-          placeholder="Add a Comment here..."
-          [ngModelOptions]="{ standalone: true }"
-        >  </textarea>
-  
-   
-  
-            <div class="row mt-2">
-            <div class="col-md-3">
-              <button
-                class="btn btn-primary"
-                (click)="openDelegationModalFromApproval(selectedApproval)"
+      </div>
+
+
+      <!-- =====================================
+           LEAVE HISTORY TABLE
+      ====================================== -->
+
+      <div
+        class="row mt-4"
+        *ngIf="leaveHistory.length > 0"
+      >
+
+        <div class="col-md-12">
+
+          <table class="table table-bordered">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Leave Type
+                </th>
+
+                <th>
+                  Start Date
+                </th>
+
+                <th>
+                  End Date
+                </th>
+
+                <th>
+                  Reason
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              <tr
+                *ngFor="let leave of leaveHistory"
               >
+
+                <td data-label="Leave Type">
+                  {{ leave.leave_type }}
+                </td>
+
+                <td data-label="Start Date">
+                  {{ leave.start_date }}
+                </td>
+
+                <td data-label="End Date">
+                  {{ leave.end_date }}
+                </td>
+
+                <td data-label="Reason">
+                  {{ leave.reason }}
+                </td>
+
+                <td data-label="Status">
+                  {{ leave.status }}
+                </td>
+
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         APPROVAL DETAILS MODAL
+    =========================================== -->
+
+    <div
+      *ngIf="isAddFieldsModalOpen"
+      class="modal"
+    >
+
+      <div class="modal-content">
+
+
+        <!-- Close -->
+
+        <div class="col-md-12 text-right">
+
+          <span
+            class="close-btn"
+            (click)="closemarketModal()"
+          >
+            ×
+          </span>
+
+        </div>
+
+
+        <!-- Selected Approval -->
+
+        <div *ngIf="selectedApproval">
+
+          <h6>
+            Leave Request Approvals
+          </h6>
+
+          <hr>
+
+
+          <h6>
+            Leave Request -
+            {{ selectedApproval.leave_request }}
+          </h6>
+
+
+          <h6>
+            Status -
+            {{ selectedApproval.status }}
+          </h6>
+
+
+          <h6>
+            Level -
+            {{ selectedApproval.level }}
+          </h6>
+
+
+          <!-- Comment -->
+
+          <textarea
+            class="form-control"
+            [(ngModel)]="note"
+            placeholder="Add a Comment here..."
+            [ngModelOptions]="{ standalone: true }"
+          ></textarea>
+
+
+          <!-- Action Buttons -->
+
+           <div class="row mt-2">
+            <div class="col-md-3">
+              <button class="btn btn-primary" (click)="openDelegationModalFromApproval(selectedApproval)">
                 Delegate
               </button>
             </div>
             <div class="col-md-3"></div>
             <div class="col-md-3">
-              <button
-                type="button"
-                class="btn btn btn-danger btn-full"
-                (click)="rejectApproval(selectedApproval.id)"
-              >
+              <button type="button" class="btn btn-danger btn-full" (click)="rejectApproval(selectedApproval.id)">
                 Reject
               </button>
             </div>
             <div class="col-md-3">
-              <button
-                type="button"
-                class="btn btn-success btn-full"
-                (click)="approveApproval(selectedApproval.id)"
-              >
+              <button type="button" class="btn btn-success btn-full" (click)="approveApproval(selectedApproval.id)">
                 Approve
               </button>
             </div>
           </div>
-             <!-- Additional input for rejection reason -->
-        <div *ngIf="showRejectionReason">
-          <textarea
-            class="form-control mt-2"
-            [(ngModel)]="rejection_reason"
-            placeholder="Add a Rejection Reason..."
-            [ngModelOptions]="{ standalone: true }"
-          ></textarea>
 
-          <!-- <div class="col-md-12">
-            <label>Leave Type</label>
-            <div class="custom-sel">
-              <select class="form-control" id="rejection_reason" name="rejection_reason" [(ngModel)]="rejection_reason" [ngModelOptions]="{standalone: true}">
-                <option *ngFor="let rejectionReason of RejectionResons" [value]="rejectionReason.id">{{ rejectionReason.reason_text }}</option>
-              </select>
-            </div>
-          </div> -->
 
-        </div>
-        <div class="mt-2" *ngIf="showRejectionReason">
-          <button
-            type="button"
-            class="btn btn-danger btn-full"
-            (click)="confirmRejection(selectedApproval.id)"
+          <!-- Rejection Reason -->
+
+          <div *ngIf="showRejectionReason">
+
+            <textarea
+              class="form-control mt-3"
+              [(ngModel)]="rejection_reason"
+              placeholder="Add a Rejection Reason..."
+              [ngModelOptions]="{ standalone: true }"
+            ></textarea>
+
+          </div>
+
+
+          <!-- Confirm Rejection -->
+
+          <div
+            class="mt-2"
+            *ngIf="showRejectionReason"
           >
-            Confirm Rejection
-          </button>
+
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="confirmRejection(selectedApproval.id)"
+            >
+
+              Confirm Rejection
+
+            </button>
+
+          </div>
+
         </div>
+
       </div>
+
     </div>
-  </div>
 
-  
-        <!-- <div *ngIf="isResponseModalOpen" class="modal">
+
+    <!-- ==========================================
+         DELEGATION MODAL
+    =========================================== -->
+
+    <div
+      *ngIf="isDelegationModalOpen"
+      class="modal"
+    >
+
       <div class="modal-content">
+
+
+        <!-- Close -->
+
         <div class="text-right">
-          <span class="close-btn" (click)="closeResponseModal()">×</span>
+
+          <span
+            class="close-btn"
+            (click)="closeDelegationModal()"
+          >
+            ×
+          </span>
+
         </div>
 
-        <h5>Send Delegation Response</h5>
-        <hr />
 
-        <div class="form-group">
-          <label>Response</label>
+        <h5>
+          Send Delegation
+        </h5>
 
-          <textarea
-            class="form-control"
-            rows="4"
-            [(ngModel)]="delegationResponse"
-            placeholder="Enter response..."
-          ></textarea>
-        </div>
+        <hr>
 
-        <button class="btn btn-primary mt-2" (click)="sendDelegationResponse()">
-          Send Response
-        </button>
-      </div>
-    </div> -->
 
-         <div *ngIf="isDelegationModalOpen" class="modal">
-      <div class="modal-content">
-        <div class="text-right">
-          <span class="close-btn" (click)="closeDelegationModal()"> × </span>
-        </div>
-
-        <h5>Send Delegation</h5>
-        <hr />
         <div class="row">
 
+
+          <!-- Request -->
+
           <div class="col-md-4">
-            <label>Request</label>
+
+            <label>
+              Request
+            </label>
 
             <select
               class="form-control"
               [(ngModel)]="delegationForm.request"
               disabled
             >
-              <option *ngFor="let req of Leavereq" [value]="req.id">
-                {{ req.document_number }} - {{ req.request_type }}
+
+              <option
+                *ngFor="let req of Leavereq"
+                [value]="req.id"
+              >
+
+                {{ req.document_number }}
+                -
+                {{ req.request_type }}
+
               </option>
+
             </select>
+
           </div>
 
-<div class="col-md-4">
-  <label>Delegator</label>
 
-  <input
-    type="text"
-    class="form-control"
-    [value]="delegationForm.deligator"
-    readonly
-  />
-</div>
+          <!-- Delegator -->
 
           <div class="col-md-4">
-            <label>Delegate To</label>
+
+            <label>
+              Delegator
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              [value]="delegationForm.deligator"
+              readonly
+            />
+
+          </div>
+
+
+          <!-- Delegate To -->
+
+          <div class="col-md-4">
+
+            <label>
+              Delegate To
+            </label>
 
             <select
               class="form-control"
               [(ngModel)]="delegationForm.deligate_to"
             >
-              <option *ngFor="let user of Users" [ngValue]="user.id">
+
+              <option
+                *ngFor="let user of Users"
+                [ngValue]="user.id"
+              >
+
                 {{ user.username }}
+
               </option>
+
             </select>
+
           </div>
 
-                    <button class="btn btn-success" (click)="createDelegation()">
-            Send
-          </button>
+
+          <!-- Send -->
+
+          <div class="col-md-12 mt-3 text-right">
+
+            <button
+              type="button"
+              class="btn btn-success"
+              (click)="createDelegation()"
+            >
+
+              Send
+
+            </button>
+
+          </div>
+
         </div>
+
       </div>
+
     </div>
-  
-  
-  
+
+  </div>
+
+
+  <!-- ==========================================
+       LOADER
+  =========================================== -->
+
+  <div
+    class="loader-container"
+    [class.show]="isLoading"
+  >
+
+    <div class="loader"></div>
+
+  </div>
 
 </div>
-
-
-  <!-- Loader -->
-  <div class="loader-container" [class.show]="isLoading">
-    <div class="loader"></div>
-  </div>
-  </div>

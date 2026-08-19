@@ -25,13 +25,38 @@ export class ApprovalsComponent {
   userDetails: any;
   userDetailss: any;
   username: any;
+
   selectedSchema: string | null = null;
+
   isLoading: boolean = false;
 
-  allApprovals: any[] = [];      // Master data from API (never modified directly)
-  filteredApprovals: any[] = []; // Display data after search/filter
+  // =========================================================
+  // APPROVAL DATA
+  // =========================================================
+
+  allApprovals: any[] = [];
+  filteredApprovals: any[] = [];
+
+  selectedApproval: any = null;
+
+  isAddFieldsModalOpen: boolean = false;
+
+  note: string = '';
+
+  // =========================================================
+  // REJECTION
+  // =========================================================
+
+  showRejectionReason: boolean = false;
+
+  rejection_reason: string = '';
+
+  // =========================================================
+  // DELEGATION
+  // =========================================================
 
   delegationData: any = null;
+
   isDelegationModalOpen: boolean = false;
 
   delegationForm: any = {
@@ -48,17 +73,44 @@ export class ApprovalsComponent {
   deligators: any[] = [];
   delegateTos: any[] = [];
   requests: any[] = [];
+
   Genreq: any[] = [];
   Users: any[] = [];
 
+  // =========================================================
+  // DELEGATION RESPONSE
+  // =========================================================
+
   isResponseModalOpen = false;
+
   delegationResponse = '';
+
   selectedDelegationId: number | null = null;
+
+  // =========================================================
+  // PERMISSIONS
+  // =========================================================
 
   hasAddPermission: boolean = false;
   hasDeletePermission: boolean = false;
   hasViewPermission: boolean = false;
   hasEditPermission: boolean = false;
+
+  // =========================================================
+  // SEARCH / FILTER
+  // =========================================================
+
+  searchText: string = '';
+
+  selectedStatus: string = '';
+
+  showFilterMenu = false;
+
+  // =========================================================
+  // DELEGATION DETAILS
+  // =========================================================
+
+  showDelegationDetails = false;
 
   constructor(
     private authService: AuthenticationService,
@@ -70,461 +122,1512 @@ export class ApprovalsComponent {
     private DesignationService: DesignationService,
   ) { }
 
+
+  // =========================================================
+  // NG ON INIT
+  // =========================================================
+
   ngOnInit(): void {
 
-    // combineLatest waits for both Schema and Branches to have a value
+    // Load approvals whenever schema or branches change
     this.dataSubscription = combineLatest([
       this.EmployeeService.selectedSchema$,
       this.EmployeeService.selectedBranches$
     ]).subscribe(([schema, branchIds]) => {
+
       if (schema) {
         this.fetchEmployees(schema, branchIds);
       }
+
     });
 
-    // Listen for sidebar changes so the dropdown updates instantly
+
+    // Listen for branch changes
     this.EmployeeService.selectedBranches$.subscribe(ids => {
       this.loadApprovalLevelGen();
     });
 
-    this.selectedSchema = this.sessionService.getSelectedSchema();
 
+    this.selectedSchema =
+      this.sessionService.getSelectedSchema();
+
+
+    // Router events
     this.router.events.subscribe(event => {
+
       if (event instanceof NavigationEnd) {
-        // Perform any actions on navigation end if needed
+        // Navigation handling if required
       }
+
     });
 
+
+    // Load users
     this.loadUsers();
 
-    const selectedSchema = this.authService.getSelectedSchema();
-    const selectedSchemaId = this.authService.getSelectedSchemaId();
+
+    // Selected schema
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+    const selectedSchemaId =
+      this.authService.getSelectedSchemaId();
+
 
     if (selectedSchema && selectedSchemaId) {
+
       this.selectedSchema = selectedSchema;
-      console.log('Selected schema from localStorage:', selectedSchema);
-      console.log('Selected schema ID from localStorage:', selectedSchemaId);
+
+      console.log(
+        'Selected schema from localStorage:',
+        selectedSchema
+      );
+
+      console.log(
+        'Selected schema ID from localStorage:',
+        selectedSchemaId
+      );
+
     } else {
-      console.error("No schema selected.");
+
+      console.error('No schema selected.');
+
     }
 
-    this.userId = this.sessionService.getUserId();
+
+    // User ID
+    this.userId =
+      this.sessionService.getUserId();
+
+
     if (this.userId !== null) {
+
+      // =====================================================
+      // USER DETAILS / PERMISSIONS
+      // =====================================================
+
       this.authService.getUserData(this.userId).subscribe(
+
         async (userData: any) => {
+
           this.userDetails = userData;
-          this.username = this.userDetails.username;
 
-          console.log('User ID:', this.userId);
-          console.log('User Details:', this.userDetails);
+          this.username =
+            this.userDetails.username;
 
-          let isSuperuser = this.userDetails.is_superuser || false;
-          const selectedSchema = this.authService.getSelectedSchema();
+
+          console.log(
+            'User ID:',
+            this.userId
+          );
+
+          console.log(
+            'User Details:',
+            this.userDetails
+          );
+
+
+          const isSuperuser =
+            this.userDetails.is_superuser || false;
+
+
+          const selectedSchema =
+            this.authService.getSelectedSchema();
+
+
           if (!selectedSchema) {
-            console.error('No schema selected.');
+
+            console.error(
+              'No schema selected.'
+            );
+
             return;
+
           }
+
+
+          // =================================================
+          // SUPERUSER
+          // =================================================
 
           if (isSuperuser) {
-            console.log('User is superuser or ESS user');
+
+            console.log(
+              'User is superuser'
+            );
+
             this.hasViewPermission = true;
+
             this.hasAddPermission = true;
+
             this.hasDeletePermission = true;
+
             this.hasEditPermission = true;
-          } else {
-            console.log('User is not superuser');
 
-            const selectedSchema = this.authService.getSelectedSchema();
-            if (selectedSchema) {
-              try {
-                const permissionsData: any = await this.DesignationService.getDesignationsPermission(selectedSchema).toPromise();
-                console.log('Permissions data:', permissionsData);
-
-                if (Array.isArray(permissionsData) && permissionsData.length > 0) {
-                  const firstItem = permissionsData[0];
-
-                  if (firstItem.is_superuser) {
-                    console.log('User is superuser according to permissions API');
-                    this.hasViewPermission = true;
-                    this.hasAddPermission = true;
-                    this.hasDeletePermission = true;
-                    this.hasEditPermission = true;
-                  } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
-                    const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
-                    console.log('Group Permissions:', groupPermissions);
-
-                    this.hasAddPermission = this.checkGroupPermission('add_approval', groupPermissions);
-                    console.log('Has add permission:', this.hasAddPermission);
-
-                    this.hasEditPermission = this.checkGroupPermission('change_approval', groupPermissions);
-                    console.log('Has edit permission:', this.hasEditPermission);
-
-                    this.hasDeletePermission = this.checkGroupPermission('delete_approval', groupPermissions);
-                    console.log('Has delete permission:', this.hasDeletePermission);
-
-                    this.hasViewPermission = this.checkGroupPermission('view_approval', groupPermissions);
-                    console.log('Has view permission:', this.hasViewPermission);
-                  } else {
-                    console.error('No groups found in data or groups array is empty.', firstItem);
-                  }
-                } else {
-                  console.error('Permissions data is not an array or is empty.', permissionsData);
-                }
-              } catch (error) {
-                console.error('Error fetching permissions:', error);
-              }
-            } else {
-              console.error('No schema selected.');
-            }
           }
+
+          // =================================================
+          // NORMAL USER
+          // =================================================
+
+          else {
+
+            console.log(
+              'User is not superuser'
+            );
+
+            try {
+
+              const permissionsData: any =
+                await this.DesignationService
+                  .getDesignationsPermission(selectedSchema)
+                  .toPromise();
+
+
+              console.log(
+                'Permissions data:',
+                permissionsData
+              );
+
+
+              if (
+                Array.isArray(permissionsData) &&
+                permissionsData.length > 0
+              ) {
+
+                const firstItem =
+                  permissionsData[0];
+
+
+                // =========================================
+                // PERMISSION API SAYS SUPERUSER
+                // =========================================
+
+                if (firstItem.is_superuser) {
+
+                  this.hasViewPermission = true;
+
+                  this.hasAddPermission = true;
+
+                  this.hasDeletePermission = true;
+
+                  this.hasEditPermission = true;
+
+                }
+
+                // =========================================
+                // GROUP PERMISSIONS
+                // =========================================
+
+                else if (
+                  firstItem.groups &&
+                  Array.isArray(firstItem.groups) &&
+                  firstItem.groups.length > 0
+                ) {
+
+                  const groupPermissions =
+                    firstItem.groups.flatMap(
+                      (group: any) =>
+                        group.permissions || []
+                    );
+
+
+                  console.log(
+                    'Group Permissions:',
+                    groupPermissions
+                  );
+
+
+                  this.hasAddPermission =
+                    this.checkGroupPermission(
+                      'add_approval',
+                      groupPermissions
+                    );
+
+
+                  this.hasEditPermission =
+                    this.checkGroupPermission(
+                      'change_approval',
+                      groupPermissions
+                    );
+
+
+                  this.hasDeletePermission =
+                    this.checkGroupPermission(
+                      'delete_approval',
+                      groupPermissions
+                    );
+
+
+                  this.hasViewPermission =
+                    this.checkGroupPermission(
+                      'view_approval',
+                      groupPermissions
+                    );
+
+
+                  console.log(
+                    'Has view permission:',
+                    this.hasViewPermission
+                  );
+
+                }
+
+                else {
+
+                  console.error(
+                    'No groups found in permissions data.',
+                    firstItem
+                  );
+
+                }
+
+              }
+
+              else {
+
+                console.error(
+                  'Permissions data is not an array or is empty.',
+                  permissionsData
+                );
+
+              }
+
+            }
+
+            catch (error) {
+
+              console.error(
+                'Error fetching permissions:',
+                error
+              );
+
+            }
+
+          }
+
         },
+
         (error) => {
-          console.error('Failed to fetch user details:', error);
+
+          console.error(
+            'Failed to fetch user details:',
+            error
+          );
+
         }
+
       );
 
-      this.authService.getUserSchema(this.userId).subscribe(
-        (userData: any) => {
-          this.userDetailss = userData;
-          this.schemas = userData.map((schema: any) => schema.schema_name);
-          console.log('scehmas-de', userData)
-        },
-        (error) => {
-          console.error('Failed to fetch user schemas:', error);
-        }
-      );
-    } else {
-      console.error('User ID is null.');
+
+      // =====================================================
+      // USER SCHEMAS
+      // =====================================================
+
+      this.authService
+        .getUserSchema(this.userId)
+        .subscribe(
+
+          (userData: any) => {
+
+            this.userDetailss = userData;
+
+            this.schemas =
+              userData.map(
+                (schema: any) =>
+                  schema.schema_name
+              );
+
+            console.log(
+              'schemas:',
+              userData
+            );
+
+          },
+
+          (error) => {
+
+            console.error(
+              'Failed to fetch user schemas:',
+              error
+            );
+
+          }
+
+        );
+
     }
+
+    else {
+
+      console.error(
+        'User ID is null.'
+      );
+
+    }
+
   }
+
+
+  // =========================================================
+  // LOAD GENERAL REQUESTS
+  // =========================================================
 
   loadApprovalLevelGen(): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-    console.log('schemastore', selectedSchema)
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
+    console.log(
+      'schema store:',
+      selectedSchema
+    );
+
+
     if (selectedSchema) {
-      this.EmployeeService.getAllgeneralRequest(selectedSchema).subscribe(
-        (result: any) => {
-          this.Genreq = result;
-          console.log(' fetching Companies:');
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
+
+      this.EmployeeService
+        .getAllgeneralRequest(selectedSchema)
+        .subscribe(
+
+          (result: any) => {
+
+            this.Genreq = result;
+
+            console.log(
+              'General requests fetched:',
+              result
+            );
+
+          },
+
+          (error) => {
+
+            console.error(
+              'Error fetching general requests:',
+              error
+            );
+
+          }
+
+        );
+
     }
+
   }
 
-  checkGroupPermission(codeName: string, groupPermissions: any[]): boolean {
-    return groupPermissions.some(permission => permission.codename === codeName);
+
+  // =========================================================
+  // PERMISSION CHECK
+  // =========================================================
+
+  checkGroupPermission(
+    codeName: string,
+    groupPermissions: any[]
+  ): boolean {
+
+    return groupPermissions.some(
+      permission =>
+        permission.codename === codeName
+    );
+
   }
 
-  fetchEmployees(schema: string, branchIds: number[]): void {
+
+  // =========================================================
+  // FETCH APPROVALS
+  // =========================================================
+
+  fetchEmployees(
+    schema: string,
+    branchIds: number[]
+  ): void {
+
     this.isLoading = true;
-    this.EmployeeService.getGeneralRequestApprovalsMasterNew(schema, branchIds).subscribe({
-      next: (data: any) => {
-        this.allApprovals = data;
-        this.applyFilters();
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Fetch error:', err);
-        this.isLoading = false;
-      }
-    });
+
+
+    this.EmployeeService
+      .getGeneralRequestApprovalsMasterNew(
+        schema,
+        branchIds
+      )
+      .subscribe({
+
+        next: (data: any) => {
+
+          this.allApprovals = data || [];
+
+          this.applyFilters();
+
+          this.isLoading = false;
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Fetch approval error:',
+            err
+          );
+
+          this.allApprovals = [];
+
+          this.filteredApprovals = [];
+
+          this.isLoading = false;
+
+        }
+
+      });
+
   }
+
+
+  // =========================================================
+  // LOAD USERS
+  // =========================================================
 
   loadUsers(): void {
-    const selectedSchema = this.authService.getSelectedSchema();
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
     if (selectedSchema) {
-      this.userService.getApprover(selectedSchema).subscribe(
-        (result: any) => {
-          this.Users = result;
-        }
-      );
+
+      this.userService
+        .getApprover(selectedSchema)
+        .subscribe(
+
+          (result: any) => {
+
+            this.Users = result || [];
+
+          },
+
+          (error) => {
+
+            console.error(
+              'Error loading users:',
+              error
+            );
+
+          }
+
+        );
+
     }
+
   }
 
-  selectedApproval: any = null;
-  isAddFieldsModalOpen: boolean = false;
-  note: string = '';
 
-  selectedaprovaldetalis(approvalId: number): void {
-    const selectedSchema = this.authService.getSelectedSchema();
+  // =========================================================
+  // VIEW APPROVAL DETAILS
+  // =========================================================
+
+  selectedaprovaldetalis(
+    approvalId: number
+  ): void {
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
     if (selectedSchema) {
-      const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/?schema=${selectedSchema}`;
-      this.EmployeeService.getApprovalDetails(apiUrl).subscribe(
-        (response: any) => {
-          this.selectedApproval = response;
-          this.isAddFieldsModalOpen = true;
-          console.log('detalis', this.selectedApproval)
-        },
-        (error) => {
-          console.error('Error fetching approval details:', error);
-        }
-      );
+
+      const apiUrl =
+        `${this.apiUrl}/employee/api/request-approvals/${approvalId}/?schema=${selectedSchema}`;
+
+
+      this.EmployeeService
+        .getApprovalDetails(apiUrl)
+        .subscribe(
+
+          (response: any) => {
+
+            this.selectedApproval = response;
+
+            this.isAddFieldsModalOpen = true;
+
+            // Reset rejection state
+            this.showRejectionReason = false;
+
+            this.rejection_reason = '';
+
+            this.note = '';
+
+            console.log(
+              'Approval details:',
+              this.selectedApproval
+            );
+
+          },
+
+          (error) => {
+
+            console.error(
+              'Error fetching approval details:',
+              error
+            );
+
+          }
+
+        );
+
     }
+
   }
+
+
+  // =========================================================
+  // REJECT BUTTON
+  // =========================================================
+  //
+  // IMPORTANT:
+  // This no longer immediately rejects.
+  // It first displays the rejection reason field.
+  //
 
   rejectApproval(approvalId: number): void {
-    const selectedSchema = this.authService.getSelectedSchema();
+
+    // Make sure the selected approval is available
+    if (
+      !this.selectedApproval ||
+      this.selectedApproval.id !== approvalId
+    ) {
+
+      this.selectedApproval =
+        this.allApprovals.find(
+          approval =>
+            approval.id === approvalId
+        );
+
+    }
+
+
+    this.showRejectionReason = true;
+
+    this.rejection_reason = '';
+
+  }
+
+
+  // =========================================================
+  // CONFIRM REJECTION
+  // =========================================================
+
+  confirmRejection(
+    approvalId: number
+  ): void {
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
+    if (!selectedSchema) {
+
+      console.error(
+        'No schema selected.'
+      );
+
+      return;
+
+    }
+
+
+    // Validate rejection reason
+    if (
+      !this.rejection_reason ||
+      !this.rejection_reason.trim()
+    ) {
+
+      alert(
+        'Please enter a rejection reason.'
+      );
+
+      return;
+
+    }
+
+
     const approvalData = {
-      note: this.note,
+
+      // Rejection reason
+      note: this.rejection_reason.trim(),
+
+      // Status
       status: 'Rejected',
+
+      // Optional separate rejection field
+      rejection_reason:
+        this.rejection_reason.trim()
+
     };
-    if (selectedSchema) {
-      const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/reject/?schema=${selectedSchema}`;
-      this.EmployeeService.rejectApprovalRequest(apiUrl, approvalData).subscribe(
-        (response: any) => {
-          console.log('Approval status changed to Rejected:', response);
 
-          // Update master data
-          const approvalIndex = this.allApprovals.findIndex(approval => approval.id === approvalId);
+
+    const apiUrl =
+      `${this.apiUrl}/employee/api/request-approvals/${approvalId}/reject/?schema=${selectedSchema}`;
+
+
+    this.isLoading = true;
+
+
+    this.EmployeeService
+      .rejectApprovalRequest(
+        apiUrl,
+        approvalData
+      )
+      .subscribe({
+
+        next: (response: any) => {
+
+          console.log(
+            'Approval rejected:',
+            response
+          );
+
+
+          // =============================================
+          // UPDATE MASTER DATA
+          // =============================================
+
+          const approvalIndex =
+            this.allApprovals.findIndex(
+              approval =>
+                approval.id === approvalId
+            );
+
+
           if (approvalIndex !== -1) {
-            this.allApprovals[approvalIndex].status = 'Rejected';
+
+            this.allApprovals[
+              approvalIndex
+            ].status = 'Rejected';
+
+            this.allApprovals[
+              approvalIndex
+            ].note =
+              this.rejection_reason.trim();
+
           }
-          this.applyFilters();
+
+
+          // =============================================
+          // UPDATE SELECTED APPROVAL
+          // =============================================
 
           if (this.selectedApproval) {
-            this.selectedApproval.status = 'Rejected';
-          }
-          this.isAddFieldsModalOpen = false;
-        },
-        (error) => {
-          console.error('Error approving the approval request:', error);
-        }
-      );
-    }
-  }
 
-  approveApproval(approvalId: number): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-    if (selectedSchema) {
-      const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${approvalId}/approve/?schema=${selectedSchema}`;
-      const approvalData = {
-        note: this.note,
-        status: 'Approved',
-      };
-      this.EmployeeService.approveApprovalRequest(apiUrl, approvalData).subscribe(
-        (response: any) => {
-          console.log('Approval status changed to Approved:', response);
+            this.selectedApproval.status =
+              'Rejected';
 
-          // Update master data
-          const approvalIndex = this.allApprovals.findIndex(approval => approval.id === approvalId);
-          if (approvalIndex !== -1) {
-            this.allApprovals[approvalIndex].status = 'Approved';
+            this.selectedApproval.note =
+              this.rejection_reason.trim();
+
           }
+
+
+          // =============================================
+          // REFRESH FILTERED DATA
+          // =============================================
+
           this.applyFilters();
 
-          if (this.selectedApproval) {
-            this.selectedApproval.status = 'Approved';
-          }
+
+          // =============================================
+          // RESET REJECTION
+          // =============================================
+
+          this.showRejectionReason = false;
+
+          this.rejection_reason = '';
+
+          this.note = '';
+
+
           this.isAddFieldsModalOpen = false;
+
+          this.isLoading = false;
+
+
+          alert(
+            'Approval rejected successfully.'
+          );
+
         },
-        (error) => {
-          console.error('Error approving the approval request:', error);
+
+        error: (error) => {
+
+          this.isLoading = false;
+
+          console.error(
+            'Error rejecting approval:',
+            error
+          );
+
+          alert(
+            'Failed to reject approval.'
+          );
+
         }
-      );
-    }
+
+      });
+
   }
 
-  closemarketModal() {
+
+  // =========================================================
+  // APPROVE APPROVAL
+  // =========================================================
+
+  approveApproval(
+    approvalId: number
+  ): void {
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
+    if (!selectedSchema) {
+
+      console.error(
+        'No schema selected.'
+      );
+
+      return;
+
+    }
+
+
+    const approvalData = {
+
+      note: this.note,
+
+      status: 'Approved'
+
+    };
+
+
+    const apiUrl =
+      `${this.apiUrl}/employee/api/request-approvals/${approvalId}/approve/?schema=${selectedSchema}`;
+
+
+    this.isLoading = true;
+
+
+    this.EmployeeService
+      .approveApprovalRequest(
+        apiUrl,
+        approvalData
+      )
+      .subscribe({
+
+        next: (response: any) => {
+
+          console.log(
+            'Approval status changed to Approved:',
+            response
+          );
+
+
+          // Update master data
+          const approvalIndex =
+            this.allApprovals.findIndex(
+              approval =>
+                approval.id === approvalId
+            );
+
+
+          if (approvalIndex !== -1) {
+
+            this.allApprovals[
+              approvalIndex
+            ].status = 'Approved';
+
+            this.allApprovals[
+              approvalIndex
+            ].note = this.note;
+
+          }
+
+
+          // Update selected approval
+          if (this.selectedApproval) {
+
+            this.selectedApproval.status =
+              'Approved';
+
+            this.selectedApproval.note =
+              this.note;
+
+          }
+
+
+          this.applyFilters();
+
+
+          // Reset rejection state
+          this.showRejectionReason = false;
+
+          this.rejection_reason = '';
+
+
+          this.isAddFieldsModalOpen = false;
+
+          this.isLoading = false;
+
+
+          alert(
+            'Approval approved successfully.'
+          );
+
+        },
+
+        error: (error) => {
+
+          this.isLoading = false;
+
+          console.error(
+            'Error approving approval request:',
+            error
+          );
+
+          alert(
+            'Failed to approve approval.'
+          );
+
+        }
+
+      });
+
+  }
+
+
+  // =========================================================
+  // CLOSE APPROVAL MODAL
+  // =========================================================
+
+  closemarketModal(): void {
+
     this.isAddFieldsModalOpen = false;
+
+    this.showRejectionReason = false;
+
+    this.rejection_reason = '';
+
+    this.note = '';
+
   }
 
-  /////////////////////////////////// Delegation Model //////////////////////////////////
 
-  openResponseModal(delegation: any): void {
-    console.log('Delegation', delegation);
-    this.selectedDelegationId = delegation.id;
+  // =========================================================
+  // DELEGATION RESPONSE MODAL
+  // =========================================================
+
+  openResponseModal(
+    delegation: any
+  ): void {
+
+    console.log(
+      'Delegation:',
+      delegation
+    );
+
+
+    this.selectedDelegationId =
+      delegation.id;
+
+
     this.delegationResponse = '';
+
     this.isResponseModalOpen = true;
+
   }
+
 
   closeResponseModal(): void {
+
     this.isResponseModalOpen = false;
+
+    this.delegationResponse = '';
+
+    this.selectedDelegationId = null;
+
   }
+
+
+  // =========================================================
+  // SEND DELEGATION RESPONSE
+  // =========================================================
 
   sendDelegationResponse(): void {
+
     if (!this.selectedDelegationId) {
+
       return;
+
     }
-    const selectedSchema = this.authService.getSelectedSchema();
+
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
     if (!selectedSchema) {
+
       return;
+
     }
-    const apiUrl = `${this.apiUrl}/employee/api/delegations/${this.selectedDelegationId}/send_response/?schema=${selectedSchema}`;
+
+
+    if (
+      !this.delegationResponse ||
+      !this.delegationResponse.trim()
+    ) {
+
+      alert(
+        'Please enter a response.'
+      );
+
+      return;
+
+    }
+
+
+    const apiUrl =
+      `${this.apiUrl}/employee/api/delegations/${this.selectedDelegationId}/send_response/?schema=${selectedSchema}`;
+
+
     const payload = {
-      response: this.delegationResponse
+
+      response:
+        this.delegationResponse.trim()
+
     };
+
+
     this.isLoading = true;
-    this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+
+
+    this.EmployeeService
+      .sendDelegationResponse(
+        apiUrl,
+        payload
+      )
       .subscribe({
+
         next: (res: any) => {
+
           this.isLoading = false;
-          console.log('Response Sent', res);
-          alert('Response sent successfully');
+
+          console.log(
+            'Response sent:',
+            res
+          );
+
+
+          alert(
+            'Response sent successfully.'
+          );
+
+
           this.closeResponseModal();
+
           window.location.reload();
+
         },
+
         error: (err) => {
+
           this.isLoading = false;
-          console.error(err);
+
+          console.error(
+            'Error sending response:',
+            err
+          );
+
+          alert(
+            'Failed to send response.'
+          );
+
         }
+
       });
+
   }
 
-  sendDelegationResponseInline(apr: any): void {
-    const selectedSchema = this.authService.getSelectedSchema();
+
+  // =========================================================
+  // INLINE DELEGATION RESPONSE
+  // =========================================================
+
+  sendDelegationResponseInline(
+    apr: any
+  ): void {
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
     if (!selectedSchema) {
+
       return;
+
     }
-    if (!apr.responseText || !apr.responseText.trim()) {
-      alert("Please enter a response");
+
+
+    if (
+      !apr.responseText ||
+      !apr.responseText.trim()
+    ) {
+
+      alert(
+        'Please enter a response.'
+      );
+
       return;
+
     }
-    const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${apr.id}/send_response/?schema=${selectedSchema}`;
+
+
+    const apiUrl =
+      `${this.apiUrl}/employee/api/request-approvals/${apr.id}/send_response/?schema=${selectedSchema}`;
+
+
     const payload = {
-      deligate_response: apr.responseText.trim()
+
+      deligate_response:
+        apr.responseText.trim()
+
     };
-    console.log("Sending:", payload);
+
+
+    console.log(
+      'Sending:',
+      payload
+    );
+
+
     this.isLoading = true;
-    this.EmployeeService.sendDelegationResponse(apiUrl, payload)
+
+
+    this.EmployeeService
+      .sendDelegationResponse(
+        apiUrl,
+        payload
+      )
       .subscribe({
+
         next: (res: any) => {
+
           this.isLoading = false;
-          apr.delegation_details.response = apr.responseText;
-          apr.responseText = "";
-          alert("Response sent successfully");
+
+
+          if (apr.delegation_details) {
+
+            apr.delegation_details.response =
+              apr.responseText;
+
+          }
+
+
+          apr.responseText = '';
+
+
+          alert(
+            'Response sent successfully.'
+          );
+
+
+          const branchIds =
+            JSON.parse(
+              localStorage.getItem(
+                'selectedBranchIds'
+              ) || '[]'
+            );
+
+
           this.fetchEmployees(
             selectedSchema,
-            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+            branchIds
           );
+
         },
-        error: err => {
+
+        error: (err) => {
+
           this.isLoading = false;
-          console.log(err);
+
+          console.error(
+            'Error sending delegation response:',
+            err
+          );
+
+          alert(
+            'Failed to send response.'
+          );
+
         }
+
       });
+
   }
 
-  canShowResponse(apr: any): boolean {
+
+  // =========================================================
+  // SHOW DELEGATION RESPONSE
+  // =========================================================
+
+  canShowResponse(
+    apr: any
+  ): boolean {
+
     return !!(
       apr.delegation_details &&
       apr.delegation_details.is_deligate &&
-      Number(apr.delegation_details.delegate_to_id) === Number(this.userId)
+      Number(
+        apr.delegation_details.delegate_to_id
+      ) === Number(this.userId)
     );
+
   }
 
-  openDelegationModal() {
+
+  // =========================================================
+  // OPEN DELEGATION MODAL
+  // =========================================================
+
+  openDelegationModal(): void {
+
     this.isDelegationModalOpen = true;
+
   }
 
-  closeDelegationModal() {
+
+  closeDelegationModal(): void {
+
     this.isDelegationModalOpen = false;
+
   }
+
+
+  // =========================================================
+  // CREATE DELEGATION
+  // =========================================================
 
   createDelegation(): void {
-    const selectedSchema = this.authService.getSelectedSchema();
-    if (!selectedSchema || !this.selectedApproval) {
+
+    const selectedSchema =
+      this.authService.getSelectedSchema();
+
+
+    if (
+      !selectedSchema ||
+      !this.selectedApproval
+    ) {
+
       return;
+
     }
-    const apiUrl = `${this.apiUrl}/employee/api/request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
+
+
+    if (!this.delegationForm.deligate_to) {
+
+      alert(
+        'Please select a user to delegate.'
+      );
+
+      return;
+
+    }
+
+
+    const apiUrl =
+      `${this.apiUrl}/employee/api/request-approvals/${this.selectedApproval.id}/delegate/?schema=${selectedSchema}`;
+
+
     const payload = {
+
       approver: this.userId,
-      deligate_to: this.delegationForm.deligate_to
+
+      deligate_to:
+        this.delegationForm.deligate_to
+
     };
+
+
     this.isLoading = true;
-    this.EmployeeService.createDelegation(apiUrl, payload)
+
+
+    this.EmployeeService
+      .createDelegation(
+        apiUrl,
+        payload
+      )
       .subscribe({
+
         next: () => {
+
           this.isLoading = false;
-          alert("Delegated Successfully");
-          window.location.reload();
+
+
+          alert(
+            'Delegated Successfully.'
+          );
+
+
           this.closeDelegationModal();
+
+
+          const branchIds =
+            JSON.parse(
+              localStorage.getItem(
+                'selectedBranchIds'
+              ) || '[]'
+            );
+
+
           this.fetchEmployees(
             selectedSchema,
-            JSON.parse(localStorage.getItem('selectedBranchIds') || '[]')
+            branchIds
           );
+
         },
-        error: err => {
+
+        error: (err) => {
+
           this.isLoading = false;
-          console.error(err);
+
+          console.error(
+            'Delegation error:',
+            err
+          );
+
+          alert(
+            'Failed to create delegation.'
+          );
+
         }
+
       });
+
   }
 
-  openDelegationModalFromApproval(approval: any) {
+
+  // =========================================================
+  // OPEN DELEGATION FROM APPROVAL
+  // =========================================================
+
+  openDelegationModalFromApproval(
+    approval: any
+  ): void {
+
     this.selectedApproval = approval;
-    const generalRequest = this.Genreq.find(
-      (req: any) => req.document_number === approval.general_request
-    );
-    this.selectedApproval = approval;
-    const approver = this.Users.find(
-      (user: any) => user.id === approval.approver
-    );
+
+
+    const generalRequest =
+      this.Genreq.find(
+        (req: any) =>
+          req.document_number ===
+          approval.general_request
+      );
+
+
+    const approver =
+      this.Users.find(
+        (user: any) =>
+          user.id === approval.approver
+      );
+
+
     this.delegationForm = {
-      request: generalRequest ? generalRequest.id : null,
-      approver: approval.approver,
-      deligator: approver ? approver.username : '',
-      deligate_to: null
+
+      request:
+        generalRequest
+          ? generalRequest.id
+          : null,
+
+      approver:
+        approval.approver,
+
+      deligator:
+        approver
+          ? approver.username
+          : '',
+
+      deligate_to:
+        null
+
     };
+
+
     this.isDelegationModalOpen = true;
+
   }
 
-  showDelegationDetails = false;
 
-  toggleDelegationDetails() {
-    this.showDelegationDetails = !this.showDelegationDetails;
+  // =========================================================
+  // DELEGATION DETAILS
+  // =========================================================
+
+  toggleDelegationDetails(): void {
+
+    this.showDelegationDetails =
+      !this.showDelegationDetails;
+
   }
 
-  // ─── Search & Filter ───
-  searchText: string = '';
-  selectedStatus: string = '';
-  showFilterMenu = false;
+
+  // =========================================================
+  // SEARCH & FILTER
+  // =========================================================
 
   applyFilters(): void {
-    const search = this.searchText.trim().toLowerCase();
 
-    this.filteredApprovals = this.allApprovals.filter(apr => {
-      const matchesSearch =
-        !search ||
-        (apr.general_request ?? '').toLowerCase().includes(search) ||
-        (apr.status ?? '').toLowerCase().includes(search) ||
-        (apr.note ?? '').toLowerCase().includes(search) ||
-        (apr.level ?? '').toString().toLowerCase().includes(search) ||
-        (apr.approver ?? '').toString().toLowerCase().includes(search);
+    const search =
+      this.searchText
+        .trim()
+        .toLowerCase();
 
-      const matchesStatus =
-        !this.selectedStatus ||
-        apr.status === this.selectedStatus;
 
-      return matchesSearch && matchesStatus;
-    });
+    this.filteredApprovals =
+      this.allApprovals.filter(
+        apr => {
+
+          const matchesSearch =
+
+            !search ||
+
+            (apr.general_request ?? '')
+              .toString()
+              .toLowerCase()
+              .includes(search) ||
+
+            (apr.status ?? '')
+              .toString()
+              .toLowerCase()
+              .includes(search) ||
+
+            (apr.note ?? '')
+              .toString()
+              .toLowerCase()
+              .includes(search) ||
+
+            (apr.level ?? '')
+              .toString()
+              .toLowerCase()
+              .includes(search) ||
+
+            (apr.approver ?? '')
+              .toString()
+              .toLowerCase()
+              .includes(search);
+
+
+          const matchesStatus =
+
+            !this.selectedStatus ||
+
+            apr.status ===
+              this.selectedStatus;
+
+
+          return (
+            matchesSearch &&
+            matchesStatus
+          );
+
+        }
+      );
+
   }
+
+
+  // =========================================================
+  // EMPTY MESSAGE
+  // =========================================================
 
   getEmptyMessage(): string {
-    if (this.allApprovals.length === 0) {
+
+    if (
+      this.allApprovals.length === 0
+    ) {
+
       return 'No general requests found.';
+
     }
-    if (this.searchText && this.selectedStatus) {
+
+
+    if (
+      this.searchText &&
+      this.selectedStatus
+    ) {
+
       return `No ${this.selectedStatus.toLowerCase()} general requests matching "${this.searchText}".`;
+
     }
+
+
     if (this.searchText) {
+
       return `No general requests matching "${this.searchText}".`;
+
     }
+
+
     if (this.selectedStatus) {
+
       return `No ${this.selectedStatus.toLowerCase()} general requests found.`;
+
     }
+
+
     return 'No general requests found.';
+
   }
+
+
+  // =========================================================
+  // FILTER MENU
+  // =========================================================
 
   toggleFilterMenu(): void {
-    this.showFilterMenu = !this.showFilterMenu;
+
+    this.showFilterMenu =
+      !this.showFilterMenu;
+
   }
 
-  filterByStatus(status: string): void {
-    this.selectedStatus = status;
+
+  filterByStatus(
+    status: string
+  ): void {
+
+    this.selectedStatus =
+      status;
+
+
     this.applyFilters();
+
+
     this.showFilterMenu = false;
+
   }
+
+
+  // =========================================================
+  // DESTROY
+  // =========================================================
+
+  ngOnDestroy(): void {
+
+    if (this.dataSubscription) {
+
+      this.dataSubscription.unsubscribe();
+
+    }
+
+  }
+
 }

@@ -380,7 +380,20 @@ table th{
   
 }
 
+  /* Sticky columns */
+.sticky-left {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+}
 
+.sticky-right {
+  position: sticky;
+  right: 0;
+  background: #fff;
+  z-index: 2;
+}
 
 
 .styled-table th {
@@ -538,119 +551,186 @@ table.styled-table td {
   text-align: left;
 }
 
-/* ✅ Smooth responsive behavior for tablets (<= 991px) */
-@media (max-width: 991px) {
-  .comapny_section {
-    margin-top: 80px;
-    margin-left: 20px;
-    margin-right: 20px;
-  }
+/* =========================================
+   PAYROLL RUN TABLE
+========================================= */
 
-  .com_list {
-    padding: 15px;
-  }
-
-  table.styled-table th,
-  table.styled-table td {
-    padding: 8px;
-    font-size: 13px;
-  }
+.payroll-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 15px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
-/* ✅ Fully responsive stacked card layout for mobile (<= 640px) */
-@media only screen and (max-width: 640px) {
-  .comapny_section {
-    margin: 20px 10px;
-  }
 
-  .com_list {
-    padding: 10px;
-    background: #fff;
-    border: none;
-    box-shadow: none;
-  }
-
-  table.styled-table {
-    border: 0;
-    width: 100%;
-    table-layout: fixed; /* Ensures smooth stacking */
-  }
-
-  /* Hide table header */
-  table.styled-table thead {
-    display: none;
-  }
-
-  /* Each row becomes a card */
-  table.styled-table tbody {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 100%;
-  }
-
-  table.styled-table tr {
-    display: block;
-    width: 27%;
-    background: #ffffff;
-    border: 1px solid #c7c7c7;
-    border-radius: 10px;
-    padding: 15px 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    box-sizing: border-box;
-  }
-
-  /* Each cell stacked vertically with its label */
-  table.styled-table td {
-    display: block;
-    width: 100%; /* ✅ Full width, no side scroll */
-    border: none;
-    padding: 6px 0;
-    text-align: left;
-    font-size: 14px;
-    line-height: 1.4;
-    word-wrap: break-word;
-  }
-
-  /* Label styling (data-label attribute) */
-  table.styled-table td::before {
-    content: attr(data-label);
-    display: block;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 4px;
-    font-size: 13px;
-    text-transform: capitalize;
-  }
-
-  /* Checkbox + first column alignment */
-  table.styled-table td:first-child {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  /* Status pill smaller for mobile */
-  .pill {
-    font-size: 12px;
-    padding: 4px 10px;
-  }
-
-  /* Reduce large font areas for mobile readability */
-  .header_section h1,
-  .com_list h2 {
-    font-size: 14px;
-  }
-
-  /* Prevent any side scrolling globally */
-  body,
-  html {
-    overflow-x: hidden;
-  }
-
-  .table-scroll {
-    overflow-x: hidden !important;
-  }
+/* Main table */
+.payroll-run-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  background: #ffffff;
 }
+
+/* Header */
+.payroll-run-table thead th {
+  padding: 13px 14px !important;
+  border: none !important;
+  border-bottom: 1px solid #003b60 !important;
+
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  text-align: left;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Rounded top corners */
+.payroll-run-table thead th:first-child {
+  border-top-left-radius: 7px;
+}
+
+.payroll-run-table thead th:last-child {
+  border-top-right-radius: 7px;
+}
+
+/* Body rows */
+.payroll-run-table tbody tr {
+  background: #ffffff;
+  transition: background-color 0.15s ease;
+}
+
+/* Alternate rows */
+.payroll-run-table tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* Hover */
+.payroll-run-table tbody tr:hover {
+  background-color: #eef6fb !important;
+}
+
+/* Body cells */
+.payroll-run-table tbody td {
+  padding: 12px 14px !important;
+  border: none !important;
+  border-bottom: 1px solid #e5e7eb !important;
+
+  color: #374151;
+  font-size: 13px;
+  font-weight: 400;
+
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* First column */
+.payroll-run-table tbody td:first-child {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* Name */
+.payroll-run-table tbody td:nth-child(2) {
+  color: #111827;
+  font-weight: 500;
+}
+
+/* Date */
+.payroll-run-table tbody td:nth-child(5) {
+  color: #4b5563;
+}
+
+/* Document number */
+.payroll-run-table tbody td:nth-child(6) {
+  color: #374151;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* Action column */
+.payroll-run-table .payroll-action {
+  text-align: center;
+  width: 70px;
+}
+
+/* Delete button */
+.payroll-delete-btn {
+  width: 32px;
+  height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+
+  background: #fff5f5;
+  color: #dc2626;
+
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.payroll-delete-btn i {
+  font-size: 13px;
+}
+
+.payroll-delete-btn:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+
+/* Status */
+.payroll-status {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 5px 10px;
+  border-radius: 20px;
+
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+/* Success */
+.payroll-status.status-success {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* Pending */
+.payroll-status.status-pending {
+  background: #fef3c7;
+  color: #a16207;
+}
+
+/* Failed */
+.payroll-status.status-failed {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Empty table */
+.payroll-empty {
+  text-align: center !important;
+  padding: 35px 15px !important;
+  color: #9ca3af !important;
+  font-size: 13px !important;
+  background: #ffffff !important;
+}
+
+
 .edited-row {
   background-color: #fff3cd;
 }
@@ -676,11 +756,6 @@ table.styled-table td {
   opacity: 0.5;
   cursor: not-allowed;
 }
-
-
-
-
-
 
 .component-grid {
   display: grid;
@@ -926,21 +1001,6 @@ table.styled-table td {
   align-items: center;
 }
 
-@media (max-width: 992px) {
-  .filter-export-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .filter-select-card .modern-multi-select {
-    width: 100%;
-  }
-  .filter-bar-spacer {
-    display: none;
-  }
-}
-
-
-
 .clear-btn-wrapper {
   min-width: auto;
 }
@@ -1014,4 +1074,133 @@ table.styled-table td {
 /* Reduce font size of the search input inside dropdown panels */
 ::ng-deep .mat-mdc-select-panel input.form-control {
   font-size: 12px;
+}
+
+
+/* ✅ Smooth responsive behavior for tablets (<= 991px) */
+@media (max-width: 991px) {
+  .comapny_section {
+    margin-top: 80px;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .com_list {
+    padding: 15px;
+  }
+
+  table.styled-table th,
+  table.styled-table td {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 992px) {
+  .filter-export-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-select-card .modern-multi-select {
+    width: 100%;
+  }
+  .filter-bar-spacer {
+    display: none;
+  }
+}
+
+/* ✅ Fully responsive stacked card layout for mobile (<= 640px) */
+@media only screen and (max-width: 640px) {
+  .comapny_section {
+    margin: 20px 10px;
+  }
+
+  .com_list {
+    padding: 10px;
+    background: #fff;
+    border: none;
+    box-shadow: none;
+  }
+
+  table.styled-table {
+    border: 0;
+    width: 100%;
+    table-layout: fixed; /* Ensures smooth stacking */
+  }
+
+  /* Hide table header */
+  table.styled-table thead {
+    display: none;
+  }
+
+  /* Each row becomes a card */
+  table.styled-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  table.styled-table tr {
+    display: block;
+    width: 27%;
+    background: #ffffff;
+    border: 1px solid #c7c7c7;
+    border-radius: 10px;
+    padding: 15px 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box;
+  }
+
+  /* Each cell stacked vertically with its label */
+  table.styled-table td {
+    display: block;
+    width: 100%; /* ✅ Full width, no side scroll */
+    border: none;
+    padding: 6px 0;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  /* Label styling (data-label attribute) */
+  table.styled-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 4px;
+    font-size: 13px;
+    text-transform: capitalize;
+  }
+
+  /* Checkbox + first column alignment */
+  table.styled-table td:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  /* Status pill smaller for mobile */
+  .pill {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  /* Reduce large font areas for mobile readability */
+  .header_section h1,
+  .com_list h2 {
+    font-size: 14px;
+  }
+
+  /* Prevent any side scrolling globally */
+  body,
+  html {
+    overflow-x: hidden;
+  }
+
+  .table-scroll {
+    overflow-x: hidden !important;
+  }
 }

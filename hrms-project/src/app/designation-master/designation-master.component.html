@@ -66,55 +66,69 @@
             
         </div> -->
 
+
         <div class="row mt-4">
-            <div class="col-md-12 col-12">
-                <div class="row">
-                    <div class="col-md-3">
-                        <p>Job Tittle</p>
-                    </div>
+  <div class="col-12">
+    <div class="table-responsive">
+      <table class="table table-hover department-table">
+        <thead>
+          <tr>
+            <th *ngIf="Delete" style="width: 50px;"></th>
+            <th>Designation code</th>
+            <th>Designation Name</th>
+            <th>Branch</th>
+            <th>Description</th>
+            <th *ngIf="showEditBtn" style="width: 100px;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let designationsec of filteredEmployees"
+              [ngClass]="{ 'selected-item': designationsec.selected }">
+            
+            <td *ngIf="Delete" class="text-center align-middle">
+              <mat-checkbox 
+                [(ngModel)]="designationsec.selected" 
+                (change)="onCheckboxChange(designationsec.id)">
+              </mat-checkbox>
+            </td>
 
-                    <div class="col-md-3">
-                        <p>Description</p>
-                    </div>
-                    <div class="col-md-3">
-                        <p>Designation code</p>
-                    </div>
-                  <div class="col-md-2">
-                        <p>Branch</p>
-                    </div>
-                  
-                </div>
-                <div class="com_list" *ngFor="let designationsec of filteredEmployees" [ngClass]="{ 'selected-item': designationsec.selected }">
-                    <mat-checkbox *ngIf="Delete" [(ngModel)]="designationsec.selected" (change)="onCheckboxChange(designationsec.id)"></mat-checkbox>
+            <td class="align-middle">
+              <span class="badge badge-code">{{ designationsec.desgntn_code }}</span>
+            </td>
 
-                  <div class="row">
-                  
-                    <div class="col-md-3">
-                        <h2 class="text-center">{{ designationsec.desgntn_job_title }}</h2>
-                    </div>
+            <td class="align-middle">
+              {{ designationsec.desgntn_job_title }}
+            </td>
 
-                    <div class="col-md-3">
-                        <h2 class="text-center">{{ designationsec.desgntn_description }}</h2>
-                    </div>
-                    <div class="col-md-3">
-                        <h2 class="text-center">{{designationsec.desgntn_code }}</h2>
+            <td class="align-middle font-weight-medium">
+              {{ designationsec.branch }}
+            </td>
 
-                    </div>
-                    <div class="col-md-2">
-                        <h2 class="text-center">
-                            {{ designationsec.branch }}
-                            </h2>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-Edit btn-info" (click)="openEditPopuss(designationsec.id)" *ngIf="showEditBtn">Edit</button>
-                        
-                    </div>
-                  
-                  </div>
-                </div>
-                
-            </div>
-        </div>
+            <td class="align-middle text-muted">
+              {{ designationsec.desgntn_description }}
+            </td>
+
+            <td *ngIf="showEditBtn" class="align-middle text-center">
+              <button type="button" 
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="openEditPopuss(designationsec.id)">
+                <mat-icon style="font-size: 16px; color: #2980b9; vertical-align: middle;">edit</mat-icon>
+                Edit
+              </button>
+            </td>
+          </tr>
+
+          <!-- Empty state -->
+          <tr *ngIf="filteredEmployees?.length === 0">
+            <td [attr.colspan]="Delete ? 6 : (showEditBtn ? 5 : 4)" class="text-center py-5 text-muted">
+              No departments found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
       
     </div>
