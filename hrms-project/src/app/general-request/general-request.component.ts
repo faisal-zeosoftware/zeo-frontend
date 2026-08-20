@@ -8,6 +8,7 @@ import { UserMasterService } from '../user-master/user-master.service';
 import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
 import { DesignationService } from '../designation-master/designation.service';
+import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-general-request',
@@ -17,6 +18,7 @@ import { DesignationService } from '../designation-master/designation.service';
 export class GeneralRequestComponent {
 
   @ViewChild('requestDocInput') requestDocInput!: ElementRef;
+     private dataSubscription?: Subscription;
 
   selectedRequestFile!: File | null;
 
@@ -114,7 +116,18 @@ ngOnInit(): void {
   this.loadUsers();
   this.loadgeneralReq();
 
-  this.userId = this.sessionService.getUserId();
+ 
+
+      // combineLatest waits for both Schema and Branches to have a value
+      this.dataSubscription = combineLatest([
+        this.employeeService.selectedSchema$,
+        this.employeeService.selectedBranches$
+      ]).subscribe(([schema, branchIds]) => {
+        if (schema) {
+          this.fetchEmployeesGeneralReq(schema, branchIds);
+    
+        }
+      });
 
   // Listen for sidebar changes so the dropdown updates instantly
   this.employeeService.selectedBranches$.subscribe(ids => {
@@ -122,6 +135,7 @@ ngOnInit(): void {
     this.loadEmp();
   });
   
+   this.userId = this.sessionService.getUserId();
   if (this.userId !== null) {
     this.authService.getUserData(this.userId).subscribe(
       async (userData: any) => {
@@ -235,6 +249,23 @@ ngOnInit(): void {
 }
 
 
+    fetchEmployeesGeneralReq(schema: string, branchIds: number[]): void {
+      this.isLoading = true;
+      this.employeeService.getAllgeneralRequestfetch(schema, branchIds).subscribe({
+
+      next: (data: any) => {
+      this.GeneralReq = data;
+      this.isLoading = false;
+      this.currentPage = 1;        // ← reset to page 1
+      this.updatePagination();      // ← apply pagination
+    },
+        error: (err) => {
+          console.error('Fetch error:', err);
+          this.isLoading = false;
+        }
+      });
+    }
+       
 
 // checkViewPermission(permissions: any[]): boolean {
 //   const requiredPermission = 'add_generalrequest' ||'change_generalrequest' ||'delete_generalrequest' ||'view_generalrequest';
@@ -1004,7 +1035,7 @@ onRequestTypeChange(event: any): void {
 // ==================== PAGINATION ====================
 currentPage: number = 1;
 itemsPerPage: number = 4;
-pagedLoanRequests: any[] = [];
+pagedGeneralReq: any[] = [];
 
 /** Filtered list based on search (replaces old getter) */
 get filteredGeneralReq(): any[] {
@@ -1017,10 +1048,9 @@ get filteredGeneralReq(): any[] {
   return this.GeneralReq.filter((docs: any) =>
     String(docs.document_number ?? '').toLowerCase().includes(search) ||
     String(docs.branch ?? '').toLowerCase().includes(search) ||
-    String(docs.asset_type ?? '').toLowerCase().includes(search) ||
-    String(docs.requested_asset ?? '').toLowerCase().includes(search) ||
+    String(docs.request_type ?? '').toLowerCase().includes(search) ||
     String(docs.reason ?? '').toLowerCase().includes(search) ||
-    String(docs.status ?? '').toLowerCase().includes(search) ||
+    String(docs.total ?? '').toLowerCase().includes(search) ||
     String(docs.employee ?? '').toLowerCase().includes(search)
   );
 }
@@ -1036,7 +1066,7 @@ get pageNumbers(): number[] {
 updatePagination(): void {
   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
   const endIndex = startIndex + this.itemsPerPage;
-  this.pagedLoanRequests = this.filteredGeneralReq.slice(startIndex, endIndex);
+  this.pagedGeneralReq = this.filteredGeneralReq.slice(startIndex, endIndex);
 }
 
 nextPage(): void {

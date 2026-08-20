@@ -109,6 +109,88 @@ margin-right: 10px;
 }
 
 
+.search-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-input {
+  padding: 8px 15px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  background: transparent;
+}
+
+.search-input.expanded {
+  width: 300px; /* Adjust width as needed */
+  opacity: 1;
+}
+
+.search-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: -40px;
+  border-radius: 100%;
+  background: #5c1e81;
+  width: 35px;
+  height: 35px;
+  z-index: 1;
+}
+
+.search-btn i {
+  color: #ffffff;
+}
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 0;
+  flex-wrap: wrap;
+}
+
+.page-btn,
+.page-number {
+  padding: 8px 16px;
+  border: 1px solid #dee2e6;
+  background: #fff;
+  color: #5c1e81;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  min-width: 40px;
+}
+
+.page-btn:hover:not(:disabled),
+.page-number:hover:not(.active) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.page-btn:disabled {
+  color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.page-number.active {
+  background: #5c1e81;
+  color: #fff;
+  border-color: #5c1e81;
+  font-weight: 600;
+}
+
+.page-btn {
+  font-weight: 500;
+}
+
+
 
 
 /* Add your CSS styles here */

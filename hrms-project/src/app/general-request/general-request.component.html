@@ -627,7 +627,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let docs of filteredGeneralReq; let i = index">
+          <tr *ngFor="let docs of pagedGeneralReq; let i = index">
              <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
             <td data-label="Employee">{{ docs.employee }}</td>
             <td data-label="Document Number">{{ docs.document_number }}</td>

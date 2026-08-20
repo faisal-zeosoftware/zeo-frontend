@@ -445,78 +445,91 @@ export class EmployeeOvertimeComponent {
 
 
 bulkuploaddocument(): void {
-
-  const formData = new FormData();
-
-  // Append only the file you actually want to upload
-  if (this.selectedFiles) {
-    formData.append('file', this.selectedFiles);
+  // Make sure a file was selected
+  if (!this.selectedFile) {
+    alert('Please select a file before uploading.');
+    return;
   }
 
-  if (this.file) {
-    formData.append('file', this.file);
-  }
-
-  formData.append('date', this.date || '');
-  formData.append('ot_type', this.ot_type || '');
-  formData.append('slab', this.slab || '');
-  formData.append('hours', this.hours || '');
-  formData.append('approved_by', this.approved_by || '');
-  formData.append('employee', this.employee || '');
-
-  const selectedSchema = localStorage.getItem('selectedSchema');
+  const selectedSchema = this.authService.getSelectedSchema();
 
   if (!selectedSchema) {
     alert('No schema selected.');
     return;
   }
 
-  /** 🔥 START LOADER */
+  const formData = new FormData();
+
+  // IMPORTANT: backend expects the field name "file"
+  formData.append('file', this.selectedFile, this.selectedFile.name);
+
+  // Optional fields
+  formData.append('date', this.date || '');
+  formData.append('ot_type', this.ot_type || '');
+  formData.append('slab', this.slab || '');
+  formData.append('hours', this.hours || '');
+  formData.append('approved_by', this.approved_by ? String(this.approved_by) : '');
+  formData.append('employee', this.employee ? String(this.employee) : '');
+
+  // Debug FormData
+  formData.forEach((value, key) => {
+    console.log('FormData:', key, value);
+  });
+
   this.isLoading = true;
 
   this.http.post(
     `${this.apiUrl}/calendars/api/Emp-bulkupload-overtime/bulk_upload/?schema=${selectedSchema}`,
     formData
   ).subscribe({
-
     next: (response: any) => {
-
       console.log('Bulk upload successful:', response);
 
       this.isLoading = false;
 
       alert('Bulk upload successful');
 
+      this.selectedFile = null;
+      this.showUploadForm = false;
+
       window.location.reload();
     },
 
+    error: (error) => {
+      console.error('Bulk upload failed:', error);
 
-        error:  (error) => {
-      console.error('Added failed', error);
+      this.isLoading = false;
 
-      let errorMessage = 'Employee Overtime required fields!';
+      let errorMessage = 'Employee Overtime bulk upload failed.';
 
-      // ✅ Handle backend validation or field-specific errors
-      if (error.error && typeof error.error === 'object') {
+      if (error?.error && typeof error.error === 'object') {
         const messages: string[] = [];
+
         for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
         }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
+        }
+      } else if (error?.error?.detail) {
         errorMessage = error.error.detail;
       }
 
       alert(errorMessage);
     }
-});
+  });
 }
 
 
-  selectedFiles!: File;
-  file: any = '';
+
+
   
 onFileChange(event: Event): void {
   const input = event.target as HTMLInputElement;
@@ -526,10 +539,13 @@ onFileChange(event: Event): void {
 
     console.log('Selected file:', this.selectedFile);
     console.log('File name:', this.selectedFile.name);
+    console.log('File size:', this.selectedFile.size);
+    console.log('File type:', this.selectedFile.type);
   } else {
     this.selectedFile = null;
   }
 }
+
 
 
   isBulkuploadCatogaryModalOpen: boolean = false;

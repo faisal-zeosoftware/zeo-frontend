@@ -4,9 +4,27 @@
         <div class="header_section">
 
             <div class="row">
-                <div class="col-md-6">
-                    <h1>Employee Opening Leave Balance</h1>
+                <div class="col-md-3">
+                    <h1>Leave Balance</h1>
                 </div>
+
+                     <div class="col-md-3">
+                    
+<div class="search-container">
+    <input
+        type="text"
+        class="search-input"
+        placeholder="Search..."
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+        (ngModelChange)="onSearchChange()"
+    >
+
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+</div>
 
                 <div class="col-md-6">
                     <div class="button-group pull-right">
@@ -405,15 +423,15 @@ name="leave_type"
                         <th>Balance</th>
                         <th>Openings</th>
                         <th>Employee</th>
-                      <th>Action</th>
+                        <th>Action</th>
             
                        
                       </tr>
                     </thead>
                     <tbody>
                         
-                      <tr *ngFor="let docs of LeaveBalances;let i = index">
-                        <td data-label="No">{{ i + 1 }}</td> 
+                      <tr *ngFor="let docs of pagedLeaveBalances;let i = index">
+                       <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
                         <td data-label="Leave type">{{ docs.leave_type }}</td>
                         <td data-label="Balance">{{ docs.balance }}</td>
                         <td data-label="Openings">{{ docs.openings }}</td> 
@@ -440,7 +458,37 @@ name="leave_type"
                     </tbody>
                   </table>
             
+                <div class="pagination-container">
   
+        <button
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+        <button
+          *ngFor="let page of pageNumbers"
+          class="page-number"
+          [class.active]="currentPage === page"
+          (click)="goToPage(page)">
+      
+          {{ page }}
+      
+        </button>
+      
+        <button
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
+      </div>
     </div>
     
 
