@@ -1,10 +1,4 @@
-<div class="sub-sidebar clickOutside">
-    <mat-sidenav-container>
-      <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
-        <div class="wrapper">
-  
-          <div class="sidebar-top"> 
-             <!-- Toggle Button (placed OUTSIDE sidebar) -->
+<!-- 
       <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
         <span *ngIf="!isMenuOpen">☰</span>
         <span *ngIf="isMenuOpen">×</span>
@@ -96,8 +90,155 @@
     
         <router-outlet></router-outlet>
     
-        <!-- <router-outlet></router-outlet> -->
+   
     
       </mat-sidenav-container>
     
+    </div> -->
+
+
+    <div class="sub-sidebar clickOutside">
+      <mat-sidenav-container class="sub-sidenav-container">
+        <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
+          <div class="wrapper">
+            
+            <!-- Sidebar Header & Toggle -->
+            <div class="sidebar-top">
+              <span class="sub-sidebar-title" *ngIf="isMenuOpen">General Options</span>
+              <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+                <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+              </button>
+            </div>
+    
+            <!-- Navigation Menu -->
+            <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+              <ul class="nav-menu-list">
+    
+                <!-- Dropdown: General Request -->
+                <li class="has-submenu">
+                  <div class="submenu-header" (click)="toggleGeneralRequest()">
+                    <div class="d-flex">
+                      <mat-icon class="nav-icon">assignment</mat-icon>
+                      <span class="sidenav-opt">General Request</span>
+                    </div>
+                    <mat-icon class="chevron-arrow">
+                      {{ showGeneralRequest ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                  </div>
+    
+                  <ul class="sub-menu-list" *ngIf="showGeneralRequest && isMenuOpen">
+                    <li *ngIf="hasViewPermissionGenreq">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/general-request" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        General Request
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionReqType">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/request-type" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Request Type
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionAprv">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/approvals" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        General Approvals
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionAprvlvl">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/approval-level" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        General Approval Level
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionGenReqEsc">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/general-request-escalation" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        General Request Escalation
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+    
+                <!-- Dropdown: Document Request -->
+                <li class="has-submenu">
+                  <div class="submenu-header" (click)="toggleDocumentRequest()">
+                    <div class="d-flex">
+                      <mat-icon class="nav-icon">folder_shared</mat-icon>
+                      <span class="sidenav-opt">Document Request</span>
+                    </div>
+                    <mat-icon class="chevron-arrow">
+                      {{ showDocumentRequest ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                  </div>
+    
+                  <ul class="sub-menu-list" *ngIf="showDocumentRequest && isMenuOpen">
+                    <li *ngIf="hasViewPermissionDocReq">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/document-request" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Document Request
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionDocReqType">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/document-request-type" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Document Type
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionDocReqApr">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/document-request-approval" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Document Approvals
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionDocAprlvl">
+                      <a 
+                        routerLink="/main-sidebar/general-sidebar/document-request-level" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Document Approval Level
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+    
+                <!-- Announcement -->
+                <li *ngIf="hasViewAnnounceMaster">
+                  <a 
+                    routerLink="/main-sidebar/general-sidebar/announcement-master" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">campaign</mat-icon>
+                    <span class="sidenav-opt">Announcement</span>
+                  </a>
+                </li>
+    
+              </ul>
+            </nav>
+    
+          </div>
+        </mat-sidenav>
+    
+        <!-- Main Content Area -->
+        <main class="sub-content-area">
+          <router-outlet></router-outlet>
+        </main>
+    
+      </mat-sidenav-container>
     </div>

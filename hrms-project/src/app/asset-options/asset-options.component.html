@@ -1,11 +1,5 @@
+<!-- 
 
-<div class="sub-sidebar clickOutside">
-  <mat-sidenav-container>
-    <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
-      <div class="wrapper">
-
-        <div class="sidebar-top"> 
-           <!-- Toggle Button (placed OUTSIDE sidebar) -->
     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
       <span *ngIf="!isMenuOpen">☰</span>
       <span *ngIf="isMenuOpen">×</span>
@@ -69,8 +63,116 @@
   
       <router-outlet></router-outlet>
   
-      <!-- <router-outlet></router-outlet> -->
+
   
     </mat-sidenav-container>
   
+  </div> -->
+
+  <div class="sub-sidebar clickOutside">
+    <mat-sidenav-container class="sub-sidenav-container">
+      <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
+        <div class="wrapper">
+          
+          <!-- Sidebar Header & Toggle -->
+          <div class="sidebar-top">
+            <span class="sub-sidebar-title" *ngIf="isMenuOpen">Asset Options</span>
+            <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+              <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+            </button>
+          </div>
+  
+          <!-- Navigation Menu -->
+          <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+            <ul class="nav-menu-list">
+  
+              <!-- Asset Types -->
+              <li *ngIf="hasViewPermissionAssetTypes">
+                <a 
+                  routerLink="/main-sidebar/asset-options/asset-type" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">category</mat-icon>
+                  <span class="sidenav-opt">Asset Types</span>
+                </a>
+              </li>
+  
+              <!-- Asset Master -->
+              <li *ngIf="hasViewPermissionAssetMaster">
+                <a 
+                  routerLink="/main-sidebar/asset-options/asset-master" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">inventory_2</mat-icon>
+                  <span class="sidenav-opt">Asset Master</span>
+                </a>
+              </li>
+  
+              <!-- Asset Approvals -->
+              <li *ngIf="hasViewPermissionAssetApprovals">
+                <a 
+                  routerLink="/main-sidebar/asset-options/asset-approval" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">verified</mat-icon>
+                  <span class="sidenav-opt">Asset Approvals</span>
+                </a>
+              </li>
+  
+              <!-- Asset Escalation -->
+              <li *ngIf="hasViewPermissionAssetEsc">
+                <a 
+                  routerLink="/main-sidebar/asset-options/asset-escalation" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">trending_up</mat-icon>
+                  <span class="sidenav-opt">Asset Escalation</span>
+                </a>
+              </li>
+  
+              <!-- Asset Allocation -->
+              <li *ngIf="hasViewPermissionAssetAllocation">
+                <a 
+                  routerLink="/main-sidebar/asset-options/asset-allocation" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">assignment_ind</mat-icon>
+                  <span class="sidenav-opt">Asset Allocation</span>
+                </a>
+              </li>
+  
+              <!-- Asset Approval Level -->
+              <li *ngIf="hasViewPermissionAssetAprlvl">
+                <a 
+                  routerLink="/main-sidebar/asset-options/asset-approvel-level" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">approval</mat-icon>
+                  <span class="sidenav-opt">Asset Approval Level</span>
+                </a>
+              </li>
+  
+              <!-- Asset Request -->
+              <li *ngIf="hasViewPermissionAssetRequest">
+                <a 
+                  routerLink="/main-sidebar/asset-options/asset-request" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">request_quote</mat-icon>
+                  <span class="sidenav-opt">Asset Request</span>
+                </a>
+              </li>
+  
+            </ul>
+          </nav>
+  
+        </div>
+      </mat-sidenav>
+  
+      <!-- Main Content Outlet Area -->
+      <main class="sub-content-area">
+        <router-outlet></router-outlet>
+      </main>
+  
+    </mat-sidenav-container>
   </div>

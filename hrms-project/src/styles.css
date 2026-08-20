@@ -9,7 +9,11 @@
   --main-color: #5c1e81;
 }
 
-html, body { height: 100%; }
+html, body { 
+  height: 100%; 
+  margin: 0;
+  overflow: hidden; /* Prevents global double-scrollbar bug */
+}
 body { 
   margin: 0; 
   font-family: Roboto, "Helvetica Neue", sans-serif; 
@@ -455,12 +459,13 @@ table thead th {
 
 
 /* 2. Global Material Drawer Container Overrides */
+/* 2. Global Material Drawer Container Overrides */
 .mat-drawer-container,
 .mat-drawer-content,
 .mat-drawer-inner-container {
-  height: auto !important;
-  min-height: 100% !important;
-  overflow: visible !important; /* Prevents inner side-panel scrollbars */
+  height: 100% !important; /* Constrains height to viewport */
+  max-height: 100vh !important;
+  overflow: hidden !important; 
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
@@ -476,26 +481,29 @@ table thead th {
 .sub-sidebar,
 .sub-sidenav-container,
 mat-sidenav-container {
-  height: auto !important;
-  min-height: calc(100vh - 64px);
+  height: calc(100vh - 64px) !important; /* Fixed viewport height below top navbar */
   background-color: #0f172a;
-  overflow: visible !important;
+  overflow: hidden !important; /* Pins outer frame */
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .sub-sidenav {
-  height: auto !important;
+  height: 100% !important;
   background-color: #0f172a !important;
   border-right: 1px solid #1e293b !important;
-  overflow: visible !important;
+  overflow: hidden !important; /* Clips content inside, forcing list scroll */
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   z-index: 500;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 /* 4. Sub-Sidebar Fixed Header Bar */
 .sidebar-top {
-  position: sticky;
-  top: 64px; /* Pins beneath main navbar during main page scroll */
+  position: relative !important; /* Stationary at the top of sidebar flex container */
   height: 48px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -503,6 +511,7 @@ mat-sidenav-container {
   background: #0f172a;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 10;
+  flex-shrink: 0 !important; /* Prevents header from collapsing/shrinking */
 }
 
 .sub-sidebar-title {
@@ -532,24 +541,43 @@ mat-sidenav-container {
   color: #ffffff;
 }
 
-/* 5. Navigation Items & Left-Alignment Rules */
+/* 5. Navigation Items & Scrollable Container Rules */
 .sidebar {
-  overflow: visible !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
 }
 
+/* Dedicated Scrollable List Section */
 .nav-menu-list {
   list-style: none;
-  padding: 10px;
+  padding: 10px 10px 24px 10px; /* Extra bottom padding for clean end-of-list scroll */
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
   width: 100%;
-  overflow: visible !important;
+  flex: 1 1 auto !important; /* Dynamically fills all remaining height */
+  overflow-y: auto !important; /* Enables independent vertical scroll */
+  overflow-x: hidden !important;
+}
+
+/* Native Scrollbar Hiding Rules for Clean UI */
+.nav-menu-list {
+  -ms-overflow-style: none !important; /* IE / Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+.nav-menu-list::-webkit-scrollbar {
+  display: none !important; /* Chrome / Safari / Opera */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .nav-menu-list li {
   width: 100%;
+  flex-shrink: 0 !important; /* Prevents menu item compression */
 }
 
 .nav-item-link,
@@ -568,6 +596,7 @@ mat-sidenav-container {
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left !important;
+  flex-shrink: 0 !important;
 }
 
 .nav-item-link:hover,
@@ -633,6 +662,7 @@ mat-sidenav-container {
   transition: all 0.2s ease;
   white-space: nowrap;
   width: 100%;
+  flex-shrink: 0 !important;
 }
 
 .subnav-item-link:hover {
@@ -684,9 +714,8 @@ mat-sidenav-container {
 
 /* 7. Shared Page Content Container */
 .sub-content-area {
-  height: auto !important;
-  min-height: calc(100vh - 64px);
+  height: calc(100vh - 64px) !important;
   padding: 24px;
   background-color: #f8fafc;
-  overflow: visible !important;
+  overflow-y: auto !important; /* Pages content scrolls independently from sidebar */
 }

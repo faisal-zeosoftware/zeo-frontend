@@ -1,14 +1,4 @@
-<div class="sub-sidebar clickOutside">
-
-
-    <mat-sidenav-container>
-      <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
-  
-        <div class="wrapper">
-            
-
-           <div class="sidebar-top"> 
-           <!-- Toggle Button (placed OUTSIDE sidebar) -->
+<!-- 
     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
       <span *ngIf="!isMenuOpen">☰</span>
       <span *ngIf="isMenuOpen">×</span>
@@ -22,10 +12,7 @@
 
 
           <div class="sidebar"  [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-            <!-- <div  class=" d-block mx-auto" (click)="openPopus()">
-                <mat-icon class="d-block mx-auto">add_circle</mat-icon>
-            </div> -->
-
+          
                      <ul>
                 
 
@@ -58,42 +45,40 @@
 
 
    
-<!-- Folder List -->
+
 <ul class="mt-4">
-    <!-- Add Folder button -->
+   
     <li *ngIf="hasAddPermissionDocumentFolder" (click)="openPopus()" class="add-folder-item">
       <mat-icon>add_circle</mat-icon>
       <span class="mt-1">Add Folder</span>
     </li>
   
-    <!-- Main Folders -->
+   
     <li *ngFor="let folder of Documentfolders; let i = index" class="folder-item">
   
         <div class="folder-header">
   
-            <!-- FOLDER ICON + PLUS ICON WRAPPED TOGETHER -->
             <div class="folder-icon-wrapper" (click)="toggleSubfolder(i)" *ngIf="hasAddPermissionDocumentFolder">
               <mat-icon  class="folder-icon">folder</mat-icon>
           
-              <!-- Plus icon placed on top of folder -->
+       
               <mat-icon 
                 class="folder-plus-icon"
                 (click)="openSubFolderPopup(folder.id, $event)">add</mat-icon>
             </div>
           
-            <!-- Folder Name -->
+          
             <span *ngIf="hasViewPermissionDocumentFolder" class="folder-name mt-1" (click)="toggleSubfolder(i)">
               {{ folder.name }}
             </span>
           
-            <!-- Arrow -->
+        
             <mat-icon class="arrow-icon mt-2" (click)="toggleSubfolder(i)" *ngIf="hasViewPermissionDocumentFolder">
               {{ expandedFolderIndex === i ? 'expand_less' : 'expand_more' }}
             </mat-icon>
           
           </div>
   
-      <!-- Subfolders: show only when expanded -->
        <div  *ngIf="hasViewPermissionDocumentFolder">
       <ul  *ngIf="expandedFolderIndex === i && folder.subfolders?.length > 0" class="subfolder-list">
         <li  *ngFor="let sub of folder.subfolders"
@@ -112,8 +97,6 @@
 
   
 
-          <!-- create folder modal pupup -->
-
               
         <div *ngIf="iscreateLoanApp" class="modal">
             <div class="modal-content">
@@ -122,7 +105,7 @@
                   <h6>   Create  Folder</h6>
                 </div>
                       <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
+  
     <span class="close-btn" (click)="closeapplicationModal()">
       ×
     </span>
@@ -162,7 +145,7 @@
 
 
 
-          <!-- create sub folder modal pupup -->
+     
 
           <div *ngIf="iscreatesubfolder" class="modal">
             <div class="modal-content">
@@ -240,8 +223,158 @@
   
       <router-outlet></router-outlet>
   
-      <!-- <router-outlet></router-outlet> -->
+   
   
     </mat-sidenav-container>
+  
+  </div> -->
+
+
+
+  <div class="sub-sidebar clickOutside">
+    <mat-sidenav-container class="sub-sidenav-container">
+      <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
+        <div class="wrapper">
+          
+          <!-- Sidebar Header & Toggle -->
+          <div class="sidebar-top">
+            <span class="sub-sidebar-title" *ngIf="isMenuOpen">Document Folders</span>
+            <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+              <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+            </button>
+          </div>
+  
+          <!-- Navigation Menu -->
+          <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+            <ul class="nav-menu-list">
+  
+              <!-- Add Folder Button -->
+              <li *ngIf="hasAddPermissionDocumentFolder" class="add-folder-item" (click)="openPopus()">
+                <div class="nav-item-link action-link">
+                  <mat-icon class="nav-icon text-success">add_circle</mat-icon>
+                  <span class="sidenav-opt">Add Folder</span>
+                </div>
+              </li>
+  
+              <!-- Main Folders Dynamic Tree -->
+              <ng-container *ngIf="hasViewPermissionDocumentFolder">
+                <li *ngFor="let folder of Documentfolders; let i = index" class="folder-group-item">
+                  
+                  <!-- Main Folder Bar -->
+                  <div class="folder-header-row" [class.active-folder]="expandedFolderIndex === i">
+                    
+                    <!-- Folder Icon & Quick Add Subfolder Action -->
+                    <div class="folder-icon-wrapper" (click)="toggleSubfolder(i)">
+                      <mat-icon class="nav-icon">folder</mat-icon>
+                      <button 
+                        *ngIf="hasAddPermissionDocumentFolder" 
+                        type="button" 
+                        class="btn-add-sub" 
+                        (click)="openSubFolderPopup(folder.id, $event)"
+                        title="Add Subfolder">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    </div>
+  
+                    <!-- Folder Name Label -->
+                    <span class="sidenav-opt folder-title" (click)="toggleSubfolder(i)">
+                      {{ folder.name }}
+                    </span>
+  
+                    <!-- Collapse/Expand Indicator -->
+                    <mat-icon class="chevron-arrow" (click)="toggleSubfolder(i)">
+                      {{ expandedFolderIndex === i ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+  
+                  </div>
+  
+                  <!-- Nested Subfolders List -->
+                  <ul class="sub-menu-list" *ngIf="expandedFolderIndex === i && folder.subfolders?.length > 0 && isMenuOpen">
+                    <li *ngFor="let sub of folder.subfolders">
+                      <a 
+                        [routerLink]="['/main-sidebar/document-folders/document-folder-files', sub.id]"
+                        routerLinkActive="active-sublink"
+                        class="subnav-item-link">
+                        <mat-icon class="subnav-icon">folder_open</mat-icon>
+                        <span class="subnav-text">{{ sub.name }}</span>
+                      </a>
+                    </li>
+                  </ul>
+  
+                </li>
+              </ng-container>
+  
+            </ul>
+          </nav>
+  
+        </div>
+      </mat-sidenav>
+  
+      <!-- Main Content Outlet -->
+      <main class="sub-content-area">
+        <router-outlet></router-outlet>
+      </main>
+  
+    </mat-sidenav-container>
+  
+    <!-- Create Main Folder Modal -->
+    <div *ngIf="iscreateLoanApp" class="modal-backdrop">
+      <div class="modal-dialog-custom">
+        <div class="modal-header-custom">
+          <h6>Create Folder</h6>
+          <button type="button" class="close-btn" (click)="closeapplicationModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+          <form (ngSubmit)="CreateFolder()">
+            <div class="form-group mb-3">
+              <label class="form-label">Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                required 
+                [(ngModel)]="name" 
+                placeholder="Enter folder name"
+                [ngModelOptions]="{standalone: true}">
+            </div>
+            <div class="text-end">
+              <button type="button" class="btn btn-secondary me-2" (click)="closeapplicationModal()">Cancel</button>
+              <button type="submit" class="btn btn-success">Add</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Create Sub Folder Modal -->
+    <div *ngIf="iscreatesubfolder" class="modal-backdrop">
+      <div class="modal-dialog-custom">
+        <div class="modal-header-custom">
+          <h6>Create Sub Folder</h6>
+          <button type="button" class="close-btn" (click)="closeSubfolderModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+          <form (ngSubmit)="CreateFolderSubFolder()">
+            <div class="form-group mb-3">
+              <label class="form-label">Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                required 
+                [(ngModel)]="name" 
+                placeholder="Enter subfolder name"
+                [ngModelOptions]="{standalone: true}">
+            </div>
+  
+            <!-- Hidden Parent Selection -->
+            <input type="hidden" [(ngModel)]="parent" [ngModelOptions]="{standalone: true}">
+  
+            <div class="text-end">
+              <button type="button" class="btn btn-secondary me-2" (click)="closeSubfolderModal()">Cancel</button>
+              <button type="submit" class="btn btn-success">Add</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   
   </div>

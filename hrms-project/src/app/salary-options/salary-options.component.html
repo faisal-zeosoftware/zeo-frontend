@@ -1,11 +1,5 @@
+<!-- 
 
-<div class="sub-sidebar clickOutside">
-  <mat-sidenav-container>
-    <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
-      <div class="wrapper">
-
-        <div class="sidebar-top"> 
-           <!-- Toggle Button (placed OUTSIDE sidebar) -->
     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
       <span *ngIf="!isMenuOpen">☰</span>
       <span *ngIf="isMenuOpen">×</span>
@@ -25,7 +19,6 @@
                 
                   <li routerLink="/main-sidebar/salary-options/pay-structure" *ngIf="hasViewPermissionPayStructure"><a ><mat-icon>attach_money</mat-icon> Pay Structure</a></li>
 
-                  <!-- <li routerLink="/main-sidebar/leave-options/leave-type" *ngIf="hasViewPermissiondesg"><a><mat-icon>peoples</mat-icon> Leave Type</a></li> -->
                  
                   <li routerLink="/main-sidebar/salary-options/pay-roll" *ngIf="hasViewPermissionPayroll"><a ><mat-icon>attach_money</mat-icon> Payroll</a></li>
                   
@@ -103,8 +96,178 @@
   
       <router-outlet></router-outlet>
   
-      <!-- <router-outlet></router-outlet> -->
+
   
     </mat-sidenav-container>
   
+  </div> -->
+
+
+
+  <div class="sub-sidebar clickOutside">
+    <mat-sidenav-container class="sub-sidenav-container">
+      <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
+        <div class="wrapper">
+          
+          <!-- Sidebar Header & Toggle -->
+          <div class="sidebar-top">
+            <span class="sub-sidebar-title" *ngIf="isMenuOpen">Salary Options</span>
+            <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+              <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+            </button>
+          </div>
+  
+          <!-- Navigation Menu -->
+          <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+            <ul class="nav-menu-list">
+  
+              <!-- Salary Component -->
+              <li *ngIf="hasViewPermissionSalary">
+                <a 
+                  routerLink="/main-sidebar/salary-options/salary" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">extension</mat-icon>
+                  <span class="sidenav-opt">Salary Component</span>
+                </a>
+              </li>
+  
+              <!-- Salary Structure -->
+              <li *ngIf="hasViewPermissionSalary">
+                <a 
+                  routerLink="/main-sidebar/salary-options/salary-structure" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">account_tree</mat-icon>
+                  <span class="sidenav-opt">Salary Structure</span>
+                </a>
+              </li>
+  
+              <!-- Employee Salary -->
+              <li *ngIf="hasViewPermissionEmployeeSalary">
+                <a 
+                  routerLink="/main-sidebar/salary-options/employee-salary" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">badge</mat-icon>
+                  <span class="sidenav-opt">Employee Salary</span>
+                </a>
+              </li>
+  
+              <!-- Pay Structure -->
+              <li *ngIf="hasViewPermissionPayStructure">
+                <a 
+                  routerLink="/main-sidebar/salary-options/pay-structure" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">schema</mat-icon>
+                  <span class="sidenav-opt">Pay Structure</span>
+                </a>
+              </li>
+  
+              <!-- Payroll -->
+              <li *ngIf="hasViewPermissionPayroll">
+                <a 
+                  routerLink="/main-sidebar/salary-options/pay-roll" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">payments</mat-icon>
+                  <span class="sidenav-opt">Payroll</span>
+                </a>
+              </li>
+  
+              <!-- Payslip Approvals -->
+              <li *ngIf="hasViewPermissionPayslipApprovals">
+                <a 
+                  routerLink="/main-sidebar/salary-options/payslip-approval" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">receipt_long</mat-icon>
+                  <span class="sidenav-opt">Payslip Approvals</span>
+                </a>
+              </li>
+  
+              <!-- Payroll Approval Level -->
+              <li *ngIf="hasViewPermissionPayrollApprovalLevel">
+                <a 
+                  routerLink="/main-sidebar/salary-options/payroll-appoval-level" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">approval</mat-icon>
+                  <span class="sidenav-opt">Payroll Approval Level</span>
+                </a>
+              </li>
+  
+              <!-- Dropdown: Advance Salary Submenu -->
+              <li class="has-submenu">
+                <div class="submenu-header" (click)="toggleAdvanceSalary()">
+                  <div class="d-flex">
+                    <mat-icon class="nav-icon">request_quote</mat-icon>
+                    <span class="sidenav-opt">Advance Salary</span>
+                  </div>
+                  <mat-icon class="chevron-arrow">
+                    {{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}
+                  </mat-icon>
+                </div>
+  
+                <!-- Nested Submenu Items -->
+                <ul class="sub-menu-list" *ngIf="showAdvanceSalary && isMenuOpen">
+                  <li *ngIf="hasViewPermissionApprovalList">
+                    <a 
+                      routerLink="/main-sidebar/salary-options/advance-salary-approvals" 
+                      routerLinkActive="active-sublink" 
+                      class="subnav-item-link">
+                      Approval List
+                    </a>
+                  </li>
+                  <li *ngIf="hasViewPermissionAdvanceSalaryRequest">
+                    <a 
+                      routerLink="/main-sidebar/salary-options/advance-salary-request" 
+                      routerLinkActive="active-sublink" 
+                      class="subnav-item-link">
+                      Advance Salary Request
+                    </a>
+                  </li>
+                  <li *ngIf="hasViewPermissionAdvanceSalaryEscalation">
+                    <a 
+                      routerLink="/main-sidebar/salary-options/advance-salary-escalation" 
+                      routerLinkActive="active-sublink" 
+                      class="subnav-item-link">
+                      Advance Salary Escalation
+                    </a>
+                  </li>
+                  <li *ngIf="hasViewPermissionAdvanceSalaryApprovalLevel">
+                    <a 
+                      routerLink="/main-sidebar/salary-options/advance-salary-approval-level" 
+                      routerLinkActive="active-sublink" 
+                      class="subnav-item-link">
+                      Advance Salary Approval Level
+                    </a>
+                  </li>
+                </ul>
+              </li>
+  
+              <!-- WPS -->
+              <li *ngIf="hasViewPermissionWPS">
+                <a 
+                  routerLink="/main-sidebar/salary-options/wps" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">account_balance</mat-icon>
+                  <span class="sidenav-opt">WPS</span>
+                </a>
+              </li>
+  
+            </ul>
+          </nav>
+  
+        </div>
+      </mat-sidenav>
+  
+      <!-- Main Content Outlet Area -->
+      <main class="sub-content-area">
+        <router-outlet></router-outlet>
+      </main>
+  
+    </mat-sidenav-container>
   </div>

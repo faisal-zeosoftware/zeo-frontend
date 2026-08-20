@@ -458,3 +458,126 @@
   width: 0 !important;
   height: 0 !important;
 }
+
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: 64px;
+  bottom: 0;
+  left: 0;
+  z-index: 600;
+  background: #0f172a !important;
+  border-right: 1px solid #1e293b;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden; /* Restricts overflow to inner elements */
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-wrapper {
+  padding: 1rem 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Ensures child elements handle scrolling properly */
+}
+
+.sidebar-brand-title {
+  padding: 0 20px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #64748b;
+  text-transform: uppercase;
+  flex-shrink: 0; /* Prevents title from shrinking when menu overflows */
+}
+
+.menu-open {
+  width: 235px !important;
+}
+
+.menu-close {
+  width: 35px !important;
+}
+
+/* Updated Scrollable Container */
+.nav-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 3px 20px 3px; /* Extra bottom padding for comfortable scrolling */
+  flex: 1 1 auto; /* Allows container to fill available height */
+  overflow-y: auto !important; /* Forces vertical scrolling */
+  max-height: none; /* Removed restrictive max-height calculation */
+}
+
+.nav-item-link {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  color: #94a3b8;
+  border-radius: 8px;
+  text-decoration: none !important;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0; /* Ensures item height remains fixed during scroll */
+}
+
+.nav-item-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+  transform: translateX(2px);
+}
+
+.nav-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  margin-right: 14px;
+  color: #64748b;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.nav-item-link:hover .nav-icon {
+  color: #818cf8;
+}
+
+.active-link {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+.active-link .nav-icon {
+  color: #ffffff !important;
+}
+
+.menu-close .sidenav-opt,
+.menu-close .sidebar-brand-title {
+  display: none;
+}
+
+.menu-close .nav-item-link {
+  justify-content: center;
+  padding: 12px;
+}
+
+.menu-close .nav-icon {
+  margin-right: 0;
+}
+
+/* Scrollbar Hiding Rules (retains scroll capability without visual scrollbar) */
+.nav-menu-list {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+.nav-menu-list::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Opera */
+  width: 0 !important;
+  height: 0 !important;
+}

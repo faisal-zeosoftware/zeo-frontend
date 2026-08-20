@@ -1,10 +1,4 @@
-<div class="sub-sidebar clickOutside">
-  <mat-sidenav-container>
-    <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
-      <div class="wrapper">
-
-        <div class="sidebar-top"> 
-           <!-- Toggle Button (placed OUTSIDE sidebar) -->
+<!-- 
     <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
       <span *ngIf="!isMenuOpen">☰</span>
       <span *ngIf="isMenuOpen">×</span>
@@ -14,26 +8,21 @@
         </div>
         <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul>
-                <li routerLink="/main-sidebar/air-ticket-options/air-ticket-policy" *ngIf="hasViewPermissionAirticketPolicy"><a><mat-icon>flight_takeoff </mat-icon> Airticket Policy</a></li>
-
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-approvals" *ngIf="hasViewPermissionAirticketApprovals"><a><mat-icon>flight_takeoff </mat-icon> Airticket Approvals</a></li>
-                         
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-allocation" *ngIf="hasViewPermissionAirticketAllocation"><a><mat-icon>flight_takeoff </mat-icon> Airticket Allocation</a></li>
-
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-rule" *ngIf="hasViewPermissionAirticketRule"><a><mat-icon>flight_takeoff </mat-icon> Airticket Rule</a></li>
-
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-escalation" *ngIf="hasViewPermissionAirticketEsc"><a><mat-icon>flight_takeoff </mat-icon> Airticket Escalation</a></li>
-
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-approval-level" *ngIf="hasViewPermissionAirticketAprlvl"><a><mat-icon>flight_takeoff </mat-icon> Airticket Approval Level</a></li>
+                <li routerLink="/main-sidebar/air-ticket-options/air-ticket-policy" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Policy</a></li>
+             
+              
+                <li routerLink="/main-sidebar/air-ticket-options/airticket-allocation" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Allocation</a></li>
                
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-request" *ngIf="hasViewPermissionAirticketRequest"><a><mat-icon>flight_takeoff </mat-icon> Airticket Request</a></li>
+                <li routerLink="/main-sidebar/air-ticket-options/airticket-request" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Airticket Request</a></li>
 
-
+                <li routerLink="/main-sidebar/air-ticket-options/airticket-rule" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Airticket Rule</a></li>
 
                   <mat-nav-list>
      
   
-  
+   
+
+                    
                     <div>
             
             
@@ -70,8 +59,116 @@
   
       <router-outlet></router-outlet>
   
-      <!-- <router-outlet></router-outlet> -->
+ 
   
     </mat-sidenav-container>
   
+  </div> -->
+
+  <div class="sub-sidebar clickOutside">
+    <mat-sidenav-container class="sub-sidenav-container">
+      <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
+        <div class="wrapper">
+          
+          <!-- Sidebar Header & Toggle -->
+          <div class="sidebar-top">
+            <span class="sub-sidebar-title" *ngIf="isMenuOpen">Air Ticket Options</span>
+            <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+              <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+            </button>
+          </div>
+  
+          <!-- Navigation Menu -->
+          <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+            <ul class="nav-menu-list">
+  
+              <!-- Airticket Policy -->
+              <li *ngIf="hasViewPermissionAirticketPolicy">
+                <a 
+                  routerLink="/main-sidebar/air-ticket-options/air-ticket-policy" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">policy</mat-icon>
+                  <span class="sidenav-opt">Airticket Policy</span>
+                </a>
+              </li>
+  
+              <!-- Airticket Approvals -->
+              <li *ngIf="hasViewPermissionAirticketApprovals">
+                <a 
+                  routerLink="/main-sidebar/air-ticket-options/airticket-approvals" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">fact_check</mat-icon>
+                  <span class="sidenav-opt">Airticket Approvals</span>
+                </a>
+              </li>
+  
+              <!-- Airticket Allocation -->
+              <li *ngIf="hasViewPermissionAirticketAllocation">
+                <a 
+                  routerLink="/main-sidebar/air-ticket-options/airticket-allocation" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">confirmation_number</mat-icon>
+                  <span class="sidenav-opt">Airticket Allocation</span>
+                </a>
+              </li>
+  
+              <!-- Airticket Rule -->
+              <li *ngIf="hasViewPermissionAirticketRule">
+                <a 
+                  routerLink="/main-sidebar/air-ticket-options/airticket-rule" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">gavel</mat-icon>
+                  <span class="sidenav-opt">Airticket Rule</span>
+                </a>
+              </li>
+  
+              <!-- Airticket Escalation -->
+              <li *ngIf="hasViewPermissionAirticketEsc">
+                <a 
+                  routerLink="/main-sidebar/air-ticket-options/airticket-escalation" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">report_problem</mat-icon>
+                  <span class="sidenav-opt">Airticket Escalation</span>
+                </a>
+              </li>
+  
+              <!-- Airticket Approval Level -->
+              <li *ngIf="hasViewPermissionAirticketAprlvl">
+                <a 
+                  routerLink="/main-sidebar/air-ticket-options/airticket-approval-level" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">layers</mat-icon>
+                  <span class="sidenav-opt">Airticket Approval Level</span>
+                </a>
+              </li>
+  
+              <!-- Airticket Request -->
+              <li *ngIf="hasViewPermissionAirticketRequest">
+                <a 
+                  routerLink="/main-sidebar/air-ticket-options/airticket-request" 
+                  routerLinkActive="active-link" 
+                  class="nav-item-link">
+                  <mat-icon class="nav-icon">flight_takeoff</mat-icon>
+                  <span class="sidenav-opt">Airticket Request</span>
+                </a>
+              </li>
+  
+            </ul>
+          </nav>
+  
+        </div>
+      </mat-sidenav>
+  
+      <!-- Main Content Area -->
+      <main class="sub-content-area">
+        <router-outlet></router-outlet>
+      </main>
+  
+    </mat-sidenav-container>
   </div>

@@ -1,22 +1,6 @@
-<div class="sub-sidebar clickOutside">
-    <mat-sidenav-container>
-      <mat-sidenav class="sidnav_scrolling" #sidenav opened="true" mode="side">
-        <div class="wrapper">
-  
-          <div class="sidebar-top"> 
-             <!-- Toggle Button (placed OUTSIDE sidebar) -->
-      <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-        <span *ngIf="!isMenuOpen">☰</span>
-        <span *ngIf="isMenuOpen">×</span>
-      </button>
-                
-    
-          </div>
-          <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-            <ul>
-             
-                 <!-- <li routerLink="/main-sidebar/attendance-sidebar/attendance-punching" *ngIf="hasViewPermissionGeoFence"><a><mat-icon>person_raised_hand</mat-icon>Employee Punching</a></li> -->
-                 <!-- <li routerLink="/main-sidebar/attendance-sidebar/employee-punching-details" *ngIf="hasViewPermissionGeoFence"><a><mat-icon>person_raised_hand</mat-icon> Punching Details</a></li> -->
+<!-- <div class="sub-sidebar clickOutside">
+   
+      
 
 
                   <li routerLink="/main-sidebar/attendance-sidebar/attendace-marking" *ngIf="hasViewPermissionAttendanceMarking"><a><mat-icon>person_raised_hand</mat-icon> Attendance Marking</a></li>
@@ -106,8 +90,221 @@
     
         <router-outlet></router-outlet>
     
-        <!-- <router-outlet></router-outlet> -->
+      
     
       </mat-sidenav-container>
     
+    </div> -->
+
+
+
+
+
+    <div class="sub-sidebar clickOutside">
+      <mat-sidenav-container class="sub-sidenav-container">
+        <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
+          <div class="wrapper">
+            
+            <!-- Sidebar Header & Toggle -->
+            <div class="sidebar-top">
+              <span class="sub-sidebar-title" *ngIf="isMenuOpen">Attendance Options</span>
+              <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+                <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+              </button>
+            </div>
+    
+            <!-- Navigation Menu -->
+            <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+              <ul class="nav-menu-list">
+    
+                <!-- Attendance Marking -->
+                <li *ngIf="hasViewPermissionAttendanceMarking">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/attendace-marking" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">edit_calendar</mat-icon>
+                    <span class="sidenav-opt">Attendance Marking</span>
+                  </a>
+                </li>
+    
+                <!-- Attendance List -->
+                <li *ngIf="hasViewPermissionAttendanceMarking">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/employee-full-attendance" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">fact_check</mat-icon>
+                    <span class="sidenav-opt">Attendance List</span>
+                  </a>
+                </li>
+    
+                <!-- Dropdown: Attendance Request Submenu -->
+                <li class="has-submenu">
+                  <div class="submenu-header" (click)="toggleGeneralRequest()">
+                    <div class="d-flex">
+                      <mat-icon class="nav-icon">pending_actions</mat-icon>
+                      <span class="sidenav-opt">Attendance Request</span>
+                    </div>
+                    <mat-icon class="chevron-arrow">
+                      {{ showGeneralRequest ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                  </div>
+    
+                  <!-- Nested Request Items -->
+                  <ul class="sub-menu-list" *ngIf="showGeneralRequest && isMenuOpen">
+                    <li *ngIf="hasViewPermissionAttendanceReq">
+                      <a 
+                        routerLink="/main-sidebar/attendance-sidebar/attendance-attendance-request" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Late In Early Out Request
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionLateinEarlyOutApprovallevel">
+                      <a 
+                        routerLink="/main-sidebar/attendance-sidebar/latein-earlyout-approval-level" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Late In Early Out Approval Level
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionLateinEarlyOutApprovals">
+                      <a 
+                        routerLink="/main-sidebar/attendance-sidebar/latein-earlyout-approvals" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Late In Early Out Approvals
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+    
+                <!-- Dropdown: Attendance Policy Submenu -->
+                <li class="has-submenu">
+                  <div class="submenu-header" (click)="togglePolicyRequest()">
+                    <div class="d-flex">
+                      <mat-icon class="nav-icon">gavel</mat-icon>
+                      <span class="sidenav-opt">Attendance Policy</span>
+                    </div>
+                    <mat-icon class="chevron-arrow">
+                      {{ showpolicyRequest ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                  </div>
+    
+                  <!-- Nested Policy Items -->
+                  <ul class="sub-menu-list" *ngIf="showpolicyRequest && isMenuOpen">
+                    <li *ngIf="hasViewPermissionAttendancepolicy">
+                      <a 
+                        routerLink="/main-sidebar/attendance-sidebar/attendance-policy" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Round Off
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionAttendancevalidationpolicy">
+                      <a 
+                        routerLink="/main-sidebar/attendance-sidebar/attendance-validation-policy" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Validation Policy
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionLateComingPolicy">
+                      <a 
+                        routerLink="/main-sidebar/attendance-sidebar/late-come-policy" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Late Coming Policy
+                      </a>
+                    </li>
+                    <li *ngIf="hasViewPermissionEarlyExitPolicy">
+                      <a 
+                        routerLink="/main-sidebar/attendance-sidebar/early-exit-policy" 
+                        routerLinkActive="active-sublink" 
+                        class="subnav-item-link">
+                        Early Exit Policy
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+    
+                <!-- Manual Entry -->
+                <li *ngIf="hasViewPermissionmanualentry">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/manual-entry" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">edit_note</mat-icon>
+                    <span class="sidenav-opt">Manual Entry</span>
+                  </a>
+                </li>
+    
+                <!-- Employees Early Going -->
+                <li *ngIf="hasViewPermissionEmpEarlygoing">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/employee-early-going" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">directions_run</mat-icon>
+                    <span class="sidenav-opt">Employees Early Going</span>
+                  </a>
+                </li>
+    
+                <!-- Employees Recheck -->
+                <li *ngIf="hasViewPermissionEmpRecheck">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/employee-recheck" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">find_replace</mat-icon>
+                    <span class="sidenav-opt">Employees Recheck</span>
+                  </a>
+                </li>
+    
+                <!-- Punching Details -->
+                <li *ngIf="hasViewPermissionPunchingList">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/employee-punching-list" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">fingerprint</mat-icon>
+                    <span class="sidenav-opt">Punching Details</span>
+                  </a>
+                </li>
+    
+                <!-- Geo Fence -->
+                <li *ngIf="hasViewPermissionGeoFence">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/geofence" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">pin_drop</mat-icon>
+                    <span class="sidenav-opt">Geo Fence</span>
+                  </a>
+                </li>
+    
+                <!-- Face Register -->
+                <li *ngIf="hasViewPermissionFaceRegister">
+                  <a 
+                    routerLink="/main-sidebar/attendance-sidebar/employee-face-register" 
+                    routerLinkActive="active-link" 
+                    class="nav-item-link">
+                    <mat-icon class="nav-icon">face_retouching_natural</mat-icon>
+                    <span class="sidenav-opt">Face Register</span>
+                  </a>
+                </li>
+    
+              </ul>
+            </nav>
+    
+          </div>
+        </mat-sidenav>
+    
+        <!-- Main Content Outlet Area -->
+        <main class="sub-content-area">
+          <router-outlet></router-outlet>
+        </main>
+    
+      </mat-sidenav-container>
     </div>
