@@ -204,84 +204,179 @@
     <!-- Right-aligned Header Actions -->
     <ul class="navbar-nav d-flex flex-row align-items-center gap-3 m-0 p-0">
       <!-- 🔔 Notification Dropdown -->
-      <li class="nav-item dropdown" *ngIf="AllNotifications">
+<!-- 🔔 Notification Dropdown -->
+<li class="nav-item dropdown" *ngIf="AllNotifications">
+  <a
+    class="nav-link dropdown-toggle hidden-arrow header-icon-btn p-0"
+    id="notificationDropdown"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+    role="button"
+  >
+    <div class="notiicon position-relative d-flex align-items-center justify-content-center">
+      <!-- SVG Bell Icon -->
+      <svg class="noti-bell-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+      </svg>
+      <span
+        *ngIf="notificationCount > 0"
+        class="badge rounded-pill position-absolute noti-badge"
+      >
+        {{ notificationCount }}
+      </span>
+    </div>
+  </a>
+
+<ul
+  class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0 rounded-4 notification-dropdown"
+  aria-labelledby="notificationDropdown"
+>
+    <!-- Header -->
+    <li class="notification-header">
+      <div class="notification-header-left">
+        <div class="notification-header-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+          </svg>
+        </div>
+        <div>
+          <strong class="notification-title">Notifications</strong>
+          <div class="notification-subtitle" *ngIf="notificationCount > 0">
+            You have {{ notificationCount }} unread message{{ notificationCount > 1 ? 's' : '' }}
+          </div>
+        </div>
+      </div>
+      <button
+        class="mark-all-btn"
+        *ngIf="AllNotifications.length > 0"
+        (click)="markAllAsRead($event)"
+      >
+        Mark all read
+      </button>
+    </li>
+
+    <ng-container *ngIf="AllNotifications.length > 0; else noNotifications">
+      <li *ngFor="let noti of AllNotifications; let i = index">
         <a
-          class="nav-link dropdown-toggle hidden-arrow header-icon-btn p-0"
-          id="notificationDropdown"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-          role="button"
+          class="dropdown-item notification-item"
+          href="javascript:void(0)"
+          (click)="onNotificationClick(noti)"
+          [ngClass]="{ 'flash-highlight': noti.highlighted, 'unread': !noti.read }"
         >
-          <div class="notiicon position-relative d-flex align-items-center justify-content-center">
-            <mat-icon>notifications_none</mat-icon>
-            <span
-              *ngIf="notificationCount > 0"
-              class="badge rounded-pill bg-danger position-absolute noti-badge"
-            >
-              {{ notificationCount }}
-            </span>
+          <div class="notification-content-wrapper">
+            <!-- Type Icon -->
+            <div class="notification-type-icon" [ngClass]="'type-' + noti.type">
+              <!-- Document Expired -->
+              <svg *ngIf="noti.type === 'expdocument'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              <!-- Resignation -->
+              <svg *ngIf="noti.type === 'resignationrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <!-- Leave -->
+              <svg *ngIf="noti.type === 'leave'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <!-- General -->
+              <svg *ngIf="noti.type === 'generalrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              <!-- Document Request -->
+              <svg *ngIf="noti.type === 'docrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <!-- Loan -->
+              <svg *ngIf="noti.type === 'loanrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              <!-- Asset -->
+              <svg *ngIf="noti.type === 'assetrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+              <!-- Air Ticket -->
+              <svg *ngIf="noti.type === 'airticketrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 12h20"></path>
+                <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"></path>
+                <path d="M12 2v10"></path>
+                <path d="M12 2l4 4"></path>
+                <path d="M12 2l-4 4"></path>
+              </svg>
+              <!-- Advance Salary -->
+              <svg *ngIf="noti.type === 'advancesalaryrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+              </svg>
+              <!-- Late In / Early Out -->
+              <svg *ngIf="noti.type === 'lateinearlyrequest'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+
+            <!-- Text Content -->
+            <div class="notification-text">
+              <div class="notification-top-row">
+                <strong class="notification-type-label">{{ getNotificationLabel(noti.type) }}</strong>
+                <span class="badge-new" *ngIf="!noti.read">New</span>
+              </div>
+              <div class="notification-date">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                {{ noti.created_at | date : "medium" }}
+              </div>
+              <div class="notification-message">
+                {{ noti.message }}
+              </div>
+            </div>
           </div>
         </a>
-
-        <ul
-          class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-0 rounded-3 overflow-hidden"
-          aria-labelledby="notificationDropdown"
-          style="min-width: 340px; max-height: 420px; overflow-y: auto;"
-        >
-          <li class="notification-header">
-            <strong class="notification-title">Notifications</strong>
-            <button
-              class="mark-all-btn"
-              *ngIf="AllNotifications.length > 0"
-              (click)="markAllAsRead($event)"
-            >
-              Mark all Read
-            </button>
-          </li>
-
-          <ng-container *ngIf="AllNotifications.length > 0; else noNotifications">
-            <li *ngFor="let noti of AllNotifications; let i = index">
-              <a
-                class="dropdown-item py-2 px-3"
-                href="javascript:void(0)"
-                (click)="onNotificationClick(noti)"
-                [ngClass]="{ 'flash-highlight': noti.highlighted }"
-              >
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                  <div>
-                    <strong *ngIf="noti.type === 'expdocument'">📝 Document Expired</strong>
-                    <strong *ngIf="noti.type === 'resignationrequest'">📄 Resignation Request</strong>
-                    <strong *ngIf="noti.type === 'leave'">🏖️ Leave Request</strong>
-                    <strong *ngIf="noti.type === 'generalrequest'">📢 General Request</strong>
-                    <strong *ngIf="noti.type === 'docrequest'">🗂️ Document Request</strong>
-                    <strong *ngIf="noti.type === 'loanrequest'">💰 Loan Request</strong>
-                    <strong *ngIf="noti.type === 'assetrequest'">🧰 Asset Request</strong>
-                    <strong *ngIf="noti.type === 'airticketrequest'">✈️ AirTicket Request</strong>
-                    <strong *ngIf="noti.type === 'advancesalaryrequest'">💵 Advance Salary Request</strong>
-                    <strong *ngIf="noti.type === 'lateinearlyrequest'">⏱️ Late In / Early Out Request</strong>
-                    <div class="text-muted small">
-                      {{ noti.created_at | date : "medium" }}
-                    </div>
-                    <div class="small mt-1 text-wrap text-dark">
-                      {{ noti.message }}
-                    </div>
-                  </div>
-                  <span class="badge bg-primary rounded-pill">New</span>
-                </div>
-              </a>
-              <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-0" />
-            </li>
-          </ng-container>
-
-          <ng-template #noNotifications>
-            <li>
-              <a class="dropdown-item text-center text-muted py-4">
-                No new notifications
-              </a>
-            </li>
-          </ng-template>
-        </ul>
+        <hr *ngIf="i < AllNotifications.length - 1" class="dropdown-divider my-0" />
       </li>
+    </ng-container>
+
+    <!-- Footer -->
+    <li class="notification-footer" *ngIf="AllNotifications.length > 0">
+      <a href="javascript:void(0)" class="view-all-link">
+        Close
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </li>
+
+    <ng-template #noNotifications>
+      <li>
+        <div class="empty-notification">
+          <div class="empty-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </div>
+          <p>No new notifications</p>
+        </div>
+      </li>
+    </ng-template>
+  </ul>
+</li>
 
       <!-- Select Company Dropdown -->
       <li class="nav-item position-relative" *ngIf="schemas.length > 0">

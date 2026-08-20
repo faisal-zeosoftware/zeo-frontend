@@ -1228,5 +1228,22 @@ showsidebarclick() {
     }
   
   }
+
+
+  getNotificationLabel(type: string): string {
+  const labels: { [key: string]: string } = {
+    'expdocument': 'Document Expired',
+    'resignationrequest': 'Resignation Request',
+    'leave': 'Leave Request',
+    'generalrequest': 'General Request',
+    'docrequest': 'Document Request',
+    'loanrequest': 'Loan Request',
+    'assetrequest': 'Asset Request',
+    'airticketrequest': 'AirTicket Request',
+    'advancesalaryrequest': 'Advance Salary Request',
+    'lateinearlyrequest': 'Late In / Early Out Request'
+  };
+  return labels[type] || 'Notification';
+}
   
 }
