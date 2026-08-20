@@ -719,3 +719,75 @@ mat-sidenav-container {
   background-color: #f8fafc;
   overflow-y: auto !important; /* Pages content scrolls independently from sidebar */
 }
+
+
+/* 1. Target Material 15+ CSS Tokens (The primary reason it stays grey) */
+.sub-sidenav mat-expansion-panel {
+  --mat-expansion-header-indicator-color: #ffffff !important;
+  --mat-expansion-header-headline-color: #ffffff !important;
+}
+
+/* 2. Target the SVG icon inside the indicator (Angular 15+ Angular Material) */
+.sub-sidenav .mat-expansion-indicator svg,
+.sub-sidenav .mat-expansion-panel-header-icon svg {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* 3. Force legacy pseudo-element arrow to white (Angular 14 and older) */
+.sub-sidenav .mat-expansion-indicator::after {
+  border-color: #ffffff !important;
+}
+
+/* 4. Ensure Parent Title / Heading text is pure white */
+.sub-sidenav .mat-expansion-panel-header-title,
+.sub-sidenav .sidenav-opt {
+  color: #ffffff !important;
+}
+
+/* 5. Ensure the left Material Icons match the white sidebar theme */
+.sub-sidenav .mat-expansion-panel-header .nav-icon {
+  color: #ffffff !important;
+}
+
+
+
+/* 1. Set explicit full-height layout for the main sidebar wrapper */
+.sub-sidenav .wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100vh !important;
+  overflow: hidden !important; /* Prevents whole sidebar from scrolling */
+}
+
+/* 2. Keep header pinned at the top */
+.sub-sidenav .sidebar-top {
+  flex-shrink: 0 !important;
+}
+
+/* 3. Enable vertical scrolling exclusively on the nav container */
+.sub-sidenav nav.sidebar {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  min-height: 0 !important; /* Crucial for flex child scrolling */
+}
+
+/* 4. Smooth custom scrollbar styling */
+.sub-sidenav nav.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sub-sidenav nav.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sub-sidenav nav.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.sub-sidenav nav.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}

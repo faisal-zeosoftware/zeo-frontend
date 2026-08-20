@@ -21,3 +21,110 @@
   margin-top: 64px; /* Height of top main header navbar */
   width: 100%;
 }
+
+
+/* ==========================================================================
+   ANGULAR MATERIAL EXPANSION PANEL DESIGN OVERRIDES
+   ========================================================================== */
+
+/* Panel Shell Baseline */
+.sub-sidenav mat-accordion {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px;
+}
+
+.sub-sidenav mat-expansion-panel {
+  background: transparent !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Panel Header & Text Alignment */
+.sub-sidenav .mat-expansion-panel-header {
+  padding: 9px 12px !important;
+  height: 38px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.sub-sidenav .mat-expansion-panel-header:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.sub-sidenav .mat-expansion-panel-header-title {
+  color: #94a3b8 !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  display: flex !important;
+  align-items: center !important;
+  margin-right: 0 !important;
+}
+
+.sub-sidenav .mat-expansion-panel-header:hover .mat-expansion-panel-header-title {
+  color: #f1f5f9 !important;
+}
+
+/* Explicit Chevron Dropdown Indicator Styling */
+.sub-sidenav .mat-expansion-indicator {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sub-sidenav .mat-expansion-indicator::after {
+  color: #64748b !important; /* Matches icon muted color */
+  border-width: 0 2px 2px 0 !important;
+  padding: 3px !important;
+  transition: all 0.2s ease !important;
+}
+
+.sub-sidenav .mat-expansion-panel-header:hover .mat-expansion-indicator::after {
+  color: #f1f5f9 !important;
+}
+
+/* Remove default material padding inside expanded body */
+.sub-sidenav .mat-expansion-panel-body {
+  padding: 0 0 6px 0 !important;
+}
+
+/* Submenu container alignment inside panels */
+.sub-sidenav .submenu-container {
+  list-style: none;
+  padding: 4px 0 4px 18px !important;
+  margin: 2px 0 2px 14px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Handle Collapsed Sidebar (56px State) */
+.menu-close mat-expansion-panel-header {
+  padding: 0 !important;
+  justify-content: center !important;
+}
+
+.menu-close .mat-expansion-panel-header-title {
+  justify-content: center !important;
+}
+
+.menu-close .mat-expansion-indicator,
+.menu-close .sidenav-opt {
+  display: none !important;
+}
+
+/* Force the Chevron Arrow Indicator to White */
+.sub-sidenav .mat-expansion-panel-header .mat-expansion-indicator {
+  --mat-expansion-header-indicator-color: #ffffff !important;
+}
+
+/* Fallback for older Angular Material versions using pseudo-elements */
+.sub-sidenav .mat-expansion-panel-header .mat-expansion-indicator::after {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+}

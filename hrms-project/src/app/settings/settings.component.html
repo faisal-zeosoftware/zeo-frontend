@@ -332,15 +332,12 @@
 </div>
 
  -->
-
-
-
  <div class="sub-sidebar clickOutside">
   <mat-sidenav-container class="sub-sidenav-container">
     <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
       <div class="wrapper">
         
-        <!-- Sidebar Header & Toggle -->
+        <!-- Header -->
         <div class="sidebar-top">
           <span class="sub-sidebar-title" *ngIf="isMenuOpen">Settings</span>
           <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
@@ -348,284 +345,282 @@
           </button>
         </div>
 
-        <!-- Navigation Menu -->
+        <!-- Scrollable Navigation Area -->
         <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <mat-accordion multi="true">
+          <div class="nav-menu-list">
+            
+            <mat-accordion multi="true">
 
-            <!-- Common Settings -->
-            <mat-expansion-panel class="mat-elevation-z0">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <mat-icon class="nav-icon">settings_applications</mat-icon>
-                  <span class="sidenav-opt">Common Settings</span>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
+              <!-- Common Settings -->
+              <mat-expansion-panel class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="nav-icon">settings_applications</mat-icon>
+                    <span class="sidenav-opt">Common Settings</span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
 
-              <div class="submenu-container">
-                <a *ngIf="hasViewPermissionBranch" 
-                   routerLink="/main-sidebar/settings/branch-master" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Branch Master
-                </a>
+                <div class="submenu-container">
+                  <a *ngIf="hasViewPermissionBranch" 
+                     routerLink="/main-sidebar/settings/branch-master" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Branch Master
+                  </a>
 
-                <a *ngIf="hasViewStateMaster" 
-                   routerLink="/main-sidebar/settings/state-master" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   {{ stateLabel }} Master
-                </a>
+                  <a *ngIf="hasViewStateMaster" 
+                     routerLink="/main-sidebar/settings/state-master" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     {{ stateLabel }} Master
+                  </a>
 
-                <a *ngIf="hasViewPermissionDocType" 
-                   routerLink="/main-sidebar/settings/document-type-master" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Employee Document Type
-                </a>
+                  <a *ngIf="hasViewPermissionDocType" 
+                     routerLink="/main-sidebar/settings/document-type-master" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Employee Document Type
+                  </a>
 
-                <a *ngIf="hasViewCompanyMaster" 
-                   routerLink="/main-sidebar/settings/location-master" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Company Master
-                </a>
+                  <a *ngIf="hasViewCompanyMaster" 
+                     routerLink="/main-sidebar/settings/location-master" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Company Master
+                  </a>
 
-                <a *ngIf="hasViewDN" 
-                   routerLink="/main-sidebar/settings/document-numbering" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Document Numbering
-                </a>
+                  <a *ngIf="hasViewDN" 
+                     routerLink="/main-sidebar/settings/document-numbering" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Document Numbering
+                  </a>
 
-                <a *ngIf="hasViewDocNotifySettings" 
-                   routerLink="/main-sidebar/settings/notification-settings" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Document Notification Settings
-                </a>
-              </div>
-            </mat-expansion-panel>
+                  <a *ngIf="hasViewDocNotifySettings" 
+                     routerLink="/main-sidebar/settings/notification-settings" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Document Notification Settings
+                  </a>
+                </div>
+              </mat-expansion-panel>
 
-            <!-- Calendars -->
-            <mat-expansion-panel class="mat-elevation-z0">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <mat-icon class="nav-icon">calendar_month</mat-icon>
-                  <span class="sidenav-opt">Calendars</span>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
+              <!-- Calendars -->
+              <mat-expansion-panel class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="nav-icon">calendar_month</mat-icon>
+                    <span class="sidenav-opt">Calendars</span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
 
-              <div class="submenu-container">
-                <a *ngIf="hasViewWeek" 
-                   routerLink="/main-sidebar/settings/weelcalendar" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Week Calendar
-                </a>
+                <div class="submenu-container">
+                  <a *ngIf="hasViewWeek" 
+                     routerLink="/main-sidebar/settings/weelcalendar" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Week Calendar
+                  </a>
 
-                <a *ngIf="hasViewWeekAssgn" 
-                   routerLink="/main-sidebar/settings/assign-weekcalendar" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Assign Calendar
-                </a>
+                  <a *ngIf="hasViewWeekAssgn" 
+                     routerLink="/main-sidebar/settings/assign-weekcalendar" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Assign Calendar
+                  </a>
 
-                <a *ngIf="hasViewHoly" 
-                   routerLink="/main-sidebar/settings/holiday-calendar" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Holiday Calendar
-                </a>
+                  <a *ngIf="hasViewHoly" 
+                     routerLink="/main-sidebar/settings/holiday-calendar" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Holiday Calendar
+                  </a>
 
-                <a *ngIf="hasViewHolyAssgn" 
-                   routerLink="/main-sidebar/settings/assign-holiday-calendar" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Assign Holiday Calendar
-                </a>
-              </div>
-            </mat-expansion-panel>
+                  <a *ngIf="hasViewHolyAssgn" 
+                     routerLink="/main-sidebar/settings/assign-holiday-calendar" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Assign Holiday Calendar
+                  </a>
+                </div>
+              </mat-expansion-panel>
 
-            <!-- User And Permissions -->
-            <mat-expansion-panel class="mat-elevation-z0">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <mat-icon class="nav-icon">security</mat-icon>
-                  <span class="sidenav-opt">User And Permissions</span>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
+              <!-- User And Permissions -->
+              <mat-expansion-panel class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="nav-icon">security</mat-icon>
+                    <span class="sidenav-opt">User And Permissions</span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
 
-              <div class="submenu-container">
-                <a *ngIf="hasViewPermissionUsers" 
-                   routerLink="/main-sidebar/settings/user-master" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   User Master
-                </a>
+                <div class="submenu-container">
+                  <a *ngIf="hasViewPermissionUsers" 
+                     routerLink="/main-sidebar/settings/user-master" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     User Master
+                  </a>
 
-                <a *ngIf="hasViewPermissionGroups" 
-                   routerLink="/main-sidebar/settings/user-grouping-master" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Permission Grouping
-                </a>
+                  <a *ngIf="hasViewPermissionGroups" 
+                     routerLink="/main-sidebar/settings/user-grouping-master" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Permission Grouping
+                  </a>
 
-                <a *ngIf="hasViewPermissionAssignPermission" 
-                   routerLink="/main-sidebar/settings/permission-assigned" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Assign Permission for user
-                </a>
+                  <a *ngIf="hasViewPermissionAssignPermission" 
+                     routerLink="/main-sidebar/settings/permission-assigned" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Assign Permission for user
+                  </a>
 
-                <a *ngIf="hasViewPermissionBranchPermission" 
-                   routerLink="/main-sidebar/settings/branch-permissions" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Branch Permissions
-                </a>
-              </div>
-            </mat-expansion-panel>
+                  <a *ngIf="hasViewPermissionBranchPermission" 
+                     routerLink="/main-sidebar/settings/branch-permissions" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Branch Permissions
+                  </a>
+                </div>
+              </mat-expansion-panel>
 
-            <!-- Email Template -->
-            <mat-expansion-panel class="mat-elevation-z0">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <mat-icon class="nav-icon">inbox_customize</mat-icon>
-                  <span class="sidenav-opt">Email Template</span>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
+              <!-- Email Template -->
+              <mat-expansion-panel class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="nav-icon">outgoing_mail</mat-icon>
+                    <span class="sidenav-opt">Email Template</span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
 
-              <div class="submenu-container">
-                <a *ngIf="hasViewPermissionEmtemp" 
-                   routerLink="/main-sidebar/settings/email-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   General Request
-                </a>
+                <div class="submenu-container">
+                  <a *ngIf="hasViewPermissionEmtemp" 
+                     routerLink="/main-sidebar/settings/email-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     General Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionLeaveEmtemp" 
-                   routerLink="/main-sidebar/settings/leave-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Leave Request
-                </a>
+                  <a *ngIf="hasViewPermissionLeaveEmtemp" 
+                     routerLink="/main-sidebar/settings/leave-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Leave Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionDocExpEmtemp" 
-                   routerLink="/main-sidebar/settings/doc-exp-emailtemplate" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Document Expired
-                </a>
+                  <a *ngIf="hasViewPermissionDocExpEmtemp" 
+                     routerLink="/main-sidebar/settings/doc-exp-emailtemplate" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Document Expired
+                  </a>
 
-                <a *ngIf="hasViewPermissionDocReqEmtemp" 
-                   routerLink="/main-sidebar/settings/document-request-email-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Document Request
-                </a>
+                  <a *ngIf="hasViewPermissionDocReqEmtemp" 
+                     routerLink="/main-sidebar/settings/document-request-email-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Document Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionAdvSalEmtemp" 
-                   routerLink="/main-sidebar/settings/advance-salary-emailtemplate" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Advance Salary Request
-                </a>
+                  <a *ngIf="hasViewPermissionAdvSalEmtemp" 
+                     routerLink="/main-sidebar/settings/advance-salary-emailtemplate" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Advance Salary Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionLoanReqEmtemp" 
-                   routerLink="/main-sidebar/settings/loan-email-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Loan Request
-                </a>
+                  <a *ngIf="hasViewPermissionLoanReqEmtemp" 
+                     routerLink="/main-sidebar/settings/loan-email-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Loan Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionAssetEmptemp" 
-                   routerLink="/main-sidebar/settings/asset-email-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Asset Request
-                </a>
+                  <a *ngIf="hasViewPermissionAssetEmptemp" 
+                     routerLink="/main-sidebar/settings/asset-email-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Asset Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionAirticketEmptemp" 
-                   routerLink="/main-sidebar/settings/airticket-email-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Airticket Request
-                </a>
+                  <a *ngIf="hasViewPermissionAirticketEmptemp" 
+                     routerLink="/main-sidebar/settings/airticket-email-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Airticket Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionResignationEmptemp" 
-                   routerLink="/main-sidebar/settings/resignation-email-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Resignation Request
-                </a>
+                  <a *ngIf="hasViewPermissionResignationEmptemp" 
+                     routerLink="/main-sidebar/settings/resignation-email-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Resignation Request
+                  </a>
 
-                <a *ngIf="hasViewPermissionLateInEarlyOutEmptemp" 
-                   routerLink="/main-sidebar/settings/latein-earlyout-email-template" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Late In Early Out Request
-                </a>
-              </div>
-            </mat-expansion-panel>
+                  <a *ngIf="hasViewPermissionLateInEarlyOutEmptemp" 
+                     routerLink="/main-sidebar/settings/latein-earlyout-email-template" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Late In Early Out Request
+                  </a>
+                </div>
+              </mat-expansion-panel>
 
-            <!-- Direct Single Items (Non-collapsible) -->
-            <ul class="nav-menu-list">
-              <!-- Email Configuration -->
-              <li *ngIf="hasViewPermissionConfig">
-                <a 
-                  routerLink="/main-sidebar/settings/email-configuration" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
+              <!-- Single Direct Links -->
+              <div class="direct-nav-item" *ngIf="hasViewPermissionConfig">
+                <a routerLink="/main-sidebar/settings/email-configuration" 
+                   routerLinkActive="active-link" 
+                   class="nav-item-link">
                   <mat-icon class="nav-icon">outgoing_mail</mat-icon>
                   <span class="sidenav-opt">Email Configuration</span>
                 </a>
-              </li>
+              </div>
 
-              <!-- Company Policy -->
-              <li *ngIf="hasViewPermissionCmpnyPol">
-                <a 
-                  routerLink="/main-sidebar/settings/company-policy" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
+              <div class="direct-nav-item" *ngIf="hasViewPermissionCmpnyPol">
+                <a routerLink="/main-sidebar/settings/company-policy" 
+                   routerLinkActive="active-link" 
+                   class="nav-item-link">
                   <mat-icon class="nav-icon">policy</mat-icon>
                   <span class="sidenav-opt">Company Policy</span>
                 </a>
-              </li>
-            </ul>
-
-            <!-- Customization -->
-            <mat-expansion-panel class="mat-elevation-z0">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <mat-icon class="nav-icon">dashboard_customize</mat-icon>
-                  <span class="sidenav-opt">Customization</span>
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-
-              <div class="submenu-container">
-                <a *ngIf="hasViewPermissionEmpForm" 
-                   routerLink="/main-sidebar/settings/from-designer" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Employee form
-                </a>
-
-                <a *ngIf="hasviewPermissionAssetForm" 
-                   routerLink="/main-sidebar/settings/asset-udf" 
-                   routerLinkActive="active-sublink" 
-                   class="subnav-item-link">
-                   Asset form
-                </a>
               </div>
-            </mat-expansion-panel>
 
-          </mat-accordion>
+              <!-- Customization -->
+              <mat-expansion-panel class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon class="nav-icon">dashboard_customize</mat-icon>
+                    <span class="sidenav-opt">Customization</span>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div class="submenu-container">
+                  <a *ngIf="hasViewPermissionEmpForm" 
+                     routerLink="/main-sidebar/settings/from-designer" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Employee form
+                  </a>
+
+                  <a *ngIf="hasviewPermissionAssetForm" 
+                     routerLink="/main-sidebar/settings/asset-udf" 
+                     routerLinkActive="active-sublink" 
+                     class="subnav-item-link">
+                     Asset form
+                  </a>
+                </div>
+              </mat-expansion-panel>
+
+            </mat-accordion>
+
+          </div>
         </nav>
 
       </div>
     </mat-sidenav>
 
-    <!-- Main Content Area -->
+    <!-- Content Outlet -->
     <main class="sub-content-area">
       <router-outlet></router-outlet>
     </main>
