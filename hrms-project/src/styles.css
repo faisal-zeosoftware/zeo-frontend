@@ -440,3 +440,253 @@ table thead th {
 }
 
 
+
+
+
+
+
+
+
+/* sub sidebar styles */
+
+/* ==========================================================================
+   GLOBAL SIDEBAR FRAMEWORK & UNIFIED LAYOUT
+   ========================================================================== */
+
+
+/* 2. Global Material Drawer Container Overrides */
+.mat-drawer-container,
+.mat-drawer-content,
+.mat-drawer-inner-container {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow: visible !important; /* Prevents inner side-panel scrollbars */
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.mat-drawer-inner-container::-webkit-scrollbar,
+.mat-drawer-content::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* 3. Base Sub-Sidebar Shell (Shared across all sub-modules) */
+.sub-sidebar,
+.sub-sidenav-container,
+mat-sidenav-container {
+  height: auto !important;
+  min-height: calc(100vh - 64px);
+  background-color: #0f172a;
+  overflow: visible !important;
+}
+
+.sub-sidenav {
+  height: auto !important;
+  background-color: #0f172a !important;
+  border-right: 1px solid #1e293b !important;
+  overflow: visible !important;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 500;
+}
+
+/* 4. Sub-Sidebar Fixed Header Bar */
+.sidebar-top {
+  position: sticky;
+  top: 64px; /* Pins beneath main navbar during main page scroll */
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: #0f172a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 10;
+}
+
+.sub-sidebar-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #64748b;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.btn-collapse {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  border-radius: 6px;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-collapse:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+/* 5. Navigation Items & Left-Alignment Rules */
+.sidebar {
+  overflow: visible !important;
+}
+
+.nav-menu-list {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  overflow: visible !important;
+}
+
+.nav-menu-list li {
+  width: 100%;
+}
+
+.nav-item-link,
+.submenu-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important; /* Strict Left Alignment */
+  width: 100%;
+  padding: 9px 12px;
+  color: #94a3b8;
+  border-radius: 6px;
+  text-decoration: none !important;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left !important;
+}
+
+.nav-item-link:hover,
+.submenu-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}
+
+.nav-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin-right: 12px !important;
+  margin-left: 0 !important;
+  color: #64748b;
+  flex-shrink: 0;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidenav-opt {
+  flex-grow: 1;
+  text-align: left !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Submenu Dropdown Items */
+.has-submenu .submenu-header {
+  justify-content: space-between !important;
+}
+
+.has-submenu .submenu-header .d-flex {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-grow: 1;
+}
+
+.sub-menu-list {
+  list-style: none;
+  padding: 4px 0 4px 18px;
+  margin: 2px 0 2px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.subnav-item-link {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: left !important;
+  padding: 6px 10px;
+  color: #94a3b8;
+  text-decoration: none !important;
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.subnav-item-link:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Active Link Indicators */
+.active-link {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+.active-link .nav-icon {
+  color: #ffffff !important;
+}
+
+.active-sublink {
+  color: #818cf8 !important;
+  font-weight: 700;
+  background: rgba(99, 102, 241, 0.1) !important;
+}
+
+/* 6. Sidebar Width Toggles (Open vs Collapsed) */
+.menu-open {
+  width: 210px !important;
+}
+
+.menu-close {
+  width: 56px !important;
+}
+
+.menu-close .sidenav-opt,
+.menu-close .sub-sidebar-title,
+.menu-close .sub-menu-list,
+.menu-close .chevron-arrow {
+  display: none !important;
+}
+
+.menu-close .nav-item-link {
+  justify-content: center !important;
+  padding: 10px;
+}
+
+.menu-close .nav-icon {
+  margin-right: 0 !important;
+}
+
+/* 7. Shared Page Content Container */
+.sub-content-area {
+  height: auto !important;
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  background-color: #f8fafc;
+  overflow: visible !important;
+}
