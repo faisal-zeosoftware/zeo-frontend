@@ -123,7 +123,7 @@ margin-right: 10px;
   font-size: 18px;
   margin-left: -40px;
   border-radius: 100%;
-  background: #5c1e81;
+  background: #2a266b;
   width: 35px;
   height: 35px;
   z-index: 1;
@@ -147,7 +147,7 @@ margin-right: 10px;
   padding: 8px 16px;
   border: 1px solid #dee2e6;
   background: #fff;
-  color: #5c1e81;
+  color: #2a266b;
   cursor: pointer;
   border-radius: 4px;
   font-size: 14px;
@@ -168,9 +168,9 @@ margin-right: 10px;
 }
 
 .page-number.active {
-  background: #5c1e81;
+  background: #2a266b;
   color: #fff;
-  border-color: #5c1e81;
+  border-color: #2a266b;
   font-weight: 600;
 }
 

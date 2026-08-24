@@ -177,7 +177,7 @@ margin-right: 10px;
   justify-content: center;
   padding: 0 10px;
   cursor: pointer;
-  background-color: #5c1e81;  /* ✅ now it will show */
+  background-color: #3f51b5;  /* ✅ now it will show */
   transition: background 0.2s ease, transform 0.15s ease;
   border-left: 1px solid #eee;
 }
@@ -195,7 +195,7 @@ margin-right: 10px;
 }
 
 .search_op:hover .mat-icon {
-  color: #5d1e82;
+  color: #3f51b5;
   transform: scale(1.15);
 }
 
@@ -293,7 +293,7 @@ margin-right: 10px;
   }
 
   .mat-mdc-raised-button.mat-primary {
-    --mdc-protected-button-container-color: #5b1e83 !important;
+    --mdc-protected-button-container-color: #3f51b5 !important;
 }
 
   ::ng-deep .custom-branch-select .mat-select-trigger {
@@ -540,7 +540,7 @@ background-color:#8e44ad;
   /* Top colored banner area */
 .card-banner-bg {
   height: 90px;
-  background: linear-gradient(135deg,  #5b1e83, #ac6ace,  #5b1e83);
+  background: linear-gradient(135deg, #2a266b, #4439cd, #2a266b);
   position: relative;
 }
   
@@ -611,7 +611,7 @@ background-color:#8e44ad;
     position: absolute;
     bottom: 0;
     right: -5px;
-    background: #5b1e83 !important;
+    background: #4439cd !important;
     color: #666;
     width: 44px !important;
     height: 46px !important;
@@ -653,7 +653,7 @@ background-color:#8e44ad;
   }
   
   .dept-tag {
-    background: #5b1e83;
+    background: #4439cd;
     color: #ffffff;
     padding: 2px 8px;
     border-radius: 4px;
