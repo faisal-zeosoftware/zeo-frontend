@@ -1,10 +1,11 @@
 /* -------------------------------
    🏢 Layout & Section Styles
 ---------------------------------- */
-.comapny_section {
-  margin-top: 100px;
-  margin-left: 50px;
-}
+.comapny_section{
+
+    margin-left: 25px;
+    
+  }
 
 .com_list {
   background: #fff;
