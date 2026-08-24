@@ -854,7 +854,8 @@ loadComponentMetadata(schema: string): void {
         // const categories = components.map(c => c.payroll_category).filter(Boolean);
         const categories = components.map(c => c.name).filter(Boolean);
 
-        this.availableCategories = Array.from(new Set(categories));
+        this.availableCategories = Array.from(new Set(categories)); 
+
       }
     },
     error: (err) => console.error('Error fetching metadata list:', err)
@@ -902,10 +903,8 @@ getComponentAmount(employee: any, category: string): string {
   const match = employee.rawAssignments.find((item: any) => {
 
     return (
-      item.payroll_category?.trim().toLowerCase() ===
-      category.trim().toLowerCase() &&
-      item.component_value_type?.trim().toLowerCase() ===
-      this.selectedComponentValueType.toLowerCase()
+      item.component?.trim().toLowerCase() === category.trim().toLowerCase() &&  // ✅ Fix here
+      item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
     );
 
   });
@@ -922,7 +921,7 @@ getComponentAmount(employee: any, category: string): string {
  */
 getComponentInstance(employeeRow: any, category: string): any {
   return employeeRow.rawAssignments.find((assign: any) => 
-    assign.payroll_category?.toLowerCase() === category.toLowerCase() &&
+    assign.component?.trim().toLowerCase() === category.toLowerCase() &&  // ✅ Fix here
     assign.component_value_type?.toLowerCase() === this.selectedComponentValueType.toLowerCase()
   );
 }
@@ -956,10 +955,16 @@ getCellKey(empCode: string, category: string): string {
     }
 
     // 2. Otherwise return value from server match
-    const match = employee.rawAssignments.find((item: any) => 
-      item.payroll_category?.trim().toLowerCase() === category.trim().toLowerCase() &&
-      item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
-    );
+    // const match = employee.rawAssignments.find((item: any) => 
+    //   item.payroll_category?.trim().toLowerCase() === category.trim().toLowerCase() &&
+    //   item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
+    // );
+
+    // ✅ CORRECT
+const match = employee.rawAssignments.find((item: any) => 
+  item.component?.trim().toLowerCase() === category.toLowerCase() &&
+  item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
+);
 
     return match ? match.amount : '';
   }
@@ -1005,15 +1010,15 @@ saveTableChanges(): void {
 
     const emp = this.distinctEmployees.find(e => e.employee_code === empCode);
 
-    // Find assignment match
+    // ✅ FIX: Match by component NAME (not payroll_category)
     const matchAssignment = emp?.rawAssignments?.find((item: any) => 
-      item.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase() &&
+      item.component?.trim().toLowerCase() === categoryKey.toLowerCase() &&
       item.component_value_type?.trim().toLowerCase() === this.selectedComponentValueType.toLowerCase()
     );
 
-    // Find component metadata object to extract its numeric PK ID
+    // ✅ FIX: Match component metadata by NAME
     const componentMeta = this.allComponentsList.find((c: any) => 
-      c.payroll_category?.trim().toLowerCase() === categoryKey.toLowerCase()
+      c.name?.trim().toLowerCase() === categoryKey.toLowerCase()
     );
 
     // 1. Get Numeric PK for Component
@@ -1027,10 +1032,10 @@ saveTableChanges(): void {
                        matchAssignment?.emp_id;
 
     const payload = {
-      id: matchAssignment?.id ? Number(matchAssignment.id) : null,
+      id: matchAssignment?.id ? Number(matchAssignment.id) : null,  // ✅ Now correctly finds existing ID
       
-      // Ensure numeric integer PKs are sent (Fallback to raw string if backend uses UUID/String PKs)
       employee: employeePk ? (isNaN(Number(employeePk)) ? employeePk : Number(employeePk)) : empCode,
+      
       component: componentPk ? (isNaN(Number(componentPk)) ? componentPk : Number(componentPk)) : categoryKey,
 
       component_value_type: this.selectedComponentValueType,
@@ -1038,7 +1043,7 @@ saveTableChanges(): void {
       amount: newValue === '' || newValue === null ? 0 : Number(newValue)
     };
 
-    console.log('Sending Payload with PK IDs:', payload);
+    console.log('Sending Payload:', payload);
 
     updateRequests.push(
       this.leaveservice.updateEmployeeSalaryComponent(schema, payload)
