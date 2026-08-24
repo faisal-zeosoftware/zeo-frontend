@@ -184,15 +184,12 @@
       
         </button>
       
-        <button
-          *ngFor="let page of pageNumbers"
-          class="page-number"
-          [class.active]="currentPage === page"
-          (click)="goToPage(page)">
-      
-          {{ page }}
-      
-        </button>
+  <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
       
         <button
           class="page-btn"

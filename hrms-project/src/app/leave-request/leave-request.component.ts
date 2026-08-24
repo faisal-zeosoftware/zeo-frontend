@@ -1020,9 +1020,6 @@ get totalPages(): number {
   return Math.ceil(this.filteredLeaveRequests.length / this.itemsPerPage);
 }
 
-get pageNumbers(): number[] {
-  return Array(this.totalPages).fill(0).map((x, i) => i + 1);
-}
 
 updatePagination(): void {
   const startIndex = (this.currentPage - 1) * this.itemsPerPage;

@@ -1,210 +1,492 @@
+/* Shared Scrollbar Hiding Mixin Rules */
+.hide-scrollbar,
+.sub-sidenav,
+.sidebar,
+.nav-menu-list {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
 
+.hide-scrollbar::-webkit-scrollbar,
+.sub-sidenav::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar,
+.nav-menu-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+  width: 0;
+  height: 0;
+}
 
-
-
-
-
-  /* Add your CSS styles here */
-  .modal {
-    display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    margin-left: auto;
-    margin-right: auto;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
-  .modal-content {
-    background-color: #fefefe;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 70%; /* Could be more or less, depending on screen size */
-    margin-right: auto;
-    margin-left: 25%;
-    margin-top: 100px;
-    height: auto;
-  
-  }
-  
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: right;
-  }
-  
-  .close:hover,
-  .close:focus {
-    color: red;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  
-  .modal h6{
-  
-    font-size: 16px;
-    text-transform: capitalize;
-    font-weight: 600;
-    font-family: math;
-    color: black !important;
-  }
-
-
-  .folder-item a, .subfolder-item a {
+.folder-header-row{
+    width: 100%;
+    min-height: 44px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
+    gap: 9px;
+    padding: 0 8px;
+    border-radius: 7px;
+    color: #475569;
     cursor: pointer;
-    text-decoration: none;
-    color: #fff;
-    transition: background 0.3s;
-  }
-  
-  .folder-item a:hover, .subfolder-item a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-  }
-  
-  .active-link a {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-left: 4px solid #FFD700;
-  }
-  
-  ul ul {
-    margin-left: 20px;
-    list-style: none;
-  }
-  
-  .add-folder-item {
+    box-sizing: border-box;
+    transition: background 0.2s ease, color 0.2s ease;
+	
+}
+	
+	.btn-add-sub {
+    width: 25px;
+    height: 25px;
+    background: darkgreen;
+    padding: 0;
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: #FFD700;
-    cursor: pointer;
-  }
-  
-  .add-folder-item:hover {
-    opacity: 0.8;
-  }
-  
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+
+}
+
+.sidebar-top {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #64748b;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+:host {
+  display: block;
+  margin-top: 64px; /* Height of top main header navbar */
+  width: 100%;
+}
+
+/* =========================================================
+   CREATE FOLDER / CREATE SUBFOLDER POPUP
+   Add this below your existing CSS
+   ========================================================= */
+
+/* Popup overlay */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: rgba(15, 23, 42, 0.55);
+
+  z-index: 99999;
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
 
 
-  .add-folder-item span{
-    color: white;
+/* Popup container */
+.modal-dialog-custom {
+  width: 100%;
+  max-width: 450px;
+
+  background: #ffffff;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  border: 1px solid #e2e8f0;
+
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.18),
+    0 5px 15px rgba(0, 0, 0, 0.08);
+
+  animation: folderPopupAnimation 0.2s ease-out;
+}
+
+
+/* Popup animation */
+@keyframes folderPopupAnimation {
+
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
   }
 
-  .folder-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    /* padding: 6px 10px; */
-    cursor: pointer;
-    color: #fff;
-    transition: background 0.3s;
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
-  
-  .folder-header:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
+
+}
+
+
+/* =========================================================
+   POPUP HEADER
+   ========================================================= */
+
+.modal-header-custom {
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 18px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e8edf2;
+
+  box-sizing: border-box;
+}
+
+
+/* Header title */
+.modal-title-wrapper {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+}
+
+
+/* Header icon */
+.modal-icon {
+  width: 40px;
+  height: 40px;
+
+  min-width: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #eef6fa;
+
+  color: #004976;
+}
+
+.modal-icon mat-icon {
+  width: 21px;
+  height: 21px;
+
+  font-size: 21px;
+}
+
+
+/* Title */
+.modal-header-custom h3 {
+  margin: 0;
+
+  color: #1e293b;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  line-height: 1.3;
+}
+
+
+/* Subtitle */
+.modal-header-custom p {
+  margin: 3px 0 0;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+  font-weight: 400;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.modal-header-custom .close-btn {
+  width: 32px;
+  height: 32px;
+
+  min-width: 32px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color: #94a3b8;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.modal-header-custom .close-btn:hover {
+  background: #f1f5f9;
+
+  color: #334155;
+}
+
+.modal-header-custom .close-btn mat-icon {
+  width: 18px;
+  height: 18px;
+
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   POPUP BODY
+   ========================================================= */
+
+.modal-body-custom {
+  padding: 20px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+
+/* Form group */
+.modal-body-custom .form-group {
+  width: 100%;
+}
+
+
+/* Label */
+.modal-body-custom .form-label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* Input */
+.modal-body-custom .form-control {
+  width: 100%;
+  height: 42px;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #334155;
+
+  font-size: 13px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+/* Placeholder */
+.modal-body-custom .form-control::placeholder {
+  color: #a0aec0;
+
+  font-size: 12px;
+}
+
+
+/* Input hover */
+.modal-body-custom .form-control:hover {
+  border-color: #94a3b8;
+}
+
+
+/* Input focus */
+.modal-body-custom .form-control:focus {
+  border-color: #1684b5;
+
+  box-shadow:
+    0 0 0 3px rgba(22, 132, 181, 0.10);
+}
+
+
+/* =========================================================
+   POPUP FOOTER
+   ========================================================= */
+
+.modal-footer-custom {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 20px;
+
+  padding-top: 15px;
+
+  border-top: 1px solid #edf0f2;
+}
+
+
+/* Cancel button */
+.btn-modal-secondary {
+  height: 38px;
+
+  padding: 0 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d1d9e0;
+
+  border-radius: 6px;
+
+  background: #ffffff;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.btn-modal-secondary:hover {
+  background: #f8fafc;
+
+  border-color: #cbd5e1;
+
+  color: #334155;
+}
+
+
+/* Add button */
+.btn-modal-primary {
+  height: 38px;
+
+  padding: 0 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  border: 1px solid #004976;
+
+  border-radius: 6px;
+
+  background: #004976;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.btn-modal-primary:hover {
+  background: #003b60;
+
+  border-color: #003b60;
+
+  box-shadow: 0 3px 8px rgba(0, 73, 118, 0.20);
+}
+
+.btn-modal-primary mat-icon {
+  width: 16px;
+  height: 16px;
+
+  font-size: 16px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .modal-backdrop {
+    padding: 15px;
   }
-  
-  .subfolder-list {
-    margin-left: 5px !important;
-    list-style: none;
-    padding-left: 0px !important;
-    border-left: 2px solid rgba(255, 255, 255, 0.1);
+
+  .modal-dialog-custom {
+    max-width: 100%;
+
+    border-radius: 9px;
   }
-  
-  .subfolder-item a {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-    color: #ddd;
-    text-decoration: none;
-    transition: background 0.3s;
+
+  .modal-header-custom {
+    min-height: 64px;
+
+    padding: 12px 15px;
   }
-  
-  .subfolder-item a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+
+  .modal-body-custom {
+    padding: 18px 15px;
   }
-  
-  .arrow-icon {
+
+  .modal-icon {
+    width: 36px;
+    height: 36px;
+
+    min-width: 36px;
+  }
+
+  .modal-header-custom h3 {
     font-size: 14px;
   }
-  
 
-  .folder-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .left-section {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  
-  .add-sub-icon {
-    font-size: 14px;
-    cursor: pointer;
-    /* margin-right: 8px; */
-  }
-  
-  .add-sub-icon:hover {
-    opacity: 0.7;
-  }
-  
-
-  .folder-icon-wrapper {
-    position: relative;
-    display: inline-block;
-    cursor: pointer;
-  }
-  
-  .folder-icon {
-    font-size: 28px;
-    color: #f4b400;
-  }
-  
-  .folder-plus-icon {
-    position: absolute;
-    top: 5px;
-    right: -3px;
-    font-size: 16px;
-    background: transparent;
-    border-radius: 50%;
-    padding: 2px;
-    color:white;
-    cursor: pointer;
-  }
-  
-  .folder-name {
-    margin-left: 10px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  
-  .arrow-icon {
-    float: right;
-    cursor: pointer;
-  }
-  
-  .subfolder-list li {
-    font-size: 12px !important;
+  .modal-header-custom p {
+    font-size: 10px;
   }
 
-  .subfolder-list .mat-icon{
-    margin-bottom: -10px;
-    
-    font-size: 18px;
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+  .modal-footer-custom {
+    flex-direction: column-reverse;
+
+    align-items: stretch;
   }
+
+  .btn-modal-secondary,
+  .btn-modal-primary {
+    width: 100%;
+  }
+
+}

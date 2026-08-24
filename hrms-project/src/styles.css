@@ -6,7 +6,7 @@
 
 :root {
   --primary-color: #3498db;
-  --main-color: #5c1e81;
+  --main-color: #2a266b;
 }
 
 html, body { 
@@ -660,7 +660,6 @@ mat-sidenav-container {
   font-weight: 500;
   border-radius: 5px;
   transition: all 0.2s ease;
-  white-space: nowrap;
   width: 100%;
   flex-shrink: 0 !important;
 }
