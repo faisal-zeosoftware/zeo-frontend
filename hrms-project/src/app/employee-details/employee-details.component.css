@@ -2,8 +2,7 @@
 
 .comapny_section{
 
-    margin-top: 100px;
-    margin-left: 50px;
+    margin-left: 25px;
     
 }
 
@@ -152,7 +151,7 @@ margin-right: 10px;
     height: 36%;
     width: 100%;
     border-radius: 24px 24px 0 0;
-    background-color: #5b1e83;
+    background-color: #2a266b;
   }
   .profile_img_emp {
     position: relative;
@@ -708,7 +707,7 @@ body {
 .styled-table thead th {
   border-spacing: 0 10px;
   font-family: 'Segoe UI', sans-serif;
-  background: #5c1e82 !important;
+  background: #2a266b !important;
     color: #fafafa;
     text-transform: uppercase;
 }

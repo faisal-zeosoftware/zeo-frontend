@@ -18,12 +18,22 @@
     margin-right: 3.5%;
   }
 
-.comapny_section{
+.comapny_section {
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 120px;
+  margin-left: 170px;
+  padding: 0;
+  scroll-behavior: smooth;
 
-    margin-top: 120px;
-    margin-left: 170px;
-    /* background: #1f2125;
-    padding: 25px; */
+  /* Hide scrollbar but keep scroll working */
+  -ms-overflow-style: none;      /* IE/Edge */
+  scrollbar-width: none;         /* Firefox */
+}
+
+.comapny_section::-webkit-scrollbar {
+  display: none;                 /* Chrome/Safari/Opera */
 }
 
 .header_section{
@@ -342,10 +352,6 @@ input:focus-visible {
 }
 
 
-
-.comapny_section{
-    padding: 0px !important;
-}
 .content_sec{
     background: #1f2125;
     padding: 25px;

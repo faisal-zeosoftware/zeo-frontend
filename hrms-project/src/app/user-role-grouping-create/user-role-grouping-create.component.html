@@ -1990,6 +1990,26 @@
                   </div>
                 </div>
 
+                  <!-- Salary Structure -->
+                <div class="row permission-row">
+                  <div class="col-md-3">
+                    <mat-checkbox [(ngModel)]="SalaryStructureChecked" [indeterminate]="isSalarystructureIndeterminate()" (change)="onSalaryStructureChange()" [ngModelOptions]="{ standalone: true }">Salary Structure</mat-checkbox>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                        <div class="row">
+                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsSalarystructure">
+                            <mat-checkbox [value]="permission.id" (change)="onCheckboxChangesSalaryStructure(permission.id)" [checked]="selectedPermissions.includes(permission.id)">
+                              {{ getDisplayNameSalarystructure(permission.codename) }}
+                            </mat-checkbox>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Employee Salary -->
                 <div class="row permission-row">
                   <div class="col-md-3">

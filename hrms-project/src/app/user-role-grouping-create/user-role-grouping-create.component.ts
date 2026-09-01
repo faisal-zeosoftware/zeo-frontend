@@ -79,6 +79,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   GrouppermissionsPayrollrun: any[] = [];
   GrouppermissionsPayStructure: any[] = [];
   GrouppermissionsSalarycomponent: any[] = [];
+  GrouppermissionsSalarystructure: any[] = [];
   GrouppermissionsEmployeesalary: any[] = [];
   GrouppermissionsPayslipAprv: any[] = [];
   GrouppermissionsPayrollaprlvl: any[] = [];
@@ -253,6 +254,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
   PayrollrunChecked: boolean = false; 
   PayStructureChecked: boolean = false; 
   SalarycomponentChecked: boolean = false; 
+  SalaryStructureChecked: boolean = false; 
   EmployeeSalaryChecked: boolean = false; 
   PayslipAprvChecked: boolean = false;
   PayrollaprlvlChecked: boolean = false;
@@ -535,6 +537,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     this.GrouppermissionsPayrollrun = this.filterUnique(all, ['add_payrollrun', 'change_payrollrun', 'delete_payrollrun', 'view_payrollrun']);
     this.GrouppermissionsPayStructure = this.filterUnique(all, ['add_paystructure', 'change_paystructure', 'delete_paystructure', 'view_paystructure']);
     this.GrouppermissionsSalarycomponent = this.filterUnique(all, ['add_salarycomponent', 'change_salarycomponent', 'delete_salarycomponent', 'view_salarycomponent']);
+    this.GrouppermissionsSalarystructure = this.filterUnique(all,['add_salarystructure', 'change_salarystructure', 'delete_salarystructure', 'view_salarystructure']);
     this.GrouppermissionsEmployeesalary = this.filterUnique(all, ['add_employeesalarystructure', 'change_employeesalarystructure', 'delete_employeesalarystructure', 'view_employeesalarystructure']);
     this.GrouppermissionsPayslipAprv = this.filterUnique(all, ['add_payslipapproval', 'change_payslipapproval', 'delete_payslipapproval', 'view_payslipapproval']);
     this.GrouppermissionsPayrollaprlvl = this.filterUnique(all, ['add_payslipcommonworkflow', 'change_payslipcommonworkflow', 'delete_payslipcommonworkflow', 'view_payslipcommonworkflow']);
@@ -618,7 +621,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
       ...this.GrouppermissionsLeaveaprv, ...this.GrouppermissionsLeavetype, ...this.GrouppermissionsLeaveEscalation, ...this.GrouppermissionsLeavemaster,
       ...this.GrouppermissionsLeavereq, ...this.GrouppermissionsLeavecom, ...this.GrouppermissionsLeaveaprvlvl, ...this.GrouppermissionsLeaveBalance,
       ...this.GrouppermissionsLeaveCancel, ...this.GrouppermissionsLeaveAccrual, ...this.GrouppermissionsLeaveRejoin,
-      ...this.GrouppermissionsPayrollrun, ...this.GrouppermissionsPayStructure, ...this.GrouppermissionsSalarycomponent, ...this.GrouppermissionsEmployeesalary,
+      ...this.GrouppermissionsPayrollrun, ...this.GrouppermissionsPayStructure, ...this.GrouppermissionsSalarycomponent, ...this.GrouppermissionsSalarystructure, ...this.GrouppermissionsEmployeesalary,
       ...this.GrouppermissionsPayslipAprv, ...this.GrouppermissionsPayrollaprlvl, ...this.GrouppermissionsAdvanceSalaryAprvlst, ...this.GrouppermissionsAdvanceSalaryReq,
       ...this.GrouppermissionsAdvanceSalaryEscalation, ...this.GrouppermissionsAdvanceSalaryAprlvl, ...this.GrouppermissionsWps,
       ...this.GrouppermissionsGen, ...this.GrouppermissionsReqtype, ...this.GrouppermissionsApr, ...this.GrouppermissionsAprlvl,
@@ -736,6 +739,7 @@ export class UserRoleGroupingCreateComponent implements OnInit {
     this.PayrollrunChecked = this.GrouppermissionsPayrollrun.every(p => this.selectedPermissions.includes(p.id));
     this.PayStructureChecked = this.GrouppermissionsPayStructure.every(p => this.selectedPermissions.includes(p.id));
     this.SalarycomponentChecked = this.GrouppermissionsSalarycomponent.every(p => this.selectedPermissions.includes(p.id));
+    this.SalaryStructureChecked = this.GrouppermissionsSalarystructure.every(p => this.selectedPermissions.includes(p.id));
     this.EmployeeSalaryChecked = this.GrouppermissionsEmployeesalary.every(p => this.selectedPermissions.includes(p.id));
     this.PayslipAprvChecked = this.GrouppermissionsPayslipAprv.every(p => this.selectedPermissions.includes(p.id));
     this.PayrollaprlvlChecked = this.GrouppermissionsPayrollaprlvl.every(p => this.selectedPermissions.includes(p.id));
@@ -1134,6 +1138,11 @@ isPayStructureIndeterminate(): boolean {
 isSalarycomponentIndeterminate(): boolean {
   const sel = this.selectedPermissions.filter(p => this.GrouppermissionsSalarycomponent.map(x => x.id).includes(p));
   return sel.length > 0 && sel.length < this.GrouppermissionsSalarycomponent.length;
+}
+
+isSalarystructureIndeterminate(): boolean {
+  const sel = this.selectedPermissions.filter(p => this.GrouppermissionsSalarystructure.map(x => x.id).includes(p));
+  return sel.length > 0 && sel.length < this.GrouppermissionsSalarystructure.length;
 }
 
 isEmployeesalaryIndeterminate(): boolean {
@@ -2042,6 +2051,7 @@ getDisplayNameLeaveRejoin = (c: string) => this.getStandardName(c, 'employeerejo
 getDisplayNamePayrollrun = (c: string) => this.getStandardName(c, 'payrollrun');
 getDisplayNamePayStructure = (c: string) => this.getStandardName(c, 'paystructure');
 getDisplayNameSalarycomponent = (c: string) => this.getStandardName(c, 'salarycomponent');
+getDisplayNameSalarystructure = (c: string) => this.getStandardName(c, 'salarystructure');
 getDisplayNameEmployeesalary = (c: string) => this.getStandardName(c, 'employeesalarystructure');
 getDisplayNamePayslipAprv = (c: string) => this.getStandardName(c, 'payslipapproval');
 getDisplayNamePayrollaprlvl = (c: string) => this.getStandardName(c, 'payslipcommonworkflow');
@@ -2401,7 +2411,7 @@ onCheckboxChangesLeaveRejoin(id: number): void { this.toggleRowPermission(id, th
 
 private payrollGroups(): any[][] {
   return [
-    this.GrouppermissionsPayrollrun, this.GrouppermissionsPayStructure, this.GrouppermissionsSalarycomponent,
+    this.GrouppermissionsPayrollrun, this.GrouppermissionsPayStructure, this.GrouppermissionsSalarycomponent, this.GrouppermissionsSalarystructure,
     this.GrouppermissionsEmployeesalary, this.GrouppermissionsPayslipAprv, this.GrouppermissionsPayrollaprlvl,
     this.GrouppermissionsAdvanceSalaryAprvlst, this.GrouppermissionsAdvanceSalaryReq, this.GrouppermissionsAdvanceSalaryEscalation,
     this.GrouppermissionsAdvanceSalaryAprlvl, this.GrouppermissionsWps
@@ -2419,6 +2429,9 @@ onCheckboxChangesPayStructure(id: number): void { this.toggleRowPermission(id, t
 
 onSalarycomponentChange(): void { this.toggleMasterRowGroup('SalarycomponentChecked', this.GrouppermissionsSalarycomponent, () => this.updatePayrollCheckbox()); }
 onCheckboxChangesSalarycomponent(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsSalarycomponent, 'SalarycomponentChecked', () => this.updatePayrollCheckbox()); }
+
+onSalaryStructureChange(): void { this.toggleMasterRowGroup('SalaryStructureChecked', this.GrouppermissionsSalarystructure, () => this.updatePayrollCheckbox()); }
+onCheckboxChangesSalaryStructure(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsSalarystructure, 'SalaryStructureChecked', () => this.updatePayrollCheckbox()); }
 
 onEmployeesalaryChange(): void { this.toggleMasterRowGroup('EmployeeSalaryChecked', this.GrouppermissionsEmployeesalary, () => this.updatePayrollCheckbox()); }
 onCheckboxChangesEmployeesalary(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsEmployeesalary, 'EmployeeSalaryChecked', () => this.updatePayrollCheckbox()); }

@@ -135,7 +135,7 @@ margin-right: 10px;
   font-size: 18px;
   margin-left: -40px;
   border-radius: 100%;
-  background: #5c1e81;
+  background: #2a266b;
   width: 35px;
   height: 35px;
   z-index: 1;
@@ -234,7 +234,7 @@ margin-right: 10px;
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #5c1e81, #8b3fb8);
+  background: linear-gradient(90deg, #2a266b, #2f67d6);
 }
 
 .branch-card:hover {
@@ -266,7 +266,7 @@ margin-right: 10px;
   min-height: 34px !important;
   background: #f4f0fa !important;
   box-shadow: none !important;
-  color: #5c1e81 !important;
+  color: #2a266b !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -279,7 +279,7 @@ margin-right: 10px;
 }
 
 .card-edit-btn:hover {
-  background: #5c1e81 !important;
+  background: #2a266b !important;
   color: white !important;
 }
 
@@ -296,7 +296,7 @@ margin-right: 10px;
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #5c1e81, #8b3fb8);
+  background: linear-gradient(135deg, #2a266b, #2f67d6);
   color: white;
   display: flex;
   align-items: center;
@@ -307,7 +307,7 @@ margin-right: 10px;
 
 .card-code {
   background: #f1edf8;
-  color: #5c1e81;
+  color: #5a57ec;
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.4px;
@@ -329,7 +329,7 @@ margin-right: 10px;
   align-items: center;
   gap: 4px;
   font-size: 13px;
-  color: #8a8a9a;
+  color: #6a6a93;
   margin: 0 0 16px 0;
   text-align: left !important;
 }
@@ -338,7 +338,7 @@ margin-right: 10px;
   font-size: 15px;
   width: 15px;
   height: 15px;
-  color: #b8a0cc;
+  color: #7997d5;
 }
 
 .card-divider {
@@ -353,7 +353,7 @@ margin-right: 10px;
   align-items: center;
   gap: 10px;
   font-size: 13.5px;
-  color: #5c5c6e;
+  color: #46466d;
   margin-bottom: 10px;
 }
 
@@ -365,7 +365,7 @@ margin-right: 10px;
   font-size: 16px;
   width: 16px;
   height: 16px;
-  color: #a888c2;
+  color: #7997d5;
   flex-shrink: 0;
 }
 
