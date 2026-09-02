@@ -916,3 +916,520 @@
   width: 0 !important;
   height: 0 !important;
 }
+
+
+
+
+/* ============================================================
+   MOBILE RESPONSIVE FIXES — APPEND TO NAVBAR CSS
+   ============================================================ */
+
+/* ============================================
+   1. MOBILE SIDEBAR TOGGLE FIX
+   ============================================ */
+
+@media only screen and (max-width: 991.98px) {
+  .lap_view {
+    display: none !important;
+  }
+  .mobview {
+    display: block !important;
+  }
+
+  .hrms-navbar {
+    height: 54px;
+    padding: 0 12px;
+  }
+
+  .sidebar {
+    top: 54px;
+    z-index: 650;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  }
+
+  /* CRITICAL FIX: Mobile sidebar closed state */
+  #sidebarMenu.menu-close {
+    transform: translateX(-100%);
+    width: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* CRITICAL FIX: Mobile sidebar open state */
+  #sidebarMenu.menu-open {
+    transform: translateX(0);
+    width: 260px !important;
+    opacity: 1;
+    pointer-events: auto;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .menu_mob {
+    color: #ffffff;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .mobview .navbar-brand img {
+    height: 28px;
+  }
+
+  /* ============================================
+     2. MOBILE DROPDOWN FIXES
+     ============================================ */
+
+  .mobview .standard-dropdown,
+  .mobview .notification-dropdown {
+    position: fixed !important;
+    top: 54px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    min-width: unset !important;
+    max-width: none !important;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+    border-radius: 12px;
+    z-index: 1060;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobview .standard-dropdown.show,
+  .mobview .notification-dropdown.show {
+    display: block !important;
+  }
+
+  .mobview .notiicon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .mobview .notiicon mat-icon {
+    color: #ffffff;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .mobview .Company_pro {
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+  }
+
+  .mobview .Company_pro .cmp-icon {
+    color: #ffffff;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .mobview .Company_pro .chevron-arrow {
+    color: #ffffff;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ============================================
+     3. SIDEBAR BACKDROP
+     ============================================ */
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 54px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 599;
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-backdrop.show {
+    display: block;
+  }
+
+  /* ============================================
+     4. MOBILE CONTENT AREA FIXES
+     ============================================ */
+
+  .comapny_section {
+    margin-left: 0 !important;
+    margin-top: 54px !important;
+    width: 100% !important;
+    padding: 12px !important;
+    height: calc(100vh - 54px) !important;
+  }
+
+  .content_sec {
+    padding: 16px !important;
+  }
+
+  .content_sec_last {
+    margin-top: 60px !important;
+  }
+
+  .card-list .card {
+    position: relative !important;
+    width: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 15px !important;
+  }
+
+  .card-list .col-md-3 {
+    margin-bottom: 10px;
+  }
+
+  .comapny_section h3 {
+    font-size: 22px !important;
+  }
+
+  .userdisname {
+    font-size: 18px !important;
+  }
+
+  .btn-ess {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .approval-main-card,
+  .dash_holidays,
+  .dash_announcements,
+  .dash_projects {
+    padding: 14px !important;
+  }
+
+  .project-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 6px;
+  }
+
+  .project-dates {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .modal-content {
+    width: 92% !important;
+    margin-top: 60px !important;
+    padding: 14px !important;
+  }
+
+  .notification-dropdown {
+    width: 92vw !important;
+    min-width: unset !important;
+  }
+
+  .scrollable-content {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .avatar-group {
+    flex-wrap: wrap;
+  }
+
+  .task-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .policy-card {
+    padding: 16px !important;
+  }
+
+  .empty-animation img {
+    width: 160px;
+  }
+}
+
+/* ============================================
+   5. SMALL PHONE FIXES (≤640px)
+   ============================================ */
+
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+
+  .comapny_section {
+    margin-top: 54px !important;
+    padding: 8px !important;
+  }
+
+  .content_sec {
+    padding: 12px !important;
+  }
+
+  .content_sec_last {
+    margin-top: 40px !important;
+  }
+
+  .card .value {
+    font-size: 22px;
+  }
+
+  .card .title {
+    font-size: 11px;
+  }
+
+  .approval-main-card .value {
+    font-size: 22px;
+  }
+
+  .holi_date_sec h2 {
+    font-size: 12px;
+  }
+
+  .dash_holidays h5 {
+    font-size: 13px;
+  }
+
+  .announcement-card {
+    padding: 15px;
+  }
+
+  .announcement-header h5 {
+    font-size: 1rem;
+  }
+
+  .project-card {
+    padding: 14px;
+  }
+
+  .project-header h4 {
+    font-size: 15px;
+  }
+
+  .task-card h5 {
+    font-size: 13px;
+  }
+
+  .policy-card h5 {
+    font-size: 15px;
+  }
+
+  .modal-content {
+    width: 95% !important;
+    margin-top: 40px !important;
+    padding: 12px !important;
+  }
+
+  .notification-dropdown {
+    width: 95vw !important;
+  }
+}
+
+/* ============================================
+   6. EXTRA SMALL DEVICES (≤400px)
+   ============================================ */
+
+@media (max-width: 400px) {
+  .comapny_section h3 {
+    font-size: 18px !important;
+  }
+
+  .userdisname {
+    font-size: 16px !important;
+  }
+
+  .card .value {
+    font-size: 20px;
+  }
+
+  .btn-ess {
+    font-size: 12px;
+    padding: 6px 8px;
+    height: 36px;
+  }
+
+  table tbody tr td {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px;
+  }
+
+  table tbody td::before {
+    font-size: 12px;
+    margin-bottom: 4px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .notification-dropdown {
+    width: 95vw !important;
+  }
+
+  .notification-item {
+    padding: 10px 12px !important;
+  }
+
+  .notification-type-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .notification-type-label {
+    font-size: 12px;
+  }
+
+  .notification-message {
+    font-size: 11px;
+  }
+
+  .standard-dropdown {
+    left: 4px !important;
+    right: 4px !important;
+  }
+
+  .schema-row {
+    padding: 10px 12px;
+  }
+
+  .company-name {
+    font-size: 12px;
+  }
+
+  .branch-option {
+    padding: 6px 8px;
+  }
+
+  .branch-name {
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   7. NOTIFICATION DROPDOWN SCROLL FIX
+   ============================================ */
+
+.notification-dropdown {
+  min-width: 320px;
+  width: 360px;
+  max-height: 440px;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.notification-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.notification-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.notification-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* ============================================
+   8. Z-INDEX FIXES
+   ============================================ */
+
+.hrms-navbar {
+  z-index: 700;
+}
+
+.sidebar {
+  z-index: 600;
+}
+
+.standard-dropdown,
+.notification-dropdown {
+  z-index: 1050;
+}
+
+.notification-modal-overlay {
+  z-index: 1100;
+}
+
+.loader-container {
+  z-index: 9999;
+}
+
+/* ============================================
+   9. TOUCH-FRIENDLY IMPROVEMENTS
+   ============================================ */
+
+@media (max-width: 991.98px) {
+  .nav-item-link {
+    padding: 14px 16px;
+    min-height: 48px;
+  }
+
+  .nav-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .sidenav-opt {
+    font-size: 14px;
+  }
+
+  .schema-row {
+    min-height: 48px;
+  }
+
+  .branch-option {
+    min-height: 44px;
+  }
+
+  .notification-item {
+    min-height: 60px;
+  }
+
+  .nav-item-link:active,
+  .branch-option:active,
+  .notification-item:active {
+    opacity: 0.7;
+  }
+}
+
+/* ============================================
+   10. HORIZONTAL SCROLL PREVENTION
+   ============================================ */
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+.comapny_section {
+  overflow-x: hidden;
+}
+
+body.sidebar-open {
+  overflow: hidden;
+}

@@ -91,23 +91,23 @@
               </mat-checkbox>
             </td>
 
-            <td class="align-middle">
+            <td data-label="Category Code" class="align-middle">
               <span class="badge badge-code">{{ catogarysec.ctgry_code }}</span>
             </td>
 
-            <td class="align-middle font-weight-medium">
+            <td data-label="Category Name" class="align-middle font-weight-medium">
               {{ catogarysec.ctgry_title }}
             </td>
 
-            <td class="align-middle">
+            <td data-label="Branch" class="align-middle">
               {{ catogarysec.branch }}
             </td>
 
-            <td class="align-middle text-muted">
+            <td data-label="Description" class="align-middle text-muted">
               {{ catogarysec.ctgry_description }}
             </td>
 
-            <td *ngIf="showEditBtn" class="align-middle text-center">
+            <td data-label="Action" *ngIf="showEditBtn" class="align-middle text-center">
               <button type="button" 
                       class="btn btn-sm btn-outline-primary"
                       (click)="openEditPopuss(catogarysec.id)">

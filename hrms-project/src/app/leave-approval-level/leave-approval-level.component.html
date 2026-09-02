@@ -447,26 +447,26 @@ name="request_type"
 
 
            <tr *ngFor="let docs of LeaveapprovalLevels; let i = index">
-  <td>{{ i + 1 }}</td>
-  <td>
+  <td data-label="No">{{ i + 1 }}</td>
+  <td data-label="Level">
     <div *ngFor="let lvl of docs.levels">
       Level {{ lvl.level }}
     </div>
   </td>
       <td data-label="Leave Type">{{ docs.request_type }}</td> 
-  <td>
+  <td data-label="Branch">
     <span *ngFor="let b of docs.branch; let last = last">
       {{ b }}<span *ngIf="!last">, </span>
     </span>
   </td>
 
-    <td>
+    <td data-label="Approver">
     <div *ngFor="let lvl of docs.levels">
       {{ lvl.approver }}
     </div>
   </td>
 
-<td>
+<td data-label="Approval Type">
   {{
     docs.approval_type === 'no_approval' ? 'No Approval' :
     docs.approval_type === 'reporting_manager' ? 'Reporting Manager' :
@@ -479,7 +479,7 @@ name="request_type"
 
   <!-- <td data-label="Is Compensatory">{{ docs.is_compensatory }}</td> -->
 
-  <td class="text-center">
+  <td data-label="Action" class="text-center">
     <button
       mat-fab
       color="primary"

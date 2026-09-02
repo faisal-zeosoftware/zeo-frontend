@@ -92,23 +92,23 @@
               </mat-checkbox>
             </td>
 
-            <td class="align-middle">
+            <td data-label="Designation Code" class="align-middle">
               <span class="badge badge-code">{{ designationsec.desgntn_code }}</span>
             </td>
 
-            <td class="align-middle">
+            <td data-label="Designation Name" class="align-middle">
               {{ designationsec.desgntn_job_title }}
             </td>
 
-            <td class="align-middle font-weight-medium">
+            <td data-label="Branch" class="align-middle font-weight-medium">
               {{ designationsec.branch }}
             </td>
 
-            <td class="align-middle text-muted">
+            <td data-label="Description" class="align-middle text-muted">
               {{ designationsec.desgntn_description }}
             </td>
 
-            <td *ngIf="showEditBtn" class="align-middle text-center">
+            <td data-label="Action" *ngIf="showEditBtn" class="align-middle text-center">
               <button type="button" 
                       class="btn btn-sm btn-outline-primary"
                       (click)="openEditPopuss(designationsec.id)">

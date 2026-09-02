@@ -52,12 +52,12 @@
                         
                       <tr *ngFor="let docs of Rejoings;let i = index">
                         <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
-                        <td>{{ docs.rejoining_date }}</td>
-                        <td>{{ docs.unpaid_leave_days }}</td>
-                        <td>{{ docs.deducted }}</td> 
-                        <td>{{ docs.employee }}</td>
-                        <td>{{ docs.leave_request }}</td>
-                        <td>{{ docs.deduct_from_leave_type || 'N/A' }}</td>
+                        <td data-label="Rejoining Date">{{ docs.rejoining_date }}</td>
+                        <td data-label="Unpaid Leave Days">{{ docs.unpaid_leave_days }}</td>
+                        <td data-label="deducted">{{ docs.deducted }}</td> 
+                        <td data-label="Employee">{{ docs.employee }}</td>
+                        <td data-label="Leave Request">{{ docs.leave_request }}</td>
+                        <td data-label="Deduct from Leave Type">{{ docs.deduct_from_leave_type || 'N/A' }}</td>
 
                         <td class="sticky-right" data-label="Actions">
                             <button type="button" class="btn btn-primary" (click)="openRejoinModal(docs.id)">Rejoin</button>
