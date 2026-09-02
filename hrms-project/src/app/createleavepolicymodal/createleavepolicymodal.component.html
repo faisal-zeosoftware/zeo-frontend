@@ -153,7 +153,13 @@
                             <div class="entitlement-section mb-4" *ngFor="let row of entitlementRows; let i = index">
                               
                               <!-- Remove Button -->
-                              <div class="text-end ent-remove" *ngIf="entitlementRows.length > 1">
+                              <!-- <div class="text-end ent-remove" *ngIf="entitlementRows.length > 1">
+                                <button type="button" class="btn btn-danger btn-sm pull-right" (click)="removeEntitlementRow(i)">
+                                  Remove
+                                </button>
+                              </div> -->
+
+                              <div class="text-end ent-remove">
                                 <button type="button" class="btn btn-danger btn-sm pull-right" (click)="removeEntitlementRow(i)">
                                   Remove
                                 </button>
@@ -1078,7 +1084,7 @@
                         <form (ngSubmit)="registerleaveEntitlement()" enctype="multipart/form-data">
                             <div   class="entitlement-section"
                             *ngFor="let row of entitlementRows; let i=index">
-                            <div class="text-end  ent-remove"
+                            <!-- <div class="text-end  ent-remove"
      *ngIf="entitlementRows.length > 1">
 
     <button
@@ -1091,7 +1097,12 @@
     </button>
 
 </div>
-                         
+                          -->
+                          <div class="text-end ent-remove">
+                            <button type="button" class="btn btn-danger btn-sm pull-right" (click)="removeEntitlementRow(i)">
+                              Remove
+                            </button>
+                          </div>
                             <div class="row">
 
 

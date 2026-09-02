@@ -2207,11 +2207,88 @@ submitPayRule(): void {
 
 // Fixed Update method handling both PUT (existing) and POST (newly added rows in edit mode)
 // 3. Updated updateEntitlement method handling PUT, POST, and DELETE
+
+
+// updateEntitlement(): void {
+//   const requests: Observable<any>[] = [];
+
+//   // A. Process existing or newly added rows (PUT / POST)
+//   this.entitlementRows.forEach(row => {
+//     const payload = {
+//       leave_type: row.leave_type,
+//       entitlement_type: this.selectedPolicy,
+//       min_experience: row.min_experience,
+//       effective_after_unit: row.effective_after_unit,
+//       effective_after_from: row.effective_after_from,
+//       branches: row.branch || [],
+//       departments: row.departments || [],
+//       designations: row.designations || [],
+//       categories: row.categories || [],
+//       accrual: row.accrual,
+//       accrual_rate: row.accrual_rate,
+//       accrual_frequency: row.accrual_frequency,
+//       accrual_month: row.accrual_month,
+//       accrual_day: row.accrual_day,
+//       prorate_accrual: row.prorate_accrual,
+//       reset_policy: row.reset ? {
+//         reset: true,
+//         frequency: row.frequency,
+//         month: row.month,
+//         day: row.day,
+//         allow_cf: row.allow_cf,
+//         carry_forward_choice: row.carry_forward_choice,
+//         cf_value: row.cf_value,
+//         cf_unit_or_percentage: row.cf_unit_or_percentage,
+//         cf_max_limit: row.cf_max_limit,
+//         cf_expires_in_value: row.cf_expires_in_value,
+//         cf_time_choice: row.cf_time_choice,
+//         allow_encashment: row.allow_encashment,
+//         encashment_value: row.encashment_value,
+//         encashment_unit_or_percentage: row.encashment_unit_or_percentage,
+//         encashment_max_limit: row.encashment_max_limit,
+//         opening_balance: row.opening_balance
+//       } : { reset: false }
+//     };
+
+//     if (row.id) {
+//       // Existing row -> UPDATE
+//       requests.push(this.leaveService.updateLeaveEntitlement(row.id, payload));
+//     } else {
+//       // New row added during edit -> CREATE
+//       requests.push(this.leaveService.registerLeaveEntitlement(payload));
+//     }
+//   });
+
+//   // B. Process removed rows (DELETE)
+//   this.deletedEntitlementIds.forEach(id => {
+//     requests.push(this.leaveService.deleteLeaveEntitlement(id));
+//   });
+
+//   // C. Execute all requests together
+//   forkJoin(requests).subscribe({
+//     next: () => {
+//       alert('Leave Policy Updated Successfully');
+//       this.deletedEntitlementIds = []; // reset array
+//       this.dialogRef.close(true);
+//       window.location.reload();
+//     },
+//     error: (err) => {
+//       console.error('Update Error:', err);
+//       alert('Error occurred while updating entitlement policy.');
+//     }
+//   });
+// }
+
 updateEntitlement(): void {
   const requests: Observable<any>[] = [];
 
   // A. Process existing or newly added rows (PUT / POST)
   this.entitlementRows.forEach(row => {
+    // Skip incomplete/blank rows (e.g. auto-added placeholder after deleting all rows)
+    if (!row.leave_type) {
+      return;
+    }
+
     const payload = {
       leave_type: row.leave_type,
       entitlement_type: this.selectedPolicy,
@@ -2249,10 +2326,8 @@ updateEntitlement(): void {
     };
 
     if (row.id) {
-      // Existing row -> UPDATE
       requests.push(this.leaveService.updateLeaveEntitlement(row.id, payload));
     } else {
-      // New row added during edit -> CREATE
       requests.push(this.leaveService.registerLeaveEntitlement(payload));
     }
   });
@@ -2262,11 +2337,16 @@ updateEntitlement(): void {
     requests.push(this.leaveService.deleteLeaveEntitlement(id));
   });
 
+  if (!requests.length) {
+    alert('Nothing to update.');
+    return;
+  }
+
   // C. Execute all requests together
   forkJoin(requests).subscribe({
     next: () => {
       alert('Leave Policy Updated Successfully');
-      this.deletedEntitlementIds = []; // reset array
+      this.deletedEntitlementIds = [];
       this.dialogRef.close(true);
       window.location.reload();
     },
@@ -2383,22 +2463,30 @@ toggleAllSelectionCat(row: any): void {
 
 
  // 2. Updated removeEntitlementRow method
-removeEntitlementRow(index: number): void {
-  if (this.entitlementRows.length > 1) {
-    const removedRow = this.entitlementRows[index];
+// removeEntitlementRow(index: number): void {
+//   if (this.entitlementRows.length > 1) {
+//     const removedRow = this.entitlementRows[index];
     
-    // If this row came from the database (has an ID), track it for deletion
-    if (removedRow && removedRow.id) {
-      this.deletedEntitlementIds.push(removedRow.id);
-    }
+//     // If this row came from the database (has an ID), track it for deletion
+//     if (removedRow && removedRow.id) {
+//       this.deletedEntitlementIds.push(removedRow.id);
+//     }
 
-    // Remove from local UI array
-    this.entitlementRows.splice(index, 1);
-  } else {
-    alert('At least one entitlement row must remain.');
+//     // Remove from local UI array
+//     this.entitlementRows.splice(index, 1);
+//   } else {
+//     alert('At least one entitlement row must remain.');
+//   }
+// }
+
+removeEntitlementRow(index: number): void {
+  const removedRow = this.entitlementRows[index];
+  if (removedRow && removedRow.id) {
+    this.deletedEntitlementIds.push(removedRow.id);
   }
+  this.entitlementRows.splice(index, 1);
+  // no auto-push — let user click "+ Add Entitlement" if they want a new row
 }
-
 
   applicableId: number | null = null;
 

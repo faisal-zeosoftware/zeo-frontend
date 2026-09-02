@@ -132,14 +132,12 @@ deleteLeavePayRule(id: number): Observable<any> {
 
 
 deleteLeaveEntitlement(id: number): Observable<any> {
-
-  const schema = localStorage.getItem('selectedSchema');
-
+  const selectedSchema = localStorage.getItem('selectedSchema');
   return this.http.delete(
-    `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${schema}`
+    `${this.apiUrl}/calendars/api/leave-entitlement/${id}/?schema=${selectedSchema}`
   );
-
 }
+
 
 deleteLeaveReset(id: number): Observable<any> {
 
