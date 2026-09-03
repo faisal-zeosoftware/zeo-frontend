@@ -1,143 +1,70 @@
-<!-- 
-    <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-      <span *ngIf="!isMenuOpen">☰</span>
-      <span *ngIf="isMenuOpen">×</span>
-    </button>
-    
+<div class="sub-sidebar clickOutside">
+  <mat-sidenav-container class="sub-sidenav-container">
+    <mat-sidenav
+      #sidenav
+      class="sub-sidenav hide-scrollbar"
+      [opened]="isMobile ? isMenuOpen : true"
+      [mode]="isMobile ? 'over' : 'side'"
+      (closedStart)="isMenuOpen = false"
+    >
+      <div class="wrapper">
+
+        <div class="sidebar-top">
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen">Project Options</span>
+          <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+            <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+          </button>
         </div>
-              
-  
 
+        <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+          <ul class="nav-menu-list">
 
+            <li *ngIf="hasViewPermissionProjects">
+              <a routerLink="/main-sidebar/project-options/project-master" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">account_tree</mat-icon>
+                <span class="sidenav-opt">Projects</span>
+              </a>
+            </li>
 
-          <div class="sidebar"  [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-              <ul>
-                <li routerLink="/main-sidebar/project-options/project-master" *ngIf="hasViewPermissionProjects"><a><mat-icon>troubleshoot</mat-icon> Projects</a></li>
-             
-                <li routerLink="/main-sidebar/project-options/project-stages" *ngIf="hasViewPermissionProjectsStages"><a><mat-icon>troubleshoot</mat-icon> Projects Stages</a></li>
-               
-                <li routerLink="/main-sidebar/project-options/project-tasks" *ngIf="hasViewPermissionProjectsTaks"><a><mat-icon>troubleshoot</mat-icon> Projects Tasks</a></li>
+            <li *ngIf="hasViewPermissionProjectsStages">
+              <a routerLink="/main-sidebar/project-options/project-stages" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">view_kanban</mat-icon>
+                <span class="sidenav-opt">Projects Stages</span>
+              </a>
+            </li>
 
-                <li routerLink="/main-sidebar/project-options/project-timesheet" *ngIf="hasViewPermissionProjectsTimesheet"><a><mat-icon>troubleshoot</mat-icon> Projects Timesheet</a></li>
+            <li *ngIf="hasViewPermissionProjectsTaks">
+              <a routerLink="/main-sidebar/project-options/project-tasks" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">assignment_turned_in</mat-icon>
+                <span class="sidenav-opt">Projects Tasks</span>
+              </a>
+            </li>
 
-                  <mat-nav-list>
-     
-  
-  
-                    <div>
-            
-            
-                 
-                    </div>
-                    <style>
-                      .mat-expansion-panel-body {
-                        padding: 0 0px 16px !important;
-                      }
-                      .mat-expansion-panel{
-                background: transparent;
-               
-              }
-                    </style>
-            
-                  </mat-nav-list>
-                   
-              </ul> 
-  
-                   
-   
-          </div>
-    
+            <li *ngIf="hasViewPermissionProjectsTimesheet">
+              <a routerLink="/main-sidebar/project-options/project-timesheet" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">schedule</mat-icon>
+                <span class="sidenav-opt">Projects Timesheet</span>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+
       </div>
-   
-  
-  
-  
-  
-  
-  
-      </mat-sidenav>
-  
-  
+    </mat-sidenav>
+
+    <main class="sub-content-area">
+      <button
+        type="button"
+        class="mobile-submenu-fab"
+        *ngIf="isMobile && !isMenuOpen"
+        (click)="toggleSidebarMenu()"
+        aria-label="Open submenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+
       <router-outlet></router-outlet>
+    </main>
 
-  
-    </mat-sidenav-container>
-  
-  </div> -->
-
-
-
-  <div class="sub-sidebar clickOutside">
-    <mat-sidenav-container class="sub-sidenav-container">
-      <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
-        <div class="wrapper">
-          
-          <!-- Sidebar Header & Toggle -->
-          <div class="sidebar-top">
-            <span class="sub-sidebar-title" *ngIf="isMenuOpen">Project Options</span>
-            <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
-              <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
-            </button>
-          </div>
-  
-          <!-- Navigation Menu -->
-          <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-            <ul class="nav-menu-list">
-  
-              <!-- Projects -->
-              <li *ngIf="hasViewPermissionProjects">
-                <a 
-                  routerLink="/main-sidebar/project-options/project-master" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">account_tree</mat-icon>
-                  <span class="sidenav-opt">Projects</span>
-                </a>
-              </li>
-  
-              <!-- Projects Stages -->
-              <li *ngIf="hasViewPermissionProjectsStages">
-                <a 
-                  routerLink="/main-sidebar/project-options/project-stages" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">view_kanban</mat-icon>
-                  <span class="sidenav-opt">Projects Stages</span>
-                </a>
-              </li>
-  
-              <!-- Projects Tasks -->
-              <li *ngIf="hasViewPermissionProjectsTaks">
-                <a 
-                  routerLink="/main-sidebar/project-options/project-tasks" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">assignment_turned_in</mat-icon>
-                  <span class="sidenav-opt">Projects Tasks</span>
-                </a>
-              </li>
-  
-              <!-- Projects Timesheet -->
-              <li *ngIf="hasViewPermissionProjectsTimesheet">
-                <a 
-                  routerLink="/main-sidebar/project-options/project-timesheet" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">schedule</mat-icon>
-                  <span class="sidenav-opt">Projects Timesheet</span>
-                </a>
-              </li>
-  
-            </ul>
-          </nav>
-  
-        </div>
-      </mat-sidenav>
-  
-      <!-- Main Content Outlet Area -->
-      <main class="sub-content-area">
-        <router-outlet></router-outlet>
-      </main>
-  
-    </mat-sidenav-container>
-  </div>
+  </mat-sidenav-container>
+</div>

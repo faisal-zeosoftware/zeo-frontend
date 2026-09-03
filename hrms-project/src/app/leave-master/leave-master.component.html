@@ -90,55 +90,55 @@
               </thead>
               <tbody>
                 <tr *ngFor="let leavetype of LeaveTypes; let i = index">
-                  <td class="sticky-left">{{ i + 1 }}</td>
-                  <td>
+                  <td data-label="No" class="sticky-left">{{ i + 1 }}</td>
+                  <td data-label="Leave Type">
                     <strong>{{ leavetype.name }}</strong>
                   </td>
-                   <td>
+                   <td data-label="Leave Category">
                     
                     {{ leavetype.leave_category }}
                   </td>
-                  <td>{{ leavetype.code }}</td>
-                  <td>
+                  <td data-label="Code">{{ leavetype.code }}</td>
+                  <td data-label="Type">
                     <span class="badge" [class.badge-success]="leavetype.type === 'paid'" [class.badge-warning]="leavetype.type === 'unpaid'">
                       {{ leavetype.type | titlecase }}
                     </span>
                   </td>
-                  <td>{{ leavetype.branch }}</td>
-                  <td>{{ leavetype.unit | titlecase }}</td>
-                  <td>{{ leavetype.valid_from | date:'mediumDate' }}</td>
-                  <td>{{ leavetype.valid_to | date:'mediumDate' }}</td>
-                                     <td>
+                  <td data-label="Branch">{{ leavetype.branch }}</td>
+                  <td data-label="Unit">{{ leavetype.unit | titlecase }}</td>
+                  <td data-label="Valid From">{{ leavetype.valid_from | date:'mediumDate' }}</td>
+                  <td data-label="Valid To">{{ leavetype.valid_to | date:'mediumDate' }}</td>
+                                     <td data-label="Half Day">
                     <span class="status-badge" [class.status-yes]="leavetype.allow_half_day" [class.status-no]="!leavetype.allow_half_day">
                       {{ leavetype.allow_half_day ? 'Yes' : 'No' }}
                     </span>
                   </td>
-                   <td>
+                   <td data-label="Negative">
                     <span class="status-badge" [class.status-yes]="leavetype.negative" [class.status-no]="!leavetype.allow_half_day">
                       {{ leavetype.negative ? 'Yes' : 'No' }}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Enable Leave Pay rule">
                     <span class="status-badge" [class.status-yes]="leavetype.enable_leave_pay_rule" [class.status-no]="!leavetype.enable_leave_pay_rule">
                       {{ leavetype.enable_leave_pay_rule ? 'Yes' : 'No' }}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Holiday">
                     <span class="status-badge" [class.status-yes]="leavetype.include_holiday" [class.status-no]="!leavetype.include_holiday">
                       {{ leavetype.include_holiday ? 'Yes' : 'No' }}
                     </span>
                   </td>
-                 <td>
+                 <td data-label="Weekend">
                     <span class="status-badge" [class.status-yes]="leavetype.include_weekend" [class.status-no]="!leavetype.include_weekend">
                       {{ leavetype.include_weekend ? 'Yes' : 'No' }}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Description">
                     <span class="description-text" [title]="leavetype.description">
                       {{ leavetype.description || 'N/A' }}
                     </span>
                   </td>
-   <td class="sticky-right">
+   <td data-label="Action" class="sticky-right">
   <button
     style="height:32px;width:32px;"
     mat-mini-fab

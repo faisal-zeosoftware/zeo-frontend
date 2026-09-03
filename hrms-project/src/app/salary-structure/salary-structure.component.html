@@ -455,28 +455,28 @@
   
           <tr *ngFor="let doc of pagedDocuments">
   
-            <td>{{ doc.name }}</td>
+            <td data-label="Name">{{ doc.name }}</td>
   
-            <td>
+            <td data-label="Branch">
                 <span class="custom-badge blue me-1" *ngFor="let branchId of doc.branch">
                   {{ getBranchNameById(branchId) }}
                 </span>
               </td>
-            <td>
+            <td data-label="Components">
               <span class="custom-badge green me-1" *ngFor="let compId of doc.components">
                 {{ getComponentNameById(compId) }}
               </span>
             </td>
   
-            <td>
+            <td data-label="Employees">
                 <span class="custom-badge purple">
                     {{ doc.employees?.length || 0 }} Employees
                   </span>
             </td>
   
-            <td>{{ doc.description || '-' }}</td>
+            <td data-label="Description">{{ doc.description || '-' }}</td>
   
-            <td *ngIf="hasEditPermission || hasDeletePermission">
+            <td data-label="Action" *ngIf="hasEditPermission || hasDeletePermission">
                 <button *ngIf="hasEditPermission" class="btn btn-sm btn-outline-primary me-1" (click)="editSalaryStructure(doc)">
                     <mat-icon>edit</mat-icon>
                   </button>

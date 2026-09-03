@@ -1,174 +1,91 @@
-<!-- 
-    <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-      <span *ngIf="!isMenuOpen">☰</span>
-      <span *ngIf="isMenuOpen">×</span>
-    </button>
-              
-  
+<div class="sub-sidebar clickOutside">
+  <mat-sidenav-container class="sub-sidenav-container">
+    <mat-sidenav
+      #sidenav
+      class="sub-sidenav hide-scrollbar"
+      [opened]="isMobile ? isMenuOpen : true"
+      [mode]="isMobile ? 'over' : 'side'"
+      (closedStart)="isMenuOpen = false"
+    >
+      <div class="wrapper">
+
+        <div class="sidebar-top">
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen">Air Ticket Options</span>
+          <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+            <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+          </button>
         </div>
-        <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <ul>
-                <li routerLink="/main-sidebar/air-ticket-options/air-ticket-policy" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Policy</a></li>
-             
-              
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-allocation" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Allocation</a></li>
-               
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-request" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Airticket Request</a></li>
 
-                <li routerLink="/main-sidebar/air-ticket-options/airticket-rule" *ngIf="hasViewPermissionSalary"><a><mat-icon>peoples</mat-icon> Airticket Rule</a></li>
+        <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+          <ul class="nav-menu-list">
 
-                  <mat-nav-list>
-     
-  
-   
+            <li *ngIf="hasViewPermissionAirticketPolicy">
+              <a routerLink="/main-sidebar/air-ticket-options/air-ticket-policy" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">policy</mat-icon>
+                <span class="sidenav-opt">Airticket Policy</span>
+              </a>
+            </li>
 
-                    
-                    <div>
-            
-            
-                 
-                    </div>
-                    <style>
-                      .mat-expansion-panel-body {
-                        padding: 0 0px 16px !important;
-                      }
-                      .mat-expansion-panel{
-                background: transparent;
-               
-              }
-                    </style>
-            
-                  </mat-nav-list>
-                   
-              </ul> 
-  
-                   
-   
-          </div>
-    
+            <li *ngIf="hasViewPermissionAirticketApprovals">
+              <a routerLink="/main-sidebar/air-ticket-options/airticket-approvals" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">fact_check</mat-icon>
+                <span class="sidenav-opt">Airticket Approvals</span>
+              </a>
+            </li>
+
+            <li *ngIf="hasViewPermissionAirticketAllocation">
+              <a routerLink="/main-sidebar/air-ticket-options/airticket-allocation" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">confirmation_number</mat-icon>
+                <span class="sidenav-opt">Airticket Allocation</span>
+              </a>
+            </li>
+
+            <li *ngIf="hasViewPermissionAirticketRule">
+              <a routerLink="/main-sidebar/air-ticket-options/airticket-rule" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">gavel</mat-icon>
+                <span class="sidenav-opt">Airticket Rule</span>
+              </a>
+            </li>
+
+            <li *ngIf="hasViewPermissionAirticketEsc">
+              <a routerLink="/main-sidebar/air-ticket-options/airticket-escalation" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">report_problem</mat-icon>
+                <span class="sidenav-opt">Airticket Escalation</span>
+              </a>
+            </li>
+
+            <li *ngIf="hasViewPermissionAirticketAprlvl">
+              <a routerLink="/main-sidebar/air-ticket-options/airticket-approval-level" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">layers</mat-icon>
+                <span class="sidenav-opt">Airticket Approval Level</span>
+              </a>
+            </li>
+
+            <li *ngIf="hasViewPermissionAirticketRequest">
+              <a routerLink="/main-sidebar/air-ticket-options/airticket-request" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">flight_takeoff</mat-icon>
+                <span class="sidenav-opt">Airticket Request</span>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+
       </div>
-   
-  
-  
-  
-  
-  
-  
-      </mat-sidenav>
-  
-  
-      <router-outlet></router-outlet>
-  
- 
-  
-    </mat-sidenav-container>
-  
-  </div> -->
+    </mat-sidenav>
 
-  <div class="sub-sidebar clickOutside">
-    <mat-sidenav-container class="sub-sidenav-container">
-      <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
-        <div class="wrapper">
-          
-          <!-- Sidebar Header & Toggle -->
-          <div class="sidebar-top">
-            <span class="sub-sidebar-title" *ngIf="isMenuOpen">Air Ticket Options</span>
-            <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
-              <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
-            </button>
-          </div>
-  
-          <!-- Navigation Menu -->
-          <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-            <ul class="nav-menu-list">
-  
-              <!-- Airticket Policy -->
-              <li *ngIf="hasViewPermissionAirticketPolicy">
-                <a 
-                  routerLink="/main-sidebar/air-ticket-options/air-ticket-policy" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">policy</mat-icon>
-                  <span class="sidenav-opt">Airticket Policy</span>
-                </a>
-              </li>
-  
-              <!-- Airticket Approvals -->
-              <li *ngIf="hasViewPermissionAirticketApprovals">
-                <a 
-                  routerLink="/main-sidebar/air-ticket-options/airticket-approvals" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">fact_check</mat-icon>
-                  <span class="sidenav-opt">Airticket Approvals</span>
-                </a>
-              </li>
-  
-              <!-- Airticket Allocation -->
-              <li *ngIf="hasViewPermissionAirticketAllocation">
-                <a 
-                  routerLink="/main-sidebar/air-ticket-options/airticket-allocation" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">confirmation_number</mat-icon>
-                  <span class="sidenav-opt">Airticket Allocation</span>
-                </a>
-              </li>
-  
-              <!-- Airticket Rule -->
-              <li *ngIf="hasViewPermissionAirticketRule">
-                <a 
-                  routerLink="/main-sidebar/air-ticket-options/airticket-rule" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">gavel</mat-icon>
-                  <span class="sidenav-opt">Airticket Rule</span>
-                </a>
-              </li>
-  
-              <!-- Airticket Escalation -->
-              <li *ngIf="hasViewPermissionAirticketEsc">
-                <a 
-                  routerLink="/main-sidebar/air-ticket-options/airticket-escalation" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">report_problem</mat-icon>
-                  <span class="sidenav-opt">Airticket Escalation</span>
-                </a>
-              </li>
-  
-              <!-- Airticket Approval Level -->
-              <li *ngIf="hasViewPermissionAirticketAprlvl">
-                <a 
-                  routerLink="/main-sidebar/air-ticket-options/airticket-approval-level" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">layers</mat-icon>
-                  <span class="sidenav-opt">Airticket Approval Level</span>
-                </a>
-              </li>
-  
-              <!-- Airticket Request -->
-              <li *ngIf="hasViewPermissionAirticketRequest">
-                <a 
-                  routerLink="/main-sidebar/air-ticket-options/airticket-request" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">flight_takeoff</mat-icon>
-                  <span class="sidenav-opt">Airticket Request</span>
-                </a>
-              </li>
-  
-            </ul>
-          </nav>
-  
-        </div>
-      </mat-sidenav>
-  
-      <!-- Main Content Area -->
-      <main class="sub-content-area">
-        <router-outlet></router-outlet>
-      </main>
-  
-    </mat-sidenav-container>
-  </div>
+    <main class="sub-content-area">
+      <button
+        type="button"
+        class="mobile-submenu-fab"
+        *ngIf="isMobile && !isMenuOpen"
+        (click)="toggleSidebarMenu()"
+        aria-label="Open submenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <router-outlet></router-outlet>
+    </main>
+
+  </mat-sidenav-container>
+</div>

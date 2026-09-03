@@ -1,92 +1,13 @@
-<!-- 
-
-    <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-      <span *ngIf="!isMenuOpen">☰</span>
-      <span *ngIf="isMenuOpen">X</span>
-    </button>
-              
-  
-        </div>
-        <div class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <ul>
-                <li  routerLink="/main-sidebar/leave-options/leave-master" *ngIf="hasViewPermissionLeaveMas"><a ><mat-icon>switch_account</mat-icon> Leave Type</a></li>
-                <li  routerLink="/main-sidebar/leave-options/leave-policy" *ngIf="hasViewPermissionLeaveMas"><a ><mat-icon>switch_account</mat-icon> Leave Policy</a></li>
-
-                <li  routerLink="/main-sidebar/leave-options/leave-request" *ngIf="hasViewPermissionEmpLeaveReq"><a ><mat-icon>switch_account</mat-icon> Leave Request</a></li>
-
-                  <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
-                    <a>
-                      <mat-icon>switch_account</mat-icon> Leave Approve
-                      <mat-icon style="float: right;">{{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}</mat-icon>
-                    </a>
-                  </li>
-              <ul *ngIf="showAdvanceSalary" style="padding-left: 20px;">
-                <li routerLink="/main-sidebar/leave-options/leave-approvals" *ngIf="hasViewPermissionLeaveApr"><a ><mat-icon>switch_account</mat-icon> Leave Approvals</a></li>
-                <li  routerLink="/main-sidebar/leave-options/leave-approval-level" *ngIf="hasViewPermissionLeaveAprvlvl"  ><a ><mat-icon>switch_account</mat-icon> Leave Approval Level</a></li>
-                <li  routerLink="/main-sidebar/leave-options/leave-escalation" *ngIf="hasViewPermissionLvEsc"><a ><mat-icon>switch_account</mat-icon>Leave Escalation</a></li>
-              </ul>
-                <li  routerLink="/main-sidebar/leave-options/leave-balance" *ngIf="hasViewPermissionLeaveBalance"  ><a ><mat-icon>switch_account</mat-icon> Leave Balance</a></li>
-                <li  routerLink="/main-sidebar/leave-options/immediate-rejection" *ngIf="hasViewPermissionLeaveCancel"  ><a ><mat-icon>switch_account</mat-icon> Leave Cancellation</a></li>
-                <li  routerLink="/main-sidebar/leave-options/compensatory-leave" *ngIf="hasViewPermissioncmpL"><a ><mat-icon>switch_account</mat-icon> Compensatory Leave</a></li>
-                <li  routerLink="/main-sidebar/leave-options/leave-accruval" *ngIf="hasViewPermissionLeaveAccrual"  ><a ><mat-icon>switch_account</mat-icon> Test Leave Accrual</a></li>
-                <li  routerLink="/main-sidebar/leave-options/employee-leave-rejoin" *ngIf="hasViewPermissionLeaveRejoin"  ><a ><mat-icon>switch_account</mat-icon> Employee Leave Rejoin</a></li>
-
-                <mat-nav-list>
-   
-
-
-                  <div>
-          
-          
-                   
-                  </div>
-                  <style>
-                    .mat-expansion-panel-body {
-                      padding: 0 0px 16px !important;
-                    }
-                    .mat-expansion-panel{
-              background: transparent;
-             
-            }
-                  </style>
-          
-                </mat-nav-list>
-                 
-            </ul> 
-
-                 
- 
-        </div>
-  
-    </div>
- 
-
-
-
-
-
-
-    </mat-sidenav>
-
-
-    <router-outlet></router-outlet>
-
-   
-
-  </mat-sidenav-container>
-
-</div> -->
-
-
-
-
-
 <div class="sub-sidebar clickOutside">
   <mat-sidenav-container class="sub-sidenav-container">
-    <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
+    <mat-sidenav
+      #sidenav
+      class="sub-sidenav hide-scrollbar"
+      [opened]="isMobile ? isMenuOpen : true"
+      [mode]="isMobile ? 'over' : 'side'"
+      (closedStart)="isMenuOpen = false"
+    >
       <div class="wrapper">
-        
-        <!-- Sidebar Header & Toggle -->
         <div class="sidebar-top">
           <span class="sub-sidebar-title" *ngIf="isMenuOpen">Leave Options</span>
           <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
@@ -94,134 +15,90 @@
           </button>
         </div>
 
-        <!-- Navigation Menu -->
-        <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+        <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
           <ul class="nav-menu-list">
 
-            <!-- Leave Type -->
             <li *ngIf="hasViewPermissionLeaveMas">
-              <a 
-                routerLink="/main-sidebar/leave-options/leave-master" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/leave-master" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">category</mat-icon>
                 <span class="sidenav-opt">Leave Type</span>
               </a>
             </li>
 
-            <!-- Leave Policy -->
             <li *ngIf="hasViewPermissionLeaveMas">
-              <a 
-                routerLink="/main-sidebar/leave-options/leave-policy" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/leave-policy" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">policy</mat-icon>
                 <span class="sidenav-opt">Leave Policy</span>
               </a>
             </li>
 
-            <!-- Leave Request -->
             <li *ngIf="hasViewPermissionEmpLeaveReq">
-              <a 
-                routerLink="/main-sidebar/leave-options/leave-request" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/leave-request" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">edit_calendar</mat-icon>
                 <span class="sidenav-opt">Leave Request</span>
               </a>
             </li>
 
-            <!-- Dropdown: Leave Approve Submenu -->
             <li class="has-submenu">
               <div class="submenu-header" (click)="toggleAdvanceSalary()">
                 <div class="d-flex">
                   <mat-icon class="nav-icon">verified_user</mat-icon>
                   <span class="sidenav-opt">Leave Approve</span>
                 </div>
-                <mat-icon class="chevron-arrow">
+                <mat-icon class="chevron-arrow" *ngIf="isMenuOpen">
                   {{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}
                 </mat-icon>
               </div>
 
-              <!-- Nested Submenu Items -->
               <ul class="sub-menu-list" *ngIf="showAdvanceSalary && isMenuOpen">
                 <li *ngIf="hasViewPermissionLeaveApr">
-                  <a 
-                    routerLink="/main-sidebar/leave-options/leave-approvals" 
-                    routerLinkActive="active-sublink" 
-                    class="subnav-item-link">
+                  <a routerLink="/main-sidebar/leave-options/leave-approvals" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
                     Leave Approvals
                   </a>
                 </li>
                 <li *ngIf="hasViewPermissionLeaveAprvlvl">
-                  <a 
-                    routerLink="/main-sidebar/leave-options/leave-approval-level" 
-                    routerLinkActive="active-sublink" 
-                    class="subnav-item-link">
+                  <a routerLink="/main-sidebar/leave-options/leave-approval-level" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
                     Leave Approval Level
                   </a>
                 </li>
                 <li *ngIf="hasViewPermissionLvEsc">
-                  <a 
-                    routerLink="/main-sidebar/leave-options/leave-escalation" 
-                    routerLinkActive="active-sublink" 
-                    class="subnav-item-link">
+                  <a routerLink="/main-sidebar/leave-options/leave-escalation" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
                     Leave Escalation
                   </a>
                 </li>
               </ul>
             </li>
 
-            <!-- Leave Balance -->
             <li *ngIf="hasViewPermissionLeaveBalance">
-              <a 
-                routerLink="/main-sidebar/leave-options/leave-balance" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/leave-balance" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">account_balance_wallet</mat-icon>
                 <span class="sidenav-opt">Leave Balance</span>
               </a>
             </li>
 
-            <!-- Leave Cancellation -->
             <li *ngIf="hasViewPermissionLeaveCancel">
-              <a 
-                routerLink="/main-sidebar/leave-options/immediate-rejection" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/immediate-rejection" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">cancel</mat-icon>
                 <span class="sidenav-opt">Leave Cancellation</span>
               </a>
             </li>
 
-            <!-- Compensatory Leave -->
             <li *ngIf="hasViewPermissioncmpL">
-              <a 
-                routerLink="/main-sidebar/leave-options/compensatory-leave" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/compensatory-leave" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">event_available</mat-icon>
                 <span class="sidenav-opt">Compensatory Leave</span>
               </a>
             </li>
 
-            <!-- Test Leave Accrual -->
             <li *ngIf="hasViewPermissionLeaveAccrual">
-              <a 
-                routerLink="/main-sidebar/leave-options/leave-accruval" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/leave-accruval" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">published_with_changes</mat-icon>
                 <span class="sidenav-opt">Test Leave Accrual</span>
               </a>
             </li>
 
-            <!-- Employee Leave Rejoin -->
             <li *ngIf="hasViewPermissionLeaveRejoin">
-              <a 
-                routerLink="/main-sidebar/leave-options/employee-leave-rejoin" 
-                routerLinkActive="active-link" 
-                class="nav-item-link">
+              <a routerLink="/main-sidebar/leave-options/employee-leave-rejoin" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">assignment_return</mat-icon>
                 <span class="sidenav-opt">Employee Leave Rejoin</span>
               </a>
@@ -229,14 +106,20 @@
 
           </ul>
         </nav>
-
       </div>
     </mat-sidenav>
 
-    <!-- Main Content Outlet Area -->
     <main class="sub-content-area">
+      <button
+        type="button"
+        class="mobile-submenu-fab"
+        *ngIf="isMobile && !isMenuOpen"
+        (click)="toggleSidebarMenu()"
+        aria-label="Open submenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+
       <router-outlet></router-outlet>
     </main>
-
   </mat-sidenav-container>
 </div>

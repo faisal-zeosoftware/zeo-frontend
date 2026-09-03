@@ -492,11 +492,11 @@ placeholder="Enter amount"
                   <tbody>
                    <!-- 🟢 FIXED: Loops over filtered array -->
 <tr *ngFor="let emp of filteredEmployees; let i = index">
-  <td class="sticky-col-left text-center fw-semibold text-muted bg-cell-override">{{ i + 1 }}</td>
-  <td class="font-monospace fw-bold text-success cell-p-sm">{{ emp.employee_code }}</td>
-  <td class="fw-semibold text-dark text-capitalize cell-p-sm">{{ emp.emp_name }}</td>
-  <td class="cell-p-sm"><span class="compact-badge-dep">{{ emp.department }}</span></td>
-  <td class="cell-p-sm"><span class="compact-badge-des">{{ emp.designation }}</span></td>
+  <td data-label="No" class="sticky-col-left text-center fw-semibold text-muted bg-cell-override">{{ i + 1 }}</td>
+  <td data-label="Employee Code" class="font-monospace fw-bold text-success cell-p-sm">{{ emp.employee_code }}</td>
+  <td data-label="Employee Name" class="fw-semibold text-dark text-capitalize cell-p-sm">{{ emp.emp_name }}</td>
+  <td data-label="Department" class="cell-p-sm"><span class="compact-badge-dep">{{ emp.department }}</span></td>
+  <td data-label="Designation" class="cell-p-sm"><span class="compact-badge-des">{{ emp.designation }}</span></td>
   
   <!-- Inline-Editable Data Cells -->
   <td *ngFor="let dynamicCat of selectedPayrollCategories" class="text-center bg-light-cell p-1">

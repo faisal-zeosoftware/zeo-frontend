@@ -416,16 +416,16 @@
                     
                   <tr *ngFor="let pol of overtimepol;let i = index">
                     <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
-                    <td >{{ pol.working_days }}</td> 
-                    <td >{{ pol.salary_calculation_type }}</td>
-                    <td >{{ pol.fixed_working_days }}</td> 
-                    <td >{{ pol.attendance_cycle_type }}</td> 
-                    <td >{{ pol.cycle_start_day }}</td>
-                    <td >{{ pol.cycle_end_day }}</td>
-                    <td >{{ pol.payday_type }}</td>
-                    <td >{{ pol.payday }}</td>
-                    <td >{{ pol.payroll_start_month }}</td>
-                    <td >{{ pol.branch }}</td>
+                    <td data-label="Work Week">{{ pol.working_days }}</td> 
+                    <td data-label="Salary Calculation Type">{{ pol.salary_calculation_type }}</td>
+                    <td data-label="Fixed working Days">{{ pol.fixed_working_days }}</td> 
+                    <td data-label="Attendance Cycle Type">{{ pol.attendance_cycle_type }}</td> 
+                    <td data-label="Cycle Start Day">{{ pol.cycle_start_day }}</td>
+                    <td data-label="Cycle End Day">{{ pol.cycle_end_day }}</td>
+                    <td data-label="Payday Type">{{ pol.payday_type }}</td>
+                    <td data-label="Payday">{{ pol.payday }}</td>
+                    <td data-label="Payroll Start Month">{{ pol.payroll_start_month }}</td>
+                    <td data-label="Branch">{{ pol.branch }}</td>
 
 
                     <td class="sticky-right" data-label="Actions">
