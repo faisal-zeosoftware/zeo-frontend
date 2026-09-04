@@ -343,6 +343,59 @@ if (this.userId !== null) {
   //   }
 
 
+exportDetailedPayslips(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    alert('No schema selected.');
+    return;
+  }
+
+  const payrollRunId = this.PaySlipsConfrimed?.[0]?.payroll_run?.id;
+
+  if (!payrollRunId) {
+    alert('No payroll run available for detailed payslip export.');
+    return;
+  }
+
+  const url =
+    `http://localhost:8000/payroll/api/PayrollRun/${payrollRunId}/detailed-payslips/` +
+    `?schema=${encodeURIComponent(selectedSchema)}`;
+
+  this.isLoading = true;
+
+  this.http.get(url, {
+    responseType: 'blob'
+  }).subscribe({
+    next: (blob: Blob) => {
+      this.isLoading = false;
+
+      if (!blob || blob.size === 0) {
+        alert('No detailed payslip data available.');
+        return;
+      }
+
+      const fileName =
+        `Detailed_Payslips_${payrollRunId}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+      FileSaver.saveAs(blob, fileName);
+    },
+
+    error: (error: any) => {
+      this.isLoading = false;
+
+      console.error('Detailed payslip export failed:', error);
+
+      alert('Failed to export detailed payslips.');
+    }
+  });
+}
+
+
+
+
+
+
   exportToExcel(exportAll: boolean = true): void {
 
     const sourceData = exportAll ? this.PaySlipsConfrimed : this.filteredPaySlips;

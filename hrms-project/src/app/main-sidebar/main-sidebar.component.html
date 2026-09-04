@@ -745,38 +745,55 @@
 </nav>
 
 <!-- Notification Modal Overlay -->
+<!-- Notification Modal Overlay -->
 <div class="notification-modal-overlay" *ngIf="isNotificationModalOpen">
   <div class="notification-modal">
-    <div class="modal-header d-flex justify-content-between align-items-center">
+    
+    <!-- Sticky Header -->
+    <div class="modal-header-custom">
       <h3 class="m-0">Notifications</h3>
-      <span class="close-btn" (click)="closeNotificationModal()">&times;</span>
+      <button class="modal-close-btn" (click)="closeNotificationModal()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
-    <div class="company-title fw-bold my-2">
+    
+    <!-- Branch Title Bar -->
+    <div class="modal-branch-title">
+      <mat-icon class="branch-icon">store</mat-icon>
       {{ selectedBranchNotification?.branch_name }}
     </div>
-    <div *ngIf="notificationList.length > 0">
-      <div
-        class="notification-card clickable-card d-flex gap-3 align-items-start p-2 border-bottom"
-        *ngFor="let item of notificationList"
-        (click)="onBranchNotificationClick(item)"
-      >
-        <div class="notification-icon">
-          <mat-icon>notifications_active</mat-icon>
-        </div>
-        <div class="notification-content">
-          <div class="notification-top d-flex justify-content-between">
-            <h5 class="m-0 fs-6 fw-bold">{{ item.title }}</h5>
-            <span class="notification-type badge bg-secondary">{{ item.type }}</span>
+    
+    <!-- Scrollable Content Area -->
+    <div class="modal-body-scroll">
+      <div *ngIf="notificationList.length > 0">
+        <div
+          class="modal-notification-item"
+          *ngFor="let item of notificationList"
+          (click)="onBranchNotificationClick(item)"
+        >
+          <div class="modal-noti-icon">
+            <mat-icon>notifications_active</mat-icon>
           </div>
-          <p class="m-0 text-muted small">{{ item.message }}</p>
-          <small class="text-black-50">{{ item.created_at | date : "medium" }}</small>
+          <div class="modal-noti-content">
+            <div class="modal-noti-top">
+              <h5 class="m-0">{{ item.title }}</h5>
+              <span class="modal-noti-type">{{ item.type }}</span>
+            </div>
+            <p class="m-0">{{ item.message }}</p>
+            <div class="modal-noti-date">
+              <mat-icon>schedule</mat-icon>
+              {{ item.created_at | date : "medium" }}
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="modal-empty-state" *ngIf="notificationList.length === 0">
+        <mat-icon class="empty-icon">notifications_off</mat-icon>
+        <p>No Notifications Found</p>
       </div>
     </div>
 
-    <div class="empty-notification text-center py-4 text-muted" *ngIf="notificationList.length === 0">
-      No Notifications Found
-    </div>
   </div>
 </div>
 
