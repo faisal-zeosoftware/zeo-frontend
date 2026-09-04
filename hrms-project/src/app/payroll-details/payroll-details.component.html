@@ -137,7 +137,8 @@
                     <th>Component</th>
                     <th>Amount </th>
                   </tr>
-                </thead>
+                </thead> 
+                
                 <tbody>
                   <tr *ngFor="let earning of earnings; let i = index">
                     <td>{{ earning.component_name }}</td>
@@ -284,16 +285,16 @@
             <!-- FIXED: Use max of earnings/deductions length for proper row rendering -->
             <tr *ngFor="let earning of earnings; let i = index">
               <td>{{ earning.component_name }}</td>
-              <td class="pc-num">{{ earning.structure_amount || '0.00' }}</td>
+              <td class="pc-num">{{ earning.amount || '0.00' }}</td>
               <td>{{ deductions[i]?.component_name || '' }}</td>
-              <td class="pc-num">{{ deductions[i]?.structure_amount || '' }}</td>
+              <td class="pc-num">{{ deductions[i]?.amount || '' }}</td>
             </tr>
             <!-- Render remaining deductions if deductions > earnings -->
             <tr *ngFor="let deduction of deductions.slice(earnings.length); let i = index">
               <td></td>
               <td class="pc-num"></td>
               <td>{{ deduction.component_name }}</td>
-              <td class="pc-num">{{ deduction.structure_amount || '' }}</td>
+              <td class="pc-num">{{ deduction.amount || '' }}</td>
             </tr>
           </tbody>
           <tfoot>
@@ -455,7 +456,7 @@
           <tbody>
             <tr *ngFor="let earning of earnings; let i = index">
               <td>{{ earning.component_name }}</td>
-              <td>{{ earning.structure_amount }}</td>
+              <td>{{ earning.amount }}</td>
               <td>{{ earning.payslip_amount }}</td>
               <td>{{ deductions[i]?.component_name || '-' }}</td>
               <td>{{ deductions[i]?.payslip_amount || '-' }}</td>
