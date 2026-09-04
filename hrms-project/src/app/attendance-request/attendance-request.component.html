@@ -444,9 +444,9 @@
         </td>
         <td data-label="Employee">{{ docs.employee }}</td>
         <td data-label="Document number">{{ docs.document_number }}</td>
-        <td>{{ docs.branch }}</td>
+        <td data-label="Branch">{{ docs.branch }}</td>
         <td data-label="Reason">{{ docs.reason }}</td>
-        <td>
+        <td data-label="Status">
            <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
                  {{ docs.status }}
             </span>

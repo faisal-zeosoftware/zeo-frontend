@@ -489,7 +489,7 @@
           <tr *ngFor="let docs of pagedDocRequests; let i = index">
             <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
             <td data-label="Document number">{{ docs.document_number }}</td>
-            <td>{{ docs.branch }}</td>
+            <td data-label="Branch">{{ docs.branch }}</td>
             <td data-label="Reason">{{ docs.reason }}</td>
             <!-- <td data-label="Total">{{ docs.total }}</td>  -->
             <td data-label="Remarks">{{ docs.remarks }}</td>

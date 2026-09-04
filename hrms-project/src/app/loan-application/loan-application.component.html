@@ -116,11 +116,11 @@
             <td data-label="Document Number">
               {{ docs.document_number }}
             </td>
-            <td>{{ docs.branch }}</td>
-            <td>{{ docs.employee }}</td>
-            <td>{{ docs.amount_requested }}</td>
-            <td>{{ docs.repayment_period }}</td>
-            <td>
+            <td data-label="Branch">{{ docs.branch }}</td>
+            <td data-label="Employee">{{ docs.employee }}</td>
+            <td data-label="Amount Requested">{{ docs.amount_requested }}</td>
+            <td data-label="Repayment Period">{{ docs.repayment_period }}</td>
+            <td data-label="Status">
               <span
                 class="badge"
                 [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'"
@@ -128,12 +128,12 @@
                 {{ docs.status }}
               </span>
             </td>
-            <td>{{ docs.emi_amount }}</td>
-            <td>{{ docs.remaining_balance }}</td>
-            <td>{{ docs.pause_start_date }}</td>
-            <td>{{ docs.resume_date }}</td>
-            <td>{{ docs.pause_reason }}</td>
-            <td>{{ docs.loan_type }}</td>
+            <td data-label="Emi Amount">{{ docs.emi_amount }}</td>
+            <td data-label="Remaining Balance">{{ docs.remaining_balance }}</td>
+            <td data-label="Pause reason">{{ docs.pause_start_date }}</td>
+            <td data-label="Resume Date">{{ docs.resume_date }}</td>
+            <td data-label="Pause Reason">{{ docs.pause_reason }}</td>
+            <td data-label="Loan Type">{{ docs.loan_type }}</td>
 
            <td class="sticky-right" data-label="Actions">
               <ng-container *ngIf="docs.status === 'Approved'">

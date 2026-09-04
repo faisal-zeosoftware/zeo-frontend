@@ -431,10 +431,10 @@
 <tbody>
 
   <tr *ngFor="let docs of approvalLevels; let i = index">
-  <td>{{ i + 1 }}</td>
+  <td data-label="No">{{ i + 1 }}</td>
 
   <!-- Levels -->
-  <td>
+  <td data-label="Level">
     <ng-container *ngIf="docs.levels?.length > 0; else noLevel">
       <div *ngFor="let lvl of docs.levels">
         Level {{ lvl.level }}
@@ -444,7 +444,7 @@
   </td>
 
   <!-- Role -->
-  <td>
+  <td data-label="Role">
     <ng-container *ngIf="docs.levels?.length > 0">
       <div *ngFor="let lvl of docs.levels">
         {{ lvl.role }}
@@ -453,20 +453,20 @@
   </td>
 
   <!-- Approver (USERNAME FIX) -->
-  <td>
+  <td data-label="Approver">
     <div *ngFor="let lvl of docs.levels">
       {{ lvl.approver }}
     </div>
   </td>
 
 
-  <td>
+  <td data-label="Branch">
     <span *ngFor="let b of docs.branch; let last = last">
       {{ b }}<span *ngIf="!last">, </span>
     </span>
   </td>
 
-<td>
+<td data-label="Approver Type">
   {{
     docs.approval_type === 'no_approval' ? 'No Approval' :
     docs.approval_type === 'reporting_manager' ? 'Reporting Manager' :
@@ -475,9 +475,9 @@
   }}
 </td>
 
-      <td>{{ docs.loan_type || '-' }}</td>
+      <td data-label="Loan Type">{{ docs.loan_type || '-' }}</td>
       
-     <td>
+     <td data-label="Action">
         <button
           mat-fab
           color="primary"

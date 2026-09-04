@@ -362,39 +362,39 @@
 
            <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
 
-          <td>{{ policy.name }}</td>
+          <td data-label="Policy Name">{{ policy.name }}</td>
 
-          <td>{{ getBranchName(policy.branch) }}</td>
+          <td data-label="Branch">{{ getBranchName(policy.branch) }}</td>
 
-          <td>
+          <td data-label="Early Check In">
             <span *ngIf="policy.early_check_in; else noEarlyIn">
               {{ policy.early_check_in_minutes }} min
             </span>
             <ng-template #noEarlyIn>-</ng-template>
           </td>
 
-          <td>
+          <td data-label="Late Check In">
             <span *ngIf="policy.late_check_in; else noLateIn">
               {{ policy.late_check_in_minutes }} min
             </span>
             <ng-template #noLateIn>-</ng-template>
           </td>
 
-          <td>
+          <td data-label="Early Check Out">
             <span *ngIf="policy.early_check_out; else noEarlyOut">
               {{ policy.early_check_out_minutes }} min
             </span>
             <ng-template #noEarlyOut>-</ng-template>
           </td>
 
-          <td>
+          <td data-label="Late Check Out">
             <span *ngIf="policy.late_check_out; else noLateOut">
               {{ policy.late_check_out_minutes }} min
             </span>
             <ng-template #noLateOut>-</ng-template>
           </td>
 
-          <td>
+          <td data-label="Status">
             <span class="badge"
               [ngClass]="policy.is_active ? 'bg-success' : 'bg-secondary'">
               {{ policy.is_active ? 'Active' : 'Inactive' }}

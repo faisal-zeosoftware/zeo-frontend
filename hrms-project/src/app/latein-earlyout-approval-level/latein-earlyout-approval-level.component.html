@@ -418,27 +418,27 @@
                     <tbody>
                         
 <tr *ngFor="let docs of approvalLevels; let i = index">
-  <td>{{ i + 1 }}</td>
+  <td data-label="No">{{ i + 1 }}</td>
 
-  <td>
+  <td data-label="Level">
     <div *ngFor="let lvl of docs.levels">
       Level {{ lvl.level }}
     </div>
   </td>
 
-  <td>
+  <td data-label="Role">
     <div *ngFor="let lvl of docs.levels">
       {{ lvl.role }}
     </div>
   </td>
 
-  <td>
+  <td data-label="Approver">
     <div *ngFor="let lvl of docs.levels">
       {{ lvl.approver }}
     </div>
   </td>
 
-  <td>
+  <td data-label="Approver Type">
   {{
     docs.approval_type === 'no_approval' ? 'No Approval' :
     docs.approval_type === 'reporting_manager' ? 'Reporting Manager' :
@@ -447,14 +447,14 @@
   }}
 </td>
 
-  <td>
+  <td data-label="Branch">
     <span *ngFor="let b of docs.branch; let last = last">
       {{ b }}<span *ngIf="!last">, </span>
     </span>
   </td>
 
 
-  <td class="text-center">
+  <td data-label="Action" class="text-center">
     <button
       mat-fab
       color="primary"

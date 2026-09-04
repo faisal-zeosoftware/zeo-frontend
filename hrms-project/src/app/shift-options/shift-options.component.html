@@ -1,199 +1,101 @@
-<!-- 
+<div class="sub-sidebar clickOutside">
+  <mat-sidenav-container class="sub-sidenav-container">
+    <mat-sidenav
+      #sidenav
+      class="sub-sidenav hide-scrollbar"
+      [opened]="isMobile ? isMenuOpen : true"
+      [mode]="isMobile ? 'over' : 'side'"
+      (closedStart)="isMenuOpen = false"
+    >
+      <div class="wrapper">
 
-    <button type="button" class="btn btn-collapse menu_mob" (click)="toggleSidebarMenu()">
-      <span *ngIf="!isMenuOpen">☰</span>
-      <span *ngIf="isMenuOpen">×</span>
-    </button>
-    
+        <div class="sidebar-top">
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen">Shift Options</span>
+          <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+            <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+          </button>
         </div>
-              
-  
 
+        <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+          <ul class="nav-menu-list">
 
+            <li *ngIf="hasViewPermissionShifts">
+              <a routerLink="/main-sidebar/shift-options/shifts" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">schedule</mat-icon>
+                <span class="sidenav-opt">Shift</span>
+              </a>
+            </li>
 
-          <div class="sidebar"  [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-              <ul>
-                
-                <li routerLink="/main-sidebar/shift-options/shifts" *ngIf="hasViewPermissionShifts"><a><mat-icon>update</mat-icon>Shift</a></li>
+            <li *ngIf="hasViewPermissionShiftPattern">
+              <a routerLink="/main-sidebar/shift-options/shift-pattern" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">date_range</mat-icon>
+                <span class="sidenav-opt">Shift Pattern</span>
+              </a>
+            </li>
 
-                <li routerLink="/main-sidebar/shift-options/shift-pattern" *ngIf="hasViewPermissionShiftPattern"><a><mat-icon>update</mat-icon>Shift Pattern</a></li>
-               
-                <li routerLink="/main-sidebar/shift-options/shift-employee" *ngIf="hasViewPermissionEmployeeShift"><a><mat-icon>update</mat-icon>Employee Shift</a></li>
+            <li *ngIf="hasViewPermissionEmployeeShift">
+              <a routerLink="/main-sidebar/shift-options/shift-employee" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">badge</mat-icon>
+                <span class="sidenav-opt">Employee Shift</span>
+              </a>
+            </li>
 
-                <li routerLink="/main-sidebar/shift-options/shift-override" *ngIf="hasViewPermissionShiftOverride"><a><mat-icon>update</mat-icon>Shift Override</a></li>
+            <li *ngIf="hasViewPermissionShiftOverride">
+              <a routerLink="/main-sidebar/shift-options/shift-override" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">edit_calendar</mat-icon>
+                <span class="sidenav-opt">Shift Override</span>
+              </a>
+            </li>
 
-                <li (click)="toggleAdvanceSalary()" style="cursor: pointer;">
-                    <a>
-                      <mat-icon>update</mat-icon> OverTime 
-                      <mat-icon style="float: right;">{{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}</mat-icon>
-                    </a>
-                  </li>
-          <ul *ngIf="showAdvanceSalary" style="padding-left: 10px;">
-                <li routerLink="/main-sidebar/shift-options/employee-overtime" *ngIf="hasViewPermissionEmpOvertime"><a><mat-icon></mat-icon>Employee OverTime</a></li>
-
-                <li routerLink="/main-sidebar/shift-options/overtime-policy" *ngIf="hasViewPermissionOvertimepolicy"><a><mat-icon></mat-icon>OverTime Policy</a></li>
-                 <li routerLink="/main-sidebar/shift-options/overtime-rule" *ngIf="hasViewPermissionOvertimepolicy"><a><mat-icon></mat-icon>OverTime Rule</a></li>
-
-         </ul>
-                  <mat-nav-list>
-     
-  
-  
-                    <div>
-            
-            
-                 
-                    </div>
-                    <style>
-                      .mat-expansion-panel-body {
-                        padding: 0 0px 16px !important;
-                      }
-                      .mat-expansion-panel{
-                background: transparent;
-               
-              }
-                    </style>
-            
-                  </mat-nav-list>
-                   
-              </ul> 
-  
-                   
-   
-          </div>
-    
-      </div>
-   
-  
-  
-  
-  
-  
-  
-      </mat-sidenav>
-  
-  
-      <router-outlet></router-outlet>
-  
-   
-  
-    </mat-sidenav-container>
-  
-  </div> -->
-
-
-  <div class="sub-sidebar clickOutside">
-    <mat-sidenav-container class="sub-sidenav-container">
-      <mat-sidenav #sidenav opened="true" mode="side" class="sub-sidenav">
-        <div class="wrapper">
-          
-          <!-- Sidebar Header & Toggle -->
-          <div class="sidebar-top">
-            <span class="sub-sidebar-title" *ngIf="isMenuOpen">Shift Options</span>
-            <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
-              <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
-            </button>
-          </div>
-  
-          <!-- Navigation Menu -->
-          <nav class="sidebar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-            <ul class="nav-menu-list">
-  
-              <!-- Shift -->
-              <li *ngIf="hasViewPermissionShifts">
-                <a 
-                  routerLink="/main-sidebar/shift-options/shifts" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">schedule</mat-icon>
-                  <span class="sidenav-opt">Shift</span>
-                </a>
-              </li>
-  
-              <!-- Shift Pattern -->
-              <li *ngIf="hasViewPermissionShiftPattern">
-                <a 
-                  routerLink="/main-sidebar/shift-options/shift-pattern" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">date_range</mat-icon>
-                  <span class="sidenav-opt">Shift Pattern</span>
-                </a>
-              </li>
-  
-              <!-- Employee Shift -->
-              <li *ngIf="hasViewPermissionEmployeeShift">
-                <a 
-                  routerLink="/main-sidebar/shift-options/shift-employee" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">badge</mat-icon>
-                  <span class="sidenav-opt">Employee Shift</span>
-                </a>
-              </li>
-  
-              <!-- Shift Override -->
-              <li *ngIf="hasViewPermissionShiftOverride">
-                <a 
-                  routerLink="/main-sidebar/shift-options/shift-override" 
-                  routerLinkActive="active-link" 
-                  class="nav-item-link">
-                  <mat-icon class="nav-icon">edit_calendar</mat-icon>
-                  <span class="sidenav-opt">Shift Override</span>
-                </a>
-              </li>
-  
-              <!-- Dropdown: OverTime Submenu -->
-              <li class="has-submenu">
-                <div class="submenu-header" (click)="toggleAdvanceSalary()">
-                  <div class="d-flex">
-                    <mat-icon class="nav-icon">more_time</mat-icon>
-                    <span class="sidenav-opt">OverTime</span>
-                  </div>
-                  <mat-icon class="chevron-arrow">
-                    {{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}
-                  </mat-icon>
+            <!-- Dropdown: OverTime Submenu -->
+            <li class="has-submenu">
+              <div class="submenu-header" (click)="toggleAdvanceSalary()">
+                <div class="d-flex">
+                  <mat-icon class="nav-icon">more_time</mat-icon>
+                  <span class="sidenav-opt">OverTime</span>
                 </div>
-  
-                <!-- Nested OverTime Items -->
-                <ul class="sub-menu-list" *ngIf="showAdvanceSalary && isMenuOpen">
-                  <li *ngIf="hasViewPermissionEmpOvertime">
-                    <a 
-                      routerLink="/main-sidebar/shift-options/employee-overtime" 
-                      routerLinkActive="active-sublink" 
-                      class="subnav-item-link">
-                      Employee OverTime
-                    </a>
-                  </li>
-                  <li *ngIf="hasViewPermissionOvertimepolicy">
-                    <a 
-                      routerLink="/main-sidebar/shift-options/overtime-policy" 
-                      routerLinkActive="active-sublink" 
-                      class="subnav-item-link">
-                      OverTime Policy
-                    </a>
-                  </li>
-                  <li *ngIf="hasViewPermissionOvertimepolicy">
-                    <a 
-                      routerLink="/main-sidebar/shift-options/overtime-rule" 
-                      routerLinkActive="active-sublink" 
-                      class="subnav-item-link">
-                      OverTime Rule
-                    </a>
-                  </li>
-                </ul>
-              </li>
-  
-            </ul>
-          </nav>
-  
-        </div>
-      </mat-sidenav>
-  
-      <!-- Main Content Outlet Area -->
-      <main class="sub-content-area">
-        <router-outlet></router-outlet>
-      </main>
-  
-    </mat-sidenav-container>
-  </div>
+                <mat-icon class="chevron-arrow" *ngIf="isMenuOpen">
+                  {{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}
+                </mat-icon>
+              </div>
+
+              <ul class="sub-menu-list" *ngIf="showAdvanceSalary && isMenuOpen">
+                <li *ngIf="hasViewPermissionEmpOvertime">
+                  <a routerLink="/main-sidebar/shift-options/employee-overtime" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
+                    Employee OverTime
+                  </a>
+                </li>
+                <li *ngIf="hasViewPermissionOvertimepolicy">
+                  <a routerLink="/main-sidebar/shift-options/overtime-policy" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
+                    OverTime Policy
+                  </a>
+                </li>
+                <li *ngIf="hasViewPermissionOvertimepolicy">
+                  <a routerLink="/main-sidebar/shift-options/overtime-rule" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
+                    OverTime Rule
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+          </ul>
+        </nav>
+
+      </div>
+    </mat-sidenav>
+
+    <main class="sub-content-area">
+      <button
+        type="button"
+        class="mobile-submenu-fab"
+        *ngIf="isMobile && !isMenuOpen"
+        (click)="toggleSidebarMenu()"
+        aria-label="Open submenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <router-outlet></router-outlet>
+    </main>
+
+  </mat-sidenav-container>
+</div>

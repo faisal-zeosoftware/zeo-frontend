@@ -335,18 +335,18 @@
     <tbody>
       <tr *ngFor="let docs of GeneralReq; let i = index">
         <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
-        <td >{{ docs.request_type }}</td>
-        <td >{{ docs.level }}</td>
+        <td data-label="Request Type">{{ docs.request_type }}</td>
+        <td data-label="Approval Level">{{ docs.level }}</td>
 
-        <td >{{ docs.approver_name }}</td>
+        <td data-label="Approver">{{ docs.approver_name }}</td>
 
-        <td >{{ docs.escalate_to_name }}</td>
+        <td data-label="Escalate Name">{{ docs.escalate_to_name }}</td>
 
-        <td >{{ docs.escalate_after_days }}</td>
+        <td data-label="Escalate After Days">{{ docs.escalate_after_days }}</td>
 
-        <td >{{ docs.escalate_after_hours }}</td>
+        <td data-label="Escalate After Hours">{{ docs.escalate_after_hours }}</td>
 
-        <td >{{ docs.escalate_after_minutes }}</td>
+        <td data-label="Escalate After Minutes">{{ docs.escalate_after_minutes }}</td>
 
        
        <td class="sticky-right" data-label="Actions">
