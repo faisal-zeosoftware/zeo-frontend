@@ -343,54 +343,182 @@ if (this.userId !== null) {
   //   }
 
 
-exportDetailedPayslips(): void {
-  const selectedSchema = this.authService.getSelectedSchema();
-
-  if (!selectedSchema) {
-    alert('No schema selected.');
-    return;
-  }
-
-  const payrollRunId = this.PaySlipsConfrimed?.[0]?.payroll_run?.id;
-
-  if (!payrollRunId) {
-    alert('No payroll run available for detailed payslip export.');
-    return;
-  }
-
-  const url =
-    `http://localhost:8000/payroll/api/PayrollRun/${payrollRunId}/detailed-payslips/` +
-    `?schema=${encodeURIComponent(selectedSchema)}`;
-
-  this.isLoading = true;
-
-  this.http.get(url, {
-    responseType: 'blob'
-  }).subscribe({
-    next: (blob: Blob) => {
-      this.isLoading = false;
-
-      if (!blob || blob.size === 0) {
-        alert('No detailed payslip data available.');
-        return;
-      }
-
-      const fileName =
-        `Detailed_Payslips_${payrollRunId}_${new Date().toISOString().slice(0, 10)}.xlsx`;
-
-      FileSaver.saveAs(blob, fileName);
-    },
-
-    error: (error: any) => {
-      this.isLoading = false;
-
-      console.error('Detailed payslip export failed:', error);
-
-      alert('Failed to export detailed payslips.');
+  exportDetailedPayslips(): void {
+    const selectedSchema = this.authService.getSelectedSchema();
+  
+    if (!selectedSchema) {
+      alert('No schema selected.');
+      return;
     }
-  });
-}
-
+  
+    const payrollRunId = this.PaySlipsConfrimed?.[0]?.payroll_run?.id;
+  
+    if (!payrollRunId) {
+      alert('No payroll run available for detailed payslip export.');
+      return;
+    }
+  
+    const url =
+      `http://localhost:8000/payroll/api/PayrollRun/${payrollRunId}/detailed-payslips/` +
+      `?schema=${encodeURIComponent(selectedSchema)}`;
+  
+    this.isLoading = true;
+  
+    // Fetch JSON directly (not a blob) — we build the xlsx client-side
+    this.http.get<any[]>(url).subscribe({
+      next: (data: any[]) => {
+        this.isLoading = false;
+  
+        if (!data || data.length === 0) {
+          alert('No detailed payslip data available.');
+          return;
+        }
+  
+        this.buildDetailedPayslipExcel(data, payrollRunId);
+      },
+      error: (error: any) => {
+        this.isLoading = false;
+        console.error('Detailed payslip export failed:', error);
+        alert('Failed to export detailed payslips.');
+      }
+    });
+  }
+  
+  private buildDetailedPayslipExcel(data: any[], payrollRunId: number): void {
+  
+    // ---- 1. Discover dynamic component columns (same logic as your table's componentColumns) ----
+    const componentColumnsSet = new Set<string>();
+    data.forEach(p => (p.components || []).forEach((c: any) => componentColumnsSet.add(c.component_name)));
+    const componentColumns = Array.from(componentColumnsSet);
+  
+    // ---- 2. Base header row (mirrors your <th> order exactly) ----
+    const baseHeaders = [
+      'No', 'Employee Code', 'Employee Name', 'Payroll Name', 'Year', 'Month',
+      'Gross Salary', 'Total Additions', 'Total Deductions', 'Net Salary',
+      'Pro Rata Adjustment', 'Working Days', 'Days Worked', 'Arrears', 'Status',
+    ];
+  
+    const headers = [...baseHeaders, ...componentColumns];
+  
+    // ---- 3. Build row data (array-of-arrays keeps column order exact) ----
+    const rows: any[][] = data.map((p, index) => {
+      const baseRow = [
+        index + 1,
+        p.employee_code,
+        p.employee_name,
+        p.payroll_run?.name,
+        p.payroll_run?.year,
+        this.getMonthName(p.payroll_run?.month),
+        Number(p.gross_salary),
+        Number(p.total_additions),
+        Number(p.total_deductions),
+        Number(p.net_salary),
+        Number(p.pro_rata_adjustment),
+        p.total_working_days,
+        p.days_worked,
+        Number(p.arrears),
+        p.status,
+      ];
+  
+      const componentValues = componentColumns.map(name =>
+        this.getComponentAmountFromList(p.components, name)
+      );
+  
+      return [...baseRow, ...componentValues];
+    });
+  
+    // ---- 4. Build worksheet from header + rows ----
+    const sheetData = [headers, ...rows];
+    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+  
+    // ---- 5. Column widths (approximates your table's column sizing) ----
+    const baseWidths = [
+      { wch: 5 },  // No
+      { wch: 16 }, // Employee Code
+      { wch: 20 }, // Employee Name
+      { wch: 14 }, // Payroll Name
+      { wch: 8 },  // Year
+      { wch: 12 }, // Month
+      { wch: 14 }, // Gross Salary
+      { wch: 15 }, // Total Additions
+      { wch: 16 }, // Total Deductions
+      { wch: 14 }, // Net Salary
+      { wch: 18 }, // Pro Rata Adjustment
+      { wch: 13 }, // Working Days
+      { wch: 13 }, // Days Worked
+      { wch: 12 }, // Arrears
+      { wch: 12 }, // Status
+    ];
+    const componentWidths = componentColumns.map(() => ({ wch: 14 }));
+    worksheet['!cols'] = [...baseWidths, ...componentWidths];
+  
+    // ---- 6. Freeze header row (view stays fixed on scroll) ----
+    worksheet['!freeze'] = { xSplit: 0, ySplit: 1 };
+    worksheet['!views'] = [{ state: 'frozen', ySplit: 1 }];
+  
+    // ---- 7. Number formats for money columns ----
+    const moneyColIndexes = [6, 7, 8, 9, 10, 13]; // gross, additions, deductions, net, pro-rata, arrears
+    const componentStartIndex = baseHeaders.length;
+    const allMoneyColIndexes = [
+      ...moneyColIndexes,
+      ...componentColumns.map((_, i) => componentStartIndex + i),
+    ];
+  
+    const range = XLSX.utils.decode_range(worksheet['!ref']!);
+    for (let R = range.s.r + 1; R <= range.e.r; R++) {
+      allMoneyColIndexes.forEach(C => {
+        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = worksheet[cellRef];
+        if (cell) cell.z = '#,##0.00';
+      });
+    }
+  
+    // ---- 8. Auto-filter on header row ----
+    worksheet['!autofilter'] = { ref: worksheet['!ref']! };
+  
+    // ---- 9. Optional: separate Leave Balances sheet ----
+    const leaveRows: any[][] = [];
+    data.forEach(p => {
+      (p.leave_balances || []).forEach((lb: any) => {
+        leaveRows.push([
+          p.employee_code,
+          p.employee_name,
+          lb.leave_type,
+          lb.balance,
+          lb.openings,
+          lb.updated_at,
+        ]);
+      });
+    });
+    const leaveSheet = XLSX.utils.aoa_to_sheet([
+      ['Employee Code', 'Employee Name', 'Leave Type', 'Balance', 'Openings', 'Updated At'],
+      ...leaveRows,
+    ]);
+    leaveSheet['!cols'] = [
+      { wch: 16 }, { wch: 20 }, { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 20 },
+    ];
+  
+    // ---- 10. Build workbook with both sheets ----
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Detailed Payslips');
+    XLSX.utils.book_append_sheet(workbook, leaveSheet, 'Leave Balances');
+  
+    // ---- 11. Write and save ----
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const fileName = `Detailed_Payslips_${payrollRunId}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    FileSaver.saveAs(blob, fileName);
+  }
+  
+  // ---- Helpers ----
+  
+  private getComponentAmountFromList(components: any[] | undefined, componentName: string): number {
+    if (!components) return 0;
+    const match = components.find(c => c.component_name === componentName);
+    return match ? Number(match.amount) : 0;
+  }
 
 
 
