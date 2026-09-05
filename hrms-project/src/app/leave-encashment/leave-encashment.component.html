@@ -1,0 +1,443 @@
+<div class="container" *ngIf="hasViewPermission">
+    <div class="comapny_section" >
+
+        <div class="header_section">
+
+            <div class="row">
+                <div class="col-md-3">
+                    <h1>Leave Encashment</h1>
+                </div>
+
+                     <div class="col-md-3">
+                    
+<!-- <div class="search-container">
+    <input
+        type="text"
+        class="search-input"
+        placeholder="Search..."
+        [(ngModel)]="searchQuery"
+        [ngModelOptions]="{standalone: true}"
+        (ngModelChange)="onSearchChange()"
+    >
+
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div> -->
+</div>
+
+                <div class="col-md-6">
+                    <div class="button-group pull-right">
+                        <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
+                        </mat-icon></span> Create</button>
+                      <span *ngIf="!hasAddPermission"></span>
+
+                        <button type="button" class="btn-Edit btn-info btn"  (click)="EditShowButtons()" *ngIf="hasEditPermission" >
+                            <span class="header-btn-icon">
+                             <mat-icon>draw
+                        </mat-icon></span> Edit</button>
+                        <span *ngIf="hasEditPermission"></span>
+                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()" *ngIf="hasDeletePermission">
+                            <span class="header-btn-icon">
+                                <mat-icon> delete
+                           </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+
+                           <span *ngIf="!hasDeletePermission"></span>
+                           
+                          
+<!-- 
+                           <button type="button" class="btn-Edit btn-secondary  btn"  (click)="OpenBulkuploadModal()" *ngIf="hasImportPermission">
+                            <span class="header-btn-icon">
+                             <mat-icon>system_update_alt
+                        </mat-icon></span> Import</button> -->
+                    </div>
+                </div>
+            </div>
+           
+           
+
+        </div>
+
+
+
+        <div class="row">
+          <div class="col-md-2">
+              
+              <button  class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete" (click)="toggleSelectAllEmployees()">Select All</button>
+  
+          </div>
+          <div class="col-md-3">
+              <button class=" mt-3 btn-danger btn"  color="warn" *ngIf="Delete" (click)="deleteSelectedLeavebalance()">Delete Selected </button>
+  
+          </div>
+      </div>
+      
+
+        <div *ngIf="iscreateLoanApp" class="modal">
+            <div class="modal-content">
+              <div class="row">
+                <div class="col-md-8">
+                  <h2> Add Leave Encashment </h2>
+                </div>
+
+    <div class="col-md-4 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeapplicationModal()">
+      ×
+    </span>
+  </div>
+              </div>
+              <hr />
+                
+                <form (ngSubmit)="LeaveEncashment()" enctype="multipart/form-data">
+                   
+                   
+                    <div class="row">
+
+        <div class="col-md-6" >
+        <label>Leave Type
+          <span class="required-star">*</span>
+        </label>
+        <div class="custom-sel">
+          <select
+            class="form-control"
+            id="leave_type"
+            name="leave_type"
+            [(ngModel)]="leave_type"
+            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !leave_type}"
+          >
+            <option *ngFor="let leavetypes of LeaveTypes" [value]="leavetypes.id">
+              {{ leavetypes.name }}
+            </option>
+          </select>
+        </div>
+        <div *ngIf="registerButtonClicked && !leave_type" class="error-message">Leave Type is required.</div>
+      </div>
+    
+
+                  <div class="col-md-6">
+              <label>
+                Employee
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      [(ngModel)]="employee"
+                      [ngModelOptions]="{ standalone: true }"
+                      placeholder="Select Employee"
+                    >
+                      <!-- Search Input -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          placeholder="Search Employee"
+                          class="form-control"
+                          [(ngModel)]="employeeSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+                      <mat-option
+                        *ngFor="let emp of searchFilteredEmployees()"
+                        [value]="emp.id"
+                      >
+                        {{ emp.emp_code }} - {{ emp.emp_first_name }}
+                        {{ emp.emp_last_name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="registerButtonClicked && !employee"
+                  class="error-message"
+                >
+                  Employee required
+                </div>
+              </div>
+            </div>
+      
+    
+    
+                      <div class="col-md-6">
+                        <label>Encashment days</label>
+                        <input type="number" class="form-control" required [(ngModel)]="encashment_days" placeholder="Enter Encashment Days"
+                               [ngModelOptions]="{standalone: true}">
+                      </div>
+                  
+    <div class="col-md-6">
+    <label>Status</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="status" [ngModelOptions]="{ standalone: true }">
+        <option value="dratf">Draft</option>
+        <option value="pending_Approval">Pending Approval</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+        <option value="Processed">Processed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+  </div>
+
+             <div class="col-md-6">
+              <label>Remark</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="remarks"
+                placeholder="Enter remarks"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+                  
+                 
+                    </div>
+                  
+                    <div class="row"  *ngIf="hasAddPermission">
+                      <div class="col-md-8"></div>
+                      <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-full mt-4" (click)="closeapplicationModal()">Close</button>
+
+                        </div>
+                      <div class="col-md-2">
+                        <button type="submit" class="btn btn-success btn-full mt-4">Add</button>
+                      </div>
+                    </div>
+                  </form>
+    
+            
+            </div>
+          </div>
+
+
+                 <!-- Edit Modal -->
+<div *ngIf="isEditModalOpen" class="modal">
+  <div class="modal-content">
+    <div class="row">
+      <div class="col-md-10">
+        <h2>Edit Leave Encashment </h2>
+      </div>
+
+  <div class="col-md-2 text-right">
+    <!-- Styled Square Close Button -->
+    <span class="close-btn" (click)="closeEditModal()">
+      ×
+    </span>
+  </div>
+    </div>
+    <hr />
+  
+    <form >
+      <div class="row">
+
+
+        <div class="col-md-6" >
+<label>Leave Type</label>
+<div class="custom-sel">
+<select
+class="form-control"
+id="leave_type"
+name="leave_type"
+[(ngModel)]="editAsset.leave_type"
+[ngModelOptions]="{ standalone: true }"
+>
+<option *ngFor="let leavetypes of LeaveTypes" [value]="leavetypes.id">
+{{ leavetypes.name }}
+</option>
+</select>
+</div>
+</div>
+
+
+            <div class="col-md-6">
+              <label>
+                Employee
+                <span class="required-star">*</span>
+              </label>
+              <div class="custom-sel">
+                <div class="form-control-wrapper">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-select
+                      [(ngModel)]="editAsset.employee"
+                      [ngModelOptions]="{ standalone: true }"
+                      placeholder="Select Employee"
+                    >
+                      <!-- Search Input -->
+                      <div class="px-2 pb-2">
+                        <input
+                          type="text"
+                          placeholder="Search Employee"
+                          class="form-control"
+                          [(ngModel)]="employeeSearch"
+                          [ngModelOptions]="{ standalone: true }"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="$event.stopPropagation()"
+                        />
+                      </div>
+                      <mat-option
+                        *ngFor="let emp of searchFilteredEmployees()"
+                        [value]="emp.id"
+                      >
+                        {{ emp.emp_code }} - {{ emp.emp_first_name }}
+                        {{ emp.emp_last_name }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div
+                  *ngIf="registerButtonClicked && !employee"
+                  class="error-message"
+                >
+                  Employee required
+                </div>
+              </div>
+            </div>
+
+                                  <div class="col-md-6">
+                        <label>Encashment days</label>
+                        <input type="number" class="form-control" required [(ngModel)]="editAsset.encashment_days" placeholder="Enter Encashment Days"
+                               [ngModelOptions]="{standalone: true}">
+                      </div>
+                  
+    <div class="col-md-6">
+    <label>Status</label>
+    <div class="custom-sel">
+      <select
+        class="form-control" [(ngModel)]="editAsset.status" [ngModelOptions]="{ standalone: true }">
+        <option value="draft">Draft</option>
+        <option value="pending">Pending Approval</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+        <option value="processed">Processed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+  </div>
+
+             <div class="col-md-6">
+              <label>Remark</label>
+              <input
+                type="text"
+                class="form-control"
+                required
+                [(ngModel)]="editAsset.remarks"
+                placeholder="Enter remarks"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+                  
+      </div>
+    
+
+      <div class="row" >
+        <div class="col-md-8"></div>
+      <div class="col-md-2">
+        <button type="button" class="btn btn-danger btn-full mt-4" (click)="closeEditModal()">Close</button>
+
+      </div>
+        <div class="col-md-2">
+          <button type="button" (click)="updateAssetType()"  class="btn btn-success btn-full mt-4">Update</button>
+        </div>
+      </div>
+    </form>
+    
+  
+  
+  </div>
+  </div>
+
+  
+  <div class="com_list mt-4" *ngIf="hasViewPermission">
+  <table width="100%" *ngIf="hasViewPermission">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Leave Type</th>
+                        <th>Employee</th>
+                        <th>Encashment days</th>
+                        <th>Remarks</th>
+                        <th>Status</th>
+                        <th>Action</th>
+            
+                       
+                      </tr>
+                    </thead>
+                    <tbody>
+                        
+                      <tr *ngFor="let docs of pagedLeaveBalances;let i = index">
+                       <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+                        <td data-label="Leave type">{{ docs.leave_type }}</td>
+                         <td data-label="Employee">{{ docs.employee }}</td>
+                        <td data-label="Encashment Days">{{ docs.encashment_days }}</td>
+                        <td data-label="Status">{{ docs.status }}</td> 
+                        <td data-label="Remarks">{{ docs.remarks }}</td> 
+                       
+                        
+                        <td data-label="Action">
+                          <button
+                            mat-fab
+                            color="primary"
+                            aria-label="Edit icon"
+                            *ngIf="showEditBtn"
+          
+                            
+                            (click)="openEditModal(docs)"
+                          >
+                            <mat-icon style="color: white;">draw</mat-icon>
+                          </button>
+          
+                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
+          
+                        </td>
+                      </tr>
+                  
+                    </tbody>
+                  </table>
+            
+<!-- <div class="pagination-container">
+
+
+  <button
+    type="button"
+    class="page-btn"
+    (click)="previousPage()"
+    [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+
+
+  <button
+    type="button"
+    class="page-btn"
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages">
+    Next
+  </button>
+
+</div> -->
+
+    </div>
+    
+
+
+    
+
+
+</div>
+
+
+                            <!-- Loader -->
+    <div class="loader-container" [class.show]="isLoading">
+      <div class="loader"></div>
+    </div>

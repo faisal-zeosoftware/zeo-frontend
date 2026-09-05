@@ -262,6 +262,7 @@ import { AttendanceValidationPolicyComponent } from './attendance-validation-pol
 import { LateComePolicyComponent } from './late-come-policy/late-come-policy.component';
 import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.component';
 import { SalaryStructureComponent } from './salary-structure/salary-structure.component';
+import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.component';
 
 @NgModule({
   declarations: [
@@ -480,6 +481,7 @@ import { SalaryStructureComponent } from './salary-structure/salary-structure.co
      LateComePolicyComponent,
      EarlyExitPolicyComponent,
      SalaryStructureComponent,
+     LeaveEncashmentComponent,
      
      
 

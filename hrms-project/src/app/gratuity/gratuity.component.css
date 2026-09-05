@@ -146,7 +146,25 @@ margin-right: 10px;
   font-family: math;
 }
 
+/* Header button layout */
+.button-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
 
+.button-group button {
+  margin-right: 0 !important;
+  flex: 0 0 auto;
+}
+
+/* Remove the empty spans from affecting the layout */
+.button-group > span:empty {
+  display: none;
+}
 
       /* Phones */
 @media (max-width: 728px) {

@@ -49,6 +49,20 @@ margin-right: 10px;
   margin-top: 2px;
 }
 
+ .close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #ff0000;
+  color: #f9f9f9;
+  font-size: 26px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #dee2e6;
+}
 
 
 .list_company_sec{
@@ -93,7 +107,7 @@ margin-right: 10px;
   width: 25px;
 }
 
- 
+
 .search-container {
   display: flex;
   align-items: center;
@@ -106,9 +120,6 @@ margin-right: 10px;
   border-radius: 20px;
   outline: none;
   background: transparent;
-  /* transition: width 0.4s ease-in-out; */
-  /* opacity: 0;
-  z-index: 0; */
 }
 
 .search-input.expanded {
@@ -170,7 +181,7 @@ margin-right: 10px;
 .page-number.active {
   background: #4f46e5;
   color: #fff;
-  border-color: #4f46e5;
+  border-color:#4f46e5;
   font-weight: 600;
 }
 
@@ -179,11 +190,13 @@ margin-right: 10px;
 }
 
 
+
+
 /* Add your CSS styles here */
 .modal {
   display: block; /* Hidden by default */
   position: fixed; /* Stay in place */
-  z-index: 6; /* Sit on top */
+  z-index: 1; /* Sit on top */
   margin-left: auto;
   margin-right: auto;
   top: 0;
@@ -203,7 +216,6 @@ margin-right: 10px;
   margin-left: auto;
   margin-top: 100px;
   height: auto;
-  z-index: 6; 
 
 }
 
@@ -230,8 +242,48 @@ margin-right: 10px;
   font-family: math;
 }
 
+.vn-wisteria a{
+background-color:#8e44ad;
+  display:inline-block;
+  position:relative;
+  margin:30px 5px;
+  padding:15px 10px 12px 50px;
+  color:#fff;
+  transition:all 0.4s ease;
+  border-radius:3px;
+  font-size: 12px;
+  width: 100%;
+  white-space: nowrap;
+}
+.vn-wisteria a:before{
+  content:"\f019";
+  font-family:fontAwesome;
+  position:absolute;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+  font-size:14px;
+  border-radius:0 20px 0 0;
+  color:#000;
+  background-color:#fff;
+  opacity:0.3;
+  padding:15px;
+  top:0;
+  left:0;
+}
+.vn-wisteria a:hover{
+  background:#7f8c8d
+}
 
-   
+.vn-green a{
+    background-color: #27ae60;
+}
+
+.vn-blue a{
+    background-color:#2980b9;
+}
+
+
 /* ================= SINGLE SELECT (Searchable Employee Dropdown) ================= */
 .modern-single-select{
   width:100%;
@@ -413,65 +465,71 @@ input:focus-visible {
   border: 1px solid red !important;
 }
 
-/* Sticky first column */
-.sticky-left {
-  position: sticky;
-  left: 0;
-  background: #fff;
-  z-index: 2;
-}
-
-/* Sticky last column */
-.sticky-right {
-  position: sticky;
-  right: 0;
-  background: #fff;
-  z-index: 2;
-}
-
-/* Keep header sticky columns dark */
-thead .sticky-left,
-thead .sticky-right {
-  background: #343a40;   /* same as thead-dark */
-  color: #fff;
-  z-index: 3;
-}
-
-/* Header button layout */
-.button-group {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-}
-
-.button-group button {
-  margin-right: 0 !important;
-  flex: 0 0 auto;
-}
-
-/* Remove the empty spans from affecting the layout */
-.button-group > span:empty {
-  display: none;
-}
 
 
-      /* Phones */
+/* Phones */
 @media (max-width: 728px) {
 
   .modal-content{
     
     margin-top: 200px;
+
   }
 
-  .header_section{
-  background: white;
-  padding: 24px 18px 15px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  width: 100%;
-  border-bottom: solid 3px navy;
-}
-}
+    .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 10px; /* horizontal and vertical gap */
+    width: 100%;
+    margin-top: 10px;
+  }
 
+  /* Keep buttons same size, like before */
+  .button-group button {
+    width: 45%;            /* two per row, with small spacing */
+    font-size: 13px;
+    padding: 6px 0;
+    text-align: center;
+    border-radius: 5px;
+  }
+
+  /* Order control for layout */
+  .button-group .btn-Create {
+    order: 1;
+  }
+
+  .button-group .btn-Edit {
+    order: 2;
+  }
+
+  .button-group .btn-Delete {
+    order: 3;
+  }
+
+  .button-group .btn-secondary {
+    order: 4;
+  }
+
+  /* Adjust icon alignment inside buttons */
+  .button-group .header-btn-icon mat-icon {
+    font-size: 18px;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  /* Ensure correct spacing on small screens */
+  .col-md-6 {
+    width: 100%;
+  }
+
+  /* Optional: make sure buttons don’t overflow */
+  .button-group button mat-icon {
+    vertical-align: middle;
+  }
+
+  
+
+
+
+  }

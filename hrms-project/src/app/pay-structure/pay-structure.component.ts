@@ -26,7 +26,12 @@ export class PayStructureComponent {
   private dataSubscription?: Subscription;
 
 
+  allSelected = false;
 
+
+  Departments: any[] = [];
+  Categories: any[] = [];
+  Designations: any[] = [];
 
 overtimepol:any []=[];
 Policyget:any []=[];
@@ -41,7 +46,8 @@ cycle_end_day:any='';
 payday_type:any='';
 payday:any='';
 payroll_start_month:any='';
-branch:any='';
+// branch:any='';
+branch: number[] = [];
 
 
       
@@ -88,6 +94,14 @@ hasEditPermission: boolean = false;
 
 
 
+designation: number[] = [];
+department: number[] = [];
+category: number[] = [];
+
+
+branches: any[] = [];
+
+
   
 
 userId: number | null | undefined;
@@ -131,6 +145,9 @@ private DepartmentServiceService:DepartmentServiceService,
   this.loadDeparmentBranch();
   // this.loadDEpartments();
   this.loadOvertimepolicy();
+  this.loadDEpartments();
+  this.loadDesignations();
+  this.loadCAtegory();
 
 });
 
@@ -302,7 +319,8 @@ if (this.payroll_start_month) {
 }
 
 formData.append('payroll_start_month', formattedDate);
-  formData.append('branch', this.branch);
+  formData.append('branch', JSON.stringify(this.branch));
+
 
   
 
@@ -426,11 +444,146 @@ loadOvertimepolicy(callback?: Function): void {
     }
   
 
+    isAllDepartmentsSelected(): boolean {
+  return (
+    this.Departments.length > 0 &&
+    Array.isArray(this.department) &&
+    this.department.length === this.Departments.length
+  );
+}
 
+isSomeDepartmentsSelected(): boolean {
+  return (
+    Array.isArray(this.department) &&
+    this.department.length > 0 &&
+    this.department.length < this.Departments.length
+  );
+}
+
+toggleAllDepartments(): void {
+  if (this.isAllDepartmentsSelected()) {
+    this.department = [];
+  } else {
+    this.department = this.Departments.map(
+      (department: any) => department.id
+    );
+  }
+}
+
+isAllCategoriesSelected(): boolean {
+  return (
+    this.Categories.length > 0 &&
+    Array.isArray(this.category) &&
+    this.category.length === this.Categories.length
+  );
+}
+
+isSomeCategoriesSelected(): boolean {
+  return (
+    Array.isArray(this.category) &&
+    this.category.length > 0 &&
+    this.category.length < this.Categories.length
+  );
+}
+
+toggleAllCategories(): void {
+  if (this.isAllCategoriesSelected()) {
+    this.category = [];
+  } else {
+    this.category = this.Categories.map(
+      (category: any) => category.id
+    );
+  }
+}
+
+
+isAllBranchesSelected(): boolean {
+  return (
+    this.branches.length > 0 &&
+    Array.isArray(this.branch) &&
+    this.branch.length === this.branches.length
+  );
+}
+
+isSomeBranchesSelected(): boolean {
+  return (
+    Array.isArray(this.branch) &&
+    this.branch.length > 0 &&
+    this.branch.length < this.branches.length
+  );
+}
+
+toggleAllBranches(): void {
+  if (this.isAllBranchesSelected()) {
+    this.branch = [];
+  } else {
+    this.branch = this.branches.map(
+      (branch: any) => branch.id
+    );
+  }
+}
 
 
   
 
+  departmentsearch: string = '';
+
+  filterDepartment(): any[] {
+
+  if (!this.departmentsearch || this.departmentsearch.trim() === '') {
+    return this.Departments;
+  }
+
+  const search = this.departmentsearch.toLowerCase().trim();
+
+  return this.Departments.filter((department: any) =>
+    department.dept_name.toLowerCase().includes(search)
+  );
+}
+
+
+  categorysearch: string = '';
+
+  filterCategory(): any[] {
+
+  if (!this.categorysearch || this.categorysearch.trim() === '') {
+    return this.Categories;
+  }
+
+  const search = this.categorysearch.toLowerCase().trim();
+
+  return this.Categories.filter((category: any) =>
+    category.ctgry_title.toLowerCase().includes(search)
+  );
+}
+
+  designationsearch: string = '';
+
+  filterDesignation(): any[] {
+
+  if (!this.designationsearch || this.designationsearch.trim() === '') {
+    return this.Designations;
+  }
+
+  const search = this.designationsearch.toLowerCase().trim();
+
+  return this.Designations.filter((designation: any) =>
+    designation.desgntn_job_title.toLowerCase().includes(search)
+  );
+}
+
+  toggleAllSelection(): void {
+    if (this.select) {
+      if (this.allSelected) {
+
+        this.select.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.select.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+  
 
 
       
@@ -675,10 +828,52 @@ updatePayStr(): void {
       }
     );
   }
-           
+         
+  
+  isAllDesignationsSelected(): boolean {
+  return (
+    this.Designations.length > 0 &&
+    Array.isArray(this.designation) &&
+    this.designation.length === this.Designations.length
+  );
+}
+
+isSomeDesignationsSelected(): boolean {
+  return (
+    Array.isArray(this.designation) &&
+    this.designation.length > 0 &&
+    this.designation.length < this.Designations.length
+  );
+}
+
+toggleAllDesignations(): void {
+  if (this.isAllDesignationsSelected()) {
+    this.designation = [];
+  } else {
+    this.designation = this.Designations.map(
+      (designation: any) => designation.id
+    );
+  }
+}
 
 
-    branches:any []=[];
+
+    // branches:any []=[];
+
+    branchsearch: string = '';
+
+filterBranches(): any[] {
+  if (!this.branchsearch || this.branchsearch.trim() === '') {
+    return this.branches;
+  }
+
+  const search = this.branchsearch.toLowerCase().trim();
+
+  return this.branches.filter((branch: any) =>
+    branch.branch_name?.toLowerCase().includes(search)
+  );
+}
+
 
         
   loadDeparmentBranch(callback?: Function): void {
@@ -712,6 +907,97 @@ if (this.branches.length === 1 && !this.branch) {
       );
     }
   }
+
+   toggleAllSelectiondept(): void {
+    if (this.selectDept) {
+      if (this.allSelecteddept) {
+        this.selectDept.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectDept.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+  loadDEpartments(callback?: Function): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+    const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.DepartmentServiceService.getDepartmentsMasterNew(selectedSchema, savedIds).subscribe(
+        (result: any) => {
+          this.Departments = result;
+          console.log(' fetching Companies:');
+          if (callback) callback();
+        },
+        (error) => {
+          console.error('Error fetching Companies:', error);
+        }
+      );
+    }
+  }
+
+  toggleAllSelectionDes(): void {
+    if (this.selectDes) {
+      if (this.allSelecteddes) {
+        this.selectDes.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectDes.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+loadDesignations(callback?: Function): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.employeeService.getDesignations(selectedSchema).subscribe(
+      (result: any) => {
+        this.Designations = result;
+
+        if (callback) {
+          callback();
+        }
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+}
+
+  toggleAllSelectioncat(): void {
+    if (this.selectCat) {
+      if (this.allSelectedcat) {
+        this.selectCat.options.forEach((item: MatOption) => item.select());
+      } else {
+        this.selectCat.options.forEach((item: MatOption) => item.deselect());
+      }
+    }
+  }
+
+loadCAtegory(callback?: Function): void {
+
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.categoryService.getcatogarys(selectedSchema).subscribe(
+      (result: any) => {
+        this.Categories = result;
+
+        if (callback) {
+          callback();
+        }
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+}
     
           
 

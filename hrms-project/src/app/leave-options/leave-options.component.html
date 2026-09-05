@@ -76,6 +76,13 @@
               </a>
             </li>
 
+            <li *ngIf="hasViewPermissionLeaveBalance">
+              <a routerLink="/main-sidebar/leave-options/leave-encashment" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                <mat-icon class="nav-icon">account_balance_wallet</mat-icon>
+                <span class="sidenav-opt">Leave-Encashment</span>
+              </a>
+            </li>
+
             <li *ngIf="hasViewPermissionLeaveCancel">
               <a routerLink="/main-sidebar/leave-options/immediate-rejection" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
                 <mat-icon class="nav-icon">cancel</mat-icon>

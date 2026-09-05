@@ -485,78 +485,6 @@ label{
 
 
 
-
-@media only screen and (max-width: 768px) {
-  table thead {
-    display: none;
-  }
-
-  table tbody {
-    display: block;
-  }
-
-  table tbody tr td {
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
-
-  table tbody tr {
-    margin-bottom: 20px;
-    display: block;
-    border: 1px solid #5c1e81;
-    background: #f9f9f9;
-    overflow: hidden;
-  }
-
-  table tbody td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    width: 80%;
-    display: flex;
-    background: #5c1e81;
-    color: #fff;
-    padding: 15px;
-    margin-inline-end: 10px;
-  }
-
-
-   ::ng-deep .modal-content{
-
-    width: 98% !important;
-    margin-top: 160px !important;
-  }
-
-
-  .close {
-  color: red;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  text-align: right;
-}
-
-.close:hover,
-.close:focus {
-  color: red;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-    .header_section{
-  background: white;
-  padding: 24px 18px 15px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  width: 100%;
-  border-bottom: solid 3px navy;
-}
-
-
-  }
-
-
-
-
   .disabled-form {
     opacity: 0.5;
     pointer-events: none;
@@ -678,26 +606,7 @@ label{
   box-shadow: 0 2px 8px rgba(0, 73, 118, 0.3);
 }
 
-/* Sticky columns for table view */
-.leave-types-table .sticky-left{
-    position: sticky;
-    left: 0;
-    background: #fff;
-    z-index: 3;
-}
 
-.leave-types-table .sticky-right{
-    position: sticky;
-    right: 0;
-    background: #fff;
-    z-index: 3;
-}
-
-.leave-types-table .sticky-left,
-.leave-types-table .sticky-right {
-  position: sticky;
-  z-index: 1;
-}
 
 /* Empty state */
 .leave-types-table .text-center.text-muted {
@@ -711,21 +620,6 @@ label{
   border-radius: 8px;
   padding: 0;
   overflow: hidden;
-}
-
-/* Responsive table view */
-@media only screen and (max-width: 1200px) {
-  .leave-types-table {
-    display: block;
-    overflow-x: auto;
-  }
-
-  .leave-types-table thead,
-  .leave-types-table tbody {
-    display: table;
-    width: 100%;
-    min-width: 900px;
-  }
 }
 
 /* Close button styling */
@@ -748,4 +642,433 @@ label{
 .close-btn:hover {
   background: #c82333;
   transform: scale(1.05);
+}
+
+/* =========================================================
+   RESPONSIVE LEAVE TYPES TABLE
+   ========================================================= */
+
+.table-container {
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Desktop table */
+.leave-types-table {
+  width: 100%;
+  min-width: 1400px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.leave-types-table th,
+.leave-types-table td {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Keep description controlled */
+.leave-types-table .description-text {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sticky columns */
+.leave-types-table .sticky-left {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: #fff;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.08);
+}
+
+.leave-types-table .sticky-right {
+  position: sticky;
+  right: 0;
+  z-index: 4;
+  background: #fff;
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Sticky header */
+.leave-types-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* Sticky header + sticky columns */
+.leave-types-table thead .sticky-left,
+.leave-types-table thead .sticky-right {
+  z-index: 6;
+  background: linear-gradient(135deg, #004976 0%, #0066a6 100%);
+  color: #fff;
+}
+
+/* Action column */
+.leave-types-table td.sticky-right {
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+.leave-types-table td.sticky-right button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   HEADER RESPONSIVE
+   ========================================================= */
+
+.button-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.button-group button {
+  margin-right: 0 !important;
+  flex: 0 0 auto;
+}
+
+.button-group > span:empty {
+  display: none;
+}
+
+.table-edit-btn {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px;
+  line-height: 32px;
+}
+
+.table-edit-btn mat-icon {
+  color: #fff !important;
+  font-size: 16px !important;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 991px) {
+
+  .comapny_section {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .header_section {
+    padding: 18px 15px;
+  }
+
+  .header_section .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .header_section .col-md-3,
+  .header_section .col-md-4,
+  .header_section .col-md-5 {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .header_section h1 {
+    margin-bottom: 10px;
+  }
+
+  .button-group {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .leave-types-table {
+    min-width: 1400px;
+  }
+
+  .modal-content {
+    width: 90%;
+    margin: 80px auto 30px auto;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .comapny_section {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+  }
+
+  .header_section {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .header_section h1 {
+    font-size: 15px;
+    margin-top: 5px;
+  }
+
+  /* Keep buttons on one line */
+  .button-group {
+    display: flex;
+    width: 100%;
+    gap: 5px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+
+  .button-group button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .button-group .header-btn-icon {
+    display: none;
+  }
+
+  /* Delete selection buttons */
+  .comapny_section > .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* =====================================================
+     LEAVE TYPES TABLE -> CARD VIEW
+     ===================================================== */
+
+  .leave-types-table {
+    min-width: 100% !important;
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .leave-types-table thead {
+    display: none;
+  }
+
+  .leave-types-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .leave-types-table tbody tr {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 0;
+    border: 1px solid #dfe6eb;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+
+  .leave-types-table tbody td {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 45px;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid #edf1f4;
+    white-space: normal;
+    text-align: left;
+    background: #fff !important;
+  }
+
+  .leave-types-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  /* Label */
+  .leave-types-table tbody td::before {
+    content: attr(data-label);
+    flex: 0 0 42%;
+    width: 42%;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    background: #004976;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    box-sizing: border-box;
+  }
+
+  /* Value */
+  .leave-types-table tbody td {
+    font-size: 13px;
+  }
+
+  .leave-types-table tbody td > * {
+    max-width: 58%;
+  }
+
+  /* No column */
+  .leave-types-table tbody td.sticky-left {
+    position: static;
+    box-shadow: none;
+    z-index: auto;
+  }
+
+  /* Action column */
+  .leave-types-table tbody td.sticky-right {
+    position: static;
+    right: auto;
+    min-width: 0;
+    box-shadow: none;
+    z-index: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .leave-types-table tbody td.sticky-right::before {
+    flex: 0 0 42%;
+    width: 42%;
+    margin: -8px 10px -8px -10px;
+    min-height: 100%;
+  }
+
+  .leave-types-table tbody td.sticky-right button {
+    margin: 0 !important;
+  }
+
+  .leave-types-table tbody td.sticky-right mat-checkbox {
+    margin-left: 5px;
+  }
+
+  /* Description */
+  .leave-types-table .description-text {
+    max-width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Status badges */
+  .leave-types-table .status-badge,
+  .leave-types-table .badge {
+    max-width: none;
+    white-space: nowrap;
+  }
+
+  /* Empty row */
+  .leave-types-table tbody tr td[colspan] {
+    display: block;
+    text-align: center;
+    padding: 25px 10px;
+  }
+
+  .leave-types-table tbody tr td[colspan]::before {
+    display: none;
+  }
+
+  /* Modal */
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-content {
+    width: 100% !important;
+    max-width: 100%;
+    margin: 60px auto 20px auto !important;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .tab_boddy {
+    padding: 10px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .header_section {
+    padding: 12px;
+  }
+
+  .header_section h1 {
+    font-size: 14px;
+  }
+
+  .button-group {
+    gap: 4px;
+  }
+
+  .button-group button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .leave-types-table tbody td::before {
+    flex: 0 0 38%;
+    width: 38%;
+    font-size: 11px;
+    padding: 7px;
+  }
+
+  .leave-types-table tbody td {
+    font-size: 12px;
+  }
+
+  .leave-types-table tbody td > * {
+    max-width: 62%;
+  }
+
+  .leave-types-table .description-text {
+    max-width: 60%;
+  }
+
+  .leave-types-table tbody td.sticky-right::before {
+    flex: 0 0 38%;
+    width: 38%;
+  }
+
+  .modal-content {
+    margin-top: 30px !important;
+    padding: 12px;
+  }
 }

@@ -94,27 +94,6 @@
                     
                 
 
-  
- 
-      <div class="col-md-6" >
-        <label>Select Branch
-            <span class="required-star">*</span>
-        </label>
-        <div class="custom-sel">
-          <select
-            class="form-control"
-            id="branch"
-            name="branch"
-            [(ngModel)]="branch"
-            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !branch}"
-          >
-          <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-
-          </select>
-        </div>
-        <div *ngIf="registerButtonClicked && !branch" class="error-message">Branch is required.</div>
-      </div>
-
         
       <div class="col-md-6">
         <label>Salary calculation type</label>
@@ -147,6 +126,217 @@
       </select>
     </div>
   </div>
+
+              <!-- FILTER SECTION -->
+            <div class="filter-card mb-4">
+              <div class="row g-3">
+                <!-- Branch -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>apartment</mat-icon>
+                      Branch
+                    </label>
+                <mat-form-field
+                  appearance="outline"
+                  class="modern-multi-select"
+                >
+  <mat-select
+    multiple
+    [(ngModel)]="branch"
+    [ngModelOptions]="{ standalone: true }">
+
+    <!-- Select All -->
+    <div class="px-2">
+      <mat-checkbox
+        class="select-all-checkbox"
+        [checked]="isAllBranchesSelected()"
+        [indeterminate]="isSomeBranchesSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllBranches()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+                        <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Branch"
+                        class="form-control"
+                        [(ngModel)]="branchsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let item of filterBranches()"
+      [value]="item.id">
+      {{ item.branch_name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Department -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>corporate_fare</mat-icon>
+                      Department
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="department"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDepartmentsSelected()"
+                          [indeterminate]="isSomeDepartmentsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDepartments()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                      <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Department"
+                        class="form-control"
+                        [(ngModel)]="departmentsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+                        <mat-option
+                          *ngFor="let item of filterDepartment()"
+                          [value]="item.id"
+                        >
+                          {{ item.dept_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Category -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>category</mat-icon>
+                      Category
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="category"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllCategoriesSelected()"
+                          [indeterminate]="isSomeCategoriesSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllCategories()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                                              <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Category"
+                        class="form-control"
+                        [(ngModel)]="categorysearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+                        <mat-option
+                          *ngFor="let item of filterCategory()"
+                          [value]="item.id"
+                        >
+                          {{ item.ctgry_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Designation -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>badge</mat-icon>
+                      Designation
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="designation"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDesignationsSelected()"
+                          [indeterminate]="isSomeDesignationsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDesignations()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                         <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Designation"
+                        class="form-control"
+                        [(ngModel)]="designationsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+                        <mat-option
+                          *ngFor="let item of filterDesignation()"
+                          [value]="item.id"
+                        >
+                          {{ item.desgntn_job_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
 
   <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
 
@@ -252,28 +442,7 @@
                   <form>
     <div class="row">
                     
-                
-
-  
- 
-      <div class="col-md-6" >
-        <label>Select Branch
-        </label>
-        <div class="custom-sel">
-          <select
-            class="form-control"
-            id="branch"
-            name="branch"
-            [(ngModel)]="editAsset.branch"
-            [ngModelOptions]="{ standalone: true }" [ngClass]="{'error-field': registerButtonClicked && !branch}"
-          >
-          <option *ngFor="let deparmentsec of branches" [value]="deparmentsec.id">{{ deparmentsec.branch_name }}</option>
-
-          </select>
-        </div>
-      </div>
-
-        
+            
       <div class="col-md-6">
         <label>Salary calculation type</label>
         <div class="custom-sel">
@@ -305,6 +474,217 @@
       </select>
     </div>
   </div>
+
+              <!-- FILTER SECTION -->
+            <div class="filter-card mb-4">
+              <div class="row g-3">
+                <!-- Branch -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>apartment</mat-icon>
+                      Branch
+                    </label>
+                <mat-form-field
+                  appearance="outline"
+                  class="modern-multi-select"
+                >
+  <mat-select
+    multiple
+    [(ngModel)]="editAsset.branch"
+    [ngModelOptions]="{ standalone: true }">
+
+    <!-- Select All -->
+    <div class="px-2">
+      <mat-checkbox
+        class="select-all-checkbox"
+        [checked]="isAllBranchesSelected()"
+        [indeterminate]="isSomeBranchesSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllBranches()">
+        Select All
+      </mat-checkbox>
+    </div>
+
+                        <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Branch"
+                        class="form-control"
+                        [(ngModel)]="branchsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+    <!-- Branch List -->
+    <mat-option
+      *ngFor="let item of filterBranches()"
+      [value]="item.id">
+      {{ item.branch_name }}
+    </mat-option>
+
+  </mat-select>
+</mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Department -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>corporate_fare</mat-icon>
+                      Department
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="editAsset.department"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDepartmentsSelected()"
+                          [indeterminate]="isSomeDepartmentsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDepartments()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                      <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Department"
+                        class="form-control"
+                        [(ngModel)]="departmentsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+                        <mat-option
+                          *ngFor="let item of filterDepartment()"
+                          [value]="item.id"
+                        >
+                          {{ item.dept_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Category -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>category</mat-icon>
+                      Category
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="editAsset.category"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllCategoriesSelected()"
+                          [indeterminate]="isSomeCategoriesSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllCategories()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                                              <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Category"
+                        class="form-control"
+                        [(ngModel)]="categorysearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+                        <mat-option
+                          *ngFor="let item of filterCategory()"
+                          [value]="item.id"
+                        >
+                          {{ item.ctgry_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Designation -->
+                <div class="col-md-3">
+                  <div class="filter-select-card">
+                    <label class="filter-title">
+                      <mat-icon>badge</mat-icon>
+                      Designation
+                    </label>
+
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="editAsset.designation"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <mat-checkbox
+                          class="select-all-checkbox"
+                          [checked]="isAllDesignationsSelected()"
+                          [indeterminate]="isSomeDesignationsSelected()"
+                          (click)="$event.stopPropagation()"
+                          (change)="toggleAllDesignations()"
+                        >
+                          Select All
+                        </mat-checkbox>
+
+                         <!-- Search -->
+                    <div class="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search Designation"
+                        class="form-control"
+                        [(ngModel)]="designationsearch"
+                        [ngModelOptions]="{ standalone: true }"
+                        (click)="$event.stopPropagation()"
+                         (keydown)="$event.stopPropagation()"
+                      />
+                    </div>
+
+                        <mat-option
+                          *ngFor="let item of filterDesignation()"
+                          [value]="item.id"
+                        >
+                          {{ item.desgntn_job_title }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
 
   <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
 
@@ -405,6 +785,9 @@
                     <th>Payday</th>
                     <th>Payroll start month</th>
                     <th>Branch</th>
+                    <th>Designation</th>
+                    <th>Department</th>
+                    <th>Category</th>
 
 
                     <th class="sticky-right">Actions</th>
@@ -426,6 +809,9 @@
                     <td data-label="Payday">{{ pol.payday }}</td>
                     <td data-label="Payroll Start Month">{{ pol.payroll_start_month }}</td>
                     <td data-label="Branch">{{ pol.branch }}</td>
+                    <td data-label="Designation">{{ pol.Designation }}</td>
+                    <td data-label="Department">{{ pol.Department }}</td>
+                    <td data-label="Category">{{ pol.Category }}</td>
 
 
                     <td class="sticky-right" data-label="Actions">
