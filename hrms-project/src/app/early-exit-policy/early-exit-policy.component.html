@@ -197,7 +197,7 @@
               </div>
             </div>
 
-            <!-- FILTER SECTION -->
+
               <!-- FILTER SECTION -->
             <div class="filter-card mb-4">
               <div class="row g-3">
@@ -407,7 +407,7 @@
               </div>
 
               <div class="employee-card">
-                                    <!-- Employee Search -->
+           <!-- Employee Search -->
 <div class="employee-search-bar">
   <mat-icon>search</mat-icon>
   <input 
@@ -441,7 +441,7 @@
 
                     <tbody>
                       <tr *ngFor="let emp of pagedEmployees">
-                        <td>
+                        <td data-label="Chechkbox">
                           <mat-checkbox
                             [(ngModel)]="emp.selected"
                             [ngModelOptions]="{ standalone: true }"
@@ -449,7 +449,7 @@
                           </mat-checkbox>
                         </td>
 
-                        <td>
+                        <td data-label="Employee">
                           <div class="employee-info">
                             <div class="employee-avatar-wrapper">
                               <img
@@ -479,25 +479,25 @@
                           </div>
                         </td>
 
-                        <td>
+                        <td data-label="Branch">
                           <span class="custom-badge blue">
                             {{ emp.emp_branch_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Department">
                           <span class="custom-badge green">
                             {{ emp.emp_dept_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Category">
                           <span class="custom-badge orange">
                             {{ emp.emp_ctgry_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Designation">
                           <span class="custom-badge purple">
                             {{ emp.emp_desgntn_id }}
                           </span>
@@ -927,7 +927,7 @@
 
                     <tbody>
                       <tr *ngFor="let emp of pagedEmployees">
-                        <td>
+                        <td data-label="CheckBox">
                           <mat-checkbox
                             [(ngModel)]="emp.selected"
                             [ngModelOptions]="{ standalone: true }"
@@ -935,7 +935,7 @@
                           </mat-checkbox>
                         </td>
 
-                        <td>
+                        <td data-label="Employee">
                           <div class="employee-info">
                             <div class="employee-avatar-wrapper">
                               <img
@@ -965,25 +965,25 @@
                           </div>
                         </td>
 
-                        <td>
+                        <td data-label="Branch">
                           <span class="custom-badge blue">
                             {{ emp.emp_branch_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Department">
                           <span class="custom-badge green">
                             {{ emp.emp_dept_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Category">
                           <span class="custom-badge orange">
                             {{ emp.emp_ctgry_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Designation">
                           <span class="custom-badge purple">
                             {{ emp.emp_desgntn_id }}
                           </span>
@@ -1073,33 +1073,33 @@
             <tr *ngFor="let docs of LoanTypes; let i = index">
              <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
 
-              <td>{{ docs.leave_days_to_deduct }}</td>
+              <td data-label="Leaves Days to Deduct">{{ docs.leave_days_to_deduct }}</td>
 
-              <td>{{ docs.occurrence_limit }}</td>
+              <td data-label="Occurrence Limit">{{ docs.occurrence_limit }}</td>
 
-              <td>{{ docs.penalty_type }}</td>
+              <td data-label="Penalty Type">{{ docs.penalty_type }}</td>
 
-              <td>{{ docs.attendance_policy }}</td>
+              <td data-label="Attendance Policy">{{ docs.attendance_policy }}</td>
 
-              <td>{{ docs.enabled }}</td>
+              <td data-label="Enabled">{{ docs.enabled }}</td>
 
-              <td>{{ docs.reset_monthly }}</td>
+              <td data-label="Reset Monthly">{{ docs.reset_monthly }}</td>
 
-              <td>
+              <td data-label="Branch">
                 {{ docs.branch?.length ? docs.branch.join(", ") : "Null" }}
               </td>
 
-              <td>
+              <td data-label="Department">
                 {{
                   docs.department?.length ? docs.department.join(", ") : "Null"
                 }}
               </td>
 
-              <td>
+              <td data-label="Category">
                 {{ docs.category?.length ? docs.category.join(", ") : "Null" }}
               </td>
 
-              <td>
+              <td data-label="Designation">
                 {{
                   docs.designation?.length
                     ? docs.designation.join(", ")
@@ -1107,7 +1107,7 @@
                 }}
               </td>
 
-              <td>
+              <td data-label="Employee">
                 {{ docs.employee?.length ? docs.employee.join(", ") : "Null" }}
               </td>
 

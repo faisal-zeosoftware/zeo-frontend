@@ -372,7 +372,7 @@
 
                     <tbody>
                       <tr *ngFor="let emp of pagedEmployees">
-                        <td>
+                        <td data-label="Checkbox">
                           <mat-checkbox
                             [(ngModel)]="emp.selected"
                             [ngModelOptions]="{ standalone: true }"
@@ -380,7 +380,7 @@
                           </mat-checkbox>
                         </td>
 
-                        <td>
+                        <td data-label="Employee">
                           <div class="employee-info">
                             <div class="employee-avatar-wrapper">
                               <img
@@ -410,25 +410,25 @@
                           </div>
                         </td>
 
-                        <td>
+                        <td data-label="Branch">
                           <span class="custom-badge blue">
                             {{ emp.emp_branch_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Department">
                           <span class="custom-badge green">
                             {{ emp.emp_dept_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Category">
                           <span class="custom-badge orange">
                             {{ emp.emp_ctgry_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Designation">
                           <span class="custom-badge purple">
                             {{ emp.emp_desgntn_id }}
                           </span>
@@ -815,7 +815,7 @@
 
                     <tbody>
                       <tr *ngFor="let emp of pagedEmployees">
-                        <td>
+                        <td data-label="CheckBox">
                           <mat-checkbox
                             [(ngModel)]="emp.selected"
                             [ngModelOptions]="{ standalone: true }"
@@ -823,7 +823,7 @@
                           </mat-checkbox>
                         </td>
 
-                        <td>
+                        <td data-label="Employee">
                           <div class="employee-info">
                             <div class="employee-avatar-wrapper">
                               <img
@@ -853,25 +853,25 @@
                           </div>
                         </td>
 
-                        <td>
+                        <td data-label="Branch">
                           <span class="custom-badge blue">
                             {{ emp.emp_branch_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Department">
                           <span class="custom-badge green">
                             {{ emp.emp_dept_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Category">
                           <span class="custom-badge orange">
                             {{ emp.emp_ctgry_id }}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="Designation">
                           <span class="custom-badge purple">
                             {{ emp.emp_desgntn_id }}
                           </span>
@@ -966,27 +966,27 @@
 <tr *ngFor="let docs of LoanTypes; let i = index">
   <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
 
-  <td>{{ docs.name }}</td>
+  <td data-label="Name">{{ docs.name }}</td>
 
-  <td>{{ docs.branch?.length ? docs.branch.join(', ') : 'Null' }}</td>
+  <td data-label="Branch">{{ docs.branch?.length ? docs.branch.join(', ') : 'Null' }}</td>
 
-  <td>{{ docs.department?.length ? docs.department.join(', ') : 'Null' }}</td>
+  <td data-label="Department">{{ docs.department?.length ? docs.department.join(', ') : 'Null' }}</td>
 
-  <td>{{ docs.category?.length ? docs.category.join(', ') : 'Null' }}</td>
+  <td data-label="Category">{{ docs.category?.length ? docs.category.join(', ') : 'Null' }}</td>
 
-  <td>{{ docs.designation?.length ? docs.designation.join(', ') : 'Null' }}</td>
+  <td data-label="Designation">{{ docs.designation?.length ? docs.designation.join(', ') : 'Null' }}</td>
 
-  <td>{{ docs.employee?.length ? docs.employee.join(', ') : 'Null' }}</td>
+  <td data-label="Employee">{{ docs.employee?.length ? docs.employee.join(', ') : 'Null' }}</td>
 
-  <td>{{ docs.enable_geofencing ? 'Yes' : 'No' }}</td>
+  <td data-label="GeoFencing">{{ docs.enable_geofencing ? 'Yes' : 'No' }}</td>
 
-  <td>{{ docs.enable_face_recognition ? 'Yes' : 'No' }}</td>
+  <td data-label="Face Recognition">{{ docs.enable_face_recognition ? 'Yes' : 'No' }}</td>
 
-  <td>{{ docs.enable_barcode_verification ? 'Yes' : 'No' }}</td>
+  <td data-label="Barcode Verification">{{ docs.enable_barcode_verification ? 'Yes' : 'No' }}</td>
 
-  <td>{{ docs.enable_photo_capture ? 'Yes' : 'No' }}</td>
+  <td data-label="Photo Capture">{{ docs.enable_photo_capture ? 'Yes' : 'No' }}</td>
 
-  <td>{{ docs.is_active ? 'Active' : 'Inactive' }}</td>
+  <td data-label="Is Active">{{ docs.is_active ? 'Active' : 'Inactive' }}</td>
 
   <td class="sticky-right" data-label="Actions">
     <button

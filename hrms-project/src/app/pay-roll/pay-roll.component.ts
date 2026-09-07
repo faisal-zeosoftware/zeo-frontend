@@ -709,63 +709,32 @@ if (this.userId !== null) {
 requestPayRoll(): void {
   this.registerButtonClicked = true;
 
-  const formData = new FormData();
-  formData.append('name', this.name);
-  formData.append('year', String(this.year));
-  formData.append('month', String(this.month));
-  formData.append('payment_date', this.payment_date);
-  formData.append('document_number', String(this.document_number ?? ''));
-
-  // ✅ Send arrays properly — append each ID individually
-  // Branch
-  if (this.selectedBranches.length > 0) {
-    this.selectedBranches.forEach(id => {
-      formData.append('branch', String(id));
-    });
-  } else {
-    formData.append('branch', ''); // or omit if backend handles empty
+  // Frontend validation
+  if (!this.name || !this.year || !this.month) {
+    alert('Please fill in all required fields.');
+    return;
   }
 
-  // Department
-  if (this.selectedDepartments.length > 0) {
-    this.selectedDepartments.forEach(id => {
-      formData.append('department', String(id));
-    });
-  } else {
-    formData.append('department', '');
-  }
+  const selectedEmployeeIds = this.filteredEmployees
+    .filter(e => e.selected)
+    .map(e => Number(e.id));  // Ensure integer
 
-  // Category
-  if (this.selectedCategories.length > 0) {
-    this.selectedCategories.forEach(id => {
-      formData.append('category', String(id));
-    });
-  } else {
-    formData.append('category', '');
-  }
-
-  // Designation
-  if (this.selectedDesignations.length > 0) {
-    this.selectedDesignations.forEach(id => {
-      formData.append('designation', String(id));
-    });
-  } else {
-    formData.append('designation', '');
-  }
-
-  // Employees (selected ones)
-  const selectedEmployees = this.filteredEmployees.filter(e => e.selected);
-  if (selectedEmployees.length > 0) {
-    selectedEmployees.forEach(emp => {
-      formData.append('employees', String(emp.id));
-    });
-  } else {
-    formData.append('employees', '');
-  }
+  const payload = {
+    name: this.name,
+    year: Number(this.year),
+    month: Number(this.month),
+    payment_date: this.payment_date || null,
+    document_number: this.document_number || null,
+    branch: this.selectedBranches.map(id => Number(id)),    
+    department: this.selectedDepartments.map(id => Number(id)), 
+    category: this.selectedCategories.map(id => Number(id)),     
+    designation: this.selectedDesignations.map(id => Number(id)), 
+    employees: selectedEmployeeIds,                                
+  };
 
   this.isLoading = true;
 
-  this.leaveService.requestPayroll(formData).subscribe({
+  this.leaveService.requestPayroll(payload).subscribe({
     next: (response) => {
       this.isLoading = false;
       console.log('Registration successful', response);
@@ -775,8 +744,8 @@ requestPayRoll(): void {
     error: (error) => {
       this.isLoading = false;
       console.error('Added failed', error);
-
-      let errorMessage = 'An unexpected error occurred. Please try again.';
+      
+            let errorMessage = 'An unexpected error occurred. Please try again.';
       if (error.error) {
         if (typeof error.error === 'string') {
           errorMessage = error.error;

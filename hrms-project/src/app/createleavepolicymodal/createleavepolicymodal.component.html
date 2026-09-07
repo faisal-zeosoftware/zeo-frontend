@@ -745,7 +745,7 @@
 
                                                 <tr *ngFor="let emp of pagedEmployees">
 
-                                                    <td>
+                                                    <td data-label="Checkbox">
 
                                                         <mat-checkbox [(ngModel)]="emp.selected"
                                                             [ngModelOptions]="{standalone:true}">
@@ -753,7 +753,7 @@
 
                                                     </td>
 
-                                                    <td>
+                                                    <td data-label="Employee">
 
                                                         <div class="employee-info">
 
@@ -787,25 +787,25 @@
                                                         </div>
                                                     </td>
 
-                                                    <td>
+                                                    <td data-label="Branch">
                                                         <span class="custom-badge blue">
                                                             {{ emp.emp_branch_id }}
                                                         </span>
                                                     </td>
 
-                                                    <td>
+                                                    <td data-label="Department">
                                                         <span class="custom-badge green">
                                                             {{ emp.emp_dept_id }}
                                                         </span>
                                                     </td>
 
-                                                    <td>
+                                                    <td data-label="Category">
                                                         <span class="custom-badge orange">
                                                             {{ emp.emp_ctgry_id }}
                                                         </span>
                                                     </td>
 
-                                                    <td>
+                                                    <td data-label="Designation">
                                                         <span class="custom-badge purple">
                                                             {{ emp.emp_desgntn_id }}
                                                         </span>

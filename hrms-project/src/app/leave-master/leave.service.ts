@@ -1188,22 +1188,44 @@ generateAttendanceReport(schema: string, data: any): Observable<any> {
   }
 
 
-  requestPayroll(formData: FormData): Observable<any> {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema) {
-      console.error('No schema selected.');
-      return throwError('No schema selected.');
-    }
+  // requestPayroll(formData: FormData): Observable<any> {
+  //   const selectedSchema = localStorage.getItem('selectedSchema');
+  //   if (!selectedSchema) {
+  //     console.error('No schema selected.');
+  //     return throwError('No schema selected.');
+  //   }
   
-    const apiUrl = `${this.apiUrl}/payroll/api/PayrollRun/?schema=${selectedSchema}`;
+  //   const apiUrl = `${this.apiUrl}/payroll/api/PayrollRun/?schema=${selectedSchema}`;
   
-    return this.http.post(apiUrl, formData).pipe(
-      catchError((error) => {
-        console.error('Error during leave type registration:', error);
-        return throwError(error);
-      })
-    );
+  //   return this.http.post(apiUrl, formData).pipe(
+  //     catchError((error) => {
+  //       console.error('Error during leave type registration:', error);
+  //       return throwError(error);
+  //     })
+  //   );
+  // }
+
+
+requestPayroll(payload: any): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return throwError(() => new Error('No schema selected.'));
   }
+
+  const apiUrl = `${this.apiUrl}/payroll/api/PayrollRun/?schema=${selectedSchema}`;
+
+  return this.http.post(apiUrl, payload, {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  }).pipe(
+    catchError((error) => {
+      console.error('Error during payroll creation:', error);
+      return throwError(() => error);
+    })
+  );
+}
 
 
 

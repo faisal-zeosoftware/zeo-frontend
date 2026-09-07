@@ -1,11 +1,12 @@
+/* ============================================================
+   ATTENDANCE MARKING — FULL STYLESHEET (deduped + responsive)
+   ============================================================ */
 
-.comapny_section{
+.comapny_section {
+  margin-left: 25px;
+}
 
-    margin-left: 25px;
-    
-  }
-
-.header_section{
+.header_section {
   background: white;
   padding: 24px 20px 15px 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
@@ -13,28 +14,25 @@
   border-bottom: solid 3px navy;
 }
 
-.header_section h1{
+.header_section h1 {
   font-size: 16px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 10px;
-
 }
 
-
-.com_list{
+.com_list {
   padding: 20px;
   width: 100%;
   background: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   border-top: solid 3px #4f46e5;
   margin-bottom: 20px;
-
-
+  box-sizing: border-box;
 }
 
-.com_list h2{
+.com_list h2 {
   font-size: 16px;
   font-weight: 500;
   text-transform: uppercase;
@@ -42,7 +40,7 @@
   margin-top: 10px;
 }
 
- .close-btn {
+.close-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -57,472 +55,222 @@
   border: 1px solid #dee2e6;
 }
 
-
-table thead th {
-  color: #ffffff;
-  background: #004976;
-  padding: 15px;
-  border: 1px solid #ebebec;
-  font-weight: 500;
-}
-
-table tr {
-  background: #ffffff;
-}
-
-table tr td {
-  border: 1px solid #e6edf1;
-  padding: 15px;
-}
-
-@media only screen and (max-width: 640px) {
-  table thead {
-    display: none;
-  }
-
-  table tbody {
-    display: block;
-  }
-
-  table tbody tr td {
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
-
-  table tbody tr {
-    margin-bottom: 20px;
-    display: block;
-    border: 1px solid #004976;
-    background: #f9f9f9;
-    overflow: hidden;
-  }
-
-  table tbody td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    width: 30%;
-    display: flex;
-    background: #004976;
-    color: #fff;
-    padding: 15px;
-    margin-inline-end: 10px;
-  }
-}
-
-
-
-
-p{
+p {
   margin-bottom: 0px;
 }
 
-
+/* ---------------- mat-select / form control skinning ---------------- */
 .form-control-wrapper {
   display: flex;
   flex-direction: column;
 }
 
-::ng-deep .form-control-wrapper mat-form-field {
-  width: 100%;
-}
+::ng-deep .form-control-wrapper mat-form-field { width: 100%; }
+::ng-deep .form-control-wrapper .mat-form-field-wrapper { padding: 0; margin: 0; }
+::ng-deep .form-control-wrapper .mat-form-field-flex { background: none; border: none; box-shadow: none; }
+::ng-deep .form-control-wrapper .mat-form-field-underline { display: none; }
+::ng-deep .form-control-wrapper .mat-select { padding: 0; border: none; box-shadow: none; height: auto; line-height: 1.5; }
+::ng-deep .form-control-wrapper .mat-select-trigger { height: auto; padding: 0; }
+::ng-deep .form-control-wrapper .mat-select-value-text { padding: 0; margin: 0; }
+::ng-deep .form-control-wrapper .mat-form-field-infix { padding: 0; border: none; }
+::ng-deep .form-control-wrapper .mat-select-placeholder { transform: translateY(-50%); top: 50%; }
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix { margin-top: -14px; }
+::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled) { background-color: white; }
+::ng-deep .form-control-wrapper .mdc-text-field { padding: 0px; }
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible { outline: none; }
+input:focus-visible { outline: none; }
+.mat-select:focus-visible { outline: none; }
+::ng-deep .form-control-wrapper:focus-visible { outline: none !important; }
+::ng-deep .mat-select:focus-visible { outline: none; }
+::ng-deep .mat-select:focus-visible .mat-select-value { outline: none; }
+::ng-deep .mdc-text-field--no-label { border: 1px solid #ced4da; }
+::ng-deep .mat-mdc-form-field-flex { padding: 4px 7px; height: 35px; }
 
-::ng-deep .form-control-wrapper .mat-form-field-wrapper {
-  padding: 0;
-  margin: 0;
-}
+.check-box-selection-sec { padding: 0px !important; }
 
-::ng-deep .form-control-wrapper .mat-form-field-flex {
-  background: none;
-  border: none;
-  box-shadow: none;
-}
+.tab_boddy { padding: 30px; }
+.tab_back { background: white; }
+.header-btn-icon { vertical-align: middle; }
+.end_section { padding: 10px; background: whitesmoke; }
 
-::ng-deep .form-control-wrapper .mat-form-field-underline {
-  display: none;
-}
-
-::ng-deep .form-control-wrapper .mat-select {
-  padding: 0;
-  border: none;
-  box-shadow: none;
-  height: auto;
-  line-height: 1.5;
-}
-
-::ng-deep .form-control-wrapper .mat-select-trigger {
-  height: auto;
-  padding: 0;
-}
-
-::ng-deep .form-control-wrapper .mat-select-value-text {
-  padding: 0;
-  margin: 0;
-}
-
-::ng-deep .form-control-wrapper .mat-form-field-infix {
-  padding: 0;
-  border: none;
-}
-
-::ng-deep .form-control-wrapper .mat-select-placeholder {
-  transform: translateY(-50%);
-  top: 50%;
-}
-
-
-::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
-  margin-top: -14px;
-}
-
-::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
-
-background-color: white;
-}
-
-::ng-deep .form-control-wrapper .mdc-text-field{
-padding: 0px;
-}
-
-::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
-outline: none-webkit-focus-ring-color auto 0px;
-
-
-}
-
-
-/* Remove :focus-visible style from all input elements */
-input:focus-visible {
-outline: none;
-}
-
-/* Remove :focus-visible style from mat-select */
-.mat-select:focus-visible {
-outline: none;
-}
-
-/* Use !important to ensure the outline is removed */
-::ng-deep .form-control-wrapper:focus-visible {
-outline: none !important;
-}
-
-
-::ng-deep .mat-select:focus-visible {
-outline: none;
-}
-
-/* Optionally, you can also override other styles */
-::ng-deep .mat-select:focus-visible .mat-select-value {
-outline: none;
-}
-
-::ng-deep .mdc-text-field--no-label{
-border:1px solid #ced4da;
-}
-
-::ng-deep .mat-mdc-form-field-flex {
-padding: 4px 7px;
-height: 35px;
-}
-
-.check-box-selection-sec{
-  padding: 0px !important;
-}
-
-
-
-
-.tab_boddy{
-  padding: 30px;
-}
-
-.tab_back{
-  background: white;
-}
-
-.header-btn-icon{
-  vertical-align: middle;
-}
-
-.end_section{
-  padding: 10px;
-  background: whitesmoke;
-}
-
-
-
-
+/* ---------------- calculator (kept, made responsive) ---------------- */
 .calculator-container {
-display: flex;
-justify-content: center;
-align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .calculator {
-width: 400px;
-background: #fff;
-padding: 20px;
-border-radius: 10px;
-box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  max-width: 100%;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
 }
 
 .display {
-width: 100%;
-height: auto;
-text-align: left;
-/* font-size: 20px; */
-border: none;
-padding: 10px;
-margin-bottom: 15px;
-background: #e9ecef;
-border-radius: 5px;
+  width: 100%;
+  height: auto;
+  text-align: left;
+  border: none;
+  padding: 10px;
+  margin-bottom: 15px;
+  background: #e9ecef;
+  border-radius: 5px;
+  box-sizing: border-box;
 }
 
+.component-btn { background-color: #007bff; color: white; }
+.operator { background-color: #6c757d; color: white; }
+.operator:hover, .component-btn:hover { opacity: 0.8; }
 
-.component-btn {
-background-color: #007bff;
-color: white;
+/* ---------------- generic table header casing ---------------- */
+table th { text-transform: capitalize; }
+table thead th { white-space: nowrap; }
+
+.email_placeholdername {
+  background: white;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  height: 200px;
+  overflow-y: scroll;
 }
 
-.operator {
-background-color: #6c757d;
-color: white;
-}
+.on_by_placeholders { background: whitesmoke; padding: 10px; margin-bottom: 10px; }
+.on_by_placeholders h4 { font-size: 12px; text-align: center; }
+.emailtep_det_ { background: whitesmoke; padding: 20px; margin-bottom: 20px; }
 
-.operator:hover, .component-btn:hover {
-opacity: 0.8;
-}
-
-
-
-table th{
-text-transform: capitalize;
-}
-
-
-.email_placeholdername{
-/* margin-top: 50px; */
-background: white;
-padding: 20px;
-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-height: 200px;
-overflow-y: scroll;
-
-}
-
-.on_by_placeholders{
-background: whitesmoke;
-padding: 10px;
-margin-bottom: 10px;
-
-
-}
-
-.on_by_placeholders h4{
-font-size: 12px;
-text-align: center;
-}
-
-.emailtep_det_{
-background: whitesmoke;
-padding: 20px;
-margin-bottom: 20px;
-}
-
-
-
-
-/* Add your CSS styles here */
+/* ---------------- modal ---------------- */
 .modal {
-display: block; /* Hidden by default */
-position: fixed; /* Stay in place */
-z-index: 1; /* Sit on top */
-margin-left: auto;
-margin-right: auto;
-top: 0;
-width: 100%; /* Full width */
-height: 100%; /* Full height */
-overflow: auto; /* Enable scroll if needed */
-background-color: rgb(0,0,0); /* Fallback color */
-background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
 }
 
 .modal-content {
-background-color: #fefefe;
-padding: 20px;
-border: 1px solid #888;
-width: 60%; /* Could be more or less, depending on screen size */
-margin-right: auto;
-margin-left: auto;
-margin-top: 100px;
-height: auto;
-left: 7%;
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 60%;
+  max-width: 700px;
+  margin: 100px auto 0 auto;
+  height: auto;
+  box-sizing: border-box;
 }
 
 .close {
-color: #aaa;
-float: right;
-font-size: 28px;
-font-weight: bold;
-text-align: right;
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  text-align: right;
 }
 
-.close:hover,
-.close:focus {
-color: red;
-text-decoration: none;
-cursor: pointer;
+.close:hover, .close:focus {
+  color: red;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.modal h2{
-
-font-size: 16px;
-text-transform: capitalize;
-font-weight: 600;
-font-family: math;
+.modal h2 {
+  font-size: 16px;
+  text-transform: capitalize;
+  font-weight: 600;
+  font-family: math;
 }
 
-
-.vn-wisteria a{
-background-color:#8e44ad;
-  display:inline-block;
-  position:relative;
-  margin:30px 5px;
-  padding:15px 10px 12px 50px;
-  color:#fff;
-  transition:all 0.4s ease;
-  border-radius:3px;
+/* ---------------- vn-wisteria buttons ---------------- */
+.vn-wisteria a {
+  background-color: #8e44ad;
+  display: inline-block;
+  position: relative;
+  margin: 30px 5px;
+  padding: 15px 10px 12px 50px;
+  color: #fff;
+  transition: all 0.4s ease;
+  border-radius: 3px;
   font-size: 12px;
   width: 100%;
   white-space: nowrap;
+  box-sizing: border-box;
 }
-.vn-wisteria a:before{
-  content:"\f019";
-  font-family:fontAwesome;
-  position:absolute;
+
+.vn-wisteria a:before {
+  content: "\f019";
+  font-family: fontAwesome;
+  position: absolute;
   font-style: normal;
   font-weight: normal;
   text-decoration: inherit;
-  font-size:14px;
-  border-radius:0 20px 0 0;
-  color:#000;
-  background-color:#fff;
-  opacity:0.3;
-  padding:15px;
-  top:0;
-  left:0;
-}
-.vn-wisteria a:hover{
-  background:#7f8c8d
+  font-size: 14px;
+  border-radius: 0 20px 0 0;
+  color: #000;
+  background-color: #fff;
+  opacity: 0.3;
+  padding: 15px;
+  top: 0;
+  left: 0;
 }
 
-.vn-green a{
-    background-color: #27ae60;
-}
+.vn-wisteria a:hover { background: #7f8c8d; }
+.vn-green a { background-color: #27ae60; }
+.vn-blue a { background-color: #2980b9; }
 
-.vn-blue a{
-    background-color:#2980b9;
-}
-
-
-
-
+/* ---------------- dropdown (custom) ---------------- */
 .dropdown-container {
-position: relative;
-font-family: Arial, sans-serif;
-margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  position: relative;
+  font-family: Arial, sans-serif;
+  margin-bottom: 10px;
 }
 
 .dropdown-header {
-padding: 10px;
-background-color: #f8f9fa;
-cursor: pointer;
-border: 1px solid #ccc;
-border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.arrow {
-float: right;
-transition: transform 0.3s ease;
-}
-
-.arrow.open {
-transform: rotate(180deg);
-}
+.arrow { float: right; transition: transform 0.3s ease; }
+.arrow.open { transform: rotate(180deg); }
 
 .dropdown-options {
-position: absolute;
-top: 100%;
-left: 0;
-right: 0;
-background: white;
-border: 1px solid #ccc;
-z-index: 1000;
-max-height: 200px;
-overflow-y: auto;
-list-style-type: none;
-padding: 0px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #fff;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
-.dropdown-option {
-padding: 10px;
-cursor: pointer;
-}
+.dropdown-option { padding: 6px 10px; cursor: pointer; font-size: 12px; }
+.dropdown-option:hover { background-color: #f1f1f1; }
 
-.dropdown-option:hover {
-background-color: #eee;
-}
-
-
-
-
-
-.dropdown-container {
-border: 1px solid #ccc;
-border-radius: 4px;
-padding: 6px;
-cursor: pointer;
-position: relative;
-}
-
-.dropdown-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
-
-.dropdown-options {
-list-style: none;
-padding: 0;
-margin: 0;
-border: 1px solid #ccc;
-position: absolute;
-width: 100%;
-background: #fff;
-z-index: 1000;
-max-height: 150px;
-overflow-y: auto;
-}
-
-.dropdown-option {
-padding: 6px 10px;
-cursor: pointer;
-}
-
-.dropdown-option:hover {
-background-color: #f1f1f1;
-}
-
-.dropdown-option{
-font-size: 12px;
-}
-
-
-table thead th{
-white-space: nowrap;
-}
-
-
+/* ============================================================
+   PUNCHING TABLE (desktop)
+   ============================================================ */
 .punching-table {
   width: 100%;
   border-collapse: collapse;
@@ -530,10 +278,41 @@ white-space: nowrap;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  table-layout: auto;
+}
+
+.punching-table thead th {
+  color: #ffffff;
+  background: #004976;
+  padding: 15px;
+  border: 1px solid #ebebec;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.punching-table tbody tr {
+  background: #ffffff;
+}
+
+.punching-table tbody td {
+  border: 1px solid #e6edf1;
+  padding: 15px;
+}
+
+.punching-table .expand-col {
+  width: 48px;
+}
+
+.expand-btn {
+  background: whitesmoke;
+}
+
+.main-row {
+  cursor: pointer;
 }
 
 .main-row:hover {
-  background-color: #f8faff;
+  background-color: #f1f8ff !important;
 }
 
 .shift-badge {
@@ -546,7 +325,6 @@ white-space: nowrap;
   white-space: nowrap;
 }
 
-/* Log Detail Styling */
 .log-details-row {
   background-color: #fdfdfe;
 }
@@ -557,10 +335,12 @@ white-space: nowrap;
   margin: 10px;
 }
 
+/* ---------------- inner log table (desktop) ---------------- */
 .inner-log-table {
   width: 100%;
   margin-top: 10px;
   border: 1px solid #edf2f7;
+  border-collapse: collapse;
 }
 
 .inner-log-table th {
@@ -568,7 +348,16 @@ white-space: nowrap;
   color: #718096;
   font-size: 11px;
   text-transform: uppercase;
+  padding: 10px;
+  text-align: left;
 }
+
+.inner-log-table td {
+  padding: 10px;
+  border-top: 1px solid #edf2f7;
+}
+
+.log-type-icon { font-size: 14px; vertical-align: middle; }
 
 .badge-method {
   background: #edf2f7;
@@ -577,134 +366,23 @@ white-space: nowrap;
   color: black;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
+.animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-
-/* multiple checkox style here */
-  
-  .form-control-wrapper {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  ::ng-deep .form-control-wrapper mat-form-field {
-    width: 100%;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-wrapper {
-    padding: 0;
-    margin: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-flex {
-    background: none;
-    border: none;
-    box-shadow: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-underline {
-    display: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select {
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    height: auto;
-    line-height: 1.5;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-trigger {
-    height: auto;
-    padding: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-value-text {
-    padding: 0;
-    margin: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-infix {
-    padding: 0;
-    border: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-placeholder {
-    transform: translateY(-50%);
-    top: 50%;
-  }
-
-
-  ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
-    margin-top: -14px;
-}
-
-::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
-
-  background-color: white;
-}
-
-::ng-deep .form-control-wrapper .mdc-text-field{
-  padding: 0px;
-}
-
-::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
-  outline: none-webkit-focus-ring-color auto 0px;
-  
-
-}
-
-
-/* Remove :focus-visible style from all input elements */
-input:focus-visible {
-  outline: none;
-}
-
-/* Remove :focus-visible style from mat-select */
-.mat-select:focus-visible {
-  outline: none;
-}
-
-/* Use !important to ensure the outline is removed */
-::ng-deep .form-control-wrapper:focus-visible {
-  outline: none !important;
-}
-
-
-::ng-deep .mat-select:focus-visible {
-  outline: none;
-}
-
-/* Optionally, you can also override other styles */
-::ng-deep .mat-select:focus-visible .mat-select-value {
-  outline: none;
-}
-
-::ng-deep .mdc-text-field--no-label{
-  border:1px solid #ced4da;
-}
-
-::ng-deep .mat-mdc-form-field-flex {
-  padding: 4px 7px;
-  height: 35px;
-}
-
-
-
-
+/* ============================================================
+   FACE DASHBOARD
+   ============================================================ */
 .thumb-lg {
-  width: 150px;
-  height: 150px;
+  width: 220px;
+  height: 220px;
   object-fit: cover;
   border-radius: 8px;
   border: 2px solid #eee;
+  max-width: 100%;
 }
 
 .dashboard-card {
@@ -723,27 +401,202 @@ input:focus-visible {
   display: inline-block;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in-out;
+.face-dashboard-container .d-flex {
+  flex-wrap: wrap;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+.photo-box {
+  flex-shrink: 0;
 }
 
-.main-row:hover {
-  background-color: #f1f8ff !important;
+/* ============================================================
+   RESPONSIVE — TABLET (<=768px)
+   ============================================================ */
+@media only screen and (max-width: 768px) {
+  .modal-content {
+    width: 92%;
+    margin-top: 40px;
+    padding: 15px;
+  }
+
+  .vn-wisteria a {
+    padding: 15px 10px 12px 40px;
+    font-size: 11px;
+  }
+
+  .dashboard-card .col-md-6.border-end {
+    border-right: none !important;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .face-dashboard-container .d-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .photo-box {
+    margin-top: 12px;
+    margin-left: 0 !important;
+    align-self: center;
+  }
+
+  .thumb-lg {
+    width: 180px;
+    height: 180px;
+  }
 }
 
-/* Add this to your CSS */
-.log-details-row {
-  display: table-row !important;
-  background-color: #f9f9f9;
+/* ============================================================
+   RESPONSIVE — MOBILE (<=640px)
+   Card-style layout, scoped ONLY to .punching-table and
+   .inner-log-table (not every <table> on the page).
+   ============================================================ */
+@media only screen and (max-width: 640px) {
+
+  /* ---- outer punching table ---- */
+  .punching-table thead {
+    display: none;
+  }
+
+  .punching-table tbody {
+    display: block;
+  }
+
+  .punching-table tbody tr.main-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    border: 1px solid #004976;
+    border-radius: 6px;
+    background: #f9f9f9;
+    overflow: hidden;
+  }
+
+  .punching-table tbody tr.main-row td {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid #e6edf1;
+  }
+
+  .punching-table tbody tr.main-row td:last-child {
+    border-bottom: none;
+  }
+
+  .punching-table tbody tr.main-row td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 40%;
+    flex-shrink: 0;
+    color: #f4fbff;
+    padding-right: 10px;
+  }
+
+  /* expand button column has no label — show it full width, no ::before */
+  .punching-table tbody tr.main-row td.expand-col {
+    background: #eef2ff;
+    justify-content: flex-end;
+  }
+
+  .punching-table tbody tr.main-row td.expand-col::before {
+    content: none;
+  }
+
+  /* log details row: plain block, not a card */
+  .punching-table tbody tr.log-details-row {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .punching-table tbody tr.log-details-row td {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+  }
+
+  .log-container {
+    padding: 12px 15px;
+  }
+
+  /* ---- inner log table -> its own mobile card layout ---- */
+  .inner-log-table thead {
+    display: none;
+  }
+
+  .inner-log-table tbody {
+    display: block;
+  }
+
+  .inner-log-table tbody tr {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    border: 1px solid #edf2f7;
+    border-radius: 4px;
+    background: #fff;
+  }
+
+  .inner-log-table tbody tr.no-logs-row {
+    display: block;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .inner-log-table tbody td {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-bottom: 1px solid #f1f1f1;
+  }
+
+  .inner-log-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .inner-log-table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 45%;
+    flex-shrink: 0;
+    color: #f2f2f2;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding-right: 8px;
+  }
 }
 
-.log-container {
-  display: block;
-  width: 100%;
-  padding: 15px;
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (<=480px)
+   ============================================================ */
+@media only screen and (max-width: 480px) {
+  .comapny_section {
+    margin-left: 0;
+  }
+
+  .header_section,
+  .com_list {
+    padding: 15px 12px;
+  }
+
+  .header_section .col-md-3,
+  .header_section .col-md-5 {
+    text-align: left;
+  }
+
+  .header_section .pull-right {
+    float: none !important;
+    margin-top: 10px;
+  }
+
+  .thumb-lg {
+    width: 140px;
+    height: 140px;
+  }
 }
