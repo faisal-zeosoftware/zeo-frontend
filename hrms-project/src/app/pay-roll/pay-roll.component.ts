@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -11,6 +11,8 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import {combineLatest, forkJoin, Subscription } from 'rxjs';
 import { DepartmentServiceService } from '../department-master/department-service.service';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 
 
 @Component({
@@ -73,28 +75,74 @@ export class PayRollComponent {
   hasViewPermission: boolean =false;
   hasEditPermission: boolean = false;
 
-  userId: number | null | undefined;
+userId: number | null | undefined;
 userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
 
 employees: any[] = [];
 Salarycomponent: any[] = [];
-
 filteredEmployees: any[] = [];
 
-Categories: any[] = [];
+
 Payrolls: any[] = [];
 PayrollSettings: any[] = [];
 PaySlips: any[] = [];
 PaySlipsComponent: any[] = [];
-
 PaySlipsConfrimed: any[] = [];
 
 
 
 Branches: any[] = [];
 Departments: any[] = [];
+Categories: any[] = [];
+Designations: any[] = [];
+
+
+// ============================================================
+// FILTER SELECTIONS
+// ============================================================
+
+selectedBranches: number[] = [];
+selectedDepartments: number[] = [];
+selectedCategories: number[] = [];
+selectedDesignations: number[] = [];
+
+
+// ============================================================
+// FILTER SEARCH
+// ============================================================
+
+branchsearch: string = '';
+departmentsearch: string = '';
+categorysearch: string = '';
+designationsearch: string = '';
+
+
+// ============================================================
+// EMPLOYEE FILTER / PAGINATION
+// ============================================================
+
+allEmployeesSelected: boolean = false;
+
+SearchEmployee: string = '';
+
+pagedEmployees: any[] = [];
+
+currentPage: number = 1;
+pageSize: number = 10;
+totalPages: number = 1;
+pageNumbers: number[] = [];
+
+
+// ============================================================
+// MATERIAL SELECT REFERENCES
+// ============================================================
+
+@ViewChild('branchSelect') branchSelect!: MatSelect;
+@ViewChild('deptSelect') deptSelect!: MatSelect;
+@ViewChild('catSelect') catSelect!: MatSelect;
+@ViewChild('selectdes') selectdes!: MatSelect;
 
 
 
@@ -113,6 +161,7 @@ Departments: any[] = [];
     private EmployeeService:EmployeeService,
     private categoryService:CatogaryService,
     private router: Router,
+    private employeeService: EmployeeService,
     private DepartmentServiceService: DepartmentServiceService, 
 
 
@@ -144,6 +193,9 @@ Departments: any[] = [];
   this.LoadPayrollSettings();
   this.LoadPaySlipComponent();
   this.LoadDepartment();
+  this.LoadCategory();
+  this.loadDesignations();
+
 
 });
 
@@ -654,63 +706,95 @@ if (this.userId !== null) {
       
       isLoading: boolean = false;
 
-      requestPayRoll(): void {
-        this.registerButtonClicked = true;
-      
-        // Frontend validation
-        // if (!this.name || !this.year ) {
-        //   alert('Please fill in all required fields.');
-        //   return;
-        // }
-      
-        const formData = new FormData();
-        formData.append('name', this.name);
-        formData.append('year', this.year);
-        formData.append('month', this.month);
-        formData.append('payment_date', this.payment_date);
-        formData.append('branch', this.branch);
-        formData.append('document_number', String(this.document_number ?? ''));
-        formData.append('department', this.department);
-        formData.append('category', this.category);
-     
-        this.isLoading = true;
+requestPayRoll(): void {
+  this.registerButtonClicked = true;
 
-        this.leaveService.requestPayroll(formData).subscribe(
-          (response) => {
-            this.isLoading = false;
+  const formData = new FormData();
+  formData.append('name', this.name);
+  formData.append('year', String(this.year));
+  formData.append('month', String(this.month));
+  formData.append('payment_date', this.payment_date);
+  formData.append('document_number', String(this.document_number ?? ''));
 
-            console.log('Registration successful', response);
-            alert('Payroll has been added');
-            window.location.reload();
-          },
-          (error) => {
-            this.isLoading = false;
+  // ✅ Send arrays properly — append each ID individually
+  // Branch
+  if (this.selectedBranches.length > 0) {
+    this.selectedBranches.forEach(id => {
+      formData.append('branch', String(id));
+    });
+  } else {
+    formData.append('branch', ''); // or omit if backend handles empty
+  }
 
-            console.error('Added failed', error);
-      
-            // Extract backend error message
-            let errorMessage = 'An unexpected error occurred. Please try again.';
-      
-            if (error.error) {
-              if (typeof error.error === 'string') {
-                errorMessage = error.error; // If backend returns a plain string message
-              } else if (error.error.detail) {
-                errorMessage = error.error.detail; // If backend returns { detail: "message" }
-              } else if (error.error.non_field_errors) {
-                errorMessage = error.error.non_field_errors.join(', '); // Handle non-field errors array
-              } else {
-                // Handle field-specific errors
-                const fieldErrors = Object.keys(error.error).map(field => `${field}: ${error.error[field]}`).join('\n');
-                errorMessage = fieldErrors || errorMessage;
-              }
-            }
-      
-            alert(errorMessage); // Show extracted error
-          } 
+  // Department
+  if (this.selectedDepartments.length > 0) {
+    this.selectedDepartments.forEach(id => {
+      formData.append('department', String(id));
+    });
+  } else {
+    formData.append('department', '');
+  }
 
-        
-        );
+  // Category
+  if (this.selectedCategories.length > 0) {
+    this.selectedCategories.forEach(id => {
+      formData.append('category', String(id));
+    });
+  } else {
+    formData.append('category', '');
+  }
+
+  // Designation
+  if (this.selectedDesignations.length > 0) {
+    this.selectedDesignations.forEach(id => {
+      formData.append('designation', String(id));
+    });
+  } else {
+    formData.append('designation', '');
+  }
+
+  // Employees (selected ones)
+  const selectedEmployees = this.filteredEmployees.filter(e => e.selected);
+  if (selectedEmployees.length > 0) {
+    selectedEmployees.forEach(emp => {
+      formData.append('employees', String(emp.id));
+    });
+  } else {
+    formData.append('employees', '');
+  }
+
+  this.isLoading = true;
+
+  this.leaveService.requestPayroll(formData).subscribe({
+    next: (response) => {
+      this.isLoading = false;
+      console.log('Registration successful', response);
+      alert('Payroll has been added');
+      window.location.reload();
+    },
+    error: (error) => {
+      this.isLoading = false;
+      console.error('Added failed', error);
+
+      let errorMessage = 'An unexpected error occurred. Please try again.';
+      if (error.error) {
+        if (typeof error.error === 'string') {
+          errorMessage = error.error;
+        } else if (error.error.detail) {
+          errorMessage = error.error.detail;
+        } else if (error.error.non_field_errors) {
+          errorMessage = error.error.non_field_errors.join(', ');
+        } else {
+          const fieldErrors = Object.keys(error.error)
+            .map(field => `${field}: ${Array.isArray(error.error[field]) ? error.error[field].join(', ') : error.error[field]}`)
+            .join('\n');
+          errorMessage = fieldErrors || errorMessage;
+        }
       }
+      alert(errorMessage);
+    }
+  });
+}
 
      
 
@@ -723,6 +807,368 @@ onFileSelected(event:any){
   }
 }
 
+
+toggleSelectAllEmployees(): void {
+
+  const selectAll = this.allEmployeesSelected;
+
+  this.filteredEmployees.forEach((emp: any) => {
+    emp.selected = selectAll;
+  });
+
+  this.pagedEmployees = this.filteredEmployees.slice(
+    (this.currentPage - 1) * this.pageSize,
+    this.currentPage * this.pageSize
+  );
+}
+
+applyEmployeeFilter(): void {
+
+  this.filteredEmployees = this.employees.filter((emp: any) => {
+
+    const branchMatch =
+      this.selectedBranches.length === 0 ||
+      this.selectedBranches.some(id =>
+        emp.emp_branch_id === this.getBranchName(id)
+      );
+
+    const departmentMatch =
+      this.selectedDepartments.length === 0 ||
+      this.selectedDepartments.some(id =>
+        emp.emp_dept_id === this.getDepartmentName(id)
+      );
+
+    const categoryMatch =
+      this.selectedCategories.length === 0 ||
+      this.selectedCategories.some(id =>
+        emp.emp_ctgry_id === this.getCategoryName(id)
+      );
+
+    const designationMatch =
+      this.selectedDesignations.length === 0 ||
+      this.selectedDesignations.some(id =>
+        emp.emp_desgntn_id === this.getDesignationName(id)
+      );
+
+    return (
+      branchMatch &&
+      departmentMatch &&
+      categoryMatch &&
+      designationMatch
+    );
+  });
+
+  // Employee search
+  this.FilterEmployee();
+
+  this.currentPage = 1;
+  this.updatePagination();
+}
+
+getBranchName(id: number): string {
+  const item = this.Branches.find(x => x.id == id);
+  return item ? item.branch_name : '';
+}
+
+
+getDepartmentName(id: number): string {
+  const item = this.Departments.find(x => x.id == id);
+  return item ? item.dept_name : '';
+}
+
+
+getCategoryName(id: number): string {
+  const item = this.Categories.find(x => x.id == id);
+  return item ? item.ctgry_title : '';
+}
+
+
+getDesignationName(id: number): string {
+  const item = this.Designations.find(x => x.id == id);
+  return item ? item.desgntn_job_title : '';
+}
+
+toggleAllBranches(): void {
+
+  if (this.selectedBranches.length === this.Branches.length) {
+    this.selectedBranches = [];
+  } else {
+    this.selectedBranches = this.Branches.map(x => x.id);
+  }
+
+  this.applyEmployeeFilter();
+}
+
+
+isAllBranchesSelected(): boolean {
+  return (
+    this.Branches.length > 0 &&
+    this.selectedBranches.length === this.Branches.length
+  );
+}
+
+
+isSomeBranchesSelected(): boolean {
+  return (
+    this.selectedBranches.length > 0 &&
+    this.selectedBranches.length < this.Branches.length
+  );
+}
+
+toggleAllDepartments(): void {
+
+  if (this.selectedDepartments.length === this.Departments.length) {
+    this.selectedDepartments = [];
+  } else {
+    this.selectedDepartments = this.Departments.map(x => x.id);
+  }
+
+  this.applyEmployeeFilter();
+}
+
+
+isAllDepartmentsSelected(): boolean {
+  return (
+    this.Departments.length > 0 &&
+    this.selectedDepartments.length === this.Departments.length
+  );
+}
+
+
+isSomeDepartmentsSelected(): boolean {
+  return (
+    this.selectedDepartments.length > 0 &&
+    this.selectedDepartments.length < this.Departments.length
+  );
+}
+
+toggleAllCategories(): void {
+
+  if (this.selectedCategories.length === this.Categories.length) {
+    this.selectedCategories = [];
+  } else {
+    this.selectedCategories = this.Categories.map(x => x.id);
+  }
+
+  this.applyEmployeeFilter();
+}
+
+
+isAllCategoriesSelected(): boolean {
+  return (
+    this.Categories.length > 0 &&
+    this.selectedCategories.length === this.Categories.length
+  );
+}
+
+
+isSomeCategoriesSelected(): boolean {
+  return (
+    this.selectedCategories.length > 0 &&
+    this.selectedCategories.length < this.Categories.length
+  );
+}
+
+toggleAllDesignations(): void {
+
+  if (this.selectedDesignations.length === this.Designations.length) {
+    this.selectedDesignations = [];
+  } else {
+    this.selectedDesignations = this.Designations.map(x => x.id);
+  }
+
+  this.applyEmployeeFilter();
+}
+
+
+isAllDesignationsSelected(): boolean {
+  return (
+    this.Designations.length > 0 &&
+    this.selectedDesignations.length === this.Designations.length
+  );
+}
+
+
+isSomeDesignationsSelected(): boolean {
+  return (
+    this.selectedDesignations.length > 0 &&
+    this.selectedDesignations.length < this.Designations.length
+  );
+}
+
+filterBranches(): any[] {
+
+  const search = this.branchsearch.trim().toLowerCase();
+
+  if (!search) {
+    return this.Branches;
+  }
+
+  return this.Branches.filter(branch =>
+    branch.branch_name?.toLowerCase().includes(search)
+  );
+}
+
+
+filterDepartment(): any[] {
+
+  const search = this.departmentsearch.trim().toLowerCase();
+
+  if (!search) {
+    return this.Departments;
+  }
+
+  return this.Departments.filter(dept =>
+    dept.dept_name?.toLowerCase().includes(search)
+  );
+}
+
+
+filterCategory(): any[] {
+
+  const search = this.categorysearch.trim().toLowerCase();
+
+  if (!search) {
+    return this.Categories;
+  }
+
+  return this.Categories.filter(category =>
+    category.ctgry_title?.toLowerCase().includes(search)
+  );
+}
+
+
+filterDesignation(): any[] {
+
+  const search = this.designationsearch.trim().toLowerCase();
+
+  if (!search) {
+    return this.Designations;
+  }
+
+  return this.Designations.filter(designation =>
+    designation.desgntn_job_title?.toLowerCase().includes(search)
+  );
+}
+
+FilterEmployee(): void {
+
+  const search = (this.SearchEmployee || '').trim().toLowerCase();
+
+  let data = [...this.employees];
+
+  // Apply dropdown filters
+  if (this.selectedBranches.length > 0) {
+    data = data.filter(emp =>
+      this.selectedBranches.some(id =>
+        emp.emp_branch_id === this.getBranchName(id)
+      )
+    );
+  }
+
+  if (this.selectedDepartments.length > 0) {
+    data = data.filter(emp =>
+      this.selectedDepartments.some(id =>
+        emp.emp_dept_id === this.getDepartmentName(id)
+      )
+    );
+  }
+
+  if (this.selectedCategories.length > 0) {
+    data = data.filter(emp =>
+      this.selectedCategories.some(id =>
+        emp.emp_ctgry_id === this.getCategoryName(id)
+      )
+    );
+  }
+
+  if (this.selectedDesignations.length > 0) {
+    data = data.filter(emp =>
+      this.selectedDesignations.some(id =>
+        emp.emp_desgntn_id === this.getDesignationName(id)
+      )
+    );
+  }
+
+  // Employee name/code search
+  if (search) {
+    data = data.filter(emp => {
+
+      const name =
+        `${emp.emp_first_name || ''} ${emp.emp_last_name || ''}`
+          .toLowerCase();
+
+      const code =
+        (emp.emp_code || '').toLowerCase();
+
+      return name.includes(search) || code.includes(search);
+    });
+  }
+
+  this.filteredEmployees = data;
+
+  this.currentPage = 1;
+  this.updatePagination();
+}
+
+updatePagination(): void {
+
+  this.totalPages = Math.ceil(
+    this.filteredEmployees.length / this.pageSize
+  );
+
+  if (this.totalPages === 0) {
+    this.totalPages = 1;
+  }
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const startIndex =
+    (this.currentPage - 1) * this.pageSize;
+
+  const endIndex =
+    startIndex + this.pageSize;
+
+  this.pagedEmployees =
+    this.filteredEmployees.slice(startIndex, endIndex);
+
+  this.pageNumbers =
+    Array.from(
+      { length: this.totalPages },
+      (_, i) => i + 1
+    );
+}
+
+
+goToPage(page: number): void {
+
+  if (page < 1 || page > this.totalPages) {
+    return;
+  }
+
+  this.currentPage = page;
+  this.updatePagination();
+}
+
+
+previousPage(): void {
+
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+
+nextPage(): void {
+
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
 
     // LoadEmployee(selectedSchema: string) {
     //   this.EmployeeService.getemployees(selectedSchema).subscribe(
@@ -742,26 +1188,28 @@ onFileSelected(event:any){
     // }
 
     
-    loadEmp(callback?: Function): void {
-      const selectedSchema = this.authService.getSelectedSchema();
-      const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
-    
-    
-      if (selectedSchema) {
-        this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
-          (data: any) => {
-           // Filtering employees where is_active is null or true
-           this.employees = data.filter((employee: any) => employee.is_active === null || employee.is_active === true);
-           this.filteredEmployees = this.employees;
-            
-            if (callback) callback();
-          },
-          (error) => {
-            console.error('Error fetching Companies:', error);
-          }
+loadEmp(callback?: Function): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+  const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+  if (selectedSchema) {
+    this.EmployeeService.getemployeesMasterNew(selectedSchema, savedIds).subscribe(
+      (data: any) => {
+        this.employees = data.filter((employee: any) => 
+          employee.is_active === null || employee.is_active === true
         );
+        
+        // ✅ Apply filters immediately after loading
+        this.applyEmployeeFilter();
+        
+        if (callback) callback();
+      },
+      (error) => {
+        console.error('Error fetching Employees:', error);
       }
-    }
+    );
+  }
+}
 
 
     LoadSalaryCom(callback?: Function) {
@@ -797,6 +1245,28 @@ onFileSelected(event:any){
         }
       );
     }
+
+  loadDesignations(): void {
+
+    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
+
+    console.log('schemastore', selectedSchema)
+    // Check if selectedSchema is available
+    if (selectedSchema) {
+      this.employeeService.getDesignations(selectedSchema).subscribe(
+        (result: any) => {
+          this.Designations = result;
+          console.log(' fetching Companies:');
+
+        },
+        (error) => {
+          console.error('Error fetching Designations:', error);
+        }
+      );
+    }
+  }
+
+    
 
 
     // LoadPayroll(selectedSchema: string) {

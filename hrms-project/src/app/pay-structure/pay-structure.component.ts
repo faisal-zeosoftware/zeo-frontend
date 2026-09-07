@@ -299,60 +299,132 @@ CreatePayStructure(): void {
   this.registerButtonClicked = true;
 
   const formData = new FormData();
-  // ✅ EXACT backend field names
 
-  formData.append('working_days', JSON.stringify(this.selectedWorkingDays));
+  // Working days
+  formData.append(
+    'working_days',
+    JSON.stringify(this.selectedWorkingDays)
+  );
 
+  // Salary
+  formData.append(
+    'salary_calculation_type',
+    this.salary_calculation_type || ''
+  );
 
-  formData.append('salary_calculation_type', this.salary_calculation_type);
-  formData.append('fixed_working_days', this.fixed_working_days);
-  formData.append('attendance_cycle_type', this.attendance_cycle_type);
-  formData.append('cycle_start_day', this.cycle_start_day);
+  if (this.salary_calculation_type !== 'CALENDAR_DAYS') {
+    formData.append(
+      'fixed_working_days',
+      String(this.fixed_working_days ?? '')
+    );
+  }
 
-  formData.append('cycle_end_day', this.cycle_end_day);
-  // formData.append('payday_type', this.payday_type);
-  // formData.append('payday', this.payday);
-let formattedDate = '';
+  // Attendance cycle
+  formData.append(
+    'attendance_cycle_type',
+    this.attendance_cycle_type || ''
+  );
 
-if (this.payroll_start_month) {
-  formattedDate = this.payroll_start_month + '-01'; // add day
-}
+  if (this.attendance_cycle_type === 'CUSTOM') {
+    formData.append(
+      'cycle_start_day',
+      String(this.cycle_start_day ?? '')
+    );
 
-formData.append('payroll_start_month', formattedDate);
-  formData.append('branch', JSON.stringify(this.branch));
+    formData.append(
+      'cycle_end_day',
+      String(this.cycle_end_day ?? '')
+    );
+  }
 
+  // Payroll start month
+  if (this.payroll_start_month) {
+    const formattedDate =
+      this.payroll_start_month.length === 7
+        ? `${this.payroll_start_month}-01`
+        : this.payroll_start_month;
 
-  
+    formData.append(
+      'payroll_start_month',
+      formattedDate
+    );
+  }
 
+  // ============================================
+  // IMPORTANT:
+  // Do NOT JSON.stringify(this.branch)
+  // ============================================
+  if (Array.isArray(this.branch)) {
+    this.branch.forEach((branchId: number) => {
+      formData.append('branch', String(branchId));
+    });
+  }
+
+  // Department
+  if (Array.isArray(this.department)) {
+    this.department.forEach((departmentId: number) => {
+      formData.append('department', String(departmentId));
+    });
+  }
+
+  // Category
+  if (Array.isArray(this.category)) {
+    this.category.forEach((categoryId: number) => {
+      formData.append('category', String(categoryId));
+    });
+  }
+
+  // Designation
+  if (Array.isArray(this.designation)) {
+    this.designation.forEach((designationId: number) => {
+      formData.append('designation', String(designationId));
+    });
+  }
+
+  // Debug FormData
+  console.log('CREATE PAY STRUCTURE DATA:');
+
+  formData.forEach((value, key) => {
+    console.log(key, value);
+  });
 
   this.employeeService.registerPayStructure(formData).subscribe(
     (response) => {
-      console.log('Registration successful', response);
+      console.log('Registration successful:', response);
+
       alert('Pay Structure has been added');
-        window.location.reload();
+
+      window.location.reload();
     },
     (error) => {
-      console.error('Added failed', error);
+      console.error('Create Pay Structure failed:', error);
+      console.error('Backend error:', error.error);
 
       let errorMessage = 'Enter all required fields!';
 
-      // ✅ Handle backend validation or field-specific errors
       if (error.error && typeof error.error === 'object') {
         const messages: string[] = [];
-        for (const [key, value] of Object.entries(error.error)) {
-          if (Array.isArray(value)) messages.push(`${key}: ${value.join(', ')}`);
-          else if (typeof value === 'string') messages.push(`${key}: ${value}`);
-          else messages.push(`${key}: ${JSON.stringify(value)}`);
+
+        Object.entries(error.error).forEach(([key, value]: [string, any]) => {
+          if (Array.isArray(value)) {
+            messages.push(`${key}: ${value.join(', ')}`);
+          } else if (typeof value === 'string') {
+            messages.push(`${key}: ${value}`);
+          } else {
+            messages.push(`${key}: ${JSON.stringify(value)}`);
+          }
+        });
+
+        if (messages.length > 0) {
+          errorMessage = messages.join('\n');
         }
-        if (messages.length > 0) errorMessage = messages.join('\n');
-      } else if (error.error?.detail) {
-        errorMessage = error.error.detail;
       }
 
       alert(errorMessage);
     }
   );
 }
+
 
 // Add to your class
 get calculatedPayDate(): string {
