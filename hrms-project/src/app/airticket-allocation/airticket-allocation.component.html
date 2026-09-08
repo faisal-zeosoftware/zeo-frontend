@@ -399,20 +399,20 @@
           
             <tbody>
               <tr *ngFor="let docs of Allocations; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.employee }}</td>
-                <td>{{ docs.policy }}</td>
-                <td>{{ docs.amount }}</td>
-                <td>{{ docs.remaining_amount }}</td>
-                <td>{{ docs.expiry_date }}</td>
+                <td data-label="No">{{ i + 1 }}</td>
+                <td data-label="Employee">{{ docs.employee }}</td>
+                <td data-label="Policy">{{ docs.policy }}</td>
+                <td data-label="Amount">{{ docs.amount }}</td>
+                <td data-label="Remaining Amount">{{ docs.remaining_amount }}</td>
+                <td data-label="Expiry Date">{{ docs.expiry_date }}</td>
 
-                <td>{{ docs.status }}</td>
-                <td>{{ docs.is_active }}</td>
+                <td data-label="Status">{{ docs.status }}</td>
+                <td data-label="Is Active">{{ docs.is_active }}</td>
 
           
                 <!-- Dynamic custom field values -->
             
-                <td>
+                <td data-label="Action">
                   <button
                     mat-fab
 

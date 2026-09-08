@@ -769,18 +769,18 @@
             <tbody>
               <tr *ngFor="let docs of LoanTypes; let i = index">
                 <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
-                <td>{{ docs.name }}</td>
-                <td>{{ docs.frequency_years }}</td>
-                <td>{{ docs.amount }}</td>
-                <td>{{ docs.allowance_type }}</td>
-                <td>{{ docs.country }}</td>
-                <td>{{ docs.eligible_departments }}</td>
-                <td>{{ docs.eligible_designations }}</td>
-                <td>{{ docs.eligible_categories }}</td>
-                <td>{{ docs.branch }}</td>
+                <td data-label="Name">{{ docs.name }}</td>
+                <td data-label="Frequency Year">{{ docs.frequency_years }}</td>
+                <td data-label="Amount">{{ docs.amount }}</td>
+                <td data-label="Allowance Type">{{ docs.allowance_type }}</td>
+                <td data-label="Country">{{ docs.country }}</td>
+                <td data-label="Department">{{ docs.eligible_departments }}</td>
+                <td data-label="Designation">{{ docs.eligible_designations }}</td>
+                <td data-label="Category">{{ docs.eligible_categories }}</td>
+                <td data-label="Branch">{{ docs.branch }}</td>
 
 
-                <td>{{ docs.allowed_in_probation }}</td>
+                <td data-label="Allowed in probation">{{ docs.allowed_in_probation }}</td>
 
           
                 <!-- Dynamic custom field values -->

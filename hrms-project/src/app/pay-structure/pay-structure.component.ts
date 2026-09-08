@@ -300,13 +300,17 @@ CreatePayStructure(): void {
 
   const formData = new FormData();
 
+  // ============================================
   // Working days
+  // ============================================
   formData.append(
     'working_days',
-    JSON.stringify(this.selectedWorkingDays)
+    JSON.stringify(this.selectedWorkingDays || [])
   );
 
-  // Salary
+  // ============================================
+  // Salary calculation
+  // ============================================
   formData.append(
     'salary_calculation_type',
     this.salary_calculation_type || ''
@@ -319,7 +323,9 @@ CreatePayStructure(): void {
     );
   }
 
+  // ============================================
   // Attendance cycle
+  // ============================================
   formData.append(
     'attendance_cycle_type',
     this.attendance_cycle_type || ''
@@ -337,7 +343,9 @@ CreatePayStructure(): void {
     );
   }
 
+  // ============================================
   // Payroll start month
+  // ============================================
   if (this.payroll_start_month) {
     const formattedDate =
       this.payroll_start_month.length === 7
@@ -351,43 +359,66 @@ CreatePayStructure(): void {
   }
 
   // ============================================
-  // IMPORTANT:
-  // Do NOT JSON.stringify(this.branch)
+  // BRANCH
+  // IMPORTANT: append each ID separately
   // ============================================
   if (Array.isArray(this.branch)) {
-    this.branch.forEach((branchId: number) => {
-      formData.append('branch', String(branchId));
+    this.branch.forEach((branchId: any) => {
+      formData.append(
+        'branch',
+        String(Number(branchId))
+      );
     });
   }
 
-  // Department
+  // ============================================
+  // DEPARTMENT
+  // ============================================
   if (Array.isArray(this.department)) {
-    this.department.forEach((departmentId: number) => {
-      formData.append('department', String(departmentId));
+    this.department.forEach((departmentId: any) => {
+      formData.append(
+        'department',
+        String(Number(departmentId))
+      );
     });
   }
 
-  // Category
+  // ============================================
+  // CATEGORY
+  // ============================================
   if (Array.isArray(this.category)) {
-    this.category.forEach((categoryId: number) => {
-      formData.append('category', String(categoryId));
+    this.category.forEach((categoryId: any) => {
+      formData.append(
+        'category',
+        String(Number(categoryId))
+      );
     });
   }
 
-  // Designation
+  // ============================================
+  // DESIGNATION
+  // ============================================
   if (Array.isArray(this.designation)) {
-    this.designation.forEach((designationId: number) => {
-      formData.append('designation', String(designationId));
+    this.designation.forEach((designationId: any) => {
+      formData.append(
+        'designation',
+        String(Number(designationId))
+      );
     });
   }
 
-  // Debug FormData
-  console.log('CREATE PAY STRUCTURE DATA:');
+  // ============================================
+  // DEBUG
+  // ============================================
+  console.log('===== CREATE PAY STRUCTURE =====');
 
   formData.forEach((value, key) => {
     console.log(key, value);
   });
 
+  // ============================================
+  // API
+  // ============================================
   this.employeeService.registerPayStructure(formData).subscribe(
     (response) => {
       console.log('Registration successful:', response);
@@ -403,28 +434,40 @@ CreatePayStructure(): void {
       let errorMessage = 'Enter all required fields!';
 
       if (error.error && typeof error.error === 'object') {
+
         const messages: string[] = [];
 
-        Object.entries(error.error).forEach(([key, value]: [string, any]) => {
-          if (Array.isArray(value)) {
-            messages.push(`${key}: ${value.join(', ')}`);
-          } else if (typeof value === 'string') {
-            messages.push(`${key}: ${value}`);
-          } else {
-            messages.push(`${key}: ${JSON.stringify(value)}`);
+        Object.entries(error.error).forEach(
+          ([key, value]: [string, any]) => {
+
+            if (Array.isArray(value)) {
+              messages.push(
+                `${key}: ${value.join(', ')}`
+              );
+            } else if (typeof value === 'string') {
+              messages.push(
+                `${key}: ${value}`
+              );
+            } else {
+              messages.push(
+                `${key}: ${JSON.stringify(value)}`
+              );
+            }
           }
-        });
+        );
 
         if (messages.length > 0) {
           errorMessage = messages.join('\n');
         }
+
+      } else if (error.error?.detail) {
+        errorMessage = error.error.detail;
       }
 
       alert(errorMessage);
     }
   );
 }
-
 
 // Add to your class
 get calculatedPayDate(): string {
@@ -728,27 +771,202 @@ toggleAllBranches(): void {
 
 
 openEditModal(asset: any): void {
-
   this.editAsset = { ...asset };
 
-
   if (this.editAsset.payroll_start_month) {
-    this.editAsset.payroll_start_month =
-      this.editAsset.payroll_start_month.substring(0,7);
+    this.editAsset.payroll_start_month = this.editAsset.payroll_start_month.substring(0, 7);
   }
-
 
   if (typeof this.editAsset.working_days === 'string') {
     try {
-      this.editAsset.working_days =
-        JSON.parse(this.editAsset.working_days);
+      this.editAsset.working_days = JSON.parse(this.editAsset.working_days);
     } catch {
       this.editAsset.working_days = [];
     }
   }
 
+  // ✅ map names -> ids using each lookup list's name field
+  this.editAsset.branch = this.mapNamesToIds(
+    this.editAsset.branch, this.branches, 'branch_name'
+  );
+  this.editAsset.department = this.mapNamesToIds(
+    this.editAsset.department, this.Departments, 'dept_name'
+  );
+  this.editAsset.category = this.mapNamesToIds(
+    this.editAsset.category, this.Categories, 'ctgry_title'
+  );
+  this.editAsset.designation = this.mapNamesToIds(
+    this.editAsset.designation, this.Designations, 'desgntn_job_title'
+  );
 
   this.isEditModalOpen = true;
+}
+
+/**
+ * Converts whatever shape the API returns (names, ids, objects, JSON string,
+ * comma string) into a plain number[] of ids matching entries in `list`
+ * by comparing against `list[i][nameKey]`.
+ */
+private mapNamesToIds(value: any, list: any[], nameKey: string): number[] {
+  if (value === null || value === undefined || value === '') return [];
+
+  let arr: any[];
+
+  if (Array.isArray(value)) {
+    arr = value;
+  } else if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      arr = Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      arr = value.split(',').map(v => v.trim());
+    }
+  } else {
+    arr = [value];
+  }
+
+  const ids: number[] = [];
+
+  arr.forEach((entry: any) => {
+    // Case 1: entry is already a numeric id
+    if (typeof entry === 'number' || (typeof entry === 'string' && !isNaN(Number(entry)) && entry.trim() !== '')) {
+      const num = Number(entry);
+      if (!isNaN(num) && list.some(item => item.id === num)) {
+        ids.push(num);
+        return;
+      }
+    }
+
+    // Case 2: entry is an object like { id, name }
+    if (entry && typeof entry === 'object' && entry.id !== undefined) {
+      ids.push(Number(entry.id));
+      return;
+    }
+
+    // Case 3: entry is a plain name string -> look up matching id
+    const match = list.find(
+      (item: any) => (item[nameKey] || '').toString().trim().toLowerCase() ===
+                      (entry || '').toString().trim().toLowerCase()
+    );
+    if (match) {
+      ids.push(match.id);
+    }
+  });
+
+  return ids;
+}
+
+
+private normalizeIds(value: any): number[] {
+  if (value === null || value === undefined || value === '') return [];
+
+  if (Array.isArray(value)) {
+    return value
+      .map((v: any) => (v && typeof v === 'object' ? Number(v.id) : Number(v)))
+      .filter((v: number) => !isNaN(v));
+  }
+
+  if (typeof value === 'string') {
+    // try JSON array first e.g. "[1,2,3]" or "[{\"id\":1}, ...]"
+    try {
+      const parsed = JSON.parse(value);
+      return this.normalizeIds(parsed);
+    } catch {
+      // fallback: comma separated "1,2,3"
+      return value
+        .split(',')
+        .map(v => Number(v.trim()))
+        .filter(v => !isNaN(v));
+    }
+  }
+
+  const num = Number(value);
+  return isNaN(num) ? [] : [num];
+}
+
+
+// ---- Edit modal: Branch ----
+isAllBranchesSelectedEdit(): boolean {
+  return (
+    this.branches.length > 0 &&
+    Array.isArray(this.editAsset.branch) &&
+    this.editAsset.branch.length === this.branches.length
+  );
+}
+isSomeBranchesSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.branch) &&
+    this.editAsset.branch.length > 0 &&
+    this.editAsset.branch.length < this.branches.length
+  );
+}
+toggleAllBranchesEdit(): void {
+  this.editAsset.branch = this.isAllBranchesSelectedEdit()
+    ? []
+    : this.branches.map((b: any) => b.id);
+}
+
+// ---- Edit modal: Department ----
+isAllDepartmentsSelectedEdit(): boolean {
+  return (
+    this.Departments.length > 0 &&
+    Array.isArray(this.editAsset.department) &&
+    this.editAsset.department.length === this.Departments.length
+  );
+}
+isSomeDepartmentsSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.department) &&
+    this.editAsset.department.length > 0 &&
+    this.editAsset.department.length < this.Departments.length
+  );
+}
+toggleAllDepartmentsEdit(): void {
+  this.editAsset.department = this.isAllDepartmentsSelectedEdit()
+    ? []
+    : this.Departments.map((d: any) => d.id);
+}
+
+// ---- Edit modal: Category ----
+isAllCategoriesSelectedEdit(): boolean {
+  return (
+    this.Categories.length > 0 &&
+    Array.isArray(this.editAsset.category) &&
+    this.editAsset.category.length === this.Categories.length
+  );
+}
+isSomeCategoriesSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.category) &&
+    this.editAsset.category.length > 0 &&
+    this.editAsset.category.length < this.Categories.length
+  );
+}
+toggleAllCategoriesEdit(): void {
+  this.editAsset.category = this.isAllCategoriesSelectedEdit()
+    ? []
+    : this.Categories.map((c: any) => c.id);
+}
+
+// ---- Edit modal: Designation ----
+isAllDesignationsSelectedEdit(): boolean {
+  return (
+    this.Designations.length > 0 &&
+    Array.isArray(this.editAsset.designation) &&
+    this.editAsset.designation.length === this.Designations.length
+  );
+}
+isSomeDesignationsSelectedEdit(): boolean {
+  return (
+    Array.isArray(this.editAsset.designation) &&
+    this.editAsset.designation.length > 0 &&
+    this.editAsset.designation.length < this.Designations.length
+  );
+}
+toggleAllDesignationsEdit(): void {
+  this.editAsset.designation = this.isAllDesignationsSelectedEdit()
+    ? []
+    : this.Designations.map((d: any) => d.id);
 }
 
 

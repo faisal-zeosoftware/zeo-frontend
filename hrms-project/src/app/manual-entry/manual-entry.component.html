@@ -236,7 +236,7 @@
 
       <!-- Main Row -->
       <tr class="main-row">
-        <td>
+        <td data-label="Expand">
           <button mat-icon-button (click)="docs.isExpanded = !docs.isExpanded">
             <mat-icon style="color:black">
               {{ docs.isExpanded ? 'expand_less' : 'expand_more' }}
@@ -244,29 +244,29 @@
           </button>
         </td>
 
-        <td>{{ i + 1 }}</td>
+        <td data-label="No">{{ i + 1 }}</td>
 
-        <td class="font-weight-bold">
+        <td data-label="Employee Name" class="font-weight-bold">
           {{ docs.employee_name || docs.employee }}
         </td>
 
-        <td>
+        <td data-label="Shift">
           <span class="shift-badge">
             {{ docs.shift || 'Null' }}
           </span>
         </td>
 
-        <td>{{ docs.date }}</td>
+        <td data-label="Date">{{ docs.date }}</td>
 
-        <td>
+        <td data-label="Total Hours">
           <strong class="text-primary">
             {{ docs.total_hours || '0' }} hrs
           </strong>
         </td>
 
-        <td>{{ docs.check_in_time || '-' }}</td>
+        <td data-label="First In">{{ docs.check_in_time || '-' }}</td>
 
-        <td>{{ docs.check_out_time || '-' }}</td>
+        <td data-label="Last Out">{{ docs.check_out_time || '-' }}</td>
       </tr>
 
       <!-- Expanded Row -->
@@ -295,7 +295,7 @@
 
                 <tr *ngFor="let log of docs.logs">
 
-                  <td>
+                  <td data-label="Type">
                     <span [ngClass]="log.log_type === 'IN' ? 'text-success' : 'text-danger'">
 
                       <mat-icon style="font-size:14px">
@@ -307,13 +307,13 @@
                     </span>
                   </td>
 
-                  <td>{{ log.timestamp }}</td>
+                  <td data-label="Time">{{ log.timestamp }}</td>
 
-                  <td>
+                  <td data-label="Location">
                     <small>{{ log.location || 'Main Gate' }}</small>
                   </td>
 
-                  <td>
+                  <td data-label="Face Verified">
                     <span class="badge-method">
                       {{ log.is_face_verified ? 'Yes' : 'No' }}
                     </span>

@@ -1,133 +1,161 @@
 <div class="container" *ngIf="hasViewPermission">
-    <div class="comapny_section">
-       
+  <div class="comapny_section">
     <div class="header_section">
-
       <div class="row">
         <div class="col-md-4">
           <h1>Pay Structure</h1>
         </div>
         <div class="col-md-3">
-
           <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
         </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
-            <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
-            </mat-icon></span> Create</button>
+            <button
+              type="button"
+              (click)="openPopus()"
+              class="btn-Create btn btn-success"
+              *ngIf="hasAddPermission"
+            >
+              <span class="header-btn-icon"
+                ><mat-icon>add_circle </mat-icon></span
+              >
+              Create
+            </button>
             <span *ngIf="!hasAddPermission"></span>
 
-            <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()" *ngIf="hasEditPermission">
-              <span class="header-btn-icon">
-                <mat-icon>draw
-                </mat-icon></span> Edit</button>
+            <button
+              type="button"
+              class="btn-Edit btn-info btn"
+              (click)="EditShowButtons()"
+              *ngIf="hasEditPermission"
+            >
+              <span class="header-btn-icon"> <mat-icon>draw </mat-icon></span>
+              Edit
+            </button>
             <span *ngIf="hasEditPermission"></span>
 
-            <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
-              *ngIf="hasDeletePermission">
+            <button
+              type="button"
+              class="btn-Delete btn btn-danger"
+              (click)="toggleCheckboxes()"
+              *ngIf="hasDeletePermission"
+            >
               <span class="header-btn-icon">
-                <mat-icon> delete
-                </mat-icon></span> {{ Delete ? 'Cancel' : 'Delete' }}</button>
+                <mat-icon> delete </mat-icon></span
+              >
+              {{ Delete ? "Cancel" : "Delete" }}
+            </button>
 
             <span *ngIf="!hasDeletePermission"></span>
           </div>
         </div>
       </div>
-
-
-
     </div>
 
     <div class="row">
       <div class="col-md-2">
-
-        <button class=" mt-3 btn-danger btn " style="width: 100%;" color="warn" *ngIf="Delete"
-          (click)="toggleSelectAllEmployees()">Select All</button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          style="width: 100%"
+          color="warn"
+          *ngIf="Delete"
+          (click)="toggleSelectAllEmployees()"
+        >
+          Select All
+        </button>
       </div>
       <div class="col-md-3">
-        <button class=" mt-3 btn-danger btn" color="warn" *ngIf="Delete" (click)="deleteSelectedPayrollAprlvl()">Delete
-          Selected </button>
-
+        <button
+          class="mt-3 btn-danger btn"
+          color="warn"
+          *ngIf="Delete"
+          (click)="deleteSelectedPayrollAprlvl()"
+        >
+          Delete Selected
+        </button>
       </div>
     </div>
 
+    <div *ngIf="iscreateovertimepolicy" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Create Pay Structure</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeapplicationModal()"> × </span>
+          </div>
+        </div>
+        <hr />
 
-      
+        <form>
+          <div class="row mb-4">
+            <div class="col-md-12">
+              <label class="form-label-custom"
+                >Select your work week<span class="text-danger">*</span></label
+              >
+              <p class="text-muted small">The days worked in a calendar week</p>
 
-        <div *ngIf="iscreateovertimepolicy" class="modal">
-            <div class="modal-content">
-              <div class="row">
-                <div class="col-md-10">
-                  <h2> Create Pay Structure</h2>
+              <div class="work-week-group">
+                <div
+                  *ngFor="let day of availableDays"
+                  class="day-segment"
+                  [class.active]="isDaySelected(day.key)"
+                  (click)="toggleDay(day.key)"
+                >
+                  {{ day.label }}
                 </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeapplicationModal()">
-      ×
-    </span>
-  </div> 
               </div>
-              <hr />
-          
-  <form  > 
-                 
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <label class="form-label-custom">Select your work week<span class="text-danger">*</span></label>
-            <p class="text-muted small">The days worked in a calendar week</p>
-            
-            <div class="work-week-group">
-                <div 
-                    *ngFor="let day of availableDays" 
-                    class="day-segment" 
-                    [class.active]="isDaySelected(day.key)"
-                    (click)="toggleDay(day.key)">
-                    {{ day.label }}
-                </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="row">
-                    
-                
+          </div>
 
-        
-      <div class="col-md-6">
-        <label>Salary calculation type</label>
-        <div class="custom-sel">
-          <select class="form-control"  [(ngModel)]="salary_calculation_type" (ngModelChange)="onSalaryTypeChange()" [ngModelOptions]="{standalone: true}">
-            <option value="CALENDAR_DAYS">Actual days in month</option>
-            <option value="ORGANIZATION_DAYS">Organisation working days</option>
-            <option value="FIXED_DAYS">Fixed Days</option>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Salary calculation type</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="salary_calculation_type"
+                  (ngModelChange)="onSalaryTypeChange()"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="CALENDAR_DAYS">Actual days in month</option>
+                  <option value="ORGANIZATION_DAYS">
+                    Organisation working days
+                  </option>
+                  <option value="FIXED_DAYS">Fixed Days</option>
+                </select>
+              </div>
+            </div>
 
-          </select>
-        </div>
-      </div>
+            <div class="col-md-6">
+              <label>Days</label>
+              <input
+                type="number"
+                class="form-control"
+                [disabled]="salary_calculation_type === 'CALENDAR_DAYS'"
+                [(ngModel)]="fixed_working_days"
+                placeholder="Enter day"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
 
-      <div class="col-md-6"  >
-        <label>Days</label>
-        <input type="number"
-               class="form-control"
-               [disabled]="salary_calculation_type === 'CALENDAR_DAYS'"
-               [(ngModel)]="fixed_working_days"
-               placeholder="Enter day"
-               [ngModelOptions]="{standalone: true}">
-      </div>
-      
-  <div class="col-md-6">
-    <label>Attendance cycle type</label>
-    <div class="custom-sel">
-      <select class="form-control" [(ngModel)]="attendance_cycle_type" [ngModelOptions]="{standalone: true}">
-        <option value="MONTH">Calendar Month</option>
-        <option value="CUSTOM">Custom Cycle</option>
-      </select>
-    </div>
-  </div>
+            <div class="col-md-6">
+              <label>Attendance cycle type</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="attendance_cycle_type"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="MONTH">Calendar Month</option>
+                  <option value="CUSTOM">Custom Cycle</option>
+                </select>
+              </div>
+            </div>
 
-              <!-- FILTER SECTION -->
+            <!-- FILTER SECTION -->
             <div class="filter-card mb-4">
               <div class="row g-3">
                 <!-- Branch -->
@@ -137,49 +165,50 @@
                       <mat-icon>apartment</mat-icon>
                       Branch
                     </label>
-                <mat-form-field
-                  appearance="outline"
-                  class="modern-multi-select"
-                >
-  <mat-select
-    multiple
-    [(ngModel)]="branch"
-    [ngModelOptions]="{ standalone: true }">
-
-    <!-- Select All -->
-    <div class="px-2">
-      <mat-checkbox
-        class="select-all-checkbox"
-        [checked]="isAllBranchesSelected()"
-        [indeterminate]="isSomeBranchesSelected()"
-        (click)="$event.stopPropagation()"
-        (change)="toggleAllBranches()">
-        Select All
-      </mat-checkbox>
-    </div>
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="branch"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <!-- Select All -->
+                        <div class="px-2">
+                          <mat-checkbox
+                            class="select-all-checkbox"
+                            [checked]="isAllBranchesSelected()"
+                            [indeterminate]="isSomeBranchesSelected()"
+                            (click)="$event.stopPropagation()"
+                            (change)="toggleAllBranches()"
+                          >
+                            Select All
+                          </mat-checkbox>
+                        </div>
 
                         <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Branch"
-                        class="form-control"
-                        [(ngModel)]="branchsearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Branch"
+                            class="form-control"
+                            [(ngModel)]="branchsearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
-    <!-- Branch List -->
-    <mat-option
-      *ngFor="let item of filterBranches()"
-      [value]="item.id">
-      {{ item.branch_name }}
-    </mat-option>
-
-  </mat-select>
-</mat-form-field>
+                        <!-- Branch List -->
+                        <mat-option
+                          *ngFor="let item of filterBranches()"
+                          [value]="item.id"
+                        >
+                          {{ item.branch_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
                   </div>
                 </div>
 
@@ -210,18 +239,18 @@
                           Select All
                         </mat-checkbox>
 
-                      <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Department"
-                        class="form-control"
-                        [(ngModel)]="departmentsearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <!-- Search -->
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Department"
+                            class="form-control"
+                            [(ngModel)]="departmentsearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
                         <mat-option
                           *ngFor="let item of filterDepartment()"
@@ -261,18 +290,18 @@
                           Select All
                         </mat-checkbox>
 
-                                              <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Category"
-                        class="form-control"
-                        [(ngModel)]="categorysearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <!-- Search -->
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Category"
+                            class="form-control"
+                            [(ngModel)]="categorysearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
                         <mat-option
                           *ngFor="let item of filterCategory()"
@@ -312,18 +341,18 @@
                           Select All
                         </mat-checkbox>
 
-                         <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Designation"
-                        class="form-control"
-                        [(ngModel)]="designationsearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <!-- Search -->
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Designation"
+                            class="form-control"
+                            [(ngModel)]="designationsearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
                         <mat-option
                           *ngFor="let item of filterDesignation()"
@@ -338,35 +367,32 @@
               </div>
             </div>
 
-  <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
+            <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Cycle start day</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="cycle_start_day"
+                    placeholder="Enter cycle start day "
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label>Cycle end day</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="cycle_end_day"
+                    placeholder="Enter cycle end day"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+              </div>
+            </div>
 
-    <div class="row">
-      <div class="col-md-6">
-                  
-        <label>Cycle start day</label>
-        <input type="number"  class="form-control" [(ngModel)]="cycle_start_day"  placeholder="Enter cycle start day "
-         [ngModelOptions]="{standalone: true}" >
-    </div>
-    <div class="col-md-6">
-      <label>Cycle end day</label>
-      <input type="number"  class="form-control" [(ngModel)]="cycle_end_day"  placeholder="Enter cycle end day"
-       [ngModelOptions]="{standalone: true}" >
-
-      </div>
-
-    </div>
- 
-   
-</div>
-
-
-
-
-
-
-
-
-<!-- <div class="col-md-6" >
+            <!-- <div class="col-md-6" >
                    
     <label>Payroll start month</label>
    <input type="date"  class="form-control" [(ngModel)]="payroll_start_month"  placeholder="Enter payroll start month"
@@ -374,108 +400,133 @@
    
 </div> -->
 
-<div class="col-md-6 mb-3">
-    <label>Start your first payroll from
-       <span class="required-star">*</span>
-    </label>
-    <input type="month" class="form-control" [(ngModel)]="payroll_start_month" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !payroll_start_month}">
-</div>
-
-<div class="col-md-12 mt-2" *ngIf="payroll_start_month && payday">
-    <label class="text-muted small d-block">Select a pay date for your first payroll*</label>
-    <p class="mb-1"><strong>Pay Period: {{ formattedPayPeriod }}</strong></p>
-    
-    <div class="fake-input-display">
-        {{ calculatedPayDate }}
-        <mat-icon class="pull-right text-muted" style="font-size: 18px;">calendar_today</mat-icon>
-    </div>
-     <div *ngIf="registerButtonClicked && !payroll_start_month" class="error-message">Payroll Start Month is required.</div>
-</div>
-
-     
-
-   
-   
-
-
-
-                  </div>
-
-                  <div class="row">
-                    <div class="col-md-8">
-                
-                    </div>
-
-            <div class="col-md-2">
-            <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeapplicationModal()">Cancel</button>  
+            <div class="col-md-6 mb-3">
+              <label
+                >Start your first payroll from
+                <span class="required-star">*</span>
+              </label>
+              <input
+                type="month"
+                class="form-control"
+                [(ngModel)]="payroll_start_month"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{
+                  'error-field': registerButtonClicked && !payroll_start_month,
+                }"
+              />
             </div>
-                
-                    <div class="col-md-2">
-                        <button type="button" class="btn-Create btn-full mt-5 btn-success btn" (click)="CreatePayStructure()">Add</button>  
-                     </div>
-                </div>
-                </form>
 
-            
+            <div class="col-md-12 mt-2" *ngIf="payroll_start_month && payday">
+              <label class="text-muted small d-block"
+                >Select a pay date for your first payroll*</label
+              >
+              <p class="mb-1">
+                <strong>Pay Period: {{ formattedPayPeriod }}</strong>
+              </p>
+
+              <div class="fake-input-display">
+                {{ calculatedPayDate }}
+                <mat-icon class="pull-right text-muted" style="font-size: 18px"
+                  >calendar_today</mat-icon
+                >
+              </div>
+              <div
+                *ngIf="registerButtonClicked && !payroll_start_month"
+                class="error-message"
+              >
+                Payroll Start Month is required.
+              </div>
             </div>
           </div>
- 
 
+          <div class="row">
+            <div class="col-md-8"></div>
 
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-danger btn"
+                (click)="closeapplicationModal()"
+              >
+                Cancel
+              </button>
+            </div>
 
-              <!-- Edit Modal -->
-              <div *ngIf="isEditModalOpen" class="modal">
-                <div class="modal-content">
-                  <div class="row">
-                    <div class="col-md-10">
-                      <h2>Edit Pay Structure</h2>
-                    </div>
-  <div class="col-md-2 text-right">
-    <!-- Styled Square Close Button -->
-    <span class="close-btn" (click)="closeEditModal()">
-      ×
-    </span>
-  </div> 
-                  </div>
-                  <hr />
-              
-                  <form>
-    <div class="row">
-                    
-            
-      <div class="col-md-6">
-        <label>Salary calculation type</label>
-        <div class="custom-sel">
-          <select class="form-control"  [(ngModel)]="editAsset.salary_calculation_type" (ngModelChange)="onSalaryTypeChange()" [ngModelOptions]="{standalone: true}">
-            <option value="CALENDAR_DAYS">Actual days in month</option>
-            <option value="ORGANIZATION_DAYS">Organisation working days</option>
-            <option value="FIXED_DAYS">Fixed Days</option>
-
-          </select>
-        </div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-success btn"
+                (click)="CreatePayStructure()"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
-
-      <div class="col-md-6"  >
-        <label>Days</label>
-        <input type="number"
-               class="form-control"
-               [disabled]="salary_calculation_type === 'CALENDAR_DAYS'"
-               [(ngModel)]="editAsset.fixed_working_days"
-               placeholder="Enter day"
-               [ngModelOptions]="{standalone: true}">
-      </div>
-      
-  <div class="col-md-6">
-    <label>Attendance cycle type</label>
-    <div class="custom-sel">
-      <select class="form-control" [(ngModel)]="editAsset.attendance_cycle_type" [ngModelOptions]="{standalone: true}">
-        <option value="MONTH">Calendar Month</option>
-        <option value="CUSTOM">Custom Cycle</option>
-      </select>
     </div>
-  </div>
 
-              <!-- FILTER SECTION -->
+    <!-- Edit Modal -->
+    <div *ngIf="isEditModalOpen" class="modal">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col-md-10">
+            <h2>Edit Pay Structure</h2>
+          </div>
+          <div class="col-md-2 text-right">
+            <!-- Styled Square Close Button -->
+            <span class="close-btn" (click)="closeEditModal()"> × </span>
+          </div>
+        </div>
+        <hr />
+
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <label>Salary calculation type</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="editAsset.salary_calculation_type"
+                  (ngModelChange)="onSalaryTypeChange()"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="CALENDAR_DAYS">Actual days in month</option>
+                  <option value="ORGANIZATION_DAYS">
+                    Organisation working days
+                  </option>
+                  <option value="FIXED_DAYS">Fixed Days</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label>Days</label>
+              <input
+                type="number"
+                class="form-control"
+                [disabled]="salary_calculation_type === 'CALENDAR_DAYS'"
+                [(ngModel)]="editAsset.fixed_working_days"
+                placeholder="Enter day"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label>Attendance cycle type</label>
+              <div class="custom-sel">
+                <select
+                  class="form-control"
+                  [(ngModel)]="editAsset.attendance_cycle_type"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <option value="MONTH">Calendar Month</option>
+                  <option value="CUSTOM">Custom Cycle</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- FILTER SECTION -->
             <div class="filter-card mb-4">
               <div class="row g-3">
                 <!-- Branch -->
@@ -485,49 +536,51 @@
                       <mat-icon>apartment</mat-icon>
                       Branch
                     </label>
-                <mat-form-field
-                  appearance="outline"
-                  class="modern-multi-select"
-                >
-  <mat-select
-    multiple
-    [(ngModel)]="editAsset.branch"
-    [ngModelOptions]="{ standalone: true }">
-
-    <!-- Select All -->
-    <div class="px-2">
-      <mat-checkbox
-        class="select-all-checkbox"
-        [checked]="isAllBranchesSelected()"
-        [indeterminate]="isSomeBranchesSelected()"
-        (click)="$event.stopPropagation()"
-        (change)="toggleAllBranches()">
-        Select All
-      </mat-checkbox>
-    </div>
+                    <mat-form-field
+                      appearance="outline"
+                      class="modern-multi-select"
+                    >
+                      <mat-select
+                        multiple
+                        [(ngModel)]="editAsset.branch"
+                        [ngModelOptions]="{ standalone: true }"
+                      >
+                        <!-- Select All -->
+                        <div class="px-2">
+                          <!-- Branch (inside Edit Modal) -->
+                          <mat-checkbox
+                            class="select-all-checkbox"
+                            [checked]="isAllBranchesSelectedEdit()"
+                            [indeterminate]="isSomeBranchesSelectedEdit()"
+                            (click)="$event.stopPropagation()"
+                            (change)="toggleAllBranchesEdit()"
+                          >
+                            Select All
+                          </mat-checkbox>
+                        </div>
 
                         <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Branch"
-                        class="form-control"
-                        [(ngModel)]="branchsearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Branch"
+                            class="form-control"
+                            [(ngModel)]="branchsearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
-    <!-- Branch List -->
-    <mat-option
-      *ngFor="let item of filterBranches()"
-      [value]="item.id">
-      {{ item.branch_name }}
-    </mat-option>
-
-  </mat-select>
-</mat-form-field>
+                        <!-- Branch List -->
+                        <mat-option
+                          *ngFor="let item of filterBranches()"
+                          [value]="item.id"
+                        >
+                          {{ item.branch_name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
                   </div>
                 </div>
 
@@ -548,28 +601,29 @@
                         [(ngModel)]="editAsset.department"
                         [ngModelOptions]="{ standalone: true }"
                       >
+                        <!-- Department (inside Edit Modal) -->
                         <mat-checkbox
                           class="select-all-checkbox"
-                          [checked]="isAllDepartmentsSelected()"
-                          [indeterminate]="isSomeDepartmentsSelected()"
+                          [checked]="isAllDepartmentsSelectedEdit()"
+                          [indeterminate]="isSomeDepartmentsSelectedEdit()"
                           (click)="$event.stopPropagation()"
-                          (change)="toggleAllDepartments()"
+                          (change)="toggleAllDepartmentsEdit()"
                         >
                           Select All
                         </mat-checkbox>
 
-                      <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Department"
-                        class="form-control"
-                        [(ngModel)]="departmentsearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <!-- Search -->
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Department"
+                            class="form-control"
+                            [(ngModel)]="departmentsearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
                         <mat-option
                           *ngFor="let item of filterDepartment()"
@@ -599,28 +653,28 @@
                         [(ngModel)]="editAsset.category"
                         [ngModelOptions]="{ standalone: true }"
                       >
-                        <mat-checkbox
-                          class="select-all-checkbox"
-                          [checked]="isAllCategoriesSelected()"
-                          [indeterminate]="isSomeCategoriesSelected()"
-                          (click)="$event.stopPropagation()"
-                          (change)="toggleAllCategories()"
-                        >
-                          Select All
-                        </mat-checkbox>
+<!-- Category (inside Edit Modal) -->
+<mat-checkbox
+  class="select-all-checkbox"
+  [checked]="isAllCategoriesSelectedEdit()"
+  [indeterminate]="isSomeCategoriesSelectedEdit()"
+  (click)="$event.stopPropagation()"
+  (change)="toggleAllCategoriesEdit()">
+  Select All
+</mat-checkbox>
 
-                                              <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Category"
-                        class="form-control"
-                        [(ngModel)]="categorysearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <!-- Search -->
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Category"
+                            class="form-control"
+                            [(ngModel)]="categorysearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
                         <mat-option
                           *ngFor="let item of filterCategory()"
@@ -650,28 +704,29 @@
                         [(ngModel)]="editAsset.designation"
                         [ngModelOptions]="{ standalone: true }"
                       >
+                        <!-- Designation (inside Edit Modal) -->
                         <mat-checkbox
                           class="select-all-checkbox"
-                          [checked]="isAllDesignationsSelected()"
-                          [indeterminate]="isSomeDesignationsSelected()"
+                          [checked]="isAllDesignationsSelectedEdit()"
+                          [indeterminate]="isSomeDesignationsSelectedEdit()"
                           (click)="$event.stopPropagation()"
-                          (change)="toggleAllDesignations()"
+                          (change)="toggleAllDesignationsEdit()"
                         >
                           Select All
                         </mat-checkbox>
 
-                         <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Designation"
-                        class="form-control"
-                        [(ngModel)]="designationsearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
+                        <!-- Search -->
+                        <div class="px-2 pb-2">
+                          <input
+                            type="text"
+                            placeholder="Search Designation"
+                            class="form-control"
+                            [(ngModel)]="designationsearch"
+                            [ngModelOptions]="{ standalone: true }"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="$event.stopPropagation()"
+                          />
+                        </div>
 
                         <mat-option
                           *ngFor="let item of filterDesignation()"
@@ -686,35 +741,32 @@
               </div>
             </div>
 
-  <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
+            <div class="col-md-6" *ngIf="attendance_cycle_type !== 'MONTH'">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Cycle start day</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="editAsset.cycle_start_day"
+                    placeholder="Enter cycle start day "
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label>Cycle end day</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [(ngModel)]="editAsset.cycle_end_day"
+                    placeholder="Enter cycle end day"
+                    [ngModelOptions]="{ standalone: true }"
+                  />
+                </div>
+              </div>
+            </div>
 
-    <div class="row">
-      <div class="col-md-6">
-                  
-        <label>Cycle start day</label>
-        <input type="number"  class="form-control" [(ngModel)]="editAsset.cycle_start_day"  placeholder="Enter cycle start day "
-         [ngModelOptions]="{standalone: true}" >
-    </div>
-    <div class="col-md-6">
-      <label>Cycle end day</label>
-      <input type="number"  class="form-control" [(ngModel)]="editAsset.cycle_end_day"  placeholder="Enter cycle end day"
-       [ngModelOptions]="{standalone: true}" >
-
-      </div>
-
-    </div>
- 
-   
-</div>
-
-
-
-
-
-
-
-
-<!-- <div class="col-md-6" >
+            <!-- <div class="col-md-6" >
                    
     <label>Payroll start month</label>
    <input type="date"  class="form-control" [(ngModel)]="payroll_start_month"  placeholder="Enter payroll start month"
@@ -722,127 +774,136 @@
    
 </div> -->
 
-<div class="col-md-6 mb-3">
-    <label>Start your first payroll from </label>
-    <input type="month" class="form-control" [(ngModel)]="editAsset.payroll_start_month" [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !payroll_start_month}">
-</div>
-
-<div class="col-md-12 mt-2" *ngIf="payroll_start_month && payday">
-    <label class="text-muted small d-block">Select a pay date for your first payroll*</label>
-    <p class="mb-1"><strong>Pay Period: {{ formattedPayPeriod }}</strong></p>
-    
-    <div class="fake-input-display">
-        {{ calculatedPayDate }}
-        <mat-icon class="pull-right text-muted" style="font-size: 18px;">calendar_today</mat-icon>
-    </div>
-</div>
-
-     
-
-   
-   
-
-
-
-                  </div>
-              
-
-        <div class="row" >
-              <div class="col-md-8">
-              </div>
-            <div class="col-md-2">
-            <button type="button" class="btn-Create btn-full mt-5 btn-danger btn" (click)="closeEditModal()">Cancel</button>  
+            <div class="col-md-6 mb-3">
+              <label>Start your first payroll from </label>
+              <input
+                type="month"
+                class="form-control"
+                [(ngModel)]="editAsset.payroll_start_month"
+                [ngModelOptions]="{ standalone: true }"
+                [ngClass]="{
+                  'error-field': registerButtonClicked && !payroll_start_month,
+                }"
+              />
             </div>
-              <div class="col-md-2">
-            <button type="button" class="btn btn-success mt-5" (click)="updatePayStr()">
-              Update
-              </button>
-              </div>
-            </div>
-                  </form>
-                </div>
-              </div>  
 
-
-
-        <div class="com_list mt-4" *ngIf="hasViewPermission">
-
-
-            <div style="overflow-x: auto; width: 100%;">
-            <table class="table-container " width="100%">
-                <thead>
-                  <tr>
-                     <th class="sticky-left">No</th>
-
-                    <th>work week</th>
-                    <th>Salary calculation type</th>
-                    <th>Fixed working days</th>
-                    <th>Attendance cycle type</th>
-                    <th>Cycle start day</th>
-                     <th>Cycle End day</th>
-
-                    <th>Payday type</th>
-                    <th>Payday</th>
-                    <th>Payroll start month</th>
-                    <th>Branch</th>
-                    <th>Designation</th>
-                    <th>Department</th>
-                    <th>Category</th>
-
-
-                    <th class="sticky-right">Actions</th>
-        
-                   
-                  </tr>
-                </thead>
-                <tbody>
-                    
-                  <tr *ngFor="let pol of overtimepol;let i = index">
-                    <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
-                    <td data-label="Work Week">{{ pol.working_days }}</td> 
-                    <td data-label="Salary Calculation Type">{{ pol.salary_calculation_type }}</td>
-                    <td data-label="Fixed working Days">{{ pol.fixed_working_days }}</td> 
-                    <td data-label="Attendance Cycle Type">{{ pol.attendance_cycle_type }}</td> 
-                    <td data-label="Cycle Start Day">{{ pol.cycle_start_day }}</td>
-                    <td data-label="Cycle End Day">{{ pol.cycle_end_day }}</td>
-                    <td data-label="Payday Type">{{ pol.payday_type }}</td>
-                    <td data-label="Payday">{{ pol.payday }}</td>
-                    <td data-label="Payroll Start Month">{{ pol.payroll_start_month }}</td>
-                    <td data-label="Branch">{{ pol.branch }}</td>
-                    <td data-label="Designation">{{ pol.Designation }}</td>
-                    <td data-label="Department">{{ pol.Department }}</td>
-                    <td data-label="Category">{{ pol.Category }}</td>
-
-
-                    <td class="sticky-right" data-label="Actions">
-              <button
-                mat-fab
-                color="primary"
-                aria-label="Edit icon"
-                *ngIf="showEditBtn"
-    
-                
-                (click)="openEditModal(pol)"
+            <div class="col-md-12 mt-2" *ngIf="payroll_start_month && payday">
+              <label class="text-muted small d-block"
+                >Select a pay date for your first payroll*</label
               >
-                <mat-icon style="color: white;">draw</mat-icon>
-              </button>
-    
-              <mat-checkbox *ngIf="Delete" [(ngModel)]="pol.selected" ></mat-checkbox>
-    
-            </td>
-    
-                  </tr>
-                
-                </tbody>
-              </table>
+              <p class="mb-1">
+                <strong>Pay Period: {{ formattedPayPeriod }}</strong>
+              </p>
+
+              <div class="fake-input-display">
+                {{ calculatedPayDate }}
+                <mat-icon class="pull-right text-muted" style="font-size: 18px"
+                  >calendar_today</mat-icon
+                >
               </div>
+            </div>
+          </div>
 
-        </div>
-        </div>
-        </div>
-
-
-                    <!-- Loader -->
-    <div class="loader-container" [class.show]="isLoading">
-      <div class="loader"></div>
+          <div class="row">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn-Create btn-full mt-5 btn-danger btn"
+                (click)="closeEditModal()"
+              >
+                Cancel
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button
+                type="button"
+                class="btn btn-success mt-5"
+                (click)="updatePayStr()"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
+
+    <div class="com_list mt-4" *ngIf="hasViewPermission">
+      <div style="overflow-x: auto; width: 100%">
+        <table class="table-container" width="100%">
+          <thead>
+            <tr>
+              <th class="sticky-left">No</th>
+
+              <th>work week</th>
+              <th>Salary calculation type</th>
+              <th>Fixed working days</th>
+              <th>Attendance cycle type</th>
+              <th>Cycle start day</th>
+              <th>Cycle End day</th>
+
+              <th>Payday type</th>
+              <th>Payday</th>
+              <th>Payroll start month</th>
+              <th>Branch</th>
+              <th>Designation</th>
+              <th>Department</th>
+              <th>Category</th>
+
+              <th class="sticky-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pol of overtimepol; let i = index">
+              <td class="sticky-left" data-label="No">{{ i + 1 }}</td>
+              <td data-label="Work Week">{{ pol.working_days }}</td>
+              <td data-label="Salary Calculation Type">
+                {{ pol.salary_calculation_type }}
+              </td>
+              <td data-label="Fixed working Days">
+                {{ pol.fixed_working_days }}
+              </td>
+              <td data-label="Attendance Cycle Type">
+                {{ pol.attendance_cycle_type }}
+              </td>
+              <td data-label="Cycle Start Day">{{ pol.cycle_start_day }}</td>
+              <td data-label="Cycle End Day">{{ pol.cycle_end_day }}</td>
+              <td data-label="Payday Type">{{ pol.payday_type }}</td>
+              <td data-label="Payday">{{ pol.payday }}</td>
+              <td data-label="Payroll Start Month">
+                {{ pol.payroll_start_month }}
+              </td>
+              <td data-label="Branch">{{ pol.branch }}</td>
+              <td data-label="Designation">{{ pol.designation }}</td>
+              <td data-label="Department">{{ pol.department }}</td>
+              <td data-label="Category">{{ pol.category }}</td>
+
+              <td class="sticky-right" data-label="Actions">
+                <button
+                  mat-fab
+                  color="primary"
+                  aria-label="Edit icon"
+                  *ngIf="showEditBtn"
+                  (click)="openEditModal(pol)"
+                >
+                  <mat-icon style="color: white">draw</mat-icon>
+                </button>
+
+                <mat-checkbox
+                  *ngIf="Delete"
+                  [(ngModel)]="pol.selected"
+                ></mat-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loader -->
+<div class="loader-container" [class.show]="isLoading">
+  <div class="loader"></div>
+</div>

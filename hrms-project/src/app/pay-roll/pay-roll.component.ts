@@ -103,7 +103,8 @@ Designations: any[] = [];
 // FILTER SELECTIONS
 // ============================================================
 
-selectedBranches: number[] = [];
+selectedBranch: number | null = null;
+
 selectedDepartments: number[] = [];
 selectedCategories: number[] = [];
 selectedDesignations: number[] = [];
@@ -725,7 +726,7 @@ requestPayRoll(): void {
     month: Number(this.month),
     payment_date: this.payment_date || null,
     document_number: this.document_number || null,
-    branch: this.selectedBranches.map(id => Number(id)),    
+    branch: this.selectedBranch ? Number(this.selectedBranch) : null,
     department: this.selectedDepartments.map(id => Number(id)), 
     category: this.selectedCategories.map(id => Number(id)),     
     designation: this.selectedDesignations.map(id => Number(id)), 
@@ -796,27 +797,26 @@ applyEmployeeFilter(): void {
   this.filteredEmployees = this.employees.filter((emp: any) => {
 
     const branchMatch =
-      this.selectedBranches.length === 0 ||
-      this.selectedBranches.some(id =>
-        emp.emp_branch_id === this.getBranchName(id)
-      );
+      this.selectedBranch === null ||
+      this.selectedBranch === undefined ||
+      Number(emp.emp_branch_id) === Number(this.selectedBranch);
 
     const departmentMatch =
       this.selectedDepartments.length === 0 ||
       this.selectedDepartments.some(id =>
-        emp.emp_dept_id === this.getDepartmentName(id)
+        Number(emp.emp_dept_id) === Number(id)
       );
 
     const categoryMatch =
       this.selectedCategories.length === 0 ||
       this.selectedCategories.some(id =>
-        emp.emp_ctgry_id === this.getCategoryName(id)
+        Number(emp.emp_ctgry_id) === Number(id)
       );
 
     const designationMatch =
       this.selectedDesignations.length === 0 ||
       this.selectedDesignations.some(id =>
-        emp.emp_desgntn_id === this.getDesignationName(id)
+        Number(emp.emp_desgntn_id) === Number(id)
       );
 
     return (
@@ -827,12 +827,11 @@ applyEmployeeFilter(): void {
     );
   });
 
-  // Employee search
-  this.FilterEmployee();
-
   this.currentPage = 1;
   this.updatePagination();
 }
+
+
 
 getBranchName(id: number): string {
   const item = this.Branches.find(x => x.id == id);
@@ -857,32 +856,32 @@ getDesignationName(id: number): string {
   return item ? item.desgntn_job_title : '';
 }
 
-toggleAllBranches(): void {
+// toggleAllBranches(): void {
 
-  if (this.selectedBranches.length === this.Branches.length) {
-    this.selectedBranches = [];
-  } else {
-    this.selectedBranches = this.Branches.map(x => x.id);
-  }
+//   if (this.selectedBranches.length === this.Branches.length) {
+//     this.selectedBranches = [];
+//   } else {
+//     this.selectedBranches = this.Branches.map(x => x.id);
+//   }
 
-  this.applyEmployeeFilter();
-}
-
-
-isAllBranchesSelected(): boolean {
-  return (
-    this.Branches.length > 0 &&
-    this.selectedBranches.length === this.Branches.length
-  );
-}
+//   this.applyEmployeeFilter();
+// }
 
 
-isSomeBranchesSelected(): boolean {
-  return (
-    this.selectedBranches.length > 0 &&
-    this.selectedBranches.length < this.Branches.length
-  );
-}
+// isAllBranchesSelected(): boolean {
+//   return (
+//     this.Branches.length > 0 &&
+//     this.selectedBranches.length === this.Branches.length
+//   );
+// }
+
+
+// isSomeBranchesSelected(): boolean {
+//   return (
+//     this.selectedBranch.length > 0 &&
+//     this.selectedBranch.length < this.Branches.length
+//   );
+// }
 
 toggleAllDepartments(): void {
 
@@ -1026,59 +1025,86 @@ FilterEmployee(): void {
 
   let data = [...this.employees];
 
-  // Apply dropdown filters
-  if (this.selectedBranches.length > 0) {
+  // ============================================================
+  // BRANCH FILTER
+  // ============================================================
+
+  if (this.selectedBranch !== null && this.selectedBranch !== undefined) {
     data = data.filter(emp =>
-      this.selectedBranches.some(id =>
-        emp.emp_branch_id === this.getBranchName(id)
-      )
+      Number(emp.emp_branch_id) === Number(this.selectedBranch)
     );
   }
+
+
+  // ============================================================
+  // DEPARTMENT FILTER
+  // ============================================================
 
   if (this.selectedDepartments.length > 0) {
     data = data.filter(emp =>
       this.selectedDepartments.some(id =>
-        emp.emp_dept_id === this.getDepartmentName(id)
+        Number(emp.emp_dept_id) === Number(id)
       )
     );
   }
+
+
+  // ============================================================
+  // CATEGORY FILTER
+  // ============================================================
 
   if (this.selectedCategories.length > 0) {
     data = data.filter(emp =>
       this.selectedCategories.some(id =>
-        emp.emp_ctgry_id === this.getCategoryName(id)
+        Number(emp.emp_ctgry_id) === Number(id)
       )
     );
   }
+
+
+  // ============================================================
+  // DESIGNATION FILTER
+  // ============================================================
 
   if (this.selectedDesignations.length > 0) {
     data = data.filter(emp =>
       this.selectedDesignations.some(id =>
-        emp.emp_desgntn_id === this.getDesignationName(id)
+        Number(emp.emp_desgntn_id) === Number(id)
       )
     );
   }
 
-  // Employee name/code search
+
+  // ============================================================
+  // EMPLOYEE SEARCH
+  // ============================================================
+
   if (search) {
     data = data.filter(emp => {
 
       const name =
         `${emp.emp_first_name || ''} ${emp.emp_last_name || ''}`
+          .trim()
           .toLowerCase();
 
       const code =
-        (emp.emp_code || '').toLowerCase();
+        String(emp.emp_code || '').toLowerCase();
 
-      return name.includes(search) || code.includes(search);
+      return (
+        name.includes(search) ||
+        code.includes(search)
+      );
     });
   }
+
 
   this.filteredEmployees = data;
 
   this.currentPage = 1;
+
   this.updatePagination();
 }
+
 
 updatePagination(): void {
 
@@ -1137,6 +1163,14 @@ nextPage(): void {
     this.currentPage++;
     this.updatePagination();
   }
+}
+
+
+// Select a branch
+onBranchChange(branchId: number | null): void {
+  this.selectedBranch = branchId;
+
+  this.applyEmployeeFilter();
 }
 
     // LoadEmployee(selectedSchema: string) {
@@ -1440,10 +1474,10 @@ loadEmp(callback?: Function): void {
             this.Branches = result; // Fallback: show all if nothing is selected in sidebar
           }
           // Inside the subscribe block of loadDeparmentBranch
-// ✅ Auto select first branch
-if (this.Branches.length > 0) {
-  this.branch = this.Branches[0].id;
-}
+          // ✅ Auto select first branch
+          if (this.Branches.length > 0) {
+           this.branch = this.Branches[0].id;
+          }
   
           console.log('Filtered branches for selection:', this.Branches);
           if (callback) callback();

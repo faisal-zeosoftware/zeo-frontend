@@ -85,63 +85,51 @@
   <div class="row g-3">
 
     <!-- Branch -->
-     <div class="col-md-3">
+<div class="col-md-3">
+  <div class="filter-select-card">
 
-    
-      <div class="filter-select-card">
+    <label class="filter-title">
+      <mat-icon>apartment</mat-icon>
+      Branch
+    </label>
 
-        <label class="filter-title">
-          <mat-icon>apartment</mat-icon>
-          Branch
-        </label>
-      
-        <mat-form-field
-          appearance="outline"
-          class="modern-multi-select">
-      
-          <mat-select
-          multiple
-          [(ngModel)]="selectedBranches"
-          [ngModelOptions]="{standalone:true}"
-          (selectionChange)="applyEmployeeFilter()">
-        
-          <mat-checkbox
-            class="select-all-checkbox"
-            [checked]="isAllBranchesSelected()"
-            [indeterminate]="isSomeBranchesSelected()"
+    <mat-form-field
+      appearance="outline"
+      class="modern-multi-select">
+
+      <mat-select
+        [(ngModel)]="selectedBranch"
+        [ngModelOptions]="{ standalone: true }"
+        (selectionChange)="applyEmployeeFilter()">
+
+        <!-- Search -->
+        <div class="px-2 pb-2">
+          <input
+            type="text"
+            placeholder="Search Branch"
+            class="form-control"
+            [(ngModel)]="branchsearch"
+            [ngModelOptions]="{ standalone: true }"
             (click)="$event.stopPropagation()"
-            (change)="toggleAllBranches()">
-        
-            Select All
-        
-          </mat-checkbox>
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
 
-                                               <!-- Search -->
-                    <div class="px-2 pb-2">
-                      <input
-                        type="text"
-                        placeholder="Search Branch"
-                        class="form-control"
-                        [(ngModel)]="branchsearch"
-                        [ngModelOptions]="{ standalone: true }"
-                        (click)="$event.stopPropagation()"
-                         (keydown)="$event.stopPropagation()"
-                      />
-                    </div>
-        
-          <mat-option
-            *ngFor="let item of filterBranches()"
-            [value]="item.id">
-        
-            {{ item.branch_name }}
-        
-          </mat-option>
-        
-        </mat-select>
-        </mat-form-field>
-      
-      </div>
-   </div>
+        <mat-option
+          *ngFor="let item of filterBranches()"
+          [value]="item.id">
+
+          {{ item.branch_name }}
+
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+</div>
+
 
 <div class="col-md-3">
   <div class="filter-select-card">
@@ -522,6 +510,7 @@
         <th>Document Number</th>
         <th>Branch</th>
         <th>Department</th>
+        <th>Designation</th>
         <th>Category</th>
         <th>Status</th>
         <th class="sticky-right">Actions</th>
@@ -559,6 +548,10 @@
 
         <td data-label="Department">
           {{ payroll.department }}
+        </td>
+
+        <td data-label="Designation">
+          {{ payroll.designation }}
         </td>
 
         <td data-label="Category">

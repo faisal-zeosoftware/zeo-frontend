@@ -442,100 +442,7 @@ input:focus-visible {
     cursor: pointer;
   }
   
-
-  /* ===== Mobile Responsive Table (<= 640px) ===== */
-@media only screen and (max-width: 640px) {
-
-  .comapny_section {
-    margin: 20px 10px;
-  }
-
-  .com_list {
-    padding: 10px;
-    background: #fff;
-    border: none;
-    box-shadow: none;
-  }
-
-  table.styled-table {
-    width: 100%;
-    border: 0;
-    table-layout: fixed;
-  }
-
-  /* Hide table header */
-  table.styled-table thead {
-    display: none;
-  }
-
-  /* Make each row a card */
-  table.styled-table tbody {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 100%;
-  }
-
-  table.styled-table tr {
-    display: block;
-    width: 100%;
-    background: #ffffff;
-    border: 1px solid #004976;
-    border-radius: 10px;
-    padding: 12px 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    box-sizing: border-box;
-  }
-
-  /* Stack each cell vertically */
-  table.styled-table td {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 6px 0;
-    text-align: left;
-    font-size: 12px;
-    line-height: 1.4;
-    word-break: break-word;
-    border: none;
-  }
-
-  /* Label before value */
-  table.styled-table td::before {
-    content: attr(data-label);
-    font-weight: 500;
-    color: #ffffff;
-    margin-right: 10px;
-    flex: 0 0 40%; /* Label width */
-    text-transform: capitalize;
-  }
-
-  /* Checkbox / first column adjustment */
-  table.styled-table td:first-child {
-    display: flex;
-    align-items: center;
-  }
-
-  /* Status pill adjustments */
-  .pill {
-    font-size: 12px;
-    padding: 4px 10px;
-  }
-
-  /* Reduce large font areas */
-  .header_section h1,
-  .com_list h2 {
-    font-size: 14px;
-  }
-
-  /* Remove horizontal scroll */
-  .table-scroll {
-    overflow-x: hidden !important;
-  }
-}
-
-
-
+  
 .search-container .input-group {
   border-radius: 8px;
   overflow: hidden;
@@ -563,3 +470,429 @@ input:focus-visible {
   font-size: 12px !important;
   font-weight: 500 !important;
 }
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+/* Tablet */
+@media (max-width: 991px) {
+
+  .comapny_section {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .com_list {
+    padding: 15px;
+  }
+
+  .search-container {
+    margin-top: 10px;
+  }
+
+  .row.mb-3.align-items-center > .col-md-2 {
+    margin-top: 10px;
+  }
+
+  .table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .styled-table {
+    min-width: 1100px;
+  }
+
+  .modal-content {
+    width: 80%;
+  }
+}
+
+
+/* =========================================================
+   MOBILE - <= 767px
+   ========================================================= */
+@media (max-width: 767px) {
+
+  .comapny_section {
+    margin: 10px;
+    width: auto;
+  }
+
+  .com_list {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    border-top: 3px solid #4f46e5;
+  }
+
+  /* -----------------------------------------
+     Header / Title / Search
+     ----------------------------------------- */
+
+  .com_list .row:first-child {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .com_list .row:first-child > .col-md-4 {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .com_list h2 {
+    font-size: 15px;
+    margin: 5px 0 12px;
+  }
+
+  .search-container {
+    width: 100%;
+    margin: 0;
+  }
+
+  .search-container .input-group {
+    width: 100%;
+  }
+
+  .search-container .form-control {
+    min-width: 0;
+    font-size: 12px;
+  }
+
+  .search-container .input-group-text {
+    padding: 6px 9px;
+  }
+
+  .search-container .btn {
+    padding: 6px 10px;
+  }
+
+
+  /* -----------------------------------------
+     Pending count + Buttons
+     ----------------------------------------- */
+
+  .row.mb-3.align-items-center {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .row.mb-3.align-items-center > .col-md-8 {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 12px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .row.mb-3.align-items-center > .col-md-2 {
+    width: 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+    margin: 0;
+    padding: 0 5px;
+  }
+
+  .row.mb-3.align-items-center > .col-md-2:first-of-type {
+    padding-left: 0;
+  }
+
+  .row.mb-3.align-items-center > .col-md-2:last-of-type {
+    padding-right: 0;
+  }
+
+  .btn-full {
+    width: 100%;
+    min-height: 38px;
+    font-size: 13px;
+  }
+
+  .ml-2 {
+    margin-left: 0 !important;
+  }
+
+
+  /* -----------------------------------------
+     TABLE
+     ----------------------------------------- */
+
+  .table-scroll {
+    width: 100%;
+    overflow-x: hidden !important;
+    overflow-y: visible;
+  }
+
+  table.styled-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    box-shadow: none;
+    white-space: normal;
+    table-layout: auto;
+  }
+
+  /* Hide desktop header */
+  table.styled-table thead {
+    display: none;
+  }
+
+  table.styled-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  /* -----------------------------------------
+     Each table row becomes a card
+     ----------------------------------------- */
+
+  table.styled-table tbody tr {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px 14px;
+    box-sizing: border-box;
+
+    background: #ffffff !important;
+    border: 1px solid #e1e5e9;
+    border-left: 4px solid #004976;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08);
+  }
+
+  table.styled-table tbody tr:hover {
+    background: #ffffff !important;
+  }
+
+  /* -----------------------------------------
+     Table cells
+     ----------------------------------------- */
+
+  table.styled-table tbody td {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100% !important;
+    min-height: 32px;
+
+    padding: 6px 0 !important;
+    margin: 0;
+
+    box-sizing: border-box;
+
+    background: transparent !important;
+    border: none !important;
+
+    color: #374151 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+
+    text-align: right;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  /* Label */
+  table.styled-table tbody td::before {
+    content: attr(data-label);
+
+    display: block;
+    flex: 0 0 42%;
+
+    margin-right: 10px;
+
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 600;
+
+    text-align: left;
+    text-transform: capitalize;
+  }
+
+  /* Value */
+  table.styled-table tbody td {
+    gap: 10px;
+  }
+
+  /* -----------------------------------------
+     Checkbox
+     ----------------------------------------- */
+
+  table.styled-table tbody td:first-child {
+    justify-content: flex-start;
+    padding-bottom: 9px !important;
+    margin-bottom: 5px;
+
+    border-bottom: 1px solid #eeeeee !important;
+  }
+
+  table.styled-table tbody td:first-child::before {
+    flex: 0 0 auto;
+    content: "Select";
+  }
+
+  table.styled-table tbody td:first-child input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+  }
+
+  /* -----------------------------------------
+     Status
+     ----------------------------------------- */
+
+  table.styled-table tbody td:last-child {
+    margin-top: 5px;
+    padding-top: 9px !important;
+
+    border-top: 1px solid #eeeeee !important;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 65px;
+
+    padding: 4px 9px !important;
+
+    font-size: 11px !important;
+    line-height: 1.2;
+
+    border-radius: 999px;
+  }
+
+  /* -----------------------------------------
+     Empty state
+     ----------------------------------------- */
+
+  table.styled-table tbody tr:has(td[colspan]) {
+    border: 1px solid #e5e7eb;
+    border-left: 1px solid #e5e7eb;
+    text-align: center;
+  }
+
+  table.styled-table tbody tr:has(td[colspan]) td {
+    display: block !important;
+    text-align: center;
+  }
+
+  table.styled-table tbody tr:has(td[colspan]) td::before {
+    display: none;
+  }
+
+
+  /* -----------------------------------------
+     Modal
+     ----------------------------------------- */
+
+  .modal {
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    margin: 50px auto 20px;
+    padding: 15px;
+    box-sizing: border-box;
+  }
+
+  .modal h2 {
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+
+  .modal-content .row {
+    margin-left: -5px;
+    margin-right: -5px;
+  }
+
+  .modal-content .col-md-10,
+  .modal-content .col-md-2,
+  .modal-content .col-md-12,
+  .modal-content .col-md-6,
+  .modal-content .col-md-3 {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .modal-content textarea {
+    font-size: 13px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE - <= 480px
+   ========================================================= */
+@media (max-width: 480px) {
+
+  .comapny_section {
+    margin: 5px;
+  }
+
+  .com_list {
+    padding: 10px;
+  }
+
+  .com_list h2 {
+    font-size: 14px;
+  }
+
+  .row.mb-3.align-items-center > .col-md-2 {
+    width: 50%;
+    flex: 0 0 50%;
+  }
+
+  .btn-full {
+    min-height: 36px;
+    font-size: 12px;
+    padding: 7px 8px;
+  }
+
+  table.styled-table tbody tr {
+    padding: 9px 11px;
+    margin-bottom: 12px;
+  }
+
+  table.styled-table tbody td {
+    font-size: 11px !important;
+    min-height: 30px;
+  }
+
+  table.styled-table tbody td::before {
+    font-size: 10px;
+    flex-basis: 40%;
+  }
+
+  .pill {
+    font-size: 10px !important;
+    min-width: 58px;
+  }
+
+  .modal {
+    padding: 8px;
+  }
+
+  .modal-content {
+    margin-top: 30px;
+    padding: 12px;
+  }
+}
+
+
+
