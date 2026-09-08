@@ -761,6 +761,51 @@ clearFormula(): void {
   this.formula = '';
 }
 
+
+
+// ---- New property ----
+useCustomFormula: boolean = false;   // checkbox state — controls visibility of formula writer
+
+// ---- Reset when checkbox is unchecked (optional but recommended) ----
+onFormulaCheckboxChange(): void {
+  if (!this.useCustomFormula) {
+    // Clear whatever the user typed; submit will fall back to defaultFormula anyway
+    this.formula = '';
+    this.showFormulaHelper = false;
+    this.formulaSearch = '';
+  } else {
+    // When checked, pre-fill with default so they have something to start editing
+    if (!this.formula) {
+      this.formula = this.defaultFormula;
+    }
+  }
+}
+
+
+// ---- New properties for formula view modal ----
+isFormulaViewOpen: boolean = false;
+selectedFormula: string = '';
+
+// ---- Truncate long formulas for table preview ----
+getFormulaPreview(formula: string): string {
+  if (!formula) return '—';
+  const maxLength = 30;
+  return formula.length > maxLength
+    ? formula.substring(0, maxLength) + '...'
+    : formula;
+}
+
+// ---- Open modal showing full formula ----
+viewFormula(docs: any): void {
+  if (!docs.formula) return; // nothing to show
+  this.selectedFormula = docs.formula;
+  this.isFormulaViewOpen = true;
+}
+
+closeFormulaView(): void {
+  this.isFormulaViewOpen = false;
+  this.selectedFormula = '';
+}
   
 
 }

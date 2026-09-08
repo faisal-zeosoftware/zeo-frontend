@@ -197,70 +197,98 @@
 
 
             <!-- ================= FORMULA WRITER ================= -->
+<!-- ================= FORMULA WRITER ================= -->
 <div class="col-md-12 mt-3">
-  <label>
-    Encashment Formula
-    <i class="fa fa-question-circle text-muted ms-1"
-       style="cursor: pointer;"
-       (click)="toggleFormulaHelper()"
-       title="Click to show/hide available variables"></i>
-  </label>
 
-  <textarea
-  #formulaInput
-  class="form-control formula-textarea"
-  rows="2"
-  [(ngModel)]="formula"
-  [ngModelOptions]="{ standalone: true }"
-  placeholder="e.g. basic_salary / fixed_days * encashment_days"
-  [ngClass]="{'error-field': formula && !isFormulaValid(formula)}">
-</textarea>
-
-<div *ngIf="formula && !isFormulaValid(formula)" class="error-message">
-  Unknown variable(s): {{ getUnknownFormulaTokens(formula).join(', ') }}
-</div>
-  <!-- Quick operator toolbar -->
-  <div class="formula-operator-bar mt-2">
-    <button type="button" class="btn btn-sm btn-outline-secondary"
-            *ngFor="let op of ['+', '-', '*', '/', '(', ')']"
-            (click)="insertOperator(op)">
-      {{ op }}
-    </button>
-    <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="clearFormula()">
-      <i class="fa fa-trash"></i> Clear
-    </button>
+  <!-- Checkbox toggle -->
+  <div class="form-check">
+    <input
+      type="checkbox"
+      id="useCustomFormula"
+      class="form-check-input"
+      [(ngModel)]="useCustomFormula"
+      [ngModelOptions]="{ standalone: true }"
+      (change)="onFormulaCheckboxChange()" />
+    <label class="form-check-label" for="useCustomFormula">
+      Use Custom Encashment Formula
+    </label>
   </div>
 
-  <!-- Variable helper panel -->
-  <div class="formula-helper-panel mt-2" *ngIf="showFormulaHelper">
-    <div class="formula-helper-header">
-      <span>Available Variables</span>
-      <i class="fa fa-times close-filter-icon" (click)="toggleFormulaHelper()"></i>
+  <!-- Hint shown when unchecked -->
+  <div class="text-muted small mt-1" *ngIf="!useCustomFormula">
+    Default formula will be used: <code>{{ defaultFormula }}</code>
+  </div>
+
+  <!-- Formula writer — only visible when checkbox is checked -->
+  <div *ngIf="useCustomFormula" class="mt-2">
+
+    <label>
+      Encashment Formula
+      <i class="fa fa-question-circle text-muted ms-1"
+         style="cursor: pointer;"
+         (click)="toggleFormulaHelper()"
+         title="Click to show/hide available variables"></i>
+    </label>
+
+    <textarea
+      #formulaInput
+      class="form-control formula-textarea"
+      rows="2"
+      [(ngModel)]="formula"
+      [ngModelOptions]="{ standalone: true }"
+      placeholder="e.g. basic_salary / fixed_days * encashment_days"
+      [ngClass]="{'error-field': formula && !isFormulaValid(formula)}">
+    </textarea>
+
+    <div *ngIf="formula && !isFormulaValid(formula)" class="error-message">
+      Unknown variable(s): {{ getUnknownFormulaTokens(formula).join(', ') }}
     </div>
 
-    <input
-      type="text"
-      class="form-control mb-2"
-      placeholder="Search variables..."
-      [(ngModel)]="formulaSearch"
-      [ngModelOptions]="{ standalone: true }" />
-
-    <div class="formula-variable-list">
-      <button
-        type="button"
-        class="formula-variable-chip"
-        *ngFor="let v of filteredFormulaVariables()"
-        (click)="insertVariable(v)"
-        [title]="'Insert ' + v">
-        {{ v }}
+    <!-- Quick operator toolbar -->
+    <div class="formula-operator-bar mt-2">
+      <button type="button" class="btn btn-sm btn-outline-secondary"
+              *ngFor="let op of ['+', '-', '*', '/', '(', ')']"
+              (click)="insertOperator(op)">
+        {{ op }}
       </button>
+      <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="clearFormula()">
+        <i class="fa fa-trash"></i> Clear
+      </button>
+    </div>
 
-      <div *ngIf="filteredFormulaVariables().length === 0" class="text-muted small p-2">
-        No matching variables.
+    <!-- Variable helper panel -->
+    <div class="formula-helper-panel mt-2" *ngIf="showFormulaHelper">
+      <div class="formula-helper-header">
+        <span>Available Variables</span>
+        <i class="fa fa-times close-filter-icon" (click)="toggleFormulaHelper()"></i>
+      </div>
+
+      <input
+        type="text"
+        class="form-control mb-2"
+        placeholder="Search variables..."
+        [(ngModel)]="formulaSearch"
+        [ngModelOptions]="{ standalone: true }" />
+
+      <div class="formula-variable-list">
+        <button
+          type="button"
+          class="formula-variable-chip"
+          *ngFor="let v of filteredFormulaVariables()"
+          (click)="insertVariable(v)"
+          [title]="'Insert ' + v">
+          {{ v }}
+        </button>
+
+        <div *ngIf="filteredFormulaVariables().length === 0" class="text-muted small p-2">
+          No matching variables.
+        </div>
       </div>
     </div>
+
   </div>
 </div>
+<!-- ================= END FORMULA WRITER ================= -->
 <!-- ================= END FORMULA WRITER ================= -->
                   
                  
@@ -421,51 +449,77 @@ name="leave_type"
 
   
   <div class="com_list mt-4" *ngIf="hasViewPermission">
-  <table width="100%" *ngIf="hasViewPermission">
-                    <thead>
-                      <tr>
-                        <th>No</th>
-                        <th>Leave Type</th>
-                        <th>Employee</th>
-                        <th>Encashment days</th>
-                        <th>Remarks</th>
-                        <th>Status</th>
-                        <th>Action</th>
-            
-                       
-                      </tr>
-                    </thead>
-                    <tbody>
-                        
-                      <tr *ngFor="let docs of pagedLeaveBalances;let i = index">
-                       <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-                        <td data-label="Leave type">{{ docs.leave_type }}</td>
-                         <td data-label="Employee">{{ docs.employee }}</td>
-                        <td data-label="Encashment Days">{{ docs.encashment_days }}</td>
-                        <td data-label="Status">{{ docs.status }}</td> 
-                        <td data-label="Remarks">{{ docs.remarks }}</td> 
-                       
-                        
-                        <td data-label="Action">
-                          <button
-                            mat-fab
-                            color="primary"
-                            aria-label="Edit icon"
-                            *ngIf="showEditBtn"
-          
-                            
-                            (click)="openEditModal(docs)"
-                          >
-                            <mat-icon style="color: white;">draw</mat-icon>
-                          </button>
-          
-                          <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected" ></mat-checkbox>
-          
-                        </td>
-                      </tr>
-                  
-                    </tbody>
-                  </table>
+    <table width="100%" *ngIf="hasViewPermission">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Leave Type</th>
+          <th>Employee</th>
+          <th>Encashment days</th>
+          <th>Formula</th>
+          <th>Status</th>
+          <th>Remarks</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+    
+        <tr *ngFor="let docs of pagedLeaveBalances; let i = index">
+          <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+          <td data-label="Leave type">{{ docs.leave_type }}</td>
+          <td data-label="Employee">{{ docs.employee }}</td>
+          <td data-label="Encashment Days">{{ docs.encashment_days }}</td>
+    
+          <!-- ✅ Formula column -->
+          <td data-label="Formula">
+            <span
+              class="formula-preview"
+              [title]="docs.formula"
+              (click)="viewFormula(docs)">
+              {{ getFormulaPreview(docs.formula) }}
+            </span>
+          </td>
+    
+          <td data-label="Status">{{ docs.status }}</td>
+          <td data-label="Remarks">{{ docs.remarks }}</td>
+    
+          <td data-label="Action">
+            <button
+              mat-fab
+              color="primary"
+              aria-label="Edit icon"
+              *ngIf="showEditBtn"
+              (click)="openEditModal(docs)"
+            >
+              <mat-icon style="color: white;">draw</mat-icon>
+            </button>
+    
+            <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+          </td>
+        </tr>
+    
+      </tbody>
+    </table>
+    
+    <!-- ================= FORMULA VIEW MODAL ================= -->
+    <div *ngIf="isFormulaViewOpen" class="modal">
+      <div class="modal-content" style="max-width: 500px;">
+        <div class="row">
+          <div class="col-md-8">
+            <h2>Encashment Formula</h2>
+          </div>
+          <div class="col-md-4 text-right">
+            <span class="close-btn" (click)="closeFormulaView()">×</span>
+          </div>
+        </div>
+        <hr />
+    
+        <div class="formula-view-box">
+          {{ selectedFormula || 'No formula set' }}
+        </div>
+      </div>
+    </div>
+    <!-- ================= END FORMULA VIEW MODAL ================= -->
             
 <!-- <div class="pagination-container">
 
