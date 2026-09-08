@@ -167,7 +167,7 @@
                                [ngModelOptions]="{standalone: true}">
                       </div>
                   
-    <div class="col-md-6">
+    <!-- <div class="col-md-6">
     <label>Status</label>
     <div class="custom-sel">
       <select
@@ -180,7 +180,7 @@
         <option value="Cancelled">Cancelled</option>
       </select>
     </div>
-  </div>
+  </div> -->
 
              <div class="col-md-6">
               <label>Remark</label>
@@ -193,6 +193,75 @@
                 [ngModelOptions]="{ standalone: true }"
               />
             </div>
+
+
+
+            <!-- ================= FORMULA WRITER ================= -->
+<div class="col-md-12 mt-3">
+  <label>
+    Encashment Formula
+    <i class="fa fa-question-circle text-muted ms-1"
+       style="cursor: pointer;"
+       (click)="toggleFormulaHelper()"
+       title="Click to show/hide available variables"></i>
+  </label>
+
+  <textarea
+  #formulaInput
+  class="form-control formula-textarea"
+  rows="2"
+  [(ngModel)]="formula"
+  [ngModelOptions]="{ standalone: true }"
+  placeholder="e.g. basic_salary / fixed_days * encashment_days"
+  [ngClass]="{'error-field': formula && !isFormulaValid(formula)}">
+</textarea>
+
+<div *ngIf="formula && !isFormulaValid(formula)" class="error-message">
+  Unknown variable(s): {{ getUnknownFormulaTokens(formula).join(', ') }}
+</div>
+  <!-- Quick operator toolbar -->
+  <div class="formula-operator-bar mt-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary"
+            *ngFor="let op of ['+', '-', '*', '/', '(', ')']"
+            (click)="insertOperator(op)">
+      {{ op }}
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-danger ms-2" (click)="clearFormula()">
+      <i class="fa fa-trash"></i> Clear
+    </button>
+  </div>
+
+  <!-- Variable helper panel -->
+  <div class="formula-helper-panel mt-2" *ngIf="showFormulaHelper">
+    <div class="formula-helper-header">
+      <span>Available Variables</span>
+      <i class="fa fa-times close-filter-icon" (click)="toggleFormulaHelper()"></i>
+    </div>
+
+    <input
+      type="text"
+      class="form-control mb-2"
+      placeholder="Search variables..."
+      [(ngModel)]="formulaSearch"
+      [ngModelOptions]="{ standalone: true }" />
+
+    <div class="formula-variable-list">
+      <button
+        type="button"
+        class="formula-variable-chip"
+        *ngFor="let v of filteredFormulaVariables()"
+        (click)="insertVariable(v)"
+        [title]="'Insert ' + v">
+        {{ v }}
+      </button>
+
+      <div *ngIf="filteredFormulaVariables().length === 0" class="text-muted small p-2">
+        No matching variables.
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ================= END FORMULA WRITER ================= -->
                   
                  
                     </div>

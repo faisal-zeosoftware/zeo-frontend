@@ -533,3 +533,59 @@ input:focus-visible {
 
 
   }
+
+
+
+
+  .formula-textarea {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    resize: vertical;
+  }
+  
+  .formula-operator-bar .btn {
+    min-width: 34px;
+    font-weight: bold;
+    margin-right: 4px;
+  }
+  
+  .formula-helper-panel {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 10px;
+    background: #fafbfc;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  
+  .formula-helper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .formula-variable-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  
+  .formula-variable-chip {
+    background: #eef3fb;
+    border: 1px solid #c9d9f0;
+    border-radius: 14px;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  
+  .formula-variable-chip:hover {
+    background: #3498db;
+    color: #fff;
+    border-color: #3498db;
+  }

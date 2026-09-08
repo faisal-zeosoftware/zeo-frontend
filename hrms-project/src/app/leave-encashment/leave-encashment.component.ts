@@ -1,6 +1,6 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -16,6 +16,9 @@ import {combineLatest, Subscription } from 'rxjs';
   styleUrl: './leave-encashment.component.css'
 })
 export class LeaveEncashmentComponent {
+
+
+  @ViewChild('formulaInput') formulaInputRef!: ElementRef<HTMLTextAreaElement>;
 
   
        private apiUrl = `${environment.apiBaseUrl}`;
@@ -244,27 +247,7 @@ export class LeaveEncashmentComponent {
   
   
   
-      //   LoadLeavetype(callback?: Function) {
-  
-      //   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
       
-      //    console.log('schemastore',selectedSchema )
-      //    // Check if selectedSchema is available
-      //    if (selectedSchema) {
-  
-      //     this.leaveService.getLeaveType(selectedSchema).subscribe(
-      //       (data: any) => {
-      //         this.LeaveTypes = data;
-            
-      //         console.log('employee:', this.LeaveTypes);
-      //           if (callback) callback();
-      //       },
-      //       (error: any) => {
-      //         console.error('Error fetching categories:', error);
-      //       }
-      //     );
-      //   }
-      // }
   
   
       LoadLeavetype(callback?: Function) {
@@ -363,81 +346,67 @@ export class LeaveEncashmentComponent {
   
         
         LeaveEncashment(): void {
-        this.registerButtonClicked = true;
-        // if (!this.name || !this.code || !this.valid_to) {
-        //   return;
-        // }
-      
-        const formData = new FormData();
-        formData.append('leave_type', this.leave_type);
-        formData.append('encashment_days', this.encashment_days);
-  
-  
-    
-        formData.append('status', this.status);
-        formData.append('remarks', this.remarks);
-        formData.append('employee', this.employee);
-      
-  
-       
-    
+          this.registerButtonClicked = true;
         
-      
-      
-        this.leaveService.CreateLeaveEncashment(formData).subscribe(
-          (response) => {
-            console.log('Registration successful', response);
-    
-    
-            alert('Leave encashment has been Created');
-    
-            window.location.reload();
-          },  
-      (error) => {
-        console.error('Leave encashment failed:', error);
-  
-        let errorMessage = 'Something went wrong.';
-  
-        // ✅ Handle backend validation or field-level errors
-        if (error.error && typeof error.error === 'object') {
-          const messages: string[] = [];
-  
-          for (const [key, value] of Object.entries(error.error)) {
-            if (Array.isArray(value)) {
-              messages.push(`${key}: ${value.join(', ')}`);
-            } else if (typeof value === 'string') {
-              messages.push(`${key}: ${value}`);
-            } else {
-              messages.push(`${key}: ${JSON.stringify(value)}`);
+          if (!this.leave_type || !this.employee) {
+            return;
+          }
+        
+          // If the field is empty/whitespace, fall back to the backend's default formula
+          const formulaToSave = (this.formula && this.formula.trim())
+            ? this.formula.trim()
+            : this.defaultFormula;
+        
+          // Validate only if there's actually a formula (typed or default) to check
+          if (formulaToSave && !this.isFormulaValid(formulaToSave)) {
+            alert(
+              `Formula contains unknown variable(s): ${this.getUnknownFormulaTokens(formulaToSave).join(', ')}`
+            );
+            return;
+          }
+        
+          const formData = new FormData();
+          formData.append('leave_type', this.leave_type);
+          formData.append('encashment_days', this.encashment_days);
+          formData.append('status', this.status);
+          formData.append('remarks', this.remarks);
+          formData.append('employee', this.employee);
+          formData.append('formula', formulaToSave); // ✅ always sends a formula, never blank
+        
+          this.leaveService.CreateLeaveEncashment(formData).subscribe(
+            (response) => {
+              console.log('Registration successful', response);
+              alert('Leave encashment has been Created');
+              window.location.reload();
+            },
+            (error) => {
+              console.error('Leave encashment failed:', error);
+        
+              let errorMessage = 'Something went wrong.';
+        
+              if (error.error && typeof error.error === 'object') {
+                const messages: string[] = [];
+                for (const [key, value] of Object.entries(error.error)) {
+                  if (Array.isArray(value)) {
+                    messages.push(`${key}: ${value.join(', ')}`);
+                  } else if (typeof value === 'string') {
+                    messages.push(`${key}: ${value}`);
+                  } else {
+                    messages.push(`${key}: ${JSON.stringify(value)}`);
+                  }
+                }
+                if (messages.length > 0) {
+                  errorMessage = messages.join('\n');
+                }
+              } else if (error.error?.detail) {
+                errorMessage = error.error.detail;
+              }
+        
+              alert(`Leave encashment failed!\n\n${errorMessage}`);
             }
-          }
-  
-          if (messages.length > 0) {
-            errorMessage = messages.join('\n');
-          }
-        } else if (error.error?.detail) {
-          // Handles backend messages like { "detail": "Invalid data" }
-          errorMessage = error.error.detail;
+          );
         }
   
-        alert(`Leave encashment failed!\n\n${errorMessage}`);
-      }
-        );
-      }
-  
-  
-      // LoadLeavebalance(selectedSchema: string) {
-      //   this.leaveService.getLeaveBalanceAll(selectedSchema).subscribe(
-      //     (data: any) => {
-      //       this.LeaveBalances = data;
-          
-      //       console.log('employee:', this.LeaveTypes);
-      //     },
-      //     (error: any) => {
-      //       console.error('Error fetching categories:', error);
-      //     }
-      //   );
-      // }
     
   
       isLoading: boolean = false;
@@ -601,87 +570,6 @@ export class LeaveEncashmentComponent {
   
   
   
-  // isBulkuploadDepartmentModalOpen = false;
-  // showUploadForm = false;
-  // selectedFile!: File;
-  
-  /* Open / Close Modal */
-  // OpenBulkuploadModal(): void {
-  //   this.isBulkuploadDepartmentModalOpen = true;
-  // }
-  
-  // closeBulkuploadModal(): void {
-  //   this.isBulkuploadDepartmentModalOpen = false;
-  //   this.showUploadForm = false;
-  // }
-  
-  // toggleUploadForm(): void {
-  //   this.showUploadForm = !this.showUploadForm;
-  // }
-  
-  // closeUploadForm(): void {
-  //   this.showUploadForm = false;
-  // }
-  
-  /* File Select */
-  // onFileSelected(event: any): void {
-  //   this.selectedFile = event.target.files[0];
-  // }
-  
-  // bulkUploadLeaveBalance(): void {
-  //   const selectedSchema = this.authService.getSelectedSchema();
-  //   if (!selectedSchema || !this.selectedFile) return;
-  
-  //   const formData = new FormData();
-  //   formData.append('file', this.selectedFile);
-  
-  //   this.http.post(
-  //     `${this.apiUrl}/calendars/api/Emp-bulkupld-openings/bulk_upload/?schema=${selectedSchema}`,
-  //     formData
-  //   ).subscribe({
-  //     next: () => {
-  //       alert('Leave Balance uploaded successfully');
-  //       window.location.reload();
-  //     },
-  //     error: () => {
-  //       alert('Upload failed');
-  //     }
-  //   });
-  // }
-  
-  // downloadLeaveBalanceCsv(): void {
-  //   const schema = this.authService.getSelectedSchema();
-  //   if (!schema) return;
-  
-  //   this.companyRegistrationService
-  //     .downloadLeaveCsv(schema)
-  //     .subscribe((blob: Blob) => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       const a = document.createElement('a');
-  //       a.href = url;
-  //       a.download = 'Leave_Balance_Template.csv';
-  //       a.click();
-  //       window.URL.revokeObjectURL(url);
-  //     });
-  // }
-  
-  
-  // downloadLeaveBalanceExcel(): void {
-  //   const schema = this.authService.getSelectedSchema();
-  //   if (!schema) return;
-  
-  //   this.companyRegistrationService
-  //     .downloadLeaveExcel(schema)
-  //     .subscribe((blob: Blob) => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       const a = document.createElement('a');
-  //       a.href = url;
-  //       a.download = 'Leave_Balance_Template.xlsx';
-  //       a.click();
-  //       window.URL.revokeObjectURL(url);
-  //     });
-  // }
-  
   
     employeeSearch: string = '';
   
@@ -765,6 +653,114 @@ export class LeaveEncashmentComponent {
     this.updatePagination();
   }
   // =====
+
+
+
+
+
+  // formula writer section
+
+
+  // ---- New properties for formula writer ----
+
+formulaVariables: string[] = [];
+formula: string = '';
+defaultFormula: string = '';   // store separately so we always have a fallback
+formulaSearch: string = '';
+showFormulaHelper: boolean = false;
+
+
+// ---- Load available variables (call this when opening the modal) ----
+loadFormulaVariables(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    console.error('No schema selected.');
+    return;
+  }
+
+  this.leaveService.getEncashmentFormulaVariables(selectedSchema).subscribe({
+    next: (result: any) => {
+      // Dedupe variables
+      this.formulaVariables = Array.from(new Set<string>(result.variables || []));
+
+      this.defaultFormula = result.default_formula || '';
+
+      // Pre-fill textarea with default only if user hasn't typed one yet
+      if (!this.formula) {
+        this.formula = this.defaultFormula;
+      }
+    },
+    error: (error) => {
+      console.error('Error fetching formula variables:', error);
+    }
+  });
+}
+
+// ---- Filtered list for the search box inside the helper panel ----
+filteredFormulaVariables(): string[] {
+  const search = this.formulaSearch.toLowerCase().trim();
+  if (!search) return this.formulaVariables;
+  return this.formulaVariables.filter(v => v.toLowerCase().includes(search));
+}
+
+// ---- Insert a variable at the current cursor position inside the textarea ----
+insertVariable(variable: string): void {
+  const textarea = this.formulaInputRef?.nativeElement;
+
+  if (!textarea) {
+    // Fallback: just append
+    this.formula = (this.formula ? this.formula + ' ' : '') + variable;
+    return;
+  }
+
+  const start = textarea.selectionStart ?? this.formula.length;
+  const end = textarea.selectionEnd ?? this.formula.length;
+
+  const before = this.formula.substring(0, start);
+  const after = this.formula.substring(end);
+
+  // Add spacing so tokens don't collide (e.g. "basic_salaryencashment_days")
+  const needsLeadingSpace = before.length > 0 && !before.endsWith(' ');
+  const insertText = (needsLeadingSpace ? ' ' : '') + variable + ' ';
+
+  this.formula = before + insertText + after;
+
+  // Restore focus + move cursor to right after the inserted variable
+  setTimeout(() => {
+    textarea.focus();
+    const cursorPos = before.length + insertText.length;
+    textarea.setSelectionRange(cursorPos, cursorPos);
+  }, 0);
+}
+
+// ---- Insert an operator (+, -, *, /, (, )) ----
+insertOperator(op: string): void {
+  this.insertVariable(op);
+}
+
+// ---- Basic client-side sanity check before submit ----
+isFormulaValid(formulaStr: string): boolean {
+  if (!formulaStr || !formulaStr.trim()) return true;
+
+  const tokens = formulaStr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+  const unknown = tokens.filter(t => !this.formulaVariables.includes(t));
+
+  return unknown.length === 0;
+}
+
+getUnknownFormulaTokens(formulaStr: string): string[] {
+  const tokens = formulaStr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+  return tokens.filter(t => !this.formulaVariables.includes(t));
+}
+toggleFormulaHelper(): void {
+  this.showFormulaHelper = !this.showFormulaHelper;
+}
+
+clearFormula(): void {
+  this.formula = '';
+}
+
   
 
 }

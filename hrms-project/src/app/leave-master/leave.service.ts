@@ -846,7 +846,10 @@ getLeaveTypeNew(selectedSchema: string, branchIds: number[]): Observable<any> {
 }
 
 
-
+getEncashmentFormulaVariables(selectedSchema: string): Observable<any> {
+  const url = `${this.apiUrl}/payroll/api/emp-leave-encashment/formula-variables/?schema=${selectedSchema}`;
+  return this.http.get(url);
+}
 
 
 getApprovalDetailsLeave(apiUrl: string): Observable<any> {
