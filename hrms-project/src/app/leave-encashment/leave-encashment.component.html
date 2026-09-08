@@ -257,34 +257,60 @@
     </div>
 
     <!-- Variable helper panel -->
-    <div class="formula-helper-panel mt-2" *ngIf="showFormulaHelper">
-      <div class="formula-helper-header">
-        <span>Available Variables</span>
-        <i class="fa fa-times close-filter-icon" (click)="toggleFormulaHelper()"></i>
-      </div>
+   <!-- Variable helper panel -->
+<div class="formula-helper-panel mt-2" *ngIf="showFormulaHelper">
+  <div class="formula-helper-header">
+    <span>Available Variables</span>
+    <i class="fa fa-times close-filter-icon" (click)="toggleFormulaHelper()"></i>
+  </div>
 
-      <input
-        type="text"
-        class="form-control mb-2"
-        placeholder="Search variables..."
-        [(ngModel)]="formulaSearch"
-        [ngModelOptions]="{ standalone: true }" />
+  <input
+    type="text"
+    class="form-control mb-2"
+    placeholder="Search variables..."
+    [(ngModel)]="formulaSearch"
+    [ngModelOptions]="{ standalone: true }" />
 
-      <div class="formula-variable-list">
-        <button
-          type="button"
-          class="formula-variable-chip"
-          *ngFor="let v of filteredFormulaVariables()"
-          (click)="insertVariable(v)"
-          [title]="'Insert ' + v">
-          {{ v }}
-        </button>
-
-        <div *ngIf="filteredFormulaVariables().length === 0" class="text-muted small p-2">
-          No matching variables.
-        </div>
-      </div>
+  <!-- General variables group -->
+  <div class="formula-var-group" *ngIf="filteredGeneralVariables().length > 0">
+    <div class="formula-var-group-title">
+      <mat-icon>functions</mat-icon> General
     </div>
+    <div class="formula-variable-list">
+      <button
+        type="button"
+        class="formula-variable-chip"
+        *ngFor="let v of filteredGeneralVariables()"
+        (click)="insertVariable(v)"
+        [title]="'Insert ' + v">
+        {{ v }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Leave balance variables group -->
+  <div class="formula-var-group" *ngIf="filteredLeaveBalanceVariables().length > 0">
+    <div class="formula-var-group-title">
+      <mat-icon>event_available</mat-icon> Leave Balances
+      <span class="formula-var-count">{{ filteredLeaveBalanceVariables().length }}</span>
+    </div>
+    <div class="formula-variable-list">
+      <button
+        type="button"
+        class="formula-variable-chip leave-balance-chip"
+        *ngFor="let v of filteredLeaveBalanceVariables()"
+        (click)="insertVariable(v)"
+        [title]="'Insert ' + v">
+        {{ v }}
+      </button>
+    </div>
+  </div>
+
+  <!-- No results -->
+  <div *ngIf="hasNoResults()" class="text-muted small p-2 text-center">
+    No matching variables.
+  </div>
+</div>
 
   </div>
 </div>

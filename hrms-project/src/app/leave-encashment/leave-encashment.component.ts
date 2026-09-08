@@ -76,6 +76,9 @@ export class LeaveEncashmentComponent {
   
       ngOnInit(): void {
   
+
+
+        this.loadFormulaVariables();
       // combineLatest waits for both Schema and Branches to have a value
       this.dataSubscription = combineLatest([
         this.employeeService.selectedSchema$,
@@ -669,10 +672,16 @@ defaultFormula: string = '';   // store separately so we always have a fallback
 formulaSearch: string = '';
 showFormulaHelper: boolean = false;
 
+groupedVariables: { general: string[]; leaveBalances: string[] } = {
+  general: [],
+  leaveBalances: [],
+};
 
-// ---- Load available variables (call this when opening the modal) ----
+
+// ---- Fetch + group variables ----
 loadFormulaVariables(): void {
   const selectedSchema = this.authService.getSelectedSchema();
+  console.log('[Formula] schema:', selectedSchema); // debug
 
   if (!selectedSchema) {
     console.error('No schema selected.');
@@ -681,35 +690,65 @@ loadFormulaVariables(): void {
 
   this.leaveService.getEncashmentFormulaVariables(selectedSchema).subscribe({
     next: (result: any) => {
-      // Dedupe variables
-      this.formulaVariables = Array.from(new Set<string>(result.variables || []));
+      console.log('[Formula] API response:', result); // debug
+
+      const uniqueVars: string[] = Array.from(new Set<string>(result.variables || []));
+      this.formulaVariables = uniqueVars;
+
+      this.groupedVariables.general = uniqueVars.filter(v => !v.startsWith('leave_balance_'));
+      this.groupedVariables.leaveBalances = uniqueVars.filter(v => v.startsWith('leave_balance_'));
+
+      console.log('[Formula] general:', this.groupedVariables.general);
+      console.log('[Formula] leaveBalances:', this.groupedVariables.leaveBalances);
 
       this.defaultFormula = result.default_formula || '';
 
-      // Pre-fill textarea with default only if user hasn't typed one yet
       if (!this.formula) {
         this.formula = this.defaultFormula;
       }
     },
     error: (error) => {
-      console.error('Error fetching formula variables:', error);
+      console.error('[Formula] API error:', error); // check this in console!
     }
   });
 }
 
-// ---- Filtered list for the search box inside the helper panel ----
-filteredFormulaVariables(): string[] {
-  const search = this.formulaSearch.toLowerCase().trim();
-  if (!search) return this.formulaVariables;
-  return this.formulaVariables.filter(v => v.toLowerCase().includes(search));
+// ---- Checkbox change ----
+onFormulaCheckboxChange(): void {
+  if (!this.useCustomFormula) {
+    this.formula = '';
+    this.showFormulaHelper = false;
+    this.formulaSearch = '';
+  } else {
+    if (!this.formula) {
+      this.formula = this.defaultFormula;
+    }
+  }
 }
 
-// ---- Insert a variable at the current cursor position inside the textarea ----
+// ---- Search filters ----
+filteredGeneralVariables(): string[] {
+  const search = this.formulaSearch.toLowerCase().trim();
+  if (!search) return this.groupedVariables.general;
+  return this.groupedVariables.general.filter(v => v.toLowerCase().includes(search));
+}
+
+filteredLeaveBalanceVariables(): string[] {
+  const search = this.formulaSearch.toLowerCase().trim();
+  if (!search) return this.groupedVariables.leaveBalances;
+  return this.groupedVariables.leaveBalances.filter(v => v.toLowerCase().includes(search));
+}
+
+hasNoResults(): boolean {
+  return this.filteredGeneralVariables().length === 0 &&
+         this.filteredLeaveBalanceVariables().length === 0;
+}
+
+// ---- Insert variable/operator at cursor ----
 insertVariable(variable: string): void {
   const textarea = this.formulaInputRef?.nativeElement;
 
   if (!textarea) {
-    // Fallback: just append
     this.formula = (this.formula ? this.formula + ' ' : '') + variable;
     return;
   }
@@ -720,13 +759,11 @@ insertVariable(variable: string): void {
   const before = this.formula.substring(0, start);
   const after = this.formula.substring(end);
 
-  // Add spacing so tokens don't collide (e.g. "basic_salaryencashment_days")
-  const needsLeadingSpace = before.length > 0 && !before.endsWith(' ');
-  const insertText = (needsLeadingSpace ? ' ' : '') + variable + ' ';
+  const needsLeadingSpace = before.length > 0 && !before.endsWith(' ') && !before.endsWith('(');
+  const insertText = (needsLeadingSpace ? ' ' : '') + variable;
 
   this.formula = before + insertText + after;
 
-  // Restore focus + move cursor to right after the inserted variable
   setTimeout(() => {
     textarea.focus();
     const cursorPos = before.length + insertText.length;
@@ -734,25 +771,10 @@ insertVariable(variable: string): void {
   }, 0);
 }
 
-// ---- Insert an operator (+, -, *, /, (, )) ----
 insertOperator(op: string): void {
   this.insertVariable(op);
 }
 
-// ---- Basic client-side sanity check before submit ----
-isFormulaValid(formulaStr: string): boolean {
-  if (!formulaStr || !formulaStr.trim()) return true;
-
-  const tokens = formulaStr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
-  const unknown = tokens.filter(t => !this.formulaVariables.includes(t));
-
-  return unknown.length === 0;
-}
-
-getUnknownFormulaTokens(formulaStr: string): string[] {
-  const tokens = formulaStr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
-  return tokens.filter(t => !this.formulaVariables.includes(t));
-}
 toggleFormulaHelper(): void {
   this.showFormulaHelper = !this.showFormulaHelper;
 }
@@ -761,25 +783,37 @@ clearFormula(): void {
   this.formula = '';
 }
 
+isFormulaValid(formulaStr: string): boolean {
+  if (!formulaStr || !formulaStr.trim()) return true;
+  const tokens = formulaStr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+  const unknown = tokens.filter(t => !this.formulaVariables.includes(t));
+  return unknown.length === 0;
+}
+
+getUnknownFormulaTokens(formulaStr: string): string[] {
+  const tokens = formulaStr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+  return tokens.filter(t => !this.formulaVariables.includes(t));
+}
+
 
 
 // ---- New property ----
 useCustomFormula: boolean = false;   // checkbox state — controls visibility of formula writer
 
 // ---- Reset when checkbox is unchecked (optional but recommended) ----
-onFormulaCheckboxChange(): void {
-  if (!this.useCustomFormula) {
-    // Clear whatever the user typed; submit will fall back to defaultFormula anyway
-    this.formula = '';
-    this.showFormulaHelper = false;
-    this.formulaSearch = '';
-  } else {
-    // When checked, pre-fill with default so they have something to start editing
-    if (!this.formula) {
-      this.formula = this.defaultFormula;
-    }
-  }
-}
+// onFormulaCheckboxChange(): void {
+//   if (!this.useCustomFormula) {
+//     // Clear whatever the user typed; submit will fall back to defaultFormula anyway
+//     this.formula = '';
+//     this.showFormulaHelper = false;
+//     this.formulaSearch = '';
+//   } else {
+//     // When checked, pre-fill with default so they have something to start editing
+//     if (!this.formula) {
+//       this.formula = this.defaultFormula;
+//     }
+//   }
+// }
 
 
 // ---- New properties for formula view modal ----
