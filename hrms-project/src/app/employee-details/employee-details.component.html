@@ -700,22 +700,22 @@
                                 
                                                 <tr *ngFor="let salary of fixedSalaryComponents; let i = index">
                                 
-                                                    <td>{{ i + 1 }}</td>
+                                                    <td data-label="No">{{ i + 1 }}</td>
                                 
-                                                    <td>{{ salary.component }}</td>
+                                                    <td data-label="Salary Component">{{ salary.component }}</td>
                                 
-                                                    <td>{{ salary.component_type }}</td>
+                                                    <td data-label="Component Type">{{ salary.component_type }}</td>
                                 
-                                                    <td>{{ salary.payroll_category }}</td>
+                                                    <td data-label="Payroll Category">{{ salary.payroll_category }}</td>
                                 
-                                                    <td class="text-end">
+                                                    <td data-label="Amount" class="text-end">
                                                         {{ salary.amount }}
                                                     </td>
                                 
                                                 </tr>
                                 
                                                 <tr *ngIf="fixedSalaryComponents.length === 0">
-                                                    <td colspan="5" class="text-center">
+                                                    <td data-label="Null" colspan="5" class="text-center">
                                                         No Fixed Salary Components Found
                                                     </td>
                                                 </tr>
@@ -793,13 +793,13 @@
 
                 <tr *ngFor="let revision of item.revisions">
 
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ item.component_name }}</td>
-                    <td>{{ revision.old_amount }}</td>
-                    <td>{{ revision.new_amount }}</td>
-                    <td>{{ revision.effective_period || '-' }}</td>
-                    <td>{{ revision.revised_on | date:'dd-MM-yyyy' }}</td>
-                    <td>{{ revision.remarks || '-' }}</td>
+                    <td data-label="No">{{ i + 1 }}</td>
+                    <td data-label="Component">{{ item.component_name }}</td>
+                    <td data-label="Old Amount">{{ revision.old_amount }}</td>
+                    <td data-label="New Amount">{{ revision.new_amount }}</td>
+                    <td data-label="Effective Period">{{ revision.effective_period || '-' }}</td>
+                    <td data-label="Revised On">{{ revision.revised_on | date:'dd-MM-yyyy' }}</td>
+                    <td data-label="Remarks">{{ revision.remarks || '-' }}</td>
 
                 </tr>
 
@@ -840,14 +840,14 @@
                     <tbody class="text-table-body">
                       <tr class="tbodytext" *ngFor="let payslip of EmpSalary; let i = index"
                       >
-                        <td>{{ i + 1 }}</td>
+                        <td data-label="No">{{ i + 1 }}</td>
                         <!-- <td class="table-body-text-spl">{{ payslip.employee }}</td> -->
-                        <td>{{ payslip.payroll_run?.name }}</td>
-                        <td>{{ payslip.payroll_run?.start_date }}</td>
-                        <td>{{ payslip.payroll_run?.end_date }}</td>
-                        <td>{{ payslip.gross_salary }}</td>
-                        <td>{{ payslip.net_salary }}</td>
-                        <td>
+                        <td data-label="Name">{{ payslip.payroll_run?.name }}</td>
+                        <td data-label="Start Date">{{ payslip.payroll_run?.start_date }}</td>
+                        <td data-label="End Date">{{ payslip.payroll_run?.end_date }}</td>
+                        <td data-label="Gross Salary">{{ payslip.gross_salary }}</td>
+                        <td data-label="Net Salary">{{ payslip.net_salary }}</td>
+                        <td data-label="Status">
                           <span class="pill" [ngClass]="{
                             'pill green': payslip.status === 'approved',
                             'pill blue': payslip.status === 'processed',
@@ -928,13 +928,13 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ attendanceData.employee_name }}</td>
-            <td *ngFor="let day of daysArray">
+            <td data-label="Employee Name">{{ attendanceData.employee_name }}</td>
+            <td data-label="Day" *ngFor="let day of daysArray">
               {{ getStatusForDay(day, attendanceData.summary_data) }}
             </td>
             <!-- <td>{{ attendanceData.total_days }}</td> -->
-            <td>{{ attendanceData.total_present }}</td>
-            <td>{{ attendanceData.total_absent }}</td>
+            <td data-label="Present Days">{{ attendanceData.total_present }}</td>
+            <td data-label="Absent Days">{{ attendanceData.total_absent }}</td>
           </tr>
         </tbody>
       </table>

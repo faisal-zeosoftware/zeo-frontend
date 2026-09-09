@@ -483,10 +483,10 @@
       <tbody>
         <tr *ngFor="let h of cal.holiday_list">
 
-          <td>{{ h.description }}</td>
-          <td>{{ h.start_date }}</td>
-          <td>{{ h.end_date }}</td>
-          <td>{{ h.note }}</td>
+          <td data-label="Description">{{ h.description }}</td>
+          <td data-label="Start Date">{{ h.start_date }}</td>
+          <td data-label="End Date">{{ h.end_date }}</td>
+          <td data-label="Note">{{ h.note }}</td>
           <!-- <td>
             <span class="badge"
                   [ngClass]="h.restricted ? 'badge-danger' : 'badge-success'">
@@ -494,7 +494,7 @@
             </span>
           </td> -->
 
-          <td class="text-center">
+          <td data-label="Action" class="text-center">
 
             <button class="action-btn edit"
               (click)="openEditHolidayModal(h, cal.id); $event.stopPropagation()">

@@ -75,26 +75,26 @@
               <tbody>
                 <tr *ngFor="let shift of employeeShiftList">
 
-                  <td class="sticky-left">{{ shift.id }}</td>
-                  <td><strong>{{ shift.schedule_name }}</strong></td>
-                  <td>{{ shift.start_date | date:'yyyy-MM-dd' }}</td>
-                  <td>{{ shift.end_date | date:'yyyy-MM-dd' }}</td>
-                  <td>
+                  <td data-label="No" class="sticky-left">{{ shift.id }}</td>
+                  <td data-label="Schedule Name"><strong>{{ shift.schedule_name }}</strong></td>
+                  <td data-label="Start Date">{{ shift.start_date | date:'yyyy-MM-dd' }}</td>
+                  <td data-label="End Date">{{ shift.end_date | date:'yyyy-MM-dd' }}</td>
+                  <td data-label="Shift Pattern">
                     <span class="badge badge-info">{{ getShiftPatternName(shift.shift_pattern) }}</span>
                   </td>
-                  <td>
+                  <td data-label="Branches">
                     <span class="custom-badge blue" *ngFor="let b of shift.branch_names">{{ b.branch_name }}</span>
                   </td>
-                  <td>
+                  <td data-label="Departments">
                     <span class="custom-badge green" *ngFor="let d of shift.department_names">{{ d.dept_name }}</span>
                   </td>
-                  <td>
+                  <td data-label="Categories">
                     <span class="custom-badge orange" *ngFor="let c of shift.category_names">{{ c.ctgry_title }}</span>
                   </td>
-                  <td>
+                  <td data-label="Designations">
                     <span class="custom-badge purple" *ngFor="let d of shift.designation_names">{{ d.desgntn_job_title }}</span>
                   </td>
-                  <td>
+                  <td data-label="Employees">
                     <div *ngIf="shift.employee_names.length <= 2">
                       <small *ngFor="let e of shift.employee_names; let last = last">
                         {{ e.emp_first_name }} {{ e.emp_last_name }}{{ !last ? ', ' : '' }}

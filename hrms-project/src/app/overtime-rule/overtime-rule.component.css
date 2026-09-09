@@ -257,7 +257,7 @@ outline: none-webkit-focus-ring-color auto 0px;
     table tbody tr {
       margin-bottom: 20px;
       display: block;
-      border: 1px solid #5c1e81;
+      border: 1px solid #4f46e5;
       background: #f9f9f9;
       overflow: hidden;
     }
@@ -267,7 +267,7 @@ outline: none-webkit-focus-ring-color auto 0px;
       font-weight: bold;
       width: 30%;
       display: flex;
-      background: #5c1e81;
+      background: #4f46e5;
       color: #fff;
       padding: 15px;
       margin-inline-end: 10px;

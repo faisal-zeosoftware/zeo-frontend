@@ -307,11 +307,11 @@
             <thead>
               <tr>
                 <th>No</th>
-                <th> Rule type</th>
+                <th>Rule type</th>
                 <th>Required service years</th>
                 <th>Apply in next payroll</th>
                 <th>Remarks</th>
-                <th> Policy </th>
+                <th>Policy </th>
 
          
           
@@ -324,18 +324,18 @@
           
             <tbody>
               <tr *ngFor="let docs of Allocations; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ docs.rule_type }}</td>
-                <td>{{ docs.required_service_years }}</td>
-                <td>{{ docs.apply_in_next_payroll }}</td>
-                <td>{{ docs.remarks }}</td>
-                <td>{{ docs.policy }}</td>
+                <td data-label="No">{{ i + 1 }}</td>
+                <td data-label="Rule Type">{{ docs.rule_type }}</td>
+                <td data-label="Required Service Years">{{ docs.required_service_years }}</td>
+                <td data-label="Apply in next Payroll">{{ docs.apply_in_next_payroll }}</td>
+                <td data-label="Remarks">{{ docs.remarks }}</td>
+                <td data-label="Policy">{{ docs.policy }}</td>
 
            
           
                 <!-- Dynamic custom field values -->
             
-                <td>
+                <td data-label="Action">
                   <button
                     mat-fab
 

@@ -301,7 +301,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let emp of filteredEmployees" (click)="showEmployeeDetails(emp.id)">
-            <td>
+            <td data-label="Profile">
                 <img *ngIf="emp.emp_profile_pic" 
                       [src]="emp.emp_profile_pic" 
                       alt="Profile" class="profile-avatar-main">
@@ -310,14 +310,14 @@
                   <mat-icon>person</mat-icon>
              </div>
             </td>
-            <td>{{ emp.emp_code }}</td>
-            <td>{{ emp.emp_first_name }} {{ emp.emp_last_name }}</td>
-            <td>{{ emp.emp_branch_id }}</td>
-            <td>{{ emp.emp_dept_id }}</td>
-            <td>{{ emp.emp_ctgry_id }}</td>
-            <td>{{ emp.emp_desgntn_id }}</td>
-            <td>{{ emp.is_active ? 'Yes' : 'No' }}</td>
-            <td *ngIf="showEditBtn">
+            <td data-label="Employee Code">{{ emp.emp_code }}</td>
+            <td data-label="Name">{{ emp.emp_first_name }} {{ emp.emp_last_name }}</td>
+            <td data-label="Branch">{{ emp.emp_branch_id }}</td>
+            <td data-label="Department">{{ emp.emp_dept_id }}</td>
+            <td data-label="Category">{{ emp.emp_ctgry_id }}</td>
+            <td data-label="Designation">{{ emp.emp_desgntn_id }}</td>
+            <td data-label="Is Active">{{ emp.is_active ? 'Yes' : 'No' }}</td>
+            <td data-label="Ation" *ngIf="showEditBtn">
             <button
             mat-fab
             color="primary"

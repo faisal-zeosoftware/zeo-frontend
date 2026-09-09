@@ -376,37 +376,37 @@
 
                     <tr *ngFor="let deparmentsec of tempEmails">
 
-                        <td>
+                        <td data-label="Template type">
                             <span class="badge-template">
                                 {{ deparmentsec.template_type }}
                             </span>
                         </td>
 
-                        <td>
+                        <td data-label="Subject">
                             <div class="subject-cell">
                                 {{ deparmentsec.subject }}
                             </div>
                         </td>
 
-                        <td>
+                        <td data-label="Branch">
                             <span class="data-text">
                                 {{ getBranchNames(deparmentsec.branch) || '-' }}
                             </span>
                         </td>
 
-                        <td>
+                        <td data-label="Department">
                             <span class="data-text">
                                 {{ getDepartmentNames(deparmentsec.Department) || '-' }}
                             </span>
                         </td>
 
-                        <td>
+                        <td data-label="Category">
                             <span class="data-text">
                                 {{ getCategoryNames(deparmentsec.Category) || '-' }}
                             </span>
                         </td>
 
-                        <td>
+                        <td data-label="Designation">
                             <span class="data-text">
                                 {{ getDesignationNames(deparmentsec.Designation) || '-' }}
                             </span>
@@ -414,7 +414,7 @@
 
                         <td>
 
-                            <div class="action-buttons">
+                            <div data-label="Action" class="action-buttons">
 
                                 <button
                                     mat-mini-fab

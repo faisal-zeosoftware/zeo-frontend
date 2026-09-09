@@ -627,19 +627,19 @@
           <tbody>
             <tr *ngFor="let docs of pagedRequests; let i = index">
               <td class="sticky-left" data-label="No"> {{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-              <td>{{ docs.allocation }}</td>
+              <td data-label="Allocation">{{ docs.allocation }}</td>
               <td data-label="Document Number">{{ docs.document_number }}</td>
-              <td>{{ docs.branch }}</td>
-              <td>{{ docs.employee }}</td>
+              <td data-label="Branch">{{ docs.branch }}</td>
+              <td data-label="Employee">{{ docs.employee }}</td>
 
-              <td>{{ docs.request_type }}</td>
-              <td>{{ docs.request_date }}</td>
-              <td>{{ docs.departure_date }}</td>
-              <td>{{ docs.return_date }}</td>
+              <td data-label="Request Type">{{ docs.request_type }}</td>
+              <td data-label="Request Date">{{ docs.request_date }}</td>
+              <td data-label="Departure Date">{{ docs.departure_date }}</td>
+              <td data-label="Return Date">{{ docs.return_date }}</td>
 
-              <td>{{ docs.origin }}</td>
-              <td>{{ docs.destination }}</td>
-              <td>
+              <td data-label="Origin">{{ docs.origin }}</td>
+              <td data-label="Designation">{{ docs.destination }}</td>
+              <td data-label="Status">
                 <span
                   class="badge"
                   [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'"
@@ -647,9 +647,9 @@
                   {{ docs.status }}
                 </span>
               </td>
-              <td>{{ docs.notes }}</td>
+              <td data-label="Notes">{{ docs.notes }}</td>
 
-              <td>{{ docs.approved_date }}</td>
+              <td data-label="Approved Date">{{ docs.approved_date }}</td>
 
               <!-- Dynamic custom field values -->
 

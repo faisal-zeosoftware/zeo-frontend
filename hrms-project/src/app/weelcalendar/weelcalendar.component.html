@@ -748,17 +748,17 @@
   <tbody>
     <tr *ngFor="let calendar of calendars; let i = index" >
 
-      <td>{{ i + 1 }}</td>
-      <td>{{ calendar.calendar_code }}</td>
-      <td>{{ calendar.description }}</td>
-      <td>{{ calendar.year }}</td>
+      <td data-label="No">{{ i + 1 }}</td>
+      <td data-label="Code">{{ calendar.calendar_code }}</td>
+      <td data-label="Description">{{ calendar.description }}</td>
+      <td data-label="Year">{{ calendar.year }}</td>
 
-      <td>
+      <td data-label="Type">
         <span *ngIf="!calendar.is_alternate" class="badge bg-success">General</span>
         <span *ngIf="calendar.is_alternate" class="badge bg-warning">Alternative</span>
       </td>
 
-      <td>
+      <td data-label="Week Info">
         <!-- GENERAL -->
         <ng-container *ngIf="!calendar.is_alternate">
           Mon: {{ calendar.monday }},
@@ -777,7 +777,7 @@
           </span>
         </ng-container>
       </td>
-      <td><button class="btn btn-info"
+      <td data-label="View"><button class="btn btn-info"
         (click)="onViewClick(calendar)">
   View
 </button></td>

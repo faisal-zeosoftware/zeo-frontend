@@ -418,13 +418,13 @@
         </thead>
         <tbody>
           <tr *ngFor="let pol of overtimepol; let i = index">
-            <td>{{ pol.rule_type }}</td>
-            <td>{{ pol.base_type }}</td>
-            <td>{{ pol.threshold_hours }}</td>
-            <td>{{ pol.is_extended }}</td>
-            <td>{{ pol.order }}</td>
-            <td>{{ pol.is_active }}</td>
-            <td>{{ pol.policy }}</td>
+            <td data-label="Rule Type">{{ pol.rule_type }}</td>
+            <td data-label="Base Type">{{ pol.base_type }}</td>
+            <td data-label="Threshold Hours">{{ pol.threshold_hours }}</td>
+            <td data-label="Is Extended">{{ pol.is_extended }}</td>
+            <td data-label="Order">{{ pol.order }}</td>
+            <td data-label="Is Active">{{ pol.is_active }}</td>
+            <td data-label="Policy">{{ pol.policy }}</td>
 
             <td data-label="Action">
               <button

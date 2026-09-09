@@ -1,314 +1,343 @@
-
-.comapny_section{
-
-    margin-left: 25px;
-    
-  }
-
-.header_section{
-    background: white;
-    padding: 24px 20px 15px 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    width: 100%;
-    border-bottom: solid 3px navy;
+/* ========== Base layout ========== */
+.comapny_section {
+  margin-left: 0;               /* was 25px – breaks on mobile */
+  padding: 0 12px;
 }
 
-.header_section h1{
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
-
+.com_list {
+  padding: 16px 12px;
+  width: 100%;
+  background: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  border-top: solid 3px #4f46e5;
+  margin-bottom: 20px;
+  overflow-x: hidden;           /* prevent horizontal scroll */
 }
 
-
-.com_list{
-    padding: 20px;
-    width: 100%;
-    background: white;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    border-top: solid 3px #4f46e5;
-    margin-bottom: 20px;
-
-
+.com_list h2 {
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 8px 0 12px;
 }
 
-.com_list h2{
-    font-size: 16px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 10px;
-}
-
-
-
-  
-table thead th {
-    color: #ffffff;
-    background: #004976;
-    padding: 15px;
-    border: 1px solid #ebebec;
-    font-weight: 500;
-  }
-  
-  table tr {
-    background: #ffffff;
-  }
-  
-  table tr td {
-    border: 1px solid #e6edf1;
-    padding: 15px;
-  }
- 
-  
-
-
-
-  p{
-    margin-bottom: 0px;
-  }
-
-
-  .form-control-wrapper {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  ::ng-deep .form-control-wrapper mat-form-field {
-    width: 100%;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-wrapper {
-    padding: 0;
-    margin: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-flex {
-    background: none;
-    border: none;
-    box-shadow: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-underline {
-    display: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select {
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    height: auto;
-    line-height: 1.5;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-trigger {
-    height: auto;
-    padding: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-value-text {
-    padding: 0;
-    margin: 0;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-form-field-infix {
-    padding: 0;
-    border: none;
-  }
-  
-  ::ng-deep .form-control-wrapper .mat-select-placeholder {
-    transform: translateY(-50%);
-    top: 50%;
-  }
-
-
-  ::ng-deep .form-control-wrapper  .mat-mdc-form-field-infix{
-    margin-top: -14px;
-}
-
-::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled){
-
-  background-color: white;
-}
-
-::ng-deep .form-control-wrapper .mdc-text-field{
-  padding: 0px;
-}
-
-::ng-deep .form-control-wrapper .mat-mdc-form-field-infix:focus-visible{
-  outline: none-webkit-focus-ring-color auto 0px;
-  
-
-}
-
-
-/* Remove :focus-visible style from all input elements */
-input:focus-visible {
-  outline: none;
-}
-
-/* Remove :focus-visible style from mat-select */
-.mat-select:focus-visible {
-  outline: none;
-}
-
-/* Use !important to ensure the outline is removed */
-::ng-deep .form-control-wrapper:focus-visible {
-  outline: none !important;
-}
-
-
-::ng-deep .mat-select:focus-visible {
-  outline: none;
-}
-
-/* Optionally, you can also override other styles */
-::ng-deep .mat-select:focus-visible .mat-select-value {
-  outline: none;
-}
-
-::ng-deep .mdc-text-field--no-label{
-  border:1px solid #ced4da;
-}
-
-::ng-deep .mat-mdc-form-field-flex {
-  padding: 4px 7px;
-  height: 35px;
-}
-
-
-
-/* Add your CSS styles here */
-.modal {
-    display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    margin-left: auto;
-    margin-right: auto;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
-  .modal-content {
-    background-color: #fefefe;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 50%; /* Could be more or less, depending on screen size */
-    margin-right: auto;
-    margin-left: auto;
-    margin-top: 100px;
-    height: auto;
-  
-  }
-  
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: right;
-  }
-  
-  .close:hover,
-  .close:focus {
-    color: red;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  
-  .modal h2{
-  
-    font-size: 16px;
-    text-transform: capitalize;
-    font-weight: 600;
-    font-family: math;
-  }
-
-  .form-check label{
-    margin-top: 0px;
-    margin-right: 20px;
-  }
-  
-  .radio-sec{
-    display: flex;
-  }
-
-  .inside_udf{
-    padding: 20px;
-  }
-
-  .calendar_view_sec .trash{
-    color: black;
-    font-size: 18px;
-    line-height: 2;
-
-  }
-
-  .mat_eye_emp{
-    color: black;
-    margin-right: 20px;
-  }
-
-
-/* Default stepper style improvements */
+/* ========== Stepper – desktop ========== */
 ::ng-deep .mat-horizontal-stepper-header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   overflow-x: auto;
   white-space: nowrap;
-  padding: 0 10px;
+  padding: 0 8px 8px;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Step labels text fix */
 ::ng-deep .mat-step-label {
   white-space: normal !important;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 18px;
+  line-height: 1.3;
 }
 
-/* Active step label highlight */
 ::ng-deep .mat-step-header.mat-step-header-selected .mat-step-label {
   color: #004976;
   font-weight: 600;
 }
 
-/* Hide horizontal scrollbar */
+/* Hide ugly scrollbar on desktop but keep it usable */
 ::ng-deep .mat-horizontal-stepper-header-container::-webkit-scrollbar {
-  height: 5px;
+  height: 4px;
 }
-
 ::ng-deep .mat-horizontal-stepper-header-container::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: #c5c5c5;
   border-radius: 10px;
 }
 
-/* Mobile adjustments */
-@media only screen and (max-width: 640px) {
+/* ========== Expansion panels ========== */
+.inside_udf {
+  padding: 16px 12px;
+}
+
+.mat_eye_emp {
+  color: #333;
+  margin-right: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.calendar_view_sec .trash {
+  color: #d32f2f;
+  font-size: 20px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+/* ========== Modal ========== */
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.45);
+  padding: 12px;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px 16px;
+  border: 1px solid #888;
+  width: 92%;                 /* default mobile-first */
+  max-width: 640px;
+  margin: 40px auto;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.modal h2 {
+  font-size: 16px;
+  text-transform: capitalize;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #666;
+  background: #f5f5f5;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1;
+}
+.close-btn:hover {
+  background: #eee;
+  color: #d32f2f;
+}
+
+/* ========== Form controls & buttons ========== */
+.form-control {
+  font-size: 14px;
+  height: 38px;
+}
+
+.btn, .mat-raised-button {
+  min-height: 40px;            /* better touch target */
+  font-size: 14px;
+}
+
+/* ========== Mobile first – max-width 768px ========== */
+@media (max-width: 768px) {
+
+  .comapny_section {
+    margin-left: 0;
+    padding: 0 8px;
+  }
+
+  .com_list {
+    padding: 12px 8px;
+  }
+
+  /* Force stepper headers to stack vertically */
   ::ng-deep .mat-horizontal-stepper-header-container {
-    flex-direction: column; /* stack steps vertically */
-    align-items: flex-start;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    overflow-x: visible;
+    white-space: normal;
+    padding: 0;
+  }
+
+  ::ng-deep .mat-step-header {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px 8px !important;
+    border-bottom: 1px solid #e0e0e0;
+    justify-content: flex-start !important;
   }
 
   ::ng-deep .mat-step-label {
-    font-size: 13px;
-    text-align: left;
-    width: 100%; /* full width label */
-    padding: 6px 0;
+    text-align: left !important;
+    font-size: 14px !important;
+    width: 100%;
+    padding: 0;
   }
 
-  /* Add spacing between step headers */
-::ng-deep .mat-step-header {
-  flex: 1;
-  min-width: 150px;
-  text-align: center;
+  /* Make every Bootstrap-like column full width */
+  .col-md-6,
+  .col-md-5,
+  .col-md-12,
+  .col-md-10,
+  .col-md-2,
+  .col-md-1 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Expansion panel header – better layout on small screens */
+  mat-expansion-panel-header .col-md-12,
+  mat-expansion-panel-header .col-md-6,
+  mat-expansion-panel-header .col-md-5 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mat_eye_emp {
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  .inside_udf {
+    padding: 12px 8px;
+  }
+
+  /* Modal almost full screen on phones */
+  .modal-content {
+    width: 96%;
+    margin: 20px auto;
+    padding: 16px 12px;
+  }
+
+  /* Buttons full width on mobile for better usability */
+  .btn.d-block.mx-auto,
+  button.mat-raised-button,
+  .pull-right.btn {
+    width: 100%;
+    margin-top: 8px !important;
+    margin-bottom: 8px;
+  }
+
+  .pull-right {
+    float: none !important;
+    display: block;
+    width: 100%;
+  }
+
+  /* Stepper navigation buttons */
+  .mat-stepper-horizontal .mat-button {
+    min-width: 100px;
+  }
 }
+
+/* ========== Very small phones ========== */
+@media (max-width: 400px) {
+  .com_list h2 {
+    font-size: 15px;
+  }
+
+  ::ng-deep .mat-step-label {
+    font-size: 13px !important;
+  }
+
+  .modal-content {
+    padding: 12px 10px;
+  }
+
+  .form-control {
+    font-size: 13px;
+    height: 36px;
+  }
+}
+
+/* ========== Keep form-control-wrapper overrides (unchanged) ========== */
+.form-control-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .form-control-wrapper mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-wrapper {
+  padding: 0;
+  margin: 0;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-flex {
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-underline {
+  display: none;
+}
+
+::ng-deep .form-control-wrapper .mat-select {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  height: auto;
+  line-height: 1.5;
+}
+
+::ng-deep .form-control-wrapper .mat-select-trigger {
+  height: auto;
+  padding: 0;
+}
+
+::ng-deep .form-control-wrapper .mat-select-value-text {
+  padding: 0;
+  margin: 0;
+}
+
+::ng-deep .form-control-wrapper .mat-form-field-infix {
+  padding: 0;
+  border: none;
+}
+
+::ng-deep .form-control-wrapper .mat-select-placeholder {
+  transform: translateY(-50%);
+  top: 50%;
+}
+
+::ng-deep .form-control-wrapper .mat-mdc-form-field-infix {
+  margin-top: -14px;
+}
+
+::ng-deep .form-control-wrapper .mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: white;
+}
+
+::ng-deep .form-control-wrapper .mdc-text-field {
+  padding: 0;
+}
+
+input:focus-visible,
+.mat-select:focus-visible,
+::ng-deep .form-control-wrapper:focus-visible {
+  outline: none !important;
+}
+
+::ng-deep .mdc-text-field--no-label {
+  border: 1px solid #ced4da;
+}
+
+::ng-deep .mat-mdc-form-field-flex {
+  padding: 4px 7px;
+  height: 35px;
 }
