@@ -103,7 +103,8 @@ Designations: any[] = [];
 // FILTER SELECTIONS
 // ============================================================
 
-selectedBranch: number | null = null;
+selectedBranches: number[] = [];
+
 
 selectedDepartments: number[] = [];
 selectedCategories: number[] = [];
@@ -134,6 +135,10 @@ currentPage: number = 1;
 pageSize: number = 10;
 totalPages: number = 1;
 pageNumbers: number[] = [];
+
+
+trialSearchQuery: string = '';
+filteredTrialPaySlips: any[] = [];
 
 
 // ============================================================
@@ -710,15 +715,23 @@ if (this.userId !== null) {
 requestPayRoll(): void {
   this.registerButtonClicked = true;
 
-  // Frontend validation
   if (!this.name || !this.year || !this.month) {
     alert('Please fill in all required fields.');
     return;
   }
 
+  const branchIds = (this.selectedBranches || [])
+    .map((id: any) => Number(id))
+    .filter((id: number) => !isNaN(id) && id > 0);
+
+  if (branchIds.length === 0) {
+    alert('Please select at least one branch to run payroll.');
+    return;
+  }
+
   const selectedEmployeeIds = this.filteredEmployees
-    .filter(e => e.selected)
-    .map(e => Number(e.id));  // Ensure integer
+    .filter((e: any) => e.selected)
+    .map((e: any) => Number(e.id));
 
   const payload = {
     name: this.name,
@@ -726,46 +739,34 @@ requestPayRoll(): void {
     month: Number(this.month),
     payment_date: this.payment_date || null,
     document_number: this.document_number || null,
-    branch: this.selectedBranch ? Number(this.selectedBranch) : null,
-    department: this.selectedDepartments.map(id => Number(id)), 
-    category: this.selectedCategories.map(id => Number(id)),     
-    designation: this.selectedDesignations.map(id => Number(id)), 
-    employees: selectedEmployeeIds,                                
+    branch_ids: branchIds,   // ✅ matches the serializer field name
+    department: (this.selectedDepartments || []).map((id: any) => Number(id)),
+    category: (this.selectedCategories || []).map((id: any) => Number(id)),
+    designation: (this.selectedDesignations || []).map((id: any) => Number(id)),
+    employees: selectedEmployeeIds
   };
+
+  console.log('PAYROLL PAYLOAD:', JSON.stringify(payload, null, 2));
 
   this.isLoading = true;
 
   this.leaveService.requestPayroll(payload).subscribe({
     next: (response) => {
       this.isLoading = false;
-      console.log('Registration successful', response);
       alert('Payroll has been added');
       window.location.reload();
     },
     error: (error) => {
       this.isLoading = false;
-      console.error('Added failed', error);
-      
-            let errorMessage = 'An unexpected error occurred. Please try again.';
-      if (error.error) {
-        if (typeof error.error === 'string') {
-          errorMessage = error.error;
-        } else if (error.error.detail) {
-          errorMessage = error.error.detail;
-        } else if (error.error.non_field_errors) {
-          errorMessage = error.error.non_field_errors.join(', ');
-        } else {
-          const fieldErrors = Object.keys(error.error)
-            .map(field => `${field}: ${Array.isArray(error.error[field]) ? error.error[field].join(', ') : error.error[field]}`)
-            .join('\n');
-          errorMessage = fieldErrors || errorMessage;
-        }
+      console.error('Payroll creation error:', error);
+      if (error.error && Array.isArray(error.error) && error.error[0]) {
+        alert(error.error[0]);
+      } else {
+        alert('Failed to create payroll. Please check your selections.');
       }
-      alert(errorMessage);
     }
   });
 }
-
      
 
 onFileSelected(event:any){
@@ -793,44 +794,51 @@ toggleSelectAllEmployees(): void {
 }
 
 applyEmployeeFilter(): void {
+  // Start with all employees
+  let data = [...this.employees];
 
-  this.filteredEmployees = this.employees.filter((emp: any) => {
-
-    const branchMatch =
-      this.selectedBranch === null ||
-      this.selectedBranch === undefined ||
-      Number(emp.emp_branch_id) === Number(this.selectedBranch);
-
-    const departmentMatch =
-      this.selectedDepartments.length === 0 ||
-      this.selectedDepartments.some(id =>
-        Number(emp.emp_dept_id) === Number(id)
-      );
-
-    const categoryMatch =
-      this.selectedCategories.length === 0 ||
-      this.selectedCategories.some(id =>
-        Number(emp.emp_ctgry_id) === Number(id)
-      );
-
-    const designationMatch =
-      this.selectedDesignations.length === 0 ||
-      this.selectedDesignations.some(id =>
-        Number(emp.emp_desgntn_id) === Number(id)
-      );
-
-    return (
-      branchMatch &&
-      departmentMatch &&
-      categoryMatch &&
-      designationMatch
+  // Apply Branch filter
+  if (this.selectedBranches.length > 0) {
+    data = data.filter(emp =>
+      this.selectedBranches.some(id => Number(emp.emp_branch_id) === Number(id))
     );
-  });
+  }
 
+  // Apply Department filter
+  if (this.selectedDepartments.length > 0) {
+    data = data.filter(emp =>
+      this.selectedDepartments.some(id => Number(emp.emp_dept_id) === Number(id))
+    );
+  }
+
+  // Apply Category filter
+  if (this.selectedCategories.length > 0) {
+    data = data.filter(emp =>
+      this.selectedCategories.some(id => Number(emp.emp_ctgry_id) === Number(id))
+    );
+  }
+
+  // Apply Designation filter
+  if (this.selectedDesignations.length > 0) {
+    data = data.filter(emp =>
+      this.selectedDesignations.some(id => Number(emp.emp_desgntn_id) === Number(id))
+    );
+  }
+
+  // Apply Search text (crucial - this was missing!)
+  const search = (this.SearchEmployee || '').trim().toLowerCase();
+  if (search) {
+    data = data.filter(emp => {
+      const name = `${emp.emp_first_name || ''} ${emp.emp_last_name || ''}`.trim().toLowerCase();
+      const code = String(emp.emp_code || '').toLowerCase();
+      return name.includes(search) || code.includes(search);
+    });
+  }
+
+  this.filteredEmployees = data;
   this.currentPage = 1;
   this.updatePagination();
 }
-
 
 
 getBranchName(id: number): string {
@@ -856,32 +864,32 @@ getDesignationName(id: number): string {
   return item ? item.desgntn_job_title : '';
 }
 
-// toggleAllBranches(): void {
+toggleAllBranches(): void {
 
-//   if (this.selectedBranches.length === this.Branches.length) {
-//     this.selectedBranches = [];
-//   } else {
-//     this.selectedBranches = this.Branches.map(x => x.id);
-//   }
+  if (this.selectedBranches.length === this.Branches.length) {
+    this.selectedBranches = [];
+  } else {
+    this.selectedBranches = this.Branches.map(x => x.id);
+  }
 
-//   this.applyEmployeeFilter();
-// }
-
-
-// isAllBranchesSelected(): boolean {
-//   return (
-//     this.Branches.length > 0 &&
-//     this.selectedBranches.length === this.Branches.length
-//   );
-// }
+  this.applyEmployeeFilter();
+}
 
 
-// isSomeBranchesSelected(): boolean {
-//   return (
-//     this.selectedBranch.length > 0 &&
-//     this.selectedBranch.length < this.Branches.length
-//   );
-// }
+isAllBranchesSelected(): boolean {
+  return (
+    this.Branches.length > 0 &&
+    this.selectedBranches.length === this.Branches.length
+  );
+}
+
+
+isSomeBranchesSelected(): boolean {
+  return (
+    this.selectedBranches.length > 0 &&
+    this.selectedBranches.length < this.Branches.length
+  );
+}
 
 toggleAllDepartments(): void {
 
@@ -1020,89 +1028,7 @@ filterDesignation(): any[] {
 }
 
 FilterEmployee(): void {
-
-  const search = (this.SearchEmployee || '').trim().toLowerCase();
-
-  let data = [...this.employees];
-
-  // ============================================================
-  // BRANCH FILTER
-  // ============================================================
-
-  if (this.selectedBranch !== null && this.selectedBranch !== undefined) {
-    data = data.filter(emp =>
-      Number(emp.emp_branch_id) === Number(this.selectedBranch)
-    );
-  }
-
-
-  // ============================================================
-  // DEPARTMENT FILTER
-  // ============================================================
-
-  if (this.selectedDepartments.length > 0) {
-    data = data.filter(emp =>
-      this.selectedDepartments.some(id =>
-        Number(emp.emp_dept_id) === Number(id)
-      )
-    );
-  }
-
-
-  // ============================================================
-  // CATEGORY FILTER
-  // ============================================================
-
-  if (this.selectedCategories.length > 0) {
-    data = data.filter(emp =>
-      this.selectedCategories.some(id =>
-        Number(emp.emp_ctgry_id) === Number(id)
-      )
-    );
-  }
-
-
-  // ============================================================
-  // DESIGNATION FILTER
-  // ============================================================
-
-  if (this.selectedDesignations.length > 0) {
-    data = data.filter(emp =>
-      this.selectedDesignations.some(id =>
-        Number(emp.emp_desgntn_id) === Number(id)
-      )
-    );
-  }
-
-
-  // ============================================================
-  // EMPLOYEE SEARCH
-  // ============================================================
-
-  if (search) {
-    data = data.filter(emp => {
-
-      const name =
-        `${emp.emp_first_name || ''} ${emp.emp_last_name || ''}`
-          .trim()
-          .toLowerCase();
-
-      const code =
-        String(emp.emp_code || '').toLowerCase();
-
-      return (
-        name.includes(search) ||
-        code.includes(search)
-      );
-    });
-  }
-
-
-  this.filteredEmployees = data;
-
-  this.currentPage = 1;
-
-  this.updatePagination();
+  this.applyEmployeeFilter();
 }
 
 
@@ -1167,9 +1093,8 @@ nextPage(): void {
 
 
 // Select a branch
-onBranchChange(branchId: number | null): void {
-  this.selectedBranch = branchId;
-
+onBranchChange(branchIds: number[]): void {
+  this.selectedBranches = branchIds;
   this.applyEmployeeFilter();
 }
 
@@ -1373,26 +1298,76 @@ loadEmp(callback?: Function): void {
     //   );
     // }
 
-    fetchLoadPaySlip(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.leaveService.getPaySlipNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.PaySlips = data
-          .filter((payslip: any) => payslip.confirm_status === false) // Only pending confirm status
-          .map((payslip: any) => ({
-            ...payslip,
-            payslip_pdf: payslip.payslip_pdf ? payslip.payslip_pdf : null
-          }));
-  
-       
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
+fetchLoadPaySlip(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+
+  this.leaveService.getPaySlipNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+
+      this.PaySlips = data
+        .filter((payslip: any) => payslip.confirm_status === false)
+        .map((payslip: any) => ({
+          ...payslip,
+          payslip_pdf: payslip.payslip_pdf
+            ? payslip.payslip_pdf
+            : null
+        }));
+
+      // Initialize Trial Pay Sheet filtered data
+      this.filteredTrialPaySlips = [...this.PaySlips];
+
+      this.isLoading = false;
+    },
+
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
     }
+  });
+}
+
+filterTrialPaySlips(): void {
+
+  const search = this.trialSearchQuery
+    .trim()
+    .toLowerCase();
+
+  if (!search) {
+    this.filteredTrialPaySlips = [...this.PaySlips];
+    return;
+  }
+
+  this.filteredTrialPaySlips = this.PaySlips.filter((payslip: any) => {
+
+    const employeeCode = String(
+      payslip.employee || ''
+    ).toLowerCase();
+
+    const payrollName = String(
+      payslip.payroll_run?.name || ''
+    ).toLowerCase();
+
+    const year = String(
+      payslip.payroll_run?.year || ''
+    ).toLowerCase();
+
+    const month = String(
+      this.getMonthName(payslip.payroll_run?.month) || ''
+    ).toLowerCase();
+
+    const status = String(
+      payslip.status || ''
+    ).toLowerCase();
+
+    return (
+      employeeCode.includes(search) ||
+      payrollName.includes(search) ||
+      year.includes(search) ||
+      month.includes(search) ||
+      status.includes(search)
+    );
+  });
+}
 
     
 

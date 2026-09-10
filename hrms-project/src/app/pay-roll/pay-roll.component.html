@@ -24,17 +24,17 @@
                 </div>
 
 
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                   <label>Document Number</label>
                   <input type="text" class="form-control" [(ngModel)]="document_number"
                     placeholder="Enter document number" [disabled]="automaticNumbering"
                     [ngModelOptions]="{standalone: true}" [required]="!automaticNumbering">
 
-                  <!-- Optional: show hint when disabled -->
+               
                   <small *ngIf="automaticNumbering" class="text-muted">
                     Document number will be auto-generated
                   </small>
-                </div>
+                </div> -->
 
                 <div class="col-md-6">
                   <label> Year
@@ -84,8 +84,7 @@
 
   <div class="row g-3">
 
-    <!-- Branch -->
-<div class="col-md-3">
+   <div class="col-md-3">
   <div class="filter-select-card">
 
     <label class="filter-title">
@@ -98,9 +97,22 @@
       class="modern-multi-select">
 
       <mat-select
-        [(ngModel)]="selectedBranch"
+        multiple
+        [(ngModel)]="selectedBranches"
         [ngModelOptions]="{ standalone: true }"
         (selectionChange)="applyEmployeeFilter()">
+
+        <!-- Select All -->
+        <mat-checkbox
+          class="select-all-checkbox"
+          [checked]="isAllBranchesSelected()"
+          [indeterminate]="isSomeBranchesSelected()"
+          (click)="$event.stopPropagation()"
+          (change)="toggleAllBranches()">
+
+          Select All
+
+        </mat-checkbox>
 
         <!-- Search -->
         <div class="px-2 pb-2">
@@ -129,6 +141,7 @@
 
   </div>
 </div>
+
 
 
 <div class="col-md-3">
@@ -311,10 +324,8 @@
 
 
   </div>
+ <!-- <div class="employee-card">
 
-  <div class="employee-card">
-
-    <!-- Employee Search -->
 <div class="employee-search-bar">
   <mat-icon>search</mat-icon>
   <input 
@@ -472,7 +483,7 @@
   
     </div>
   
-  </div>
+  </div>  -->
          
 
 
@@ -507,7 +518,7 @@
         <th>Year</th>
         <th>Month</th>
         <th>Payment Date</th>
-        <th>Document Number</th>
+        <!-- <th>Document Number</th> -->
         <th>Branch</th>
         <th>Department</th>
         <th>Designation</th>
@@ -538,25 +549,46 @@
           {{ payroll.payment_date }}
         </td>
 
-        <td data-label="Document Number">
+        <!-- <td data-label="Document Number">
           {{ payroll.document_number }}
-        </td>
+        </td> -->
 
-        <td data-label="Branch">
-          {{ payroll.branch }}
-        </td>
+<td data-label="Branch">
+  <ng-container *ngIf="payroll.branch?.length; else noBranch">
+    <span *ngFor="let b of payroll.branch; let last = last">
+      {{ b?.name ?? b }}{{ last ? '' : ', ' }}
+    </span>
+  </ng-container>
+  <ng-template #noBranch>-</ng-template>
+</td>
 
-        <td data-label="Department">
-          {{ payroll.department }}
-        </td>
 
-        <td data-label="Designation">
-          {{ payroll.designation }}
-        </td>
+  <td data-label="Department">
+  <ng-container *ngIf="payroll.department?.length; else noDept">
+    <span *ngFor="let d of payroll.department; let last = last">
+      {{ d?.name ?? d }}{{ last ? '' : ', ' }}
+    </span>
+  </ng-container>
+  <ng-template #noDept>-</ng-template>
+</td>
 
-        <td data-label="Category">
-          {{ payroll.category }}
-        </td>
+<td data-label="Designation">
+  <ng-container *ngIf="payroll.designation?.length; else noDesg">
+    <span *ngFor="let de of payroll.designation; let last = last">
+      {{ de?.name ?? de }}{{ last ? '' : ', ' }}
+    </span>
+  </ng-container>
+  <ng-template #noDesg>-</ng-template>
+</td>
+
+<td data-label="Category">
+  <ng-container *ngIf="payroll.category?.length; else noCat">
+    <span *ngFor="let c of payroll.category; let last = last">
+      {{ c?.name ?? c }}{{ last ? '' : ', ' }}
+    </span>
+  </ng-container>
+  <ng-template #noCat>-</ng-template>
+</td>
 
         <td data-label="Status">
           <span
@@ -599,6 +631,215 @@
         <mat-tab label="Trail Pay Sheet">
 
           <div class="tab_boddy mt-4" style="padding: 10px;">
+
+              <div class="top-action-bar mb-2">
+
+    <!-- Search box -->
+    <div class="search-container">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="fa fa-search text-muted"></i>
+        </span>
+<input
+  type="text"
+  class="form-control border-start-0 ps-0"
+  placeholder="Search by Employee, Status, Year, Month..."
+  [(ngModel)]="trialSearchQuery"
+  [ngModelOptions]="{ standalone: true }"
+  (input)="filterTrialPaySlips()">
+
+<button
+  *ngIf="trialSearchQuery"
+  class="btn btn-outline-secondary border-start-0"
+  type="button"
+  (click)="trialSearchQuery = ''; filterTrialPaySlips()">
+  <i class="fa fa-times"></i>
+</button>
+
+
+      </div>
+    </div>
+
+    <!-- Filter toggle icon -->
+    <button
+      class="btn filter-toggle-btn"
+      [class.active]="showFilterPanel"
+      (click)="toggleFilterPanel()">
+      <i class="fa fa-filter"></i>
+      Filter
+      <span class="filter-count-badge" *ngIf="activeFilterCount() > 0">
+        {{ activeFilterCount() }}
+      </span>
+    </button>
+    </div>
+
+      <!-- FILTER PANEL — shown only when toggled -->
+  <div class="filter-card mb-3" *ngIf="showFilterPanel">
+
+    <div class="filter-card-header">
+      <span>Filter Options</span>
+      <i class="fa fa-times close-filter-icon" (click)="toggleFilterPanel()"></i>
+    </div>
+
+    <div class="filter-export-bar">
+
+      <!-- Status Filter -->
+      <div class="filter-select-card">
+        <label class="filter-title">
+          <mat-icon>flag</mat-icon>
+          Status
+          <span class="filter-count-badge" *ngIf="selectedStatuses.length > 0">
+            {{ selectedStatuses.length }}
+          </span>
+        </label>
+
+        <mat-form-field appearance="outline" class="modern-multi-select">
+          <mat-select
+            multiple
+            [(ngModel)]="selectedStatuses"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="filterPaySlips()">
+
+            <mat-checkbox
+              class="select-all-checkbox"
+              [checked]="isAllStatusSelected()"
+              [indeterminate]="isSomeStatusSelected()"
+              (click)="$event.stopPropagation()"
+              (change)="toggleAllStatus()">
+              Select All
+            </mat-checkbox>
+
+            <div class="px-2 pb-2">
+              <input
+                type="text"
+                placeholder="Search Status"
+                class="form-control"
+                [(ngModel)]="statusSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              />
+            </div>
+
+            <mat-option *ngFor="let status of filterStatusOptions()" [value]="status">
+              {{ status }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Year Filter -->
+      <div class="filter-select-card">
+        <label class="filter-title">
+          <mat-icon>calendar_today</mat-icon>
+          Year
+          <span class="filter-count-badge" *ngIf="selectedYears.length > 0">
+            {{ selectedYears.length }}
+          </span>
+        </label>
+
+        <mat-form-field appearance="outline" class="modern-multi-select">
+          <mat-select
+            multiple
+            [(ngModel)]="selectedYears"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="filterPaySlips()">
+
+            <mat-checkbox
+              class="select-all-checkbox"
+              [checked]="isAllYearSelected()"
+              [indeterminate]="isSomeYearSelected()"
+              (click)="$event.stopPropagation()"
+              (change)="toggleAllYear()">
+              Select All
+            </mat-checkbox>
+
+            <div class="px-2 pb-2">
+              <input
+                type="text"
+                placeholder="Search Year"
+                class="form-control"
+                [(ngModel)]="yearSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              />
+            </div>
+
+            <mat-option *ngFor="let year of filterYearOptions()" [value]="year">
+              {{ year }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Month Filter -->
+      <div class="filter-select-card">
+        <label class="filter-title">
+          <mat-icon>date_range</mat-icon>
+          Month
+          <span class="filter-count-badge" *ngIf="selectedMonths.length > 0">
+            {{ selectedMonths.length }}
+          </span>
+        </label>
+
+        <mat-form-field appearance="outline" class="modern-multi-select">
+          <mat-select
+            multiple
+            [(ngModel)]="selectedMonths"
+            [ngModelOptions]="{standalone: true}"
+            (selectionChange)="filterPaySlips()">
+
+            <mat-checkbox
+              class="select-all-checkbox"
+              [checked]="isAllMonthSelected()"
+              [indeterminate]="isSomeMonthSelected()"
+              (click)="$event.stopPropagation()"
+              (change)="toggleAllMonth()">
+              Select All
+            </mat-checkbox>
+
+            <div class="px-2 pb-2">
+              <input
+                type="text"
+                placeholder="Search Month"
+                class="form-control"
+                [(ngModel)]="monthSearch"
+                [ngModelOptions]="{standalone: true}"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+              />
+            </div>
+
+            <mat-option *ngFor="let m of filterMonthOptions()" [value]="m.value">
+              {{ m.label }}
+            </mat-option>
+
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-bar-spacer"></div>
+
+   <!-- Clear Filters — standard button -->
+  <div class="filter-select-card clear-btn-wrapper">
+    <label class="filter-title invisible-label">&nbsp;</label>
+    <button
+      type="button"
+      class="btn-clear-standard"
+      [disabled]="activeFilterCount() === 0"
+      (click)="clearFilters()">
+      <i class="fa fa-rotate-left"></i>
+      Clear Filters
+    </button>
+  </div>
+
+    </div>
+
+  </div>
+
             <div class="d-flex justify-content-end mb-2">
 
               <!-- Save Icon -->
@@ -645,8 +886,9 @@
 
                 <tbody class="text-table-body">
 
-                  <tr *ngFor="let payslip of PaySlips; let i = index"
-                    [ngClass]="{'edited-row': editedRows.includes(payslip)}">
+<tr *ngFor="let payslip of filteredTrialPaySlips; let i = index"
+    [ngClass]="{'edited-row': editedRows.includes(payslip)}">
+
                     <!-- Checkbox -->
                     <td data-label="Select">
                       <mat-checkbox [(ngModel)]="payslip.selected" (change)="checkIfAllSelected()"></mat-checkbox>
