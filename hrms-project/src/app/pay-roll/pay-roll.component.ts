@@ -140,6 +140,31 @@ pageNumbers: number[] = [];
 trialSearchQuery: string = '';
 filteredTrialPaySlips: any[] = [];
 
+// ============================================================
+// TRIAL PAY SHEET — FILTER SELECTIONS (separate from Final)
+// ============================================================
+trialSelectedStatuses: string[] = [];
+trialSelectedYears: number[] = [];
+trialSelectedMonths: number[] = [];
+
+trialStatusOptions: string[] = [];
+trialYearOptions: number[] = [];
+trialMonthOptions = [
+  { value: 1, label: 'January' },  { value: 2, label: 'February' },
+  { value: 3, label: 'March' },    { value: 4, label: 'April' },
+  { value: 5, label: 'May' },      { value: 6, label: 'June' },
+  { value: 7, label: 'July' },     { value: 8, label: 'August' },
+  { value: 9, label: 'September' },{ value: 10, label: 'October' },
+  { value: 11, label: 'November' },{ value: 12, label: 'December' }
+];
+
+trialStatusSearch: string = '';
+trialYearSearch: string = '';
+trialMonthSearch: string = '';
+
+showTrialFilterPanel: boolean = false;
+
+
 
 // ============================================================
 // MATERIAL SELECT REFERENCES
@@ -1308,13 +1333,19 @@ fetchLoadPaySlip(schema: string, branchIds: number[]): void {
         .filter((payslip: any) => payslip.confirm_status === false)
         .map((payslip: any) => ({
           ...payslip,
-          payslip_pdf: payslip.payslip_pdf
-            ? payslip.payslip_pdf
-            : null
+          payslip_pdf: payslip.payslip_pdf ? payslip.payslip_pdf : null
         }));
 
       // Initialize Trial Pay Sheet filtered data
       this.filteredTrialPaySlips = [...this.PaySlips];
+
+      // ✅ Build trial filter dropdown options from trial data
+      this.trialStatusOptions = [...new Set(
+        this.PaySlips.map(p => p.status).filter(Boolean)
+      )];
+      this.trialYearOptions = [...new Set(
+        this.PaySlips.map(p => p.payroll_run?.year).filter(Boolean)
+      )].sort((a, b) => b - a);
 
       this.isLoading = false;
     },
@@ -1327,48 +1358,137 @@ fetchLoadPaySlip(schema: string, branchIds: number[]): void {
 }
 
 filterTrialPaySlips(): void {
+  const search = (this.trialSearchQuery || '').trim().toLowerCase();
 
-  const search = this.trialSearchQuery
-    .trim()
-    .toLowerCase();
+  this.filteredTrialPaySlips = this.PaySlips.filter((p: any) => {
 
-  if (!search) {
-    this.filteredTrialPaySlips = [...this.PaySlips];
-    return;
-  }
+    // ---- Text search ----
+    const matchesSearch = !search ||
+      String(p.employee || '').toLowerCase().includes(search) ||
+      String(p.payroll_run?.name || '').toLowerCase().includes(search) ||
+      String(p.payroll_run?.year || '').toLowerCase().includes(search) ||
+      String(this.getMonthName(p.payroll_run?.month) || '').toLowerCase().includes(search) ||
+      String(p.status || '').toLowerCase().includes(search);
 
-  this.filteredTrialPaySlips = this.PaySlips.filter((payslip: any) => {
+    // ---- Dropdown filters ----
+    const matchesStatus =
+      this.trialSelectedStatuses.length === 0 ||
+      this.trialSelectedStatuses.includes(p.status);
 
-    const employeeCode = String(
-      payslip.employee || ''
-    ).toLowerCase();
+    const matchesYear =
+      this.trialSelectedYears.length === 0 ||
+      this.trialSelectedYears.includes(p.payroll_run?.year);
 
-    const payrollName = String(
-      payslip.payroll_run?.name || ''
-    ).toLowerCase();
+    const matchesMonth =
+      this.trialSelectedMonths.length === 0 ||
+      this.trialSelectedMonths.includes(p.payroll_run?.month);
 
-    const year = String(
-      payslip.payroll_run?.year || ''
-    ).toLowerCase();
-
-    const month = String(
-      this.getMonthName(payslip.payroll_run?.month) || ''
-    ).toLowerCase();
-
-    const status = String(
-      payslip.status || ''
-    ).toLowerCase();
-
-    return (
-      employeeCode.includes(search) ||
-      payrollName.includes(search) ||
-      year.includes(search) ||
-      month.includes(search) ||
-      status.includes(search)
-    );
+    return matchesSearch && matchesStatus && matchesYear && matchesMonth;
   });
 }
 
+// ---------- Trial: Search-within-dropdown ----------
+filterTrialStatusOptions(): string[] {
+  if (!this.trialStatusSearch) return this.trialStatusOptions;
+  const s = this.trialStatusSearch.toLowerCase();
+  return this.trialStatusOptions.filter(x => x.toLowerCase().includes(s));
+}
+
+filterTrialYearOptions(): number[] {
+  if (!this.trialYearSearch) return this.trialYearOptions;
+  return this.trialYearOptions.filter(y => y.toString().includes(this.trialYearSearch));
+}
+
+filterTrialMonthOptions(): { value: number, label: string }[] {
+  if (!this.trialMonthSearch) return this.trialMonthOptions;
+  const s = this.trialMonthSearch.toLowerCase();
+  return this.trialMonthOptions.filter(m => m.label.toLowerCase().includes(s));
+}
+
+// ---------- Trial: Select All — Status ----------
+isAllTrialStatusSelected(): boolean {
+  return this.trialStatusOptions.length > 0 &&
+         this.trialSelectedStatuses.length === this.trialStatusOptions.length;
+}
+isSomeTrialStatusSelected(): boolean {
+  return this.trialSelectedStatuses.length > 0 &&
+         this.trialSelectedStatuses.length < this.trialStatusOptions.length;
+}
+toggleAllTrialStatus(): void {
+  this.trialSelectedStatuses = this.isAllTrialStatusSelected()
+    ? []
+    : [...this.trialStatusOptions];
+  this.filterTrialPaySlips();
+}
+
+// ---------- Trial: Select All — Year ----------
+isAllTrialYearSelected(): boolean {
+  return this.trialYearOptions.length > 0 &&
+         this.trialSelectedYears.length === this.trialYearOptions.length;
+}
+isSomeTrialYearSelected(): boolean {
+  return this.trialSelectedYears.length > 0 &&
+         this.trialSelectedYears.length < this.trialYearOptions.length;
+}
+toggleAllTrialYear(): void {
+  this.trialSelectedYears = this.isAllTrialYearSelected()
+    ? []
+    : [...this.trialYearOptions];
+  this.filterTrialPaySlips();
+}
+
+// ---------- Trial: Select All — Month ----------
+isAllTrialMonthSelected(): boolean {
+  return this.trialSelectedMonths.length === this.trialMonthOptions.length;
+}
+isSomeTrialMonthSelected(): boolean {
+  return this.trialSelectedMonths.length > 0 &&
+         this.trialSelectedMonths.length < this.trialMonthOptions.length;
+}
+toggleAllTrialMonth(): void {
+  this.trialSelectedMonths = this.isAllTrialMonthSelected()
+    ? []
+    : this.trialMonthOptions.map(m => m.value);
+  this.filterTrialPaySlips();
+}
+
+// ---------- Trial: Remove single chip ----------
+removeTrialStatus(status: string): void {
+  this.trialSelectedStatuses = this.trialSelectedStatuses.filter(s => s !== status);
+  this.filterTrialPaySlips();
+}
+removeTrialYear(year: number): void {
+  this.trialSelectedYears = this.trialSelectedYears.filter(y => y !== year);
+  this.filterTrialPaySlips();
+}
+removeTrialMonth(month: number): void {
+  this.trialSelectedMonths = this.trialSelectedMonths.filter(m => m !== month);
+  this.filterTrialPaySlips();
+}
+
+// ---------- Trial: Clear all filters ----------
+clearTrialFilters(): void {
+  this.trialSearchQuery = '';
+  this.trialSelectedStatuses = [];
+  this.trialSelectedYears = [];
+  this.trialSelectedMonths = [];
+  this.trialStatusSearch = '';
+  this.trialYearSearch = '';
+  this.trialMonthSearch = '';
+  this.filteredTrialPaySlips = [...this.PaySlips];
+}
+
+// ---------- Trial: Filter panel visibility ----------
+toggleTrialFilterPanel(): void {
+  this.showTrialFilterPanel = !this.showTrialFilterPanel;
+}
+
+// ---------- Trial: Active filter count ----------
+activeTrialFilterCount(): number {
+  return this.trialSelectedStatuses.length +
+         this.trialSelectedYears.length +
+         this.trialSelectedMonths.length;
+}
     
 
     getMonthName(month: number): string {

@@ -660,26 +660,26 @@
       </div>
     </div>
 
-    <!-- Filter toggle icon -->
-    <button
-      class="btn filter-toggle-btn"
-      [class.active]="showFilterPanel"
-      (click)="toggleFilterPanel()">
-      <i class="fa fa-filter"></i>
-      Filter
-      <span class="filter-count-badge" *ngIf="activeFilterCount() > 0">
-        {{ activeFilterCount() }}
-      </span>
-    </button>
+<!-- Filter toggle icon -->
+<button
+  class="btn filter-toggle-btn"
+  [class.active]="showTrialFilterPanel"
+  (click)="toggleTrialFilterPanel()">
+  <i class="fa fa-filter"></i>
+  Filter
+  <span class="filter-count-badge" *ngIf="activeTrialFilterCount() > 0">
+    {{ activeTrialFilterCount() }}
+  </span>
+</button>
     </div>
 
       <!-- FILTER PANEL — shown only when toggled -->
-  <div class="filter-card mb-3" *ngIf="showFilterPanel">
+<div class="filter-card mb-3" *ngIf="showTrialFilterPanel">
 
-    <div class="filter-card-header">
-      <span>Filter Options</span>
-      <i class="fa fa-times close-filter-icon" (click)="toggleFilterPanel()"></i>
-    </div>
+  <div class="filter-card-header">
+    <span>Filter Options</span>
+    <i class="fa fa-times close-filter-icon" (click)="toggleTrialFilterPanel()"></i>
+  </div>
 
     <div class="filter-export-bar">
 
@@ -688,45 +688,44 @@
         <label class="filter-title">
           <mat-icon>flag</mat-icon>
           Status
-          <span class="filter-count-badge" *ngIf="selectedStatuses.length > 0">
-            {{ selectedStatuses.length }}
-          </span>
+  <!-- Status -->
+<span class="filter-count-badge" *ngIf="trialSelectedStatuses.length > 0">
+  {{ trialSelectedStatuses.length }}
+</span>
         </label>
 
-        <mat-form-field appearance="outline" class="modern-multi-select">
-          <mat-select
-            multiple
-            [(ngModel)]="selectedStatuses"
-            [ngModelOptions]="{standalone: true}"
-            (selectionChange)="filterPaySlips()">
+<mat-form-field appearance="outline" class="modern-multi-select">
+  <mat-select
+    multiple
+    [(ngModel)]="trialSelectedStatuses"
+    [ngModelOptions]="{standalone: true}"
+    (selectionChange)="filterTrialPaySlips()">
 
-            <mat-checkbox
-              class="select-all-checkbox"
-              [checked]="isAllStatusSelected()"
-              [indeterminate]="isSomeStatusSelected()"
-              (click)="$event.stopPropagation()"
-              (change)="toggleAllStatus()">
-              Select All
-            </mat-checkbox>
+    <mat-checkbox
+      class="select-all-checkbox"
+      [checked]="isAllTrialStatusSelected()"
+      [indeterminate]="isSomeTrialStatusSelected()"
+      (click)="$event.stopPropagation()"
+      (change)="toggleAllTrialStatus()">
+      Select All
+    </mat-checkbox>
 
-            <div class="px-2 pb-2">
-              <input
-                type="text"
-                placeholder="Search Status"
-                class="form-control"
-                [(ngModel)]="statusSearch"
-                [ngModelOptions]="{standalone: true}"
-                (click)="$event.stopPropagation()"
-                (keydown)="$event.stopPropagation()"
-              />
-            </div>
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        placeholder="Search Status"
+        class="form-control"
+        [(ngModel)]="trialStatusSearch"
+        [ngModelOptions]="{standalone: true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()" />
+    </div>
 
-            <mat-option *ngFor="let status of filterStatusOptions()" [value]="status">
-              {{ status }}
-            </mat-option>
-
-          </mat-select>
-        </mat-form-field>
+    <mat-option *ngFor="let status of filterTrialStatusOptions()" [value]="status">
+      {{ status }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
       </div>
 
       <!-- Year Filter -->
@@ -734,45 +733,44 @@
         <label class="filter-title">
           <mat-icon>calendar_today</mat-icon>
           Year
-          <span class="filter-count-badge" *ngIf="selectedYears.length > 0">
-            {{ selectedYears.length }}
-          </span>
+<!-- Year -->
+<span class="filter-count-badge" *ngIf="trialSelectedYears.length > 0">
+  {{ trialSelectedYears.length }}
+</span>
         </label>
 
-        <mat-form-field appearance="outline" class="modern-multi-select">
-          <mat-select
-            multiple
-            [(ngModel)]="selectedYears"
-            [ngModelOptions]="{standalone: true}"
-            (selectionChange)="filterPaySlips()">
+  <mat-form-field appearance="outline" class="modern-multi-select">
+  <mat-select
+    multiple
+    [(ngModel)]="trialSelectedYears"
+    [ngModelOptions]="{standalone: true}"
+    (selectionChange)="filterTrialPaySlips()">
 
-            <mat-checkbox
-              class="select-all-checkbox"
-              [checked]="isAllYearSelected()"
-              [indeterminate]="isSomeYearSelected()"
-              (click)="$event.stopPropagation()"
-              (change)="toggleAllYear()">
-              Select All
-            </mat-checkbox>
+    <mat-checkbox
+      class="select-all-checkbox"
+      [checked]="isAllTrialYearSelected()"
+      [indeterminate]="isSomeTrialYearSelected()"
+      (click)="$event.stopPropagation()"
+      (change)="toggleAllTrialYear()">
+      Select All
+    </mat-checkbox>
 
-            <div class="px-2 pb-2">
-              <input
-                type="text"
-                placeholder="Search Year"
-                class="form-control"
-                [(ngModel)]="yearSearch"
-                [ngModelOptions]="{standalone: true}"
-                (click)="$event.stopPropagation()"
-                (keydown)="$event.stopPropagation()"
-              />
-            </div>
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        placeholder="Search Year"
+        class="form-control"
+        [(ngModel)]="trialYearSearch"
+        [ngModelOptions]="{standalone: true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()" />
+    </div>
 
-            <mat-option *ngFor="let year of filterYearOptions()" [value]="year">
-              {{ year }}
-            </mat-option>
-
-          </mat-select>
-        </mat-form-field>
+    <mat-option *ngFor="let year of filterTrialYearOptions()" [value]="year">
+      {{ year }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
       </div>
 
       <!-- Month Filter -->
@@ -780,45 +778,44 @@
         <label class="filter-title">
           <mat-icon>date_range</mat-icon>
           Month
-          <span class="filter-count-badge" *ngIf="selectedMonths.length > 0">
-            {{ selectedMonths.length }}
-          </span>
+<!-- Month -->
+<span class="filter-count-badge" *ngIf="trialSelectedMonths.length > 0">
+  {{ trialSelectedMonths.length }}
+</span>
         </label>
 
-        <mat-form-field appearance="outline" class="modern-multi-select">
-          <mat-select
-            multiple
-            [(ngModel)]="selectedMonths"
-            [ngModelOptions]="{standalone: true}"
-            (selectionChange)="filterPaySlips()">
+<mat-form-field appearance="outline" class="modern-multi-select">
+  <mat-select
+    multiple
+    [(ngModel)]="trialSelectedMonths"
+    [ngModelOptions]="{standalone: true}"
+    (selectionChange)="filterTrialPaySlips()">
 
-            <mat-checkbox
-              class="select-all-checkbox"
-              [checked]="isAllMonthSelected()"
-              [indeterminate]="isSomeMonthSelected()"
-              (click)="$event.stopPropagation()"
-              (change)="toggleAllMonth()">
-              Select All
-            </mat-checkbox>
+    <mat-checkbox
+      class="select-all-checkbox"
+      [checked]="isAllTrialMonthSelected()"
+      [indeterminate]="isSomeTrialMonthSelected()"
+      (click)="$event.stopPropagation()"
+      (change)="toggleAllTrialMonth()">
+      Select All
+    </mat-checkbox>
 
-            <div class="px-2 pb-2">
-              <input
-                type="text"
-                placeholder="Search Month"
-                class="form-control"
-                [(ngModel)]="monthSearch"
-                [ngModelOptions]="{standalone: true}"
-                (click)="$event.stopPropagation()"
-                (keydown)="$event.stopPropagation()"
-              />
-            </div>
+    <div class="px-2 pb-2">
+      <input
+        type="text"
+        placeholder="Search Month"
+        class="form-control"
+        [(ngModel)]="trialMonthSearch"
+        [ngModelOptions]="{standalone: true}"
+        (click)="$event.stopPropagation()"
+        (keydown)="$event.stopPropagation()" />
+    </div>
 
-            <mat-option *ngFor="let m of filterMonthOptions()" [value]="m.value">
-              {{ m.label }}
-            </mat-option>
-
-          </mat-select>
-        </mat-form-field>
+    <mat-option *ngFor="let m of filterTrialMonthOptions()" [value]="m.value">
+      {{ m.label }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
       </div>
 
       <div class="filter-bar-spacer"></div>
@@ -826,14 +823,14 @@
    <!-- Clear Filters — standard button -->
   <div class="filter-select-card clear-btn-wrapper">
     <label class="filter-title invisible-label">&nbsp;</label>
-    <button
-      type="button"
-      class="btn-clear-standard"
-      [disabled]="activeFilterCount() === 0"
-      (click)="clearFilters()">
-      <i class="fa fa-rotate-left"></i>
-      Clear Filters
-    </button>
+<button
+  type="button"
+  class="btn-clear-standard"
+  [disabled]="activeTrialFilterCount() === 0"
+  (click)="clearTrialFilters()">
+  <i class="fa fa-rotate-left"></i>
+  Clear Filters
+</button>
   </div>
 
     </div>
