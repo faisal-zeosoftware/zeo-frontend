@@ -51,7 +51,7 @@ export class LeaveEncashmentComponent {
     hasDeletePermission: boolean = false;
     hasViewPermission: boolean =false;
     hasEditPermission: boolean = false;
-    hasImportPermission: boolean = false;
+    // hasImportPermission: boolean = false;
     
     userId: number | null | undefined;
     userDetails: any;
@@ -139,7 +139,7 @@ export class LeaveEncashmentComponent {
           this.hasAddPermission = true;
           this.hasDeletePermission = true;
           this.hasEditPermission = true;
-          this.hasImportPermission = true;
+          // this.hasImportPermission = true;
   
       
           // Fetch designations without checking permissions
@@ -166,27 +166,27 @@ export class LeaveEncashmentComponent {
                   this.hasAddPermission = true;
                   this.hasDeletePermission = true;
                   this.hasEditPermission = true;
-                  this.hasImportPermission = true;
+                  // this.hasImportPermission = true;
   
                 } else if (firstItem.groups && Array.isArray(firstItem.groups) && firstItem.groups.length > 0) {
                   const groupPermissions = firstItem.groups.flatMap((group: any) => group.permissions);
                   console.log('Group Permissions:', groupPermissions);
   
                  
-                  this.hasAddPermission = this.checkGroupPermission('add_emp_leave_balance', groupPermissions);
+                  this.hasAddPermission = this.checkGroupPermission('add_leaveencashmenttransaction', groupPermissions);
                   console.log('Has add permission:', this.hasAddPermission);
                   
-                  this.hasEditPermission = this.checkGroupPermission('change_emp_leave_balance', groupPermissions);
+                  this.hasEditPermission = this.checkGroupPermission('change_leaveencashmenttransaction', groupPermissions);
                   console.log('Has edit permission:', this.hasEditPermission);
     
-                 this.hasDeletePermission = this.checkGroupPermission('delete_emp_leave_balance', groupPermissions);
+                 this.hasDeletePermission = this.checkGroupPermission('delete_leaveencashmenttransaction', groupPermissions);
                  console.log('Has delete permission:', this.hasDeletePermission);
     
-                  this.hasViewPermission = this.checkGroupPermission('view_emp_leave_balance', groupPermissions);
+                  this.hasViewPermission = this.checkGroupPermission('view_leaveencashmenttransaction', groupPermissions);
                   console.log('Has view permission:', this.hasViewPermission);
   
-                  this.hasImportPermission = this.checkGroupPermission('import_emp_leave_balance', groupPermissions);
-                  console.log('Has import permission:', this.hasImportPermission);
+                  // this.hasImportPermission = this.checkGroupPermission('import_emp_leave_balance', groupPermissions);
+                  // console.log('Has import permission:', this.hasImportPermission);
   
   
                 } else {

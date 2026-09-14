@@ -181,6 +181,7 @@ ngOnInit(): void {
     GrouppermissionsLeaveaprvlvl: any[] = [];
     GrouppermissionsLeaveBalance: any[] = [];
     GrouppermissionsLeaveCancel: any[] = [];
+    GrouppermissionsLeaveEncashment: any[] = [];
     GrouppermissionsLeaveAccrual: any[] = [];
     GrouppermissionsLeaveRejoin: any[] = [];
     GrouppermissionsLeaveEscalation: any[] = [];
@@ -268,6 +269,7 @@ ngOnInit(): void {
     GrouppermissionsFaceRegister: any[] = [];
     GrouppermissionsPunching: any[] = [];
     GrouppermissionsManualentry: any[] = [];
+    GrouppermissionsPunchingDetails: any[] = [];
     GrouppermissionsLateinEarlyout: any[] = [];
     GrouppermissionsLinEoutAprlvl: any[] = [];
     GrouppermissionsLinEoutApr: any[] = [];
@@ -349,6 +351,7 @@ ngOnInit(): void {
     LeaveaprvlvlChecked: boolean = false;
     LeaveBalanceChecked: boolean = false;
     LeaveCancelChecked: boolean = false;
+    LeaveEncashmentChecked: boolean = false;
     LeaveAccrualChecked: boolean = false;
     LeaveRejoinChecked: boolean = false;
   
@@ -417,6 +420,7 @@ ngOnInit(): void {
     LateComePolChecked: boolean = false;
     EarlyExitPolChecked: boolean = false;
     ManualentryChecked: boolean = false;
+    PunchingDetailsChecked:boolean = false;
     GeoFenceChecked: boolean = false;
     LateinEarlyoutChecked: boolean = false;
     LinEoutAprlvlChecked: boolean = false;
@@ -593,6 +597,7 @@ ngOnInit(): void {
       this.GrouppermissionsLateComePol = this.filterUnique(all, ['add_latecomingpolicy', 'change_latecomingpolicy', 'delete_latecomingpolicy', 'view_latecomingpolicy']);
       this.GrouppermissionsEarlyExitPol = this.filterUnique(all, ['add_earlyexitpolicy', 'change_earlyexitpolicy', 'delete_earlyexitpolicy', 'view_earlyexitpolicy']);
       this.GrouppermissionsManualentry = this.filterUnique(all, ['add_attendance_manual', 'change_attendance_manual', 'delete_attendance_manual', 'view_attendance_manual', 'export_attendance_manual'], orderPriority);
+      this.GrouppermissionsPunchingDetails = this.filterUnique(all, ['add_punch', 'change_punch', 'delete_punch', 'view_punch'], orderPriority);
       this.GrouppermissionsGeoFence = this.filterUnique(all, ['add_branchgeofence', 'change_branchgeofence', 'delete_branchgeofence', 'view_branchgeofence']);
       this.GrouppermissionsLateinEarlyout = this.filterUnique(all, ['add_lateinearlyoutrequest', 'change_lateinearlyoutrequest', 'delete_lateinearlyoutrequest', 'view_lateinearlyoutrequest']);
       this.GrouppermissionsLinEoutAprlvl = this.filterUnique(all, ['add_lateinearlyoutapprovallevel', 'change_lateinearlyoutapprovallevel', 'delete_lateinearlyoutapprovallevel', 'view_lateinearlyoutapprovallevel']);
@@ -620,6 +625,7 @@ ngOnInit(): void {
       this.GrouppermissionsLeaveaprvlvl = this.filterUnique(all, ['add_leaveapprovallevels', 'change_leaveapprovallevels', 'delete_leaveapprovallevels', 'view_leaveapprovallevels']);
       this.GrouppermissionsLeaveBalance = this.filterUnique(all, ['add_emp_leave_balance', 'change_emp_leave_balance', 'delete_emp_leave_balance', 'view_emp_leave_balance']);
       this.GrouppermissionsLeaveCancel = this.filterUnique(all, ['add_lv_cancellation', 'change_lv_cancellation', 'delete_lv_cancellation', 'view_lv_cancellation']);
+      this.GrouppermissionsLeaveEncashment = this.filterUnique(all, ['add_leaveencashmenttransaction', 'change_leaveencashmenttransaction', 'delete_leaveencashmenttransaction', 'view_leaveencashmenttransaction']);
       this.GrouppermissionsLeaveAccrual = this.filterUnique(all, ['add_leave_accrual_transaction', 'change_leave_accrual_transaction', 'delete_leave_accrual_transaction', 'view_leave_accrual_transaction']);
       this.GrouppermissionsLeaveRejoin = this.filterUnique(all, ['add_employeerejoining', 'change_employeerejoining', 'delete_employeerejoining', 'view_employeerejoining']);
   
@@ -709,7 +715,7 @@ ngOnInit(): void {
         ...this.Grouppermissionsaddweek, ...this.Grouppermisionsassignweek, ...this.Grouppermissionsaddholiday, ...this.Grouppermissionsassisgnholiday,
         ...this.GrouppermissionsLeaveaprv, ...this.GrouppermissionsLeavetype, ...this.GrouppermissionsLeaveEscalation, ...this.GrouppermissionsLeavemaster,
         ...this.GrouppermissionsLeavereq, ...this.GrouppermissionsLeavecom, ...this.GrouppermissionsLeaveaprvlvl, ...this.GrouppermissionsLeaveBalance,
-        ...this.GrouppermissionsLeaveCancel, ...this.GrouppermissionsLeaveAccrual, ...this.GrouppermissionsLeaveRejoin,
+        ...this.GrouppermissionsLeaveCancel, ...this.GrouppermissionsLeaveEncashment, ...this.GrouppermissionsLeaveAccrual, ...this.GrouppermissionsLeaveRejoin,
         ...this.GrouppermissionsPayrollrun, ...this.GrouppermissionsPayStructure, ...this.GrouppermissionsSalarycomponent, ...this.GrouppermissionsEmployeesalary,
         ...this.GrouppermissionsPayslipAprv, ...this.GrouppermissionsPayrollaprlvl, ...this.GrouppermissionsAdvanceSalaryAprvlst, ...this.GrouppermissionsAdvanceSalaryReq,
         ...this.GrouppermissionsAdvanceSalaryEscalation, ...this.GrouppermissionsAdvanceSalaryAprlvl, ...this.GrouppermissionsWps,
@@ -722,7 +728,7 @@ ngOnInit(): void {
         ...this.GrouppermissionsAssetAlon, ...this.GrouppermissionsAssetApprovallvl, ...this.GrouppermissionsAssetReq,
         ...this.GrouppermissionsAtd, ...this.GrouppermissionsPunching, ...this.GrouppermissionsFaceRegister, ...this.GrouppermissionsEmpEarlygoing,
         ...this.GrouppermissionsEmpRecheck, ...this.GrouppermissionsPuncinglist, ...this.GrouppermissionsValidationPol, ...this.GrouppermissionsLateComePol,
-        ...this.GrouppermissionsEarlyExitPol, ...this.GrouppermissionsManualentry, ...this.GrouppermissionsGeoFence, ...this.GrouppermissionsLateinEarlyout,
+        ...this.GrouppermissionsEarlyExitPol, ...this.GrouppermissionsManualentry, ...this.GrouppermissionsPunchingDetails, ...this.GrouppermissionsGeoFence, ...this.GrouppermissionsLateinEarlyout,
         ...this.GrouppermissionsLinEoutAprlvl, ...this.GrouppermissionsLinEoutApr,
         ...this.GrouppermissionsDocumentAddFol,
         ...this.GrouppermissionsProjects, ...this.GrouppermissionsProjectStages, ...this.GrouppermissionsProjectTask, ...this.GrouppermissionsProjectTime,
@@ -820,6 +826,7 @@ ngOnInit(): void {
       this.LeaveaprvlvlChecked = this.GrouppermissionsLeaveaprvlvl.every(p => this.selectedPermissions.includes(p.id));
       this.LeaveBalanceChecked = this.GrouppermissionsLeaveBalance.every(p => this.selectedPermissions.includes(p.id));
       this.LeaveCancelChecked = this.GrouppermissionsLeaveCancel.every(p => this.selectedPermissions.includes(p.id));
+      this.LeaveEncashmentChecked = this.GrouppermissionsLeaveEncashment.every(p => this.selectedPermissions.includes(p.id));
       this.LeaveAccrualChecked = this.GrouppermissionsLeaveAccrual.every(p => this.selectedPermissions.includes(p.id));
       this.LeaveRejoinChecked = this.GrouppermissionsLeaveRejoin.every(p => this.selectedPermissions.includes(p.id));
   
@@ -877,6 +884,7 @@ ngOnInit(): void {
       this.LateComePolChecked = this.GrouppermissionsLateComePol.every(p => this.selectedPermissions.includes(p.id));
       this.EarlyExitPolChecked = this.GrouppermissionsEarlyExitPol.every(p => this.selectedPermissions.includes(p.id));
       this.ManualentryChecked = this.GrouppermissionsManualentry.every(p => this.selectedPermissions.includes(p.id));
+      this.PunchingDetailsChecked = this.GrouppermissionsPunchingDetails.every(p => this.selectedPermissions.includes(p.id));
       this.GeoFenceChecked = this.GrouppermissionsGeoFence.every(p => this.selectedPermissions.includes(p.id));
       this.LateinEarlyoutChecked = this.GrouppermissionsLateinEarlyout.every(p => this.selectedPermissions.includes(p.id));
       this.LinEoutAprlvlChecked = this.GrouppermissionsLinEoutAprlvl.every(p => this.selectedPermissions.includes(p.id));
@@ -1201,6 +1209,11 @@ ngOnInit(): void {
     const sel = this.selectedPermissions.filter(p => this.GrouppermissionsLeaveCancel.map(x => x.id).includes(p));
     return sel.length > 0 && sel.length < this.GrouppermissionsLeaveCancel.length;
   }
+
+  isLeaveEncashmentIndeterminate(): boolean {
+    const sel = this.selectedPermissions.filter(p => this.GrouppermissionsLeaveEncashment.map(x => x.id).includes(p));
+    return sel.length > 0 && sel.length < this.GrouppermissionsLeaveEncashment.length;
+  }
   
   isLeaveAccrualIndeterminate(): boolean {
     const sel = this.selectedPermissions.filter(p => this.GrouppermissionsLeaveAccrual.map(x => x.id).includes(p));
@@ -1435,6 +1448,11 @@ ngOnInit(): void {
   isManualentryIndeterminate(): boolean {
     const sel = this.selectedPermissions.filter(p => this.GrouppermissionsManualentry.map(x => x.id).includes(p));
     return sel.length > 0 && sel.length < this.GrouppermissionsManualentry.length;
+  }
+
+    isPunchingDetailsIndeterminate(): boolean {
+    const sel = this.selectedPermissions.filter(p => this.GrouppermissionsPunchingDetails.map(x => x.id).includes(p));
+    return sel.length > 0 && sel.length < this.GrouppermissionsPunchingDetails.length;
   }
   
   isGeoFenceIndeterminate(): boolean {
@@ -2127,6 +2145,7 @@ ngOnInit(): void {
   getDisplayNameLeaveaprvlvl = (c: string) => this.getStandardName(c, 'leaveapprovallevels');
   getDisplayNameLeaveBalance = (c: string) => this.getStandardName(c, 'emp_leave_balance');
   getDisplayNameLeaveCancel = (c: string) => this.getStandardName(c, 'lv_cancellation');
+  getDisplayNameLeaveEncashment = (c: string) => this.getStandardName(c, 'lv_cancellation');
   getDisplayNameLeaveAccrual = (c: string) => this.getStandardName(c, 'leave_accrual_transaction');
   getDisplayNameLeaveRejoin = (c: string) => this.getStandardName(c, 'employeerejoining');
   
@@ -2182,6 +2201,7 @@ ngOnInit(): void {
   getDisplayNameLateComePol = (c: string) => this.getStandardName(c, 'latecomingpolicy');
   getDisplayNameEarlyExitPol = (c: string) => this.getStandardName(c, 'earlyexitpolicy');
   getDisplayNameManualentry = (c: string) => this.getStandardName(c, 'attendance_manual');
+  getDisplayNamePunchingDetails = (c: string) => this.getStandardName(c, 'punch');
   getDisplayNameGeoFence = (c: string) => this.getStandardName(c, 'branchgeofence');
   getDisplayNameLateinEarlyout = (c: string) => this.getStandardName(c, 'lateinearlyoutrequest');
   getDisplayNameLinEoutAprlvl = (c: string) => this.getStandardName(c, 'lateinearlyoutapprovallevel');
@@ -2443,7 +2463,7 @@ ngOnInit(): void {
     return [
       this.GrouppermissionsLeaveaprv, this.GrouppermissionsLeavetype, this.GrouppermissionsLeaveEscalation,
       this.GrouppermissionsLeavemaster, this.GrouppermissionsLeavereq, this.GrouppermissionsLeavecom,
-      this.GrouppermissionsLeaveaprvlvl, this.GrouppermissionsLeaveBalance, this.GrouppermissionsLeaveCancel,
+      this.GrouppermissionsLeaveaprvlvl, this.GrouppermissionsLeaveBalance, this.GrouppermissionsLeaveCancel,this.GrouppermissionsLeaveEncashment,
       this.GrouppermissionsLeaveAccrual, this.GrouppermissionsLeaveRejoin
     ];
   }
@@ -2484,6 +2504,9 @@ ngOnInit(): void {
   
   onLeaveCancelChange(): void { this.toggleMasterRowGroup('LeaveCancelChecked', this.GrouppermissionsLeaveCancel, () => this.updateLeaveCheckbox()); }
   onCheckboxChangesLeaveCancel(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsLeaveCancel, 'LeaveCancelChecked', () => this.updateLeaveCheckbox()); }
+
+  onLeaveEncashmentChange(): void { this.toggleMasterRowGroup('LeaveEncashmentChecked', this.GrouppermissionsLeaveEncashment, () => this.updateLeaveCheckbox()); }
+  onCheckboxChangesLeaveEncashment(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsLeaveEncashment, 'LeaveEncashmentChecked', () => this.updateLeaveCheckbox()); }
   
   onLeaveAccrualChange(): void { this.toggleMasterRowGroup('LeaveAccrualChecked', this.GrouppermissionsLeaveAccrual, () => this.updateLeaveCheckbox()); }
   onCheckboxChangesLeaveAccrual(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsLeaveAccrual, 'LeaveAccrualChecked', () => this.updateLeaveCheckbox()); }
@@ -2642,7 +2665,7 @@ ngOnInit(): void {
       this.GrouppermissionsAtd, this.GrouppermissionsPunching, this.GrouppermissionsFaceRegister,
       this.GrouppermissionsEmpEarlygoing, this.GrouppermissionsEmpRecheck, this.GrouppermissionsPuncinglist,
       this.GrouppermissionsValidationPol, this.GrouppermissionsLateComePol, this.GrouppermissionsEarlyExitPol,
-      this.GrouppermissionsManualentry, this.GrouppermissionsGeoFence, this.GrouppermissionsLateinEarlyout,
+      this.GrouppermissionsManualentry, this.GrouppermissionsPunchingDetails, this.GrouppermissionsGeoFence, this.GrouppermissionsLateinEarlyout,
       this.GrouppermissionsLinEoutAprlvl, this.GrouppermissionsLinEoutApr
     ];
   }
@@ -2679,6 +2702,9 @@ ngOnInit(): void {
   
   onManualentryChange(): void { this.toggleMasterRowGroup('ManualentryChecked', this.GrouppermissionsManualentry, () => this.updateAttendanceCheckbox()); }
   onCheckboxChangesManualentry(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsManualentry, 'ManualentryChecked', () => this.updateAttendanceCheckbox()); }
+
+  onPunchingDetailsChange(): void { this.toggleMasterRowGroup('PunchingDetailsChecked', this.GrouppermissionsPunchingDetails, () => this.updateAttendanceCheckbox()); }
+  onCheckboxChangesPuchingDetails(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsPunchingDetails, 'PunchingDetailsChecked', () => this.updateAttendanceCheckbox()); }
   
   onGeoFenceChange(): void { this.toggleMasterRowGroup('GeoFenceChecked', this.GrouppermissionsGeoFence, () => this.updateAttendanceCheckbox()); }
   onCheckboxChangesGeoFence(id: number): void { this.toggleRowPermission(id, this.GrouppermissionsGeoFence, 'GeoFenceChecked', () => this.updateAttendanceCheckbox()); }

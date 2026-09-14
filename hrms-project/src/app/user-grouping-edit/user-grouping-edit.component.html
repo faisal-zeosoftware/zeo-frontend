@@ -522,7 +522,7 @@
                       (change)="onUserStateChange()"
                       [ngModelOptions]="{ standalone: true }"
                     >
-                      Emirates Master
+                      Provinces Master
                     </mat-checkbox>
                   </div>
                   <div class="col-md-9">
@@ -1880,6 +1880,26 @@
                   </div>
                 </div>
 
+              <!-- Leave Encashment -->
+                <div class="row permission-row">
+                  <div class="col-md-3">
+                    <mat-checkbox [(ngModel)]="LeaveEncashmentChecked" [indeterminate]="isLeaveEncashmentIndeterminate()" (change)="onLeaveEncashmentChange()" [ngModelOptions]="{ standalone: true }">Leave Encashment</mat-checkbox>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                        <div class="row">
+                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsLeaveEncashment">
+                            <mat-checkbox [value]="permission.id" (change)="onCheckboxChangesLeaveEncashment(permission.id)" [checked]="selectedPermissions.includes(permission.id)">
+                              {{ getDisplayNameLeaveEncashment(permission.codename) }}
+                            </mat-checkbox>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Leave Accrual -->
                 <div class="row permission-row">
                   <div class="col-md-3">
@@ -2842,6 +2862,26 @@
                           <div class="col-md-3" *ngFor="let permission of GrouppermissionsManualentry">
                             <mat-checkbox [value]="permission.id" (change)="onCheckboxChangesManualentry(permission.id)" [checked]="selectedPermissions.includes(permission.id)">
                               {{ getDisplayNameManualentry(permission.codename) }}
+                            </mat-checkbox>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Punching Details -->
+                <div class="row permission-row">
+                  <div class="col-md-3">
+                    <mat-checkbox [(ngModel)]="PunchingDetailsChecked" [indeterminate]="isPunchingDetailsIndeterminate()" (change)="onPunchingDetailsChange()" [ngModelOptions]="{ standalone: true }">Punching Details</mat-checkbox>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="selection_checkmark_sec">
+                      <div class="all_selection_Sec">
+                        <div class="row">
+                          <div class="col-md-3" *ngFor="let permission of GrouppermissionsPunchingDetails">
+                            <mat-checkbox [value]="permission.id" (change)="onCheckboxChangesPuchingDetails(permission.id)" [checked]="selectedPermissions.includes(permission.id)">
+                              {{ getDisplayNamePunchingDetails(permission.codename) }}
                             </mat-checkbox>
                           </div>
                         </div>
