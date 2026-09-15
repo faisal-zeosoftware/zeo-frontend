@@ -896,21 +896,21 @@
                     <td data-label="Payroll Name">{{ payslip.payroll_run?.name }}</td>
                     <td data-label="Year">{{ payslip.payroll_run?.year }}</td>
                     <td data-label="Month">{{ getMonthName(payslip.payroll_run?.month) }}</td>
-                    <td>
+                    <td data-label="Gross Salary">
                       <input type="number" placeholder="{{ payslip.gross_salary }}" [(ngModel)]="payslip.gross_salary"
                         (ngModelChange)="markAsEdited(payslip)" class="form-control">
                     </td>
-                    <td>
+                    <td data-label="Total Additions">
                       <input type="number" placeholder="{{ payslip.total_additions }}"
                         [(ngModel)]="payslip.total_additions" (ngModelChange)="markAsEdited(payslip)"
                         class="form-control">
                     </td>
-                    <td>
+                    <td data-label="Total Deductions">
                       <input type="number" placeholder="{{ payslip.total_deductions }}"
                         [(ngModel)]="payslip.total_deductions" (ngModelChange)="markAsEdited(payslip)"
                         class="form-control">
                     </td>
-                    <td>
+                    <td data-label="Net Salary">
                       <input type="number" placeholder="{{ payslip.net_salary }}" [(ngModel)]="payslip.net_salary"
                         (ngModelChange)="markAsEdited(payslip)" class="form-control">
                     </td>

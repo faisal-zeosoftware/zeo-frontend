@@ -194,121 +194,6 @@ margin-right: 10px;
 }
 
 
-/* Phones */
-@media (max-width: 728px) {
-
-.modal-content{
-  
-  margin-top: 200px;
-
-}
-}
-
-
-
-
-
-.mat-icon{
-  height: 18px ;
-  width: 18px ;
-  font-size: 18px ;
-
-}
-
-.btn_tabl{
-  padding: 3px 12px 0px 12px ;
-}
-
-.update-btn{
- 
-  border-radius: 0px;
-
-}
-
-
-.calendar_view_sec h4{
-  font-size: 14px;
-  font-weight: 400;
-
-}
-
-.calendar_view_sec h5{
-  font-size: 16px;
-  font-weight: 500;
- color: #5c1e7f;
-}
-
-.week-1 {
-  background-color: white !important;
-}
-
-.week-2 {
-  background-color: #b2ffaa1f  !important;
-}
-
-.week-3 {
-  background-color: #fff1f1e0 !important;
-}
-
-.week-4 {
-  background-color: #d38bff29 !important;
-}
-
-.week-5 {
-  background-color: #dceaff8f !important;
-}
-
-
-.leave_type_clm{
-  text-transform: capitalize;
-}
-
-.search-input::placeholder {
-  font-size: 12px; /* Adjust the size as needed */
-  color: gray; /* You can also change the color if needed */
-}
-
-.search-input{
-  width: 100px;
-}
-
-
-
-@media only screen and (max-width: 768px) {
-  table thead {
-    display: none;
-  }
-
-  table tbody {
-    display: block;
-  }
-
-  table tbody tr td {
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
-
-  table tbody tr {
-    margin-bottom: 20px;
-    display: block;
-    border: 1px solid  #5c1e7f;
-    background: #f9f9f9;
-    overflow: hidden;
-  }
-
-  table tbody td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    width: 30%;
-    display: flex;
-    background: #5c1e7f;
-    color: #fff;
-    padding: 15px;
-    margin-inline-end: 10px;
-  }
-}
-
 
 
 
@@ -381,40 +266,77 @@ margin-right: 10px;
 
 
 
-@media only screen and (max-width: 768px) {
-  table thead {
-    display: none;
-  }
 
-  table tbody {
-    display: block;
-  }
 
-  table tbody tr td {
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
 
-  table tbody tr {
-    margin-bottom: 20px;
-    display: block;
-    border: 1px solid  #5c1e7f;
-    background: #f9f9f9;
-    overflow: hidden;
-  }
 
-  table tbody td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    width: 30%;
-    display: flex;
-    background: #5c1e7f;
-    color: #fff;
-    padding: 15px;
-    margin-inline-end: 10px;
-  }
+
+
+.mat-icon{
+  height: 18px ;
+  width: 18px ;
+  font-size: 18px ;
+
 }
+
+.btn_tabl{
+  padding: 3px 12px 0px 12px ;
+}
+
+.update-btn{
+ 
+  border-radius: 0px;
+
+}
+
+
+.calendar_view_sec h4{
+  font-size: 14px;
+  font-weight: 400;
+
+}
+
+.calendar_view_sec h5{
+  font-size: 16px;
+  font-weight: 500;
+ color: #5c1e7f;
+}
+
+.week-1 {
+  background-color: white !important;
+}
+
+.week-2 {
+  background-color: #b2ffaa1f  !important;
+}
+
+.week-3 {
+  background-color: #fff1f1e0 !important;
+}
+
+.week-4 {
+  background-color: #d38bff29 !important;
+}
+
+.week-5 {
+  background-color: #dceaff8f !important;
+}
+
+
+.leave_type_clm{
+  text-transform: capitalize;
+}
+
+.search-input::placeholder {
+  font-size: 12px; /* Adjust the size as needed */
+  color: gray; /* You can also change the color if needed */
+}
+
+.search-input{
+  width: 100px;
+}
+
+
 
 
 
@@ -604,4 +526,51 @@ margin-right: 10px;
 
 .empty-day {
   visibility: hidden;
+}
+
+/* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
+    
+    margin-top: 200px;
+    margin-left: 15%;
+  }
+
+}
+
+
+@media only screen and (max-width: 768px) {
+  table thead {
+    display: none;
+  }
+
+  table tbody {
+    display: block;
+  }
+
+  table tbody tr td {
+    display: flex;
+    align-items: center;
+    padding: 0;
+  }
+
+  table tbody tr {
+    margin-bottom: 20px;
+    display: block;
+    border: 1px solid  #4f46e5;
+    background: #f9f9f9;
+    overflow: hidden;
+  }
+
+  table tbody td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 30%;
+    display: flex;
+    background: #4f46e5;
+    color: #fff;
+    padding: 15px;
+    margin-inline-end: 10px;
+  }
 }

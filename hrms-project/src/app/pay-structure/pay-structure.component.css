@@ -497,71 +497,262 @@ outline: none-webkit-focus-ring-color auto 0px;
 }
 
 
-  @media only screen and (max-width: 640px) {
-    table thead {
-      display: none;
-    }
-  
-    table tbody {
-      display: block;
-    }
-  
-    table tbody tr td {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-  
-    table tbody tr {
-      margin-bottom: 20px;
-      display: block;
-      border: 1px solid #5c1e81;
-      background: #f9f9f9;
-      overflow: hidden;
-    }
-  
-    table tbody td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      width: 30%;
-      display: flex;
-      background: #5c1e81;
-      color: #fff;
-      padding: 15px;
-      margin-inline-end: 10px;
-    }
+/* ============================================================
+   MOBILE RESPONSIVE FIXES — PAY STRUCTURE PAGE
+   ============================================================ */
 
-        .header_section{
-  background: white;
-  padding: 24px 18px 15px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  width: 100%;
-  border-bottom: solid 3px navy;
+@media only screen and (max-width: 991.98px) {
+
+  .comapny_section {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  .header_section {
+    padding: 16px 14px 12px 14px;
+  }
+
+  .header_section .row {
+    flex-direction: column;
+  }
+
+  .header_section .col-md-4,
+  .header_section .col-md-3,
+  .header_section .col-md-5 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .header_section h1 {
+    font-size: 15px;
+    margin-top: 0;
+  }
+
+  .button-group.pull-right {
+    float: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .button-group.pull-right button {
+    flex: 1 1 auto;
+    min-width: 45%;
+    margin-right: 0 !important;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .row > .col-md-2,
+  .row > .col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 8px;
+  }
 }
 
+/* ============================================================
+   CREATE / EDIT MODAL — MOBILE
+   ============================================================ */
 
+@media only screen and (max-width: 991.98px) {
 
-
+  .modal-content {
+    width: 80% !important;
+    max-width: 94% !important;
+    margin: 80px auto !important;
+    padding: 20px !important;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    box-sizing: border-box;
   }
 
-
-  
-/* Phones */
-@media (max-width: 768px) {
-
- ::ng-deep.modal-content{
-    
-    margin-top: 200px !important;
-
+  .modal-content > .row:first-child {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
   }
 
-      .header_section{
-  background: white;
-  padding: 24px 18px 15px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  width: 100%;
-  border-bottom: solid 3px navy;
+  .modal-content > .row:first-child .col-md-10 {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  .modal-content > .row:first-child .col-md-2 {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-bottom: 0;
+  }
+
+  .modal-content h2 {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* All top-level field rows stack, except the filter-card and
+     the cycle-day nested row (handled separately below) */
+  .modal-content form > .row > [class*="col-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+
+  .modal-content .form-control,
+  .modal-content select.form-control {
+    width: 100% !important;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  /* Nested cycle start/end day row inside col-md-6 needs its own stack */
+  .modal-content .col-md-6 .row .col-md-6 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 12px;
+  }
+
+  /* Bottom action row */
+  .modal-content form > .row:last-of-type {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .modal-content form > .row:last-of-type .col-md-8 {
+    display: none;
+  }
+
+  .modal-content form > .row:last-of-type .col-md-2 {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-bottom: 0;
+  }
+
+  .modal-content form > .row:last-of-type button {
+    width: 100%;
+    margin-top: 0 !important;
+  }
 }
 
+/* ============================================================
+   WORK WEEK DAY PICKER — MOBILE
+   ============================================================ */
 
+@media only screen and (max-width: 640px) {
+
+  .work-week-group {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    border-radius: 6px;
   }
+
+  .day-segment {
+    flex: 1 1 auto;
+    min-width: calc(100% / 4 - 4px); /* ~4 per row */
+    padding: 10px 6px;
+    font-size: 12px;
+    border-right: 1px solid #d1d5db;
+    border-bottom: 1px solid #d1d5db;
+  }
+
+  .day-segment:last-child {
+    border-right: 1px solid #d1d5db;
+  }
+}
+
+@media (max-width: 400px) {
+  .day-segment {
+    min-width: calc(100% / 3 - 4px); /* ~3 per row on very small phones */
+    font-size: 11px;
+    padding: 8px 4px;
+  }
+}
+
+/* ============================================================
+   FILTER CARD (Branch / Department / Category / Designation)
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .filter-card {
+    padding: 14px;
+    margin-top: 14px;
+  }
+
+  .filter-card .row.g-3 {
+    flex-direction: column;
+  }
+
+  .filter-card .col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .modern-multi-select {
+    width: 100% !important;
+  }
+}
+
+/* ============================================================
+   FAKE INPUT DISPLAY (Pay Period preview)
+   ============================================================ */
+
+@media (max-width: 480px) {
+  .fake-input-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 13px;
+  }
+}
+
+/* ============================================================
+   MAIN LIST TABLE (14 columns) — HORIZONTAL SCROLL
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .com_list {
+    padding: 12px;
+  }
+
+  table th,
+  table td {
+    font-size: 12px;
+    padding: 8px 10px !important;
+    white-space: nowrap;
+  }
+
+  .sticky-left {
+    min-width: 40px;
+  }
+
+  .sticky-right {
+    min-width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  table th,
+  table td {
+    font-size: 11px;
+    padding: 6px 8px !important;
+  }
+}

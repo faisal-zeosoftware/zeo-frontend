@@ -292,9 +292,10 @@ input:focus-visible {
 /* Phones */
 @media (max-width: 768px) {
 
- ::ng-deep.modal-content{
+    ::ng-deep.modal-content{
     
     margin-top: 200px !important;
+    margin-left: 60px !important;
 
   }
 

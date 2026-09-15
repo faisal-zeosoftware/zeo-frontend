@@ -299,6 +299,32 @@ input:focus-visible {
     /* Phones */
 @media (max-width: 728px) {
 
+    .com_list table tbody tr {
+    display: block;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+  }
+
+  .com_list table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 8px 0 !important;
+    font-size: 13px;
+    white-space: normal;
+    text-align: right;
+    word-break: break-word;
+  }
+
+
   .modal-content{
     
     margin-top: 200px;

@@ -305,25 +305,268 @@ thead .sticky-right {
   z-index: 3;
 }
 
-/* Phones */
-@media (max-width: 728px) {
 
-  .modal-content{
-    
-    margin-top: 200px;
+  /* ============================================================
+   MOBILE RESPONSIVE FIXES — EMPLOYEE LEAVE REQUEST PAGE
+   ============================================================ */
 
+@media only screen and (max-width: 991.98px) {
+
+  .comapny_section {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 12px !important;
   }
 
-  .header_section{
-  background: white;
-  padding: 24px 18px 15px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  width: 100%;
-  border-bottom: solid 3px navy;
+  /* Header: title / search / buttons stack */
+  .header_section {
+    padding: 16px 14px 12px 14px;
+  }
+
+  .header_section .row {
+    flex-direction: column;
+  }
+
+  .header_section .col-md-4,
+  .header_section .col-md-3,
+  .header_section .col-md-5 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .header_section h1 {
+    font-size: 15px;
+    margin-top: 0;
+  }
+
+  .search-container {
+    width: 100%;
+  }
+
+  .search-input {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .button-group.pull-right {
+    float: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .button-group.pull-right button {
+    flex: 1 1 auto;
+    min-width: 45%;
+    margin-right: 0 !important;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  /* Select All / Delete Selected row */
+  .row > .col-md-2,
+  .row > .col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 8px;
+  }
 }
 
-  
+/* ============================================================
+   CREATE / EDIT MODAL — MOBILE FIX
+   ============================================================ */
 
+@media only screen and (max-width: 991.98px) {
 
-
+  .modal-content {
+    width: 94% !important;
+    max-width: 94% !important;
+    margin: 60px auto !important;
+    padding: 16px !important;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    box-sizing: border-box;
   }
+
+  /* Field rows stack full-width */
+  .modal-content form .row {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  .modal-content form .row > [class*="col-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+
+  /* Modal header (title + close) stays side-by-side */
+  .modal-content > .row:first-child {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .modal-content > .row:first-child .col-md-10 {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  .modal-content > .row:first-child .col-md-2 {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-bottom: 0;
+  }
+
+  .modal-content h2 {
+    font-size: 15px;
+    margin: 0;
+  }
+
+  .modal-content .form-control,
+  .modal-content select.form-control,
+  .modal-content textarea.form-control,
+  .modal-content input[type="file"] {
+    width: 100% !important;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  .modal-content textarea.form-control {
+    min-height: 80px;
+  }
+
+  /* Searchable employee dropdown */
+  .modal-content .searchable-select {
+    width: 100%;
+  }
+
+  .modal-content .dropdown-list {
+    max-height: 180px;
+  }
+
+  /* Half-day checkbox row */
+  .modal-content .check-box-selection-sec {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Bottom action row (Cancel / Add / Update) */
+  .modal-content form > .row:last-child {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .modal-content form > .row:last-child .col-md-8 {
+    display: none;
+  }
+
+  .modal-content form > .row:last-child .col-md-2 {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-bottom: 0;
+  }
+
+  .modal-content form > .row:last-child button {
+    width: 100%;
+    margin-top: 0 !important;
+  }
+
+  .required-star {
+    font-size: 13px;
+  }
+
+  .error-message {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    width: 80% !important;
+    margin: 80px auto !important;
+    padding: 12px !important;
+  }
+
+  .modal-content h2 {
+    font-size: 14px;
+  }
+
+  .modal-content .form-control,
+  .modal-content select.form-control,
+  .modal-content textarea.form-control {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+}
+
+/* ============================================================
+   TABLE RESPONSIVE FIXES
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .com_list {
+    padding: 12px;
+  }
+
+  table th,
+  table td {
+    font-size: 12px;
+    padding: 8px 10px !important;
+    white-space: nowrap;
+  }
+
+  .sticky-left {
+    min-width: 40px;
+  }
+
+  .sticky-right {
+    min-width: 60px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .pagination-container {
+    gap: 6px;
+    padding: 12px 0;
+  }
+
+  .page-btn,
+  .page-number {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-width: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  table th,
+  table td {
+    font-size: 11px;
+    padding: 6px 8px !important;
+  }
+
+  .search-btn {
+    width: 30px;
+    height: 30px;
+  }
+}

@@ -1633,131 +1633,466 @@ table.styled-table td {
   background:#e2e8f0;
 }
 
+/* ============================================================
+   FIX: BROKEN CARD LAYOUT (existing bug — tr width was 27%)
+   ============================================================ */
 
-/* ✅ Smooth responsive behavior for tablets (<= 991px) */
-@media (max-width: 991px) {
-  .comapny_section {
-    margin-top: 80px;
-    margin-left: 20px;
-    margin-right: 20px;
+/* ============================================================
+   CARD LAYOUT FOR ALL TABLES ON MOBILE (≤ 640px)
+   ============================================================ */
+
+@media only screen and (max-width: 640px) {
+
+  /* ---------- PAYROLL RUN TABLE ---------- */
+
+  .payroll-table-wrapper {
+    overflow-x: visible;
+    border: none;
+    background: transparent;
   }
 
-  .com_list {
-    padding: 15px;
-  }
-
-  table.styled-table th,
-  table.styled-table td {
-    padding: 8px;
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 992px) {
-  .filter-export-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .filter-select-card .modern-multi-select {
+  .payroll-run-table {
+    min-width: 0 !important;
     width: 100%;
+    border-collapse: collapse;
   }
-  .filter-bar-spacer {
+
+  .payroll-run-table thead {
     display: none;
   }
-}
 
-/* ✅ Fully responsive stacked card layout for mobile (<= 640px) */
-@media only screen and (max-width: 640px) {
-  .comapny_section {
-    margin: 20px 10px;
+  .payroll-run-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
-  .com_list {
-    padding: 10px;
+  .payroll-run-table tbody tr {
+    display: block;
+    width: 100%;
     background: #fff;
-    border: none;
-    box-shadow: none;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+  }
+
+  .payroll-run-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 8px 0 !important;
+    font-size: 13px;
+    white-space: normal;
+    text-align: right;
+  }
+
+  .payroll-run-table tbody td:last-child {
+    border-bottom: none !important;
+  }
+
+  .payroll-run-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #e5e7eb;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+
+
+  .payroll-run-table .sticky-left,
+  .payroll-run-table .sticky-right {
+    position: static;
+    background: transparent;
+  }
+
+  /* ---------- TRIAL PAY SHEET & FINAL PAY SHEET (.styled-table) ---------- */
+
+  .table-scroll,
+  div[style*="overflow-x: auto"] {
+    overflow-x: visible !important;
   }
 
   table.styled-table {
-    border: 0;
+    min-width: 0 !important;
     width: 100%;
-    table-layout: fixed; /* Ensures smooth stacking */
+    white-space: normal;
   }
 
-  /* Hide table header */
   table.styled-table thead {
     display: none;
   }
 
-  /* Each row becomes a card */
   table.styled-table tbody {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     width: 100%;
   }
 
-  table.styled-table tr {
+  table.styled-table tbody tr {
     display: block;
-    width: 27%;
-    background: #ffffff;
-    border: 1px solid #c7c7c7;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
-    padding: 15px 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     box-sizing: border-box;
   }
 
-  /* Each cell stacked vertically with its label */
-  table.styled-table td {
-    display: block;
-    width: 100%; /* ✅ Full width, no side scroll */
-    border: none;
-    padding: 6px 0;
-    text-align: left;
-    font-size: 14px;
-    line-height: 1.4;
-    word-wrap: break-word;
-  }
-
-  /* Label styling (data-label attribute) */
-  table.styled-table td::before {
-    content: attr(data-label);
-    display: block;
-    font-weight: 600;
-    color: #ffffff;
-    margin-bottom: 4px;
-    font-size: 13px;
-    text-transform: capitalize;
-  }
-
-  /* Checkbox + first column alignment */
-  table.styled-table td:first-child {
+  table.styled-table tbody td {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    width: 100%;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 8px 0 !important;
+    font-size: 13px;
+    white-space: normal;
+    text-align: right;
+  }
+
+  table.styled-table tbody td:last-child {
+    border-bottom: none !important;
+  }
+
+  table.styled-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #e5e7eb;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 10px;
+  }
+
+  /* Checkbox column — no label needed, left aligned */
+  table.styled-table tbody td:first-child {
     justify-content: flex-start;
   }
 
-  /* Status pill smaller for mobile */
-  .pill {
-    font-size: 12px;
-    padding: 4px 10px;
+  table.styled-table tbody td:first-child::before {
+    display: none;
   }
 
-  /* Reduce large font areas for mobile readability */
-  .header_section h1,
-  .com_list h2 {
+  /* Editable inputs (Trial Pay Sheet) fit inline */
+  table.styled-table tbody td input.form-control {
+    width: 120px;
+    text-align: right;
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+
+  /* Status pill stays inline, right-aligned */
+  table.styled-table tbody td .pill {
+    margin-left: auto;
+  }
+
+  /* Components list (Trial Pay Sheet) — full width block, not inline */
+  table.styled-table tbody td:has(ul) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  table.styled-table tbody td:has(ul)::before {
+    margin-bottom: 6px;
+  }
+
+  table.styled-table tbody td ul {
+    width: 100%;
+    padding-left: 14px;
+    margin: 0;
+  }
+
+  table.styled-table tbody td ul li {
+    font-size: 12px;
+    white-space: normal;
+    text-align: left;
+  }
+
+  /* Edited row highlight still visible on card */
+  .edited-row {
+    background-color: #fff3cd !important;
+  }
+
+  /* Empty state row spans full width without card styling */
+  table.styled-table tbody tr:has(td[colspan]) {
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  table.styled-table tbody tr:has(td[colspan]) td {
+    display: block;
+    text-align: center;
+  }
+
+  table.styled-table tbody tr:has(td[colspan]) td::before {
+    display: none;
+  }
+}
+
+/* ============================================================
+   PAYROLL RUN — CREATE FORM (top of first tab)
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .comapny_section {
+    margin: 70px 10px 10px 10px !important;
+  }
+
+  .tab_boddy {
+    padding: 14px;
+  }
+
+  /* Name / Year / Month / Payment date fields stack */
+  .tab_boddy form > .row > [class*="col-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 12px;
+  }
+
+  /* Bottom "Run Payroll" button row */
+  .tab_boddy form > .row:last-of-type {
+    flex-direction: row !important;
+  }
+
+  .tab_boddy form > .row:last-of-type .col-md-9 {
+    display: none;
+  }
+
+  .tab_boddy form > .row:last-of-type .col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  .tab_boddy form > .row:last-of-type button {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   FILTER CARD (Branch / Department / Category / Designation)
+   — used in Payroll Run form AND both filter panels
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .filter-card {
+    padding: 14px;
+    margin-top: 14px;
+  }
+
+  .filter-card .row.g-3 {
+    flex-direction: column;
+  }
+
+  .filter-card .row.g-3 > .col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .modern-multi-select {
+    width: 100% !important;
+  }
+}
+
+/* ============================================================
+   TOP ACTION BAR (search + filter toggle + export buttons)
+   — Trial Pay Sheet & Final Pay Sheet tabs
+   ============================================================ */
+
+@media only screen and (max-width: 768px) {
+
+  .top-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-container {
+    min-width: 100%;
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .filter-toggle-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .table-header {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .table-header .btn-export {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   FILTER PANEL (Status / Year / Month multi-selects)
+   ============================================================ */
+
+@media only screen and (max-width: 768px) {
+
+  .filter-export-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .filter-select-card {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .filter-select-card .modern-multi-select {
+    width: 100% !important;
+  }
+
+  .filter-bar-spacer {
+    display: none;
+  }
+
+  .clear-btn-wrapper {
+    width: 100%;
+  }
+
+  .btn-clear-standard {
+    width: 100%;
+  }
+
+  .active-filters-row {
+    gap: 4px;
+  }
+
+  .active-filter-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
+/* ============================================================
+   PAYROLL RUN TABLE (min-width: 1100px) — HORIZONTAL SCROLL
+   This table was never given ANY mobile handling before.
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .payroll-table-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .payroll-run-table thead th,
+  .payroll-run-table tbody td {
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+
+  .payroll-status {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .payroll-delete-btn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* ============================================================
+   TRIAL PAY SHEET editable table (min-width: 1200px)
+   — keep horizontal scroll, shrink inputs
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .styled-table input.form-control {
+    font-size: 12px;
+    padding: 6px 8px;
+    min-width: 80px;
+  }
+
+  .icon-btn {
+    padding: 6px 10px;
+  }
+
+  .icon-btn i {
     font-size: 14px;
   }
+}
 
-  /* Prevent any side scrolling globally */
-  body,
-  html {
-    overflow-x: hidden;
+/* ============================================================
+   MOBILE CARD LAYOUT — completing/correcting the existing
+   incomplete rules for Final Pay Sheet & Trial Pay Sheet
+   ============================================================ */
+
+@media only screen and (max-width: 640px) {
+
+  .comapny_section {
+    margin: 70px 10px 10px 10px !important;
   }
 
+  table.styled-table tbody tr {
+    margin-bottom: 0; /* gap already handled by tbody flex gap */
+  }
+
+  table.styled-table td {
+    font-size: 13px;
+  }
+
+  /* Components list inside Trial Pay Sheet needs its own handling */
+  table.styled-table td ul {
+    padding-left: 16px;
+    margin: 0;
+  }
+
+  table.styled-table td ul li {
+    font-size: 12px;
+    white-space: normal;
+  }
+
+  /* Checkbox column readable on mobile card */
+  table.styled-table td:first-child::before {
+    display: none; /* checkbox doesn't need a label */
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-toggle-btn,
+  .btn-export,
+  .btn-clear-standard {
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .payroll-table-wrapper,
   .table-scroll {
-    overflow-x: hidden !important;
+    font-size: 11px;
   }
 }

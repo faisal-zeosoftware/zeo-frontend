@@ -891,6 +891,14 @@ input:focus-visible {
 
 
 @media (max-width: 728px) {
+
+  ::ng-deep.modal-content{
+    
+    margin-top: 200px !important;
+    margin-left: 60px !important;
+
+  }
+
    .header_section{
   background: white;
   padding: 24px 18px 15px 20px;

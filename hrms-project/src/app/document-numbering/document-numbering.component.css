@@ -168,10 +168,10 @@ margin-right: 10px;
 /* Phones */
 @media (max-width: 768px) {
 
- ::ng-deep.modal-content{
+  .modal-content{
     
-    margin-top: 200px !important;
-
+    margin-top: 200px;
+    margin-left: 15%;
   }
 
   .header_section{

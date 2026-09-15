@@ -147,23 +147,6 @@
   }
   
   
-  /* Phones */
-  @media (max-width: 728px) {
-  
-  .modal-content{
-    
-    margin-top: 200px;
-  
-  }
-  }
-  
-  
-  
-  
-  
-  
-  
-  
     /* Multiple select css */
   
     .form-control-wrapper {
@@ -314,42 +297,6 @@
   .search-btn i {
     color: #ffffff;
   }
-  
-  
-   @media only screen and (max-width: 768px) {
-      table thead {
-        display: none;
-      }
-    
-      table tbody {
-        display: block;
-      }
-    
-      table tbody tr td {
-        display: flex;
-        align-items: center;
-        padding: 0;
-      }
-    
-      table tbody tr {
-        margin-bottom: 20px;
-        display: block;
-        border: 1px solid #5c1e7f;
-        background: #f9f9f9;
-        overflow: hidden;
-      }
-    
-      table tbody td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        width: 30%;
-        display: flex;
-        background: #5c1e7f;
-        color: #fff;
-        padding: 15px;
-        margin-inline-end: 10px;
-      }
-    }
     
   
   
@@ -908,3 +855,319 @@
   .page-number:hover{
     background:#e2e8f0;
   }
+
+  /* ============================================================
+   MOBILE RESPONSIVE FIXES — SALARY STRUCTURE PAGE
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .comapny_section {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  /* Header row stacks */
+  .header_section {
+    padding: 16px 14px 12px 14px;
+  }
+
+  .header_section .row {
+    flex-direction: column;
+  }
+
+  .header_section .col-md-4,
+  .header_section .col-md-3,
+  .header_section .col-md-5 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .header_section h1 {
+    font-size: 15px;
+    margin-top: 0;
+  }
+
+  .button-group.pull-right {
+    float: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .button-group.pull-right button {
+    flex: 1 1 auto;
+    min-width: 45%;
+    margin-right: 0 !important;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .row > .col-md-2,
+  .row > .col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 8px;
+  }
+}
+
+/* ============================================================
+   MAIN CREATE/EDIT MODAL — MOBILE
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .modal-content {
+    width: 94% !important;
+    max-width: 94% !important;
+    margin: 40px auto !important;
+    padding: 14px !important;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .modal-content > .row:first-child {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .modal-content > .row:first-child .col-md-10 {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  .modal-content > .row:first-child .col-md-2 {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-bottom: 0;
+  }
+
+  .modal-content h2 {
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* Name / Components / Description fields stack */
+  .modal-content form > .row:nth-of-type(1) > [class*="col-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+
+  .modal-content .form-control,
+  .modal-content textarea.form-control {
+    width: 100% !important;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  /* Bottom action row (Close / Add/Update) */
+  .modal-content > .row:last-of-type {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .modal-content > .row:last-of-type .col-md-8 {
+    display: none;
+  }
+
+  .modal-content > .row:last-of-type .col-md-2 {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-bottom: 0;
+  }
+
+  .modal-content > .row:last-of-type button {
+    width: 100%;
+    margin-top: 0 !important;
+  }
+}
+
+/* ============================================================
+   FILTER CARD (Branch multi-select) — MOBILE
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .filter-card {
+    padding: 14px;
+    margin-top: 14px;
+  }
+
+  .filter-card .row.g-3 {
+    flex-direction: column;
+  }
+
+  .filter-card .col-md-3 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .modern-multi-select {
+    width: 100% !important;
+  }
+}
+
+/* ============================================================
+   NESTED EMPLOYEE TABLE INSIDE MODAL — CARD LAYOUT ON MOBILE
+   ============================================================ */
+
+@media only screen and (max-width: 768px) {
+
+  .modal-content .employee-card .table-responsive {
+    overflow-x: visible;
+  }
+
+  .modal-content .employee-table thead {
+    display: none;
+  }
+
+  .modal-content .employee-table tbody,
+  .modal-content .employee-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .modal-content .employee-table tr {
+    margin-bottom: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .modal-content .employee-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px !important;
+    border-top: 1px solid #f1f5f9;
+    font-size: 12px;
+  }
+
+  /* Checkbox column and employee-info column need special handling */
+  .modal-content .employee-table td:first-child {
+    justify-content: flex-start;
+    background: #f8fafc;
+  }
+
+  .modal-content .employee-table td .employee-info {
+    width: 100%;
+  }
+
+  .modal-content .employee-avatar,
+  .modal-content .employee-avatar-placeholder {
+    width: 32px;
+    height: 32px;
+  }
+
+  .modal-content .custom-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+}
+
+/* ============================================================
+   SALARY STRUCTURE LIST TABLE — CARD LAYOUT ON MOBILE
+   (already has a base rule in your CSS; this extends/refines it)
+   ============================================================ */
+
+@media only screen and (max-width: 768px) {
+
+  .employee-card .employee-table {
+    display: block;
+  }
+
+  .employee-card .employee-table thead {
+    display: none;
+  }
+
+  .employee-card .employee-table tbody,
+  .employee-card .employee-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .employee-card .employee-table tr {
+    margin-bottom: 14px;
+    border: 1px solid #5c1e7f;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f9f9f9;
+  }
+
+  .employee-card .employee-table td {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px !important;
+  }
+
+  .employee-card .employee-table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    width: 35%;
+    flex-shrink: 0;
+    background: #5c1e7f;
+    color: #fff;
+    padding: 8px 10px;
+    margin-right: 10px;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+
+  .employee-card .employee-table td[data-label="Branch"],
+  .employee-card .employee-table td[data-label="Components"] {
+    flex-wrap: wrap;
+  }
+
+  .employee-search-bar {
+    flex-wrap: wrap;
+    padding: 12px 14px;
+  }
+
+  .employee-search-input {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    width: 80% !important;
+    margin: 80px auto !important;
+    padding: 20px !important;
+  }
+
+  .employee-table td::before {
+    width: 40%;
+    font-size: 10px;
+  }
+
+  .pagination-container {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .page-btn,
+  .page-number {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+}

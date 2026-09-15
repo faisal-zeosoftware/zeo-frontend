@@ -147,24 +147,6 @@ margin-right: 10px;
 }
 
 
-/* Phones */
-@media (max-width: 728px) {
-
-.modal-content{
-  
-  margin-top: 200px;
-
-}
-}
-
-
-
-
-
-
-
-
-
   p{
     margin-bottom: 0px;
   }
@@ -527,4 +509,14 @@ mat-icon {
 .rotate-icon {
   transform: rotate(180deg);
   transition: 0.3s ease;
+}
+
+/* Phones */
+@media (max-width: 728px) {
+
+  .modal-content{
+    
+    margin-top: 200px;
+    margin-left: 15%;
+  }
 }
