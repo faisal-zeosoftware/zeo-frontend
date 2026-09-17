@@ -21,6 +21,9 @@ import { DepartmentServiceService } from '../department-master/department-servic
 import {  MatSelect } from '@angular/material/select';
 import { MatOption } from '@angular/material/core';
 
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+
 
 
 interface FieldSetting {
@@ -105,6 +108,7 @@ constructor(private leaveService: LeaveService,
 get visibleFieldsCount(): number {
   return this.fieldSettings.filter(f => f.visible).length;
 }
+
 
 
 ngOnInit(): void {
@@ -254,6 +258,7 @@ async initialLoad() {
     this.employeeService.selectedBranches$
   ]).subscribe(([schema, branchIds]) => {
     if (schema) {
+      
       this.fetchStandardReport(schema, branchIds);
 
     }
@@ -457,6 +462,7 @@ saveCustomFile(): void {
     });
   }
 
+
   this.isLoading = true;
 
   this.http.post<any>(url, formData).subscribe({
@@ -612,6 +618,7 @@ resetToStandard() {
       }
     });
 }
+
 
 
 
