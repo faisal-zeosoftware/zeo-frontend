@@ -817,30 +817,27 @@
 
                                         </table>
 
-                                        <div class="pagination-container">
+<div class="pagination-container" *ngIf="totalPages > 0">
 
-                                            <button class="page-btn" (click)="previousPage()"
-                                                [disabled]="currentPage === 1">
+    <button
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        Previous
+    </button>
 
-                                                Previous
+    <button class="page-number active">
+        {{ currentPage }}
+    </button>
 
-                                            </button>
+    <button
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next
+    </button>
 
-                                            <button *ngFor="let page of pageNumbers" class="page-number"
-                                                [class.active]="currentPage === page" (click)="goToPage(page)">
-
-                                                {{ page }}
-
-                                            </button>
-
-                                            <button class="page-btn" (click)="nextPage()"
-                                                [disabled]="currentPage === totalPages">
-
-                                                Next
-
-                                            </button>
-
-                                        </div>
+</div>
 
                                     </div>
 
@@ -2121,30 +2118,27 @@
 
                                         </table>
 
-                                        <div class="pagination-container">
+<div class="pagination-container" *ngIf="totalPages > 0">
 
-                                            <button class="page-btn" (click)="previousPage()"
-                                                [disabled]="currentPage === 1">
+    <button
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        Previous
+    </button>
 
-                                                Previous
+    <button class="page-number active">
+        {{ currentPage }}
+    </button>
 
-                                            </button>
+    <button
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next
+    </button>
 
-                                            <button *ngFor="let page of pageNumbers" class="page-number"
-                                                [class.active]="currentPage === page" (click)="goToPage(page)">
-
-                                                {{ page }}
-
-                                            </button>
-
-                                            <button class="page-btn" (click)="nextPage()"
-                                                [disabled]="currentPage === totalPages">
-
-                                                Next
-
-                                            </button>
-
-                                        </div>
+</div>
 
                                     </div>
 

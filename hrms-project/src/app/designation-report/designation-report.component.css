@@ -146,13 +146,159 @@ margin-right: 10px;
 }
 
 
+/* ============================================================
+   HEADER SECTION — MOBILE
+   ============================================================ */
 
-/* Phones */
+@media only screen and (max-width: 991.98px) {
+
+  .comapny_section {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  .header_section {
+    padding: 16px 14px 12px 14px;
+  }
+
+  .header_section .row {
+    flex-direction: column;
+  }
+
+  .header_section .col-md-4,
+  .header_section .col-md-3,
+  .header_section .col-md-5 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .header_section h1 {
+    font-size: 15px;
+    margin-top: 0;
+  }
+
+  .button-group.pull-right {
+    float: none !important;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .button-group.pull-right button {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   MODAL — MOBILE (kept from existing, extended)
+   ============================================================ */
+
 @media (max-width: 728px) {
+  .modal-content {
+    width: 94% !important;
+    margin: 60px auto !important;
+    padding: 16px !important;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+}
 
-  .modal-content{
-    
-    margin-top: 200px;
+/* ============================================================
+   MAT-TABLE (Angular Material) — CARD LAYOUT ON MOBILE
+   Material renders mat-header-row/mat-row/mat-cell as divs
+   with display:table-row/table-cell by default — override that.
+   ============================================================ */
 
+@media only screen and (max-width: 640px) {
+
+  .com_list {
+    padding: 8px !important;
+  }
+
+  .table-container {
+    overflow-x: visible !important;
+  }
+
+  table[mat-table] {
+    width: 100%;
+    background: transparent;
+    box-shadow: none !important;
+  }
+
+  /* Hide the header row entirely on mobile — labels come from data-label */
+  table[mat-table] tr.mat-header-row,
+  table[mat-table] tr[mat-header-row] {
+    display: none !important;
+  }
+
+  table[mat-table] tbody,
+  table[mat-table] .mat-mdc-table {
+    display: block;
+    width: 100%;
+  }
+
+  /* Each data row becomes a card */
+  table[mat-table] tr.mat-row,
+  table[mat-table] tr[mat-row] {
+    display: block !important;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+    height: auto !important;
+  }
+
+  /* Each cell becomes a labeled flex row inside the card */
+  table[mat-table] td.mat-cell,
+  table[mat-table] td[mat-cell] {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 8px 0 !important;
+    font-size: 13px;
+    white-space: normal;
+    text-align: right;
+    word-break: break-word;
+  }
+
+  table[mat-table] td.mat-cell:last-child,
+  table[mat-table] td[mat-cell]:last-child {
+    border-bottom: none !important;
+  }
+
+  table[mat-table] td.mat-cell::before,
+  table[mat-table] td[mat-cell]::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 10px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  table[mat-table] td.mat-cell,
+  table[mat-table] td[mat-cell] {
+    font-size: 12px;
+  }
+
+  table[mat-table] td.mat-cell::before,
+  table[mat-table] td[mat-cell]::before {
+    font-size: 10px;
   }
 }

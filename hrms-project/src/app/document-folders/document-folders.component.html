@@ -1,5 +1,7 @@
 <div class="sub-sidebar clickOutside">
 
+
+
   <mat-sidenav-container class="sub-sidenav-container">
 
     <!-- =====================================================
@@ -8,11 +10,12 @@
 
     <mat-sidenav
       #sidenav
-      opened="true"
-      mode="side"
-      class="sub-sidenav"
-      [class.sidebar-expanded]="isMenuOpen"
-      [class.sidebar-collapsed]="!isMenuOpen"
+      class="sub-sidenav hide-scrollbar"
+      [opened]="isMobile ? isMenuOpen : true"
+      [mode]="isMobile ? 'over' : 'side'"
+      [class.sidebar-expanded]="!isMobile && isMenuOpen"
+      [class.sidebar-collapsed]="!isMobile && !isMenuOpen"
+      (closedStart)="isMenuOpen = false"
     >
 
       <div class="sidebar-wrapper">
@@ -23,15 +26,12 @@
 
         <div class="sidebar-top">
 
-          <div
-            class="sidebar-brand"
+          <span
+            class="sub-sidebar-title"
             *ngIf="isMenuOpen"
           >
-
-            <span>
-              Document Folders
-            </span>
-          </div>
+            Document Folders
+          </span>
 
           <button
             type="button"
@@ -53,7 +53,7 @@
              ================================================= -->
 
         <nav
-          class="sidebar"
+          class="sidebar hide-scrollbar"
           [class.menu-open]="isMenuOpen"
           [class.menu-close]="!isMenuOpen"
         >
@@ -71,7 +71,7 @@
 
               <button
                 type="button"
-                class="nav-item-link add-folder-link"  style=" background: radial-gradient(black, transparent);"
+                class="nav-item-link add-folder-link"
                 (click)="openPopus()"
                 [title]="!isMenuOpen ? 'Add Folder' : ''"
               >
@@ -108,9 +108,7 @@
                 class="folder-group-item"
               >
 
-                <!-- =================================================
-                     MAIN FOLDER
-                     ================================================= -->
+                <!-- MAIN FOLDER -->
 
                 <div
                   class="folder-header-row"
@@ -120,7 +118,6 @@
                   (click)="toggleSubfolder(i)"
                 >
 
-                  <!-- FOLDER ICON -->
                   <div class="folder-icon-wrapper">
 
                     <mat-icon class="nav-icon folder-icon">
@@ -130,7 +127,6 @@
                   </div>
 
 
-                  <!-- FOLDER NAME -->
                   <span
                     class="sidenav-opt folder-title"
                     *ngIf="isMenuOpen"
@@ -140,6 +136,7 @@
 
 
                   <!-- ADD SUBFOLDER -->
+
                   <button
                     *ngIf="
                       hasAddPermissionDocumentFolder &&
@@ -163,7 +160,8 @@
                   </button>
 
 
-                  <!-- EXPAND/COLLAPSE -->
+                  <!-- EXPAND / COLLAPSE -->
+
                   <mat-icon
                     class="chevron-arrow"
                     *ngIf="isMenuOpen"
@@ -178,9 +176,7 @@
                 </div>
 
 
-                <!-- =================================================
-                     SUBFOLDERS
-                     ================================================= -->
+                <!-- SUBFOLDERS -->
 
                 <ul
                   class="sub-menu-list"
@@ -205,6 +201,7 @@
                       ]"
                       routerLinkActive="active-sublink"
                       class="subnav-item-link"
+                      (click)="closeOnMobile()"
                     >
 
                       <mat-icon class="subnav-icon">
@@ -238,13 +235,31 @@
          MAIN CONTENT
          ===================================================== -->
 
-    <div class="sub-content-area">
+    <main class="sub-content-area">
+
+      <!-- MOBILE MENU BUTTON -->
+
+      <button
+        type="button"
+        class="mobile-submenu-fab"
+        *ngIf="isMobile && !isMenuOpen"
+        (click)="toggleSidebarMenu()"
+        aria-label="Open submenu"
+      >
+
+        <mat-icon>
+          menu
+        </mat-icon>
+
+      </button>
+
 
       <router-outlet></router-outlet>
 
-    </div>
+    </main>
 
   </mat-sidenav-container>
+
 
 
   <!-- =======================================================

@@ -1042,7 +1042,7 @@ export class CreateleavepolicymodalComponent {
 
 
   currentPage: number = 1;
-  itemsPerPage: number = 3;
+  itemsPerPage: number = 4;
   pagedEmployees: any[] = [];
 
 
@@ -1111,14 +1111,6 @@ export class CreateleavepolicymodalComponent {
   }
 
 
-
-  get pageNumbers(): number[] {
-
-    return Array(
-      this.totalPages
-    ).fill(0).map((x, i) => i + 1);
-
-  }
 
 
 

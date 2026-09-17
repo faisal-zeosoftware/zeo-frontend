@@ -606,7 +606,7 @@ toggleSelectAllEmployees(): void {
   }
 
   currentPage: number = 1;
-  itemsPerPage: number = 3;
+  itemsPerPage: number = 6;
   pagedEmployees: any[] = [];
 
   updatePagination(): void {
@@ -638,9 +638,9 @@ toggleSelectAllEmployees(): void {
     this.updatePagination();
   }
 
-  get pageNumbers(): number[] {
-    return Array(this.totalPages).fill(0).map((x, i) => i + 1);
-  }
+  // get pageNumbers(): number[] {
+  //   return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+  // }
 
   loadShifts(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();

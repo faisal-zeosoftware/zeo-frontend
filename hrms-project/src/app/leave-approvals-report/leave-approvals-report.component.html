@@ -282,7 +282,7 @@
     
     <ng-template #rowTemplate let-items>
       <tr *ngFor="let item of items" class="data-row">
-        <td *ngFor="let f of fieldSettings" [hidden]="!f.visible" class="align-middle py-3">
+        <td *ngFor="let f of fieldSettings" [hidden]="!f.visible" [attr.data-label]="f.label" class="align-middle py-3">
           
           <ng-container *ngIf="f.key === 'status'; else dateCheck">
             <span class="badge px-3 py-2 rounded-pill" 

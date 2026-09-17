@@ -825,7 +825,7 @@ export class LateComePolicyComponent {
   
   
     currentPage: number = 1;
-    itemsPerPage: number = 3;
+    itemsPerPage: number = 4;
     pagedEmployees: any[] = [];
   
   
@@ -895,13 +895,13 @@ export class LateComePolicyComponent {
   
   
   
-    get pageNumbers(): number[] {
+    // get pageNumbers(): number[] {
   
-      return Array(
-        this.totalPages
-      ).fill(0).map((x, i) => i + 1);
+    //   return Array(
+    //     this.totalPages
+    //   ).fill(0).map((x, i) => i + 1);
   
-    }
+    // }
   
   
     toggleAllSelection(): void {

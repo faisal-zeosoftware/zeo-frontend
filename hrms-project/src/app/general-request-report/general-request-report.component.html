@@ -300,7 +300,7 @@
         <ng-template #rowTemplate>
           <tr>
             <ng-container *ngFor="let f of fieldSettings">
-              <td *ngIf="f.visible">
+               <td *ngIf="f.visible" [attr.data-label]="f.label">
                 {{ item[f.key] !== null && item[f.key] !== undefined ? item[f.key] : '-' }}
               </td>
             </ng-container>

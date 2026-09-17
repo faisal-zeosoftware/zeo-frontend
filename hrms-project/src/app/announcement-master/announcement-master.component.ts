@@ -836,7 +836,7 @@ getDesignationName(id: number | string): string {
 
 
   currentPage: number = 1;
-  itemsPerPage: number = 3;
+  itemsPerPage: number = 6;
   pagedEmployees: any[] = [];
 
 
@@ -906,13 +906,13 @@ getDesignationName(id: number | string): string {
 
 
 
-  get pageNumbers(): number[] {
+  // get pageNumbers(): number[] {
 
-    return Array(
-      this.totalPages
-    ).fill(0).map((_x, i) => i + 1);
+  //   return Array(
+  //     this.totalPages
+  //   ).fill(0).map((_x, i) => i + 1);
 
-  }
+  // }
 
 
 
@@ -1122,7 +1122,7 @@ editPagedEmployees: any[] = [];
 editAllEmployeesSelected = false;
 
 editCurrentPage = 1;
-editItemsPerPage = 3;
+editItemsPerPage = 6;
 
 openEditModal(asset: any): void {
 

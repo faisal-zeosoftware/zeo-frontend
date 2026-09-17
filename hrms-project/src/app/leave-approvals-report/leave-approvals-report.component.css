@@ -311,42 +311,6 @@ table thead th {
 
 
 
-  @media only screen and (max-width: 640px) {
-  table thead {
-    display: none;
-  }
-
-  table tbody {
-    display: block;
-  }
-
-  table tbody tr td {
-    display: flex;
-    align-items: center;
-    padding: 0;
-  }
-
-  table tbody tr {
-    margin-bottom: 20px;
-    display: block;
-    border: 1px solid #5c1e81;
-    background: #f9f9f9;
-    overflow: hidden;
-  }
-
-  table tbody td::before {
-    content: attr(data-label);
-    font-weight: bold;
-    width: 30%;
-    display: flex;
-    background: #5c1e81;
-    color: #fff;
-    padding: 15px;
-    margin-inline-end: 10px;
-  }
-}
-
-
 
 .search_op{
   cursor: pointer;
@@ -710,18 +674,6 @@ border-bottom: 2px solid #714b67;
 .custom-table td { font-size: 13.5px; vertical-align: middle; } 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /* Glassmorphism Backdrop */
 ::ng-deep .glass-backdrop {
 background: rgba(15, 23, 42, 0.15) !important;
@@ -729,13 +681,13 @@ backdrop-filter: blur(4px) !important;
 }
 
 /* Menu Container */
-::ng-deep .custom-filter-menu {
+/* ::ng-deep .custom-filter-menu {
 max-width: none !important;
 width: 850px !important;
 border-radius: 12px !important;
 overflow: hidden !important;
 box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-}
+} */
 
 .filter-dropdown-container {
 background: #ffffff;
@@ -985,10 +937,10 @@ cursor: pointer;
 
 
 /* Container Extensions */
-::ng-deep .custom-filter-menu {
+/* ::ng-deep .custom-filter-menu {
 width: 920px !important;
 border-radius: 16px !important;
-}
+} */
 
 /* Header Badge */
 .header-icon-badge {
@@ -1505,4 +1457,437 @@ cursor: grabbing;
 .btn-export-excel:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);
+}
+
+
+
+/* ============================================================
+   FIX: TABLE HEADINGS INVISIBLE (white text on bg-light)
+   ============================================================ */
+
+.com_list .table-responsive table.table thead.bg-light th {
+  color: #ffffff !important;
+  background: #443acd !important;
+}
+
+
+/* ============================================================
+   HEADER SEARCH BAR — MOBILE
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  .comapny_section {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  .header_section {
+    padding: 16px 14px 12px 14px;
+  }
+
+  .header_section .row.align-items-center {
+    flex-direction: column;
+  }
+
+  .header_section .col-md-4,
+  .header_section .col-md-6 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin-bottom: 10px;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .page-title {
+    font-size: 16px;
+  }
+
+  .search-container-modern {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .search-input-field {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .filter-trigger-btn {
+    flex-shrink: 0;
+  }
+
+  .filter-trigger-btn .filter-text {
+    display: none;
+  }
+}
+
+/* ============================================================
+   FILTER MENU (Report Designer panel) — CRITICAL MOBILE FIX
+   Overrides the hard-coded 920px/850px/50vw desktop widths.
+   ============================================================ */
+
+@media only screen and (max-width: 991.98px) {
+
+  ::ng-deep .custom-filter-menu,
+  ::ng-deep .centered-half-menu,
+  ::ng-deep .full-width-menu {
+    width: 94vw !important;
+    max-width: 94vw !important;
+    max-height: 85vh !important;
+    left: 50% !important;
+    top: 8vh !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    border-radius: 10px !important;
+    overflow-y: auto !important;
+  }
+
+  .filter-dropdown-container {
+    min-height: 0 !important;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .filter-dropdown-container .row.m-0.p-3 {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-dropdown-container .col-md-3,
+  .filter-dropdown-container .col-md-4,
+  .filter-dropdown-container .col-md-5 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    padding: 12px !important;
+  }
+
+  .border-left,
+  .border-right {
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 12px !important;
+    margin-top: 8px;
+  }
+
+  .filter-main-header {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-main-header .header-icon-badge {
+    margin-right: 8px !important;
+  }
+
+  .filter-main-header span.h6 {
+    font-size: 14px;
+  }
+
+  .filter-scroll-area {
+    max-height: 240px;
+  }
+
+  /* Date range inputs */
+  .date-input-group {
+    width: 100%;
+  }
+
+  .save-input-wrapper.modern-row {
+    flex-direction: column;
+  }
+
+  .file-save-row {
+    flex-direction: column;
+  }
+
+  .clean-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .btn-save-confirm {
+    width: 100%;
+  }
+
+  .group-pill-btn {
+    padding: 10px;
+  }
+
+  .pill-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  ::ng-deep .custom-filter-menu,
+  ::ng-deep .centered-half-menu {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    top: 5vh !important;
+    max-height: 90vh !important;
+  }
+
+  .filter-scroll-area {
+    max-height: 200px;
+  }
+
+  .saved-reports-container {
+    max-height: 130px;
+  }
+}
+
+/* ============================================================
+   TABLE STATS BAR
+   ============================================================ */
+
+@media only screen and (max-width: 768px) {
+
+  .table-stats-bar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 8px;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .table-stats-bar button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   RECURSIVE GROUPED TABLE — CARD LAYOUT ON MOBILE
+   Now that data-label is set correctly via the template fix.
+   ============================================================ */
+
+@media only screen and (max-width: 640px) {
+
+  .com_list {
+    padding: 8px !important;
+  }
+
+  .com_list .table-responsive {
+    overflow-x: visible !important;
+  }
+
+  .com_list table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .com_list table thead {
+    display: none;
+  }
+
+  .com_list table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Data rows become cards */
+  .com_list table tbody tr:not(.group-header) {
+    display: block;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+  }
+
+  .com_list table tbody tr:not(.group-header) td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 8px 0 !important;
+    font-size: 13px;
+    white-space: normal;
+    text-align: right;
+    word-break: break-word;
+  }
+
+  .com_list table tbody tr:not(.group-header) td:last-child {
+    border-bottom: none !important;
+  }
+
+  .com_list table tbody tr:not(.group-header) td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 10px;
+    white-space: nowrap;
+  }
+
+  /* Group header rows stay as full-width banners, not cards */
+  .com_list table tbody tr.group-header {
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    margin-top: 4px;
+  }
+
+  .com_list table tbody tr.group-header td {
+    display: flex !important;
+    align-items: center;
+    padding: 10px 12px !important;
+    font-size: 12px;
+    border: none !important;
+  }
+
+  .com_list table tbody tr.group-header td::before {
+    display: none; /* group headers use colspan, no label needed */
+  }
+
+  .com_list .badge.badge-pill {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .com_list table tbody tr:not(.group-header) td {
+    font-size: 12px;
+  }
+
+  .com_list table tbody tr:not(.group-header) td::before {
+    font-size: 10px;
+  }
+}
+
+/* ============================================================
+   DESKTOP: Base width for larger screens
+   ============================================================ */
+::ng-deep .custom-filter-menu {
+  max-width: none !important;
+  width: 920px !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ============================================================
+   MOBILE FIX: Center the CDK Overlay properly
+   ============================================================ */
+@media only screen and (max-width: 991.98px) {
+
+  /* Position fixed is REQUIRED to break out of CDK's inline positioning */
+  ::ng-deep .custom-filter-menu,
+  ::ng-deep .centered-half-menu,
+  ::ng-deep .full-width-menu {
+    position: fixed !important; 
+    width: 94vw !important;
+    max-width: 94vw !important;
+    max-height: 85vh !important;
+    left: 50% !important;
+    top: 8vh !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    border-radius: 10px !important;
+    overflow-y: auto !important;
+  }
+
+  .filter-dropdown-container {
+    min-height: 0 !important;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  /* Stack columns vertically */
+  .filter-dropdown-container .row.m-0.p-3 {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 12px;
+  }
+
+  .filter-dropdown-container .col-md-3,
+  .filter-dropdown-container .col-md-4,
+  .filter-dropdown-container .col-md-5 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    padding: 12px !important;
+  }
+
+  /* Remove side borders, add top dividers for stacked look */
+  .border-left,
+  .border-right {
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 12px !important;
+    margin-top: 8px;
+  }
+
+  .filter-main-header {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .filter-main-header .header-icon-badge {
+    margin-right: 8px !important;
+  }
+
+  .filter-main-header span.h6 {
+    font-size: 14px;
+  }
+
+  .filter-scroll-area {
+    max-height: 240px;
+  }
+
+  /* Ensure save form elements stack neatly */
+  .save-input-wrapper.modern-row {
+    flex-direction: column;
+  }
+
+  .file-save-row {
+    flex-direction: column;
+  }
+
+  .clean-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .btn-save-confirm {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   SMALL MOBILE DEVICES
+   ============================================================ */
+@media (max-width: 480px) {
+  ::ng-deep .custom-filter-menu,
+  ::ng-deep .centered-half-menu {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    top: 5vh !important;
+    max-height: 90vh !important;
+  }
+
+  .filter-scroll-area {
+    max-height: 200px;
+  }
+
+  .saved-reports-container {
+    max-height: 130px;
+  }
 }

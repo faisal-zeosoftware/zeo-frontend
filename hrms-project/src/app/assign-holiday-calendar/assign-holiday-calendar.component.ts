@@ -1027,7 +1027,7 @@ FilterEmployee() {
 
 
   currentPage: number = 1;
-  itemsPerPage: number = 3;
+  itemsPerPage: number = 6;
   pagedEmployees: any[] = [];
 
 

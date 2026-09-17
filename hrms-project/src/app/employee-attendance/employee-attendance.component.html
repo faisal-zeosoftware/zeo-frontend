@@ -84,10 +84,10 @@
                 <tbody>
                   <ng-container *ngFor="let emp of filteredRecords">
                     <tr *ngFor="let day of emp.attendance.summary_data">
-                      <td><strong>{{ emp.employee_name }}</strong></td>
-                      <td><small>{{ emp.branch }} / {{ emp.department || 'N/A' }}</small></td>
-                      <td>{{ day.date | date:'dd-MM-yyyy' }}</td>
-                      <td>
+                      <td data-label="Employee"><strong>{{ emp.employee_name }}</strong></td>
+                      <td data-label="Branch/Dept"><small>{{ emp.branch }} / {{ emp.department || 'N/A' }}</small></td>
+                      <td data-label="Date">{{ day.date | date:'dd-MM-yyyy' }}</td>
+                      <td data-label="Status">
                         <span [class.text-success]="day.status === 'Present'" 
                               [class.text-danger]="day.status === 'Absent'">
                           {{ day.status }}

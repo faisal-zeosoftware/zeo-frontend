@@ -336,37 +336,27 @@
     
         </table>
     
-        <div class="pagination-container">
-    
-          <button
-            class="page-btn"
-            (click)="previousPage()"
-            [disabled]="currentPage === 1">
-        
-            Previous
-        
-          </button>
-        
-          <button
-            *ngFor="let page of pageNumbers"
-            class="page-number"
-            [class.active]="currentPage === page"
-            (click)="goToPage(page)">
-        
-            {{ page }}
-        
-          </button>
-        
-          <button
-            class="page-btn"
-            (click)="nextPage()"
-            [disabled]="currentPage === totalPages">
-        
-            Next
-        
-          </button>
-        
-        </div>
+<div class="pagination-container" *ngIf="totalPages > 0">
+
+    <button
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        Previous
+    </button>
+
+    <button class="page-number active">
+        {{ currentPage }}
+    </button>
+
+    <button
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next
+    </button>
+
+</div>
     
       </div>
     
@@ -493,31 +483,27 @@
       </table>
   
       <!-- Pagination -->
-      <div class="pagination-container">
-  
-        <button
-          class="page-btn"
-          (click)="previousDocPage()"
-          [disabled]="currentDocPage === 1">
-          Previous
-        </button>
-  
-        <button
-          *ngFor="let page of docPageNumbers"
-          class="page-number"
-          [class.active]="currentDocPage === page"
-          (click)="goToDocPage(page)">
-          {{ page }}
-        </button>
-  
-        <button
-          class="page-btn"
-          (click)="nextDocPage()"
-          [disabled]="currentDocPage === totalDocPages">
-          Next
-        </button>
-  
-      </div>
+<div class="pagination-container" *ngIf="totalPages > 0">
+
+    <button
+        class="page-btn"
+        (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        Previous
+    </button>
+
+    <button class="page-number active">
+        {{ currentPage }}
+    </button>
+
+    <button
+        class="page-btn"
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Next
+    </button>
+
+</div>
   
     </div>
   

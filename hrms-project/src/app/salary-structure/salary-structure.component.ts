@@ -691,7 +691,7 @@ isSomeBranchesSelected(): boolean {
 
 
 currentPage: number = 1;
-itemsPerPage: number = 7;
+itemsPerPage: number = 6;
 pagedEmployees: any[] = [];
 
 
@@ -756,16 +756,6 @@ goToPage(page: number): void {
   this.currentPage = page;
 
   this.updatePagination();
-
-}
-
-
-
-get pageNumbers(): number[] {
-
-  return Array(
-    this.totalPages
-  ).fill(0).map((x, i) => i + 1);
 
 }
 
