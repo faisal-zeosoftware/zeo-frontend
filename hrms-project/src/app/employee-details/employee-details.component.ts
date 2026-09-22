@@ -1160,6 +1160,10 @@ categoryList: any[] = [];
 religionList: any[] = [];
 nationalityList: any[] = [];
 
+workLocationList: any[] = [];
+visaLocationList: any[] = [];
+
+
 onFileSelected(event: any): void {
   if (event.target.files && event.target.files.length > 0) {
     this.selectedFile = event.target.files[0];
@@ -1169,24 +1173,90 @@ onFileSelected(event: any): void {
 saveEmployee(): void {
   const formData = new FormData();
 
-  // Helper function to ensure we ONLY send integers for Foreign Keys
-  const getPkValue = (val: any, list: any[] = []): string => {
-    if (val === null || val === undefined) return '';
-    
-    // If it's already a number or numeric string (e.g. 1 or "1")
-    if (!isNaN(Number(val))) return val.toString();
 
-    // If it's an object with an 'id' field
-    if (typeof val === 'object' && val.id) return val.id.toString();
+const getPkValue = (val: any, list: any[] = []): string => {
 
-    // If it's a string name (e.g., "Hrms"), find its ID in the master list
-    if (typeof val === 'string' && list.length > 0) {
-      const found = list.find(item => item.name.toLowerCase() === val.toLowerCase());
-      if (found) return found.id.toString();
-    }
-
+  // Empty value
+  if (val === null || val === undefined || val === '') {
     return '';
-  };
+  }
+
+  // Already an ID
+  if (typeof val === 'number') {
+    return String(val);
+  }
+
+  // Numeric string ID
+  if (typeof val === 'string') {
+    const trimmedValue = val.trim();
+
+    if (/^\d+$/.test(trimmedValue)) {
+      return trimmedValue;
+    }
+  }
+
+  // Object containing ID
+  if (
+    typeof val === 'object' &&
+    val !== null &&
+    val.id !== undefined &&
+    val.id !== null
+  ) {
+    return String(val.id);
+  }
+
+  // Find ID by name/title
+  if (typeof val === 'string' && Array.isArray(list)) {
+
+    const searchValue = val.trim().toLowerCase();
+
+    const found = list.find((item: any) => {
+
+      if (!item || typeof item !== 'object') {
+        return false;
+      }
+
+      const possibleNames = [
+        item.name,
+        item.location_name,
+        item.branch_name,
+        item.dept_name,
+        item.desgntn_job_title,
+        item.ctgry_title,
+        item.religion,
+        item.N_name
+      ];
+
+      return possibleNames.some((name: any) => {
+
+        if (
+          name === null ||
+          name === undefined
+        ) {
+          return false;
+        }
+
+        const normalizedName = String(name)
+          .trim()
+          .toLowerCase();
+
+        return normalizedName === searchValue;
+      });
+    });
+
+    if (
+      found &&
+      found.id !== undefined &&
+      found.id !== null
+    ) {
+      return String(found.id);
+    }
+  }
+
+  return '';
+};
+
+
 
   const safeAppend = (key: string, value: any) => {
     formData.append(key, value !== null && value !== undefined ? value.toString() : '');
@@ -1221,8 +1291,16 @@ saveEmployee(): void {
   safeAppend('emp_father_name', this.employee.emp_father_name);
   safeAppend('emp_mother_name', this.employee.emp_mother_name);
   safeAppend('emp_posting_location', this.employee.emp_posting_location);
-  safeAppend('work_location', this.employee.work_location);
-  safeAppend('visa_location', this.employee.visa_location);
+// Work/Visa Location
+safeAppend(
+  'work_location',
+  getPkValue(this.employee.work_location, this.branches)
+);
+
+safeAppend(
+  'visa_location',
+  getPkValue(this.employee.visa_location, this.branches)
+);
   safeAppend('attendance_source', this.employee.attendance_source);
   safeAppend('person_id', this.employee.person_id);
 
@@ -1256,12 +1334,9 @@ saveEmployee(): void {
   this.EmployeeService.updateEmp(this.employee.id, formData).subscribe({
     next: (response) => {
       alert('Employee Details Updated Successfully!');
-
-      this.saveFamilyMembers();          // NEW — chain family save after employee save
-
+      this.saveAllSections();          // <-- single entry point now
       this.isEditMode = false;
       this.selectedFile = null;
-      this.ngOnInit(); // Reload details
     },
     error: (error) => {
       console.error('Update Error:', error);
@@ -1275,6 +1350,135 @@ saveEmployee(): void {
         alert(messages.join('\n'));
       }
     }
+  });
+}
+
+saveAllSections(): void {
+  const familyReqs = (this.emp_family_details || []).map((member: any) =>
+    this.EmployeeService.updateEmpFamily(this.employee.id, member.id, {
+      ef_member_name: member.ef_member_name,
+      emp_relation: member.emp_relation,
+      ef_company_expence: member.ef_company_expence,
+      ef_date_of_birth: member.ef_date_of_birth
+    })
+  );
+
+  const qualificationReqs = (this.Qualifications || []).map((q: any) =>
+    this.EmployeeService.updateQualification(this.employee.id, q.id, {
+      emp_qualification: q.emp_qualification,
+      emp_qf_year: q.emp_qf_year,
+      emp_qf_subject: q.emp_qf_subject,
+      emp_qf_instituition: q.emp_qf_instituition
+    })
+  );
+
+  const bankReqs = (this.emp_bank_details || []).map((b: any) =>
+    this.EmployeeService.updateBankDetail(this.employee.id, b.id, {
+      bank_name: b.bank_name,
+      branch_name: b.branch_name,
+      account_number: b.account_number,
+      bank_address: b.bank_address,
+      route_code: b.route_code,
+      iban_number: b.iban_number
+    })
+  );
+
+  const jobHistoryReqs = (this.Jobhistorys || []).map((j: any) =>
+    this.EmployeeService.updateJobHistory(this.employee.id, j.id, {
+      emp_jh_company_name: j.emp_jh_company_name,
+      emp_jh_designation: j.emp_jh_designation,
+      emp_jh_from_date: j.emp_jh_from_date,
+      emp_jh_end_date: j.emp_jh_end_date,
+      emp_jh_leaving_salary_permonth: j.emp_jh_leaving_salary_permonth,
+      emp_jh_reason: j.emp_jh_reason,
+      emp_jh_years_experiance: j.emp_jh_years_experiance
+    })
+  );
+
+  const documentReqs = (this.employeeDocuments || []).map((d: any) => {
+    const docFormData = new FormData();
+    docFormData.append('emp_doc_number', d.emp_doc_number || '');
+    docFormData.append('emp_doc_issued_date', d.emp_doc_issued_date || '');
+    docFormData.append('emp_doc_expiry_date', d.emp_doc_expiry_date || '');
+    docFormData.append('document_type', d.document_type || '');
+    docFormData.append('is_active', d.is_active ? '1' : '0');
+    if (d._newFile) {
+      docFormData.append('emp_doc_document', d._newFile, d._newFile.name);
+    }
+    return this.EmployeeService.updateDocument(this.employee.id, d.id, docFormData);
+  });
+
+  const allReqs = [
+    ...familyReqs,
+    ...qualificationReqs,
+    ...bankReqs,
+    ...jobHistoryReqs,
+    ...documentReqs
+  ];
+
+  forkJoin(allReqs.length ? allReqs : [of(null)]).subscribe({
+    next: () => this.saveAllCustomFields(),
+    error: (err) => {
+      console.error('Section update failed', err);
+      alert('Some sections failed to update — check console.');
+    }
+  });
+}
+
+saveAllCustomFields(): void {
+  const schema = localStorage.getItem('selectedSchema');
+  const calls: Observable<any>[] = [];
+
+  (this.emp_family_details || []).forEach((member: any) => {
+    (member.fam_custom_fields || []).forEach((field: any) => {
+      calls.push(
+        this.http.put(
+          `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
+          { field_value: field.field_value }
+        )
+      );
+    });
+  });
+
+  (this.Qualifications || []).forEach((q: any) => {
+    (q.qualification_fields || []).forEach((field: any) => {
+      calls.push(
+        this.http.put(
+          `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
+          { field_value: field.field_value }
+        )
+      );
+    });
+  });
+
+  (this.Jobhistorys || []).forEach((j: any) => {
+    (j.job_history_custom_fields || []).forEach((field: any) => {
+      calls.push(
+        this.http.put(
+          `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
+          { field_value: field.field_value }
+        )
+      );
+    });
+  });
+
+  (this.employeeDocuments || []).forEach((d: any) => {
+    (d.doc_custom_fields || []).forEach((field: any) => {
+      calls.push(
+        this.http.put(
+          `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
+          { field_value: field.field_value }
+        )
+      );
+    });
+  });
+
+  forkJoin(calls.length ? calls : [of(null)]).subscribe({
+    next: () => {
+      alert('Employee & Family Details Updated Successfully!');
+      this.ngOnInit(); // single, final reload
+    },
+    error: (err) => console.error('Custom field update failed', err)
   });
 }
 
@@ -1415,92 +1619,109 @@ cancelEdit(): void {
 
 
 
-  saveFamilyMembers(): void {
-    const requests = (this.emp_family_details || []).map((member: any) => {
-      const payload = {
-        ef_member_name: member.ef_member_name,
-        emp_relation: member.emp_relation,
-        ef_company_expence: member.ef_company_expence,
-        ef_date_of_birth: member.ef_date_of_birth
-      };
-      return this.EmployeeService.updateEmpFamily(this.employee.id, member.id, payload); // 3 args now
-    });
+  // saveFamilyMembers(): void {
+  //   const requests = (this.emp_family_details || []).map((member: any) => {
+  //     const payload = {
+  //       ef_member_name: member.ef_member_name,
+  //       emp_relation: member.emp_relation,
+  //       ef_company_expence: member.ef_company_expence,
+  //       ef_date_of_birth: member.ef_date_of_birth
+  //     };
+  //     return this.EmployeeService.updateEmpFamily(this.employee.id, member.id, payload);
+  //   });
   
-    forkJoin(requests.length ? requests : [of(null)]).subscribe({
-      next: () => this.saveFamilyCustomFields(),
-      error: (err) => console.error('Family update failed', err)
-    });
-  }
+  //   forkJoin(requests.length ? requests : [of(null)]).subscribe({
+  //     next: () => this.saveFamilyCustomFields(),
+  //     error: (err) => console.error('Family update failed', err)
+  //   });
+  // }
 
-saveQualifications(): void {
-  const requests = (this.Qualifications || []).map((q: any) =>
-    this.EmployeeService.updateQualification(this.employee.id, q.id, {
-      emp_qualification: q.emp_qualification,
-      emp_qf_year: q.emp_qf_year,
-      emp_qf_subject: q.emp_qf_subject,
-      emp_qf_instituition: q.emp_qf_instituition
-    })
-  );
-  forkJoin(requests.length ? requests : [of(null)]).subscribe({
-    next: () => this.saveBankDetails(),
-    error: (err) => console.error('Qualification update failed', err)
-  });
-}
+  //   saveQualifications(): void {
+  //   const requests = (this.Qualifications || []).map((q: any) => {
+  //     const payload = {
+  //     emp_qualification: q.emp_qualification,
+  //     emp_qf_year: q.emp_qf_year,
+  //     emp_qf_subject: q.emp_qf_subject,
+  //     emp_qf_instituition: q.emp_qf_instituition
+  //     };
+  //     return this.EmployeeService.updateQualification(this.employee.id, q.id, payload);
+  //   });
+  
+  //   forkJoin(requests.length ? requests : [of(null)]).subscribe({
+  //     next: () => this.saveFamilyCustomFields(),
+  //     error: (err) => console.error('Family update failed', err)
+  //   });
+  // }
+
+// saveQualifications(): void {
+//   const requests = (this.Qualifications || []).map((q: any) =>
+//     this.EmployeeService.updateQualification(this.employee.id, q.id, {
+//       emp_qualification: q.emp_qualification,
+//       emp_qf_year: q.emp_qf_year,
+//       emp_qf_subject: q.emp_qf_subject,
+//       emp_qf_instituition: q.emp_qf_instituition
+//     })
+//   );
+//   forkJoin(requests.length ? requests : [of(null)]).subscribe({
+//     next: () => this.saveBankDetails(),
+//     error: (err) => console.error('Qualification update failed', err)
+//   });
+// }
 
 
-saveBankDetails(): void {
-  const requests = (this.emp_bank_details || []).map((b: any) =>
-    this.EmployeeService.updateBankDetail(this.employee.id, b.id, {
-      bank_name: b.bank_name,
-      branch_name: b.branch_name,
-      account_number: b.account_number,
-      bank_address: b.bank_address,
-      route_code: b.route_code,
-      iban_number: b.iban_number
-    })
-  );
-  forkJoin(requests.length ? requests : [of(null)]).subscribe({
-    next: () => this.saveJobHistory(),
-    error: (err) => console.error('Bank details update failed', err)
-  });
-}
+// saveBankDetails(): void {
+//   const requests = (this.emp_bank_details || []).map((b: any) =>
+//     this.EmployeeService.updateBankDetail(this.employee.id, b.id, {
+//       bank_name: b.bank_name,
+//       branch_name: b.branch_name,
+//       account_number: b.account_number,
+//       bank_address: b.bank_address,
+//       route_code: b.route_code,
+//       iban_number: b.iban_number
+//     })
+//   );
+//   forkJoin(requests.length ? requests : [of(null)]).subscribe({
+//     next: () => this.saveJobHistory(),
+//     error: (err) => console.error('Bank details update failed', err)
+//   });
+// }
 
-saveJobHistory(): void {
-  const requests = (this.Jobhistorys || []).map((j: any) =>
-    this.EmployeeService.updateJobHistory(this.employee.id, j.id, {
-      emp_jh_company_name: j.emp_jh_company_name,
-      emp_jh_designation: j.emp_jh_designation,
-      emp_jh_from_date: j.emp_jh_from_date,
-      emp_jh_end_date: j.emp_jh_end_date,
-      emp_jh_leaving_salary_permonth: j.emp_jh_leaving_salary_permonth,
-      emp_jh_reason: j.emp_jh_reason,
-      emp_jh_years_experiance: j.emp_jh_years_experiance
-    })
-  );
-  forkJoin(requests.length ? requests : [of(null)]).subscribe({
-    next: () => this.saveDocuments(),
-    error: (err) => console.error('Job history update failed', err)
-  });
-}
+// saveJobHistory(): void {
+//   const requests = (this.Jobhistorys || []).map((j: any) =>
+//     this.EmployeeService.updateJobHistory(this.employee.id, j.id, {
+//       emp_jh_company_name: j.emp_jh_company_name,
+//       emp_jh_designation: j.emp_jh_designation,
+//       emp_jh_from_date: j.emp_jh_from_date,
+//       emp_jh_end_date: j.emp_jh_end_date,
+//       emp_jh_leaving_salary_permonth: j.emp_jh_leaving_salary_permonth,
+//       emp_jh_reason: j.emp_jh_reason,
+//       emp_jh_years_experiance: j.emp_jh_years_experiance
+//     })
+//   );
+//   forkJoin(requests.length ? requests : [of(null)]).subscribe({
+//     next: () => this.saveDocuments(),
+//     error: (err) => console.error('Job history update failed', err)
+//   });
+// }
 
-saveDocuments(): void {
-  const requests = (this.employeeDocuments || []).map((d: any) => {
-    const formData = new FormData();
-    formData.append('emp_doc_number', d.emp_doc_number || '');
-    formData.append('emp_doc_issued_date', d.emp_doc_issued_date || '');
-    formData.append('emp_doc_expiry_date', d.emp_doc_expiry_date || '');
-    formData.append('document_type', d.document_type || '');
-    formData.append('is_active', d.is_active ? '1' : '0');
-    if (d._newFile) {
-      formData.append('emp_doc_document', d._newFile, d._newFile.name);
-    }
-    return this.EmployeeService.updateDocument(this.employee.id, d.id, formData);
-  });
-  forkJoin(requests.length ? requests : [of(null)]).subscribe({
-    next: () => this.saveFamilyMembers(),
-    error: (err) => console.error('Document update failed', err)
-  });
-}
+// saveDocuments(): void {
+//   const requests = (this.employeeDocuments || []).map((d: any) => {
+//     const formData = new FormData();
+//     formData.append('emp_doc_number', d.emp_doc_number || '');
+//     formData.append('emp_doc_issued_date', d.emp_doc_issued_date || '');
+//     formData.append('emp_doc_expiry_date', d.emp_doc_expiry_date || '');
+//     formData.append('document_type', d.document_type || '');
+//     formData.append('is_active', d.is_active ? '1' : '0');
+//     if (d._newFile) {
+//       formData.append('emp_doc_document', d._newFile, d._newFile.name);
+//     }
+//     return this.EmployeeService.updateDocument(this.employee.id, d.id, formData);
+//   });
+//   forkJoin(requests.length ? requests : [of(null)]).subscribe({
+//     next: () => this.saveFamilyMembers(),
+//     error: (err) => console.error('Document update failed', err)
+//   });
+// }
 
 onDocFileSelected(event: any, document: any): void {
   if (event.target.files && event.target.files.length > 0) {
@@ -1508,31 +1729,57 @@ onDocFileSelected(event: any, document: any): void {
   }
 }
 
-  saveFamilyCustomFields(): void {
-    const schema = localStorage.getItem('selectedSchema');
-    const calls: Observable<any>[] = [];
+  // saveFamilyCustomFields(): void {
+  //   const schema = localStorage.getItem('selectedSchema');
+  //   const calls: Observable<any>[] = [];
   
-    this.emp_family_details.forEach((member: any) => {
-      (member.fam_custom_fields || []).forEach((field: any) => {
-        calls.push(
-          this.http.put(
-            `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
-            { field_value: field.field_value }
-          )
-        );
-      });
-    });
+  //   this.emp_family_details.forEach((member: any) => {
+  //     (member.fam_custom_fields || []).forEach((field: any) => {
+  //       calls.push(
+  //         this.http.put(
+  //           `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
+  //           { field_value: field.field_value }
+  //         )
+  //       );
+  //     });
+  //   });
   
-    forkJoin(calls.length ? calls : [of(null)]).subscribe({
-      next: () => {
-        alert('Employee & Family Details Updated Successfully!');
-        this.isEditMode = false;
-        this.selectedFile = null;
-        this.ngOnInit();
-      },
-      error: (err) => console.error('Custom field update failed', err)
-    });
-  }
+  //   forkJoin(calls.length ? calls : [of(null)]).subscribe({
+  //     next: () => {
+  //       alert('Employee & Family Details Updated Successfully!');
+  //       this.isEditMode = false;
+  //       this.selectedFile = null;
+  //       this.ngOnInit();
+  //     },
+  //     error: (err) => console.error('Custom field update failed', err)
+  //   });
+  // }
+
+  //   saveQualificationCustomFields(): void {
+  //   const schema = localStorage.getItem('selectedSchema');
+  //   const calls: Observable<any>[] = [];
+  
+  //   this.Qualifications.forEach(( q: any) => {
+  //     ( q.quali_custom_fields || []).forEach((field: any) => {
+  //       calls.push(
+  //         this.http.put(
+  //           `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
+  //           { field_value: field.field_value }
+  //         )
+  //       );
+  //     });
+  //   });
+  
+  //   forkJoin(calls.length ? calls : [of(null)]).subscribe({
+  //     next: () => {
+  //       alert('Employee & Family Details Updated Successfully!');
+  //       this.isEditMode = false;
+  //       this.selectedFile = null;
+  //       this.ngOnInit();
+  //     },
+  //     error: (err) => console.error('Custom field update failed', err)
+  //   });
+  // }
 
   deletedFamilyIds: number[] = [];
   deletedQualificationIds: number[] = [];

@@ -160,7 +160,7 @@
                               </div> -->
 
                               <div class="text-end ent-remove">
-                                <button type="button" class="btn btn-danger btn-sm pull-right" (click)="removeEntitlementRow(i)">
+                                <button *ngIf="hasDeletePermission" type="button" class="btn btn-danger btn-sm pull-right" (click)="removeEntitlementRow(i)">
                                   Remove
                                 </button>
                               </div>
@@ -422,7 +422,7 @@
                             </div>
                           
                             <!-- Action Buttons -->
-                            <div class="mt-3">
+                            <div *ngIf="hasAddPermission" class="mt-3">
                               <button type="button" class="btn btn-primary" (click)="addEntitlementRow()">
                                 + Add Entitlement
                               </button>
@@ -895,7 +895,7 @@
                       
                             <!-- Remove Button -->
                             <div class="text-end mb-2" *ngIf="payRuleRows.length > 1">
-                              <button
+                              <button *ngIf="hasDeletePermission"
                                 type="button"
                                 class="btn btn-danger btn-sm"
                                 (click)="removePayRuleRow(i)">
@@ -937,7 +937,7 @@
                           </div>
                       
                           <!-- Add Row Action Button -->
-                          <div class="mt-3">
+                          <div *ngIf="hasAddPermission" class="mt-3">
                             <button
                               type="button"
                               class="btn btn-primary"

@@ -46,6 +46,7 @@ export class LeaveOptionsComponent {
   hasViewPermissionLeaveAccrual: boolean = false;
   hasViewPermissionLeaveRejoin: boolean = false;
   hasViewPermissionLvEsc: boolean = false;
+  
 
   // ---- Mobile / responsive state ----
   isMobile: boolean = window.innerWidth <= 991.98;

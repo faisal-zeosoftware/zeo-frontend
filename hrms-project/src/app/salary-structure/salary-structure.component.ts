@@ -134,7 +134,7 @@ export class SalaryStructureComponent {
     });
 
 
-    this.userId = this.sessionService.getUserId();
+  this.userId = this.sessionService.getUserId();
     if (this.userId !== null) {
       this.authService.getUserData(this.userId).subscribe(
         async (userData: any) => {
@@ -191,17 +191,17 @@ export class SalaryStructureComponent {
                     console.log('Group Permissions:', groupPermissions);
 
 
-                    this.hasAddPermission = this.checkGroupPermission('add_assign_weekend', groupPermissions);
+                    this.hasAddPermission = this.checkGroupPermission('add_salarystructure', groupPermissions);
                     console.log('Has add permission:', this.hasAddPermission);
 
-                    this.hasEditPermission = this.checkGroupPermission('change_assign_weekend', groupPermissions);
+                    this.hasEditPermission = this.checkGroupPermission('change_salarystructure', groupPermissions);
                     console.log('Has edit permission:', this.hasEditPermission);
 
-                    this.hasDeletePermission = this.checkGroupPermission('delete_assign_weekend', groupPermissions);
+                    this.hasDeletePermission = this.checkGroupPermission('delete_salarystructure', groupPermissions);
                     console.log('Has delete permission:', this.hasDeletePermission);
 
 
-                    this.hasViewPermission = this.checkGroupPermission('view_assign_weekend', groupPermissions);
+                    this.hasViewPermission = this.checkGroupPermission('view_salarystructure', groupPermissions);
                     console.log('Has view permission:', this.hasViewPermission);
 
 
