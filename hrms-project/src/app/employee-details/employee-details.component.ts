@@ -1337,6 +1337,7 @@ safeAppend(
       this.saveAllSections();          // <-- single entry point now
       this.isEditMode = false;
       this.selectedFile = null;
+      window.location.reload();
     },
     error: (error) => {
       console.error('Update Error:', error);

@@ -380,7 +380,7 @@ async registerCheckIn(): Promise<void> {
 
         console.log('Response:', response);
         alert("Check In successful");
-        // window.location.reload();
+        window.location.reload();
       },
       (error) => {
         alert("Check-In Failed");
