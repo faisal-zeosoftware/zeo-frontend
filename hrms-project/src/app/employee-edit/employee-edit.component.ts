@@ -208,6 +208,7 @@ ngOnInit(): void {
         }
             // 👇 IMPORTANT: wait for users then map
       }
+            this.mapEmployeeBranchLocations();
 
       /**
        * 🔴 IMPORTANT PART
@@ -663,6 +664,61 @@ console.log('Request Data:', requestData);
 }
 
 
+private mapEmployeeBranchLocations(): void {
+  if (!this.Emp || !this.branches?.length) {
+    return;
+  }
+
+  console.log('Employee before mapping:', {
+    emp_branch_id: this.Emp.emp_branch_id,
+    work_location: this.Emp.work_location,
+    visa_location: this.Emp.visa_location
+  });
+
+  // Employee Branch
+  const employeeBranch = this.branches.find(
+    branch =>
+      String(branch.id) === String(this.Emp.emp_branch_id) ||
+      branch.branch_name?.trim().toLowerCase() ===
+      String(this.Emp.emp_branch_id).trim().toLowerCase()
+  );
+
+  if (employeeBranch) {
+    this.Emp.emp_branch_id = employeeBranch.id;
+  }
+
+  // Work Location
+  const workLocation = this.branches.find(
+    branch =>
+      String(branch.id) === String(this.Emp.work_location) ||
+      branch.branch_name?.trim().toLowerCase() ===
+      String(this.Emp.work_location).trim().toLowerCase()
+  );
+
+  if (workLocation) {
+    this.Emp.work_location = workLocation.id;
+  }
+
+  // Visa Location
+  const visaLocation = this.branches.find(
+    branch =>
+      String(branch.id) === String(this.Emp.visa_location) ||
+      branch.branch_name?.trim().toLowerCase() ===
+      String(this.Emp.visa_location).trim().toLowerCase()
+  );
+
+  if (visaLocation) {
+    this.Emp.visa_location = visaLocation.id;
+  }
+
+  console.log('Employee after mapping:', {
+    emp_branch_id: this.Emp.emp_branch_id,
+    work_location: this.Emp.work_location,
+    visa_location: this.Emp.visa_location
+  });
+}
+
+
 // loadEmployeeDetailsFeilds(employeeId: number): void {
 //   this.EmployeeService.getEmpByIdCustomFeild(employeeId).subscribe(
 //       (fields) => {
@@ -836,36 +892,41 @@ loadCompanies(): void {
 
 LoadBranch(callback?: Function) {
   const selectedSchema = this.authService.getSelectedSchema();
-  
-  if (selectedSchema) {
-    this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
-      (result: any[]) => {
-        // 1. Get the sidebar selected IDs from localStorage
-        const sidebarSelectedIds: number[] = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
 
-        // 2. Filter the API result to only include branches selected in the sidebar
-        // If sidebar is empty, you might want to show all, or show none. 
-        // Usually, we show only the selected ones:
-        if (sidebarSelectedIds.length > 0) {
-          this.branches = result.filter(branch => sidebarSelectedIds.includes(branch.id));
-        } else {
-          this.branches = result; // Fallback: show all if nothing is selected in sidebar
-        }
-        // Inside the subscribe block of loadDeparmentBranch
-// ✅ Auto select first branch
-if (this.branches.length > 0) {
-this.emp_branch_id = this.branches[0].id;
-}
-
-        console.log('Filtered branches for selection:', this.branches);
-        if (callback) callback();
-      },
-      (error) => {
-        console.error('Error fetching branches:', error);
-      }
-    );
+  if (!selectedSchema) {
+    return;
   }
+
+  this.DepartmentServiceService.getDeptBranchList(selectedSchema).subscribe(
+    (result: any[]) => {
+
+      const sidebarSelectedIds: number[] =
+        JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
+
+      if (sidebarSelectedIds.length > 0) {
+        this.branches = result.filter(branch =>
+          sidebarSelectedIds.includes(Number(branch.id))
+        );
+      } else {
+        this.branches = result;
+      }
+
+      console.log('Branches loaded:', this.branches);
+
+      // IMPORTANT:
+      // Convert API branch names to branch IDs
+      this.mapEmployeeBranchLocations();
+
+      if (callback) {
+        callback();
+      }
+    },
+    (error) => {
+      console.error('Error fetching branches:', error);
+    }
+  );
 }
+
 
 loadDepartments(): void {
   const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema

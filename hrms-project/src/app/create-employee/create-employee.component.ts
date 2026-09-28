@@ -988,7 +988,17 @@ export class CreateEmployeeComponent implements OnInit {
     formData.append('emp_gender', this.emp_gender || '');
     formData.append('emp_date_of_birth', this.emp_date_of_birth || '');
 
-    formData.append('emp_personal_email', this.emp_personal_email || '');
+   // Personal Email
+formData.append(
+  'emp_personal_email',
+  this.emp_personal_email || ''
+);
+
+// Company Email - ADD THIS
+formData.append(
+  'emp_company_email',
+  this.emp_company_email || ''
+);
 
     formData.append('emp_mobile_number_1', this.emp_mobile_number_1 || '');
     formData.append('emp_mobile_number_2', this.emp_mobile_number_2 || '');

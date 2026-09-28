@@ -262,6 +262,18 @@ downloadDocumnetExcel(selectedSchema: string): Observable<Blob> {
   return this.http.get(apiUrl, { responseType: 'blob' });
 }
 
+downloadBankDetailsCsv(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/employee/api/emp-bulkupload-bankdetails/download_demo_csv/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
+
+
+downloadBankDetailsExcel(selectedSchema: string): Observable<Blob> {
+  const apiUrl = `${this.apiUrl}/employee/api/emp-bulkupload-bankdetails/download_demo_excel/?schema=${selectedSchema}`;
+  return this.http.get(apiUrl, { responseType: 'blob' });
+}
+
 downloadEmployeeOvertimeCsv(selectedSchema: string): Observable<Blob> {
   const apiUrl = `${this.apiUrl}/calendars/api/Emp-bulkupload-overtime/download_default_csv_file/?schema=${selectedSchema}`;
   return this.http.get(apiUrl, { responseType: 'blob' });

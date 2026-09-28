@@ -452,6 +452,381 @@ onFileSelected(event:any, doc:any){
 
 }
 
+showBankBulkUpload: boolean = false;
+showBankUploadForm: boolean = false;
+bankReadMore: boolean = false;
+bankUploadFile: File | null = null;
+
+bulkUploadBank(): void {
+  this.bankReadMore = !this.bankReadMore;
+  this.showBankBulkUpload = !this.showBankBulkUpload;
+
+  if (!this.showBankBulkUpload) {
+    this.showBankUploadForm = false;
+    this.bankUploadFile = null;
+  }
+}
+
+onBankFileChange(event: any): void {
+
+  const input = event.target as HTMLInputElement;
+
+  if (input.files && input.files.length > 0) {
+
+    const file = input.files[0];
+
+    const validExtensions = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'text/csv'
+    ];
+
+    if (validExtensions.includes(file.type)) {
+
+      this.bankUploadFile = file;
+
+      console.log('Selected bank file:', file);
+
+    } else {
+
+      alert('Please select a valid Excel or CSV file.');
+
+      input.value = '';
+      this.bankUploadFile = null;
+    }
+  }
+}
+
+  downloadBankDetailsExcel(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+    
+      this.companyRegistrationService.downloadBankDetailsExcel(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Bank_Details_template.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+// downloadBankDetailsExcel(): void {
+
+//   const selectedSchema = this.authService.getSelectedSchema();
+
+//   if (!selectedSchema) {
+//     alert('No schema selected.');
+//     return;
+//   }
+
+//   this.companyRegistrationService
+//     .downloadBankDetailsExcel(selectedSchema)
+//     .subscribe({
+//       next: (blob: Blob) => {
+
+//         const url = window.URL.createObjectURL(blob);
+
+//         const a = document.createElement('a');
+
+//         a.href = url;
+//         a.download = 'Bank_Details_template.xlsx';
+
+//         a.click();
+
+//         window.URL.revokeObjectURL(url);
+//       },
+
+//       error: (error) => {
+
+//         console.error(
+//           'Failed to download bank Excel template:',
+//           error
+//         );
+
+//         alert('Unable to download bank Excel template.');
+//       }
+//     });
+// }
+
+// downloadBankDetailsCsv(): void {
+
+//   const selectedSchema = this.authService.getSelectedSchema();
+
+//   if (!selectedSchema) {
+//     alert('No schema selected.');
+//     return;
+//   }
+
+//   this.companyRegistrationService
+//     .downloadBankDetailsCsv(selectedSchema)
+//     .subscribe({
+//       next: (blob: Blob) => {
+
+//         const url = window.URL.createObjectURL(blob);
+
+//         const a = document.createElement('a');
+
+//         a.href = url;
+//         a.download = 'Bank_Details_template.csv';
+
+//         a.click();
+
+//         window.URL.revokeObjectURL(url);
+//       },
+
+//       error: (error) => {
+
+//         console.error(
+//           'Failed to download bank CSV template:',
+//           error
+//         );
+
+//         alert('Unable to download bank CSV template.');
+//       }
+//     });
+// }
+
+    downloadBankDetailsCsv(): void {
+      const selectedSchema = this.authService.getSelectedSchema();
+      if (!selectedSchema) return;
+
+      this.companyRegistrationService.downloadBankDetailsCsv(selectedSchema).subscribe((blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Bank_Details_template.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      });
+    }
+
+
+// bulkUploadBankDetails(): void {
+
+//   if (!this.bankUploadFile) {
+
+//     alert(
+//       'Please select a valid Excel or CSV file before uploading.'
+//     );
+
+//     return;
+//   }
+
+//   const selectedSchema =
+//     this.authService.getSelectedSchema();
+
+//   if (!selectedSchema) {
+
+//     alert('No schema selected.');
+
+//     return;
+//   }
+
+//   const formData = new FormData();
+
+//   formData.append(
+//     'file',
+//     this.bankUploadFile
+//   );
+
+
+//   formData.append(
+//     'emp_id',
+//     this.emp_id.toString()
+//   );
+
+//   this.http.post(
+//     `${this.apiUrl}/employee/api/emp-bulkupload-bankdetails/bulk_upload/?schema=${selectedSchema}`,
+//     formData
+//   )
+//   .subscribe({
+
+//     next: (response: any) => {
+
+//       console.log(
+//         'Bank bulk upload successful:',
+//         response
+//       );
+
+//       alert('Bank details bulk upload successful.');
+
+//       this.bankUploadFile = null;
+
+//       this.showBankUploadForm = false;
+
+//       this.showBankBulkUpload = false;
+
+//       this.bankReadMore = false;
+
+//       window.location.reload();
+//     },
+
+//     error: (error: any) => {
+
+//       console.error(
+//         'Bank bulk upload failed:',
+//         error
+//       );
+
+//       let errorMessage =
+//         'Error during bank bulk upload.';
+
+//       if (error.error) {
+
+//         if (typeof error.error === 'string') {
+
+//           errorMessage = error.error;
+
+//         } else if (error.error.message) {
+
+//           errorMessage = error.error.message;
+
+//         } else if (error.error.detail) {
+
+//           errorMessage = error.error.detail;
+
+//         } else if (typeof error.error === 'object') {
+
+//           errorMessage = Object.values(error.error)
+//             .flat()
+//             .join('\n');
+//         }
+//       }
+
+//       alert(errorMessage);
+//     }
+
+//   });
+// }
+
+bulkUploadBankDetails(): void {
+
+  // 1. Validate selected file
+  if (!this.bankUploadFile) {
+    alert('Please select a valid Excel or CSV file before uploading.');
+    return;
+  }
+
+  // 2. Validate employee ID
+  if (!this.emp_id) {
+    alert('Employee ID is missing.');
+    return;
+  }
+
+  // 3. Get selected schema
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (!selectedSchema) {
+    alert('No schema selected.');
+    return;
+  }
+
+  // 4. Prepare FormData
+  const formData = new FormData();
+
+  formData.append('file', this.bankUploadFile);
+  formData.append('emp_id', this.emp_id.toString());
+
+  // 5. Call bulk upload API
+  this.http.post(
+    `${this.apiUrl}/employee/api/emp-bulkupload-bankdetails/bulk_upload/?schema=${selectedSchema}`,
+    formData
+  ).subscribe({
+
+    next: (response: any) => {
+
+      console.log('Bank bulk upload successful:', response);
+
+      alert('Bank details bulk upload successful.');
+
+      // Reset selected file
+      this.bankUploadFile = null;
+
+      // Reset upload form
+      this.showBankUploadForm = false;
+      this.showBankBulkUpload = false;
+      this.bankReadMore = false;
+
+      window.location.reload();
+    },
+
+    error: (error: any) => {
+
+      console.error('Bank bulk upload failed:', error);
+
+      let errorMessage = 'Error during bank bulk upload.';
+
+      if (typeof error.error === 'string') {
+
+        errorMessage = error.error;
+
+      } else if (error.error?.message) {
+
+        errorMessage = error.error.message;
+
+      } else if (error.error?.detail) {
+
+        errorMessage = error.error.detail;
+
+      } else if (error.error && typeof error.error === 'object') {
+
+        errorMessage = Object.values(error.error)
+          .flat()
+          .join('\n');
+      }
+
+      alert(errorMessage);
+    }
+
+  });
+
+}
+
+// bulkUploadBankDetails(): void {
+//   if (!this.selectedFiles) {
+//     alert('Please select a valid Excel file before uploading.');
+//     return;
+//   }
+
+//   const formData = new FormData();
+//   formData.append('bank_name', this.bank_name); // Ensure this matches the backend field name
+//   formData.append('account_number', this.account_number || '');
+//   formData.append('iban_number', this.iban_number || '');
+//   formData.append('route_code', this.route_code || '');
+//   formData.append('branch_name', this.branch_name || '')  
+//   formData.append('bank_address', this.bank_address || '');
+//   formData.append('is_active', String(this.is_active));
+
+//   const selectedSchema = localStorage.getItem('selectedSchema');
+//   if (!selectedSchema) {
+//     alert('No schema selected.');
+//     return;
+//   }
+
+//   this.http.post(`${this.apiUrl}/employee/api/emp-bulkupload-bankdetails/bulk_upload/?schema=${selectedSchema}`, formData)
+//     .subscribe(
+//       (response) => {
+//         console.log('Bulk upload successful', response);
+//         alert('Bulk upload successful');
+//         window.location.reload();
+//       },
+//       (error) => {
+//         console.error('Bulk upload failed', error);
+//         alert(error.error || 'Error during bulk upload.');
+//       }
+//     );
+// }
+
+
+
+
+closeBankBulkUpload(): void {
+  this.showBankUploadForm = false;
+}
+
+
+
 uploadEmployeeDocument() {
 
   // Validate all documents before uploading

@@ -543,136 +543,310 @@
         </mat-action-row>
       </mat-expansion-panel>
 
-      <mat-expansion-panel
-        [expanded]="step === 3"
-        (opened)="setStep(3)"
-        *ngIf="!showOnlySection || showOnlySection === 'bank'"
-        hideToggle
-      >
-        <mat-expansion-panel-header>
-          <mat-panel-title> Bank Details </mat-panel-title>
-          <mat-panel-description>
-            <!-- <mat-icon>map</mat-icon> -->
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-<div class="from-sec">
-        <form>
-          
-            <div *ngFor="let bank of bankDetails; let i = index" class="border rounded p-3 mb-3">
+<mat-expansion-panel
+  [expanded]="step === 3"
+  (opened)="setStep(3)"
+  *ngIf="!showOnlySection || showOnlySection === 'bank'"
+  hideToggle
+>
+  <mat-expansion-panel-header>
+    <mat-panel-title>Bank Details</mat-panel-title>
+    <mat-panel-description></mat-panel-description>
+  </mat-expansion-panel-header>
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5>Bank Detail {{ i + 1 }}</h5>
+  <div class="from-sec">
+
+    <!-- Normal Bank Details -->
+    <form>
+
+      <div
+        *ngFor="let bank of bankDetails; let i = index"
+        class="border rounded p-3 mb-3"
+      >
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5>Bank Detail {{ i + 1 }}</h5>
+
+          <button
+            *ngIf="bankDetails.length > 1"
+            type="button"
+            class="btn btn-danger btn-sm"
+            (click)="removeBankDetail(i)"
+          >
+            Remove
+          </button>
+        </div>
+
+        <!-- Import Button -->
+        <div class="row mb-3">
+          <div class="col-md-9"></div>
+
+          <div class="col-md-3 text-end">
+<button
+  type="button"
+  class="btn-Edit btn-secondary btn"
+  (click)="bulkUploadBank()"
+>
+  <span class="header-btn-icon">
+    <mat-icon>system_update_alt</mat-icon>
+  </span>
+
+  {{ bankReadMore ? "Back" : "Import" }}
+</button>
+
+          </div>
+        </div>
+
+        <!-- Normal Bank Form -->
+        <div *ngIf="!showBankBulkUpload">
+
+          <div class="row">
+
+            <div class="col-md-6">
+              <label>Bank Name</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="bank.bank_name"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label>Account Number</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="bank.account_number"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label>IBAN Number</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="bank.iban_number"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label>Route Code</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="bank.route_code"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label>Branch Name</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="bank.branch_name"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label>Bank Address</label>
+              <textarea
+                class="form-control"
+                [(ngModel)]="bank.bank_address"
+                [ngModelOptions]="{ standalone: true }"
+              ></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <div class="check-box-selection-sec form-control mt-3">
+                <mat-checkbox
+                  [(ngModel)]="bank.is_active"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  Is Active
+                </mat-checkbox>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </form>
+
+
+    <!-- ============================= -->
+    <!-- BANK BULK UPLOAD SECTION -->
+    <!-- ============================= -->
+
+    <div
+      class="from-sec"
+      *ngIf="showBankBulkUpload"
+    >
+
+      <div class="row mt-4">
+
+        <!-- Download Excel -->
+        <div class="col-md-4">
+          <div class="vn-wisteria">
+            <a
+              class="btn-wrap"
+              (click)="downloadBankDetailsExcel()"
+            >
+              DOWNLOAD EXCEL FILE
+              <i class="fa fa-rocket fa-lg fa-spin"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Download CSV -->
+        <div class="col-md-4">
+          <div class="vn-wisteria vn-green">
+            <a
+              class="btn-wrap"
+              (click)="downloadBankDetailsCsv()"
+            >
+              DOWNLOAD CSV FILE
+              <i class="fa fa-rocket fa-lg fa-spin"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Bulk Upload -->
+        <div class="col-md-4">
+          <div class="vn-wisteria vn-blue">
+            <a
+              class="btn-wrap"
+              (click)="showBankUploadForm = true"
+            >
+              BANK BULK UPLOAD
+              <i class="fa fa-rocket fa-lg fa-spin"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- Upload Form -->
+      <div
+        *ngIf="showBankUploadForm"
+        class="mt-4"
+      >
+
+        <h4>Bulk Upload Bank Details</h4>
+
+        <hr />
+
+        <div class="text-wrappers">
+
+          <label>Select file to upload.</label>
+
+          <input
+            type="file"
+            name="bankFile"
+            id="bankFile"
+            class="form-control"
+            accept=".xlsx,.xls,.csv"
+            (change)="onBankFileChange($event)"
+          />
+
+          <br />
+
+          <label for="bankFile">
+            <span class="textLinks">
+              Select your Excel / CSV file
+            </span>
+          </label>
+
+        </div>
+
+
+        <div class="row mt-3">
+
+          <div class="col-md-8"></div>
+
+          <div class="col-md-2">
+
+            <button
+              type="button"
+              (click)="closeBankBulkUpload()"
+              class="btn btn-danger pull-right"
+            >
+              Cancel
+            </button>
+
+          </div>
+
+          <div class="col-md-2">
+
+            <button
+              type="button"
+              (click)="bulkUploadBankDetails()"
+              class="btn btn-success"
+            >
+              Upload Bank Details
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <!-- Bank Action Buttons -->
+  <mat-action-row>
 
     <button
-      *ngIf="bankDetails.length > 1"
-      type="button"
-      class="btn btn-danger btn-sm"
-      (click)="removeBankDetail(i)">
-      Remove
+      mat-button
+      color="warn"
+      (click)="prevStep()"
+      *ngIf="!showOnlySection"
+    >
+      Previous
     </button>
-  </div>
-  <div class="row">
 
-    <div class="col-md-6">
-      <label>Bank Name</label>
-      <input
-        type="text"
-        class="form-control"
-        [(ngModel)]="bank.bank_name"
-        [ngModelOptions]="{standalone:true}">
+    <div class="text-end mb-3">
+
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="addBankDetail()"
+      >
+        <i class="fa fa-plus"></i>
+        Add Another
+      </button>
+
     </div>
 
-    <div class="col-md-6">
-      <label>Account Number</label>
-      <input
-        type="text"
-        class="form-control"
-        [(ngModel)]="bank.account_number"
-        [ngModelOptions]="{standalone:true}">
+    <div class="text-end mb-3">
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="createempbankdetails()"
+      >
+        Add Bank Details
+      </button>
+
     </div>
 
-    <div class="col-md-6">
-      <label>IBAN Number</label>
-      <input
-        type="text"
-        class="form-control"
-        [(ngModel)]="bank.iban_number"
-        [ngModelOptions]="{standalone:true}">
-    </div>
+  </mat-action-row>
 
-    <div class="col-md-6">
-      <label>Route Code</label>
-      <input
-        type="text"
-        class="form-control"
-        [(ngModel)]="bank.route_code"
-        [ngModelOptions]="{standalone:true}">
-    </div>
+</mat-expansion-panel>
 
-    <div class="col-md-6">
-      <label>Branch Name</label>
-      <input
-        type="text"
-        class="form-control"
-        [(ngModel)]="bank.branch_name"
-        [ngModelOptions]="{standalone:true}">
-    </div>
-
-    <div class="col-md-6">
-      <label>Bank Address</label>
-      <textarea
-        class="form-control"
-        [(ngModel)]="bank.bank_address"
-        [ngModelOptions]="{standalone:true}">
-      </textarea>
-    </div>
-
-    <div class="col-md-6">
-      <div class="check-box-selection-sec form-control mt-3">
-        <mat-checkbox
-          [(ngModel)]="bank.is_active"
-          [ngModelOptions]="{standalone:true}">
-          Is Active
-        </mat-checkbox>
-      </div>
-    </div>
-
-  </div>
-
-
-          </div>
-        </form>
-    </div>
-
-        <mat-action-row>
-          <button
-            mat-button
-            color="warn"
-            (click)="prevStep()"
-            *ngIf="!showOnlySection"
-          >
-            Previous
-          </button>
-          <div class="text-end mb-3">
-  <button
-    type="button"
-    class="btn btn-success"
-    (click)="addBankDetail()">
-    <i class="fa fa-plus"></i>
-    Add Another
-  </button>
-</div>
-      <div class="text-end mb-3">
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="createempbankdetails()"
-          >
-            Add Bank Details
-          </button>
-          </div>
-        </mat-action-row>
-      </mat-expansion-panel>
 
       <mat-expansion-panel
         [expanded]="step === 4"

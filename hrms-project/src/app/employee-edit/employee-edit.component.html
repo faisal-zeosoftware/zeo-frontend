@@ -560,36 +560,56 @@
                        
                         </div>
                 
-                            <div class="col-md-6">
-                    
-                    
-                        <div class="custom-sel">
-                            <label>Select work location</label>
-                            <select class="form-control" id="empwork_location_branch_id" name="work_location" required [(ngModel)]="Emp.work_location"  [ngModelOptions]="{standalone: true}"
-                              >
-                                <option value="" >Select</option>
-                                <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
-                            </select>
-                        </div>
-                 </div>
+<div class="col-md-6">
+  <div class="custom-sel">
+    <label>Select work location</label>
+
+    <select
+      class="form-control"
+      id="empwork_location_branch_id"
+      name="work_location"
+      [(ngModel)]="Emp.work_location"
+      [ngModelOptions]="{standalone: true}">
+
+      <option [ngValue]="null">Select</option>
+
+      <option
+        *ngFor="let branch of branches"
+        [ngValue]="branch.id">
+        {{ branch.branch_name }}
+      </option>
+
+    </select>
+  </div>
+</div>
+
                 
                  
                 
                 
-                   <div class="col-md-6">
-                
-                
-                        <div class="custom-sel">
-                            <label>Select  visa location</label>
-                            <select class="form-control" id="visa_location" name="visa_location" required [(ngModel)]="Emp.visa_location"  [ngModelOptions]="{standalone: true}"
-                              >
-                                <option value="" >Select</option>
-                                <option *ngFor="let emp_branch_id of branches" [value]="emp_branch_id.id">{{ emp_branch_id.branch_name }}</option>
-                            </select>
-                        </div>
-                                    
-                
-                    </div>
+<div class="col-md-6">
+  <div class="custom-sel">
+    <label>Select visa location</label>
+
+    <select
+      class="form-control"
+      id="visa_location"
+      name="visa_location"
+      [(ngModel)]="Emp.visa_location"
+      [ngModelOptions]="{standalone: true}">
+
+      <option [ngValue]="null">Select</option>
+
+      <option
+        *ngFor="let branch of branches"
+        [ngValue]="branch.id">
+        {{ branch.branch_name }}
+      </option>
+
+    </select>
+  </div>
+</div>
+
                 
                 
                 

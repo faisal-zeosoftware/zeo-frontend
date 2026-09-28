@@ -142,8 +142,8 @@ export class SchemaSelectionComponent {
         this.isLoading = false; // Hide the loader
   
         this.router.navigate(['/main-sidebar/dashboard-contents']);
-        // const url =` /main-sidebar/dashboard-contents`;
-        //   window.location.href = url;
+        const url =` /main-sidebar/dashboard-contents`;
+          window.location.href = url;
       }, 3000); // Delay of 100ms to ensure localStorage is updated
   }
   
