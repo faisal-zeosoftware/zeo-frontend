@@ -357,75 +357,113 @@ export class AssetEmailTemplateEditComponent {
       );
   }
 
-  
-    
+  // ===============================
+// BRANCH
+// ===============================
+
 isAllBranchesSelected(): boolean {
-  return this.branch?.length === this.branches?.length;
+  const selected = this.templateData?.branch || [];
+  const all = this.branches || [];
+
+  return all.length > 0 && selected.length === all.length;
 }
 
 isSomeBranchesSelected(): boolean {
-  return this.branch?.length > 0 &&
-         this.branch?.length < this.branches?.length;
+  const selected = this.templateData?.branch || [];
+  const all = this.branches || [];
+
+  return selected.length > 0 && selected.length < all.length;
 }
 
 toggleAllBranches(): void {
   if (this.isAllBranchesSelected()) {
-    this.branch = [];
+    this.templateData.branch = [];
   } else {
-    this.branch = this.branches.map((x: { id: any; }) => x.id);
+    this.templateData.branch = this.branches.map((item: any) => item.id);
   }
 }
 
+
+// ===============================
+// DEPARTMENT
+// ===============================
+
 isAllDepartmentsSelected(): boolean {
-  return this.department?.length === this.Departments?.length;
+  const selected = this.templateData?.Department || [];
+  const all = this.Departments || [];
+
+  return all.length > 0 && selected.length === all.length;
 }
 
 isSomeDepartmentsSelected(): boolean {
-  return this.department?.length > 0 &&
-         this.department?.length < this.Departments?.length;
+  const selected = this.templateData?.Department || [];
+  const all = this.Departments || [];
+
+  return selected.length > 0 && selected.length < all.length;
 }
 
 toggleAllDepartments(): void {
   if (this.isAllDepartmentsSelected()) {
-    this.department = [];
+    this.templateData.Department = [];
   } else {
-    this.department = this.Departments.map(x => x.id);
+    this.templateData.Department = this.Departments.map((item: any) => item.id);
   }
 }
 
+
+// ===============================
+// CATEGORY
+// ===============================
+
 isAllCategoriesSelected(): boolean {
-  return this.category?.length === this.Categories?.length;
+  const selected = this.templateData?.Category || [];
+  const all = this.Categories || [];
+
+  return all.length > 0 && selected.length === all.length;
 }
 
 isSomeCategoriesSelected(): boolean {
-  return this.category?.length > 0 &&
-         this.category?.length < this.Categories?.length;
+  const selected = this.templateData?.Category || [];
+  const all = this.Categories || [];
+
+  return selected.length > 0 && selected.length < all.length;
 }
 
 toggleAllCategories(): void {
   if (this.isAllCategoriesSelected()) {
-    this.category = [];
+    this.templateData.Category = [];
   } else {
-    this.category = this.Categories.map(x => x.id);
+    this.templateData.Category = this.Categories.map((item: any) => item.id);
   }
 }
 
+
+// ===============================
+// DESIGNATION
+// ===============================
+
 isAllDesignationsSelected(): boolean {
-  return this.designation?.length === this.Designations?.length;
+  const selected = this.templateData?.Designation || [];
+  const all = this.Designations || [];
+
+  return all.length > 0 && selected.length === all.length;
 }
 
 isSomeDesignationsSelected(): boolean {
-  return this.designation?.length > 0 &&
-         this.designation?.length < this.Designations?.length;
+  const selected = this.templateData?.Designation || [];
+  const all = this.Designations || [];
+
+  return selected.length > 0 && selected.length < all.length;
 }
 
 toggleAllDesignations(): void {
   if (this.isAllDesignationsSelected()) {
-    this.designation = [];
+    this.templateData.Designation = [];
   } else {
-    this.designation = this.Designations.map(x => x.id);
+    this.templateData.Designation = this.Designations.map((item: any) => item.id);
   }
 }
+
 
   ClosePopup() {
     this.ref.close('Closed using function')

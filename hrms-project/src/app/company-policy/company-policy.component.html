@@ -486,7 +486,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let policy of policies">
+      <tr *ngFor="let policy of pagedPolicies">
+
         <td data-label="Title">{{ policy.title }}</td>
         <td data-label="Specific users">{{ policy.specific_users }}</td>
         <td data-label="Description">{{ policy.description }}</td>
@@ -517,9 +518,38 @@
     </tbody>
   </table>
 </div>
+                                <div class="pagination-container">
+  
+        <button
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+        <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+
+      
+        <button
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
+      </div>
 </div>    
 
-     
+
 
 
 

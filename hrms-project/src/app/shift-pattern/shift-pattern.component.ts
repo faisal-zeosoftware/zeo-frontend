@@ -948,6 +948,7 @@ registerShiftPattern() {
     (res: any) => {
       alert('Shift Pattern Created Successfully');
       this.closeapplicationModal();
+      window.location.reload();
     },
     error => {
       this.handleBackendErrors(error);

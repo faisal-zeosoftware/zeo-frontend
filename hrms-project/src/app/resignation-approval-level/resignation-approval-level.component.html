@@ -3,13 +3,25 @@
         <div class="header_section">
 
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <h1> Resignation Approval Level</h1>
                 </div>
-                <div class="col-md-2">
+               <div class="col-md-3">
                     
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+<div class="search-container">
+<input
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchQuery"
+  [ngModelOptions]="{standalone: true}"
+  (ngModelChange)="onSearchChange()"
+>
 
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
                 </div>
                 <div class="col-md-5" >
                     <div class="button-group pull-right">
@@ -409,11 +421,11 @@
 
       <tbody>
 
-        <ng-container *ngFor="let docs of approvalLevels; let i = index">
+        <ng-container *ngFor="let docs of paginatedApprovalLevels; let i = index">
 
           <tr>
 
-            <td data-label="No">{{ i + 1 }}</td>
+            <td data-label="No">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
 
             <!-- ALL LEVELS -->
             <td data-label="Level">
@@ -472,6 +484,36 @@
     </table>
 
   </div>
+          <div class="pagination-container">
+  
+        <button
+         type="button"
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+  <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+      
+        <button
+         type="button"
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
+      </div>
 </div>
 
         </div>

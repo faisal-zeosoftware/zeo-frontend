@@ -411,7 +411,7 @@ export class LateComePolicyComponent {
     loadlatecomingPolicies() {
     this.CountryService.getlatecomingPolicy().subscribe({
       next: (res: any) => {
-        console.log("Validation Policies", res);
+        console.log("latecome Policies", res);
   
         this.LoanTypes = res;
       },
@@ -460,7 +460,7 @@ export class LateComePolicyComponent {
         (response) => {
           console.log('Registration successful', response);
   
-          alert('validation policy Added ');
+          alert('latecome policy Added ');
           window.location.reload();
   
   

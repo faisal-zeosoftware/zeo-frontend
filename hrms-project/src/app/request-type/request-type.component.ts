@@ -69,6 +69,66 @@ isLoading: boolean = false;
 
   registerButtonClicked = false;
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredReqTypes: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.ReqTypes];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      return (
+        (item.name && item.name.toString().toLowerCase().includes(q)) ||
+        (item.description && item.description.toString().toLowerCase().includes(q)) ||
+        (item.branch && item.branch.toString().toLowerCase().includes(q)) ||
+        (item.salary_component && item.salary_component.toString().toLowerCase().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredReqTypes = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
 
   constructor(
     private http: HttpClient,
@@ -327,25 +387,25 @@ ngOnInit(): void {
             );
           }
 
-          loadReqTypes(): void {
-    
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-          
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getGenReqType(selectedSchema).subscribe(
-                (result: any) => {
-                  this.ReqTypes = result;
-                  console.log(' fetching Loantypes:');
-          
-                },
-                (error) => {
-                  console.error('Error fetching Companies:', error);
-                }
-              );
-            }
-            }
+loadReqTypes(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.isLoading = true;
+    this.employeeService.getGenReqType(selectedSchema).subscribe(
+      (result: any) => {
+        this.ReqTypes = result || [];
+        this.currentPage = 1;
+        this.applyFilterAndPagination();   // ← important
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching Request Types:', error);
+        this.isLoading = false;
+      }
+    );
+  }
+}
         
 
           registerRequestTyopecmnwrkflow(): void {

@@ -44,6 +44,59 @@ export class DocumentTypeMasterComponent {
 
   filteredDocuments: any[] = [];  // Filtered list
 
+  // Search (searchQuery already exists — keep it)
+// searchQuery is already declared as: searchQuery = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.Documents];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(doc =>
+      (doc.type_name && doc.type_name.toString().toLowerCase().includes(q)) ||
+      (doc.description && doc.description.toString().toLowerCase().includes(q))
+    );
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredDocuments = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
 
 
   constructor(
@@ -264,21 +317,21 @@ if (this.userId !== null) {
 
   isLoading: boolean = false;
 
-  fetchEmployees(schema: string, branchIds: number[]): void {
-    this.isLoading = true;
-    this.countryService.getDocumentNew(schema, branchIds).subscribe({
-      next: (data: any) => {
-        // Filter active employees
-        this.Documents = data;
-        this.filteredDocuments = data;  // Initialize filtered data
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Fetch error:', err);
-        this.isLoading = false;
-      }
-    });
-  }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.countryService.getDocumentNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.Documents = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
 
     // Filter documents based on searchQuery
     filterDocuments() {

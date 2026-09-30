@@ -72,6 +72,77 @@ export class AssetMasterComponent {
   editCustomFields: any[] = [];
 
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredAssets: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.Assets];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      // Standard fields
+      const standardMatch =
+        (item.name && item.name.toString().toLowerCase().includes(q)) ||
+        (item.serial_number && item.serial_number.toString().toLowerCase().includes(q)) ||
+        (item.model && item.model.toString().toLowerCase().includes(q)) ||
+        (item.purchase_date && item.purchase_date.toString().toLowerCase().includes(q)) ||
+        (item.status && item.status.toString().toLowerCase().includes(q)) ||
+        (item.condition && item.condition.toString().toLowerCase().includes(q)) ||
+        (item.asset_type && item.asset_type.toString().toLowerCase().includes(q));
+
+      // Custom fields
+      const customMatch = Array.isArray(item.asset_custom_fields)
+        ? item.asset_custom_fields.some((f: any) =>
+            (f.field_value || '').toString().toLowerCase().includes(q)
+          )
+        : false;
+
+      return standardMatch || customMatch;
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredAssets = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
 
   constructor(
     private http: HttpClient,
@@ -637,38 +708,35 @@ deleteSelectedAssetMaster() {
 
   isLoading: boolean = false;
 
-  fetchEmployees(schema: string, branchIds: number[]): void {
-    this.isLoading = true;
-  
-    // Use your new filtered API call
-    this.employeeService.getAssetNew(schema, branchIds).subscribe({
-      next: (data: any[]) => {
-        // 1. Set the main data
-        this.Assets = data;
-  
-        // 2. --- IMPLEMENTED LOGIC TO EXTRACT CUSTOM FIELDS ---
-        // Step: Extract unique custom_field IDs from the filtered data
-        const allCustomFields = data.flatMap(asset => asset.asset_custom_fields || []);
-        const uniqueFieldIds = [...new Set(allCustomFields.map(field => field.custom_field))];
-  
-        // Map IDs to names using your existing custom field definitions (custom_fieldsFam)
-        this.customFieldHeaders = uniqueFieldIds.map(fieldId => {
-          const fieldDef = this.custom_fieldsFam.find(f => f.id === fieldId);
-          return {
-            custom_field_id: fieldId,
-            custom_field_name: fieldDef ? fieldDef.custom_field : `${fieldId}`
-          };
-        });
-        // ---------------------------------------------------
-  
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Fetch error:', err);
-        this.isLoading = false;
-      }
-    });
-  }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+
+  this.employeeService.getAssetNew(schema, branchIds).subscribe({
+    next: (data: any[]) => {
+      this.Assets = data || [];
+
+      // Extract unique custom field headers
+      const allCustomFields = data.flatMap(asset => asset.asset_custom_fields || []);
+      const uniqueFieldIds = [...new Set(allCustomFields.map(field => field.custom_field))];
+
+      this.customFieldHeaders = uniqueFieldIds.map(fieldId => {
+        const fieldDef = this.custom_fieldsFam.find(f => f.id === fieldId);
+        return {
+          custom_field_id: fieldId,
+          custom_field_name: fieldDef ? fieldDef.custom_field : `${fieldId}`
+        };
+      });
+
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
 
 getCustomFieldValue(asset: any, fieldId: number): string {
   const field = asset.asset_custom_fields?.find((f: any) => f.custom_field === fieldId);

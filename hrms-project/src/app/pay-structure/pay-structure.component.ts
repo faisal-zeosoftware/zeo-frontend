@@ -108,6 +108,79 @@ userId: number | null | undefined;
 userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
+
+// Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;          // change if you want more/fewer rows per page
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredPayStructures: any[] = [];
+
+/** Called every time the search box changes */
+onSearchChange(): void {
+  this.currentPage = 1;          // reset to first page on new search
+  this.applyFilterAndPagination();
+}
+
+/** Filter the full list, then paginate */
+applyFilterAndPagination(): void {
+  let filtered = [...this.overtimepol];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      // Search across the most useful columns
+      return (
+        (item.working_days && item.working_days.toString().toLowerCase().includes(q)) ||
+        (item.salary_calculation_type && item.salary_calculation_type.toLowerCase().includes(q)) ||
+        (item.fixed_working_days != null && item.fixed_working_days.toString().includes(q)) ||
+        (item.attendance_cycle_type && item.attendance_cycle_type.toLowerCase().includes(q)) ||
+        (item.cycle_start_day != null && item.cycle_start_day.toString().includes(q)) ||
+        (item.cycle_end_day != null && item.cycle_end_day.toString().includes(q)) ||
+        (item.payday_type && item.payday_type.toLowerCase().includes(q)) ||
+        (item.payday != null && item.payday.toString().includes(q)) ||
+        (item.payroll_start_month && item.payroll_start_month.toString().toLowerCase().includes(q)) ||
+        (item.branch && item.branch.toString().toLowerCase().includes(q)) ||
+        (item.designation && item.designation.toString().toLowerCase().includes(q)) ||
+        (item.department && item.department.toString().toLowerCase().includes(q)) ||
+        (item.category && item.category.toString().toLowerCase().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  // Safety: if current page is now beyond the last page
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredPayStructures = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
   
   constructor(
     private leaveservice: LeaveService, 
@@ -542,22 +615,21 @@ loadOvertimepolicy(callback?: Function): void {
 
     isLoading: boolean = false;
 
-    fetchEmployees(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.employeeService.getPayStrNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.overtimepol = data;
-  
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getPayStrNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.overtimepol = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
     }
-  
+  });
+}
 
     isAllDepartmentsSelected(): boolean {
   return (

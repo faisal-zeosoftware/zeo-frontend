@@ -55,6 +55,88 @@ hasEditPermission: boolean = false;
 
 schemas: string[] = []; // Array to store schema names
 
+// Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 10;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredApprovalLEvel: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.ApprovalLEvel];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      // Approval type
+      const typeMatch =
+        (item.approval_type && item.approval_type.toLowerCase().includes(q)) ||
+        (item.approval_type === 'no_approval' && 'no approval'.includes(q)) ||
+        (item.approval_type === 'reporting_manager' && 'reporting manager'.includes(q)) ||
+        (item.approval_type === 'multi_approval' && 'multi approval'.includes(q));
+
+      // Request type
+      const requestTypeMatch =
+        (item.request_type && item.request_type.toString().toLowerCase().includes(q));
+
+      // Branch names (array)
+      const branchMatch = Array.isArray(item.branch)
+        ? item.branch.some((b: any) =>
+            (b || '').toString().toLowerCase().includes(q)
+          )
+        : (item.branch || '').toString().toLowerCase().includes(q);
+
+      // Levels (approver / level number)
+      const levelsMatch = Array.isArray(item.levels)
+        ? item.levels.some((lvl: any) =>
+            (lvl.approver || '').toString().toLowerCase().includes(q) ||
+            (lvl.role || '').toString().toLowerCase().includes(q) ||
+            (lvl.level != null && lvl.level.toString().includes(q))
+          )
+        : false;
+
+      return typeMatch || requestTypeMatch || branchMatch || levelsMatch;
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredApprovalLEvel = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
 
   constructor(
     private http: HttpClient,
@@ -293,25 +375,25 @@ mapApproverNameToId() {
 
   
       
-  loadApprovalLevelGen(): void {
-    
-    const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-  
-    console.log('schemastore',selectedSchema )
-    // Check if selectedSchema is available
-    if (selectedSchema) {
-      this.DepartmentServiceService.getApprovalLEvelGen(selectedSchema).subscribe(
-        (result: any) => {
-          this.ApprovalLEvel = result;
-          console.log(' fetching Companies:');
-  
-        },
-        (error) => {
-          console.error('Error fetching Companies:', error);
-        }
-      );
-    }
-    }
+loadApprovalLevelGen(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.isLoading = true;
+    this.DepartmentServiceService.getApprovalLEvelGen(selectedSchema).subscribe(
+      (result: any) => {
+        this.ApprovalLEvel = result || [];
+        this.currentPage = 1;
+        this.applyFilterAndPagination();   // ← important
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching Approval Levels:', error);
+        this.isLoading = false;
+      }
+    );
+  }
+}
 
 
     

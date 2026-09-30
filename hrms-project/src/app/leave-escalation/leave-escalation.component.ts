@@ -78,6 +78,94 @@ export class LeaveEscalationComponent {
         
         
           registerButtonClicked = false;
+
+
+          // Search & Pagination properties
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 4;
+
+// Getter for filtered data
+get filteredGeneralReq(): any[] {
+  let filtered = this.GeneralReq;
+
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const query = this.searchQuery.toLowerCase().trim();
+    filtered = filtered.filter((docs: any) => {
+      const level = (docs.level || '').toString().toLowerCase();
+      const approver = (docs.approver_name || '').toString().toLowerCase();
+      const escalater = (docs.escalate_to_name || '').toString().toLowerCase();
+      const days = (docs.escalate_after_days || '').toString().toLowerCase();
+      const hours = (docs.escalate_after_hours || '').toString().toLowerCase();
+      const minutes = (docs.escalate_after_minutes || '').toString().toLowerCase();
+      
+      return level.includes(query) || 
+             approver.includes(query) || 
+             escalater.includes(query) ||
+             days.includes(query) ||
+             hours.includes(query) ||
+             minutes.includes(query);
+    });
+  }
+
+  return filtered;
+}
+
+// Getter for paginated data
+get paginatedGeneralReq(): any[] {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  return this.filteredGeneralReq.slice(startIndex, endIndex);
+}
+
+// Getter for total pages
+get calculatedTotalPages(): number {
+  return Math.ceil(this.filteredGeneralReq.length / this.itemsPerPage) || 1;
+}
+
+// Search handler
+onSearchChange(): void {
+  this.currentPage = 1;
+}
+
+// Pagination handlers
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.calculatedTotalPages) {
+    this.currentPage++;
+  }
+}
+
+goToPage(page: number): void {
+  if (page >= 1 && page <= this.calculatedTotalPages) {
+    this.currentPage = page;
+  }
+}
+
+// Generate page numbers array
+getPageNumbers(): number[] {
+  const total = this.calculatedTotalPages;
+  const pages: number[] = [];
+  
+  // Show max 5 page numbers with current page in center
+  let start = Math.max(1, this.currentPage - 2);
+  let end = Math.min(total, start + 4);
+  
+  if (end - start < 4) {
+    start = Math.max(1, end - 4);
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
+}
         
           // private apiUrl = 'http://one.localhost:8000/organisation/api/fiscal-years/';
           private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local

@@ -18,14 +18,14 @@
                                 </mat-icon></span> Create</button>
                         <span *ngIf="!hasAddPermission"></span>
 
-                        <button type="button" class="btn-Edit btn-info btn" (click)="EditShowButtons()"
+                        <button type="button" class="btn-Edit btn-info btn" disabled (click)="EditShowButtons()"
                             *ngIf="hasEditPermission">
                             <span class="header-btn-icon">
                                 <mat-icon>draw
                                 </mat-icon></span> Edit</button>
                         <span *ngIf="hasEditPermission"></span>
 
-                        <button type="button" class="btn-Delete btn btn-danger" (click)="toggleCheckboxes()"
+                        <button type="button" class="btn-Delete btn btn-danger" disabled (click)="toggleCheckboxes()"
                             *ngIf="hasDeletePermission">
                             <span class="header-btn-icon">
                                 <mat-icon> delete

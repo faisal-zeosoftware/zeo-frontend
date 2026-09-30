@@ -75,6 +75,68 @@ export class AdvanceSalaryEscalationComponent {
   
   
     registerButtonClicked = false;
+
+    // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredGeneralReq: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.GeneralReq];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      return (
+        (item.level != null && item.level.toString().toLowerCase().includes(q)) ||
+        (item.approver_name && item.approver_name.toString().toLowerCase().includes(q)) ||
+        (item.escalate_to_name && item.escalate_to_name.toString().toLowerCase().includes(q)) ||
+        (item.escalate_after_days != null && item.escalate_after_days.toString().includes(q)) ||
+        (item.escalate_after_hours != null && item.escalate_after_hours.toString().includes(q)) ||
+        (item.escalate_after_minutes != null && item.escalate_after_minutes.toString().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredGeneralReq = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
   
     // private apiUrl = 'http://one.localhost:8000/organisation/api/fiscal-years/';
     private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
@@ -701,21 +763,21 @@ export class AdvanceSalaryEscalationComponent {
 
               isLoading: boolean = false;
 
-              fetchEmployees(schema: string, branchIds: number[]): void {
-                this.isLoading = true;
-                this.employeeService.getEscalationsAdvNew(schema, branchIds).subscribe({
-                  next: (data: any) => {
-                    // Filter active employees
-                    this.GeneralReq = data;
-            
-                    this.isLoading = false;
-                  },
-                  error: (err) => {
-                    console.error('Fetch error:', err);
-                    this.isLoading = false;
-                  }
-                });
-              }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getEscalationsAdvNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.GeneralReq = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
             
       
      

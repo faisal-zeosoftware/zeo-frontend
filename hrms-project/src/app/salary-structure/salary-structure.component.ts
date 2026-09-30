@@ -884,7 +884,7 @@ toggleAllComponents(): void {
 
 // Table state for salary structure list
 currentDocPage: number = 1;
-itemsPerDocPage: number = 10;
+itemsPerDocPage: number = 4;
 pagedDocuments: any[] = [];
 
 

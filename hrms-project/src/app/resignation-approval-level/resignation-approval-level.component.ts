@@ -56,6 +56,77 @@ userId: number | null | undefined;
 userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
+
+  // Search + pagination
+  searchQuery: string = '';
+  currentPage: number = 1;
+  pageSize: number = 4;
+  filteredApprovalLevels: any[] = [];
+  paginatedApprovalLevels: any[] = [];
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredApprovalLevels.length / this.pageSize));
+  }
+
+  private updateFilteredAndPaginatedData(): void {
+    const query = (this.searchQuery || '').trim().toLowerCase();
+
+    if (!query) {
+      this.filteredApprovalLevels = [...this.approvalLevels];
+    } else {
+      this.filteredApprovalLevels = this.approvalLevels.filter((doc: any) => {
+        const levels = Array.isArray(doc.levels) ? doc.levels : [];
+
+        const levelText = levels
+          .map((lvl: any) => [
+            lvl.level,
+            lvl.role,
+            lvl.approver,
+            lvl.escalate_to
+          ].join(' '))
+          .join(' ');
+
+        const branchText = Array.isArray(doc.branch)
+          ? doc.branch.join(' ')
+          : (doc.branch ?? '');
+
+        const searchableText = [
+          branchText,
+          doc.approval_type ?? '',
+          levelText
+        ].join(' ').toLowerCase();
+
+        return searchableText.includes(query);
+      });
+    }
+
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    this.paginatedApprovalLevels =
+      this.filteredApprovalLevels.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.updateFilteredAndPaginatedData();
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateFilteredAndPaginatedData();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updateFilteredAndPaginatedData();
+    }
+  }
   
   constructor(
     private leaveservice: LeaveService, 
@@ -297,8 +368,10 @@ CreateLoanApproverLevel(): void {
       this.isLoading = true;
       this.employeeService.getemployeesResignationApprovalLevel(schema, branchIds).subscribe({
         next: (data: any) => {
-          // Filter active employees
-               this.approvalLevels = data;
+          // Store the complete API result. Search/pagination operate on this full list.
+          this.approvalLevels = Array.isArray(data) ? data : [];
+          this.currentPage = 1;
+          this.updateFilteredAndPaginatedData();
 
           this.isLoading = false;
         },
@@ -495,8 +568,9 @@ deleteSelectedResignationAprlvl() {
       this.employeeService.deleteResignationApprovaLevel(categoryId).subscribe(
         () => {
           console.log(' Approval Level deleted successfully:', categoryId);
-          // Remove the deleted employee from the local list
-          this.approvalLevels = this.approvalLevels.filter(emp  => emp .id !== categoryId);
+          // Remove the deleted record from the local list
+          this.approvalLevels = this.approvalLevels.filter(emp => emp.id !== categoryId);
+          this.updateFilteredAndPaginatedData();
 
           completed++;
 

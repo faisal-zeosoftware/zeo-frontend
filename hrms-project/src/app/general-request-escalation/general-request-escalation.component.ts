@@ -73,6 +73,69 @@ selectedLevel: any = null;   // now contains full object
 
   registerButtonClicked = false;
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredGeneralReq: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.GeneralReq];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      return (
+        (item.request_type && item.request_type.toString().toLowerCase().includes(q)) ||
+        (item.level != null && item.level.toString().toLowerCase().includes(q)) ||
+        (item.approver_name && item.approver_name.toString().toLowerCase().includes(q)) ||
+        (item.escalate_to_name && item.escalate_to_name.toString().toLowerCase().includes(q)) ||
+        (item.escalate_after_days != null && item.escalate_after_days.toString().includes(q)) ||
+        (item.escalate_after_hours != null && item.escalate_after_hours.toString().includes(q)) ||
+        (item.escalate_after_minutes != null && item.escalate_after_minutes.toString().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredGeneralReq = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
   // private apiUrl = 'http://one.localhost:8000/organisation/api/fiscal-years/';
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -645,26 +708,23 @@ onRequestTypeChange(event: any) {
 
 
 
-          loadgeneralReq(): void {
-    
-            const selectedSchema = this.authService.getSelectedSchema(); // Assuming you have a method to get the selected schema
-          
-            console.log('schemastore',selectedSchema )
-            // Check if selectedSchema is available
-            if (selectedSchema) {
-              this.employeeService.getAllgeneralRequestEscalations(selectedSchema).subscribe(
-                (result: any) => {
-                  this.GeneralReq = result;
-                  console.log(' fetching  general Request: ', result);
-          
-                },
-                (error) => {
-                  console.error('Error fetching general Request:', error);
-                }
-              );
-            }
-            }
-    
+loadgeneralReq(): void {
+  const selectedSchema = this.authService.getSelectedSchema();
+
+  if (selectedSchema) {
+    this.employeeService.getAllgeneralRequestEscalations(selectedSchema).subscribe(
+      (result: any) => {
+        this.GeneralReq = result || [];
+        this.currentPage = 1;
+        this.applyFilterAndPagination();   // ← important
+        console.log('fetching general Request:', result);
+      },
+      (error) => {
+        console.error('Error fetching general Request:', error);
+      }
+    );
+  }
+}
    
             
             onFileChange(event: any) {

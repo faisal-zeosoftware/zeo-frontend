@@ -314,19 +314,29 @@ getCompanyPolicies(
   this.isLoading = true;
 
   this.branchService.getplo(selectedSchema, branchIds).subscribe(
-
     (result: any) => {
 
-      this.policies = result;
+      this.policies = result || [];
+
+      this.currentPage = 1;
+
+      this.updatePagination();
 
       this.isLoading = false;
 
       console.log('Policies:', this.policies);
+      console.log('Paged Policies:', this.pagedPolicies);
+      console.log('Total Pages:', this.totalPages);
     },
 
     (error) => {
 
       console.error('Error fetching policies:', error);
+
+      this.policies = [];
+      this.pagedPolicies = [];
+      this.totalPages = 0;
+      this.currentPage = 1;
 
       this.isLoading = false;
     }
@@ -798,4 +808,61 @@ filteredBranches() {
     }
 
 
+currentPage: number = 1;
+itemsPerPage: number = 4;
+pagedPolicies: any[] = [];
+totalPages: number = 0;
+
+
+updatePagination(): void {
+  this.totalPages = Math.ceil(this.policies.length / this.itemsPerPage);
+
+  // Prevent invalid page number
+  if (this.totalPages === 0) {
+    this.currentPage = 1;
+    this.pagedPolicies = [];
+    return;
+  }
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  if (this.currentPage < 1) {
+    this.currentPage = 1;
+  }
+
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+
+  this.pagedPolicies = this.policies.slice(startIndex, endIndex);
 }
+
+
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePagination();
+  }
+}
+
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePagination();
+  }
+}
+
+goToPage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+    this.updatePagination();
+  }
+}
+
+
+}
+
+

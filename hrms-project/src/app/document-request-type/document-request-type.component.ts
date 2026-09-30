@@ -55,6 +55,59 @@ export class DocumentRequestTypeComponent {
 
   filteredDocuments: any[] = [];  // Filtered list
 
+  // searchQuery already exists — keep it
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.Documents];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(doc =>
+      (doc.type_name && doc.type_name.toString().toLowerCase().includes(q)) ||
+      (doc.branch && doc.branch.toString().toLowerCase().includes(q)) ||
+      (doc.description && doc.description.toString().toLowerCase().includes(q))
+    );
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredDocuments = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
 
 
   constructor(
@@ -194,31 +247,23 @@ if (this.userId !== null) {
 
   
 
-  fetchDesignations(selectedSchema: string, branchIds: number[] = []) {
-
+fetchDesignations(selectedSchema: string, branchIds: number[] = []) {
   this.isLoading = true;
 
   this.countryService.getDocumentReqType(selectedSchema, branchIds).subscribe(
-
     (data: any) => {
-
-      this.Documents = data;
-       this.filteredDocuments = data;
-
+      this.Documents = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
       this.isLoading = false;
-
-       console.log('employee:', this.Documents);
+      console.log('employee:', this.Documents);
     },
-
     (error: any) => {
-
       console.error('Error fetching DocRequest:', error);
-
       this.isLoading = false;
     }
   );
 }
-
     // Filter documents based on searchQuery
     filterDocuments() {
       this.filteredDocuments = this.Documents.filter(doc =>

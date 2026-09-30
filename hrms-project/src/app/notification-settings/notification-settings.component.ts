@@ -411,32 +411,67 @@ branch: number[] = [];
 
 
 
+mapBranchesNameToId(): void {
 
-  mapBranchesNameToId() {
-    if (!this.Branches || !this.editAsset?.branch) return;
-
-    // Case A: backend returns single ID
-    if (typeof this.editAsset.branch === 'number') {
-      this.editAsset.branch = [this.editAsset.branch];
-      return;
-    }
-
-    // Case B: backend returns single NAME
-    if (typeof this.editAsset.branch === 'string') {
-      const found = this.Branches.find(b => b.branch_name === this.editAsset.branch);
-      this.editAsset.branch = found ? [found.id] : [];
-      return;
-    }
-
-    // Case C: backend returns an array of names
-    if (Array.isArray(this.editAsset.branch)) {
-      this.editAsset.branch = this.Branches
-        .filter(b => this.editAsset.branch.includes(b.branch_name))
-        .map(b => b.id);
-    }
-
-    console.log("Mapped branch IDs:", this.editAsset.branch);
+  if (!this.Branches?.length) {
+    return;
   }
+
+  let values = this.editAsset?.branch;
+
+  if (values == null || values === '') {
+    this.editAsset.branch = [];
+    return;
+  }
+
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  this.editAsset.branch = values
+    .map((value: any) => {
+
+      // Already ID
+      if (typeof value === 'number') {
+        return value;
+      }
+
+      // Numeric string
+      if (
+        typeof value === 'string' &&
+        !isNaN(Number(value))
+      ) {
+        return Number(value);
+      }
+
+      // Object
+      if (
+        typeof value === 'object' &&
+        value !== null
+      ) {
+        return value.id ?? null;
+      }
+
+      // Branch name
+      const branch = this.Branches.find(
+        (b: any) =>
+          String(b.branch_name).trim().toLowerCase() ===
+          String(value).trim().toLowerCase()
+      );
+
+      return branch ? branch.id : null;
+    })
+    .filter(
+      (id: any) =>
+        id !== null &&
+        id !== undefined
+    );
+
+  console.log(
+    'Mapped Branch IDs:',
+    this.editAsset.branch
+  );
+}
 
 
 
@@ -732,18 +767,22 @@ toggleAllDesignations(): void {
   editAsset: any = {}; // holds the asset being edited
 
 openEditModal(asset: any): void {
+  console.log('Original asset:', asset);
 
   this.editAsset = {
     ...asset,
-    department: asset.Department || [],
-    category: asset.Category || [],
-    designation: asset.Designation || [],
-    branch: asset.branch || [],
-    notify_users: asset.notify_users || []
+
+    // Normalize API response fields
+    department: asset.Department ?? asset.department ?? [],
+    category: asset.Category ?? asset.category ?? [],
+    designation: asset.Designation ?? asset.designation ?? [],
+    branch: asset.branch ?? [],
+    notify_users: asset.notify_users ?? []
   };
 
   this.isEditModalOpen = true;
 
+  // Load all master data first, then convert response values to IDs
   this.LoadUsers(() => {
     this.mapUsersNameToId();
   });
@@ -764,6 +803,7 @@ openEditModal(asset: any): void {
     this.mapDesignationsNameToId();
   });
 }
+
 
   closeEditModal(): void {
     this.isEditModalOpen = false;
@@ -802,37 +842,91 @@ openEditModal(asset: any): void {
   }
 
 
-  updateAssetType(): void {
-    const selectedSchema = localStorage.getItem('selectedSchema');
-    if (!selectedSchema || !this.editAsset.id) {
-      alert('Missing schema or asset ID');
-      return;
-    }
+updateAssetType(): void {
 
-    this.employeeService.updateNotSetting(this.editAsset.id, this.editAsset).subscribe(
+  const selectedSchema = localStorage.getItem('selectedSchema');
+
+  if (!selectedSchema || !this.editAsset?.id) {
+    alert('Missing schema or asset ID');
+    return;
+  }
+
+  const payload = {
+    days_before_expiry: Number(this.editAsset.days_before_expiry),
+    days_after_expiry: Number(this.editAsset.days_after_expiry),
+
+    document_type: this.editAsset.document_type,
+
+    branch: this.editAsset.branch || [],
+
+    Department: this.editAsset.department || [],
+
+    Category: this.editAsset.category || [],
+
+    Designation: this.editAsset.designation || [],
+
+    notify_users: this.editAsset.notify_users || [],
+
+    send_email: this.editAsset.send_email ?? false
+  };
+
+  console.log('FINAL UPDATE PAYLOAD:', payload);
+
+  this.employeeService
+    .updateNotSetting(this.editAsset.id, payload)
+    .subscribe(
       (response) => {
-        alert(' Document Notification Setting  updated successfully!');
+
+        console.log(
+          'Notification setting updated:',
+          response
+        );
+
+        alert(
+          'Document Notification Setting updated successfully!'
+        );
+
         this.closeEditModal();
+
         window.location.reload();
       },
       (error) => {
-        console.error('Error updating Doc Notification:', error);
+
+        console.error(
+          'Error updating Doc Notification:',
+          error
+        );
+
+        console.error(
+          'Backend response:',
+          error?.error
+        );
 
         let errorMsg = 'Update failed';
 
         const backendError = error?.error;
 
-        if (backendError && typeof backendError === 'object') {
-          // Convert the object into a readable string
-          errorMsg = Object.keys(backendError)
-            .map(key => `${key}: ${backendError[key].join(', ')}`)
+        if (
+          backendError &&
+          typeof backendError === 'object'
+        ) {
+          errorMsg = Object.entries(backendError)
+            .map(([key, value]: [string, any]) => {
+
+              if (Array.isArray(value)) {
+                return `${key}: ${value.join(', ')}`;
+              }
+
+              return `${key}: ${value}`;
+            })
             .join('\n');
         }
 
         alert(errorMsg);
       }
     );
-  }
+}
+
 
 
 
@@ -1084,63 +1178,165 @@ loadCAtegory(callback?: Function): void {
   }
 
 
-mapDepartmentsToId() {
-  if (!this.Departments || !this.editAsset?.department) return;
-
-  // already ids
-  if (Array.isArray(this.editAsset.department) &&
-      typeof this.editAsset.department[0] === 'number') {
+mapDesignationsNameToId(): void {
+  if (!this.Designations?.length) {
+    console.log('Designations not loaded');
     return;
   }
 
-  let values = this.editAsset.department;
+  let values = this.editAsset?.designation;
 
-  if (typeof values === 'string') {
-    values = values.split(',').map((x: string) => x.trim());
+  if (values == null || values === '') {
+    this.editAsset.designation = [];
+    return;
   }
 
   if (!Array.isArray(values)) {
     values = [values];
   }
 
-  this.editAsset.department = this.Departments
-    .filter(d => values.includes(d.dept_name))
-    .map(d => d.id);
+  this.editAsset.designation = values
+    .map((value: any) => {
 
-  console.log(this.editAsset.department);
+      // Already ID
+      if (typeof value === 'number') {
+        return value;
+      }
+
+      // Numeric string ID
+      if (typeof value === 'string' && !isNaN(Number(value))) {
+        return Number(value);
+      }
+
+      // Object
+      if (typeof value === 'object' && value !== null) {
+        return value.id ?? null;
+      }
+
+      // Name
+      const designation = this.Designations.find(
+        (d: any) =>
+          String(d.desgntn_job_title).trim().toLowerCase() ===
+          String(value).trim().toLowerCase()
+      );
+
+      return designation ? designation.id : null;
+    })
+    .filter((id: any) => id !== null && id !== undefined);
+
+  console.log(
+    'Mapped Designation IDs:',
+    this.editAsset.designation
+  );
 }
 
-mapCategoriesNameToId() {
-  console.log('API Category:', this.editAsset.category);
-  console.log('Master Categories:', this.Categories);
 
-  this.editAsset.category = this.Categories
-    .filter(c => this.editAsset.category.includes(c.ctgry_title))
-    .map(c => c.id);
+mapCategoriesNameToId(): void {
+  if (!this.Categories?.length) {
+    console.log('Categories not loaded');
+    return;
+  }
 
-  console.log('Mapped Category IDs:', this.editAsset.category);
+  let values = this.editAsset?.category;
+
+  if (values == null || values === '') {
+    this.editAsset.category = [];
+    return;
+  }
+
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  this.editAsset.category = values
+    .map((value: any) => {
+
+      // Already ID
+      if (typeof value === 'number') {
+        return value;
+      }
+
+      // Numeric string ID
+      if (typeof value === 'string' && !isNaN(Number(value))) {
+        return Number(value);
+      }
+
+      // Object
+      if (typeof value === 'object' && value !== null) {
+        return value.id ?? null;
+      }
+
+      // Name
+      const category = this.Categories.find(
+        (c: any) =>
+          String(c.ctgry_title).trim().toLowerCase() ===
+          String(value).trim().toLowerCase()
+      );
+
+      return category ? category.id : null;
+    })
+    .filter((id: any) => id !== null && id !== undefined);
+
+  console.log(
+    'Mapped Category IDs:',
+    this.editAsset.category
+  );
 }
 
-mapDesignationsNameToId() {
-  console.log('API Designation:', this.editAsset.designation);
-  console.log('Master Designations:', this.Designations);
 
-  this.editAsset.designation = this.Designations
-    .filter(d => this.editAsset.designation.includes(d.desgntn_job_title))
-    .map(d => d.id);
+mapDepartmentsNameToId(): void {
+  if (!this.Departments?.length) {
+    console.log('Departments not loaded');
+    return;
+  }
 
-  console.log('Mapped Designation IDs:', this.editAsset.designation);
+  let values = this.editAsset?.department;
+
+  if (values == null || values === '') {
+    this.editAsset.department = [];
+    return;
+  }
+
+  // Convert single value to array
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+
+  this.editAsset.department = values
+    .map((value: any) => {
+
+      // Already an ID
+      if (typeof value === 'number') {
+        return value;
+      }
+
+      // Numeric string ID: "5"
+      if (typeof value === 'string' && !isNaN(Number(value))) {
+        return Number(value);
+      }
+
+      // Object returned by API: { id: 5, dept_name: "HR" }
+      if (typeof value === 'object' && value !== null) {
+        return value.id ?? null;
+      }
+
+      // Name returned by API: "HR"
+      const department = this.Departments.find(
+        (d: any) =>
+          String(d.dept_name).trim().toLowerCase() ===
+          String(value).trim().toLowerCase()
+      );
+
+      return department ? department.id : null;
+    })
+    .filter((id: any) => id !== null && id !== undefined);
+
+  console.log(
+    'Mapped Department IDs:',
+    this.editAsset.department
+  );
 }
 
-mapDepartmentsNameToId() {
-
-  if (!this.Departments || !this.editAsset.department) return;
-
-  this.editAsset.department =
-    this.Departments
-      .filter(d => this.editAsset.department.includes(d.dept_name))
-      .map(d => d.id);
-}
 
 
 }

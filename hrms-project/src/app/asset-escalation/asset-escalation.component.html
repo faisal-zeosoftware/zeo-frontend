@@ -10,11 +10,24 @@
                     <h1> Asset Escalation</h1>
                 </div>
 
-                <div class="col-md-3">
+                           <div class="col-md-3">
                     
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+<div class="search-container">
+<input
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchQuery"
+  [ngModelOptions]="{standalone: true}"
+  (ngModelChange)="onSearchChange()"
+>
 
-                </div>
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+
+  </div>
                 <div class="col-md-5">
                     <div class="button-group pull-right">
                         <button type="button" (click)="openPopus()" class="btn-Create btn btn-success " *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
@@ -302,8 +315,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let docs of GeneralReq; let i = index">
-        <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
+     <tr *ngFor="let docs of filteredGeneralReq; let i = index">
+        <td class="sticky-left" data-label="No">
+          {{ (currentPage - 1) * pageSize + i + 1 }}
+        </td> 
         
         <td data-label="Approval level">{{ docs.level }}</td>
 
@@ -348,6 +363,31 @@
     </tbody>
   </table>
   </div>
+                  <div class="pagination-container">
+
+  <button
+    type="button"
+    class="page-btn"
+    (click)="previousPage()"
+    [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+
+<button
+  type="button"
+  class="page-btn"
+  (click)="nextPage()"
+  [disabled]="currentPage === totalPages">
+  Next
+</button>
+</div>
 
 </div>
 

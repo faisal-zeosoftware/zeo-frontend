@@ -58,6 +58,75 @@ userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
 
+// Search & Pagination properties
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 4;
+totalPages: number = 1;
+
+// Getter for filtered and paginated data
+get filteredLeaveApprovalLevels(): any[] {
+  let filtered = this.LeaveapprovalLevels;
+
+  // Apply search filter
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const query = this.searchQuery.toLowerCase().trim();
+    filtered = filtered.filter((docs: any) => {
+      const leaveType = (docs.request_type || '').toString().toLowerCase();
+      const approvalType = (docs.approval_type || '').toString().toLowerCase();
+      const branches = Array.isArray(docs.branch) 
+        ? docs.branch.join(' ').toLowerCase() 
+        : (docs.branch || '').toString().toLowerCase();
+      const approvers = Array.isArray(docs.levels)
+        ? docs.levels.map((l: any) => l.approver || '').join(' ').toLowerCase()
+        : '';
+      
+      return leaveType.includes(query) || 
+             approvalType.includes(query) || 
+             branches.includes(query) ||
+             approvers.includes(query);
+    });
+  }
+
+  return filtered;
+}
+
+// Getter for paginated data
+get paginatedLeaveApprovalLevels(): any[] {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  return this.filteredLeaveApprovalLevels.slice(startIndex, endIndex);
+}
+
+// Getter for total pages
+get calculatedTotalPages(): number {
+  return Math.ceil(this.filteredLeaveApprovalLevels.length / this.itemsPerPage) || 1;
+}
+
+// Search handler
+onSearchChange(): void {
+  this.currentPage = 1; // Reset to first page when searching
+}
+
+// Pagination handlers
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.calculatedTotalPages) {
+    this.currentPage++;
+  }
+}
+
+goToPage(page: number): void {
+  if (page >= 1 && page <= this.calculatedTotalPages) {
+    this.currentPage = page;
+  }
+}
+
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,

@@ -62,6 +62,69 @@ export class AssetAllocationComponent {
 
   registerButtonClicked = false;
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredAssetAllocations: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.AssetAllocations];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      return (
+        (item.assigned_date && item.assigned_date.toString().toLowerCase().includes(q)) ||
+        (item.asset && item.asset.toString().toLowerCase().includes(q)) ||
+        (item.employee && item.employee.toString().toLowerCase().includes(q)) ||
+        (item.returned_date && item.returned_date.toString().toLowerCase().includes(q)) ||
+        (item.return_condition && item.return_condition.toString().toLowerCase().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredAssetAllocations = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
+
+
 
   constructor(
     private http: HttpClient,
@@ -323,21 +386,21 @@ this.loadEmployees();
 
   isLoading: boolean = false;
 
-            fetchEmployees(schema: string, branchIds: number[]): void {
-              this.isLoading = true;
-              this.employeeService.getAssetAllocationNew(schema, branchIds).subscribe({
-                next: (data: any) => {
-                  // Filter active employees
-                       this.AssetAllocations = data;
-            
-                  this.isLoading = false;
-                },
-                error: (err) => {
-                  console.error('Fetch error:', err);
-                  this.isLoading = false;
-                }
-              });
-            } 
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getAssetAllocationNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.AssetAllocations = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
             
 
 

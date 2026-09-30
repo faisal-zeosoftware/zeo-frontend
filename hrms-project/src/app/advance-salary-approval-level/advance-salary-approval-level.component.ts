@@ -54,6 +54,84 @@ userId: number | null | undefined;
 userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
+
+// Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 10;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredApprovalLevels: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.approvalLevels];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      // Approval type
+      const typeMatch =
+        (item.approval_type && item.approval_type.toLowerCase().includes(q)) ||
+        (item.approval_type === 'no_approval' && 'no approval'.includes(q)) ||
+        (item.approval_type === 'reporting_manager' && 'reporting manager'.includes(q)) ||
+        (item.approval_type === 'multi_approval' && 'multi approval'.includes(q));
+
+      // Branch names (array)
+      const branchMatch = Array.isArray(item.branch)
+        ? item.branch.some((b: any) =>
+            (b || '').toString().toLowerCase().includes(q)
+          )
+        : (item.branch || '').toString().toLowerCase().includes(q);
+
+      // Levels (role / approver / level number)
+      const levelsMatch = Array.isArray(item.levels)
+        ? item.levels.some((lvl: any) =>
+            (lvl.role || '').toString().toLowerCase().includes(q) ||
+            (lvl.approver || '').toString().toLowerCase().includes(q) ||
+            (lvl.level != null && lvl.level.toString().includes(q))
+          )
+        : false;
+
+      return typeMatch || branchMatch || levelsMatch;
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredApprovalLevels = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
   
   constructor(
     private leaveservice: LeaveService, 
@@ -316,21 +394,21 @@ CreateLoanApproverLevel(): void {
 
     isLoading: boolean = false;
 
-    fetchEmployees(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.employeeService.getadvSalaryApprovalLevelsNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.approvalLevels = data;
-  
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getadvSalaryApprovalLevelsNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.approvalLevels = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
     }
+  });
+}
   
 
 

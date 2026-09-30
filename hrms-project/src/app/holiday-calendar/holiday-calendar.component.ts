@@ -707,6 +707,7 @@ updateHoliday() {
     start_date: this.editHolidayData.start_date,
     end_date: this.editHolidayData.end_date,
     restricted: this.editHolidayData.restricted,
+    note: this.editHolidayData.note,
     calendar: this.editHolidayData.calendar
   };
 
@@ -714,6 +715,7 @@ updateHoliday() {
     .subscribe(() => {
       alert('Holiday Updated');
       this.closeEditHolidayModal();
+      window.location.reload();
   
     });
 }
@@ -726,6 +728,7 @@ deleteHoliday(id: number) {
   this.countryService.deleteHoliday(id)
     .subscribe(() => {
       alert('Deleted Successfully');
+      window.location.reload();
     
     });
 }

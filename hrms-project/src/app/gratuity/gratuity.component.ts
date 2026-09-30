@@ -40,6 +40,64 @@ export class GratuityComponent {
   Users:any []=[];
   LoanTypes:any []=[];
 
+  // Search + pagination
+  searchQuery: string = '';
+  currentPage: number = 1;
+  pageSize: number = 4;
+  filteredLoanTypes: any[] = [];
+  paginatedLoanTypes: any[] = [];
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredLoanTypes.length / this.pageSize));
+  }
+
+  private updateFilteredAndPaginatedData(): void {
+    const query = (this.searchQuery || '').trim().toLowerCase();
+
+    if (!query) {
+      this.filteredLoanTypes = [...this.LoanTypes];
+    } else {
+      this.filteredLoanTypes = this.LoanTypes.filter((item: any) => {
+        const searchableText = [
+          item.minimum_value ?? '',
+          item.maximum_value ?? '',
+          item.resignation_days ?? '',
+          item.termination_days ?? '',
+          item.is_active ? 'active' : 'inactive'
+        ].join(' ').toLowerCase();
+
+        return searchableText.includes(query);
+      });
+    }
+
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    this.paginatedLoanTypes =
+      this.filteredLoanTypes.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.updateFilteredAndPaginatedData();
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateFilteredAndPaginatedData();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updateFilteredAndPaginatedData();
+    }
+  }
+
 
 
 
@@ -266,7 +324,7 @@ ngOnInit(): void {
               
                     alert('Gratuity has been Added ');
                     window.location.reload();
-                    // window.location.reload();
+
                
         
               },
@@ -328,7 +386,9 @@ ngOnInit(): void {
               this.employeeService.getemployeesgratuityMasterNew(schema, branchIds).subscribe({
                 next: (data: any) => {
                   // Filter active employees
-                       this.LoanTypes = data;
+                       this.LoanTypes = Array.isArray(data) ? data : [];
+                   this.currentPage = 1;
+                   this.updateFilteredAndPaginatedData();
         
                   this.isLoading = false;
                 },
@@ -421,7 +481,8 @@ deleteSelectedGratuity() {
         () => {
           console.log(' Gratuity deleted successfully:', categoryId);
           // Remove the deleted employee from the local list
-          this.LoanTypes = this.LoanTypes.filter(emp  => emp .id !== categoryId);
+          this.LoanTypes = this.LoanTypes.filter(emp => emp.id !== categoryId);
+           this.updateFilteredAndPaginatedData();
 
             completed++;
 
