@@ -92,6 +92,69 @@ export class ProjectTimesheetComponent {
 
   custom_fieldsFam :any[] = [];
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 10;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredTimesheets: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.Timesheets];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      return (
+        (item.date && item.date.toString().toLowerCase().includes(q)) ||
+        (item.time_spent && item.time_spent.toString().toLowerCase().includes(q)) ||
+        (item.status && item.status.toString().toLowerCase().includes(q)) ||
+        (item.description && item.description.toString().toLowerCase().includes(q)) ||
+        (item.project && item.project.toString().toLowerCase().includes(q)) ||
+        (item.task && item.task.toString().toLowerCase().includes(q)) ||
+        (item.employee && item.employee.toString().toLowerCase().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredTimesheets = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
 
 
   constructor(
@@ -382,22 +445,21 @@ this.loadEmp();
 
             isLoading: boolean = false;
 
-            fetchEmployees(schema: string, branchIds: number[]): void {
-              this.isLoading = true;
-              this.employeeService.getProjectTimesheetNew(schema, branchIds).subscribe({
-                next: (data: any) => {
-                  // Filter active employees
-                  this.Timesheets = data;
-          
-                  this.isLoading = false;
-                },
-                error: (err) => {
-                  console.error('Fetch error:', err);
-                  this.isLoading = false;
-                }
-              });
-            }
-          
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getProjectTimesheetNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.Timesheets = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
         
 
           // loadLTasks(): void {

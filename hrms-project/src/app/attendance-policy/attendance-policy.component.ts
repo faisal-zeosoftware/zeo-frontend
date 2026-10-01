@@ -85,6 +85,72 @@ export class AttendancePolicyComponent {
   
   
   schemas: string[] = []; // Array to store schema names
+
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredPolicies: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.policies];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      const branchName = this.getBranchName(item.branch) || '';
+      const statusText = item.is_active ? 'active' : 'inactive';
+
+      return (
+        (item.name && item.name.toString().toLowerCase().includes(q)) ||
+        branchName.toLowerCase().includes(q) ||
+        statusText.includes(q) ||
+        (item.early_check_in_minutes != null && item.early_check_in_minutes.toString().includes(q)) ||
+        (item.late_check_in_minutes != null && item.late_check_in_minutes.toString().includes(q)) ||
+        (item.early_check_out_minutes != null && item.early_check_out_minutes.toString().includes(q)) ||
+        (item.late_check_out_minutes != null && item.late_check_out_minutes.toString().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredPolicies = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
   
   
     constructor(
@@ -526,7 +592,9 @@ loadPolicies(): void {
     `${this.apiUrl}/calendars/api/attendance-policy/?schema=${selectedSchema}`
   ).subscribe({
     next: (res) => {
-      this.policies = res;   // ✅ Assign data
+      this.policies = res || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
       console.log('Policies:', this.policies);
     },
     error: (err) => {
@@ -534,7 +602,6 @@ loadPolicies(): void {
     }
   });
 }
-
 getBranchName(branchId: number): string {
   if (!branchId || !this.branches || this.branches.length === 0) {
     return 'N/A';

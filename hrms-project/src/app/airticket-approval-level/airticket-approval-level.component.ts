@@ -62,6 +62,79 @@ export class AirticketApprovalLevelComponent {
     userDetails: any;
     userDetailss: any;
     schemas: string[] = []; // Array to store schema names
+
+    // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredApprovalLevels: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.approvalLevels];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      const levelsMatch = Array.isArray(item.levels)
+        ? item.levels.some((lvl: any) =>
+            (lvl.level != null && lvl.level.toString().includes(q)) ||
+            (lvl.role && lvl.role.toString().toLowerCase().includes(q)) ||
+            (lvl.approver && lvl.approver.toString().toLowerCase().includes(q))
+          )
+        : false;
+
+      const branchMatch = Array.isArray(item.branch)
+        ? item.branch.some((b: any) => (b || '').toString().toLowerCase().includes(q))
+        : (item.branch || '').toString().toLowerCase().includes(q);
+
+      const typeText =
+        item.approval_type === 'no_approval' ? 'no approval' :
+        item.approval_type === 'reporting_manager' ? 'reporting manager' :
+        item.approval_type === 'multi_approval' ? 'multi approval' :
+        (item.approval_type || '').toString().toLowerCase();
+
+      return levelsMatch || branchMatch || typeText.includes(q);
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredApprovalLevels = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
       
       constructor(
         private leaveservice: LeaveService, 
@@ -320,21 +393,21 @@ CreateAirticketApproverLevel(): void {
 
           isLoading: boolean = false;
 
-          fetchEmployees(schema: string, branchIds: number[]): void {
-            this.isLoading = true;
-            this.employeeService.getAirTicketApprovalLevelsNew(schema, branchIds).subscribe({
-              next: (data: any) => {
-                // Filter active employees
-                this.approvalLevels = data;
-        
-                this.isLoading = false;
-              },
-              error: (err) => {
-                console.error('Fetch error:', err);
-                this.isLoading = false;
-              }
-            });
-          }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getAirTicketApprovalLevelsNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.approvalLevels = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
         
     
     

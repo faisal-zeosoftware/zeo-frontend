@@ -7,11 +7,23 @@
         <div class="col-md-4">
           <h1>OverTime Policy</h1>
         </div>
-        <div class="col-md-3">
+                 <div class="col-md-3">
+                    
+<div class="search-container">
+<input
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchQuery"
+  [ngModelOptions]="{standalone: true}"
+  (ngModelChange)="onSearchChange()"
+>
 
-          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-
-        </div>
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+                </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
             <button type="button" (click)="openPopus()" class="btn-Create btn btn-success" *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
@@ -655,7 +667,8 @@
                 </thead>
                 <tbody>
                     
-                  <tr *ngFor="let pol of overtimepol;let i = index">
+                <tr *ngFor="let pol of filteredLoanTypes; let i = index">
+
                     <td data-label="Name">{{ pol.name }}</td> 
                     <td data-label="Ot Type">{{ pol.ot_type }}</td>
                     <td data-label="Rate multiplier">{{ pol.rate_multiplier }}</td> 
@@ -687,5 +700,31 @@
               </table>
 
         </div>
+        <div class="pagination-container">
+
+  <button
+    type="button"
+    class="page-btn"
+    (click)="previousPage()"
+    [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+
+<button
+  type="button"
+  class="page-btn"
+  (click)="nextPage()"
+  [disabled]="currentPage === totalPages">
+  Next
+</button>
+
+</div>
         </div>
         </div>

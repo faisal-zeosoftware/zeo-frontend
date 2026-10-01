@@ -64,6 +64,69 @@ export class EmployeeOvertimeComponent {
 
   selectedFile: File | null = null;
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 10;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredLeaveBalances: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.LeaveBalances];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      const approvedText = item.approved ? 'true yes approved' : 'false no';
+
+      return (
+        (item.date && item.date.toString().toLowerCase().includes(q)) ||
+        (item.hours != null && item.hours.toString().includes(q)) ||
+        (item.ot_type && item.ot_type.toString().toLowerCase().includes(q)) ||
+        approvedText.includes(q) ||
+        (item.employee && item.employee.toString().toLowerCase().includes(q)) ||
+        (item.approved_by && item.approved_by.toString().toLowerCase().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredLeaveBalances = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
 
 
   constructor(
@@ -419,21 +482,21 @@ export class EmployeeOvertimeComponent {
 
   isLoading: boolean = false;
 
-  fetchEmployees(schema: string, branchIds: number[]): void {
-    this.isLoading = true;
-    this.leaveService.getEmployeeOvertimeNew(schema, branchIds).subscribe({
-      next: (data: any) => {
-        // Filter active employees
-        this.LeaveBalances = data;
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Fetch error:', err);
-        this.isLoading = false;
-      }
-    });
-  }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.leaveService.getEmployeeOvertimeNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.LeaveBalances = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
 
 
   // File selection

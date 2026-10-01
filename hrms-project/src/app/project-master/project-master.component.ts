@@ -112,6 +112,81 @@ export class ProjectMasterComponent {
 
   custom_fieldsFam: any[] = [];
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredLoanTypes: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.LoanTypes];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      const managersMatch = Array.isArray(item.managers)
+        ? item.managers.some((m: any) => (m || '').toString().toLowerCase().includes(q))
+        : (item.managers || '').toString().toLowerCase().includes(q);
+
+      const membersMatch = Array.isArray(item.members)
+        ? item.members.some((m: any) => (m || '').toString().toLowerCase().includes(q))
+        : (item.members || '').toString().toLowerCase().includes(q);
+
+      const activeText = item.is_active ? 'active true' : 'inactive false';
+
+      return (
+        (item.title && item.title.toString().toLowerCase().includes(q)) ||
+        (item.status && item.status.toString().toLowerCase().includes(q)) ||
+        (item.start_date && item.start_date.toString().toLowerCase().includes(q)) ||
+        (item.end_date && item.end_date.toString().toLowerCase().includes(q)) ||
+        (item.description && item.description.toString().toLowerCase().includes(q)) ||
+        activeText.includes(q) ||
+        managersMatch ||
+        membersMatch ||
+        (item.document && item.document.toString().toLowerCase().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredLoanTypes = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
 
 
   constructor(
@@ -442,21 +517,21 @@ export class ProjectMasterComponent {
 
   isLoading: boolean = false;
 
-  fetchEmployees(schema: string, branchIds: number[]): void {
-    this.isLoading = true;
-    this.employeeService.getProjectNew(schema, branchIds).subscribe({
-      next: (data: any) => {
-        // Filter active employees
-        this.LoanTypes = data;
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Fetch error:', err);
-        this.isLoading = false;
-      }
-    });
-  }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getProjectNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.LoanTypes = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
 
 
 

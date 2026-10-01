@@ -8,8 +8,22 @@
                     <h1>Shift OverRide</h1>
                 </div>
 
-                <div class="col-md-3">
+                  <div class="col-md-3">
+                    
+<div class="search-container">
+<input
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchQuery"
+  [ngModelOptions]="{standalone: true}"
+  (ngModelChange)="onSearchChange()"
+>
 
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
                 </div>
                 <div class="col-md-5">
                     <div class="button-group pull-right">
@@ -278,7 +292,7 @@
           </thead>
         <tbody>
                         
-        <tr *ngFor="let pattern of ShiftsOverride">
+    <tr *ngFor="let pattern of filteredShiftsOverride; let i = index">
             <td data-label="Date">{{ pattern.date }}</td>
             <td data-label="Employee">{{ pattern.employee }}</td>
             <td data-label="OverRide">{{ pattern.override_shift }}</td>
@@ -305,7 +319,32 @@
                   </table>
     
                   </div>
+<div class="pagination-container">
 
+  <button
+    type="button"
+    class="page-btn"
+    (click)="previousPage()"
+    [disabled]="currentPage === 1">
+    Previous
+  </button>
+
+  <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+
+<button
+  type="button"
+  class="page-btn"
+  (click)="nextPage()"
+  [disabled]="currentPage === totalPages">
+  Next
+</button>
+
+</div>
         </div>
         </div>
         

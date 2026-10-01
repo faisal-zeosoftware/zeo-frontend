@@ -75,6 +75,64 @@ ShiftsOverride: any[] = [];
 
   registerButtonClicked = false;
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 10;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredShiftsOverride: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.ShiftsOverride];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      return (
+        (item.date && item.date.toString().toLowerCase().includes(q)) ||
+        (item.employee && item.employee.toString().toLowerCase().includes(q)) ||
+        (item.override_shift && item.override_shift.toString().toLowerCase().includes(q))
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredShiftsOverride = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
 
   constructor(
     private countryService: CountryService, 
@@ -388,21 +446,21 @@ ngOnInit(): void {
 
         isLoading: boolean = false;
 
-        fetchEmployees(schema: string, branchIds: number[]): void {
-          this.isLoading = true;
-          this.countryService.getShiftOverrideNew(schema, branchIds).subscribe({
-            next: (data: any) => {
-              // Filter active employees
-              this.ShiftsOverride = data;
-      
-              this.isLoading = false;
-            },
-            error: (err) => {
-              console.error('Fetch error:', err);
-              this.isLoading = false;
-            }
-          });
-        }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.countryService.getShiftOverrideNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.ShiftsOverride = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
       
 
 

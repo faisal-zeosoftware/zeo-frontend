@@ -84,6 +84,70 @@ branch: number[] = [];
 
   send_email: boolean = false;
 
+  // Add these properties to your component class
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 4;
+totalPages: number = 1;
+
+// Computed property for filtered data
+get filteredNotSettings(): any[] {
+  if (!this.searchQuery) {
+    return this.NotSettings;
+  }
+  
+  const query = this.searchQuery.toLowerCase().trim();
+  return this.NotSettings.filter(item => 
+    item.days_before_expiry?.toString().includes(query) ||
+    item.days_after_expiry?.toString().includes(query) ||
+    item.document_type?.toLowerCase().includes(query) ||
+    item.branch?.toLowerCase().includes(query) ||
+    item.Designation?.toLowerCase().includes(query) ||
+    item.Department?.toLowerCase().includes(query) ||
+    item.Category?.toLowerCase().includes(query) ||
+    item.notify_users?.toLowerCase().includes(query)
+  );
+}
+
+// Computed property for paginated data
+get paginatedNotSettings(): any[] {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  return this.filteredNotSettings.slice(startIndex, endIndex);
+}
+
+// Search handler
+onSearchChange(): void {
+  this.currentPage = 1; // Reset to first page when searching
+  this.updateTotalPages();
+}
+
+// Update total pages
+updateTotalPages(): void {
+  this.totalPages = Math.ceil(this.filteredNotSettings.length / this.itemsPerPage);
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages || 1;
+  }
+}
+
+// Pagination methods
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+  }
+}
+
+goToPage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+  }
+}
 
 
   constructor(
@@ -289,21 +353,20 @@ branch: number[] = [];
 
   isLoading: boolean = false;
 
-  fetchEmployees(schema: string, branchIds: number[]): void {
-    this.isLoading = true;
-    this.leaveService.getNotificationSettingsNew(schema, branchIds).subscribe({
-      next: (data: any) => {
-        // Filter active employees
-        this.NotSettings = data;
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Fetch error:', err);
-        this.isLoading = false;
-      }
-    });
-  }
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.leaveService.getNotificationSettingsNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.NotSettings = data;
+      this.updateTotalPages(); // Add this line
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
 
 
 

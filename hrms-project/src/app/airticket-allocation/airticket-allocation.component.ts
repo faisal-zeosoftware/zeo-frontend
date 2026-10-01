@@ -64,6 +64,71 @@ export class AirticketAllocationComponent {
 
   registerButtonClicked = false;
 
+  // Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredAllocations: any[] = [];
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+applyFilterAndPagination(): void {
+  let filtered = [...this.Allocations];
+
+  // ----- SEARCH -----
+  if (this.searchQuery && this.searchQuery.trim()) {
+    const q = this.searchQuery.toLowerCase().trim();
+
+    filtered = filtered.filter(item => {
+      const activeText = item.is_active ? 'active true' : 'inactive false';
+
+      return (
+        (item.employee && item.employee.toString().toLowerCase().includes(q)) ||
+        (item.policy && item.policy.toString().toLowerCase().includes(q)) ||
+        (item.amount != null && item.amount.toString().includes(q)) ||
+        (item.remaining_amount != null && item.remaining_amount.toString().includes(q)) ||
+        (item.expiry_date && item.expiry_date.toString().toLowerCase().includes(q)) ||
+        (item.status && item.status.toString().toLowerCase().includes(q)) ||
+        activeText.includes(q)
+      );
+    });
+  }
+
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
+
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
+
+  this.filteredAllocations = filtered.slice(start, end);
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.applyFilterAndPagination();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.applyFilterAndPagination();
+  }
+}
+
 
 
 
@@ -387,22 +452,21 @@ ngOnInit(): void {
 
               isLoading: boolean = false;
 
-              fetchEmployees(schema: string, branchIds: number[]): void {
-                this.isLoading = true;
-                this.employeeService.getairticketAllocationsNew(schema, branchIds).subscribe({
-                  next: (data: any) => {
-                    // Filter active employees
-                    this.Allocations = data;
-            
-                    this.isLoading = false;
-                  },
-                  error: (err) => {
-                    console.error('Fetch error:', err);
-                    this.isLoading = false;
-                  }
-                });
-              }
-            
+fetchEmployees(schema: string, branchIds: number[]): void {
+  this.isLoading = true;
+  this.employeeService.getairticketAllocationsNew(schema, branchIds).subscribe({
+    next: (data: any) => {
+      this.Allocations = data || [];
+      this.currentPage = 1;
+      this.applyFilterAndPagination();   // ← important
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Fetch error:', err);
+      this.isLoading = false;
+    }
+  });
+}
 
 
 

@@ -88,6 +88,148 @@ userId: number | null | undefined;
 userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
+
+// Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 4;
+totalPages: number = 1;
+
+// Data displayed in table
+filteredLoanTypes: any[] = [];
+
+
+onSearchChange(): void {
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+
+applyFilterAndPagination(): void {
+
+  // Always start from the complete API result
+  let filtered = [...this.overtimepol];
+
+  // =========================
+  // SEARCH
+  // =========================
+  const q = this.searchQuery?.trim().toLowerCase();
+
+  if (q) {
+    filtered = filtered.filter((item: any) => {
+
+      return (
+        // Name
+        String(item.name ?? '')
+          .toLowerCase()
+          .includes(q) ||
+
+        // OT Type
+        String(item.ot_type ?? '')
+          .toLowerCase()
+          .includes(q) ||
+
+        // Rate multiplier
+        String(item.rate_multiplier ?? '')
+          .toLowerCase()
+          .includes(q) ||
+
+        // Branch
+        this.searchArrayOrValue(item.branch, q) ||
+
+        // Department
+        this.searchArrayOrValue(item.department, q) ||
+
+        // Designation
+        this.searchArrayOrValue(item.designation, q) ||
+
+        // Category
+        this.searchArrayOrValue(item.category, q) ||
+
+        // Active status
+        (item.is_active === true && 'active'.includes(q)) ||
+
+        (item.is_active === false && 'inactive'.includes(q))
+      );
+    });
+  }
+
+  // =========================
+  // PAGINATION
+  // =========================
+  this.totalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / this.pageSize)
+  );
+
+  // Make sure current page is valid
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = this.totalPages;
+  }
+
+  if (this.currentPage < 1) {
+    this.currentPage = 1;
+  }
+
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+  const endIndex = startIndex + this.pageSize;
+
+  // IMPORTANT:
+  // Only this array should be displayed in the table
+  this.filteredLoanTypes = filtered.slice(startIndex, endIndex);
+}
+
+
+// Handles both array and normal string/number values
+searchArrayOrValue(value: any, search: string): boolean {
+
+  if (Array.isArray(value)) {
+    return value.some((item: any) =>
+      String(item ?? '')
+        .toLowerCase()
+        .includes(search)
+    );
+  }
+
+  return String(value ?? '')
+    .toLowerCase()
+    .includes(search);
+}
+
+
+previousPage(): void {
+
+  if (this.currentPage > 1) {
+    this.currentPage--;
+
+    this.applyFilterAndPagination();
+
+    // Optional: scroll table to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+}
+
+
+nextPage(): void {
+
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+
+    this.applyFilterAndPagination();
+
+    // Optional: scroll table to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+}
+
   
   constructor(
     private leaveservice: LeaveService, 
@@ -501,21 +643,41 @@ toggleAllDesignations(): void {
 
     isLoading: boolean = false;
 
-    fetchEmployees(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.employeeService.getovertimepolicyNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.overtimepol = data;
-  
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
+fetchEmployees(schema: string, branchIds: number[]): void {
+
+  this.isLoading = true;
+
+  this.employeeService.getovertimepolicyNew(schema, branchIds).subscribe({
+
+    next: (data: any) => {
+
+      this.overtimepol = Array.isArray(data) ? data : [];
+
+      // Reset to first page whenever fresh data arrives
+      this.currentPage = 1;
+
+      // Apply search + pagination
+      this.applyFilterAndPagination();
+
+      this.isLoading = false;
+    },
+
+    error: (err) => {
+
+      console.error('Fetch error:', err);
+
+      this.overtimepol = [];
+      this.filteredLoanTypes = [];
+
+      this.currentPage = 1;
+      this.totalPages = 1;
+
+      this.isLoading = false;
     }
+
+  });
+}
+
   
 
 
