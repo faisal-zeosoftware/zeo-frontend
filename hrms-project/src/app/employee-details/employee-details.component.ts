@@ -1331,37 +1331,130 @@ safeAppend(
   safeAppend('is_active', this.employee.is_active ? '1' : '0');
 
   // --- Submit Request ---
-this.EmployeeService.updateEmp(this.employee.id, formData).subscribe({
-  next: (response) => {
-    this.isEditMode = false;
-    this.selectedFile = null;
-
-    // IMPORTANT:
-    // Do NOT reload here.
-    // saveAllSections() must finish first.
-    this.saveAllSections();
-  },
-
-  error: (error) => {
-    console.error('Update Error:', error);
-
-    if (error.error) {
-      let messages: string[] = [];
-
-      for (const key in error.error) {
-        if (error.error.hasOwnProperty(key)) {
-          const value = error.error[key];
-
-          messages.push(
-            `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
-          );
+  this.EmployeeService.updateEmp(this.employee.id, formData).subscribe({
+    next: (response) => {
+      alert('Employee Details Updated Successfully!');
+      this.saveAllSections();          // <-- single entry point now
+      this.isEditMode = false;
+      this.selectedFile = null;
+      window.location.reload();
+    },
+    error: (error) => {
+      console.error('Update Error:', error);
+      if (error.error) {
+        let messages: string[] = [];
+        for (const key in error.error) {
+          if (error.error.hasOwnProperty(key)) {
+            messages.push(`${key}: ${error.error[key].join(', ')}`);
+          }
         }
+        alert(messages.join('\n'));
       }
-
-      alert(messages.join('\n'));
     }
+  });
+}
+
+removeSectionItem(
+  section: 'family' | 'qualification' | 'bank' | 'jobHistory' | 'document',
+  item: any,
+  index: number
+): void {
+
+  if (!item?.id) {
+    this.removeItemFromArray(section, index);
+    alert('Removed Successfully!');
+    return;
   }
-});
+
+  let removeRequest$: Observable<any>;
+
+  switch (section) {
+
+    case 'family':
+      removeRequest$ = this.EmployeeService.RemoveEmpFamily(
+        this.employee.id,
+        item.id
+      );
+      break;
+
+    case 'qualification':
+      removeRequest$ = this.EmployeeService.RemoveQualification(
+        this.employee.id,
+        item.id
+      );
+      break;
+
+    case 'bank':
+      removeRequest$ = this.EmployeeService.RemoveBankDetail(
+        this.employee.id,
+        item.id
+      );
+      break;
+
+    case 'jobHistory':
+      removeRequest$ = this.EmployeeService.RemoveJobHistory(
+        this.employee.id,
+        item.id
+      );
+      break;
+
+    case 'document':
+      removeRequest$ = this.EmployeeService.RemoveDocument(
+        this.employee.id,
+        item.id
+      );
+      break;
+
+    default:
+      return;
+  }
+
+  removeRequest$.subscribe({
+    next: () => {
+
+      // Remove from current UI
+      this.removeItemFromArray(section, index);
+
+      alert('Removed Successfully!');
+
+      // Reload only after API deletion is completed
+      window.location.reload();
+    },
+
+    error: (error) => {
+      console.error(`Remove ${section} Error:`, error);
+      alert('Failed to remove item.');
+    }
+  });
+}
+
+private removeItemFromArray(
+  section: 'family' | 'qualification' | 'bank' | 'jobHistory' | 'document',
+  index: number
+): void {
+
+  switch (section) {
+
+    case 'family':
+      this.emp_family_details?.splice(index, 1);
+      break;
+
+    case 'qualification':
+      this.Qualifications?.splice(index, 1);
+      break;
+
+    case 'bank':
+      this.emp_bank_details?.splice(index, 1);
+      break;
+
+    case 'jobHistory':
+      this.Jobhistorys?.splice(index, 1);
+      break;
+
+    case 'document':
+      this.employeeDocuments?.splice(index, 1);
+      break;
+  }
 }
 
 saveAllSections(): void {
@@ -1522,29 +1615,13 @@ saveAllCustomFields(): void {
     });
   });
 
-forkJoin(calls.length ? calls : [of(null)]).subscribe({
-  next: () => {
-    // Clear deleted IDs only after everything succeeded
-    this.deletedFamilyIds = [];
-    this.deletedQualificationIds = [];
-    this.deletedBankIds = [];
-    this.deletedJobHistoryIds = [];
-    this.deletedDocumentIds = [];
-
-    this.isEditMode = false;
-    this.selectedFile = null;
-
-    alert('Employee & Family Details Updated Successfully!');
-
-    // FINAL reload — only after ALL API calls are completed
-    window.location.reload();
-  },
-
-  error: (err) => {
-    console.error('Custom field update failed', err);
-    alert('Some custom fields failed to update. Please check the console.');
-  }
-});
+  forkJoin(calls.length ? calls : [of(null)]).subscribe({
+    next: () => {
+      alert('Employee & Family Details Updated Successfully!');
+      this.ngOnInit(); // single, final reload
+    },
+    error: (err) => console.error('Custom field update failed', err)
+  });
 }
 
 qualificationBackup: any = null;
