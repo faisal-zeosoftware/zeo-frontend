@@ -1001,8 +1001,32 @@ loadDeparmentBranch(selectedBranchIds: number[] = []): void {
   
 // ==================== PAGINATION ====================
 currentPage: number = 1;
-itemsPerPage: number = 4;
+itemsPerPage: number = 10;                       // default
 pagedDocRequests: any[] = [];
+
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+
+
+// Called when the user picks a new count
+onPageSizeChange(size: number | string): void {
+  this.itemsPerPage = Number(size);   // select returns a string, so convert
+  this.currentPage = 1;               // always go back to page 1
+  this.updatePagination();
+}
+
+
+// Optional: for the "Showing 1–10 of 57" text
+get startRecord(): number {
+  return this.filteredDocRequests.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.itemsPerPage + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.itemsPerPage, this.filteredDocRequests.length);
+}
+
+
 
 /** Filtered list based on search (replaces old getter) */
 get filteredDocRequests(): any[] {

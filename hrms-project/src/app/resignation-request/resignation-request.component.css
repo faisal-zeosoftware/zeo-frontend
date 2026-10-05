@@ -475,3 +475,21 @@ thead .sticky-right {
 }
 }
 
+
+
+.page-size-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+.page-size-select {
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.record-info {
+  margin-right: auto;
+  font-size: 14px;
+}
