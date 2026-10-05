@@ -6,9 +6,23 @@
           <h1>Early Exit Policy</h1>
         </div>
 
-        <div class="col-md-3">
-          <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
-        </div>
+               <div class="col-md-3">
+                    
+<div class="search-container">
+<input
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchQuery"
+  [ngModelOptions]="{standalone: true}"
+  (ngModelChange)="onSearchChange()"
+>
+
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+                </div>
         <div class="col-md-5">
           <div class="button-group pull-right">
             <button
@@ -1065,8 +1079,8 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let docs of LoanTypes; let i = index">
-             <td class="sticky-left" data-label="No">{{ i + 1 }}</td> 
+            <tr *ngFor="let docs of pagedLoanTypes; let i = index">
+             <td class="sticky-left" data-label="No">{{ ((tableCurrentPage - 1) * tableItemsPerPage) + i + 1 }}</td> 
 
               <td data-label="Leaves Days to Deduct">{{ docs.leave_days_to_deduct }}</td>
 
@@ -1123,6 +1137,31 @@
           </tbody>
         </table>
       </div>
+            <div
+  class="pagination-container">
+
+  <button
+    class="page-btn"
+    (click)="previousTablePage()"
+    [disabled]="tableCurrentPage === 1">
+    Previous
+  </button>
+
+  <!-- Only ONE number -->
+  <button
+    class="page-number active"
+    disabled>
+    {{ tableCurrentPage }}
+  </button>
+
+  <button
+    class="page-btn"
+    (click)="nextTablePage()"
+    [disabled]="tableCurrentPage === tableTotalPages">
+    Next
+  </button>
+
+</div>
     </div>
   </div>
 

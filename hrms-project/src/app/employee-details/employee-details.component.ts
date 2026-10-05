@@ -1355,6 +1355,8 @@ safeAppend(
 }
 
 saveAllSections(): void {
+
+  // ---------- UPDATES ----------
   const familyReqs = (this.emp_family_details || []).map((member: any) =>
     this.EmployeeService.updateEmpFamily(this.employee.id, member.id, {
       ef_member_name: member.ef_member_name,
@@ -1409,7 +1411,34 @@ saveAllSections(): void {
     return this.EmployeeService.updateDocument(this.employee.id, d.id, docFormData);
   });
 
-  const allReqs = [
+  // ---------- DELETES ----------
+  const familyDeleteReqs = this.deletedFamilyIds.map(id =>
+    this.EmployeeService.RemoveEmpFamily(this.employee.id, id)
+  );
+
+  const qualificationDeleteReqs = this.deletedQualificationIds.map(id =>
+    this.EmployeeService.RemoveQualification(this.employee.id, id)
+  );
+
+  const bankDeleteReqs = this.deletedBankIds.map(id =>
+    this.EmployeeService.RemoveBankDetail(this.employee.id, id)
+  );
+
+  const jobHistoryDeleteReqs = this.deletedJobHistoryIds.map(id =>
+    this.EmployeeService.RemoveJobHistory(this.employee.id, id)
+  );
+
+  const documentDeleteReqs = this.deletedDocumentIds.map(id =>
+    this.EmployeeService.RemoveDocument(this.employee.id, id)
+  );
+
+  // ---------- RUN EVERYTHING ONCE ----------
+  const allReqs: Observable<any>[] = [
+    ...familyDeleteReqs,
+    ...qualificationDeleteReqs,
+    ...bankDeleteReqs,
+    ...jobHistoryDeleteReqs,
+    ...documentDeleteReqs,
     ...familyReqs,
     ...qualificationReqs,
     ...bankReqs,
@@ -1418,13 +1447,22 @@ saveAllSections(): void {
   ];
 
   forkJoin(allReqs.length ? allReqs : [of(null)]).subscribe({
-    next: () => this.saveAllCustomFields(),
+    next: () => {
+      this.deletedFamilyIds = [];
+      this.deletedQualificationIds = [];
+      this.deletedBankIds = [];
+      this.deletedJobHistoryIds = [];
+      this.deletedDocumentIds = [];
+      this.saveAllCustomFields();
+    },
     error: (err) => {
       console.error('Section update failed', err);
-      alert('Some sections failed to update — check console.');
+      alert('Some sections failed to update. Check the console.');
     }
   });
 }
+
+
 
 saveAllCustomFields(): void {
   const schema = localStorage.getItem('selectedSchema');

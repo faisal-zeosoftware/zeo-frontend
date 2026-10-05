@@ -7,6 +7,8 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { CountryService } from '../country.service';
 import { environment } from '../../environments/environment';
 import { SessionService } from '../login/session.service';
+import { forkJoin, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-employee-family',
@@ -167,9 +169,9 @@ bankDetails: any[] = [
 
 
 CreateEmployeeFamily() {
+  const schema = localStorage.getItem('selectedSchema');
 
-  this.familyMembers.forEach(member => {
-
+  const requests = this.familyMembers.map(member => {
     const familyData = {
       ef_member_name: member.ef_member_name,
       emp_relation: member.emp_relation,
@@ -177,35 +179,57 @@ CreateEmployeeFamily() {
       ef_date_of_birth: member.ef_date_of_birth
     };
 
-    this.EmployeeService.registerEmpFamilyz(this.emp_id, familyData)
-      .subscribe(res => {
+    return this.EmployeeService.registerEmpFamilyz(this.emp_id, familyData).pipe(
+      switchMap((res: any) => {
+        member.id = res.id;
 
-        const familyId = res.id;
-
-        member.custom_fields.forEach((field: any) => {
-
-          const body = {
-            emp_custom_field: field.emp_custom_field,
-            field_value: field.field_value,
-            emp_family: familyId,
-            created_by: this.created_by
-          };
-
-          const schema = localStorage.getItem('selectedSchema');
-
+        const customCalls = member.custom_fields.map((field: any) =>
           this.http.post(
             `${this.apiUrl}/employee/api/empfamily-customfieldvalue/?schema=${schema}`,
-            body
-          ).subscribe();
+            {
+              emp_custom_field: field.emp_custom_field,
+              field_value: field.field_value,
+              emp_family: res.id,
+              created_by: this.created_by
+            }
+          )
+        );
 
-        });
-
-      });
-
+        return customCalls.length ? forkJoin(customCalls) : of(null);
+      })
+    );
   });
 
-  alert('All family members added successfully');
-  window.location.reload();
+  forkJoin(requests).subscribe({
+    next: () => {
+      alert('All family members added successfully');
+      window.location.reload();
+    },
+    error: (err) => {
+      console.error(err);
+      alert('Failed to save some family members.');
+    }
+  });
+}
+
+removeFamilyMember(index: number) {
+  const member = this.familyMembers[index];
+
+  // Not saved yet, so just remove from the UI
+  if (!member.id) {
+    this.familyMembers.splice(index, 1);
+    return;
+  }
+
+  if (!confirm('Delete this family member?')) return;
+
+  this.EmployeeService.RemoveEmpFamily(this.emp_id, member.id).subscribe({
+    next: () => this.familyMembers.splice(index, 1),
+    error: (err: any) => {
+      console.error(err);
+      alert('Could not delete. Please try again.');
+    }
+  });
 }
 
 createEmployeeQual() {
@@ -1225,11 +1249,11 @@ addFamilyMember() {
   });
 }
 
-removeFamilyMember(index: number) {
-  if (this.familyMembers.length > 1) {
-    this.familyMembers.splice(index, 1);
-  }
-}
+// removeFamilyMember(index: number) {
+//   if (this.familyMembers.length > 1) {
+//     this.familyMembers.splice(index, 1);
+//   }
+// }
 
 
 loadFormFieldsQual(): void {

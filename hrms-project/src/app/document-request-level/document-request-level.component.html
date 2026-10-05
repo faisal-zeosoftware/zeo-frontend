@@ -9,11 +9,23 @@
             <div class="col-md-4">
                 <h1>Document Approvel Level</h1>
             </div>
-            <div class="col-md-3">
-                
-                <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+               <div class="col-md-3">
+                    
+<div class="search-container">
+<input
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchQuery"
+  [ngModelOptions]="{standalone: true}"
+  (ngModelChange)="onSearchChange()"
+>
 
-            </div>
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
+                </div>
             <div class="col-md-5">
               <div class="button-group pull-right">
                   <button type="button" (click)="openPopus()" class="btn-Create btn btn-success"  *ngIf="hasAddPermission"><span class="header-btn-icon"><mat-icon>add_circle
@@ -410,11 +422,12 @@
 
     <tbody>
 
-      <ng-container *ngFor="let docs of LeaveapprovalLevels; let i = index">
-
-        <!-- MAIN ROW -->
-        <tr>
-          <td data-label="No">{{ i + 1 }}</td>
+<ng-container *ngFor="let docs of filteredLeaveapprovalLevels; let i = index">
+  <!-- MAIN ROW -->
+  <tr>
+    <td data-label="No">
+      {{ (currentPage - 1) * pageSize + i + 1 }}
+    </td>
 
           <!-- Show ALL levels inside one cell -->
           <td data-label="Level">
@@ -473,7 +486,36 @@
   </table>
 
 </div>
-
+    <div class="pagination-container">
+  
+        <button
+         type="button"
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+  <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+      
+        <button
+         type="button"
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
+      </div>
 
     </div>
 </div>

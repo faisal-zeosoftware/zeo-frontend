@@ -45,6 +45,37 @@ hasEditPermission: boolean = false;
 
 schemas: string[] = []; // Array to store schema names
 
+// Add these properties to your component class
+searchQuery: string = '';
+
+// Computed property for filtered data
+get filteredEmailConfig(): any[] {
+  if (!this.searchQuery) {
+    return this.EmailConfg;
+  }
+  
+  const query = this.searchQuery.toLowerCase().trim();
+  return this.EmailConfg.filter(item => 
+    item.email_host?.toLowerCase().includes(query) ||
+    item.email_port?.toString().includes(query) ||
+    item.email_host_user?.toLowerCase().includes(query) ||
+    item.email_use_tls?.toString().toLowerCase().includes(query) ||
+    item.is_active?.toString().toLowerCase().includes(query)
+  );
+}
+
+// Search handler
+onSearchChange(): void {
+  // Reset selection when searching
+  this.allSelected = false;
+}
+
+// Update toggleSelectAllEmployees to work with filtered data
+// toggleSelectAllEmployees() {
+//   this.allSelected = !this.allSelected;
+//   this.filteredEmailConfig.forEach(item => item.selected = this.allSelected);
+// }
+
 
   constructor(
     private http: HttpClient,

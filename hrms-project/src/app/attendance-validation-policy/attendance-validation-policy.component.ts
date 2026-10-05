@@ -400,18 +400,221 @@ export class AttendanceValidationPolicyComponent {
     }
   }
 
-  loadValidationPolicies() {
-  this.CountryService.getAttendanceValidationPolicy().subscribe({
-    next: (res: any) => {
-      console.log("Validation Policies", res);
+  
 
-      this.LoanTypes = res;
-    },
-    error: err => {
-      console.log(err);
-    }
-  });
+// =====================================================
+// MAIN VALIDATION POLICY TABLE PAGINATION
+// Separate from Create/Edit employee-card pagination
+// =====================================================
+
+tableCurrentPage: number = 1;
+tableItemsPerPage: number = 4;
+tableTotalPages: number = 1;
+pagedLoanTypes: any[] = [];
+
+// =====================================================
+// MAIN TABLE SEARCH
+// =====================================================
+
+searchQuery: string = '';
+
+filteredLoanTypes: any[] = [];
+
+
+
+
+onSearchChange(): void {
+
+  const search =
+    (this.searchQuery || '')
+      .trim()
+      .toLowerCase();
+
+  // No search
+  if (!search) {
+
+    this.filteredLoanTypes = [
+      ...this.LoanTypes
+    ];
+
+  } else {
+
+    this.filteredLoanTypes =
+      this.LoanTypes.filter((policy: any) => {
+
+        const searchableText = [
+
+          // Name
+          policy.name,
+
+          // Branch
+          ...(Array.isArray(policy.branch)
+            ? policy.branch
+            : [policy.branch]),
+
+          // Department
+          ...(Array.isArray(policy.department)
+            ? policy.department
+            : [policy.department]),
+
+          // Category
+          ...(Array.isArray(policy.category)
+            ? policy.category
+            : [policy.category]),
+
+          // Designation
+          ...(Array.isArray(policy.designation)
+            ? policy.designation
+            : [policy.designation]),
+
+          // Employee
+          ...(Array.isArray(policy.employee)
+            ? policy.employee
+            : [policy.employee])
+
+        ]
+          .filter(value =>
+            value !== null &&
+            value !== undefined
+          )
+          .map(value =>
+            String(value).toLowerCase()
+          );
+
+        return searchableText.some(value =>
+          value.includes(search)
+        );
+      });
+  }
+
+  // Always start search results from page 1
+  this.tableCurrentPage = 1;
+
+  // Rebuild pagination
+  this.updateTablePagination();
 }
+
+
+
+// =====================================================
+// MAIN TABLE PAGINATION
+// =====================================================
+
+
+updateTablePagination(): void {
+
+  const data = this.LoanTypes || [];
+
+  this.tableTotalPages = Math.max(
+    1,
+    Math.ceil(data.length / this.tableItemsPerPage)
+  );
+
+  // Keep page within valid range
+  if (this.tableCurrentPage > this.tableTotalPages) {
+    this.tableCurrentPage = this.tableTotalPages;
+  }
+
+  if (this.tableCurrentPage < 1) {
+    this.tableCurrentPage = 1;
+  }
+
+  const startIndex =
+    (this.tableCurrentPage - 1) * this.tableItemsPerPage;
+
+  const endIndex =
+    startIndex + this.tableItemsPerPage;
+
+  this.pagedLoanTypes = data.slice(
+    startIndex,
+    endIndex
+  );
+
+  console.log(
+    'Table Pagination:',
+    {
+      currentPage: this.tableCurrentPage,
+      totalPages: this.tableTotalPages,
+      totalRecords: data.length,
+      displayedRecords: this.pagedLoanTypes.length
+    }
+  );
+}
+
+
+
+nextTablePage(): void {
+
+  if (this.tableCurrentPage < this.tableTotalPages) {
+
+    this.tableCurrentPage++;
+
+    this.updateTablePagination();
+  }
+}
+
+
+previousTablePage(): void {
+
+  if (this.tableCurrentPage > 1) {
+
+    this.tableCurrentPage--;
+
+    this.updateTablePagination();
+  }
+}
+
+
+
+loadValidationPolicies() {
+
+  this.CountryService.getAttendanceValidationPolicy().subscribe({
+
+    next: (res: any) => {
+
+      console.log(
+        'Validation Policies',
+        res
+      );
+
+      this.LoanTypes = Array.isArray(res)
+        ? res
+        : [];
+
+      // Initialize searchable data
+      this.filteredLoanTypes = [
+        ...this.LoanTypes
+      ];
+
+      // Reset table page
+      this.tableCurrentPage = 1;
+
+      // Build first page
+      this.updateTablePagination();
+    },
+
+    error: (err) => {
+
+      console.log(err);
+
+      this.LoanTypes = [];
+
+      this.filteredLoanTypes = [];
+
+      this.pagedLoanTypes = [];
+
+      this.tableCurrentPage = 1;
+
+      this.updateTablePagination();
+    }
+
+  });
+
+}
+
+
+
+
 
 
 
@@ -494,25 +697,71 @@ export class AttendanceValidationPolicyComponent {
   //   }
   //   }
 
+  
 
   isLoading: boolean = false;
 
-  fetchEmployees(schema: string, branchIds: number[]): void {
-    this.isLoading = true;
-    this.CountryService.getvalidationpolicyNew(schema, branchIds).subscribe({
+fetchEmployees(schema: string, branchIds: number[]): void {
+
+  this.isLoading = true;
+
+  this.CountryService
+    .getvalidationpolicyNew(schema, branchIds)
+    .subscribe({
+
       next: (data: any) => {
-        // Filter active employees
-        this.LoanTypes = data;
+
+        this.LoanTypes = Array.isArray(data)
+          ? data
+          : [];
+
+        // Reset pagination
+        this.tableCurrentPage = 1;
+
+        // Create first page
+        this.updateTablePagination();
 
         this.isLoading = false;
+
+        console.log(
+          'Validation policies:',
+          this.LoanTypes
+        );
+
+        console.log(
+          'Total:',
+          this.LoanTypes.length
+        );
+
+        console.log(
+          'Pages:',
+          this.tableTotalPages
+        );
+
+        console.log(
+          'Current page data:',
+          this.pagedLoanTypes
+        );
       },
+
       error: (err) => {
-        console.error('Fetch error:', err);
+
+        console.error(
+          'Fetch error:',
+          err
+        );
+
+        this.LoanTypes = [];
+        this.pagedLoanTypes = [];
+
+        this.tableCurrentPage = 1;
+        this.tableTotalPages = 1;
+
         this.isLoading = false;
       }
-    });
-  }
 
+    });
+}
 
 
 
@@ -807,7 +1056,7 @@ export class AttendanceValidationPolicyComponent {
 
 
   currentPage: number = 1;
-  itemsPerPage: number = 3;
+  itemsPerPage: number = 4;
   pagedEmployees: any[] = [];
 
 
@@ -984,28 +1233,271 @@ export class AttendanceValidationPolicyComponent {
   isEditModalOpen: boolean = false;
   editAsset: any = {}; // holds the asset being edited
 
+  selectedEmployees: number[] = [];
+
+
 openEditModal(policy: any): void {
+  console.log('EDIT POLICY RESPONSE:', policy);
 
   this.editAsset = { ...policy };
 
-  this.selectedBranches = [...(policy.branch || [])];
-  this.selectedDepartments = [...(policy.department || [])];
-  this.selectedCategories = [...(policy.category || [])];
-  this.selectedDesignations = [...(policy.designation || [])];
+  // =========================================================
+  // BRANCH
+  // =========================================================
+  this.selectedBranches = this.mapValuesToIds(
+    policy.branch,
+    this.branches,
+    'branch_name'
+  );
 
-  // Reset employee selection
-  this.Employee.forEach(emp => emp.selected = false);
+  // =========================================================
+  // DEPARTMENT
+  // =========================================================
+  this.selectedDepartments = this.mapValuesToIds(
+    policy.department,
+    this.Departments,
+    'dept_name'
+  );
 
-  if (policy.employee) {
-    this.Employee.forEach(emp => {
-      emp.selected = policy.employee.includes(emp.id);
-    });
-  }
+  // =========================================================
+  // CATEGORY
+  // =========================================================
+  this.selectedCategories = this.mapValuesToIds(
+    policy.category,
+    this.Categories,
+    'ctgry_title'
+  );
+
+  // =========================================================
+  // DESIGNATION
+  // =========================================================
+  this.selectedDesignations = this.mapValuesToIds(
+    policy.designation,
+    this.Designations,
+    'desgntn_job_title'
+  );
+
+  // =========================================================
+  // EMPLOYEES
+  // =========================================================
+
+  // Convert API employee values into numeric IDs.
+  //
+  // Handles:
+  // [1, 2, 3]
+  // ["1", "2", "3"]
+  // [{ id: 1 }, { id: 2 }]
+  //
+  const selectedEmployeeIds: number[] =
+    this.getEmployeeIds(policy.employee);
+
+  console.log(
+    'Employee IDs from policy:',
+    selectedEmployeeIds
+  );
+
+  // Reset selection first
+  this.Employee.forEach((emp: any) => {
+    emp.selected = false;
+  });
+
+  // Mark matching employees as selected
+  this.Employee.forEach((emp: any) => {
+    emp.selected = selectedEmployeeIds.includes(
+      Number(emp.id)
+    );
+  });
+
+  // Keep a copy of the selected employee IDs
+  this.selectedEmployees = [...selectedEmployeeIds];
+
+  console.log(
+    'Selected employees:',
+    this.Employee
+      .filter((emp: any) => emp.selected)
+      .map((emp: any) => emp.id)
+  );
+
+  // =========================================================
+  // FILTER EMPLOYEES
+  // =========================================================
+
+  // First show all employees.
+  // Then apply branch/department/category/designation filters.
+  this.FilteredEmployees = [...this.Employee];
 
   this.applyEmployeeFilter();
 
+  // IMPORTANT:
+  // applyEmployeeFilter() may create a new array, so restore
+  // the selected state after filtering.
+  this.FilteredEmployees.forEach((emp: any) => {
+    emp.selected = selectedEmployeeIds.includes(
+      Number(emp.id)
+    );
+  });
+
+  // Update Select All checkbox
+  this.allEmployeesSelected =
+    this.FilteredEmployees.length > 0 &&
+    this.FilteredEmployees.every(
+      (emp: any) => emp.selected
+    );
+
+  // Open modal
   this.isEditModalOpen = true;
 }
+
+
+/**
+ * Convert policy employee values into numeric employee IDs.
+ */
+private getEmployeeIds(values: any): number[] {
+
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  const ids: number[] = [];
+
+  values.forEach((value: any) => {
+
+    // API returned employee object
+    if (
+      value &&
+      typeof value === 'object' &&
+      value.id !== undefined
+    ) {
+      const id = Number(value.id);
+
+      if (!isNaN(id) && !ids.includes(id)) {
+        ids.push(id);
+      }
+
+      return;
+    }
+
+    // API returned numeric ID
+    const id = Number(value);
+
+    if (!isNaN(id) && !ids.includes(id)) {
+      ids.push(id);
+    }
+  });
+
+  return ids;
+}
+
+
+/**
+ * Converts Branch / Department / Category / Designation
+ * values from the API into the IDs used by mat-option.
+ */
+private mapValuesToIds(
+  values: any,
+  options: any[],
+  nameField: string
+): number[] {
+
+  if (!Array.isArray(values) || !Array.isArray(options)) {
+    return [];
+  }
+
+  const result: number[] = [];
+
+  values.forEach((value: any) => {
+
+    // API returned object
+    if (value && typeof value === 'object') {
+
+      if (value.id !== undefined && value.id !== null) {
+
+        const id = Number(value.id);
+
+        if (!isNaN(id) && !result.includes(id)) {
+          result.push(id);
+        }
+
+        return;
+      }
+
+      const objectName = value[nameField];
+
+      if (objectName !== undefined && objectName !== null) {
+
+        const matched = options.find(
+          option =>
+            String(option[nameField] ?? '')
+              .trim()
+              .toLowerCase() ===
+            String(objectName)
+              .trim()
+              .toLowerCase()
+        );
+
+        if (matched) {
+
+          const id = Number(matched.id);
+
+          if (!isNaN(id) && !result.includes(id)) {
+            result.push(id);
+          }
+        }
+      }
+
+      return;
+    }
+
+    // Numeric ID / numeric string
+    if (
+      typeof value === 'number' ||
+      (
+        typeof value === 'string' &&
+        /^\d+$/.test(value.trim())
+      )
+    ) {
+
+      const id = Number(value);
+
+      const exists = options.some(
+        option => Number(option.id) === id
+      );
+
+      if (exists && !result.includes(id)) {
+        result.push(id);
+      }
+
+      return;
+    }
+
+    // API returned name
+    if (typeof value === 'string') {
+
+      const valueName =
+        value.trim().toLowerCase();
+
+      const matched = options.find(
+        option =>
+          String(option[nameField] ?? '')
+            .trim()
+            .toLowerCase() === valueName
+      );
+
+      if (matched) {
+
+        const id = Number(matched.id);
+
+        if (!isNaN(id) && !result.includes(id)) {
+          result.push(id);
+        }
+      }
+    }
+  });
+
+  return result;
+}
+
+
 
   closeEditModal(): void {
     this.isEditModalOpen = false;

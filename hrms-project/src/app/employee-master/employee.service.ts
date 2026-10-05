@@ -3259,10 +3259,23 @@ updateEmpFamily(employeeId: number, familyId: number, familyData: any): Observab
   return this.http.put(apiUrl, familyData);
 }
 
+
+RemoveEmpFamily(employeeId: number, familyId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_family/${familyId}/?schema=${selectedSchema}`;
+  return this.http.delete(apiUrl);
+}
+
 updateQualification(employeeId: number, qualificationId: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_qualification/${qualificationId}/?schema=${selectedSchema}`;
   return this.http.put(apiUrl, data);
+}
+
+RemoveQualification(employeeId: number, qualificationId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_qualification/${qualificationId}/?schema=${selectedSchema}`;
+  return this.http.delete(apiUrl);
 }
 
 updateBankDetail(employeeId: number, bankId: number, data: any): Observable<any> {
@@ -3271,16 +3284,34 @@ updateBankDetail(employeeId: number, bankId: number, data: any): Observable<any>
   return this.http.put(apiUrl, data);
 }
 
+RemoveBankDetail(employeeId: number, bankId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_bank_details/${bankId}/?schema=${selectedSchema}`;
+  return this.http.delete(apiUrl);
+}
+
 updateJobHistory(employeeId: number, jobHistoryId: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_job_history/${jobHistoryId}/?schema=${selectedSchema}`;
   return this.http.put(apiUrl, data);
 }
 
+RemoveJobHistory(employeeId: number, jobHistoryId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_job_history/${jobHistoryId}/?schema=${selectedSchema}`;
+  return this.http.delete(apiUrl);
+}
+
 updateDocument(employeeId: number, documentId: number, data: any): Observable<any> {
   const selectedSchema = localStorage.getItem('selectedSchema');
   const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_documents/${documentId}/?schema=${selectedSchema}`;
   return this.http.put(apiUrl, data);
+}
+
+RemoveDocument(employeeId: number, documentId: number): Observable<any> {
+  const selectedSchema = localStorage.getItem('selectedSchema');
+  const apiUrl = `${this.apiUrl}/employee/api/Employee/${employeeId}/emp_documents/${documentId}/?schema=${selectedSchema}`;
+  return this.http.delete(apiUrl);
 }
 
 // Delete Family Member

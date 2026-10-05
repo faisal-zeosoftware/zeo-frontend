@@ -54,6 +54,43 @@ schemas: string[] = []; // Array to store schema names
 isUserPereditModalOpen = false;
 selectedUserPermission: any = { profile: '', groups: [] };
 
+// Add these properties to your component class
+searchQuery: string = '';
+
+// Computed property for filtered data
+get filteredUserPermissions(): any[] {
+  if (!this.searchQuery) {
+    return this.UserPermissions;
+  }
+  
+  const query = this.searchQuery.toLowerCase().trim();
+  return this.UserPermissions.filter(item => {
+    // Search by username
+    const usernameMatch = item.user?.toLowerCase().includes(query);
+    
+    // Search by group names
+    const groupMatch = item.groups?.some((g: any) => 
+      g.name?.toLowerCase().includes(query)
+    );
+    
+    return usernameMatch || groupMatch;
+  });
+}
+
+// Search handler
+onSearchChange(): void {
+  // Reset selection when searching
+  this.allSelected = false;
+}
+
+// Update toggleSelectAllEmployees to work with filtered data
+// toggleSelectAllEmployees() {
+//   this.allSelected = !this.allSelected;
+//   this.filteredUserPermissions.forEach((permission: any) => {
+//     permission.selected = this.allSelected;
+//   });
+// }
+
   constructor(private DepartmentServiceService: DepartmentServiceService ,
     private http: HttpClient,
     private authService: AuthenticationService,

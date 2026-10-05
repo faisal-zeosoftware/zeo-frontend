@@ -94,6 +94,19 @@ export class LateComePolicyComponent {
     @ViewChild('selectCat') selectCat: MatSelect | undefined;
     @ViewChild('selectEmp') selectEmp: MatSelect | undefined;
     @ViewChild('selectDes') selectDes: MatSelect | undefined;
+
+// =====================================================
+// MAIN TABLE SEARCH + PAGINATION
+// =====================================================
+
+searchQuery: string = '';
+
+filteredLoanTypes: any[] = [];
+pagedLoanTypes: any[] = [];
+
+tableCurrentPage: number = 1;
+tableItemsPerPage: number = 4;
+tableTotalPages: number = 1;
   
   
     constructor(
@@ -256,7 +269,130 @@ export class LateComePolicyComponent {
     }
   
   
-  
+  updateTablePagination(): void {
+
+  const data = this.filteredLoanTypes || [];
+
+  this.tableTotalPages = Math.max(
+    1,
+    Math.ceil(data.length / this.tableItemsPerPage)
+  );
+
+  // Keep current page valid
+  if (this.tableCurrentPage > this.tableTotalPages) {
+    this.tableCurrentPage = this.tableTotalPages;
+  }
+
+  if (this.tableCurrentPage < 1) {
+    this.tableCurrentPage = 1;
+  }
+
+  const startIndex =
+    (this.tableCurrentPage - 1) * this.tableItemsPerPage;
+
+  const endIndex =
+    startIndex + this.tableItemsPerPage;
+
+  this.pagedLoanTypes = data.slice(
+    startIndex,
+    endIndex
+  );
+}
+
+nextTablePage(): void {
+
+  if (this.tableCurrentPage < this.tableTotalPages) {
+
+    this.tableCurrentPage++;
+
+    this.updateTablePagination();
+  }
+}
+
+previousTablePage(): void {
+
+  if (this.tableCurrentPage > 1) {
+
+    this.tableCurrentPage--;
+
+    this.updateTablePagination();
+  }
+}
+
+onSearchChange(): void {
+
+  const search = (this.searchQuery || '')
+    .trim()
+    .toLowerCase();
+
+  // No search
+  if (!search) {
+
+    this.filteredLoanTypes = [
+      ...this.LoanTypes
+    ];
+
+  } else {
+
+    this.filteredLoanTypes =
+      this.LoanTypes.filter((policy: any) => {
+
+        const searchableValues: any[] = [
+
+          policy.name,
+
+          policy.leave_days_to_deduct,
+
+          policy.late_occurrence_limit,
+
+          policy.penalty_type,
+
+          policy.attendance_policy,
+
+          policy.enabled,
+
+          policy.reset_monthly,
+
+          ...(Array.isArray(policy.branch)
+            ? policy.branch
+            : [policy.branch]),
+
+          ...(Array.isArray(policy.department)
+            ? policy.department
+            : [policy.department]),
+
+          ...(Array.isArray(policy.category)
+            ? policy.category
+            : [policy.category]),
+
+          ...(Array.isArray(policy.designation)
+            ? policy.designation
+            : [policy.designation]),
+
+          ...(Array.isArray(policy.employee)
+            ? policy.employee
+            : [policy.employee])
+        ];
+
+        return searchableValues
+          .filter(
+            value =>
+              value !== null &&
+              value !== undefined
+          )
+          .some(value =>
+            String(value)
+              .toLowerCase()
+              .includes(search)
+          );
+      });
+  }
+
+  // Always start search results from page 1
+  this.tableCurrentPage = 1;
+
+  this.updateTablePagination();
+}
   
   
   
@@ -408,18 +544,47 @@ export class LateComePolicyComponent {
 
 
   
-    loadlatecomingPolicies() {
-    this.CountryService.getlatecomingPolicy().subscribe({
-      next: (res: any) => {
-        console.log("latecome Policies", res);
-  
-        this.LoanTypes = res;
-      },
-      error: err => {
-        console.log(err);
-      }
-    });
-  }
+loadlatecomingPolicies(): void {
+
+  this.CountryService.getlatecomingPolicy().subscribe({
+
+    next: (res: any) => {
+
+      console.log(
+        'Late Coming Policies:',
+        res
+      );
+
+      this.LoanTypes = Array.isArray(res)
+        ? res
+        : [];
+
+      this.filteredLoanTypes = [
+        ...this.LoanTypes
+      ];
+
+      this.tableCurrentPage = 1;
+
+      this.updateTablePagination();
+    },
+
+    error: (err) => {
+
+      console.error(
+        'Error loading Late Coming Policies:',
+        err
+      );
+
+      this.LoanTypes = [];
+      this.filteredLoanTypes = [];
+      this.pagedLoanTypes = [];
+
+      this.tableCurrentPage = 1;
+      this.tableTotalPages = 1;
+    }
+
+  });
+}
 
   loadAttendancePolicies(): void {
   this.CountryService.getAttendancePolicy().subscribe({
@@ -515,21 +680,72 @@ export class LateComePolicyComponent {
   
     isLoading: boolean = false;
   
-    fetchEmployees(schema: string, branchIds: number[]): void {
-      this.isLoading = true;
-      this.CountryService.getlatecomingpolicyNew(schema, branchIds).subscribe({
-        next: (data: any) => {
-          // Filter active employees
-          this.LoanTypes = data;
-  
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Fetch error:', err);
-          this.isLoading = false;
-        }
-      });
-    }
+fetchEmployees(schema: string, branchIds: number[]): void {
+
+  this.isLoading = true;
+
+  this.CountryService
+    .getlatecomingpolicyNew(schema, branchIds)
+    .subscribe({
+
+      next: (data: any) => {
+
+        this.LoanTypes = Array.isArray(data)
+          ? data
+          : [];
+
+        // Reset search
+        this.searchQuery = '';
+
+        // Copy all records into searchable array
+        this.filteredLoanTypes = [
+          ...this.LoanTypes
+        ];
+
+        // Start from first page
+        this.tableCurrentPage = 1;
+
+        // Build first page
+        this.updateTablePagination();
+
+        this.isLoading = false;
+
+        console.log(
+          'Late Coming Policies:',
+          this.LoanTypes
+        );
+
+        console.log(
+          'Filtered Policies:',
+          this.filteredLoanTypes
+        );
+
+        console.log(
+          'Paged Policies:',
+          this.pagedLoanTypes
+        );
+
+      },
+
+      error: (err) => {
+
+        console.error(
+          'Fetch error:',
+          err
+        );
+
+        this.LoanTypes = [];
+        this.filteredLoanTypes = [];
+        this.pagedLoanTypes = [];
+
+        this.tableCurrentPage = 1;
+        this.tableTotalPages = 1;
+
+        this.isLoading = false;
+      }
+
+    });
+}
   
   
   

@@ -31,11 +31,12 @@
               >
                 <h5>Family Member {{ i + 1 }}</h5>
 
-                <button
-                  *ngIf="familyMembers.length > 1"
-                  class="btn btn-danger btn-sm"
-                  (click)="removeFamilyMember(i)"
-                >
+<button
+  type="button"
+  *ngIf="familyMembers.length > 1"
+  class="btn btn-danger btn-sm"
+  (click)="removeFamilyMember(i)"
+>
                   Remove
                 </button>
               </div>

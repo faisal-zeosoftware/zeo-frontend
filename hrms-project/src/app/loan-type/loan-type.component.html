@@ -6,10 +6,22 @@
                 <div class="col-md-4">
                     <h1> Loan Types</h1>
                 </div>
-                <div class="col-md-3">
+               <div class="col-md-3">
                     
-                    <!-- <input type="text" class="form-control mt-1" placeholder="Search by name " [(ngModel)]="searchQuery" (input)="filterEmployees()"> -->
+<div class="search-container">
+<input
+  type="text"
+  class="search-input"
+  placeholder="Search..."
+  [(ngModel)]="searchQuery"
+  [ngModelOptions]="{standalone: true}"
+  (ngModelChange)="onSearchChange()"
+>
 
+    <button class="search-btn" type="button">
+        <i class="fa fa-search"></i>
+    </button>
+</div>
                 </div>
                 <div class="col-md-5">
                   <div class="button-group pull-right">
@@ -358,8 +370,10 @@
                 </thead>
                 <tbody>
                     
-                  <tr *ngFor="let docs of LoanTypes;let i = index">
-                    <td data-label="No">{{ i + 1 }}</td> 
+                  <tr *ngFor="let docs of filteredLoanTypes; let i = index">
+                    <td data-label="No">
+                      {{ (currentPage - 1) * pageSize + i + 1 }}
+                    </td>
                     <td data-label="Loan type">{{ docs.loan_type }}</td>
                     <td data-label="Branch">{{ docs.branch }}</td>
                     <td data-label="Maximum amount">{{ docs.max_amount }}</td> 
@@ -384,8 +398,37 @@
               
                 </tbody>
               </table>
-
         </div>
+    <div class="pagination-container">
+  
+        <button
+         type="button"
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1">
+      
+          Previous
+      
+        </button>
+      
+  <!-- Current Page Only -->
+  <button
+    type="button"
+    class="page-number active">
+    {{ currentPage }}
+  </button>
+      
+        <button
+         type="button"
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+      
+          Next
+      
+        </button>
+      
+      </div>
         </div>
         </div>
 
