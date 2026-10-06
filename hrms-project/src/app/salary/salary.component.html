@@ -506,38 +506,40 @@
                 </div>
 
                 <!-- Right column: Textarea -->
-                <div class="col-md-7 col-6">
-                  <textarea
-                    class="form-control display"
-                    [(ngModel)]="formula"
-                    #formulaTextArea
-                    [ngModelOptions]="{ standalone: true }"
-                    rows="6"
-                  ></textarea>
+             <!-- Right column: Textarea -->
+<div class="col-md-7 col-6">
+  <textarea
+    class="form-control display"
+    [value]="isEditModalOpen ? editAsset.formula : formula"
+    (input)="onFormulaInput($event)"
+    #formulaTextArea
+    rows="6"
+    placeholder="Type formula or select from left dropdowns..."
+  ></textarea>
 
-                  <div class="row">
-                    <div class="col-md-6"></div>
-                    <div class="col-md-3">
-                      <button
-                        type="button"
-                        class="btn btn-danger btn-full pull-right mt-2"
-                        (click)="closemarketModal()"
-                      >
-                        Close
-                      </button>
-                    </div>
+  <div class="row">
+    <div class="col-md-6"></div>
+    <div class="col-md-3">
+      <button
+        type="button"
+        class="btn btn-danger btn-full pull-right mt-2"
+        (click)="closemarketModal()"
+      >
+        Close
+      </button>
+    </div>
 
-                    <div class="col-md-3">
-                      <button
-                        type="button"
-                        class="btn btn-success btn-full pull-right mt-2"
-                        (click)="closemarketModal()"
-                      >
-                        OK
-                      </button>
-                    </div>
-                  </div>
-                </div>
+    <div class="col-md-3">
+      <button
+        type="button"
+        class="btn btn-success btn-full pull-right mt-2"
+        (click)="closemarketModal()"
+      >
+        OK
+      </button>
+    </div>
+  </div>
+</div>
               </div>
             </div>
           </div>

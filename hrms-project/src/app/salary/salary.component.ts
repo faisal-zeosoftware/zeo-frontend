@@ -610,39 +610,88 @@ mapBranchNameToId() {
 
 
 
-  insertComponentToFormula(code: string, textarea: HTMLTextAreaElement): void {
-    const placeholder = `${code}`;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
+  // insertComponentToFormula(code: string, textarea: HTMLTextAreaElement): void {
+  //   const placeholder = `${code}`;
+  //   const start = textarea.selectionStart;
+  //   const end = textarea.selectionEnd;
   
-    // Pick the correct formula holder based on which modal is open
-    const isEditing = this.isEditModalOpen;
+  //   // Pick the correct formula holder based on which modal is open
+  //   const isEditing = this.isEditModalOpen;
   
-    const currentValue = isEditing ? this.editAsset.formula : this.formula;
+  //   const currentValue = isEditing ? this.editAsset.formula : this.formula;
   
-    const updatedValue =
-      currentValue.substring(0, start) +
-      placeholder +
-      currentValue.substring(end);
+  //   const updatedValue =
+  //     currentValue.substring(0, start) +
+  //     placeholder +
+  //     currentValue.substring(end);
   
-    if (isEditing) {
-      this.editAsset.formula = updatedValue;
-    } else {
-      this.formula = updatedValue;
-    }
+  //   if (isEditing) {
+  //     this.editAsset.formula = updatedValue;
+  //   } else {
+  //     this.formula = updatedValue;
+  //   }
   
-    setTimeout(() => {
-      textarea.focus();
-      textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
-    }, 0);
+  //   setTimeout(() => {
+  //     textarea.focus();
+  //     textarea.selectionStart = textarea.selectionEnd = start + placeholder.length;
+  //   }, 0);
   
-    // Close dropdowns after selection
-    this.dropdownOpen = false;
-    this.operatorDropdownOpen = false;
-    this.arithmeticDropdownOpen = false;
-    this.FunctionsdropdownOpen = false;
-    this.VariablesdropdownOpen = false;
+  //   // Close dropdowns after selection
+  //   this.dropdownOpen = false;
+  //   this.operatorDropdownOpen = false;
+  //   this.arithmeticDropdownOpen = false;
+  //   this.FunctionsdropdownOpen = false;
+  //   this.VariablesdropdownOpen = false;
+  // }
+
+
+  /** Inserts component, operator, variable, or function at current cursor position */
+insertComponentToFormula(code: string, textarea: HTMLTextAreaElement): void {
+  const placeholder = `${code}`;
+  const start = textarea.selectionStart ?? 0;
+  const end = textarea.selectionEnd ?? 0;
+
+  const isEditing = this.isEditModalOpen;
+  const currentValue = (isEditing ? this.editAsset.formula : this.formula) || '';
+
+  // Insert value at cursor location
+  const updatedValue =
+    currentValue.substring(0, start) +
+    placeholder +
+    currentValue.substring(end);
+
+  if (isEditing) {
+    this.editAsset.formula = updatedValue;
+  } else {
+    this.formula = updatedValue;
   }
+
+  // Restore cursor position right after the inserted operator/string
+  setTimeout(() => {
+    textarea.focus();
+    const newCursorPos = start + placeholder.length;
+    textarea.setSelectionRange(newCursorPos, newCursorPos);
+  }, 0);
+
+  // Close open dropdowns
+  this.dropdownOpen = false;
+  this.operatorDropdownOpen = false;
+  this.arithmeticDropdownOpen = false;
+  this.FunctionsdropdownOpen = false;
+  this.VariablesdropdownOpen = false;
+}
+
+/** Handles direct manual typing into the textarea */
+onFormulaInput(event: Event): void {
+  const inputVal = (event.target as HTMLTextAreaElement).value;
+  if (this.isEditModalOpen) {
+    this.editAsset.formula = inputVal;
+  } else {
+    this.formula = inputVal;
+  }
+}
+
+
   isAddFieldsModalOpen: boolean = false;
 
 
