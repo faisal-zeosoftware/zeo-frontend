@@ -55,12 +55,38 @@ hasEditPermission: boolean = false;
 
 schemas: string[] = []; // Array to store schema names
 
-// Search
-searchQuery: string = '';
 
-// Pagination
+             // Search + pagination
+searchQuery: string = '';
 currentPage: number = 1;
-pageSize: number = 10;
+pageSize: number = 5;
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+paginatedLoanTypes: any[] = [];
+
+get itemsPerPage(): number {
+  return this.pageSize;
+}
+
+set itemsPerPage(value: number) {
+  this.pageSize = value;
+}
+
+onPageSizeChange(newSize: number): void {
+  this.pageSize = Number(newSize);
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+get startRecord(): number {
+  return this.filteredApprovalLEvel.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.pageSize + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.pageSize, this.filteredApprovalLEvel.length);
+}
+
 totalPages: number = 1;
 
 // Filtered + paginated list used by the table

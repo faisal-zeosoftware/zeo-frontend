@@ -58,11 +58,7 @@ userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
 
-// Search & Pagination properties
-searchQuery: string = '';
-currentPage: number = 1;
-itemsPerPage: number = 4;
-totalPages: number = 1;
+
 
 // Getter for filtered and paginated data
 get filteredLeaveApprovalLevels(): any[] {
@@ -126,6 +122,33 @@ goToPage(page: number): void {
     this.currentPage = page;
   }
 }
+
+// ==================== PAGINATION ====================
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 5;
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+
+// ✅ REMOVE: pagedLeaveRequests (not used, getters handle pagination)
+
+// ✅ FIX: Remove updatePagination() call, just reset page
+onPageSizeChange(newSize: number): void {
+  this.itemsPerPage = Number(newSize);
+  this.currentPage = 1;
+  // No need to call updatePagination() - getters auto-recalculate
+}
+
+// ✅ Keep these getters
+get startRecord(): number {
+  return this.filteredLeaveApprovalLevels.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.itemsPerPage + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.itemsPerPage, this.filteredLeaveApprovalLevels.length);
+}
+
 
   constructor(
     private http: HttpClient,

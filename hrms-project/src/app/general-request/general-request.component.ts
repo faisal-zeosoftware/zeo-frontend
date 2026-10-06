@@ -89,6 +89,43 @@ document_number: number | string | null = null;
 
 
   registerButtonClicked = false;
+  
+// ==================== PAGINATION ====================
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 5;                    // ✅ single source of truth
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+
+
+
+
+// ✅ Template uses [ngModel]="itemsPerPage" — keep getter/setter for compatibility
+get pageSize(): number {
+  return this.itemsPerPage;
+}
+
+set pageSize(value: number) {
+  this.itemsPerPage = value;
+}
+
+onPageSizeChange(newSize: number): void {
+  this.itemsPerPage = Number(newSize);
+  this.currentPage = 1;
+  this.updatePagination();
+}
+
+get startRecord(): number {
+  return this.filteredGeneralReq.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.itemsPerPage + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.itemsPerPage, this.filteredGeneralReq.length);
+}
+
+
+
 
   // private apiUrl = 'http://one.localhost:8000/organisation/api/fiscal-years/';
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
@@ -1012,7 +1049,7 @@ onRequestTypeChange(event: any): void {
     );
   }
 
-        searchQuery: string = '';
+
 //   get filteredGeneralReq(): any[] {
 //   if (!this.searchQuery || this.searchQuery.trim() === '') {
 //     return this.GeneralReq;
@@ -1033,8 +1070,7 @@ onRequestTypeChange(event: any): void {
 
 
 // ==================== PAGINATION ====================
-currentPage: number = 1;
-itemsPerPage: number = 4;
+
 pagedGeneralReq: any[] = [];
 
 /** Filtered list based on search (replaces old getter) */

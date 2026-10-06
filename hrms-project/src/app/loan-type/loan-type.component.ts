@@ -63,13 +63,40 @@ export class LoanTypeComponent {
 
   registerButtonClicked = false;
 
-  // Search
+  // ==================== PAGINATION ====================
 searchQuery: string = '';
-
-// Pagination
 currentPage: number = 1;
-pageSize: number = 4;
+itemsPerPage: number = 5;                    // ✅ single source of truth
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+
+// Filtered + paginated list used by the table
+filteredApprovalLevels: any[] = [];
 totalPages: number = 1;
+
+// ✅ Template uses [ngModel]="itemsPerPage" — keep getter/setter for compatibility
+get pageSize(): number {
+  return this.itemsPerPage;
+}
+
+set pageSize(value: number) {
+  this.itemsPerPage = value;
+}
+
+onPageSizeChange(newSize: number): void {
+  this.itemsPerPage = Number(newSize);
+  this.currentPage = 1;
+  this.applyFilterAndPagination();
+}
+
+get startRecord(): number {
+  return this.filteredApprovalLevels.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.itemsPerPage + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.itemsPerPage, this.filteredApprovalLevels.length);
+}
 
 // Filtered + paginated list used by the table
 filteredLoanTypes: any[] = [];

@@ -71,6 +71,39 @@ export class AttendanceRequestComponent {
   userDetailss: any;
   schemas: string[] = []; // Array to store schema names
 
+    // ==================== PAGINATION ====================
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 5;                    // ✅ single source of truth
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+
+
+
+// ✅ Template uses [ngModel]="itemsPerPage" — keep getter/setter for compatibility
+get pageSize(): number {
+  return this.itemsPerPage;
+}
+
+set pageSize(value: number) {
+  this.itemsPerPage = value;
+}
+
+onPageSizeChange(newSize: number): void {
+  this.itemsPerPage = Number(newSize);
+  this.currentPage = 1;
+  this.updatePagination();
+}
+
+get startRecord(): number {
+  return this.filteredDocRequest.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.itemsPerPage + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.itemsPerPage, this.filteredDocRequest.length);
+}
+
   
     constructor(
       private http: HttpClient,
@@ -779,7 +812,7 @@ onEmployeeChange(): void {
     );
   }
   
-searchQuery: string = '';
+
 
 // get filteredDocRequest(): any[] {
 //   if (!this.searchQuery || this.searchQuery.trim() === '') {
@@ -816,8 +849,7 @@ searchQuery: string = '';
 
 
 // ==================== PAGINATION ====================
-currentPage: number = 1;
-itemsPerPage: number = 4;
+
 pagedDocRequests: any[] = [];
 
 /** Filtered list based on search (replaces old getter) */

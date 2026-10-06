@@ -81,6 +81,39 @@ userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
 
+
+ // Search + pagination
+searchQuery: string = '';
+currentPage: number = 1;
+pageSize: number = 5;
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+filteredLoanTypes: any[] = [];
+paginatedLoanTypes: any[] = [];
+
+get itemsPerPage(): number {
+  return this.pageSize;
+}
+
+set itemsPerPage(value: number) {
+  this.pageSize = value;
+}
+
+onPageSizeChange(newSize: number): void {
+  this.pageSize = Number(newSize);
+  this.currentPage = 1;
+  this.updatePagination();
+}
+
+get startRecord(): number {
+  return this.filteredDocRequest.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.pageSize + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.pageSize, this.filteredDocRequest.length);
+}
+
   constructor(
     private http: HttpClient,
     private authService: AuthenticationService,
@@ -898,7 +931,7 @@ this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).s
     );
   }
 
-    searchQuery: string = '';
+
 //   get filteredDocRequest(): any[] {
 //   if (!this.searchQuery || this.searchQuery.trim() === '') {
 //     return this.DocRequest;
@@ -920,8 +953,7 @@ this.employeeService.updatepayrolladvSalary(this.editAsset.id, this.editAsset).s
 
 
 // ==================== PAGINATION ====================
-currentPage: number = 1;
-itemsPerPage: number = 4;
+
 pagedLeaveRequests: any[] = [];
 
 /** Filtered list based on search (replaces old getter) */

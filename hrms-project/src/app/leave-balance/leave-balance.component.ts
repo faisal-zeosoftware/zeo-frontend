@@ -54,7 +54,32 @@ export class LeaveBalanceComponent {
   schemas: string[] = []; // Array to store schema names
 
 
+// ==================== PAGINATION ====================
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 5;
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
+// ✅ REMOVE: pagedLeaveRequests (not used, getters handle pagination)
+
+// ✅ FIX: Remove updatePagination() call
+// ✅ FIX: Add updatePagination() call
+onPageSizeChange(newSize: number): void {
+  this.itemsPerPage = Number(newSize);
+  this.currentPage = 1;
+  this.updatePagination();  // ← ADD THIS LINE
+}
+
+// ✅ Keep these getters
+get startRecord(): number {
+  return this.filteredLeaveBalances.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.itemsPerPage + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.itemsPerPage, this.filteredLeaveBalances.length);
+}
 
 
   constructor(
@@ -701,13 +726,6 @@ downloadLeaveBalanceExcel(): void {
 
              
 
-
-        searchQuery: string = '';
-
-
-// ==================== PAGINATION ====================
-currentPage: number = 1;
-itemsPerPage: number = 4;
 pagedLeaveBalances: any[] = [];
 
 /** Filtered list based on search (replaces old getter) */

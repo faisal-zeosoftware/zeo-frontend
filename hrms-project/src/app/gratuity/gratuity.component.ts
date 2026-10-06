@@ -40,12 +40,7 @@ export class GratuityComponent {
   Users:any []=[];
   LoanTypes:any []=[];
 
-  // Search + pagination
-  searchQuery: string = '';
-  currentPage: number = 1;
-  pageSize: number = 4;
-  filteredLoanTypes: any[] = [];
-  paginatedLoanTypes: any[] = [];
+
 
   get totalPages(): number {
     return Math.max(1, Math.ceil(this.filteredLoanTypes.length / this.pageSize));
@@ -113,6 +108,40 @@ export class GratuityComponent {
 
 
   registerButtonClicked = false;
+
+
+ // Search + pagination
+searchQuery: string = '';
+currentPage: number = 1;
+pageSize: number = 5;
+pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+filteredLoanTypes: any[] = [];
+paginatedLoanTypes: any[] = [];
+
+get itemsPerPage(): number {
+  return this.pageSize;
+}
+
+set itemsPerPage(value: number) {
+  this.pageSize = value;
+}
+
+onPageSizeChange(newSize: number): void {
+  this.pageSize = Number(newSize);
+  this.currentPage = 1;
+  this.updateFilteredAndPaginatedData();
+}
+
+get startRecord(): number {
+  return this.filteredLoanTypes.length === 0
+    ? 0
+    : (this.currentPage - 1) * this.pageSize + 1;
+}
+
+get endRecord(): number {
+  return Math.min(this.currentPage * this.pageSize, this.filteredLoanTypes.length);
+}
+
 
 
   constructor(
