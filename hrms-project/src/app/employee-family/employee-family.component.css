@@ -1,112 +1,452 @@
-.from-sec{
-    padding: 20px;
-}
-
-
-.mat-expansion-panel-header-title, .mat-expansion-panel-header-description{
-    font-weight: 500;
-    text-transform: uppercase;
+/* =========================================================
+   THEME  (change --brand / --brand-2 to re-color everything)
+   ========================================================= */
+   :host {
+    --brand: #6366f1;
+    --brand-2: #8b5cf6;
+    --brand-dark: #4f46e5;
+    --brand-soft: #eef2ff;
+    --success: #10b981;
+    --danger: #ef4444;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --line: #e2e8f0;
+    --bg: #f8fafc;
+    --radius: 14px;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
+    --shadow-md: 0 8px 24px rgba(15, 23, 42, .08);
+    --shadow-brand: 0 10px 28px rgba(99, 102, 241, .28);
+    --grad: linear-gradient(135deg, var(--brand), var(--brand-2));
+  }
+  
+  /* =========================================================
+     DIALOG WRAPPER + CLOSE BUTTON
+     ========================================================= */
+  .cpm-sec {
+    padding: 6px 10px 18px;
+    color: var(--ink);
+    font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  .close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--muted);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all .25s ease;
+  }
+  .close-btn:hover {
+    color: #fff;
+    background: var(--danger);
+    border-color: var(--danger);
+    transform: rotate(90deg) scale(1.05);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, .35);
+  }
+  
+  /* =========================================================
+     ACCORDION PANELS
+     ========================================================= */
+  .cpm-sec ::ng-deep .mat-accordion .mat-expansion-panel {
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius) !important;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow .3s ease, border-color .3s ease, transform .3s ease;
+  }
+  .cpm-sec ::ng-deep .mat-accordion .mat-expansion-panel:hover {
+    box-shadow: var(--shadow-md);
+  }
+  .cpm-sec ::ng-deep .mat-accordion .mat-expansion-panel.mat-expanded {
+    border-color: transparent;
+    box-shadow: var(--shadow-brand);
+  }
+  
+  /* Header */
+  .cpm-sec ::ng-deep .mat-expansion-panel-header {
+    height: 60px;
+    padding: 0 22px;
+    background: #fff;
+    transition: background .3s ease;
+  }
+  .cpm-sec ::ng-deep .mat-expansion-panel-header:hover {
+    background: var(--brand-soft) !important;
+  }
+  .cpm-sec ::ng-deep .mat-expansion-panel.mat-expanded .mat-expansion-panel-header,
+  .cpm-sec ::ng-deep .mat-expansion-panel.mat-expanded .mat-expansion-panel-header:hover {
+    background: var(--grad) !important;
+  }
+  
+  .mat-expansion-panel-header-title,
+  .mat-expansion-panel-header-description {
     font-size: 14px;
-}
-
-
-
-
-
-
-
-.vn-wisteria a{
-background-color:#8e44ad;
-  display:inline-block;
-  position:relative;
-  margin:30px 5px;
-  padding:15px 10px 12px 50px;
-  color:#fff;
-  transition:all 0.4s ease;
-  border-radius:3px;
-  font-size: 12px;
-  width: 100%;
-  white-space: nowrap;
-}
-.vn-wisteria a:before{
-  content:"\f019";
-  font-family:fontAwesome;
-  position:absolute;
-  font-style: normal;
-  font-weight: normal;
-  text-decoration: inherit;
-  font-size:14px;
-  border-radius:0 20px 0 0;
-  color:#000;
-  background-color:#fff;
-  opacity:0.3;
-  padding:15px;
-  top:0;
-  left:0;
-}
-.vn-wisteria a:hover{
-  background:#7f8c8d
-}
-
-.vn-green a{
-    background-color: #27ae60;
-}
-
-.vn-blue a{
-    background-color:#2980b9;
-}
-
-
-
-
-/* Add your CSS styles here */
-.modal {
-    display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    margin-left: auto;
-    margin-right: auto;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--ink);
+    align-items: center;
+  }
+  /* little dot before each title */
+  .mat-expansion-panel-header-title::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 12px;
+    border-radius: 50%;
+    background: var(--grad);
+    box-shadow: 0 0 0 4px var(--brand-soft);
+    transition: all .3s ease;
+  }
+  .cpm-sec ::ng-deep .mat-expanded .mat-expansion-panel-header-title,
+  .cpm-sec ::ng-deep .mat-expanded .mat-expansion-panel-header-description,
+  .cpm-sec ::ng-deep .mat-expanded .mat-expansion-panel-header-description mat-icon {
+    color: #fff;
+  }
+  .cpm-sec ::ng-deep .mat-expanded .mat-expansion-panel-header-title::before {
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, .3);
+  }
+  .mat-expansion-panel-header-description mat-icon {
+    color: var(--muted);
+  }
+  
+  /* Smooth reveal of panel content */
+  .cpm-sec ::ng-deep .mat-expansion-panel-body {
+    padding: 0 !important;
+    animation: fadeSlide .35s ease;
+  }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* =========================================================
+     FORM AREA
+     ========================================================= */
+  .from-sec {
+    padding: 22px 22px 6px;
+    background: var(--bg);
+  }
+  
+  /* Entry cards (family member, qualification, job, bank, document) */
+  .cpm-sec .border.rounded {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--line) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-sm);
+    padding: 22px !important;
+    transition: box-shadow .25s ease, transform .25s ease;
+  }
+  .cpm-sec .border.rounded:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  /* gradient accent strip on the left */
+  .cpm-sec .border.rounded::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: var(--grad);
+  }
+  
+  .cpm-sec .border.rounded h5 {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    color: var(--brand-dark);
+    background: var(--brand-soft);
+    border-radius: 999px;
+  }
+  
+  /* Labels */
+  .cpm-sec label {
+    display: block;
+    margin: 14px 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  
+  /* Inputs, selects, textareas */
+  .cpm-sec .form-control {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    outline: none;
+    transition: all .2s ease;
+  }
+  .cpm-sec .form-control::placeholder { color: #a0aec0; }
+  .cpm-sec .form-control:hover { border-color: #cbd5e1; background: #fff; }
+  .cpm-sec .form-control:focus {
+    background: #fff;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, .15);
+  }
+  .cpm-sec .form-control[readonly] {
+    background: #f1f5f9;
+    color: var(--muted);
+    cursor: not-allowed;
+  }
+  .cpm-sec .form-control.ng-invalid.ng-touched {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, .12);
+  }
+  .cpm-sec textarea.form-control { min-height: 90px; resize: vertical; }
+  
+  /* Radio + checkbox groups */
+  .radio-sec,
+  .check-box-selection-sec {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg) !important;
+  }
+  .cpm-sec .form-check-input { accent-color: var(--brand); }
+  .cpm-sec .form-check-label {
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  
+  /* =========================================================
+     BUTTONS
+     ========================================================= */
+  .cpm-sec .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .25s ease;
+  }
+  .cpm-sec .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, .15);
+  }
+  .cpm-sec .btn:active { transform: translateY(0); }
+  
+  .cpm-sec .btn-success {
+    color: #fff;
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+  .cpm-sec .btn-danger {
+    color: var(--danger);
+    background: #fff;
+    border-color: #fecaca;
+  }
+  .cpm-sec .btn-danger:hover {
+    color: #fff;
+    background: var(--danger);
+    border-color: var(--danger);
+  }
+  .cpm-sec .btn-sm { padding: 6px 14px; font-size: 12px; }
+  
+  /* Import / Back button */
+  .cpm-sec .btn-Edit.btn-secondary {
+    color: var(--brand-dark);
+    background: var(--brand-soft);
+  }
+  .cpm-sec .btn-Edit.btn-secondary:hover {
+    color: #fff;
+    background: var(--grad);
+  }
+  .header-btn-icon { display: inline-flex; }
+  .header-btn-icon mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  
+  .btn-full { min-width: 120px; }
+  
+  /* Angular Material buttons */
+  .cpm-sec ::ng-deep .mat-mdc-raised-button.mat-primary,
+  .cpm-sec ::ng-deep .mat-raised-button.mat-primary {
+    --mdc-protected-button-container-color: transparent;
+    --mdc-protected-button-label-text-color: #fff;
+    height: 42px;
+    padding: 0 24px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    border-radius: 10px;
+    background: var(--grad);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, .35);
+    transition: all .25s ease;
+  }
+  .cpm-sec ::ng-deep .mat-mdc-raised-button.mat-primary:hover,
+  .cpm-sec ::ng-deep .mat-raised-button.mat-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(99, 102, 241, .45);
+  }
+  .cpm-sec ::ng-deep .mat-mdc-button.mat-warn {
+    font-weight: 600;
+    border-radius: 10px;
+  }
+  
+  /* Panel footer (Previous / Add Another / Save) */
+  .cpm-sec ::ng-deep .mat-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 22px;
+    background: #fff;
+    border-top: 1px solid var(--line);
+  }
+  .cpm-sec ::ng-deep .mat-action-row .mb-3 { margin-bottom: 0 !important; }
+  
+  /* =========================================================
+     BULK UPLOAD CARDS
+     ========================================================= */
+  .vn-wisteria a {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin: 14px 0;
+    padding: 16px 16px 16px 66px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    white-space: nowrap;
+    color: #fff;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(124, 58, 237, .3);
+    transition: all .3s ease;
+  }
+  .vn-wisteria a:before {
+    content: "\f019";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    position: absolute;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    left: 0;
+    width: 52px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: rgba(0, 0, 0, .18);
+  }
+  /* shine sweep on hover */
+  .vn-wisteria a:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, .35), transparent);
+    transform: skewX(-20deg);
+    transition: left .6s ease;
+  }
+  .vn-wisteria a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .2);
+  }
+  .vn-wisteria a:hover:after { left: 130%; }
+  
+  .vn-green a {
+    background: linear-gradient(135deg, #34d399, #059669);
+    box-shadow: 0 6px 16px rgba(5, 150, 105, .3);
+  }
+  .vn-blue a {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, .3);
   }
   
-  .modal-content {
-    background-color: #fefefe;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 60%; /* Could be more or less, depending on screen size */
-    margin-right: auto;
-    margin-left: auto;
-    margin-top: 100px;
-    height: auto;
-  
+  /* Upload drop-zone */
+  .text-wrappers {
+    padding: 26px;
+    text-align: center;
+    background: #fff;
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--radius);
+    transition: all .25s ease;
   }
-  
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    text-align: right;
+  .text-wrappers:hover {
+    border-color: var(--brand);
+    background: var(--brand-soft);
   }
-  
-  .close:hover,
-  .close:focus {
-    color: red;
-    text-decoration: none;
+  .text-wrappers .form-control { background: #fff; }
+  .textLinks {
+    color: var(--brand-dark);
+    font-weight: 600;
+    text-transform: none;
     cursor: pointer;
   }
-  
-  .modal h2{
-  
-    font-size: 16px;
-    text-transform: capitalize;
-    font-weight: 600;
-    font-family: math;
+  .from-sec h1,
+  .from-sec h4 {
+    margin: 18px 0 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
   }
-
+  .from-sec hr {
+    border: 0;
+    height: 2px;
+    margin: 10px 0 18px;
+    background: var(--grad);
+    opacity: .35;
+    border-radius: 2px;
+  }
   
+  /* =========================================================
+     SCROLLBAR
+     ========================================================= */
+  .cpm-sec ::-webkit-scrollbar { width: 8px; height: 8px; }
+  .cpm-sec ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 8px;
+  }
+  .cpm-sec ::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+  
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width: 768px) {
+    .from-sec { padding: 14px 10px 4px; }
+    .cpm-sec .border.rounded { padding: 16px !important; }
+    .cpm-sec ::ng-deep .mat-expansion-panel-header { height: 54px; padding: 0 14px; }
+    .cpm-sec ::ng-deep .mat-action-row > * { flex: 1 1 100%; }
+    .cpm-sec ::ng-deep .mat-action-row .btn,
+    .cpm-sec ::ng-deep .mat-action-row button { width: 100%; }
+  }

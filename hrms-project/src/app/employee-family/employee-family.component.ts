@@ -203,7 +203,7 @@ CreateEmployeeFamily() {
   forkJoin(requests).subscribe({
     next: () => {
       alert('All family members added successfully');
-      // window.location.reload();
+      window.location.reload();
     },
     error: (err) => {
       console.error(err);
