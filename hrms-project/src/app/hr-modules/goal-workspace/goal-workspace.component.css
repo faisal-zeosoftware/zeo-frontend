@@ -1,0 +1,35 @@
+.gw-top { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+.gw-top select { max-width: 280px; }
+.gw-scope { display: inline-flex; border: 1px solid #c9c4f5; border-radius: 8px; overflow: hidden; }
+.gw-scope button { border: none; background: #fff; padding: 7px 12px; font-size: 13px; color: #4b3fbf; }
+.gw-scope button.on { background: #5b4fe0; color: #fff; }
+.gw-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 14px; }
+@media (max-width: 1000px) { .gw-layout { grid-template-columns: 1fr; } }
+.gw-list { background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.07); align-self: start; max-height: 78vh; overflow: auto; }
+.gw-item { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+.gw-item:hover { background: #f6f5ff; } .gw-item.on { background: #ebe8ff; }
+.muted { color: #7b8199; font-size: 12px; }
+.gw-card { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.07); margin-bottom: 12px; }
+.gw-card h4 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+.gw-card-head { display: flex; justify-content: space-between; align-items: center; }
+.gw-head { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.gw-head h3 { font-size: 17px; margin: 0; font-weight: 600; }
+.gw-flow { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.gw-flow .st { padding: 3px 9px; border-radius: 12px; background: #eceef5; color: #555d70; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.gw-flow .st.done { background: #dff3e6; color: #22703f; } .gw-flow .st.cur { background: #5b4fe0; color: #fff; }
+.gw-scores { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 12px; }
+@media (max-width: 900px) { .gw-scores { grid-template-columns: repeat(2, 1fr); } }
+.gw-stat { background: #fff; border-radius: 10px; padding: 10px 12px; box-shadow: 0 1px 3px rgba(0,0,0,.07); display: flex; flex-direction: column; }
+.gw-stat span { font-size: 11px; color: #6b7185; text-transform: uppercase; } .gw-stat b { font-size: 19px; } .gw-stat b.bad { color: #b3263a; }
+.gw-stat small { color: #7b8199; font-size: 11px; }
+.gw-num { width: 70px; display: inline-block; padding: 2px 6px; height: 28px; }
+.gw-sel { width: auto; display: inline-block; padding: 2px 6px; height: 28px; font-size: 12px; }
+.gw-txt { margin-top: 4px; height: 28px; font-size: 12px; }
+.gw-form { background: #f6f6fc; border-radius: 8px; padding: 12px; margin-top: 8px; }
+.gw-form label { font-size: 12px; color: #4b5068; margin: 6px 0 2px; }
+.gw-actions { display: flex; justify-content: flex-end; gap: 10px; align-items: center; margin-top: 8px; }
+.gw-alert { background: #fff0d9; color: #a0610a; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; font-size: 13px; }
+.gw-checkin { border-top: 1px solid #eceef5; padding: 8px 0; font-size: 13px; }
+.gw-card p { text-align: left; color: inherit; margin-bottom: 4px; }
+.gw-layout.single { grid-template-columns: minmax(0, 1fr); }
+.gw-sheet td .gw-txt { min-width: 150px; }

@@ -61,6 +61,16 @@ userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
 
+// Search
+searchQuery: string = '';
+
+// Pagination
+currentPage: number = 1;
+pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
+totalPages: number = 1;
+
+// Filtered + paginated list used by the table
+filteredApprovalLevels: any[] = [];
 
 onSearchChange(): void {
   this.currentPage = 1;
@@ -70,23 +80,30 @@ onSearchChange(): void {
 applyFilterAndPagination(): void {
   let filtered = [...this.approvalLevels];
 
-  // ----- SEARCH ----- (keep your existing search logic) -----
+  // ----- SEARCH -----
   if (this.searchQuery && this.searchQuery.trim()) {
     const q = this.searchQuery.toLowerCase().trim();
+
     filtered = filtered.filter(item => {
+      // Approval type
       const typeMatch =
         (item.approval_type && item.approval_type.toLowerCase().includes(q)) ||
         (item.approval_type === 'no_approval' && 'no approval'.includes(q)) ||
         (item.approval_type === 'reporting_manager' && 'reporting manager'.includes(q)) ||
         (item.approval_type === 'multi_approval' && 'multi approval'.includes(q));
 
+      // Loan type
       const loanTypeMatch =
         (item.loan_type && item.loan_type.toString().toLowerCase().includes(q));
 
+      // Branch names (array)
       const branchMatch = Array.isArray(item.branch)
-        ? item.branch.some((b: any) => (b || '').toString().toLowerCase().includes(q))
+        ? item.branch.some((b: any) =>
+            (b || '').toString().toLowerCase().includes(q)
+          )
         : (item.branch || '').toString().toLowerCase().includes(q);
 
+      // Levels (role / approver / level number)
       const levelsMatch = Array.isArray(item.levels)
         ? item.levels.some((lvl: any) =>
             (lvl.role || '').toString().toLowerCase().includes(q) ||
@@ -99,15 +116,15 @@ applyFilterAndPagination(): void {
     });
   }
 
-  // ----- PAGINATION ----- ✅ use itemsPerPage consistently
-  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
+  // ----- PAGINATION -----
+  this.totalPages = Math.max(1, Math.ceil(filtered.length / this.pageSize));
 
   if (this.currentPage > this.totalPages) {
     this.currentPage = this.totalPages;
   }
 
-  const start = (this.currentPage - 1) * this.itemsPerPage;
-  const end = start + this.itemsPerPage;
+  const start = (this.currentPage - 1) * this.pageSize;
+  const end = start + this.pageSize;
 
   this.filteredApprovalLevels = filtered.slice(start, end);
 }
@@ -125,42 +142,6 @@ nextPage(): void {
     this.applyFilterAndPagination();
   }
 }
-
-// ==================== PAGINATION ====================
-searchQuery: string = '';
-currentPage: number = 1;
-itemsPerPage: number = 5;                    // ✅ single source of truth
-pageSizeOptions: number[] = [5, 10, 25, 50, 100];
-
-// Filtered + paginated list used by the table
-filteredApprovalLevels: any[] = [];
-totalPages: number = 1;
-
-// ✅ Template uses [ngModel]="itemsPerPage" — keep getter/setter for compatibility
-get pageSize(): number {
-  return this.itemsPerPage;
-}
-
-set pageSize(value: number) {
-  this.itemsPerPage = value;
-}
-
-onPageSizeChange(newSize: number): void {
-  this.itemsPerPage = Number(newSize);
-  this.currentPage = 1;
-  this.applyFilterAndPagination();
-}
-
-get startRecord(): number {
-  return this.filteredApprovalLevels.length === 0
-    ? 0
-    : (this.currentPage - 1) * this.itemsPerPage + 1;
-}
-
-get endRecord(): number {
-  return Math.min(this.currentPage * this.itemsPerPage, this.filteredApprovalLevels.length);
-}
-
   
   constructor(
     private leaveservice: LeaveService, 

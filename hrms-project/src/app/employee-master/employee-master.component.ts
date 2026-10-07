@@ -428,8 +428,9 @@ ngOnDestroy(): void {
     this.EmployeeService.getemployeesMasterNew(schema, branchIds).subscribe({
       next: (data: any) => {
         // Filter active employees
-        this.employees = data.filter((emp: any) => emp.is_active !== false);
+        this.employees = data;
         this.filteredEmployees = [...this.employees];
+         console.log('employee lter branch wise:', this.employees);
         this.isLoading = false;
       },
       
@@ -443,7 +444,7 @@ ngOnDestroy(): void {
 
 
 
-isTableView = false; // default grid view
+isTableView = true; // default: table view with the shared list bar (cards still one click away)
 
 toggleView() {
   this.isTableView = !this.isTableView;

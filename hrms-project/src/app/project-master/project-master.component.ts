@@ -112,39 +112,13 @@ export class ProjectMasterComponent {
 
   custom_fieldsFam: any[] = [];
 
-   // Search + pagination
+  // Search
 searchQuery: string = '';
+
+// Pagination
 currentPage: number = 1;
-pageSize: number = 5;
-totalPages: number = 1;        // ✅ ADD THIS
-pageSizeOptions: number[] = [5, 10, 25, 50, 100];
-
-get itemsPerPage(): number {
-  return this.pageSize;
-}
-
-set itemsPerPage(value: number) {
-  this.pageSize = value;
-}
-
-onPageSizeChange(newSize: number): void {
-  this.pageSize = Number(newSize);
-  this.currentPage = 1;
-  this.applyFilterAndPagination();
-}
-
-get startRecord(): number {
-  return this.filteredLoanTypes.length === 0
-    ? 0
-    : (this.currentPage - 1) * this.pageSize + 1;
-}
-
-get endRecord(): number {
-  return Math.min(this.currentPage * this.pageSize, this.filteredLoanTypes.length);
-}
-
-
-
+pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
+totalPages: number = 1;
 
 // Filtered + paginated list used by the table
 filteredLoanTypes: any[] = [];
@@ -584,7 +558,7 @@ fetchEmployees(schema: string, branchIds: number[]): void {
           }
           // Inside the subscribe block of loadDeparmentBranch
           if (this.Branches.length === 1) {
-            this.branches = this.branches[0].id;
+            this.branches = [this.Branches[0].id];  // was this.branches[0].id -> TypeError with a single branch
           }
   
           console.log('Filtered branches for selection:', this.branches);

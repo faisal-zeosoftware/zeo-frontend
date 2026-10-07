@@ -69,40 +69,12 @@ isLoading: boolean = false;
 
   registerButtonClicked = false;
 
-    // Search + pagination
+  // Search
 searchQuery: string = '';
+
+// Pagination
 currentPage: number = 1;
-pageSize: number = 5;
-pageSizeOptions: number[] = [5, 10, 25, 50, 100];   // ✅ add this
-
-// ✅ add this getter + setter so the template's itemsPerPage works with existing logic
-get itemsPerPage(): number {
-  return this.pageSize;
-}
-
-set itemsPerPage(value: number) {
-  this.pageSize = value;
-}
-
-// ✅ add this handler
-onPageSizeChange(newSize: number): void {
-  this.pageSize = Number(newSize);
-  this.currentPage = 1;                 // reset to first page
-  this.applyFilterAndPagination();
-}
-
-get startRecord(): number {
-  return this.filteredReqTypes.length === 0
-    ? 0
-    : (this.currentPage - 1) * this.itemsPerPage + 1;
-}
-
-get endRecord(): number {
-  return Math.min(this.currentPage * this.itemsPerPage, this.filteredReqTypes.length);
-}
-
-
-
+pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 totalPages: number = 1;
 
 // Filtered + paginated list used by the table

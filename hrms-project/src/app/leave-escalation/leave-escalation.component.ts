@@ -80,7 +80,10 @@ export class LeaveEscalationComponent {
           registerButtonClicked = false;
 
 
-
+          // Search & Pagination properties
+searchQuery: string = '';
+currentPage: number = 1;
+itemsPerPage: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 
 // Getter for filtered data
 get filteredGeneralReq(): any[] {
@@ -162,32 +165,6 @@ getPageNumbers(): number[] {
   }
   
   return pages;
-}
-
-// ==================== PAGINATION ====================
-searchQuery: string = '';
-currentPage: number = 1;
-itemsPerPage: number = 5;
-pageSizeOptions: number[] = [5, 10, 25, 50, 100];
-
-// ✅ REMOVE: pagedLeaveRequests (not used, getters handle pagination)
-
-// ✅ FIX: Remove updatePagination() call
-onPageSizeChange(newSize: number): void {
-  this.itemsPerPage = Number(newSize);
-  this.currentPage = 1;
-  // Getters auto-recalculate, no manual update needed
-}
-
-// ✅ Keep these getters
-get startRecord(): number {
-  return this.filteredGeneralReq.length === 0
-    ? 0
-    : (this.currentPage - 1) * this.itemsPerPage + 1;
-}
-
-get endRecord(): number {
-  return Math.min(this.currentPage * this.itemsPerPage, this.filteredGeneralReq.length);
 }
         
           // private apiUrl = 'http://one.localhost:8000/organisation/api/fiscal-years/';

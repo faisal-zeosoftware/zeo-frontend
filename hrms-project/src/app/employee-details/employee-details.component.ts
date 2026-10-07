@@ -21,6 +21,7 @@ import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { DepartmentServiceService } from '../department-master/department-service.service';
 import { forkJoin, Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 
@@ -30,6 +31,41 @@ import { environment } from '../../environments/environment';
   styleUrl: './employee-details.component.css'
 })
 export class EmployeeDetailsComponent implements OnInit {
+  /** v1.7.0: fields hidden in the form designer are hidden on the details page too. */
+  hid(key: string): boolean { try { return JSON.parse(localStorage.getItem(key) || 'false') === true; } catch { return false; } }
+
+  /** v1.7.0: every designed custom field shows on each family / qualification / job history / document row, not only the filled ones. */
+  private childDefs: Record<string, any[] | null> = { fam: null, qual: null, job: null, doc: null };
+  private childDefsLoading = false;
+  private static CHILD = [
+    { k: 'fam', udf: 'empfamily-UDF', list: 'emp_family_details', key: 'fam_custom_fields', value: 'empfamily-customfieldvalue', fk: 'emp_family' },
+    { k: 'qual', udf: 'empQualification-UDF', list: 'Qualifications', key: 'qualification_fields', value: 'empQualification-customfieldvalue', fk: 'emp_qualification' },
+    { k: 'job', udf: 'empjob-history-UDF', list: 'Jobhistorys', key: 'job_history_custom_fields', value: 'empjob-history-customfieldvalue', fk: 'emp_job_history' },
+    { k: 'doc', udf: 'emp-Documents-UDF', list: 'employeeDocuments', key: 'doc_custom_fields', value: 'Documents-customfieldvalue', fk: 'emp_documents' },
+  ];
+  mergeChildFields(): void {
+    const schema = localStorage.getItem('selectedSchema');
+    if (Object.values(this.childDefs).some(d => d === null)) {
+      if (this.childDefsLoading) { return; }
+      this.childDefsLoading = true;
+      forkJoin(EmployeeDetailsComponent.CHILD.map(c => this.http.get<any[]>(`${this.apiUrl}/employee/api/${c.udf}/?schema=${schema}`).pipe(catchError(() => of([])))))
+        .subscribe(res => { EmployeeDetailsComponent.CHILD.forEach((c, i) => this.childDefs[c.k] = res[i] || []); this.childDefsLoading = false; this.mergeChildFields(); });
+      return;
+    }
+    for (const c of EmployeeDetailsComponent.CHILD) {
+      const defs = this.childDefs[c.k] || [];
+      for (const row of ((this as any)[c.list] || [])) {
+        const list: any[] = row[c.key] = row[c.key] || [];
+        for (const d of defs) {
+          const props = { data_type: d.data_type, dropdown_values: d.dropdown_values, radio_values: d.radio_values, mandatory: d.mandatory, section: d.section, order: d.order, help_text: d.help_text, placeholder: d.placeholder };
+          const have = list.find(x => String(x.emp_custom_field).toLowerCase() === String(d.emp_custom_field).toLowerCase());
+          if (have) { Object.assign(have, props); } else { list.push({ emp_custom_field: d.emp_custom_field, field_value: '', _new: true, ...props }); }
+        }
+        list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      }
+    }
+  }
+
 
 
 
@@ -96,7 +132,7 @@ export class EmployeeDetailsComponent implements OnInit {
   brchFieldName: string = 'Branch';
   deptFieldName: string = 'Department';
   desFieldName: string = 'Designation';
-  catFieldName: string = 'Catogory';
+  catFieldName: string = 'Category';
 
   hiredFieldName: string = 'Hired Date';
 
@@ -179,6 +215,7 @@ export class EmployeeDetailsComponent implements OnInit {
         this.EmployeeService.getEmployeeDetails(employeeId).subscribe(
           (details) => {
             this.employee = details;
+            this.loadDetailCustomFields();
               this.loadSalaryRevisions(employeeId);
             // this.cdr.detectChanges(); // Manually trigger change detection
 
@@ -410,6 +447,7 @@ attendanceData: any = null; // Define this at the class level
               ? `${baseUrl}${document.emp_doc_document}` // Full URL for document
               : null
           }));
+          this.mergeChildFields();
           
           console.log('Filtered Employee Documents:', this.employeeDocuments);
         },
@@ -425,6 +463,7 @@ attendanceData: any = null; // Define this at the class level
       this.EmployeeService.getFamilyDetails(this.employee).subscribe(
         family => {
           this.emp_family_details = family;
+          this.mergeChildFields();
         },
         error => {
           console.error('Error fetching family details:', error);
@@ -679,6 +718,7 @@ attendanceData: any = null; // Define this at the class level
       this.EmployeeService.getQualificationById(this.employee).subscribe(
         Qualification => {
           this.Qualifications = Qualification;
+          this.mergeChildFields();
           console.log('qua',Qualification)
         },
         error => {
@@ -692,6 +732,7 @@ attendanceData: any = null; // Define this at the class level
       this.EmployeeService.getJobHistoryById(this.employee).subscribe(
         Jobhistory => {
           this.Jobhistorys = Jobhistory;
+          this.mergeChildFields();
         },
         error => {
           console.error('Error fetching family details:', error);
@@ -1170,7 +1211,35 @@ onFileSelected(event: any): void {
   }
 }
 
+/** All custom fields of the form designer with this employee's values (also fields added later). */
+detailCustom: any[] = [];
+
+loadDetailCustomFields(): void {
+  const schema = localStorage.getItem('selectedSchema') || '';
+  this.EmployeeService.getFormField(schema).subscribe({
+    next: (defs: any) => {
+      const values = (this.employee && this.employee.custom_fields) || [];
+      this.detailCustom = (Array.isArray(defs) ? defs : []).map((d: any) => {
+        const v = values.find((x: any) => (x.emp_custom_field || '').toLowerCase() === (d.emp_custom_field || '').toLowerCase());
+        let value: any = v ? v.field_value : '';
+        if (d.data_type === 'checkbox') { value = value === true || value === 'true' || value === 'Yes'; }
+        // dates are stored as dd-mm-yyyy; the date box needs yyyy-mm-dd
+        if (d.data_type === 'date' && /^\d{2}-\d{2}-\d{4}$/.test(String(value))) { const [dd, mm, yy] = String(value).split('-'); value = `${yy}-${mm}-${dd}`; }
+        return { ...d, value, original: value };
+      });
+    },
+    // no right to read the designer: show the stored values as text
+    error: () => { this.detailCustom = ((this.employee && this.employee.custom_fields) || []).map((v: any) => ({ emp_custom_field: v.emp_custom_field, data_type: 'text', value: v.field_value, original: v.field_value })); },
+  });
+}
+
 saveEmployee(): void {
+  // custom fields ticked "Mandatory" in the form designer
+  const missing = (this.detailCustom || []).filter((f: any) => f.mandatory && (f.value === undefined || f.value === null || String(f.value).trim() === '' || f.value === false));
+  if (missing.length) {
+    alert('Please fill: ' + missing.map((f: any) => f.emp_custom_field).join(', '));
+    return;
+  }
   const formData = new FormData();
 
 
@@ -1333,11 +1402,11 @@ safeAppend(
   // --- Submit Request ---
   this.EmployeeService.updateEmp(this.employee.id, formData).subscribe({
     next: (response) => {
-      alert('Employee Details Updated Successfully!');
-      this.saveAllSections();          // <-- single entry point now
+      // save family, qualification, bank, job history, documents and custom fields next;
+      // the page reloads only when all of them are done (an immediate reload used to cancel them)
+      this.saveAllSections();
       this.isEditMode = false;
       this.selectedFile = null;
-      window.location.reload();
     },
     error: (error) => {
       console.error('Update Error:', error);
@@ -1560,7 +1629,9 @@ saveAllSections(): void {
     },
     error: (err) => {
       console.error('Section update failed', err);
-      alert('Some sections failed to update. Check the console.');
+      const e = err?.error;
+      alert('Employee saved, but some tabs were not: ' + (e ? Object.entries(e).map(([k, v]) => `${k}: ${([] as any[]).concat(v).join(' ')}`).join('; ') : 'please try again'));
+      window.location.reload();
     }
   });
 }
@@ -1571,12 +1642,28 @@ saveAllCustomFields(): void {
   const schema = localStorage.getItem('selectedSchema');
   const calls: Observable<any>[] = [];
 
+  // the employee's own custom fields (the server updates the value or adds it)
+  (this.detailCustom || []).filter((f: any) => f.value !== f.original).forEach((f: any) => {
+    calls.push(this.http.post(`${this.apiUrl}/employee/api/custom-field-value/?schema=${schema}`, {
+      emp_custom_field: f.emp_custom_field,
+      field_value: f.data_type === 'checkbox' ? (f.value ? 'Yes' : 'No') : (f.value ?? ''),
+      emp_master: this.employee_id,
+    }));
+  });
+
   (this.emp_family_details || []).forEach((member: any) => {
     (member.fam_custom_fields || []).forEach((field: any) => {
+      const v = field.data_type === 'checkbox' && typeof field.field_value === 'boolean' ? (field.field_value ? 'Yes' : 'No') : field.field_value;
+      if (field._new) {   // a designed field that had no value yet
+        if (v !== '' && v !== null && v !== undefined) {
+          calls.push(this.http.post(`${this.apiUrl}/employee/api/empfamily-customfieldvalue/?schema=${schema}`, { emp_custom_field: field.emp_custom_field, field_value: v, emp_family: member.id }));
+        }
+        return;
+      }
       calls.push(
-        this.http.put(
+        this.http.patch(
           `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
-          { field_value: field.field_value }
+          { field_value: v }
         )
       );
     });
@@ -1584,10 +1671,17 @@ saveAllCustomFields(): void {
 
   (this.Qualifications || []).forEach((q: any) => {
     (q.qualification_fields || []).forEach((field: any) => {
+      const v = field.data_type === 'checkbox' && typeof field.field_value === 'boolean' ? (field.field_value ? 'Yes' : 'No') : field.field_value;
+      if (field._new) {   // a designed field that had no value yet
+        if (v !== '' && v !== null && v !== undefined) {
+          calls.push(this.http.post(`${this.apiUrl}/employee/api/empQualification-customfieldvalue/?schema=${schema}`, { emp_custom_field: field.emp_custom_field, field_value: v, emp_qualification: q.id }));
+        }
+        return;
+      }
       calls.push(
-        this.http.put(
-          `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
-          { field_value: field.field_value }
+        this.http.patch(
+          `${this.apiUrl}/employee/api/empQualification-customfieldvalue/${field.id}/?schema=${schema}`,
+          { field_value: v }
         )
       );
     });
@@ -1595,10 +1689,17 @@ saveAllCustomFields(): void {
 
   (this.Jobhistorys || []).forEach((j: any) => {
     (j.job_history_custom_fields || []).forEach((field: any) => {
+      const v = field.data_type === 'checkbox' && typeof field.field_value === 'boolean' ? (field.field_value ? 'Yes' : 'No') : field.field_value;
+      if (field._new) {   // a designed field that had no value yet
+        if (v !== '' && v !== null && v !== undefined) {
+          calls.push(this.http.post(`${this.apiUrl}/employee/api/empjob-history-customfieldvalue/?schema=${schema}`, { emp_custom_field: field.emp_custom_field, field_value: v, emp_job_history: j.id }));
+        }
+        return;
+      }
       calls.push(
-        this.http.put(
-          `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
-          { field_value: field.field_value }
+        this.http.patch(
+          `${this.apiUrl}/employee/api/empjob-history-customfieldvalue/${field.id}/?schema=${schema}`,
+          { field_value: v }
         )
       );
     });
@@ -1606,10 +1707,17 @@ saveAllCustomFields(): void {
 
   (this.employeeDocuments || []).forEach((d: any) => {
     (d.doc_custom_fields || []).forEach((field: any) => {
+      const v = field.data_type === 'checkbox' && typeof field.field_value === 'boolean' ? (field.field_value ? 'Yes' : 'No') : field.field_value;
+      if (field._new) {   // a designed field that had no value yet
+        if (v !== '' && v !== null && v !== undefined) {
+          calls.push(this.http.post(`${this.apiUrl}/employee/api/Documents-customfieldvalue/?schema=${schema}`, { emp_custom_field: field.emp_custom_field, field_value: v, emp_documents: d.id }));
+        }
+        return;
+      }
       calls.push(
-        this.http.put(
-          `${this.apiUrl}/employee/api/empfamily-customfieldvalue/${field.id}/?schema=${schema}`,
-          { field_value: field.field_value }
+        this.http.patch(
+          `${this.apiUrl}/employee/api/Documents-customfieldvalue/${field.id}/?schema=${schema}`,
+          { field_value: v }
         )
       );
     });
@@ -1617,10 +1725,15 @@ saveAllCustomFields(): void {
 
   forkJoin(calls.length ? calls : [of(null)]).subscribe({
     next: () => {
-      alert('Employee & Family Details Updated Successfully!');
-      this.ngOnInit(); // single, final reload
+      alert('Employee Details Updated Successfully!');
+      window.location.reload();
     },
-    error: (err) => console.error('Custom field update failed', err)
+    error: (err) => {
+      console.error('Custom field update failed', err);
+      const e = err?.error;
+      alert('Employee saved, but some custom fields were not: ' + (e ? Object.values(e).flat().join(' ') : 'please try again'));
+      window.location.reload();
+    }
   });
 }
 

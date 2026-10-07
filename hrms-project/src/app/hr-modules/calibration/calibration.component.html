@@ -1,0 +1,84 @@
+<div class="container hr-page">
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="row align-items-center">
+        <div class="col-md-4"><h1>Calibration</h1></div>
+        <div class="col-md-8 cal-top">
+          <select class="form-control" [(ngModel)]="cycleId" (ngModelChange)="load()">
+            <option *ngFor="let c of cycles" [ngValue]="c.id">{{ c.name }} ({{ c.status_label }})</option>
+          </select>
+          <button class="btn hr-btn hr-btn-blue" *ngIf="cycle?.status === 'active'" (click)="cycleAction('lock_ratings', 'Lock all ratings? Every sheet must be manager-reviewed.')"><mat-icon>lock</mat-icon> Lock ratings</button>
+          <button class="btn hr-btn hr-btn-green" *ngIf="cycle?.status === 'calibration'" (click)="cycleAction('generate_outcomes', 'Generate increment / bonus outcomes from the rating bands?')"><mat-icon>trending_up</mat-icon> Generate outcomes</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr-stats" *ngIf="data">
+      <div class="hr-stat"><div class="hr-stat-k">Goal sheets</div><div class="hr-stat-v">{{ data.sheets }}</div></div>
+      <div class="hr-stat"><div class="hr-stat-k">Rated</div><div class="hr-stat-v">{{ data.rated }}</div></div>
+      <div class="hr-stat"><div class="hr-stat-k">Waiting for self appraisal</div><div class="hr-stat-v">{{ data.status_counts?.approved || 0 }}</div></div>
+      <div class="hr-stat"><div class="hr-stat-k">Waiting for manager</div><div class="hr-stat-v">{{ data.status_counts?.self_submitted || 0 }}</div></div>
+    </div>
+
+    <div class="cal-grid" *ngIf="data">
+      <div class="gw-card">
+        <h4>Rating distribution – actual vs guideline</h4>
+        <div class="muted">Purple = actual share · dashed line = guideline</div>
+        <div class="cal-chart">
+          <div class="cal-col" *ngFor="let d of data.distribution">
+            <div class="cal-val">{{ d.percent }}% <small>({{ d.count }})</small></div>
+            <div class="cal-track">
+              <div class="cal-bar" [style.height.%]="d.percent * 100 / maxPct()"></div>
+              <div class="cal-guide" *ngIf="d.guideline_percent !== null" [style.bottom.%]="d.guideline_percent * 100 / maxPct()" [title]="'Guideline ' + d.guideline_percent + '%'"></div>
+            </div>
+            <div class="cal-lbl">{{ d.rating }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="gw-card">
+        <h4>By department</h4>
+        <table class="table hr-table small" zPlain>
+          <thead><tr><th>Department</th><th>Avg</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let d of data.departments"><td><b>{{ d.department }}</b></td><td>{{ d.average }}</td><td>{{ d['5'] }}</td><td>{{ d['4'] }}</td><td>{{ d['3'] }}</td><td>{{ d['2'] }}</td><td>{{ d['1'] }}</td></tr>
+            <tr *ngIf="!data.departments.length"><td colspan="7" class="hr-empty">No ratings yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="gw-card">
+      <h4>Reviewed employees</h4>
+      <table class="table hr-table small" zPlain>
+        <thead><tr><th>Employee</th><th>Department</th><th>Self</th><th>Manager</th><th>Proposed</th><th>Final</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr *ngFor="let s of sheets">
+            <td><b>{{ s.employee_display }}</b></td><td>{{ s.department }}</td><td>{{ s.self_score }}</td><td>{{ s.manager_score }}</td>
+            <td>{{ s.proposed_rating }}</td><td><b>{{ s.final_rating_label }}</b></td><td><span class="tag tag-blue">{{ s.status_label }}</span></td>
+            <td class="hr-col-actions"><button class="hr-mini hr-btn-orange" *ngIf="cycle?.status !== 'closed' && (s.status === 'reviewed' || s.status === 'calibrated')" (click)="open(s)">Calibrate</button></td>
+          </tr>
+          <tr *ngIf="!sheets.length"><td colspan="8" class="hr-empty">No manager-reviewed sheets yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="gw-card" *ngIf="logs.length">
+      <h4>Calibration log</h4>
+      <table class="table hr-table small">
+        <thead><tr><th>When</th><th>Sheet</th><th>Old</th><th>New</th><th>Reason</th><th>By</th></tr></thead>
+        <tbody><tr *ngFor="let l of logs"><td>{{ l.changed_at | date:'dd/MM/yyyy HH:mm' }}</td><td>{{ l.sheet_display }}</td><td>{{ l.old_rating }}</td><td>{{ l.new_rating }}</td><td>{{ l.reason }}</td><td>{{ l.changed_by_display }}</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="hr-modal" *ngIf="editing">
+    <div class="hr-modal-box narrow">
+      <div class="hr-modal-head"><h2>Calibrate – {{ editing.employee_display }}</h2><span class="close-btn" (click)="editing = null">×</span></div>
+      <div class="hr-field"><label>Final rating</label>
+        <select class="form-control" [(ngModel)]="form.new_rating"><option *ngFor="let n of [5,4,3,2,1]" [ngValue]="n">{{ n }}</option></select></div>
+      <div class="hr-field"><label>Reason (kept in the audit log) *</label><textarea class="form-control" rows="3" [(ngModel)]="form.reason"></textarea></div>
+      <div class="hr-modal-foot"><button class="btn btn-danger" (click)="editing = null">Cancel</button><button class="btn btn-primary hr-save" [disabled]="!form.reason" (click)="save()">Save</button></div>
+    </div>
+  </div>
+  <div class="hr-toast" *ngIf="toast" [class.err]="toast.kind === 'err'">{{ toast.text }}</div>
+</div>

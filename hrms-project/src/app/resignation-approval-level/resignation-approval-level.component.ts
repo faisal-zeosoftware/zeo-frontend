@@ -57,46 +57,16 @@ userDetails: any;
 userDetailss: any;
 schemas: string[] = []; // Array to store schema names
 
-
+  // Search + pagination
+  searchQuery: string = '';
+  currentPage: number = 1;
+  pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
   filteredApprovalLevels: any[] = [];
   paginatedApprovalLevels: any[] = [];
 
   get totalPages(): number {
     return Math.max(1, Math.ceil(this.filteredApprovalLevels.length / this.pageSize));
   }
-
-  // Search + pagination
-searchQuery: string = '';
-currentPage: number = 1;
-pageSize: number = 5;
-pageSizeOptions: number[] = [5, 10, 25, 50, 100];   // ✅ add this
-
-// ✅ add this getter + setter so the template's itemsPerPage works with existing logic
-get itemsPerPage(): number {
-  return this.pageSize;
-}
-
-set itemsPerPage(value: number) {
-  this.pageSize = value;
-}
-
-// ✅ add this handler
-onPageSizeChange(newSize: number): void {
-  this.pageSize = Number(newSize);
-  this.currentPage = 1;                 // reset to first page
-  this.updateFilteredAndPaginatedData();
-}
-
-get startRecord(): number {
-  return this.filteredApprovalLevels.length === 0
-    ? 0
-    : (this.currentPage - 1) * this.itemsPerPage + 1;
-}
-
-get endRecord(): number {
-  return Math.min(this.currentPage * this.itemsPerPage, this.filteredApprovalLevels.length);
-}
-
 
   private updateFilteredAndPaginatedData(): void {
     const query = (this.searchQuery || '').trim().toLowerCase();

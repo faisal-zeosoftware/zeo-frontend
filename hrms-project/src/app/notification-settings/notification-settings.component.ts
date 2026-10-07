@@ -87,7 +87,7 @@ branch: number[] = [];
   // Add these properties to your component class
 searchQuery: string = '';
 currentPage: number = 1;
-itemsPerPage: number = 4;
+itemsPerPage: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 totalPages: number = 1;
 
 // Computed property for filtered data

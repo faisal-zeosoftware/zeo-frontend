@@ -9,7 +9,7 @@
 
                     <label> Feild Name</label>
                     <input type="text" class="form-control" required [(ngModel)]="field_name"
-                        placeholder="Enter Feild Name" [ngModelOptions]="{standalone: true}"
+                        placeholder="Enter Field Name" [ngModelOptions]="{standalone: true}"
                         [ngClass]="{'error-field': registerButtonClicked && !field_name}">
 
                     <div *ngIf="registerButtonClicked && !field_name" class="error-message">Feild

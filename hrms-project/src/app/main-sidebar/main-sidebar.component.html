@@ -13,178 +13,28 @@
   [class.menu-close]="!isMenuOpen"
 >
   <div class="sidebar-wrapper">
-    <div class="sidebar-brand-title" *ngIf="isMenuOpen">
-      <span>HRMS PORTAL</span>
+    <div class="zm-top">
+      <span class="sidebar-brand-title" *ngIf="isMenuOpen">HRMS PORTAL</span>
+      <button type="button" class="zm-fold" (click)="toggleFold()" [attr.aria-expanded]="isMenuOpen"
+              [attr.aria-label]="isMenuOpen ? 'Fold the menu' : 'Unfold the menu'" [title]="isMenuOpen ? 'Fold the menu' : 'Unfold the menu'">
+        <mat-icon>{{ isMenuOpen ? 'menu_open' : 'menu' }}</mat-icon>
+      </button>
     </div>
 
       <div class="nav-menu-list">
-
-    <a routerLinkActive="active-link" class="nav-item-link" routerLink="/main-sidebar/dashboard-contents">
-        <mat-icon class="nav-icon">dashboard</mat-icon>
-        <span class="sidenav-opt">Dashboard</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        routerLink="/main-sidebar/sub-sidebar/employee-master"
-        (click)="onToolbarMenuToggle()"
-      >
-        <mat-icon class="nav-icon">people_alt</mat-icon>
-        <span class="sidenav-opt">Employee Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/leave-options/leave-master"
-      >
-        <mat-icon class="nav-icon">event_available</mat-icon>
-        <span class="sidenav-opt">Leave Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/salary-options/salary"
-      >
-        <mat-icon class="nav-icon">account_balance_wallet</mat-icon>
-        <span class="sidenav-opt">Payroll Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/loan-sidebar/loan-type"
-      >
-        <mat-icon class="nav-icon">request_quote</mat-icon>
-        <span class="sidenav-opt">Loan Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/asset-options/asset-type"
-      >
-        <mat-icon class="nav-icon">inventory_2</mat-icon>
-        <span class="sidenav-opt">Asset Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/general-sidebar/general-request"
-      >
-        <mat-icon class="nav-icon">tune</mat-icon>
-        <span class="sidenav-opt">General Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/attendance-sidebar/attendace-marking"
-      >
-        <mat-icon class="nav-icon">fact_check</mat-icon>
-        <span class="sidenav-opt">Attendance Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/document-folders"
-      >
-        <mat-icon class="nav-icon">folder_shared</mat-icon>
-        <span class="sidenav-opt">Document Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/project-options/project-master"
-      >
-        <mat-icon class="nav-icon">assignment_turned_in</mat-icon>
-        <span class="sidenav-opt">Project Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/air-ticket-options/air-ticket-policy"
-      >
-        <mat-icon class="nav-icon">flight_takeoff</mat-icon>
-        <span class="sidenav-opt">Air Ticket Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/shift-options/shifts"
-      >
-        <mat-icon class="nav-icon">published_with_changes</mat-icon>
-        <span class="sidenav-opt">Shift Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        *ngIf="!hideButton"
-        routerLink="/main-sidebar/report-options/report-generate"
-        (click)="onToolbarMenuToggle()"
-      >
-        <mat-icon class="nav-icon">insights</mat-icon>
-        <span class="sidenav-opt">Report Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        *ngIf="!hideButton"
-        routerLink="/main-sidebar/settings/branch-master"
-        (click)="onToolbarMenuToggle()"
-      >
-        <mat-icon class="nav-icon">settings</mat-icon>
-        <span class="sidenav-opt">Settings</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/dashboard-contents"
-      >
-        <mat-icon class="nav-icon">speed</mat-icon>
-        <span class="sidenav-opt">Performance Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/dashboard-contents"
-      >
-        <mat-icon class="nav-icon">person_add_alt_1</mat-icon>
-        <span class="sidenav-opt">Recruitment Management</span>
-      </a>
-
-      <a
-        routerLinkActive="active-link"
-        class="nav-item-link"
-        (click)="onToolbarMenuToggle()"
-        routerLink="/main-sidebar/dashboard-contents"
-      >
-        <mat-icon class="nav-icon">school</mat-icon>
-        <span class="sidenav-opt">Learning Management</span>
-      </a>
+      <ng-container *ngFor="let g of menuGroups; let first = first">
+        <div class="zm-group" *ngIf="isMenuOpen && !first">{{ g.title }}</div>
+        <div class="zm-group-rule" *ngIf="!isMenuOpen && !first"></div>
+        <a *ngFor="let a of g.apps"
+           class="nav-item-link"
+           [class.active-link]="a.app.key === currentAppKey"
+           [routerLink]="a.link"
+           [attr.title]="a.app.label" [attr.aria-label]="a.app.label"
+           (click)="a.app.key !== 'home' && modulePicked()">
+          <mat-icon class="nav-icon">{{ a.app.icon }}</mat-icon>
+          <span class="sidenav-opt">{{ a.app.label }}</span>
+        </a>
+      </ng-container>
     </div>
       <!-- ADD THIS: Logout button at the bottom of the sidebar -->
     <div class="sidebar-footer" *ngIf="isMenuOpen">
@@ -192,6 +42,7 @@
         <mat-icon class="logout-btn-icon">logout</mat-icon>
         <span>Logout</span>
       </button>
+      <div class="zm-version" title="Installed update">Version {{ appVersion }}</div>
     </div>
   </div>
 </nav>
@@ -215,6 +66,14 @@
     <!-- Right-aligned Header Actions -->
     <ul class="navbar-nav d-flex flex-row align-items-center gap-3 m-0 p-0">
       <!-- Notification Dropdown (Desktop) -->
+      <!-- v1.7.0: activities planned for me on any record -->
+      <li class="nav-item" *ngIf="todo$ | async as t">
+        <button type="button" class="zr-todo-btn" routerLink="/main-sidebar/todo" [attr.aria-label]="'My To-do: ' + (t.overdue + t.today) + ' due'" title="My To-do">
+          <mat-icon>task_alt</mat-icon>
+          <span class="zr-badge" *ngIf="t.overdue">{{ t.overdue }}</span>
+          <span class="zr-badge soft" *ngIf="!t.overdue && t.today">{{ t.today }}</span>
+        </button>
+      </li>
       <li class="nav-item dropdown" *ngIf="AllNotifications">
         <a
           class="nav-link dropdown-toggle hidden-arrow header-icon-btn p-0"

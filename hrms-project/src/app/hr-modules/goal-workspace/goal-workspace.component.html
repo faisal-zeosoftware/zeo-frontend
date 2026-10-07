@@ -1,0 +1,207 @@
+<div class="container hr-page">
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="row align-items-center">
+        <div class="col-md-4"><h1>{{ title }}</h1></div>
+        <div class="col-md-8 gw-top">
+          <select class="form-control" [(ngModel)]="cycleId" (ngModelChange)="sheet = null; loadSheets()">
+            <option [ngValue]="null">Select appraisal cycle</option>
+            <option *ngFor="let c of cycles" [ngValue]="c.id">{{ c.name }}</option>
+          </select>
+          <div class="gw-scope">
+            <button type="button" [class.on]="scope === 'mine'" (click)="scope = 'mine'; sheet = null; loadSheets()">My sheet</button>
+            <button type="button" [class.on]="scope === 'team'" (click)="scope = 'team'; sheet = null; loadSheets()">My team</button>
+            <button type="button" *ngIf="isAdmin" [class.on]="scope === 'all'" (click)="scope = 'all'; sheet = null; loadSheets()">All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="gw-layout" [class.single]="!showList">
+      <!-- sheet list -->
+      <div class="gw-list" *ngIf="showList">
+        <select class="form-control mb-2" [(ngModel)]="statusFilter" (ngModelChange)="loadSheets()">
+          <option value="">All statuses</option>
+          <option *ngFor="let f of flow" [value]="f.key">{{ f.label }}</option>
+        </select>
+        <div class="gw-item" *ngFor="let s of sheets" (click)="open(s)" [class.on]="sheet?.id === s.id">
+          <div><b>{{ s.employee_display }}</b><div class="muted">{{ s.department }} · {{ s.designation }}</div></div>
+          <span [ngClass]="statusClass(s.status)">{{ s.status_label }}</span>
+        </div>
+        <div class="muted p-3" *ngIf="!sheets.length">No goal sheets for this view.</div>
+      </div>
+
+      <!-- sheet -->
+      <div class="gw-sheet" *ngIf="sheet">
+        <div class="gw-card gw-head">
+          <div>
+            <h3>{{ sheet.employee_display }}</h3>
+            <div class="muted">{{ sheet.designation }} · {{ sheet.department }} · Manager: {{ sheet.manager_display || '–' }}</div>
+          </div>
+          <div class="gw-flow">
+            <span *ngFor="let f of flow" class="st" [class.done]="stepIndex(f.key) < stepIndex(sheet.status)" [class.cur]="f.key === sheet.status">{{ f.label }}</span>
+          </div>
+        </div>
+
+        <div class="gw-alert" *ngIf="sheet.return_reason && (sheet.status === 'draft' || sheet.status === 'approved')">Sent back: {{ sheet.return_reason }}</div>
+
+        <div class="gw-scores">
+          <div class="gw-stat"><span>Total weight</span><b [class.bad]="totalWeight !== 100">{{ totalWeight }}%</b></div>
+          <div class="gw-stat"><span>KPI / competency</span><b>{{ kpiWeight }}% / {{ totalWeight - kpiWeight }}%</b><small>target {{ sheet.kpi_weight }}% KPI</small></div>
+          <div class="gw-stat"><span>Self score</span><b>{{ sheet.self_score || '–' }}</b></div>
+          <div class="gw-stat"><span>Manager score</span><b>{{ sheet.manager_score || '–' }}</b></div>
+          <div class="gw-stat"><span>Final rating</span><b>{{ sheet.final_rating_label || '–' }}</b></div>
+        </div>
+
+        <!-- goals -->
+        <div class="gw-card">
+          <div class="gw-card-head">
+            <h4>Goals</h4>
+            <button class="hr-mini hr-btn-green" *ngIf="canEditGoals()" (click)="newGoal()">+ Add goal</button>
+          </div>
+          <div class="table-responsive">
+            <table class="table hr-table small" zPlain>
+              <thead><tr>
+                <th>Goal / KRA</th><th>Type</th><th>Weight</th><th>Target</th><th>Progress</th><th>Self</th><th>Manager</th><th></th>
+              </tr></thead>
+              <tbody>
+                <tr *ngIf="!sheet.goals?.length"><td colspan="8" class="hr-empty">No goals yet{{ canEditGoals() ? ' – add 3 to 8 goals totalling 100%.' : '.' }}</td></tr>
+                <tr *ngFor="let g of sheet.goals">
+                  <td><b>{{ g.title }}</b><div class="muted" *ngIf="g.kpi_display">{{ g.kpi_display }}</div></td>
+                  <td><span class="tag" [ngClass]="g.goal_type === 'kpi' ? 'tag-blue' : 'tag-cyan'">{{ g.goal_type_label }}</span></td>
+                  <td>{{ g.weight | number:'1.0-2' }}%</td>
+                  <td>{{ g.target || '–' }}</td>
+                  <td>
+                    <ng-container *ngIf="canProgress(); else prog">
+                      <input type="number" min="0" max="100" class="form-control gw-num" [(ngModel)]="g.progress_percent" (change)="patchGoal(g, ['progress_percent'])">
+                      <select class="form-control gw-sel" [(ngModel)]="g.progress_status" (change)="patchGoal(g, ['progress_status'])">
+                        <option value="not_started">Not started</option><option value="on_track">On track</option><option value="ahead">Ahead</option>
+                        <option value="at_risk">At risk</option><option value="off_track">Off track</option><option value="done">Done</option>
+                      </select>
+                    </ng-container>
+                    <ng-template #prog><span class="hr-progress"><span class="bar"><span [style.width.%]="g.progress_percent"></span></span>{{ g.progress_percent }}%</span></ng-template>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="canSelfRate(); else selfro">
+                      <select class="form-control gw-sel" [(ngModel)]="g.self_rating" (change)="patchGoal(g, ['self_rating'])">
+                        <option [ngValue]="null">–</option><option *ngFor="let n of [1,2,3,4,5]" [ngValue]="n">{{ n }}</option>
+                      </select>
+                      <input class="form-control gw-txt" placeholder="Evidence / comment" [(ngModel)]="g.self_comment" (change)="patchGoal(g, ['self_comment'])">
+                    </ng-container>
+                    <ng-template #selfro><span class="hr-stars"><i *ngFor="let s of stars(g.self_rating)" [class.on]="s">★</i></span><div class="muted">{{ g.self_comment }}</div></ng-template>
+                  </td>
+                  <td>
+                    <ng-container *ngIf="canManagerRate(); else mgrro">
+                      <select class="form-control gw-sel" [(ngModel)]="g.manager_rating" (change)="patchGoal(g, ['manager_rating'])">
+                        <option [ngValue]="null">–</option><option *ngFor="let n of [1,2,3,4,5]" [ngValue]="n">{{ n }}</option>
+                      </select>
+                      <input class="form-control gw-txt" placeholder="Comment" [(ngModel)]="g.manager_comment" (change)="patchGoal(g, ['manager_comment'])">
+                    </ng-container>
+                    <ng-template #mgrro><span class="hr-stars"><i *ngFor="let s of stars(g.manager_rating)" [class.on]="s">★</i></span><div class="muted">{{ g.manager_comment }}</div></ng-template>
+                  </td>
+                  <td class="hr-col-actions">
+                    <ng-container *ngIf="canEditGoals()">
+                      <button class="hr-icon-btn" (click)="editGoal(g)"><mat-icon>edit</mat-icon></button>
+                      <button class="hr-icon-btn danger" (click)="deleteGoal(g)"><mat-icon>delete</mat-icon></button>
+                    </ng-container>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- goal form -->
+          <div class="gw-form" *ngIf="goalForm">
+            <div class="row">
+              <div class="col-md-4"><label>From library</label>
+                <select class="form-control" [(ngModel)]="goalForm.kpi" (ngModelChange)="pickKpi()">
+                  <option [ngValue]="null">Custom goal</option>
+                  <option *ngFor="let k of kpis" [ngValue]="k.id">{{ k.code }} – {{ k.name }}</option>
+                </select></div>
+              <div class="col-md-5"><label>Goal / KRA *</label><input class="form-control" [(ngModel)]="goalForm.title"></div>
+              <div class="col-md-3"><label>Type</label>
+                <select class="form-control" [(ngModel)]="goalForm.goal_type"><option value="kpi">KPI</option><option value="competency">Competency</option></select></div>
+              <div class="col-md-2"><label>Weight % *</label><input type="number" class="form-control" [(ngModel)]="goalForm.weight"></div>
+              <div class="col-md-6"><label>Target / measure</label><input class="form-control" [(ngModel)]="goalForm.target"></div>
+              <div class="col-md-4"><label>Due date</label><input type="date" class="form-control" [(ngModel)]="goalForm.due_date"></div>
+            </div>
+            <div class="gw-actions">
+              <button class="btn btn-danger" (click)="goalForm = null">Cancel</button>
+              <button class="btn btn-primary hr-save" (click)="saveGoal()">Save goal</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- self / review text -->
+        <div class="gw-card" *ngIf="canSelfRate()">
+          <h4>Your summary</h4>
+          <div class="row">
+            <div class="col-md-6"><label>Key achievements this year</label><textarea class="form-control" rows="3" [(ngModel)]="selfForm.key_achievements"></textarea></div>
+            <div class="col-md-6"><label>Development needs / training requests</label><textarea class="form-control" rows="3" [(ngModel)]="selfForm.development_needs"></textarea></div>
+          </div>
+        </div>
+        <div class="gw-card" *ngIf="sheet.key_achievements && !canSelfRate()">
+          <h4>Employee summary</h4>
+          <p class="pre"><b>Achievements:</b> {{ sheet.key_achievements }}</p>
+          <p class="pre" *ngIf="sheet.development_needs"><b>Development needs:</b> {{ sheet.development_needs }}</p>
+        </div>
+        <div class="gw-card" *ngIf="canManagerRate()">
+          <h4>Manager review</h4>
+          <div class="row">
+            <div class="col-md-6"><label>Overall comments</label><textarea class="form-control" rows="3" [(ngModel)]="reviewForm.manager_comments"></textarea></div>
+            <div class="col-md-6"><label>Development needs (sent to Learning)</label><textarea class="form-control" rows="3" [(ngModel)]="reviewForm.development_needs"></textarea></div>
+          </div>
+        </div>
+        <div class="gw-card" *ngIf="sheet.manager_comments && !canManagerRate()">
+          <h4>Manager comments</h4><p class="pre">{{ sheet.manager_comments }}</p>
+        </div>
+
+        <!-- actions -->
+        <div class="gw-actions gw-card">
+          <button class="btn btn-primary hr-save" [disabled]="busy" *ngIf="sheet.status === 'draft' && isOwner" (click)="act('submit_goals', {}, 'Submit goals to your manager?')">Submit goals</button>
+          <ng-container *ngIf="sheet.status === 'submitted' && isManager">
+            <button class="btn btn-danger" [disabled]="busy" (click)="sendBack()">Send back</button>
+            <button class="btn btn-success" [disabled]="busy" (click)="act('approve_goals')">Approve goals</button>
+          </ng-container>
+          <button class="btn btn-primary hr-save" [disabled]="busy" *ngIf="canSelfRate()" (click)="submitSelf()">Submit self appraisal</button>
+          <ng-container *ngIf="canManagerRate()">
+            <button class="btn btn-danger" [disabled]="busy" (click)="sendBack()">Send back</button>
+            <button class="btn btn-success" [disabled]="busy" (click)="submitReview()">Submit review</button>
+          </ng-container>
+          <ng-container *ngIf="sheet.status === 'calibrated' && isOwner">
+            <button class="btn btn-outline-danger" (click)="acknowledge(true)">I disagree</button>
+            <button class="btn btn-success" (click)="acknowledge(false)">Acknowledge</button>
+          </ng-container>
+          <span class="muted" *ngIf="sheet.status === 'acknowledged'">Acknowledged on {{ sheet.acknowledged_on | date:'dd/MM/yyyy' }}{{ sheet.employee_disagrees ? ' (with disagreement noted)' : '' }}</span>
+        </div>
+
+        <!-- check-ins -->
+        <div class="gw-card" *ngIf="mode === 'checkin' || checkins.length || sheet.status === 'approved'">
+          <div class="gw-card-head">
+            <h4>Check-ins</h4>
+            <button class="hr-mini hr-btn-green" *ngIf="(isOwner || isManager) && sheet.status === 'approved'" (click)="newCheckin()">+ Add check-in</button>
+          </div>
+          <div class="gw-form" *ngIf="checkinForm">
+            <div class="row">
+              <div class="col-md-3"><label>Date</label><input type="date" class="form-control" [(ngModel)]="checkinForm.checkin_date"></div>
+              <div class="col-md-9"><label>Goal changes agreed</label><input class="form-control" [(ngModel)]="checkinForm.goal_changes"></div>
+              <div class="col-md-6"><label>Manager comments</label><textarea class="form-control" rows="2" [(ngModel)]="checkinForm.manager_comments"></textarea></div>
+              <div class="col-md-6"><label>Employee comments</label><textarea class="form-control" rows="2" [(ngModel)]="checkinForm.employee_comments"></textarea></div>
+            </div>
+            <div class="gw-actions"><button class="btn btn-danger" (click)="checkinForm = null">Cancel</button><button class="btn btn-primary hr-save" (click)="saveCheckin()">Save</button></div>
+          </div>
+          <div class="gw-checkin" *ngFor="let c of checkins">
+            <b>{{ c.checkin_date | date:'dd/MM/yyyy' }}</b> <span class="muted">by {{ c.created_by_display }}</span>
+            <div *ngIf="c.manager_comments"><span class="muted">Manager:</span> {{ c.manager_comments }}</div>
+            <div *ngIf="c.employee_comments"><span class="muted">Employee:</span> {{ c.employee_comments }}</div>
+            <div *ngIf="c.goal_changes"><span class="muted">Goal changes:</span> {{ c.goal_changes }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gw-sheet muted p-4" *ngIf="!sheet && cycleId">Select a goal sheet.</div>
+      <div class="gw-sheet muted p-4" *ngIf="!cycleId">No active appraisal cycle yet. HR creates and launches one under Appraisal Cycle.</div>
+    </div>
+  </div>
+  <div class="hr-toast" *ngIf="toast" [class.err]="toast.kind === 'err'">{{ toast.text }}</div>
+</div>

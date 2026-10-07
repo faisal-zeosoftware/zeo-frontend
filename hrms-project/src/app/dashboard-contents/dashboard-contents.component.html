@@ -59,7 +59,7 @@
                               </div>
         </div>
             
-        <div class="card-list">  
+        <div class="card-list" data-widget="counts" data-widget-title="Company counts">  
 
             <div class="row">
                 <div class="col-md-3 col-12">
@@ -104,6 +104,9 @@
 
 
     <div class="content_sec_last">
+      <!-- v1.7.0: dashboard designer + every module on the dashboard -->
+      <z-dash-designer name="main" scope="app-dashboard-contents"></z-dash-designer>
+      <z-dash-overview></z-dash-overview>
 
 
 
@@ -116,7 +119,7 @@
                                    
 
 
-    <div class="approval-main-card">
+    <div class="approval-main-card" data-widget="approvals" data-widget-title="Pending approvals">
 
       <!-- 🔹 Header (Clickable) -->
       <div class="d-flex justify-content-between align-items-center"
@@ -195,7 +198,7 @@
     </div>
 
 
-            <div class="dash_holidays">
+            <div class="dash_holidays" data-widget="holidays" data-widget-title="Holidays">
               <div class="row">
                 <div class="col-md-5">
                   <h6>Holidays</h6>
@@ -231,7 +234,7 @@
               </div>
             </div>
 
-            <div class="dash_announcements mt-4">
+            <div class="dash_announcements mt-4" data-widget="announcements" data-widget-title="Announcements">
               <div class="row align-items-center mb-3">
                 <div class="col-md-12">
                   <h6> Announcements</h6>
@@ -302,7 +305,7 @@
           <div class="col-md-8">
 
 
-            <div class="dash_holidays mb-4">
+            <div class="dash_holidays mb-4" data-widget="attendance-chart" data-widget-title="Today's attendance chart">
               <h6>Today's Attendance Metrics</h6>
               <div *ngIf="isLoading" class="d-flex flex-column align-items-center justify-content-center py-5" style="min-height: 320px;">
                 <div class="spinner-border text-success" role="status" style="width: 2.5rem; height: 2.5rem;">
@@ -316,7 +319,7 @@
               </div>
               </div>
 
-            <div class="dash_projects ">
+            <div class="dash_projects " data-widget="projects" data-widget-title="Projects">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6> Projects</h6>
               </div>
@@ -514,7 +517,7 @@
 
 
 
-            <div class="dash_holidays mt-4">
+            <div class="dash_holidays mt-4" data-widget="policies" data-widget-title="Company policies">
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="fw-bold">🏢 Company Policies</h6>
                 <span class="text-muted small"

@@ -1,0 +1,228 @@
+<div class="container hr-page">
+  <div class="comapny_section">
+
+    <div class="header_section">
+      <div class="row align-items-center">
+        <div class="col-md-4"><h1>{{ config.title }}</h1></div>
+        <div class="col-md-3">
+          <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search..." [(ngModel)]="search" (ngModelChange)="page = 1">
+            <button class="search-btn" type="button"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
+        <div class="col-md-5">
+          <div class="button-group pull-right hr-toolbar">
+            <ng-container *ngFor="let a of config.toolbarActions">
+              <button type="button" class="btn hr-btn" [ngClass]="'hr-btn-' + (a.color || 'blue')" (click)="runAction(a, null)">
+                <mat-icon *ngIf="a.icon">{{ a.icon }}</mat-icon> {{ a.label }}
+              </button>
+            </ng-container>
+            <button type="button" class="btn-Create btn btn-success" *ngIf="config.canCreate !== false && config.fields?.length && canAdd" (click)="openCreate()">
+              <span class="header-btn-icon"><mat-icon>add_circle</mat-icon></span> Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="hr-intro" *ngIf="config.intro">{{ config.intro }}</p>
+
+    <!-- stat tiles -->
+    <div class="hr-stats" *ngIf="config.stats && stats">
+      <div class="hr-stat" *ngFor="let t of config.stats.tiles">
+        <div class="hr-stat-k">{{ t.label }}</div>
+        <div class="hr-stat-v" [style.color]="t.color || null">{{ statValue(t) }}</div>
+      </div>
+    </div>
+
+    <!-- filters -->
+    <div class="hr-filters" *ngIf="config.filters?.length">
+      <div class="hr-filter" *ngFor="let f of config.filters">
+        <label>{{ f.label }}</label>
+        <select class="form-control" [(ngModel)]="filters[f.key]" (ngModelChange)="onFilterChange()">
+          <option [ngValue]="undefined">All</option>
+          <option *ngFor="let o of options['filter:' + f.key]" [ngValue]="o.value">{{ o.label }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="hr-layout" [class.with-detail]="detail">
+      <!-- list -->
+      <div class="hr-list">
+        <div class="table-responsive">
+          <table class="table hr-table">
+            <thead>
+              <tr>
+                <th *ngFor="let c of config.columns">{{ c.label }}</th>
+                <th class="hr-col-actions" *ngIf="config.rowActions?.length || config.fields?.length">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="loading"><td [attr.colspan]="config.columns.length + 1" class="hr-empty">Loading…</td></tr>
+              <tr *ngIf="!loading && !filteredRows.length"><td [attr.colspan]="config.columns.length + 1" class="hr-empty">{{ config.emptyText || 'No records yet.' }}</td></tr>
+              <tr *ngFor="let r of pagedRows; trackBy: trackById" (click)="openDetail(r)" [class.selected]="detail?.id === r.id">
+                <td *ngFor="let c of config.columns" [ngSwitch]="c.type || 'text'">
+                  <span *ngSwitchCase="'tag'" [ngClass]="tagClass(r, c)">{{ cell(r, c) }}</span>
+                  <span *ngSwitchCase="'date'">{{ cell(r, c) | date:'dd/MM/yyyy' }}</span>
+                  <span *ngSwitchCase="'datetime'">{{ cell(r, c) | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span *ngSwitchCase="'money'">{{ cell(r, c) !== null && cell(r, c) !== undefined ? (cell(r, c) | number:'1.0-2') : '–' }}</span>
+                  <span *ngSwitchCase="'percent'">{{ cell(r, c) !== null && cell(r, c) !== undefined ? (cell(r, c) | number:'1.0-2') + '%' : '–' }}</span>
+                  <span *ngSwitchCase="'bool'">{{ cell(r, c) ? 'Yes' : 'No' }}</span>
+                  <span *ngSwitchCase="'stars'" class="hr-stars"><i *ngFor="let s of stars(cell(r, c))" [class.on]="s">★</i></span>
+                  <span *ngSwitchCase="'progress'" class="hr-progress"><span class="bar"><span [style.width.%]="cell(r, c) || 0"></span></span>{{ cell(r, c) || 0 }}%</span>
+                  <span *ngSwitchCase="'list'">{{ (cell(r, c) || []).join ? (cell(r, c) || []).join(', ') : cell(r, c) }}</span>
+                  <span *ngSwitchDefault>{{ cell(r, c) ?? '–' }}</span>
+                </td>
+                <td class="hr-col-actions" *ngIf="config.rowActions?.length || config.fields?.length" (click)="$event.stopPropagation()">
+                  <ng-container *ngFor="let a of config.rowActions">
+                    <button *ngIf="actionVisible(a, r)" type="button" class="hr-mini" [ngClass]="'hr-btn-' + (a.color || 'blue')" (click)="runAction(a, r, config.endpoint, undefined, $event)">{{ a.label }}</button>
+                  </ng-container>
+                  <button *ngIf="rowEditable(r)" type="button" class="hr-icon-btn" title="Edit" (click)="openEdit(r, $event)"><mat-icon>edit</mat-icon></button>
+                  <button *ngIf="rowDeletable(r)" type="button" class="hr-icon-btn danger" title="Delete" (click)="remove(r, $event)"><mat-icon>delete</mat-icon></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-container" *ngIf="pageCount > 1">
+          <button class="page-btn" [disabled]="page === 1" (click)="page = page - 1">‹</button>
+          <span class="page-number active">{{ page }} / {{ pageCount }}</span>
+          <button class="page-btn" [disabled]="page === pageCount" (click)="page = page + 1">›</button>
+        </div>
+      </div>
+
+      <!-- detail panel -->
+      <aside class="hr-detail" *ngIf="detail">
+        <div class="hr-detail-head">
+          <h3>{{ detailHeading(detail) }}</h3>
+          <button class="hr-icon-btn" (click)="detail = null" title="Close"><mat-icon>close</mat-icon></button>
+        </div>
+        <dl class="hr-facts">
+          <ng-container *ngFor="let c of (config.detailFields || config.columns)">
+            <dt>{{ c.label }}</dt>
+            <dd [ngSwitch]="c.type || 'text'">
+              <span *ngSwitchCase="'date'">{{ cell(detail, c) | date:'dd/MM/yyyy' }}</span>
+              <span *ngSwitchCase="'datetime'">{{ cell(detail, c) | date:'dd/MM/yyyy HH:mm' }}</span>
+              <span *ngSwitchCase="'tag'" [ngClass]="tagClass(detail, c)">{{ cell(detail, c) }}</span>
+              <span *ngSwitchCase="'money'">{{ cell(detail, c) | number:'1.0-2' }}</span>
+              <span *ngSwitchCase="'bool'">{{ cell(detail, c) ? 'Yes' : 'No' }}</span>
+              <span *ngSwitchCase="'stars'" class="hr-stars"><i *ngFor="let s of stars(cell(detail, c))" [class.on]="s">★</i></span>
+              <span *ngSwitchDefault class="pre">{{ cell(detail, c) ?? '–' }}</span>
+            </dd>
+          </ng-container>
+        </dl>
+
+        <section class="hr-child" *ngFor="let ch of config.children">
+          <div class="hr-child-head">
+            <h4>{{ ch.title }}</h4>
+            <button *ngIf="ch.fields?.length && (!ch.canAdd || ch.canAdd(detail))" class="hr-mini hr-btn-green" (click)="addChild(ch)">+ Add</button>
+          </div>
+          <table class="table hr-table small">
+            <thead><tr><th *ngFor="let c of ch.columns">{{ c.label }}</th><th></th></tr></thead>
+            <tbody>
+              <tr *ngIf="!(childRows[ch.title] || []).length"><td [attr.colspan]="ch.columns.length + 1" class="hr-empty">None</td></tr>
+              <tr *ngFor="let r of childRows[ch.title]">
+                <td *ngFor="let c of ch.columns" [ngSwitch]="c.type || 'text'">
+                  <span *ngSwitchCase="'tag'" [ngClass]="tagClass(r, c)">{{ cell(r, c) }}</span>
+                  <span *ngSwitchCase="'date'">{{ cell(r, c) | date:'dd/MM/yyyy' }}</span>
+                  <span *ngSwitchCase="'datetime'">{{ cell(r, c) | date:'dd/MM/yyyy HH:mm' }}</span>
+                  <span *ngSwitchCase="'money'">{{ cell(r, c) | number:'1.0-2' }}</span>
+                  <span *ngSwitchCase="'bool'">{{ cell(r, c) ? '✔' : '—' }}</span>
+                  <span *ngSwitchCase="'stars'" class="hr-stars"><i *ngFor="let s of stars(cell(r, c))" [class.on]="s">★</i></span>
+                  <span *ngSwitchDefault>{{ cell(r, c) ?? '–' }}</span>
+                </td>
+                <td class="hr-col-actions">
+                  <ng-container *ngFor="let a of ch.rowActions">
+                    <button *ngIf="actionVisible(a, r)" class="hr-mini" [ngClass]="'hr-btn-' + (a.color || 'blue')" (click)="runAction(a, r, ch.endpoint, loadChildFn(ch))">{{ a.label }}</button>
+                  </ng-container>
+                  <button *ngIf="ch.fields?.length && (!ch.canEdit || ch.canEdit(detail, r))" class="hr-icon-btn" (click)="editChild(ch, r)"><mat-icon>edit</mat-icon></button>
+                  <button *ngIf="ch.canDelete && ch.canDelete(detail, r)" class="hr-icon-btn danger" (click)="removeChild(ch, r)"><mat-icon>delete</mat-icon></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- create / edit modal -->
+  <div class="hr-modal" *ngIf="formOpen">
+    <div class="hr-modal-box">
+      <div class="hr-modal-head">
+        <h2>{{ formTitle }}</h2>
+        <span class="close-btn" (click)="formOpen = false">×</span>
+      </div>
+      <div class="row">
+        <ng-container *ngFor="let f of formFields">
+          <div [ngClass]="'col-md-' + (f.width || 6)" class="hr-field" *ngIf="fieldVisible(f, formModel)">
+            <label>{{ f.label }}<span class="required-star" *ngIf="f.required"> *</span></label>
+            <ng-container [ngSwitch]="f.type">
+              <textarea *ngSwitchCase="'textarea'" class="form-control" rows="3" [(ngModel)]="formModel[f.key]" [placeholder]="f.placeholder || ''"></textarea>
+              <textarea *ngSwitchCase="'json'" class="form-control mono" rows="3" [(ngModel)]="formModel[f.key]" [placeholder]="f.placeholder || ''"></textarea>
+              <select *ngSwitchCase="'select'" class="form-control" [(ngModel)]="formModel[f.key]">
+                <option [ngValue]="null">Select</option>
+                <option *ngFor="let o of options[f.key]" [ngValue]="o.value">{{ o.label }}</option>
+              </select>
+              <div *ngSwitchCase="'multiselect'" class="hr-multi form-control">
+                <label *ngFor="let o of options[f.key]" class="hr-check">
+                  <input type="checkbox" [checked]="(formModel[f.key] || []).includes(o.value)" (change)="toggleMulti(formModel, f.key, o.value)"> {{ o.label }}
+                </label>
+              </div>
+              <div *ngSwitchCase="'chips'" class="hr-chips">
+                <span *ngFor="let c of f.chipOptions" class="hr-chip" [class.on]="(formModel[f.key] || []).includes(c)" (click)="toggleMulti(formModel, f.key, c)">{{ c }}</span>
+              </div>
+              <label *ngSwitchCase="'checkbox'" class="hr-check"><input type="checkbox" [(ngModel)]="formModel[f.key]"> {{ f.help || 'Yes' }}</label>
+              <input *ngSwitchCase="'file'" type="file" class="form-control" (change)="onFile(f.key, $event)">
+              <input *ngSwitchCase="'datetime'" type="datetime-local" class="form-control" [(ngModel)]="formModel[f.key]">
+              <input *ngSwitchDefault [type]="f.type" class="form-control" [(ngModel)]="formModel[f.key]" [placeholder]="f.placeholder || ''">
+            </ng-container>
+            <small class="hr-help" *ngIf="f.help && f.type !== 'checkbox'">{{ f.help }}</small>
+          </div>
+        </ng-container>
+      </div>
+      <pre class="hr-error" *ngIf="formErrors">{{ formErrors }}</pre>
+      <div class="hr-modal-foot">
+        <button type="button" class="btn btn-danger" (click)="formOpen = false">Close</button>
+        <button type="button" class="btn btn-primary hr-save" [disabled]="saving" (click)="save()">{{ saving ? 'Saving…' : 'Save' }}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- prompt modal -->
+  <div class="hr-modal" *ngIf="promptOpen">
+    <div class="hr-modal-box narrow">
+      <div class="hr-modal-head"><h2>{{ promptTitle }}</h2><span class="close-btn" (click)="closePrompt(false)">×</span></div>
+      <div class="hr-field" *ngFor="let f of promptFields">
+        <label>{{ f.label }}<span class="required-star" *ngIf="f.required"> *</span></label>
+        <ng-container [ngSwitch]="f.type">
+          <textarea *ngSwitchCase="'textarea'" class="form-control" rows="3" [(ngModel)]="promptModel[f.key]"></textarea>
+          <select *ngSwitchCase="'select'" class="form-control" [(ngModel)]="promptModel[f.key]">
+            <option [ngValue]="''">Select</option>
+            <option *ngFor="let o of options[f.key]" [ngValue]="o.value">{{ o.label }}</option>
+          </select>
+          <label *ngSwitchCase="'checkbox'" class="hr-check"><input type="checkbox" [(ngModel)]="promptModel[f.key]"> {{ f.help || 'Yes' }}</label>
+          <input *ngSwitchDefault [type]="f.type" class="form-control" [(ngModel)]="promptModel[f.key]">
+        </ng-container>
+      </div>
+      <div class="hr-modal-foot">
+        <button type="button" class="btn btn-danger" (click)="closePrompt(false)">Cancel</button>
+        <button type="button" class="btn btn-primary hr-save" (click)="closePrompt(true)">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- printable document -->
+  <div class="hr-modal" *ngIf="docHtml">
+    <div class="hr-modal-box">
+      <div class="hr-modal-head"><h2>Preview</h2><span class="close-btn" (click)="docHtml = null">×</span></div>
+      <div class="hr-doc-body" [innerHTML]="docHtml"></div>
+      <div class="hr-modal-foot">
+        <button type="button" class="btn btn-danger" (click)="docHtml = null">Close</button>
+        <button type="button" class="btn btn-primary hr-save" (click)="printDoc()">Print / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hr-toast" *ngIf="toast" [class.err]="toast.kind === 'err'">{{ toast.text }}</div>
+</div>

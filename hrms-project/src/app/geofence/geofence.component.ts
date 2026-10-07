@@ -1127,7 +1127,7 @@ export class GeofenceComponent implements AfterViewInit, OnDestroy {
 
           // ✅ FIX: auto select, DON'T overwrite array
           if (this.Branches.length === 1) {
-            this.branch = this.Branches[0].id; // for single select
+            this.branch = [this.Branches[0].id];  // multi-select needs an array (was a number -> mat-select error with one branch)
             // OR if multi-select:
             // this.branch = [this.Branches[0].id];
           }

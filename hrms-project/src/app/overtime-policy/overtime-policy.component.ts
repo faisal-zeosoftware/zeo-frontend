@@ -94,7 +94,7 @@ searchQuery: string = '';
 
 // Pagination
 currentPage: number = 1;
-pageSize: number = 4;
+pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 totalPages: number = 1;
 
 // Data displayed in table
@@ -956,7 +956,7 @@ openEditModal(asset: any): void {
           }
           // Inside the subscribe block of loadDeparmentBranch
           if (this.Branches.length === 1) {
-            this.branch = this.Branches[0].id;
+            this.branch = [this.Branches[0].id];  // multi-select needs an array (was a number -> mat-select error with one branch)
           }
   
           console.log('Filtered branches for selection:', this.Branches);

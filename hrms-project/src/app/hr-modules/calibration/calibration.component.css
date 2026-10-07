@@ -1,0 +1,14 @@
+.cal-top { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+.cal-top select { max-width: 320px; }
+.cal-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; }
+@media (max-width: 1000px) { .cal-grid { grid-template-columns: 1fr; } }
+.gw-card { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,.07); margin-bottom: 12px; }
+.gw-card h4 { font-size: 15px; font-weight: 600; margin: 0 0 6px; }
+.muted { color: #7b8199; font-size: 12px; }
+.cal-chart { display: flex; gap: 16px; height: 230px; padding: 12px 10px 0; align-items: stretch; }
+.cal-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.cal-val { font-weight: 700; font-size: 13px; margin-bottom: 4px; } .cal-val small { color: #7b8199; font-weight: 400; }
+.cal-track { flex: 1; width: 48px; position: relative; display: flex; align-items: flex-end; }
+.cal-bar { width: 100%; background: #5b4fe0; border-radius: 6px 6px 0 0; min-height: 2px; }
+.cal-guide { position: absolute; left: -8px; right: -8px; border-top: 2px dashed #f0a030; }
+.cal-lbl { margin-top: 6px; font-weight: 600; }

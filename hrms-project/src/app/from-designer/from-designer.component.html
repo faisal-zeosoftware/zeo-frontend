@@ -1585,6 +1585,10 @@
               </mat-accordion>
               </div>
 
+              <div class="zfd-open">
+                <div><b>Employee custom fields</b><span>All field types, order, sections, help text and a live preview</span></div>
+                <button type="button" class="btn btn-primary" (click)="designerFor = 'employee'">Open form designer</button>
+              </div>
               <div
                 class="calendar_view_sec mt-3"
                 *ngFor="let field of custom_fields"
@@ -1635,6 +1639,7 @@
                               <option value="dropdown">Dropdown</option>
                               <option value="radio">Radio</option>
                               <option value="date">Date</option>
+                              <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                             </select>
                           </div>
                         </div>
@@ -1736,7 +1741,7 @@
                           class="form-control"
                           required
                           [(ngModel)]="field_name"
-                          placeholder="Enter Feild Name"
+                          placeholder="Enter Field Name"
                           [ngModelOptions]="{ standalone: true }"
                           [ngClass]="{
                             'error-field': registerButtonClicked && !field_name,
@@ -1747,7 +1752,7 @@
                           *ngIf="registerButtonClicked && !field_name"
                           class="error-message"
                         >
-                          Feild Name is required.
+                          Field Name is required.
                         </div>
                       </div>
 
@@ -1769,6 +1774,7 @@
                             <option value="dropdown">Dropdown</option>
                             <option value="radio">Radio</option>
                             <option value="date">Date</option>
+                            <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                             <option value="text">Text Box</option>
                           </select>
                           <div
@@ -1984,6 +1990,10 @@
               </mat-accordion>
             </div>
 
+            <div class="zfd-open">
+              <div><b>Family custom fields</b><span>All field types, order, sections, help text and a live preview</span></div>
+              <button type="button" class="btn btn-primary" (click)="designerFor = 'family'">Open form designer</button>
+            </div>
             <div
               class="calendar_view_sec mt-3"
               *ngFor="let field of custom_fields_fam"
@@ -2035,6 +2045,7 @@
                             <option value="dropdown">Dropdown</option>
                             <option value="radio">Radio</option>
                             <option value="date">Date</option>
+                            <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           </select>
                         </div>
                       </div>
@@ -2133,7 +2144,7 @@
                         class="form-control"
                         required
                         [(ngModel)]="field_name_fam"
-                        placeholder="Enter Feild Name"
+                        placeholder="Enter Field Name"
                         [ngModelOptions]="{ standalone: true }"
                         [ngClass]="{
                           'error-field':
@@ -2145,7 +2156,7 @@
                         *ngIf="registerButtonClicked && !field_name_fam"
                         class="error-message"
                       >
-                        Feild Name is required.
+                        Field Name is required.
                       </div>
                     </div>
 
@@ -2167,6 +2178,7 @@
                           <option value="dropdown">Dropdown</option>
                           <option value="radio">Radio</option>
                           <option value="date">Date</option>
+                          <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           <option value="text">Text Box</option>
                         </select>
                         <div
@@ -2381,6 +2393,10 @@
               </mat-accordion>
             </div>
 
+            <div class="zfd-open">
+              <div><b>Qualification custom fields</b><span>All field types, order, sections, help text and a live preview</span></div>
+              <button type="button" class="btn btn-primary" (click)="designerFor = 'qualification'">Open form designer</button>
+            </div>
             <div
               class="calendar_view_sec mt-3"
               *ngFor="let field of custom_fields_qual"
@@ -2432,6 +2448,7 @@
                             <option value="dropdown">Dropdown</option>
                             <option value="radio">Radio</option>
                             <option value="date">Date</option>
+                            <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           </select>
                         </div>
                       </div>
@@ -2529,7 +2546,7 @@
                         class="form-control"
                         required
                         [(ngModel)]="field_name_qual"
-                        placeholder="Enter Feild Name"
+                        placeholder="Enter Field Name"
                         [ngModelOptions]="{ standalone: true }"
                         [ngClass]="{
                           'error-field':
@@ -2541,7 +2558,7 @@
                         *ngIf="registerButtonClicked && !field_name_qual"
                         class="error-message"
                       >
-                        Feild Name is required.
+                        Field Name is required.
                       </div>
                     </div>
 
@@ -2563,6 +2580,7 @@
                           <option value="dropdown">Dropdown</option>
                           <option value="radio">Radio</option>
                           <option value="date">Date</option>
+                          <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           <option value="text">Text Box</option>
                         </select>
                         <div
@@ -2876,6 +2894,10 @@
               </mat-accordion>
             </div>
 
+            <div class="zfd-open">
+              <div><b>Job history custom fields</b><span>All field types, order, sections, help text and a live preview</span></div>
+              <button type="button" class="btn btn-primary" (click)="designerFor = 'job'">Open form designer</button>
+            </div>
             <div
               class="calendar_view_sec mt-3"
               *ngFor="let field of custom_fields_job"
@@ -2927,6 +2949,7 @@
                             <option value="dropdown">Dropdown</option>
                             <option value="radio">Radio</option>
                             <option value="date">Date</option>
+                            <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           </select>
                         </div>
                       </div>
@@ -3024,7 +3047,7 @@
                         class="form-control"
                         required
                         [(ngModel)]="field_name_job"
-                        placeholder="Enter Feild Name"
+                        placeholder="Enter Field Name"
                         [ngModelOptions]="{ standalone: true }"
                         [ngClass]="{
                           'error-field':
@@ -3036,7 +3059,7 @@
                         *ngIf="registerButtonClicked && !field_name_job"
                         class="error-message"
                       >
-                        Feild Name is required.
+                        Field Name is required.
                       </div>
                     </div>
 
@@ -3058,6 +3081,7 @@
                           <option value="dropdown">Dropdown</option>
                           <option value="radio">Radio</option>
                           <option value="date">Date</option>
+                          <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           <option value="text">Text Box</option>
                         </select>
                         <div
@@ -3305,6 +3329,10 @@
                 </mat-accordion>
               </div>
 
+              <div class="zfd-open">
+                <div><b>Documents custom fields</b><span>All field types, order, sections, help text and a live preview</span></div>
+                <button type="button" class="btn btn-primary" (click)="designerFor = 'documents'">Open form designer</button>
+              </div>
               <div
                 class="calendar_view_sec mt-3"
                 *ngFor="let field of custom_fields_doc"
@@ -3355,6 +3383,7 @@
                               <option value="dropdown">Dropdown</option>
                               <option value="radio">Radio</option>
                               <option value="date">Date</option>
+                              <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                             </select>
                           </div>
                         </div>
@@ -3455,7 +3484,7 @@
                         class="form-control"
                         required
                         [(ngModel)]="field_name_doc"
-                        placeholder="Enter Feild Name"
+                        placeholder="Enter Field Name"
                         [ngModelOptions]="{ standalone: true }"
                         [ngClass]="{
                           'error-field':
@@ -3467,7 +3496,7 @@
                         *ngIf="registerButtonClicked && !field_name_doc"
                         class="error-message"
                       >
-                        Feild Name is required.
+                        Field Name is required.
                       </div>
                     </div>
 
@@ -3488,6 +3517,7 @@
                           <option value="dropdown">Dropdown</option>
                           <option value="radio">Radio</option>
                           <option value="date">Date</option>
+                          <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           <option value="text">Text Box</option>
                         </select>
                         <div
@@ -3574,3 +3604,6 @@
     </div>
   </div>
 </div>
+
+<!-- v1.7.0: form designer for the employee custom fields (types, order, sections, preview) -->
+<z-field-designer *ngIf="designerFor" [adapter]="designerAdapter(designerFor)" (closed)="designerClosed($event)"></z-field-designer>

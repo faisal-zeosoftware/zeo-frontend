@@ -132,7 +132,7 @@ SearchEmployee: string = '';
 pagedEmployees: any[] = [];
 
 currentPage: number = 1;
-pageSize: number = 10;
+pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 totalPages: number = 1;
 pageNumbers: number[] = [];
 
@@ -221,7 +221,7 @@ showTrialFilterPanel: boolean = false;
   this.LoadBranch();
   this.loadEmp(); 
   this.LoadSalaryCom();
-  this.LoadPayrollSettings();
+  // this.LoadPayrollSettings();  // endpoint payroll/api/PayrollFormula no longer exists (404) and the data is unused
   this.LoadPaySlipComponent();
   this.LoadDepartment();
   this.LoadCategory();

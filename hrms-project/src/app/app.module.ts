@@ -102,6 +102,24 @@ import { EmployeeSctionComponent } from './employee-sction/employee-sction.compo
 import { AssignWeekcalendarComponent } from './assign-weekcalendar/assign-weekcalendar.component';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { EmployeeDashboardComponent } from './employee-dashboard/employee-dashboard.component';
+import { EssDashboardComponent } from './hr-modules/dashboards/ess-dashboard.component';
+import { ZListDirective } from './shared-ui/z-list.directive';
+import { ZOrgPickDirective } from './shared-ui/z-org-pick.directive';
+import { ZModuleMenuComponent, ZAppTitleComponent } from './shared-ui/z-module-menu.component';
+import { ZDashDesignerComponent, ZDashOverviewComponent } from './shared-ui/z-dash.component';
+import { ZFieldDesignerComponent } from './shared-ui/z-field-designer.component';
+import { ZFieldInputComponent } from './shared-ui/z-field-input.component';
+import { ZEmpFieldsComponent } from './shared-ui/z-emp-fields.component';
+import { ZRecordService } from './shared-ui/z-record.service';
+import { ZRecordServiceToken } from './shared-ui/z-list.service';
+import { ZListRecorderInterceptor } from './shared-ui/z-list.service';
+import { FormSettingsService } from './shared-ui/form-settings.service';
+import { APP_INITIALIZER } from '@angular/core';
+
+/** Load the company's form designer settings before the first screen opens (max 3 s). */
+export function loadFormSettings(fs: FormSettingsService) {
+  return () => Promise.race([fs.pull(), new Promise(r => setTimeout(r, 3000))]);
+}
 import { HolidayCalendarComponent } from './holiday-calendar/holiday-calendar.component';
 import { AssignweekCalendarDaysComponent } from './assignweek-calendar-days/assignweek-calendar-days.component';
 import { AssignHolidayCalendarComponent } from './assign-holiday-calendar/assign-holiday-calendar.component';
@@ -488,6 +506,16 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
 
   ],
   imports: [
+    EssDashboardComponent,
+    ZListDirective,
+    ZOrgPickDirective,
+    ZModuleMenuComponent,
+    ZDashDesignerComponent,
+    ZDashOverviewComponent,
+    ZFieldDesignerComponent,
+    ZFieldInputComponent,
+    ZEmpFieldsComponent,
+    ZAppTitleComponent,
     
     
     BrowserModule,
@@ -535,7 +563,10 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
       provide:HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
-    }],
+    },
+    { provide: HTTP_INTERCEPTORS, useClass: ZListRecorderInterceptor, multi: true },
+    { provide: ZRecordServiceToken, useExisting: ZRecordService },
+    { provide: APP_INITIALIZER, useFactory: loadFormSettings, deps: [FormSettingsService], multi: true }],
     
    
 

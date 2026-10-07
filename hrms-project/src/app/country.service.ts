@@ -431,7 +431,7 @@ export class CountryService {
         // const url = `${this.baseUrl}/Branch/`;
         // return this.http.get(url);
     
-        const Url = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
+        const Url = `${this.apiUrl}/employee/api/Documents/?schema=${selectedSchema}`;
     
         // Fetch employees from the API
         return this.http.get(Url);

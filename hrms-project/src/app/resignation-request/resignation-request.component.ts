@@ -1001,7 +1001,7 @@ loadDeparmentBranch(selectedBranchIds: number[] = []): void {
   
 // ==================== PAGINATION ====================
 currentPage: number = 1;
-itemsPerPage: number = 10;                       // default
+itemsPerPage: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)                       // default
 pagedDocRequests: any[] = [];
 
 pageSizeOptions: number[] = [5, 10, 25, 50, 100];

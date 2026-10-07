@@ -299,16 +299,6 @@
 
   <div class="com_list mt-4" *ngIf="hasViewPermission">
     <div style="overflow-x: auto; width: 100%;">
-              <div class="page-size-box">
-        <label for="pageSize">Rows per page:</label>
-        <select
-          id="pageSize"
-          class="page-size-select"
-          [ngModel]="itemsPerPage"
-          (ngModelChange)="onPageSizeChange($event)">
-          <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-        </select>
-      </div>
     <table width="100%">
     <thead class="thead-dark">
       <tr>
@@ -373,9 +363,6 @@
     </tbody>
   </table>
   </div>
-                               <span class="record-info">
-    Showing {{ startRecord }}–{{ endRecord }} of {{ filteredGeneralReq.length }}
-  </span>
                   <div class="pagination-container">
 
   <button

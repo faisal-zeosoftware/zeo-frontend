@@ -1775,7 +1775,7 @@ updateEmployeeSalaryComponent(selectedSchema: string, payload: any): Observable<
 
 
 getDocType(selectedSchema: string): Observable<any> {
-  const apiUrl = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
+  const apiUrl = `${this.apiUrl}/employee/api/Documents/?schema=${selectedSchema}`;
 
 
   return this.http.get(apiUrl);

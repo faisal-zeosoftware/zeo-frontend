@@ -7,6 +7,12 @@ import { EmployeeService } from '../employee-master/employee.service';
 import { SessionService } from '../login/session.service';
 import { environment } from '../../environments/environment';
 import { CompanyRegistrationService } from '../company-registration.service';
+import { ZListService } from '../shared-ui/z-list.service';
+
+import { visibleGroups } from '../shared-ui/z-module-menu.component';
+import { appForUrl } from '../shared-ui/menu-config';
+import { APP_VERSION } from '../shared-ui/version';
+import { ZRecordService } from '../shared-ui/z-record.service';
 import { ElementRef, ViewChild } from '@angular/core';
 import { HostListener } from '@angular/core';
 
@@ -64,12 +70,41 @@ export class MainSidebarComponent implements OnDestroy {
     private route: ActivatedRoute,
     private sessionService: SessionService,
     private companyservice: CompanyRegistrationService,
+    private zlist: ZListService,
+    private zrec: ZRecordService,
   ) { }
+
+  // ---------- main menu (shared config, grouped, by user rights) ----------
+  private menuAccess: { admin: boolean; codes: Set<string> } | null = null;
+  get todo$() { return this.zrec.todoCounts$; }
+  menuGroups: ReturnType<typeof visibleGroups> = visibleGroups(null);
+  currentAppKey = '';
+  appVersion = APP_VERSION;
+
+  buildMenu(): void {
+    this.menuGroups = visibleGroups(this.menuAccess, this.hideButton);
+    this.markApp();
+  }
+
+  private markApp(): void {
+    this.currentAppKey = appForUrl(this.router.url)?.key || (this.router.url.includes('dashboard-contents') ? 'home' : this.router.url.includes('manager-dashboard') ? 'mgr' : '');
+  }
 
   // ============================================================
   // SIDEBAR TOGGLE (FIXED FOR MOBILE)
   // ============================================================
-  isMenuOpen: boolean = true;
+  // v1.7.0: the main menu starts folded (icons only); the fold / unfold button keeps the user's choice
+  isMenuOpen: boolean = window.innerWidth > 991.98 && (() => { try { return localStorage.getItem('zeo-main-menu') === 'open'; } catch { return false; } })();
+
+  toggleFold(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+    try { localStorage.setItem('zeo-main-menu', this.isMenuOpen ? 'open' : 'folded'); } catch { /* storage off */ }
+  }
+
+  /** A module was picked: its own menu opens, so the main menu folds (mobile: the drawer closes). */
+  modulePicked(): void {
+    if (this.isMenuOpen) { this.isMenuOpen = false; this.unlockBodyScroll(); }
+  }
 
   toggleSidebarMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
@@ -172,6 +207,7 @@ export class MainSidebarComponent implements OnDestroy {
   // ============================================================
 
   ngOnInit(): void {
+    this.zlist.permissions().subscribe(a => { this.menuAccess = a; this.buildMenu(); });
     this.selectedBranchIds = JSON.parse(
       localStorage.getItem('selectedBranchIds') || '[]'
     );
@@ -196,9 +232,11 @@ export class MainSidebarComponent implements OnDestroy {
     });
 
     this.hideButton = this.EmployeeService.getHideButton();
+    this.buildMenu();
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
+        this.markApp();
       }
     });
 

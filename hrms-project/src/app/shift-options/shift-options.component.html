@@ -10,75 +10,14 @@
       <div class="wrapper">
 
         <div class="sidebar-top">
-          <span class="sub-sidebar-title" *ngIf="isMenuOpen">Shift Options</span>
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen"><z-app-title fallback="Shift Options"></z-app-title></span>
           <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
             <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
           </button>
         </div>
 
         <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <ul class="nav-menu-list">
-
-            <li *ngIf="hasViewPermissionShifts">
-              <a routerLink="/main-sidebar/shift-options/shifts" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">schedule</mat-icon>
-                <span class="sidenav-opt">Shift</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionShiftPattern">
-              <a routerLink="/main-sidebar/shift-options/shift-pattern" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">date_range</mat-icon>
-                <span class="sidenav-opt">Shift Pattern</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionEmployeeShift">
-              <a routerLink="/main-sidebar/shift-options/shift-employee" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">badge</mat-icon>
-                <span class="sidenav-opt">Employee Shift</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionShiftOverride">
-              <a routerLink="/main-sidebar/shift-options/shift-override" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">edit_calendar</mat-icon>
-                <span class="sidenav-opt">Shift Override</span>
-              </a>
-            </li>
-
-            <!-- Dropdown: OverTime Submenu -->
-            <li class="has-submenu">
-              <div class="submenu-header" (click)="toggleAdvanceSalary()">
-                <div class="d-flex">
-                  <mat-icon class="nav-icon">more_time</mat-icon>
-                  <span class="sidenav-opt">OverTime</span>
-                </div>
-                <mat-icon class="chevron-arrow" *ngIf="isMenuOpen">
-                  {{ showAdvanceSalary ? 'expand_less' : 'expand_more' }}
-                </mat-icon>
-              </div>
-
-              <ul class="sub-menu-list" *ngIf="showAdvanceSalary && isMenuOpen">
-                <li *ngIf="hasViewPermissionEmpOvertime">
-                  <a routerLink="/main-sidebar/shift-options/employee-overtime" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    Employee OverTime
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionOvertimepolicy">
-                  <a routerLink="/main-sidebar/shift-options/overtime-policy" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    OverTime Policy
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionOvertimepolicy">
-                  <a routerLink="/main-sidebar/shift-options/overtime-rule" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    OverTime Rule
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-          </ul>
+          <z-module-menu [open]="isMenuOpen" (picked)="closeOnMobile()"></z-module-menu>
         </nav>
 
       </div>

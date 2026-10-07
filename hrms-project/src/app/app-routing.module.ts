@@ -1,3 +1,5 @@
+import { ZTodoComponent } from './shared-ui/z-todo.component';
+import { ZOrgChartComponent } from './shared-ui/z-org-chart.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
@@ -103,6 +105,7 @@ import { ResignationApprovalLevelComponent } from './resignation-approval-level/
 import { ResignationRequestComponent } from './resignation-request/resignation-request.component';
 import { ResignationApprovalsComponent } from './resignation-approvals/resignation-approvals.component';
 import { ProjectOptionsComponent } from './project-options/project-options.component';
+import { HR_MODULE_ROUTES } from './hr-modules/hr-modules.routes';
 import { ProjectMasterComponent } from './project-master/project-master.component';
 import { ProjectStagesComponent } from './project-stages/project-stages.component';
 import { ProjectTasksComponent } from './project-tasks/project-tasks.component';
@@ -197,6 +200,12 @@ const routes: Routes = [
     path: 'main-sidebar',
     component: MainSidebarComponent, canActivate: [AuthGuard],
     children: [
+      // v1.7.0: My To-do (activities on every screen) and the organisation chart
+      { path: 'todo', component: ZTodoComponent },
+      { path: 'org-chart', component: ZOrgChartComponent },
+
+      // Performance, Recruitment and Learning Management (hr-modules)
+      ...HR_MODULE_ROUTES,
 
       {
         path: 'sub-sidebar',

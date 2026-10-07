@@ -139,7 +139,7 @@
                      <span class="required-star">*</span>
                 </label>
                 <input type="text" class="form-control" required [(ngModel)]="field_name_fam"
-                    placeholder="Enter Feild Name" [ngModelOptions]="{standalone: true}"
+                    placeholder="Enter Field Name" [ngModelOptions]="{standalone: true}"
                     [ngClass]="{'error-field': registerButtonClicked && !field_name_fam}">
 
                 <div *ngIf="registerButtonClicked && !field_name_fam" class="error-message">Feild

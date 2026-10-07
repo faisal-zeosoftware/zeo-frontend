@@ -1976,3 +1976,5 @@ html {
         border: 1px solid #dee2e6 !important;
     }
 }
+/* heading between the new dashboard and the existing profile tabs */
+.ess-profile-title { font-size: 15px; font-weight: 500; color: #1B1640; margin: 8px 0 10px; }

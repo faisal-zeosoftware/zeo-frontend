@@ -49,7 +49,7 @@ export class DocumentTypeMasterComponent {
 
 // Pagination
 currentPage: number = 1;
-pageSize: number = 4;
+pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 totalPages: number = 1;
 
 onSearchChange(): void {

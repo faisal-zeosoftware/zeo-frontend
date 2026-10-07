@@ -602,6 +602,9 @@
       <!-- Dashboard Tab (Default View) -->
       <section class="content-tab animate__animated animate__fadeIn" id="dashboard"
         *ngIf="activeTabNav === 'dashboard'">
+        <!-- new all-module home (ESS + My team for managers); the profile tabs stay below -->
+        <app-ess-dashboard [inPortal]="true" (openTab)="selectTabNav($event)"></app-ess-dashboard>
+        <h2 class="ess-profile-title">My profile</h2>
         <ul class="tab-group ">
           <li class="tab" [class.active]="activeTab === 'signup'" (click)="selectTab('signup')">
             <a href="javascript:void(0)">Profile</a>

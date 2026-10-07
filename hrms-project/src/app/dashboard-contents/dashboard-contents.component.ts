@@ -1,5 +1,5 @@
 import { style } from '@angular/animations';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AuthenticationService } from '../login/authentication.service';
 import { ActivatedRoute, Router, NavigationEnd  } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http'; // Import HttpErrorResponse
@@ -21,7 +21,7 @@ Chart.register(...registerables);
   templateUrl: './dashboard-contents.component.html',
   styleUrl: './dashboard-contents.component.css'
 })
-export class DashboardContentsComponent implements OnInit {
+export class DashboardContentsComponent implements OnInit, OnDestroy {
 
 
   @ViewChild('attendanceChart') attendanceChartCanvas!: ElementRef;
@@ -73,13 +73,26 @@ approvalFilter: string = '';
       private leaveService: LeaveService,
       private cdr: ChangeDetectorRef,
    private DepartmentServiceService: DepartmentServiceService ,
-   ) { this.router.events.subscribe(event => {
+   ) { this.navSub = this.router.events.subscribe(event => {
     if (event instanceof NavigationEnd) {
       this.isLoadingEss = false;
     }
   }); }
 
   dataSubscription?: Subscription;
+  // v1.6.0: timers and subscriptions are stopped when the dashboard is left (they kept the whole app busy before)
+  private navSub?: Subscription;
+  private greetingTimer: any;
+  private destroyed = false;
+  private chartRetries = 0;
+
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    clearInterval(this.greetingTimer);
+    this.dataSubscription?.unsubscribe();
+    this.navSub?.unsubscribe();
+    if (this.attendanceChart) { this.attendanceChart.destroy(); this.attendanceChart = null; }
+  }
 
    ngOnInit(): void {
 
@@ -98,9 +111,10 @@ approvalFilter: string = '';
   });
 
   // Update the greeting every minute
-  setInterval(() => {
+  this.setDynamicGreeting();
+  this.greetingTimer = setInterval(() => {
     this.setDynamicGreeting();
-  }, 100); // 60000ms = 1 minute
+  }, 60000); // 1 minute
 
     this.fetchingSchemaDatas();
     this.loadBranch();
@@ -573,10 +587,12 @@ scrollToApprovals(): void {
     }
 
     if (!this.attendanceChartCanvas) {
-      console.warn("Retrying canvas lookup on next animation frame...");
+      // the canvas appears after the next render; stop when the dashboard has been left
+      if (this.destroyed || this.chartRetries++ > 120) { return; }
       requestAnimationFrame(() => this.renderAttendanceBarChart(present, absent, leave));
       return;
     }
+    this.chartRetries = 0;
 
     const ctx = this.attendanceChartCanvas.nativeElement.getContext('2d');
     

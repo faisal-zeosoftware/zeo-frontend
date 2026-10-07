@@ -190,7 +190,7 @@
             </span>
 
             <span class="value">
-              {{ apr.employee_id }}
+              {{ apr.request_details?.employee_name || apr.request_details?.employee || apr.employee_id || '—' }}
             </span>
 
           </div>

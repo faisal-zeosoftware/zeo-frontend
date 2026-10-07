@@ -826,6 +826,13 @@ export class CreateEmployeeComponent implements OnInit {
 
     this.registerButtonClicked = true;
 
+    // custom fields ticked "Mandatory" in the form designer
+    const missingCustom = (this.custom_fields || []).filter((f: any) => f.mandatory && (f.field_value === undefined || f.field_value === null || String(f.field_value).trim() === '' || f.field_value === false));
+    if (missingCustom.length) {
+      alert('Please fill: ' + missingCustom.map((f: any) => f.emp_custom_field).join(', '));
+      return;
+    }
+
     // ================================
     // REQUIRED FIELD VALIDATION
     // ================================
@@ -1210,30 +1217,24 @@ formData.append(
 
 
   postCustomFieldValues(empMasterId: number): void {
-    const customFieldValues = this.custom_fields.map(field => ({
-      emp_custom_field: field.emp_custom_field, // Assuming the field has an 'id' property
-      field_value: field.field_value, // The value entered by the user
-      emp_master: empMasterId // The employee ID from the response
-    }));
-
-    // Make API calls to post each custom field value
-    customFieldValues.forEach(fieldValue => {
-      const selectedSchema = localStorage.getItem('selectedSchema');
-      if (!selectedSchema) {
-        console.error('No schema selected.');
-        // return throwError('No schema selected.'); // Return an error observable if no schema is selected
-      }
-
-      // this.http.post(`${this.apiUrl}/employee/api/emp-custom-field-value/?schema=${selectedSchema}`, fieldValue)
-      this.http.post(`${this.apiUrl}/employee/api/custom-field-value/?schema=${selectedSchema}`, fieldValue)
-        .subscribe(
-          (response: any) => {
-            console.log('Custom field value posted successfully', response);
-          },
-          (error: HttpErrorResponse) => {
-            console.error('Failed to post custom field value', error);
-          }
-        );
+    const selectedSchema = localStorage.getItem('selectedSchema');
+    // only fields the user filled in; the API stores the value under the field name
+    const filled = (this.custom_fields || []).filter((f: any) => f.field_value !== undefined && f.field_value !== null && String(f.field_value).trim() !== '');
+    const errors: string[] = [];
+    let pending = filled.length;
+    filled.forEach((field: any) => {
+      const fieldValue = {
+        emp_custom_field: field.emp_custom_field,
+        field_value: field.data_type === 'checkbox' ? (field.field_value ? 'Yes' : 'No') : field.field_value,
+        emp_master: empMasterId,
+      };
+      this.http.post(`${this.apiUrl}/employee/api/custom-field-value/?schema=${selectedSchema}`, fieldValue).subscribe({
+        next: () => { if (--pending === 0 && errors.length) { alert('Employee saved, but some custom fields were not:\n' + errors.join('\n')); } },
+        error: (error: HttpErrorResponse) => {
+          const e = error.error; errors.push(`${field.emp_custom_field}: ${e ? Object.values(e).flat().join(' ') : 'not saved'}`);
+          if (--pending === 0) { alert('Employee saved, but some custom fields were not:\n' + errors.join('\n')); }
+        },
+      });
     });
   }
 

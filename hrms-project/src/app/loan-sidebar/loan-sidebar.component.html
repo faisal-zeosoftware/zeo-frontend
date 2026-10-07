@@ -10,58 +10,14 @@
       <div class="wrapper">
 
         <div class="sidebar-top">
-          <span class="sub-sidebar-title" *ngIf="isMenuOpen">Loan Options</span>
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen"><z-app-title fallback="Loan Options"></z-app-title></span>
           <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
             <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
           </button>
         </div>
 
         <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <ul class="nav-menu-list">
-
-            <li *ngIf="hasViewPermissionLoanType">
-              <a routerLink="/main-sidebar/loan-sidebar/loan-type" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">account_balance</mat-icon>
-                <span class="sidenav-opt">Loan Type</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionLoanApprovals">
-              <a routerLink="/main-sidebar/loan-sidebar/loan-approval" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">verified</mat-icon>
-                <span class="sidenav-opt">Loan Approvals</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionLoanRepayment">
-              <a routerLink="/main-sidebar/loan-sidebar/loan-repayment" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">price_check</mat-icon>
-                <span class="sidenav-opt">Loan Repayment</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionLoanEscalation">
-              <a routerLink="/main-sidebar/loan-sidebar/loan-escalation" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">trending_up</mat-icon>
-                <span class="sidenav-opt">Loan Escalation</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionLoanApprovalLevel">
-              <a routerLink="/main-sidebar/loan-sidebar/loan-approvel-level" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">approval</mat-icon>
-                <span class="sidenav-opt">Loan Approval Level</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionLoanApplication">
-              <a routerLink="/main-sidebar/loan-sidebar/loan-application" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">request_quote</mat-icon>
-                <span class="sidenav-opt">Loan Request</span>
-              </a>
-            </li>
-
-          </ul>
+          <z-module-menu [open]="isMenuOpen" (picked)="closeOnMobile()"></z-module-menu>
         </nav>
 
       </div>

@@ -331,6 +331,7 @@ export class AssetEmailTemplateComponent {
 
 
   ngAfterViewInit(): void {
+    if (!this.summernoteEditor) { return; }  // editor lives inside the create/edit modal; it is initialised when the modal opens
     $(this.summernoteEditor.nativeElement).summernote({
       height: 150,
       placeholder: 'Type your text here...',

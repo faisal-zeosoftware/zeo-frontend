@@ -10,44 +10,14 @@
       <div class="wrapper">
 
         <div class="sidebar-top">
-          <span class="sub-sidebar-title" *ngIf="isMenuOpen">Project Options</span>
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen"><z-app-title fallback="Project Options"></z-app-title></span>
           <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
             <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
           </button>
         </div>
 
         <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <ul class="nav-menu-list">
-
-            <li *ngIf="hasViewPermissionProjects">
-              <a routerLink="/main-sidebar/project-options/project-master" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">account_tree</mat-icon>
-                <span class="sidenav-opt">Projects</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionProjectsStages">
-              <a routerLink="/main-sidebar/project-options/project-stages" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">view_kanban</mat-icon>
-                <span class="sidenav-opt">Projects Stages</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionProjectsTaks">
-              <a routerLink="/main-sidebar/project-options/project-tasks" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">assignment_turned_in</mat-icon>
-                <span class="sidenav-opt">Projects Tasks</span>
-              </a>
-            </li>
-
-            <li *ngIf="hasViewPermissionProjectsTimesheet">
-              <a routerLink="/main-sidebar/project-options/project-timesheet" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">schedule</mat-icon>
-                <span class="sidenav-opt">Projects Timesheet</span>
-              </a>
-            </li>
-
-          </ul>
+          <z-module-menu [open]="isMenuOpen" (picked)="closeOnMobile()"></z-module-menu>
         </nav>
 
       </div>

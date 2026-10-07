@@ -358,7 +358,18 @@ getAddress(lat: number, lng: number): Promise<string> {
 
 
 
+private apiErrorText(error: any): string {
+  const e = error?.error;
+  if (!e) { return error?.message || 'Unknown error'; }
+  if (typeof e === 'string') { return e; }
+  return Object.entries(e).map(([k, v]: any) => `${k}: ${Array.isArray(v) ? v.join(' ') : v}`).join('\n');
+}
+
 async registerCheckIn(): Promise<void> {
+  if (!this.employee) {
+    alert('Please select an employee first.');
+    return;
+  }
   try {
     this.registerButtonClicked = true;
 
@@ -383,18 +394,23 @@ async registerCheckIn(): Promise<void> {
         window.location.reload();
       },
       (error) => {
-        alert("Check-In Failed");
+        alert("Check-In Failed\n" + this.apiErrorText(error));
       }
     );
 
   } catch (error) {
     console.log(error);
-    alert(JSON.stringify(error));
+    // getLocation() rejects when the browser blocks location; JSON.stringify(error) only showed "{}"
+    alert("Please allow location access!");
   }
 }
 
 
 async registerCheckOut(): Promise<void> {
+  if (!this.employee) {
+    alert('Please select an employee first.');
+    return;
+  }
   try {
     this.registerButtonClicked = true;
 
@@ -418,7 +434,7 @@ async registerCheckOut(): Promise<void> {
         window.location.reload();
       },
       (error) => {
-        alert("Check-Out Failed");
+        alert("Check-Out Failed\n" + this.apiErrorText(error));
       }
     );
 

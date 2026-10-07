@@ -104,42 +104,16 @@ export class AirTicketPolicyComponent {
   allSelectedbR=false;
   allSelecteddes=false;
 
-   // Search + pagination
+  // Search
 searchQuery: string = '';
+
+// Pagination
 currentPage: number = 1;
-pageSize: number = 5;
-pageSizeOptions: number[] = [5, 10, 25, 50, 100];
-filteredLoanTypes: any[] = [];
-paginatedLoanTypes: any[] = [];
-
-get itemsPerPage(): number {
-  return this.pageSize;
-}
-
-set itemsPerPage(value: number) {
-  this.pageSize = value;
-}
-
-onPageSizeChange(newSize: number): void {
-  this.pageSize = Number(newSize);
-  this.currentPage = 1;
-  this.applyFilterAndPagination();
-}
-
-get startRecord(): number {
-  return this.filteredLoanTypes.length === 0
-    ? 0
-    : (this.currentPage - 1) * this.pageSize + 1;
-}
-
-get endRecord(): number {
-  return Math.min(this.currentPage * this.pageSize, this.filteredLoanTypes.length);
-}
-
-
-
+pageSize: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 totalPages: number = 1;
 
+// Filtered + paginated list used by the table
+filteredLoanTypes: any[] = [];
 
 onSearchChange(): void {
   this.currentPage = 1;
@@ -438,7 +412,7 @@ toggleAllSelectionDes(): void {
           }
           // Inside the subscribe block of loadDeparmentBranch
           if (this.Branches.length === 1) {
-            this.branch = this.Branches[0].id;
+            this.branch = [this.Branches[0].id];  // multi-select needs an array (was a number -> mat-select error with one branch)
           }
   
           console.log('Filtered branches for selection:', this.Branches);

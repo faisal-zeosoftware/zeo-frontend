@@ -1,0 +1,163 @@
+<div class="zdash" [class.embedded]="embedded" [class.page]="!embedded">
+  <p class="err" *ngIf="error">{{ error }}</p>
+  <p class="muted" *ngIf="!d && !error">Loading…</p>
+
+  <ng-container *ngIf="d">
+    <header class="zh" *ngIf="!embedded">
+      <div>
+        <h1>{{ d.scope === 'company' ? 'Company dashboard' : 'My team' }}</h1>
+        <p class="muted">{{ d.headcount }} people · {{ d.today | date:'EEEE d MMMM y' }}</p>
+      </div>
+    </header>
+
+    <!-- one filter row scopes everything below -->
+    <div class="filters" *ngIf="d.is_admin">
+      <div class="seg" role="group" aria-label="Who to show">
+        <button type="button" [class.on]="scope === 'team'" (click)="setScope('team')">My team</button>
+        <button type="button" [class.on]="scope === 'company'" (click)="setScope('company')">Whole company</button>
+      </div>
+      <label *ngIf="scope === 'company'">Department
+        <select [(ngModel)]="department" (change)="load()">
+          <option value="">All departments</option>
+          <option *ngFor="let x of departments" [value]="x.id">{{ x.dept_name }}</option>
+        </select>
+      </label>
+    </div>
+
+    <div [class.refetch]="loading">
+      <p class="muted" *ngIf="!d.headcount">Nobody reports to you yet. Team numbers appear here once employees have you as their reporting manager.</p>
+
+      <!-- today -->
+      <section class="today big" *ngIf="d.headcount">
+        <button type="button" class="t-item" (click)="drill('present_today', 'Present today')">
+          <span class="t-k">Present</span><b>{{ d.today_status.present }}<small> of {{ d.headcount }}</small></b>
+          <span class="t-bar"><i [style.width.%]="pctOf(d.today_status.present)"></i></span>
+        </button>
+        <button type="button" class="t-item" (click)="drill('late_today', 'Late today')">
+          <span class="t-k">Late in</span><b [class.warn-text]="d.today_status.late">{{ d.today_status.late }}</b>
+          <span class="t-note">after shift start + 15 min</span>
+        </button>
+        <button type="button" class="t-item" (click)="drill('on_leave_today', 'On leave today')">
+          <span class="t-k">On leave</span><b>{{ d.today_status.on_leave }}</b>
+        </button>
+        <button type="button" class="t-item" (click)="drill('not_punched_today', 'Not checked in yet')">
+          <span class="t-k">Not in yet</span><b [class.bad-text]="d.today_status.not_punched">{{ d.today_status.not_punched }}</b>
+          <span class="t-note" *ngIf="!d.today_status.working_day">weekend</span>
+        </button>
+        <button type="button" class="t-item" (click)="drill('headcount', 'Everyone')">
+          <span class="t-k">Headcount</span><b>{{ d.headcount }}</b>
+        </button>
+      </section>
+
+      <div class="grid g-2 wide-left">
+        <!-- approvals inbox (signature element) -->
+        <section class="card inbox">
+          <div class="card-h">
+            <h2>Waiting for my approval</h2>
+            <button type="button" class="zbtn link" (click)="drill('approvals', 'Waiting for my approval')" *ngIf="d.approvals.total">Open all</button>
+          </div>
+          <div class="inbox-top">
+            <p class="hero">{{ d.approvals.total }}</p>
+            <p class="muted" *ngIf="d.approvals.total">requests · oldest <b>{{ d.approvals.oldest_days ? 'waiting ' + d.approvals.oldest_days + (d.approvals.oldest_days === 1 ? ' day' : ' days') : 'raised today' }}</b></p>
+            <p class="muted" *ngIf="!d.approvals.total">Nothing waiting. New requests from your team appear here.</p>
+          </div>
+          <ul class="bars">
+            <li *ngFor="let m of d.approvals.by_module">
+              <button type="button" (click)="drill('approvals', m.label, {module: m.module})">
+                <span class="b-l">{{ m.label }}</span>
+                <span class="b-track"><i [style.width.%]="m.count * 100 / apprMax"></i></span>
+                <b>{{ m.count }}</b>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <!-- attendance trend -->
+        <section class="card">
+          <div class="card-h"><h2>Attendance, last 14 working days</h2><span class="muted small">% of people present · select a day</span></div>
+          <z-chart type="bar" [labels]="trendLabels" [values]="trendValues" [max]="100" suffix="% present" [tooltipExtra]="trendExtra" [height]="230"
+                   ariaLabel="Share of the team present per working day" (pick)="pickDay($event)"></z-chart>
+        </section>
+      </div>
+
+      <div class="grid g-3">
+        <!-- who is out -->
+        <section class="card">
+          <div class="card-h"><h2>Who is out, next 14 days</h2><button type="button" class="zbtn link" (click)="drill('out_next', 'Leave – next 30 days', {days: 30})">30 days</button></div>
+          <p class="muted small" *ngIf="!d.out_next_14.length">Everyone is in.</p>
+          <ul class="rlist">
+            <li *ngFor="let o of d.out_next_14" (click)="drill('out_next', 'Leave – next 30 days', {days: 30})" tabindex="0">
+              <div><b>{{ o.employee }}</b><p class="small muted">{{ o.type }} · {{ o.days }} d</p></div>
+              <div class="r-end"><small>{{ o.from | date:'d MMM' }}<span *ngIf="o.to !== o.from"> – {{ o.to | date:'d MMM' }}</span></small><span [class]="o.status === 'approved' ? 'pill good' : 'pill warn'">{{ o.status }}</span></div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- composition -->
+        <section class="card">
+          <div class="card-h"><h2>{{ d.composition.by === 'department' ? 'People by department' : 'People by role' }}</h2></div>
+          <z-chart type="bar" [horizontal]="true" [labels]="compLabels" [values]="compValues" suffix=" people" [height]="40 + compLabels.length * 34"
+                   ariaLabel="Headcount by group" (pick)="pickComp($event)"></z-chart>
+        </section>
+
+        <!-- watch list -->
+        <section class="card">
+          <div class="card-h"><h2>Needs attention</h2></div>
+          <button type="button" class="watch" (click)="drill('documents', 'Expired documents', {state: 'expired'})"><span>Expired documents</span><b [class.bad-text]="d.documents.expired">{{ d.documents.expired }}</b></button>
+          <button type="button" class="watch" (click)="drill('documents', 'Documents expiring in 60 days', {state: 'expiring'})"><span>Documents expiring in 60 days</span><b [class.warn-text]="d.documents.expiring">{{ d.documents.expiring }}</b></button>
+          <button type="button" class="watch" *ngIf="d.learning" (click)="drill('certificates', 'Certificates to renew')"><span>Certificates to renew</span><b [class.warn-text]="d.learning.certificates_expiring">{{ d.learning.certificates_expiring }}</b></button>
+          <button type="button" class="watch" (click)="drill('team_requests', 'Open requests from the team')"><span>Open requests from the team</span><b>{{ sumOpen }}</b></button>
+          <button type="button" class="watch" *ngIf="d.learning" (click)="drill('trainings', 'Upcoming trainings')"><span>Upcoming trainings</span><b>{{ d.learning.upcoming_trainings }}</b></button>
+          <button type="button" class="watch" (click)="drill('assets', 'Assets with the team')"><span>Company assets with the team</span><b>{{ d.assets_assigned }}</b></button>
+          <button type="button" class="watch" *ngIf="d.recruitment" (click)="drill('recruitment', 'Open requisitions')"><span>Open requisitions · jobs</span><b>{{ d.recruitment.open_requisitions }} · {{ d.recruitment.open_jobs }}</b></button>
+        </section>
+      </div>
+
+      <div class="grid g-2">
+        <!-- appraisal pipeline -->
+        <section class="card" *ngIf="d.performance">
+          <div class="card-h"><h2>Appraisal – {{ d.performance.cycle }}</h2><span class="muted small">goal sheets by stage</span></div>
+          <ul class="bars stage">
+            <li *ngFor="let r of perfRows; let i = index">
+              <button type="button" (click)="drill('goal_status', r.label, {cycle: d.performance.cycle_id, status: r.key})" [disabled]="!r.count">
+                <span class="b-l">{{ r.label }}</span>
+                <span class="b-track"><i [style.width.%]="r.count * 100 / perfMax" [style.opacity]="0.45 + i * 0.09"></i></span>
+                <b>{{ r.count }}</b>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <!-- celebrations -->
+        <section class="card">
+          <div class="card-h"><h2>This month</h2><span class="muted small">birthdays and work anniversaries</span></div>
+          <p class="muted small" *ngIf="!d.celebrations.length">No birthdays or anniversaries this month.</p>
+          <ul class="rlist">
+            <li *ngFor="let c of d.celebrations" (click)="drill('celebrations', 'Birthdays & anniversaries')" tabindex="0">
+              <div><b>{{ c.employee }}</b><p class="small muted">{{ c.kind }}</p></div>
+              <div class="r-end"><span class="daychip">{{ c.day }}</span></div>
+            </li>
+          </ul>
+          <h3 class="sub" *ngIf="d.holidays?.length">Holidays</h3>
+          <p class="small" *ngFor="let h of d.holidays">{{ h.name }} <span class="muted">· {{ h.from | date:'EEE d MMM' }}</span></p>
+        </section>
+      </div>
+
+      <!-- HR only -->
+      <div class="grid g-2" *ngIf="d.payroll">
+        <section class="card">
+          <div class="card-h"><h2>Net payroll, last runs</h2><span class="muted small">AED · select a month for payslips</span></div>
+          <z-chart type="bar" [labels]="payLabels" [values]="payValues" suffix=" AED net" [tooltipExtra]="payExtra" [height]="220"
+                   ariaLabel="Net payroll per run" (pick)="pickPay($event)"></z-chart>
+        </section>
+        <section class="card">
+          <div class="card-h"><h2>Money owed by employees</h2></div>
+          <button type="button" class="watch" (click)="drill('loans', 'Loans outstanding')"><span>Loans outstanding</span><b>AED {{ d.loans_outstanding | number:'1.0-0' }}</b></button>
+          <p class="muted small">Loan EMIs and salary advances are deducted automatically in each payroll run.</p>
+        </section>
+      </div>
+    </div>
+  </ng-container>
+
+  <z-drill-panel [request]="drillReq" (closed)="drillReq = null" (navigate)="go($event)"></z-drill-panel>
+</div>

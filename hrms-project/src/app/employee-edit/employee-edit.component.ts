@@ -198,6 +198,7 @@ ngOnInit(): void {
       }
 
       // Custom fields
+      this.loadEditCustomFields();
       if (this.Emp.custom_fields) {
         this.Emp.custom_fields.forEach((field: any) => {
           this.customFieldValues[field.id] = field.field_value;
@@ -334,6 +335,12 @@ private appendFormData(formData: FormData, key: string, value: any): void {
 }
  
 updateEmp(): void {
+  // custom fields ticked "Mandatory" in the form designer
+  const missing = (this.editCustom || []).filter((f: any) => f.mandatory && (f.value === undefined || f.value === null || String(f.value).trim() === '' || f.value === false));
+  if (missing.length) {
+    alert('Please fill: ' + missing.map((f: any) => f.emp_custom_field).join(', '));
+    return;
+  }
   const formData = new FormData();
 
   // ✅ Profile Pic (optional)
@@ -412,11 +419,8 @@ updateEmp(): void {
       alert('Employee Details Edited');
       // window.location.reload();
 
-    this.updateCustomFieldValues();
-
-// Close the edit dialog
-// this.dialogRef.close();
-window.location.reload();
+    // save the custom fields first, then reload (a reload used to cancel these requests)
+    this.updateCustomFieldValues().then(() => window.location.reload());
 
 // Open success dialog
 // this.dialog.open(SuccesModalComponent, {
@@ -449,24 +453,42 @@ window.location.reload();
 }
 
  
-updateCustomFieldValues() {
-  this.Emp.custom_fields.forEach((field: any) => {
-      const fieldData = {
-          id: field.id,
-          emp_custom_field: field.emp_custom_field,
-          field_value: this.customFieldValues[field.id],
-          emp_master: this.data.employeeId
-      };
+/** Every custom field defined in the form designer, with this employee's value (also fields added later). */
+editCustom: any[] = [];
 
-      this.EmployeeService.registerEmpAddMoreFeildValues(fieldData).subscribe(
-          response => {
-              console.log('Custom field value updated successfully:', response);
-          },
-          error => {
-              console.error('Error updating custom field value:', error);
-          }
-      );
+loadEditCustomFields(): void {
+  const schema = localStorage.getItem('selectedSchema') || '';
+  this.EmployeeService.getFormField(schema).subscribe((defs: any) => {
+    const values = (this.Emp && this.Emp.custom_fields) || [];
+    this.editCustom = (Array.isArray(defs) ? defs : []).map((d: any) => {
+      const v = values.find((x: any) => (x.emp_custom_field || '').toLowerCase() === (d.emp_custom_field || '').toLowerCase());
+      let value: any = v ? v.field_value : '';
+      if (d.data_type === 'checkbox') { value = value === true || value === 'true' || value === 'Yes'; }
+      // dates are stored as dd-mm-yyyy; the date box needs yyyy-mm-dd
+      if (d.data_type === 'date' && /^\d{2}-\d{2}-\d{4}$/.test(String(value))) { const [dd, mm, yy] = String(value).split('-'); value = `${yy}-${mm}-${dd}`; }
+      return { ...d, value, original: value };
+    });
   });
+}
+
+/** Saves changed custom field values (the server updates an existing value or adds it). */
+updateCustomFieldValues(): Promise<void> {
+  const changed = (this.editCustom || []).filter((f: any) => f.value !== f.original);
+  if (!changed.length) { return Promise.resolve(); }
+  const errors: string[] = [];
+  return Promise.all(changed.map((f: any) => new Promise<void>(resolve => {
+    const fieldData = {
+      emp_custom_field: f.emp_custom_field,
+      field_value: f.data_type === 'checkbox' ? (f.value ? 'Yes' : 'No') : (f.value ?? ''),
+      emp_master: this.data.employeeId,
+    };
+    this.EmployeeService.registerEmpAddMoreFeildValues(fieldData).subscribe({
+      next: () => resolve(),
+      error: (err: any) => {
+        const e = err?.error; errors.push(`${f.emp_custom_field}: ${e ? Object.values(e).flat().join(' ') : 'not saved'}`); resolve();
+      },
+    });
+  }))).then(() => { if (errors.length) { alert('Some custom fields were not saved:\n' + errors.join('\n')); } });
 }
 
 

@@ -10,101 +10,14 @@
       <div class="wrapper">
 
         <div class="sidebar-top">
-          <span class="sub-sidebar-title" *ngIf="isMenuOpen">General Options</span>
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen"><z-app-title fallback="General Options"></z-app-title></span>
           <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
             <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
           </button>
         </div>
 
         <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
-          <ul class="nav-menu-list">
-
-            <!-- Dropdown: General Request -->
-            <li class="has-submenu">
-              <div class="submenu-header" (click)="toggleGeneralRequest()">
-                <div class="d-flex">
-                  <mat-icon class="nav-icon">assignment</mat-icon>
-                  <span class="sidenav-opt">General Request</span>
-                </div>
-                <mat-icon class="chevron-arrow" *ngIf="isMenuOpen">
-                  {{ showGeneralRequest ? 'expand_less' : 'expand_more' }}
-                </mat-icon>
-              </div>
-
-              <ul class="sub-menu-list" *ngIf="showGeneralRequest && isMenuOpen">
-                <li *ngIf="hasViewPermissionGenreq">
-                  <a routerLink="/main-sidebar/general-sidebar/general-request" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    General Request
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionReqType">
-                  <a routerLink="/main-sidebar/general-sidebar/request-type" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    Request Type
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionAprv">
-                  <a routerLink="/main-sidebar/general-sidebar/approvals" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    General Approvals
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionAprvlvl">
-                  <a routerLink="/main-sidebar/general-sidebar/approval-level" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    General Approval Level
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionGenReqEsc">
-                  <a routerLink="/main-sidebar/general-sidebar/general-request-escalation" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    General Request Escalation
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Dropdown: Document Request -->
-            <li class="has-submenu">
-              <div class="submenu-header" (click)="toggleDocumentRequest()">
-                <div class="d-flex">
-                  <mat-icon class="nav-icon">folder_shared</mat-icon>
-                  <span class="sidenav-opt">Document Request</span>
-                </div>
-                <mat-icon class="chevron-arrow" *ngIf="isMenuOpen">
-                  {{ showDocumentRequest ? 'expand_less' : 'expand_more' }}
-                </mat-icon>
-              </div>
-
-              <ul class="sub-menu-list" *ngIf="showDocumentRequest && isMenuOpen">
-                <li *ngIf="hasViewPermissionDocReq">
-                  <a routerLink="/main-sidebar/general-sidebar/document-request" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    Document Request
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionDocReqType">
-                  <a routerLink="/main-sidebar/general-sidebar/document-request-type" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    Document Type
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionDocReqApr">
-                  <a routerLink="/main-sidebar/general-sidebar/document-request-approval" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    Document Approvals
-                  </a>
-                </li>
-                <li *ngIf="hasViewPermissionDocAprlvl">
-                  <a routerLink="/main-sidebar/general-sidebar/document-request-level" routerLinkActive="active-sublink" class="subnav-item-link" (click)="closeOnMobile()">
-                    Document Approval Level
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Announcement -->
-            <li *ngIf="hasViewAnnounceMaster">
-              <a routerLink="/main-sidebar/general-sidebar/announcement-master" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
-                <mat-icon class="nav-icon">campaign</mat-icon>
-                <span class="sidenav-opt">Announcement</span>
-              </a>
-            </li>
-
-          </ul>
+          <z-module-menu [open]="isMenuOpen" (picked)="closeOnMobile()"></z-module-menu>
         </nav>
 
       </div>

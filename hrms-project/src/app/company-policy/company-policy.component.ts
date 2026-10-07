@@ -809,7 +809,7 @@ filteredBranches() {
 
 
 currentPage: number = 1;
-itemsPerPage: number = 4;
+itemsPerPage: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
 pagedPolicies: any[] = [];
 totalPages: number = 0;
 

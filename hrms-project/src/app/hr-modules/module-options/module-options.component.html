@@ -1,0 +1,32 @@
+<div class="sub-sidebar clickOutside">
+  <mat-sidenav-container class="sub-sidenav-container">
+    <mat-sidenav #sidenav class="sub-sidenav hide-scrollbar" [opened]="isMobile ? isMenuOpen : true" [mode]="isMobile ? 'over' : 'side'" (closedStart)="isMenuOpen = false">
+      <div class="wrapper">
+        <div class="sidebar-top">
+          <span class="sub-sidebar-title" *ngIf="isMenuOpen">{{ title }}</span>
+          <button type="button" class="btn-collapse" (click)="toggleSidebarMenu()" aria-label="Toggle Navigation">
+            <mat-icon>{{ isMenuOpen ? 'chevron_left' : 'menu' }}</mat-icon>
+          </button>
+        </div>
+        <nav class="sidebar hide-scrollbar" [class.menu-open]="isMenuOpen" [class.menu-close]="!isMenuOpen">
+          <ul class="nav-menu-list">
+            <ng-container *ngFor="let item of items">
+              <li *ngIf="visible[item.path]">
+                <a [routerLink]="base + '/' + item.path" routerLinkActive="active-link" class="nav-item-link" (click)="closeOnMobile()">
+                  <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+                  <span class="sidenav-opt">{{ item.label }}</span>
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </nav>
+      </div>
+    </mat-sidenav>
+    <main class="sub-content-area">
+      <button type="button" class="mobile-submenu-fab" *ngIf="isMobile && !isMenuOpen" (click)="toggleSidebarMenu()" aria-label="Open submenu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-container>
+</div>

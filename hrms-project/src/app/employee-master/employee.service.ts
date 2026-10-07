@@ -1,3 +1,4 @@
+import { forkJoin } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
@@ -2532,7 +2533,7 @@ deleteSalarySrt(id: number): Observable<any> {
     // const url = `${this.baseUrl}/emp-Documents/`;
 
     // return this.http.get(url);
-    const apiUrl = `${this.apiUrl}/core/api/Documents/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/employee/api/Documents/?schema=${selectedSchema}`;
 
     // Fetch employees from the API
     return this.http.get(apiUrl);
@@ -3575,7 +3576,7 @@ updateFamilyCustomField(customFieldValId: number, payload: any): Observable<any>
       return throwError('No schema selected.');
     }
 
-    const apiUrl = `${this.apiUrl}/employee/api/emp-custom-field-value/?schema=${selectedSchema}`;
+    const apiUrl = `${this.apiUrl}/employee/api/custom-field-value/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.post(apiUrl, familyData, { headers }).pipe(
@@ -3666,10 +3667,12 @@ updateFamilyCustomField(customFieldValId: number, payload: any): Observable<any>
       return throwError('No schema selected.');
     }
 
-    const Url = `${this.apiUrl}/employee/api/emp-custom-field-value/?schema=${selectedSchema}`;
+    const Url = `${this.apiUrl}/employee/api/custom-field-value/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    return this.http.post(Url, fieldValues, { headers }).pipe(
+    // one value per request (the API takes a single value)
+    return forkJoin((fieldValues || []).filter(v => v.field_value !== undefined && v.field_value !== null && v.field_value !== '')
+      .map(v => this.http.post(Url, v, { headers }))).pipe(
       catchError((error) => {
         console.error('Error submitting custom field values:', error);
         return throwError(error);

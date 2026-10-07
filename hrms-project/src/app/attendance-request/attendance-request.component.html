@@ -414,16 +414,6 @@
 
 
   <div class="com_list mt-4" *ngIf="hasViewPermission">
-          <div class="page-size-box">
-        <label for="pageSize">Rows per page:</label>
-        <select
-          id="pageSize"
-          class="page-size-select"
-          [ngModel]="itemsPerPage"
-          (ngModelChange)="onPageSizeChange($event)">
-          <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-        </select>
-      </div>
   <table width="100%" *ngIf="hasViewPermission">
           <thead>
             <tr>
@@ -454,7 +444,7 @@
         </td>
         <td data-label="Employee">{{ docs.employee }}</td>
         <td data-label="Document number">{{ docs.document_number }}</td>
-        <td data-label="Branch">{{ docs.branch }}</td>
+        <td data-label="Branch">{{ docs.branch_name || docs.branch }}</td>
         <td data-label="Reason">{{ docs.reason }}</td>
         <td data-label="Status">
            <span class="badge" [ngClass]="docs.status ? 'bg-success' : 'bg-secondary'">
@@ -483,9 +473,6 @@
         
           </tbody>
         </table>
-                                <span class="record-info">
-    Showing {{ startRecord }}–{{ endRecord }} of {{ filteredDocRequest.length }}
-  </span>
       <div class="pagination-container">
   
         <button

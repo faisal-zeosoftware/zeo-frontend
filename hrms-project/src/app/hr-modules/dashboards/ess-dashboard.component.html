@@ -1,0 +1,171 @@
+<div class="zdash" [class.page]="!inPortal">
+  <p class="err" *ngIf="error">{{ error }}</p>
+  <p class="muted" *ngIf="!d && !error">Loading your dashboard…</p>
+
+  <ng-container *ngIf="d">
+    <!-- greeting + today -->
+    <header class="zh">
+      <div class="zh-who">
+        <div class="avatar">{{ initials(d.employee?.name) }}</div>
+        <div>
+          <h1>{{ greeting }}<span *ngIf="firstName">, {{ firstName }}</span></h1>
+          <p class="muted" *ngIf="d.employee">{{ d.employee.designation }}, {{ d.employee.department }} · {{ d.today | date:'EEEE d MMMM y' }}</p>
+          <p class="muted" *ngIf="d.message">{{ d.message }}</p>
+        </div>
+      </div>
+      <div class="zh-switch" *ngIf="d.has_team" role="tablist" aria-label="Dashboard view">
+        <button type="button" role="tab" [attr.aria-selected]="view === 'me'" [class.on]="view === 'me'" (click)="view = 'me'">My dashboard</button>
+        <button type="button" role="tab" [attr.aria-selected]="view === 'team'" [class.on]="view === 'team'" (click)="view = 'team'">My team</button>
+      </div>
+    </header>
+
+    <app-manager-dashboard *ngIf="view === 'team'" [embedded]="true" [inPortal]="inPortal" (openTab)="openTab.emit($event)"></app-manager-dashboard>
+
+    <ng-container *ngIf="view === 'me' && d.employee">
+      <z-dash-designer name="ess" scope=".zdash"></z-dash-designer>
+      <!-- today strip -->
+      <section data-widget="ess-today" data-widget-title="Today" class="today">
+        <button type="button" class="t-item" (click)="drill('my_attendance', 'My attendance – last 30 days')">
+          <span class="t-k">Today</span>
+          <b *ngIf="d.attendance.today.checked_in">In at {{ d.attendance.today.checked_in | slice:0:5 }}<span *ngIf="d.attendance.today.checked_out"> · out {{ d.attendance.today.checked_out | slice:0:5 }}</span></b>
+          <b *ngIf="!d.attendance.today.checked_in" class="warn-text">Not checked in yet</b>
+        </button>
+        <button type="button" class="t-item" (click)="drill('my_leave', 'My leave')">
+          <span class="t-k">Next leave</span>
+          <b *ngIf="d.next_leave">{{ d.next_leave.from | date:'d MMM' }} – {{ d.next_leave.to | date:'d MMM' }} <small>{{ d.next_leave.type }}, {{ d.next_leave.status }}</small></b>
+          <b *ngIf="!d.next_leave">None planned</b>
+        </button>
+        <button type="button" class="t-item" (click)="drill('my_requests', 'My open requests', {status: 'pending'})">
+          <span class="t-k">My open requests</span>
+          <b>{{ d.requests.counts.pending || 0 }}</b>
+        </button>
+        <button type="button" class="t-item" *ngIf="d.approvals.total" (click)="drill('approvals', 'Waiting for my approval')">
+          <span class="t-k">Waiting for my approval</span>
+          <b class="accent-text">{{ d.approvals.total }}</b>
+        </button>
+      </section>
+
+      <!-- attendance ribbon (signature element) -->
+      <section data-widget="ess-attendance" data-widget-title="My attendance" class="card ribbon-card">
+        <div class="card-h">
+          <h2>Last 30 days</h2>
+          <button type="button" class="zbtn link" (click)="drill('my_attendance', 'My attendance – last 30 days')">See every punch</button>
+        </div>
+        <div class="ribbon" role="list" aria-label="Attendance for the last 30 days">
+          <button type="button" role="listitem" *ngFor="let t of d.attendance_trend" [class]="cellClass(t)" [title]="cellTitle(t)" [attr.aria-label]="cellTitle(t)"
+                  (click)="drill('my_attendance', 'My attendance – last 30 days')">
+            <span class="c-bar" *ngIf="t.status === 'present' && t.hours" [style.height.%]="t.hours / 10 * 100"></span>
+          </button>
+        </div>
+        <div class="ribbon-days" aria-hidden="true">
+          <span *ngFor="let t of d.attendance_trend" [class.wkend]="!t.working">{{ t.date | date:'d' }}</span>
+        </div>
+        <div class="ribbon-foot">
+          <ul class="legend">
+            <li *ngFor="let l of ribbonLegend"><i [class]="'sw ' + l.key"></i>{{ l.label }}</li>
+          </ul>
+          <dl class="mstats">
+            <div><dt>{{ d.attendance.month_label }}</dt><dd>{{ d.attendance.present }} / {{ d.attendance.working_days }} days</dd></div>
+            <div><dt>Late</dt><dd>{{ d.attendance.late }}</dd></div>
+            <div><dt>Absent</dt><dd>{{ d.attendance.absent }}</dd></div>
+            <div><dt>Avg hours</dt><dd>{{ d.attendance.avg_hours }}</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <div class="grid g-2">
+        <!-- leave -->
+        <section data-widget="ess-leave" data-widget-title="Leave balance" class="card">
+          <div class="card-h"><h2>Leave balance</h2><button type="button" class="zbtn" (click)="newRequest('leave')">Apply for leave</button></div>
+          <p class="muted" *ngIf="!d.leave_balances.length">No leave balance set up yet.</p>
+          <div class="meters">
+            <button type="button" class="meter" *ngFor="let b of d.leave_balances" (click)="drill('my_leave', b.name, {leave_type: b.leave_type_id})">
+              <div class="m-top"><span>{{ b.name }}</span><b>{{ b.balance }} <small>of {{ b.openings }} days</small></b></div>
+              <div class="m-track"><div class="m-fill" [style.width.%]="pct(b)"></div></div>
+              <small class="muted" *ngIf="b.used">{{ b.used }} taken this year</small>
+            </button>
+          </div>
+        </section>
+
+        <!-- requests -->
+        <section data-widget="ess-requests" data-widget-title="My requests" class="card">
+          <div class="card-h"><h2>My requests</h2><button type="button" class="zbtn link" (click)="drill('my_requests', 'All my requests')">See all</button></div>
+          <div class="chips" role="group" aria-label="Filter by type">
+            <button type="button" [class.on]="!moduleFilter" (click)="moduleFilter = ''">All</button>
+            <button type="button" *ngFor="let m of d.requests.by_module" [class.on]="moduleFilter === m.module" (click)="moduleFilter = m.module">
+              {{ m.label }} <small>{{ m.count }}</small>
+            </button>
+          </div>
+          <p class="muted" *ngIf="!filteredRequests.length">No requests yet.</p>
+          <ul class="rlist">
+            <li *ngFor="let r of filteredRequests" (click)="drill('my_requests', r.module_label + ' requests', {module: r.module})" tabindex="0">
+              <div><b>{{ r.module_label }}</b><span class="muted"> {{ r.document_number }}</span><p class="small">{{ r.summary }}</p></div>
+              <div class="r-end"><span [class]="reqClass(r.status_key)">{{ r.status | lowercase }}</span><small class="muted">{{ r.date | date:'dd/MM' }}</small></div>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="grid g-3">
+        <!-- pay -->
+        <section data-widget="ess-pay" data-widget-title="Pay" class="card">
+          <div class="card-h"><h2>Pay</h2><button type="button" class="zbtn link" (click)="drill('my_payslips', 'My payslips')">Payslips</button></div>
+          <ng-container *ngIf="d.payslip; else noPay">
+            <p class="muted small">{{ d.payslip.period }}</p>
+            <p class="big">AED {{ d.payslip.net | number:'1.0-0' }} <small>net</small></p>
+            <p class="muted small">Gross {{ d.payslip.gross | number:'1.0-0' }} · deductions {{ d.payslip.deductions | number:'1.0-0' }}</p>
+          </ng-container>
+          <ng-template #noPay><p class="muted">No payslip yet.</p></ng-template>
+          <div class="kv" *ngIf="d.loans.count"><span>Loan balance</span><b>AED {{ d.loans.outstanding | number:'1.0-0' }} <small>EMI {{ d.loans.emi | number:'1.0-0' }}</small></b></div>
+          <div class="kv" *ngIf="d.air_ticket"><span>Air ticket</span><b>AED {{ d.air_ticket.remaining | number:'1.0-0' }} <small>left, until {{ d.air_ticket.expiry | date:'MMM y' }}</small></b></div>
+        </section>
+
+        <!-- appraisal & learning -->
+        <section data-widget="ess-goals" data-widget-title="Goals &amp; learning" class="card">
+          <div class="card-h"><h2>Goals &amp; learning</h2></div>
+          <ng-container *ngIf="d.performance; else noGoals">
+            <p class="small"><b>{{ d.performance.cycle }}</b> · {{ d.performance.status_label }}</p>
+            <div class="m-top"><span>Goal progress ({{ d.performance.goals }} goals)</span><b>{{ d.performance.progress }}%</b></div>
+            <div class="m-track"><div class="m-fill" [style.width.%]="d.performance.progress"></div></div>
+            <p class="muted small" *ngIf="d.performance.self_score">Self score {{ d.performance.self_score }}</p>
+          </ng-container>
+          <ng-template #noGoals><p class="muted small">No active appraisal cycle.</p></ng-template>
+          <h3 class="sub">Upcoming training</h3>
+          <p class="muted small" *ngIf="!d.training?.length">None scheduled.</p>
+          <p class="small" *ngFor="let t of d.training">{{ t.course }} <span class="muted">· {{ t.date | date:'d MMM' }} · {{ t.seat }}</span></p>
+          <p class="small" *ngFor="let c of d.certificates?.slice(0,2)">{{ c.title }} <span [class]="c.status === 'valid' ? 'pill good' : c.status === 'renewed' ? 'pill' : 'pill warn'">{{ c.status }}</span></p>
+        </section>
+
+        <!-- documents & assets -->
+        <section data-widget="ess-docs-assets" data-widget-title="Documents &amp; assets" class="card">
+          <div class="card-h"><h2>Documents &amp; assets</h2><button type="button" class="zbtn link" (click)="drill('my_documents', 'My documents')">All</button></div>
+          <p class="muted small" *ngIf="!d.documents.length">No documents on file.</p>
+          <div class="kv" *ngFor="let x of d.documents"><span>{{ x.type }}</span><span [class]="docClass(x)">{{ x.days < 0 ? 'expired ' + (x.expiry | date:'dd/MM/yy') : (x.days <= 60 ? x.days + ' days left' : 'until ' + (x.expiry | date:'MMM y')) }}</span></div>
+          <h3 class="sub">With me</h3>
+          <p class="muted small" *ngIf="!d.assets.length">No company assets.</p>
+          <p class="small" *ngFor="let a of d.assets">{{ a.name }} <span class="muted">· since {{ a.since | date:'MMM y' }}</span></p>
+        </section>
+      </div>
+
+      <div class="grid" [class.g-2]="d.approvals.total">
+        <section data-widget="ess-approvals" data-widget-title="Waiting for my approval" class="card" *ngIf="d.approvals.total">
+          <div class="card-h"><h2>Waiting for my approval</h2><button type="button" class="zbtn link" (click)="drill('approvals', 'Waiting for my approval')">Open all</button></div>
+          <ul class="rlist">
+            <li *ngFor="let a of d.approvals.items" (click)="drill('approvals', a.module_label, {module: a.module})" tabindex="0">
+              <div><b>{{ a.employee }}</b><span class="muted"> · {{ a.module_label }}</span><p class="small">{{ a.summary }}</p></div>
+              <div class="r-end"><small class="muted">{{ a.date | date:'dd/MM' }}</small></div>
+            </li>
+          </ul>
+        </section>
+        <section data-widget="ess-news" data-widget-title="Company news" class="card">
+          <div class="card-h"><h2>Company news</h2></div>
+          <div class="news" *ngFor="let n of d.announcements"><b>{{ n.title }}</b><p class="small muted">{{ n.message }}</p></div>
+          <h3 class="sub" *ngIf="d.holidays.length">Coming holidays</h3>
+          <p class="small" *ngFor="let h of d.holidays">{{ h.name }} <span class="muted">· {{ h.from | date:'EEE d MMM' }}<span *ngIf="h.to !== h.from"> – {{ h.to | date:'d MMM' }}</span></span></p>
+        </section>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <z-drill-panel [request]="drillReq" [canOpenEmployee]="false" (closed)="drillReq = null" (navigate)="go($event)"></z-drill-panel>
+</div>

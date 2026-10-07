@@ -1,3 +1,6 @@
+import { environment } from '../../environments/environment';
+import { DesignerAdapter } from '../shared-ui/field-types';
+import { empFieldAdapter } from '../shared-ui/emp-field-adapter';
 import { Component, OnInit } from '@angular/core';
 import { EmployeeService } from '../employee-master/employee.service';
 import { HttpClient } from '@angular/common/http';
@@ -6,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DesignationService } from '../designation-master/designation.service';
 import { SessionService } from '../login/session.service';
+import { FormSettingsService } from '../shared-ui/form-settings.service';
 
 
 @Component({
@@ -16,6 +20,19 @@ import { SessionService } from '../login/session.service';
 
 })
 export class FromDesignerComponent {
+  // v1.7.0: the new form designer for the five employee custom-field lists
+  designerFor: string | null = null;
+  private adapters: Record<string, DesignerAdapter> = {};
+  designerAdapter(kind: string): DesignerAdapter {
+    return this.adapters[kind] = this.adapters[kind] || empFieldAdapter(this.http, environment.apiBaseUrl, kind);
+  }
+  designerClosed(changed: boolean): void {
+    this.designerFor = null;
+    if (changed) { location.reload(); }
+  }
+
+  ngOnDestroy(): void { this.formSettings.unwatch(); }
+
 
   isLinear = true;
   firstFormGroup!: FormGroup;
@@ -97,10 +114,10 @@ export class FromDesignerComponent {
    cityFieldName: string = 'City';
    nationFieldName: string = 'Nationality';
    fatherFieldName: string = 'Father Name';
-   motherFieldName: string = 'mother Name';
+   motherFieldName: string = 'Mother Name';
 
    hiredFieldName: string = 'Joining  Date';
-   joinFieldName: string = 'Comfirmation Date';
+   joinFieldName: string = 'Confirmation Date';
 
 
 
@@ -206,7 +223,7 @@ bloodDropdownOptions: string[] = [];  // Property to store the dropdown options
            desDropdownOptions: string[] = []; 
      
         // Add new fields for country
-        catFieldName: string = 'Catogory';  // Initial Gender field name
+        catFieldName: string = 'Category';  // Initial Gender field name
         catDataType: string = 'Dropdown'; // Default data type for Gender
         catDropdownValues: string = '';   // Store gender dropdown values as a comma-separated string
         catDropdownOptions: string[] = []; 
@@ -241,12 +258,16 @@ bloodDropdownOptions: string[] = [];  // Property to store the dropdown options
     
 private DesignationService: DesignationService,
 private sessionService: SessionService,
-
-  
+private formSettings: FormSettingsService,
    ) {}
 
 
    ngOnInit(): void {
+    // settings are saved for the whole company (server), not only in this browser
+    this.formSettings.watch();
+    this.formSettings.pull(true).then(changed => {
+      if (changed) { this.loadFieldNames(); this.loadFieldDisplay(); this.loadFamilyFieldNames(); }
+    });
     this.loadFormFields();
     this.loadFormFieldsDoc();
     this.loadFormFieldsFam();

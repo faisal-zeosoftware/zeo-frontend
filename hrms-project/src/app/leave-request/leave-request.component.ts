@@ -77,32 +77,6 @@ export class LeaveRequestComponent {
   userDetailss: any;
   schemas: string[] = []; // Array to store schema names
 
-  
-// ==================== PAGINATION ====================
-searchQuery: string = '';
-currentPage: number = 1;
-itemsPerPage: number = 5;
-pageSizeOptions: number[] = [5, 10, 25, 50, 100];
-pagedLeaveRequests: any[] = [];
-
-// ✅ add this method
-onPageSizeChange(newSize: number): void {
-  this.itemsPerPage = Number(newSize);
-  this.currentPage = 1;
-  this.updatePagination();
-}
-
-// ✅ add these record counters
-get startRecord(): number {
-  return this.filteredLeaveRequests.length === 0
-    ? 0
-    : (this.currentPage - 1) * this.itemsPerPage + 1;
-}
-
-get endRecord(): number {
-  return Math.min(this.currentPage * this.itemsPerPage, this.filteredLeaveRequests.length);
-}
-
 
 
   constructor(
@@ -1014,6 +988,13 @@ selectEditEmployee(event: any, emp: any): void {
   this.onEmployeeChangeEdit(); 
 }
 
+  searchQuery: string = '';
+
+
+// ==================== PAGINATION ====================
+currentPage: number = 1;
+itemsPerPage: number = 100000; // all rows: paging is done by the shared list footer (50 / 100 / 500 / 1000)
+pagedLeaveRequests: any[] = [];
 
 /** Filtered list based on search (replaces old getter) */
 get filteredLeaveRequests(): any[] {

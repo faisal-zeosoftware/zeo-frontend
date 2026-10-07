@@ -1,0 +1,80 @@
+<div class="container hr-page">
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="row align-items-center">
+        <div class="col-md-4"><h1>Candidate Pipeline</h1></div>
+        <div class="col-md-8 pb-top">
+          <select class="form-control" [(ngModel)]="jobId" (ngModelChange)="selected = null; load()">
+            <option [ngValue]="null">Select job opening</option>
+            <option *ngFor="let j of jobs" [ngValue]="j.id">{{ j.job_code }} – {{ j.title }} ({{ j.applicant_count }})</option>
+          </select>
+          <button class="btn-Create btn btn-success" [disabled]="!jobId" (click)="startAdd()"><span class="header-btn-icon"><mat-icon>person_add</mat-icon></span> Add candidate</button>
+        </div>
+      </div>
+    </div>
+    <p class="hr-intro" *ngIf="job">{{ job.openings }} opening(s) · {{ job.department_display }} · {{ job.status_label }} · drag a card to change its stage.</p>
+
+    <div class="pb-wrap">
+      <div class="pb-board" cdkDropListGroup>
+        <div class="pb-col" *ngFor="let col of columns">
+          <div class="pb-col-head"><b>{{ col.label }}</b><span class="tag tag-blue">{{ col.count }}</span></div>
+          <div class="pb-list" cdkDropList [id]="'col-' + col.stage" [cdkDropListData]="col.items" (cdkDropListDropped)="drop($event, col)">
+            <div class="pb-card" *ngFor="let a of col.items; let i = index" cdkDrag [cdkDragData]="a" (click)="selected = a" [class.on]="selected?.id === a.id">
+              <div class="pb-card-top">
+                <span class="pb-ini" [style.background]="color(a.id)">{{ initials(a.candidate_name) }}</span>
+                <div><b>{{ a.candidate_name }}</b><div class="muted">{{ a.candidate_nationality || '–' }} · {{ a.candidate_experience }} yrs</div></div>
+              </div>
+              <div class="pb-card-bot"><span class="hr-stars"><i *ngFor="let s of stars(a.rating)" [class.on]="s">★</i></span><span class="muted">{{ a.candidate_source }}</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hr-detail pb-detail" *ngIf="selected">
+        <div class="hr-detail-head"><h3>{{ selected.candidate_name }}</h3><button class="hr-icon-btn" (click)="selected = null"><mat-icon>close</mat-icon></button></div>
+        <dl class="hr-facts">
+          <dt>Stage</dt><dd>{{ selected.stage_label }}</dd>
+          <dt>Nationality</dt><dd>{{ selected.candidate_nationality || '–' }}</dd>
+          <dt>Experience</dt><dd>{{ selected.candidate_experience }} years</dd>
+          <dt>Source</dt><dd>{{ selected.candidate_source }}</dd>
+          <dt>Applied</dt><dd>{{ selected.applied_on | date:'dd/MM/yyyy' }}</dd>
+          <dt *ngIf="selected.rejection_reason">Rejection reason</dt><dd *ngIf="selected.rejection_reason">{{ selected.rejection_reason }}</dd>
+        </dl>
+        <div class="row">
+          <div class="col-6 hr-field"><label>Screening score (0-100)</label><input type="number" class="form-control" [(ngModel)]="selected.screening_score"></div>
+          <div class="col-6 hr-field"><label>Rating</label><select class="form-control" [(ngModel)]="selected.rating"><option [ngValue]="null">–</option><option *ngFor="let n of [1,2,3,4,5]" [ngValue]="n">{{ n }}</option></select></div>
+        </div>
+        <div class="pb-actions">
+          <button class="hr-mini hr-btn-blue" (click)="saveSelected()">Save score</button>
+          <button class="hr-mini hr-btn-cyan" *ngIf="selected.stage === 'applied'" (click)="move(selected, 'screening')">Shortlist</button>
+          <button class="hr-mini hr-btn-red" *ngIf="selected.stage !== 'hired' && selected.stage !== 'rejected'" (click)="move(selected, 'rejected')">Reject</button>
+        </div>
+        <h4 class="pb-h">History</h4>
+        <div class="pb-hist" *ngFor="let h of selected.history"><b>{{ h.from_stage || '–' }} → {{ h.to_stage }}</b> <span class="muted">{{ h.changed_at | date:'dd/MM/yyyy HH:mm' }} · {{ h.changed_by_display }}</span><div *ngIf="h.note">{{ h.note }}</div></div>
+        <p class="muted">Schedule interviews under Interviews, and create the offer under Offer Letters.</p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="hr-modal" *ngIf="adding">
+    <div class="hr-modal-box">
+      <div class="hr-modal-head"><h2>Add candidate to {{ job?.title }}</h2><span class="close-btn" (click)="adding = null">×</span></div>
+      <div class="row">
+        <div class="col-md-4 hr-field"><label>First name *</label><input class="form-control" [(ngModel)]="adding.first_name"></div>
+        <div class="col-md-4 hr-field"><label>Last name</label><input class="form-control" [(ngModel)]="adding.last_name"></div>
+        <div class="col-md-4 hr-field"><label>Email *</label><input type="email" class="form-control" [(ngModel)]="adding.email"></div>
+        <div class="col-md-4 hr-field"><label>Phone</label><input class="form-control" [(ngModel)]="adding.phone" placeholder="+971 5x xxx xxxx"></div>
+        <div class="col-md-4 hr-field"><label>Nationality</label><select class="form-control" [(ngModel)]="adding.nationality"><option [ngValue]="null">Select</option><option *ngFor="let n of nationalities" [ngValue]="n.value">{{ n.label }}</option></select></div>
+        <div class="col-md-4 hr-field"><label>Current location</label><input class="form-control" [(ngModel)]="adding.current_location"></div>
+        <div class="col-md-3 hr-field"><label>Experience (yrs)</label><input type="number" class="form-control" [(ngModel)]="adding.experience_years"></div>
+        <div class="col-md-3 hr-field"><label>Notice (days)</label><input type="number" class="form-control" [(ngModel)]="adding.notice_period_days"></div>
+        <div class="col-md-3 hr-field"><label>Expected salary (AED)</label><input type="number" class="form-control" [(ngModel)]="adding.expected_salary"></div>
+        <div class="col-md-3 hr-field"><label>Source</label><select class="form-control" [(ngModel)]="adding.source"><option *ngFor="let s of sources" [value]="s[0]">{{ s[1] }}</option></select></div>
+        <div class="col-md-6 hr-field"><label>Visa status</label><select class="form-control" [(ngModel)]="adding.visa_status"><option *ngFor="let v of visas" [value]="v[0]">{{ v[1] }}</option></select></div>
+        <div class="col-md-6 hr-field"><label>Skills</label><input class="form-control" [(ngModel)]="adding.skills"></div>
+      </div>
+      <div class="hr-modal-foot"><button class="btn btn-danger" (click)="adding = null">Cancel</button><button class="btn btn-primary hr-save" (click)="saveAdd()">Add</button></div>
+    </div>
+  </div>
+  <div class="hr-toast" *ngIf="toast" [class.err]="toast.kind === 'err'">{{ toast.text }}</div>
+</div>
