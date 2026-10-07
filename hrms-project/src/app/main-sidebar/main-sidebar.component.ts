@@ -473,6 +473,10 @@ export class MainSidebarComponent implements OnDestroy {
     }
   }
 
+
+
+  // notification section
+
   loadAirTicketNotifications(callback?: Function): void {
     const selectedSchema = this.authService.getSelectedSchema();
     const savedIds = JSON.parse(localStorage.getItem('selectedBranchIds') || '[]');
