@@ -139,7 +139,7 @@
 
 
 
-        <div class="row mt-4" *ngIf="!isTableView">
+        <div class="row mt-4" *ngIf="isTableView">
           <div class="col-md-4 col-sm-6" *ngFor="let employeesec of filteredEmployees">
             <div class="emp-card-modern mt-3" [ngClass]="{ 'selected-card': employeesec.selected }">
               
@@ -198,7 +198,7 @@
       
 <!-- Table View -->
 
-<div class="mt-4" *ngIf="isTableView">
+<div class="mt-4" *ngIf="!isTableView">
     <div class="tabe_outer">
       <!-- <div class="row mb-3">
         <div class="col-md-3 "></div>

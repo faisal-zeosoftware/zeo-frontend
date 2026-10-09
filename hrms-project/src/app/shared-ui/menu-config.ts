@@ -188,8 +188,8 @@ export const MAIN_GROUPS: MenuGroup[] = [
         key: 'leave', label: 'Leave', icon: 'event_busy', parents: ['leave-options'],
         sections: [
           { title: 'Daily work', items: [
-            { label: 'My leave', hint: 'Apply, see balance and status', link: M + 'self-service/leave', icon: 'event_note' },   // v1.13.0
-            { label: 'Leave requests', link: M + 'leave-options/leave-request', icon: 'edit_calendar', perms: ['view_employee_leave_request'] },
+            { label: 'Leave requests', hint: 'Apply, see balance and status', link: M + 'leave-options/leave-request', icon: 'edit_calendar', perms: ['view_employee_leave_request']  },   // v1.13.0
+            { label: 'My leave', link: M + 'self-service/leave', icon: 'event_note', perms: ['view_employee_leave_request'] },
             { label: 'Leave balance', link: M + 'leave-options/leave-balance', icon: 'account_balance_wallet', perms: ['view_emp_leave_balance'] },
             { label: 'Leave planner', hint: 'Who is away when', link: M + 'leave-options/leave-planner', icon: 'calendar_month', perms: ['view_employee_leave_request', 'view_leaveapproval'] },
             { label: 'Compensatory leave', link: M + 'leave-options/compensatory-leave', icon: 'event_available', perms: ['view_compensatoryleaverequest'] },
