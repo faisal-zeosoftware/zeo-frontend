@@ -359,8 +359,9 @@
             <th>Employee</th>
             <th>Branch</th>
             <th>Department</th>
-            <th>Category</th>
+            <th *zIfOrg="'employee_categories'">Category</th>
             <th>Designation</th>
+            <th *ngFor="let c of orgCols.cols">{{ c.label }}</th>
   
           </tr>
   
@@ -428,7 +429,7 @@
               </span>
             </td>
   
-            <td>
+            <td *zIfOrg="'employee_categories'">
               <span class="custom-badge orange">
                 {{ emp.emp_ctgry_id }}
               </span>
@@ -439,6 +440,7 @@
                 {{ emp.emp_desgntn_id }}
               </span>
             </td>
+            <td *ngFor="let c of orgCols.cols">{{ orgCols.value(emp.id, c.field) }}</td>
   
           </tr>
   

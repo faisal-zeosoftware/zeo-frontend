@@ -133,7 +133,7 @@ export class AuthenticationService {
 
   getDesignationsPermission(selectedSchema: string): Observable<any> {
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/organisation/api/permissions/`;
+    const apiUrl = `${environment.apiBaseUrl}/organisation/api/permissions/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);

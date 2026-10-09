@@ -1244,3 +1244,28 @@ div[class*='segment']:before {
 }
 
 
+
+/* v1.7.1 – tablet and phone */
+@media (max-width: 991.98px) {
+  .comapny_section { margin-left: 0 !important; margin-right: 0 !important; margin-top: 70px !important; }
+  .container { padding: 0 12px !important; }
+  .content_sec { padding: 18px !important; }
+  .card-list .row { row-gap: 12px; }
+  .card-list .row > .col-md-3 { flex: 0 0 50%; max-width: 50%; }
+  .card-list .card { position: relative !important; width: 100% !important; margin-top: 0 !important; }
+  .btn-ess { height: auto !important; min-height: 38px; white-space: nowrap; padding: 6px 12px !important; width: auto !important; }
+}
+@media (max-width: 640px) {
+  .comapny_section h2 { font-size: 16px; }
+  .card-list .card { padding: 12px !important; min-height: 0 !important; }
+  .card-list .card .title { font-size: 11px; }
+  .card-list .card .value { font-size: 22px; }
+  .content_sec .col-4 { flex: 0 0 auto; width: auto; }
+  .content_sec .col-8 { flex: 1 1 0; width: auto; }
+}
+@media (max-width: 991.98px) { .content_sec_last { margin-top: 20px !important; } }
+/* v1.7.1 – desktop: each count card was 90 % of the whole page wide (page scrolled sideways); keep it in its column */
+@media (min-width: 992px) {
+  .card-list .row > [class*="col-"] { position: relative; }
+  .card-list .card { width: 100%; }
+}

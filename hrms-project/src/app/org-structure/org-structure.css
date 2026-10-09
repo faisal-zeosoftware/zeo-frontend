@@ -1,0 +1,66 @@
+/* v1.12.0 organisation structure – used with ../leave-policy/leave-policy.css and ../hr-actions/hr-actions.css */
+:host { display: block; max-width: 100%; }
+.os-wrap input, .os-wrap select, .os-wrap textarea { max-width: 100%; min-width: 0; box-sizing: border-box; }
+
+.os-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 14px; }
+.os-card { border: 1px solid #e3e5ef; border-radius: 12px; padding: 14px 16px; background: #fff; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.os-card.on { border-color: #b9b2ff; box-shadow: 0 0 0 3px rgba(91, 79, 245, .07); }
+.os-card h3 { margin: 0; font-size: 14.5px; font-weight: 700; color: #1b1640; display: flex; align-items: center; gap: 8px; }
+.os-card p { margin: 0; font-size: 12.5px; color: #6b7185; line-height: 1.45; }
+.os-card .row2 { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.os-card label.inline { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: #2b2f42; font-weight: 500; }
+.os-card input[type=text] { height: 32px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font-size: 13px; flex: 1 1 140px; }
+.os-card a { font-size: 12.5px; color: #4338ca; text-decoration: none; }
+.os-card a:hover { text-decoration: underline; }
+
+/* switch */
+.os-switch { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; margin-left: auto; font-size: 12px; font-weight: 600; color: #6b7185; }
+.os-switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.os-switch .tr { width: 38px; height: 22px; border-radius: 11px; background: #cfd2de; position: relative; transition: background .15s; flex: none; }
+.os-switch .tr::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.os-switch input:checked + .tr { background: #5b4ff5; }
+.os-switch input:checked + .tr::after { left: 19px; }
+.os-switch input:focus-visible + .tr { outline: 2px solid #5b4ff5; outline-offset: 2px; }
+.os-switch input:disabled + .tr { opacity: .5; }
+
+.os-tag { display: inline-block; font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 9px; white-space: nowrap; background: #f1f2f6; color: #4a4f63; }
+.os-tag.ok { background: #ecfdf3; color: #1f7a4d; }
+.os-tag.warn { background: #fff7e6; color: #9a5b00; }
+.os-tag.bad { background: #fff5f5; color: #b42318; }
+.os-tag.blue { background: #efedff; color: #4338ca; }
+
+.os-bar { height: 8px; border-radius: 4px; background: #eceef5; overflow: hidden; min-width: 80px; }
+.os-bar i { display: block; height: 100%; background: #22a06b; }
+
+/* tree */
+.os-tree { list-style: none; margin: 0; padding-left: 18px; border-left: 1px dashed #d6d9e6; }
+.os-tree.root { padding-left: 0; border-left: 0; }
+.os-node { margin: 6px 0; }
+.os-node .box { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; border: 1px solid #e3e5ef; border-radius: 10px; padding: 7px 11px; background: #fff; font-size: 13px; max-width: 100%; }
+.os-node .box b { color: #1b1640; }
+.os-node .box small { color: #6b7185; }
+.os-node .holders { font-size: 12px; color: #2b2f42; }
+.os-node button.tg { border: 0; background: transparent; cursor: pointer; color: #5b4ff5; font-weight: 700; width: 18px; padding: 0; }
+
+/* country policy */
+.os-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 10px 16px; }
+.os-facts > div { border: 1px solid #eceef5; border-radius: 10px; padding: 10px 12px; background: #fafafd; min-width: 0; }
+.os-facts span { display: block; color: #6b7185; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 3px; }
+.os-facts b { font-weight: 600; color: #1d2033; font-size: 13px; word-break: break-word; }
+.os-facts small { display: block; color: #6b7185; font-size: 11.5px; margin-top: 3px; line-height: 1.4; }
+.os-slabs { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.os-slabs td, .os-slabs th { padding: 4px 6px; border-bottom: 1px solid #f0f1f6; text-align: left; }
+.os-slabs input { width: 80px; height: 30px; border: 1px solid #dcdfea; border-radius: 6px; padding: 0 6px; }
+.os-sec { font-size: 12px; font-weight: 700; color: #5b4fe0; text-transform: uppercase; letter-spacing: .4px; margin: 16px 0 6px; }
+.os-days { display: flex; flex-wrap: wrap; gap: 6px; }
+.os-days label { display: inline-flex; align-items: center; gap: 5px; border: 1px solid #dcdfea; border-radius: 14px; padding: 3px 10px; font-size: 12.5px; cursor: pointer; font-weight: 500; color: #2b2f42; }
+.os-days label.on { border-color: #5b4ff5; background: #efedff; color: #4338ca; }
+
+@media (max-width: 640px) {
+  .comapny_section { margin-left: 0 !important; }
+  .lp-head { padding: 0 !important; }
+}
+
+/* v1.12.0: My policies opened straight from the main menu has no sub-menu frame – keep the header below the top bar */
+.os-own { padding-top: 84px; }
+@media (max-width: 991.98px) { .os-own { padding-top: 64px; } }

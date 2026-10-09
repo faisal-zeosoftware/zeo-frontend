@@ -16,7 +16,7 @@ export class ReportGenerateService {
 
   
 
-  private baseUrl = 'http://localhost:8000/employee/api';
+  private baseUrl = `${environment.apiBaseUrl}/employee/api`;
   
  
   

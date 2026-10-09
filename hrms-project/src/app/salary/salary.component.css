@@ -475,3 +475,9 @@ table tr td {
 .icon-no  { color: #c62828; opacity: 0.6; }
 
 .text-center { text-align: center; }
+/* v1.11.0 formula check */
+.fx-check { display: flex; gap: 8px; margin-top: 10px; }
+.fx-check select { flex: 1; }
+.fx-result { margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: #edf8f2; color: #1d6b45; font-size: 13px; border: 1px solid #c7ead6; }
+.fx-result.bad { background: #fdf0f1; color: #a12a36; border-color: #f2c9ce; }
+.fx-used { color: #3d4256; font-size: 12px; margin-top: 4px; word-break: break-word; }

@@ -1,3 +1,6 @@
+import { EmployeeTransferComponent } from './hr-actions/employee-transfer.component';   // v1.11.0
+import { RejoiningComponent } from './hr-actions/rejoining.component';                 // v1.11.0
+import { PROJECT_CONTROL_CHILDREN } from './project-control/project-control.routes';  // v1.11.0
 import { ZTodoComponent } from './shared-ui/z-todo.component';
 import { ZOrgChartComponent } from './shared-ui/z-org-chart.component';
 import { NgModule } from '@angular/core';
@@ -141,6 +144,11 @@ import { AssetEscalationComponent } from './asset-escalation/asset-escalation.co
 import { LeaveEscalationComponent } from './leave-escalation/leave-escalation.component';
 
 import { ReportOptionsComponent } from './report-options/report-options.component';
+import { ZReportComponent } from './z-report/z-report.component';
+import { ZRecordViewComponent } from './z-report/z-record-view.component';
+import { LeavePoliciesComponent } from './leave-policy/leave-policies.component';
+import { LeavePlannerComponent } from './leave-policy/leave-planner.component';
+import { EncashmentApprovalsComponent } from './leave-policy/encashment-approvals.component';
 import { ReportGenerateComponent } from './report-generate/report-generate.component';
 import { DocumentReportComponent } from './document-report/document-report.component';
 import { GeneralRequestReportComponent } from './general-request-report/general-request-report.component';
@@ -181,11 +189,13 @@ import { LateComePolicyComponent } from './late-come-policy/late-come-policy.com
 import { EarlyExitPolicyComponent } from './early-exit-policy/early-exit-policy.component';
 import { SalaryStructureComponent } from './salary-structure/salary-structure.component';
 import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.component';
+import { ATTENDANCE_KIOSK_ROUTE } from './attendance-plus/attendance-plus.routes';   // v1.12.0
 
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', },
   { path: 'login', component: LoginComponent, },
+  ATTENDANCE_KIOSK_ROUTE,   // v1.12.0 attendance kiosk tablet (the kiosk token identifies it – no login)
 
 
   { path: 'company-selection', component: CompanySelectionComponent },
@@ -227,6 +237,7 @@ const routes: Routes = [
             path: 'employee-master',
             component: EmployeeMasterComponent,
           },
+          { path: 'employee-transfer', component: EmployeeTransferComponent },   // v1.11.0
           {
             path: 'employee-details/:id/details',
             component: EmployeeDetailsComponent
@@ -479,6 +490,10 @@ const routes: Routes = [
         path: 'leave-options',
         component: LeaveOptionsComponent,
         children: [
+          { path: 'leave-policies', component: LeavePoliciesComponent },          // v1.10.0
+          { path: 'leave-planner', component: LeavePlannerComponent },            // v1.10.0
+          { path: 'encashment-approvals', component: EncashmentApprovalsComponent }, // v1.10.0
+          { path: 'rejoining', component: RejoiningComponent },                  // v1.11.0
           {
             path: 'leave-type',
             component: LeaveTypeComponent,
@@ -923,6 +938,7 @@ const routes: Routes = [
             path: 'project-timesheet',
             component: ProjectTimesheetComponent,
           },
+          ...PROJECT_CONTROL_CHILDREN,   // v1.11.0
 
 
         ]
@@ -979,6 +995,8 @@ const routes: Routes = [
         path: 'report-options',
         component: ReportOptionsComponent,
         children: [
+          { path: 'r/:key', component: ZReportComponent },   // v1.8.0 report centre
+          { path: 'rec/:label/:id', component: ZRecordViewComponent },   // v1.8.1 drill-down to the record
 
           {
             path: 'report-generate',
@@ -1072,7 +1090,7 @@ const routes: Routes = [
 
   {
     path: 'employee-dashboard',
-    component: EmployeeDashboardComponent,
+    component: EmployeeDashboardComponent, canActivate: [AuthGuard],   // v1.13.0: the portal needs a login
     children: [
       {
         path: 'employee-sction',

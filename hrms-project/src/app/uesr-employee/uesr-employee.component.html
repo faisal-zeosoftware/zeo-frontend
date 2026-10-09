@@ -176,8 +176,8 @@
                   <div *ngIf="registerButtonClicked && !emp_desgntn_id" class="error-message">Designation is required.</div>
                 </div>
 
-                <!-- Category -->
-                <div class="col-md-6">
+                <!-- Category (v1.12.0: hidden when employee categories are switched off) -->
+                <div class="col-md-6" *zIfOrg="'employee_categories'">
                   <label>Select Category<span class="required-star">*</span></label>
                   <div class="custom-sel">
                     <select class="form-control" id="emp_ctgry_id" name="emp_ctgry_id" [(ngModel)]="emp_ctgry_id"

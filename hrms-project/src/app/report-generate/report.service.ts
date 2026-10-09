@@ -52,7 +52,7 @@ export class ReportService {
     return throwError('No schema selected.'); // Return an error observable if no schema is selected
   }
  
-  const apiUrl = `http://${selectedSchema}.localhost:8000/emp-report/select_filter_fields/?report_id=${reportId}/`;
+  const apiUrl = `${environment.apiBaseUrl}/emp-report/select_filter_fields/?report_id=${reportId}/&schema=${selectedSchema}`;
  
   return this.http.get(apiUrl);
     // const url = `${this.baseUrl}select_filter_fields/?report_id=${reportId}`;

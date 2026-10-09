@@ -1,5 +1,7 @@
+import { environment } from '../../environments/environment';   // v1.13.1
 import { HttpClient } from '@angular/common/http';
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
+import { EmpOrgColumnsService } from '../org-structure/emp-org-columns.service';   // v1.12.0
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -21,6 +23,7 @@ import { MatOption } from '@angular/material/core';
   styleUrl: './pay-roll.component.css'
 })
 export class PayRollComponent {
+  readonly orgCols = inject(EmpOrgColumnsService);   // v1.12.0: location / division / section … columns when switched on
 
   private dataSubscription?: Subscription;
 
@@ -442,7 +445,7 @@ if (this.userId !== null) {
     }
   
     const url =
-      `http://localhost:8000/payroll/api/PayrollRun/${payrollRunId}/detailed-payslips/` +
+      `${environment.apiBaseUrl}/payroll/api/PayrollRun/${payrollRunId}/detailed-payslips/` +
       `?schema=${encodeURIComponent(selectedSchema)}`;
   
     this.isLoading = true;

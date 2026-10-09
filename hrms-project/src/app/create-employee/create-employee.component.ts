@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ZEmpOrgFieldsComponent } from '../org-structure/z-emp-org-fields.component';   // v1.12.0
+import { ZEmpProfileFieldsComponent } from '../employee-profile/z-emp-profile-fields.component';   // v1.13.0
+import { EmployeeProfileService } from '../employee-profile/employee-profile.service';            // v1.13.0
+import { OrgSettingsService } from '../org-structure/org-settings.service';
+import { ZEmpFieldsComponent } from '../shared-ui/z-emp-fields.component';  // v1.12.0
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -23,6 +28,21 @@ import { DepartmentServiceService } from '../department-master/department-servic
   styleUrl: './create-employee.component.css'
 })
 export class CreateEmployeeComponent implements OnInit {
+  // v1.12.0: location / division / section / cost centre / grade / position / employment type (when switched on)
+  @ViewChild('orgFields') orgFields?: ZEmpOrgFieldsComponent;
+  @ViewChild('profileFields') profileFields?: ZEmpProfileFieldsComponent;   // v1.13.0 title / name in Arabic / preferred name
+  private profileSvc = inject(EmployeeProfileService);
+  emp_middle_name = '';      // v1.13.0
+  autoCode = false;          // v1.13.0 employee code numbering on for the chosen branch
+  nextCode = '';
+
+  /** v1.13.0: is the employee code filled on save for this branch? (Employee master → Employee code numbering) */
+  checkAutoCode(): void {
+    this.profileSvc.get<any>('code-settings/next/', this.emp_branch_id ? `&branch=${this.emp_branch_id}` : '')
+      .then(r => { this.autoCode = !!r?.enabled; this.nextCode = r?.next_code || ''; })
+      .catch(() => { this.autoCode = false; this.nextCode = ''; });
+  }
+  readonly orgSettings = inject(OrgSettingsService);
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -83,6 +103,7 @@ export class CreateEmployeeComponent implements OnInit {
   emp_desgntn_id: any = '';
   emp_ctgry_id: any = '';
   attendance_source: string = 'manual';
+  barcode_number: string = '';
   emp_languages: any = '';
   emp_date_of_confirmation: any = '';
   emp_joined_date: any = '';
@@ -95,7 +116,7 @@ export class CreateEmployeeComponent implements OnInit {
 
   is_ess: boolean = false;
 
-  emp_status: boolean = false;
+  emp_status: boolean = true;
   is_active: boolean = true;
 
   employee: any;
@@ -314,6 +335,7 @@ export class CreateEmployeeComponent implements OnInit {
   selectedEmployeeId: number | null = null;
 
   ngOnInit(): void {
+    this.checkAutoCode();   // v1.13.0
 
     // Listen for sidebar changes so the dropdown updates instantly
     this.EmployeeService.selectedBranches$.subscribe(ids => {
@@ -557,6 +579,7 @@ export class CreateEmployeeComponent implements OnInit {
   syncbrch(selectedValue: string): void {
     // Sync the selected value from the dropdown to the emp_gender field
     this.emp_branch_id = selectedValue;
+    this.checkAutoCode();   // v1.13.0
   }
 
   syncdept(selectedValue: string): void {
@@ -827,9 +850,20 @@ export class CreateEmployeeComponent implements OnInit {
     this.registerButtonClicked = true;
 
     // custom fields ticked "Mandatory" in the form designer
-    const missingCustom = (this.custom_fields || []).filter((f: any) => f.mandatory && (f.field_value === undefined || f.field_value === null || String(f.field_value).trim() === '' || f.field_value === false));
+    // v1.12.0: only fields shown on this form (show on / show only if); the server checks them again
+    const missingCustom = ZEmpFieldsComponent.missing(this.custom_fields, 'field_value', 'create');
     if (missingCustom.length) {
-      alert('Please fill: ' + missingCustom.map((f: any) => f.emp_custom_field).join(', '));
+      alert('Please fill: ' + missingCustom.join(', '));
+      return;
+    }
+    const badCustom = ZEmpFieldsComponent.problems(this.custom_fields, 'field_value', 'create');
+    if (badCustom.length) {
+      alert('Please correct: ' + badCustom.join(' '));
+      return;
+    }
+    const orgMissing = this.orgFields?.problems() || [];   // v1.12.0 required organisation fields
+    if (orgMissing.length) {
+      alert('Please fill: ' + orgMissing.join(' '));
       return;
     }
 
@@ -841,7 +875,7 @@ export class CreateEmployeeComponent implements OnInit {
 
       // BASIC DETAILS
       {
-        field: this.emp_code,
+        field: this.emp_code || (this.autoCode ? 'generated on save' : ''),   // v1.13.0: numbering fills it
         fieldName: 'Employee Code',
         section: 'basic',
         elementId: 'emp_code'
@@ -875,12 +909,13 @@ export class CreateEmployeeComponent implements OnInit {
         elementId: 'emp_desgntn_id'
       },
 
-      {
+      // v1.12.0: not asked when employee categories are switched off in Organisation settings
+      ...(this.orgSettings.categoriesOn() ? [{
         field: this.emp_ctgry_id,
         fieldName: 'Category',
         section: 'basic',
         elementId: 'emp_ctgry_id'
-      },
+      }] : []),
 
 
 
@@ -955,6 +990,16 @@ export class CreateEmployeeComponent implements OnInit {
 
     const formData = new FormData();
 
+    // v1.12.0: custom field values go with the employee; the server checks them (mandatory, type, rules)
+    // before the employee is saved and stores them right after it
+    const customValues: Record<string, any> = {};
+    (this.custom_fields || []).forEach((f: any) => {
+      const v = f.field_value;
+      if (v === undefined || v === null || (typeof v === 'string' && !v.trim())) { return; }
+      customValues[f.emp_custom_field] = f.data_type === 'checkbox' ? (v === true || /^(yes|true|1)$/i.test(String(v)) ? 'Yes' : 'No') : (Array.isArray(v) ? v.join(', ') : v);
+    });
+    formData.append('custom_fields', JSON.stringify(customValues));
+
     // PROFILE PIC
     if (this.selectedFile) {
       formData.append('emp_profile_pic', this.selectedFile);
@@ -990,6 +1035,7 @@ export class CreateEmployeeComponent implements OnInit {
     formData.append('emp_code', this.emp_code || '');
 
     formData.append('emp_first_name', this.emp_first_name || '');
+    formData.append('emp_middle_name', this.emp_middle_name || '');   // v1.13.0
     formData.append('emp_last_name', this.emp_last_name || '');
 
     formData.append('emp_gender', this.emp_gender || '');
@@ -1011,6 +1057,9 @@ formData.append(
     formData.append('emp_mobile_number_2', this.emp_mobile_number_2 || '');
 
     formData.append('emp_city', this.emp_city || '');
+    // v1.13.0: country / state are saved again
+    formData.append('emp_country_id', this.emp_country_id || '');
+    formData.append('emp_state_id', this.emp_state_id || '');
 
     formData.append('emp_permenent_address', this.emp_permenent_address || '');
     formData.append('emp_present_address', this.emp_present_address || '');
@@ -1025,9 +1074,7 @@ formData.append(
     formData.append('emp_father_name', this.emp_father_name || '');
     formData.append('emp_mother_name', this.emp_mother_name || '');
 
-    formData.append('emp_posting_location', this.emp_posting_location || '');
-
-    formData.append('emp_company_id', this.emp_company_id || '');
+    // v1.13.0: emp_posting_location / emp_company_id are not employee fields (work location / branch are) – not sent
 
     if (!this.branches || this.branches.length === 0) {
       alert("Branches are still loading. Please wait.");
@@ -1064,6 +1111,7 @@ formData.append(
     formData.append('emp_ctgry_id', this.emp_ctgry_id || '');
 
     formData.append('attendance_source', this.attendance_source);
+    if ((this.barcode_number || '').trim()) { formData.append('barcode_number', this.barcode_number.trim()); }
 
     formData.append('person_id', this.person_id || '');
 
@@ -1078,7 +1126,7 @@ formData.append(
       );
     }
 
-    formData.append('emp_languages', this.emp_languages || '');
+    // v1.13.0: emp_languages is not an employee field (languages are skills) – not sent
 
     formData.append(
       'emp_date_of_confirmation',
@@ -1095,9 +1143,10 @@ formData.append(
       this.is_ess ? '1' : '0'
     );
 
+    // "Employee Is Active" on the form is the employee's status (is_active itself is set by the server)
     formData.append(
       'emp_status',
-      this.emp_status ? '1' : '0'
+      this.is_active ? '1' : '0'
     );
 
     formData.append(
@@ -1141,8 +1190,17 @@ formData.append(
 
           this.EmployeeService.setEmployeeId(createdEmployeeId);
 
-          // POST CUSTOM FIELD VALUES
-          this.postCustomFieldValues(createdEmployeeId);
+          // custom field values were saved with the employee (v1.12.0)
+
+          // v1.12.0: organisation fields (saved once the employee exists)
+          this.orgFields?.save(createdEmployeeId).then(problem => {
+            if (problem) { alert('The employee was saved, but not the organisation details: ' + problem + ' Correct them on the employee.'); }
+          });
+          // v1.13.0: title / name in Arabic / preferred name
+          this.profileFields?.save(createdEmployeeId).then(problem => {
+            if (problem) { alert('The employee was saved, but not the name in Arabic / title: ' + problem + ' Correct it on the UAE identity tab.'); }
+          });
+          if (response?.emp_code && !this.emp_code) { this.emp_code = response.emp_code; }
 
           // SUCCESS MODAL
           const dialogRef = this.dialog.open(
@@ -1903,6 +1961,7 @@ formData.append(
           if (this.branches.length > 0) {
             this.emp_branch_id = this.branches[0].id;
           }
+          this.checkAutoCode();   // v1.13.0: the branch was chosen for the user – show its code numbering ("Generated on save")
 
           console.log('Filtered branches for selection:', this.branches);
           if (callback) callback();
@@ -1928,7 +1987,7 @@ formData.append(
 
       this.companyRegistrationService.getDepartmentsList(selectedSchema).subscribe(
         (result: any) => {
-          this.departments = result;
+          this.departments = (result || []).filter((d: any) => d.dept_is_active !== false);
         },
         (error: any) => {
           console.error('Error fetching countries:', error);
@@ -1948,7 +2007,7 @@ formData.append(
     if (selectedSchema) {
       this.companyRegistrationService.getDesignationList(selectedSchema).subscribe(
         (result: any) => {
-          this.designations = result;
+          this.designations = (result || []).filter((d: any) => d.desgntn_is_active !== false);
         },
         (error: any) => {
           console.error('Error fetching designations:', error);
@@ -1966,7 +2025,7 @@ formData.append(
     if (selectedSchema) {
       this.companyRegistrationService.getcatgoriesList(selectedSchema).subscribe(
         (result: any) => {
-          this.catogories = result;
+          this.catogories = (result || []).filter((c: any) => c.ctgry_is_active !== false);
         },
         (error: any) => {
           console.error('Error fetching catogories:', error);

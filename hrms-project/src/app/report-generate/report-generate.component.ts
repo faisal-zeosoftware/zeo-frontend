@@ -1,7 +1,8 @@
 
 
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit  } from '@angular/core';
+import { Component, ElementRef, OnInit, inject } from '@angular/core';
+import { OrgSettingsService } from '../org-structure/org-settings.service';   // v1.12.0
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -86,7 +87,8 @@ export class ReportGenerateComponent implements OnInit {
   // Add these to your component properties
 activeFilters: { [key: string]: { [val: string]: boolean } } = {};
 // 1. Define which fields you want to show filters for
-filterFields: string[] = ['emp_branch_id', 'emp_dept_id', 'emp_desgntn_id', 'emp_ctgry_id', 'is_active'];
+filterFields: string[] = ['emp_branch_id', 'emp_dept_id', 'emp_desgntn_id', 'emp_ctgry_id', 'is_active']
+  .filter(f => f !== 'emp_ctgry_id' || inject(OrgSettingsService).categoriesOn());   // v1.12.0: no Category filter when categories are off
 
 // 2. The helper function that was missing
 getKeys(obj: any): string[] {

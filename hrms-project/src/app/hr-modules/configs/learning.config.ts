@@ -1,5 +1,6 @@
 import { LOOKUPS } from '../module-api.service';
 import { PageConfig } from '../page-config';
+import { COURSE_EXTRA_CHILD, COURSE_MODULES_CHILD, COURSE_SKILLS_CHILD, SESSION_ATTENDANCE_CHILD, SESSION_COSTS_CHILD, SESSION_EXTRA_CHILD } from '../../learning-plus/learning-plus.config';
 
 const API = '/learning/api/';
 const opt = (pairs: [string, string][]) => pairs.map(([value, label]) => ({ value, label }));
@@ -77,6 +78,8 @@ export const COURSE_PAGE: PageConfig = {
     { key: 'is_active', label: 'Active', type: 'checkbox', default: true },
   ],
   canDelete: true,
+  // LearningPlus: category / provider / delivery, online modules, skills gained
+  children: [COURSE_EXTRA_CHILD, COURSE_MODULES_CHILD, COURSE_SKILLS_CHILD],
 };
 
 const SESSION_STATUS = { draft: 'grey', published: 'blue', in_progress: 'cyan', completed: 'green', cancelled: 'red' };
@@ -139,6 +142,10 @@ export const SESSION_PAGE: PageConfig = {
       title: 'Attendance & results', endpoint: API + 'results/', parentKey: 'session',
       columns: RESULT_COLUMNS,
     },
+    // LearningPlus: trainer / provider / venue, cost lines, date-wise attendance (edit it in Attendance Sheet)
+    SESSION_EXTRA_CHILD,
+    SESSION_COSTS_CHILD,
+    SESSION_ATTENDANCE_CHILD,
   ],
 };
 

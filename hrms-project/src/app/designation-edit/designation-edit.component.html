@@ -17,7 +17,7 @@
             <div class="col-md-6" >
                
                 <label>Job Title</label>
-               <input type="text"  class="form-control" required id="desgntn_job_title" name="job_title"  [(ngModel)]="designation.desgntn_job_title"  placeholder="Enter Description "
+               <input type="text"  class="form-control" required id="desgntn_job_title" name="job_title"  [(ngModel)]="designation.desgntn_job_title"  placeholder="Enter job title"
                 [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !desgntn_job_title}">
                
                <div *ngIf="registerButtonClicked && !desgntn_job_title" class="error-message">Designation name is required.</div>
@@ -33,7 +33,7 @@
             </div>
             <!-- <div class="col-md-6"  >
               
-      <label>Catogary Tittle</label>
+      <label>Job Title</label>
       <input type="text" [(ngModel)]="category.catogary_title" [ngModelOptions]="{standalone: true}" >
 
 </div> -->
@@ -102,6 +102,14 @@
 
 
         </div>
+      <div class="row">
+        <div class="col-md-12 mt-3">
+          <label class="d-inline-flex align-items-center gap-2" style="cursor:pointer">
+            <input type="checkbox" [(ngModel)]="designation.desgntn_is_active" [ngModelOptions]="{standalone: true}">
+            Active <span class="text-muted" style="font-weight:400">– inactive designations are not offered for new employees</span>
+          </label>
+        </div>
+      </div>
     </form>
 
     <div class="row">

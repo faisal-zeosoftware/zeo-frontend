@@ -1,4 +1,5 @@
-import { Component , Inject, OnInit} from '@angular/core';
+import { Component , Inject, OnInit, inject} from '@angular/core';
+import { OrgSettingsService } from '../org-structure/org-settings.service';   // v1.12.0
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -27,6 +28,7 @@ export interface Employee {
 })
 
 export class UesrEmployeeComponent implements OnInit {
+  readonly orgSettings = inject(OrgSettingsService);   // v1.12.0: Category is not asked when categories are switched off
 
   private apiUrl = `${environment.apiBaseUrl}`;
 
@@ -230,7 +232,7 @@ export class UesrEmployeeComponent implements OnInit {
       { field: this.emp_branch_id, fieldName: 'Branch', section: 'basic', elementId: 'emp_branch_id' },
       { field: this.emp_dept_id, fieldName: 'Department', section: 'basic', elementId: 'emp_dept_id' },
       { field: this.emp_desgntn_id, fieldName: 'Designation', section: 'basic', elementId: 'emp_desgntn_id' },
-      { field: this.emp_ctgry_id, fieldName: 'Category', section: 'basic', elementId: 'emp_ctgry_id' },
+      ...(this.orgSettings.categoriesOn() ? [{ field: this.emp_ctgry_id, fieldName: 'Category', section: 'basic', elementId: 'emp_ctgry_id' }] : []),
       { field: this.emp_joined_date, fieldName: 'Join Date', section: 'basic', elementId: 'emp_joined_date' },
       { field: this.emp_nationality, fieldName: 'Nationality', section: 'personal', elementId: 'emp_nationality' }
     ];

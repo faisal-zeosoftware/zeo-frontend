@@ -63,7 +63,7 @@
 
             <div class="col-md-6">
                 <label>{{empCodeFieldName}}
-                    <span class="required-star">*</span>
+                    <span class="required-star" *ngIf="!autoCode">*</span>
 
                 </label>
             
@@ -76,8 +76,10 @@
                            required placeholder="{{empCodeFieldName}}" 
                            [(ngModel)]="temp_emp_code" 
                            (ngModelChange)="syncEmpCode($event)"  [ngModelOptions]="{standalone: true}"
-                           [ngClass]="{'error-field': registerButtonClicked && !emp_code}">
-                    <div *ngIf="registerButtonClicked && !emp_code" class="error-message">{{empCodeFieldName}} is required.</div>
+                           [ngClass]="{'error-field': registerButtonClicked && !emp_code && !autoCode}">
+                    <!-- v1.13.0: employee code numbering -->
+                    <div *ngIf="autoCode && !emp_code" class="hint-text" style="font-size:12px;color:#6b7185;margin-top:-8px">Generated on save{{ nextCode ? ' (next: ' + nextCode + ')' : '' }} – leave empty, or type a code to use your own.</div>
+                    <div *ngIf="registerButtonClicked && !emp_code && !autoCode" class="error-message">{{empCodeFieldName}} is required.</div>
             
                     <!-- Dropdown -->
                     <div *ngSwitchCase="'Dropdown'" class="custom-sel">
@@ -109,6 +111,11 @@
                 </div>
             </div>
 
+            <div class="col-md-6"><!-- v1.13.0 -->
+                <label for="emp_middle_name">Middle Name</label>
+                <input type="text" class="form-control" id="emp_middle_name" name="emp_middle_name" [(ngModel)]="emp_middle_name" placeholder="Middle Name" [ngModelOptions]="{standalone: true}">
+            </div>
+
             <div class="col-md-6" *ngIf="!isLasstNameFieldHidden" >
                
                 <label>{{lastNameFieldName}}</label>
@@ -122,6 +129,9 @@
                     {{lastNameFieldName}} is required.
                 </div>
             </div>
+
+            <!-- v1.13.0: title, name in Arabic (right to left), preferred name -->
+            <z-emp-profile-fields #profileFields></z-emp-profile-fields>
 
 
 <div class="col-md-6" *ngIf="!isGernderNameFieldHidden">
@@ -292,6 +302,9 @@
     </ng-container>
 </div>
 
+<!-- v1.12.0: organisation fields switched on in Organisation settings (location, division, section, cost centre, grade, position, employment type) -->
+<z-emp-org-fields #orgFields [departmentId]="emp_dept_id" [designationId]="emp_desgntn_id" [branchId]="emp_branch_id"></z-emp-org-fields>
+
 
 
 
@@ -341,6 +354,7 @@
 
 
 
+<ng-container *zIfOrg="'employee_categories'"><!-- v1.12.0: hidden when employee categories are switched off -->
 <div class="col-md-6"  *ngIf="!isCatFieldHidden">
     <label>{{catFieldName}}
         <span class="required-star" >*</span>
@@ -383,6 +397,7 @@
         </div>
     </ng-container>
 </div>
+</ng-container>
 
 <div class="col-md-6">
     <label>Attendance Source</label>
@@ -393,6 +408,11 @@
         <option value="manual">Manual Attendance</option>
         <option value="biometric">Biometric Attendance</option>
     </select>
+</div>
+
+<div class="col-md-6">
+    <label>Attendance Card / Barcode</label>
+    <input type="text" class="form-control" [(ngModel)]="barcode_number" [ngModelOptions]="{standalone: true}" placeholder="Card or barcode number used at the attendance device">
 </div>
 
 <div class="col-md-6">
@@ -427,12 +447,11 @@
         <!-- Text Box for Gender -->
         <input *ngSwitchCase="'Text Box'" type="text" class="form-control" 
                required placeholder="{{repoFieldName}}" 
-               [(ngModel)]="approver" 
-               (ngModelChange)="syncbrch($event)" [ngModelOptions]="{standalone: true}">
+               [(ngModel)]="approver" [ngModelOptions]="{standalone: true}">
         
         <!-- Dropdown for Gender -->
         <div *ngSwitchCase="'Dropdown'" class="custom-sel">
-            <select class="form-control" [(ngModel)]="approver" (ngModelChange)="syncbrch($event)" [ngModelOptions]="{standalone: true}" >
+            <select class="form-control" [(ngModel)]="approver" [ngModelOptions]="{standalone: true}" >
 
                 <option *ngFor="let user of Users" [ngValue]="user.id">
                     {{ user.username }}
@@ -912,19 +931,16 @@
         
         
         
-             <!-- <div class="col-md-6">
-        
-        
+             <!-- v1.13.0: country select back on the form (the state list below follows it) -->
+             <div class="col-md-6">
                     <div class="custom-sel">
-                        <label>Country</label>
-                        <select class="form-control" id="emp_country_id" name="emp_country_id" required [(ngModel)]="emp_country_id" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}" >
+                        <label for="emp_country_id">Country</label>
+                        <select class="form-control" id="emp_country_id" name="emp_country_id" [(ngModel)]="emp_country_id" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}" >
                             <option value="" >Select</option>
                             <option *ngFor="let emp_country_id of countries" [value]="emp_country_id.id">{{ emp_country_id.country_name }}</option>
                         </select>
                     </div>
-                                
-        
-                </div> -->
+                </div>
         
         
                 <!-- <div class="col-md-6"  *ngIf="!isCountryFieldHidden">
@@ -1053,7 +1069,7 @@
         
             </div>
             <!-- v1.7.0: custom fields in the designer's order and sections, every field type -->
-            <z-emp-fields [fields]="custom_fields" valueKey="field_value" [minWidth]="260"></z-emp-fields>
+            <z-emp-fields [fields]="custom_fields" valueKey="field_value" context="create" [minWidth]="260"></z-emp-fields>
       
         
            

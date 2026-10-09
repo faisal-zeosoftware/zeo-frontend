@@ -42,7 +42,8 @@
               "node_modules/summernote/dist/summernote-lite.css",
               "node_modules/summernote/dist/summernote-bs4.css",
               "src/zlist.css",
-              "src/zrecord.css"
+              "src/zrecord.css",
+              "src/zresponsive.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",

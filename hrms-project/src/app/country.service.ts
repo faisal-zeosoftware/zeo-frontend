@@ -11,7 +11,7 @@ import { environment } from '../environments/environment';
 })
 export class CountryService {
 
-  private baseUrl = 'http://80.65.208.178:8000/core/api/';
+  private baseUrl = `${environment.apiBaseUrl}/core/api/`;
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -351,7 +351,7 @@ export class CountryService {
        
     
         
-        const apiUrl = `http://${selectedSchema}.localhost:8000/calendars/api/assign-days/`;
+        const apiUrl = `${environment.apiBaseUrl}/calendars/api/assign-days/?schema=${selectedSchema}`;
         const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     
         return this.http.post(apiUrl, companyData, { headers }).pipe(
@@ -440,7 +440,7 @@ export class CountryService {
 
 
       getHolidayendcalendar(selectedSchema: string): Observable<any> {
-        const apiUrl = `http://${selectedSchema}.localhost:8000/calendars/api/holiday/`;
+        const apiUrl = `${environment.apiBaseUrl}/calendars/api/holiday/?schema=${selectedSchema}`;
       
         // Fetch employees from the API
         return this.http.get(apiUrl);

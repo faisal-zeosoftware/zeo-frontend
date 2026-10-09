@@ -5,7 +5,11 @@ import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
 import { ZFieldInputComponent } from './z-field-input.component';
 import { ZFieldDesignerComponent } from './z-field-designer.component';
-import { DesignField, bySection, checkValue, showValue } from './field-types';
+import { DesignField, DesignerAdapter, bySection, checkValue, showIfOk, showValue, visibleOn } from './field-types';
+import { ZListService } from './z-list.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { empFieldAdapter } from './emp-field-adapter';
 
 interface FeedItem { kind: 'note' | 'change' | 'created' | 'deleted'; at: string; who: string; body?: string; changes?: any[]; attachments?: any[]; id?: number; mine?: boolean; }
 
@@ -33,13 +37,14 @@ const ACT_TYPES = [
       <div class="zr-head">
         <h4>More details</h4>
         <span class="zr-grow"></span>
-        <button type="button" class="zr-link" *ngIf="canDesign" (click)="designing = true"><mat-icon>tune</mat-icon>Design this form</button>
+        <button type="button" class="zr-link" *ngIf="canDesign" (click)="designing = true"><mat-icon>tune</mat-icon>{{ isEmployee ? 'Design employee fields' : 'Design this form' }}</button>
       </div>
-      <p class="zr-muted" *ngIf="!fields.length">No extra fields yet. Use “Design this form” to add fields such as a cost centre, a contract file or a rating.</p>
-      <ng-container *ngFor="let g of groups">
+      <p class="zr-muted" *ngIf="!fields.length && !isEmployee">No extra fields yet. Use “Design this form” to add fields such as a cost centre, a contract file or a rating.</p>
+      <p class="zr-muted" *ngIf="!fields.length && isEmployee">Employee fields you add appear in this form with the other employee details (reopen the form after designing).</p>
+      <ng-container *ngFor="let g of visibleGroups()">
         <div class="zr-sec" *ngIf="g.section">{{ g.section }}</div>
         <div class="zr-grid">
-          <z-field-input *ngFor="let f of g.fields" [field]="f" [value]="values[f.name]" [error]="errors[f.name] || ''" [wide]="f.field_type === 'textarea' || f.field_type === 'multiselect'"
+          <z-field-input *ngFor="let f of g.fields" [field]="f" [value]="values[f.name]" [error]="errors[f.name] || ''" [disabled]="locked(f)" [wide]="f.field_type === 'textarea' || f.field_type === 'multiselect'"
                          [upload]="id ? uploader(f.name) : undefined" (valueChange)="change(f, $event)"></z-field-input>
         </div>
       </ng-container>
@@ -151,7 +156,8 @@ const ACT_TYPES = [
       <div class="zr-err" *ngIf="error" role="alert">{{ error }}</div>
     </div>
 
-    <z-field-designer *ngIf="designing" [screen]="endpoint" [screenName]="screenName" (closed)="designClosed($event)"></z-field-designer>
+    <z-field-designer *ngIf="designing && !isEmployee" [screen]="endpoint" [screenName]="screenName" (closed)="designClosed($event)"></z-field-designer>
+    <z-field-designer *ngIf="designing && isEmployee" [adapter]="employeeAdapter" (closed)="designClosed($event)"></z-field-designer>
   </section>`,
 })
 export class ZRecordPanelComponent implements OnInit, OnDestroy {
@@ -178,7 +184,34 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
   act: any = { activity_type: 'todo', summary: '', due_date: '', assigned_to: 0, note: '' };
   private key = 0;
 
-  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef, private el: ElementRef<HTMLElement>) {}
+  /** v1.12.0: self-service employee (no back-office rights): read-only and hidden fields apply. */
+  ess = false;
+
+  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef, private el: ElementRef<HTMLElement>, private http: HttpClient, private zl: ZListService) {}
+
+  /** Values by field name and label (for "show only if"). */
+  private valueMap(): Record<string, any> {
+    const out: Record<string, any> = {};
+    for (const f of this.fields) { out[f.name] = this.values[f.name]; out[f.label] = this.values[f.name]; }
+    return out;
+  }
+  /** Is the field shown now (show on, self service, show only if)? */
+  shown(f: DesignField, vals = this.valueMap()): boolean {
+    const r = f.rules || {};
+    return visibleOn(r, this.id ? 'edit' : 'create') && (!this.ess || visibleOn(r, 'ess')) && showIfOk(r, vals);
+  }
+  visibleGroups() { const vals = this.valueMap(); return bySection(this.fields.filter(f => this.shown(f, vals))); }
+  locked(f: DesignField): boolean { return this.ess && !!f.rules?.ess_read_only; }
+  /** Problems of the shown, changeable fields (the interceptor asks before the screen saves). */
+  problems(): string[] {
+    const vals = this.valueMap();
+    return this.fields.filter(f => this.shown(f, vals) && !this.locked(f)).map(f => checkValue(f, this.values[f.name])).filter(Boolean);
+  }
+
+  /** Employee screens keep their own custom fields (employee form designer), not the generic extra fields. */
+  get isEmployee(): boolean { return /\/employee\/api\/(Employee|emplist)\//i.test(this.endpoint || ''); }
+  private _empAdapter?: DesignerAdapter;
+  get employeeAdapter(): DesignerAdapter { return this._empAdapter ??= empFieldAdapter(this.http, environment.apiBaseUrl, 'employee'); }
 
   get openActs(): any[] { return this.activities.filter(a => a.state === 'open'); }
 
@@ -188,8 +221,10 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
       endpoint: this.endpoint, id: this.id, fields: [], values: this.values,
       visible: () => this.el.nativeElement.isConnected && (!this.host || this.host.isConnected),
       onError: (m) => { this.formError = m; this.markErrors(); this.cd.detectChanges(); },
+      check: () => this.problems(),
       onSaved: (ep, id) => { this.dirty = false; if (!this.id) { this.endpoint = ep; this.id = id; this.rec.update(this.key, { endpoint: ep, id }); this.el.nativeElement.setAttribute('data-record', `${ep}#${id}`); } this.load(); },
     });
+    this.zl.permissions().subscribe(p => { this.ess = !p.admin && !p.codes.size; this.cd.detectChanges(); });
     this.load();
   }
 
@@ -208,7 +243,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
       } else if (this.endpoint) {
         const r = await firstValueFrom(this.rec.fields(this.endpoint));
         this.applyFields((r.fields || []).filter((f: any) => f.active), {});
-        this.canDesign = !!r.can_design && !/\/employee\/api\/Employee\/$/i.test(this.endpoint);
+        this.canDesign = !!r.can_design;
         for (const f of this.fields) { if (f.default && this.values[f.name] === undefined) { this.values[f.name] = f.default; } }
       }
     } catch (e: any) {
@@ -219,11 +254,12 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
   }
 
   private async designAllowed(): Promise<boolean> {
-    if (!this.endpoint || /\/employee\/api\/Employee\/$/i.test(this.endpoint)) { return false; }
+    if (!this.endpoint) { return false; }
     try { const r = await firstValueFrom(this.rec.fields(this.endpoint)); return !!r.can_design; } catch { return false; }
   }
 
   private applyFields(fields: any[], values: Record<string, any>): void {
+    if (this.isEmployee) { fields = []; }
     this.fields = fields;
     this.groups = bySection(fields);
     for (const k of Object.keys(this.values)) { delete this.values[k]; }
@@ -261,7 +297,7 @@ export class ZRecordPanelComponent implements OnInit, OnDestroy {
     this.values[f.name] = v; this.dirty = true; this.errors[f.name] = ''; this.formError = '';
     this.rec.update(this.key, { values: this.values });
   }
-  private markErrors(): void { for (const f of this.fields) { this.errors[f.name] = checkValue(f, this.values[f.name]); } }
+  private markErrors(): void { const vals = this.valueMap(); for (const f of this.fields) { this.errors[f.name] = this.shown(f, vals) && !this.locked(f) ? checkValue(f, this.values[f.name]) : ''; } }
   uploader(field: string) {
     return async (file: File) => {
       const r = await firstValueFrom(this.rec.upload(this.endpoint!, this.id!, [file], field));

@@ -1,0 +1,66 @@
+<div class="container">
+  <div class="comapny_section">
+    <div class="header_section">
+      <div class="zq-head">
+        <div>
+          <h1 class="page-title">{{ title }}</h1>
+          <p class="zq-desc" *ngIf="description">{{ description }}</p>
+          <p class="zq-desc zq-rnote" *ngFor="let n of notes">{{ n }}</p>
+        </div>
+        <div class="zq-side">
+          <span class="zq-count" *ngIf="!loading && !error">{{ rows.length | number }} {{ rows.length === 1 ? 'row' : 'rows' }}</span>
+          <button type="button" class="zq-mail" (click)="email()" [disabled]="sending || loading || !!error" title="Send this report to your e-mail as a CSV file">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg><span>{{ sending ? 'Sending…' : 'E-mail me' }}</span>
+          </button>
+        </div>
+      </div>
+      <p class="zq-note" *ngIf="note" [class.zq-err]="noteErr">{{ note }}</p>
+
+      <div class="zq-period" *ngIf="hasPeriod">
+        <span class="zq-plabel">Period</span>
+        <button type="button" *ngFor="let p of presets" [class.on]="preset === p.k" (click)="pick(p.k)">{{ p.l }}</button>
+        <span class="zq-custom">
+          <input type="date" [(ngModel)]="from" aria-label="From date">
+          <span>to</span>
+          <input type="date" [(ngModel)]="to" aria-label="To date">
+          <button type="button" class="zq-run" (click)="custom()" [disabled]="!from || !to || loading">Run</button>
+        </span>
+      </div>
+    </div>
+
+    <div class="com_list mt-4">
+      <div class="zq-drill" *ngIf="(drillF.length || nz) && !loading && !error">
+        <span class="zq-dl">Drilled down to</span>
+        <span class="zq-dchip" *ngFor="let f of drillF">{{ f.label }} = <b>{{ f.value.split('|').join(' or ') }}</b></span>
+        <span class="zq-dchip" *ngIf="nz">{{ nzLabel }} <b>not zero</b></span>
+        <span class="zq-dn">{{ rows.length | number }} of {{ all.length | number }} rows</span>
+        <button type="button" class="zq-dx" (click)="clearDrill()">Show all rows</button>
+      </div>
+      <div class="zq-totals" *ngIf="totalCols.length && !loading && !error">
+        <button type="button" *ngFor="let c of totalCols" (click)="drillTotal(c)" [title]="'Show the rows that make up ' + c.label"><em>{{ c.label }}</em><b>{{ fmt(totals[c.key]) }}</b></button>
+      </div>
+
+      <p class="zq-msg" *ngIf="loading">Running the report…</p>
+      <p class="zq-msg zq-err" *ngIf="error && !loading">{{ error }}</p>
+
+      <ng-container *ngIf="!loading && !error">
+        <ng-container *ngFor="let r of runs">
+          <table class="table table-hover mb-0 zq-table">
+            <thead>
+              <tr><th *ngFor="let c of columns; trackBy: trackCol" [class.zq-num]="c.type === 'number'">{{ c.label }}</th><th class="zq-open-h"></th></tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of rows" [class.zq-row]="rowLink(row)" (click)="rowClick(row, $event)">
+                <td *ngFor="let c of columns; trackBy: trackCol" [attr.data-label]="c.label" [attr.data-k]="c.key" [class.zq-num]="c.type === 'number'" [class.zq-date]="c.type === 'date'"
+                    [class.zq-cl]="cellLink(row, c)">{{ show(row, c) }}</td>
+                <td class="zq-open"><button *ngIf="rowLink(row)" type="button" class="zq-ob" (click)="open(row, $event)" [attr.aria-label]="row._m ? 'Open record' : 'Open the rows behind this line'" [title]="row._m ? 'Open record' : 'Open the rows behind this line'">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></td>
+              </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <p class="zq-msg" *ngIf="!rows.length">Nothing to show for this period and these branches. Pick another period or branch.</p>
+      </ng-container>
+    </div>
+  </div>
+</div>

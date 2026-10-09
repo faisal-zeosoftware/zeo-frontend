@@ -143,6 +143,62 @@
         </section>
       </div>
 
+      <!-- overtime, goals, ratings -->
+      <div class="grid g-3">
+        <section class="card" *ngIf="d.overtime">
+          <div class="card-h"><h2>Overtime · {{ d.overtime.month_label }}</h2><button type="button" class="zbtn link" (click)="drill('team_overtime', 'Overtime this month')" *ngIf="d.overtime.hours">All entries</button></div>
+          <button type="button" class="kpi-btn" (click)="drill('team_overtime', 'Overtime this month')">
+            <span class="big">{{ d.overtime.hours | number:'1.0-1' }} <small>hours · {{ d.overtime.people }} {{ d.overtime.people === 1 ? 'person' : 'people' }}</small></span>
+          </button>
+          <p class="muted small" *ngIf="d.overtime.hours">{{ d.overtime.approved | number:'1.0-1' }} h approved · <span [class.warn-text]="d.overtime.pending">{{ d.overtime.pending | number:'1.0-1' }} h waiting</span></p>
+          <p class="muted small" *ngIf="!d.overtime.hours">No overtime booked this month.</p>
+          <ul class="bars">
+            <li *ngFor="let t of d.overtime.top">
+              <button type="button" (click)="drill('team_overtime', 'Overtime – ' + t.employee, {employee: t.employee_id})">
+                <span class="b-l">{{ t.employee }}</span>
+                <span class="b-track"><i [style.width.%]="t.hours * 100 / otMax"></i></span>
+                <b>{{ t.hours | number:'1.0-1' }}</b>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card" *ngIf="d.goals">
+          <div class="card-h"><h2>Goal progress</h2><button type="button" class="zbtn link" (click)="drill('goal_progress', 'Goal progress', {cycle: d.goals.cycle_id})">Everyone</button></div>
+          <p class="muted small">{{ d.goals.cycle }} · {{ d.goals.sheets }} goal sheets</p>
+          <div class="m-top"><span>Average achievement (weighted)</span><b>{{ d.goals.avg_progress | number:'1.0-0' }}%</b></div>
+          <div class="m-track"><div class="m-fill" [style.width.%]="d.goals.avg_progress"></div></div>
+          <p class="muted small">{{ d.goals.completed_goals }} of {{ d.goals.total_goals }} goals done · <span [class.warn-text]="d.goals.at_risk">{{ d.goals.at_risk }} at risk</span></p>
+          <ul class="bars">
+            <li *ngFor="let g of d.goals.rows.slice(0, 5)">
+              <button type="button" (click)="drill('goal_progress', 'Goal progress', {cycle: d.goals.cycle_id})">
+                <span class="b-l">{{ g.employee }}</span>
+                <span class="b-track"><i [style.width.%]="g.progress"></i></span>
+                <b>{{ g.progress | number:'1.0-0' }}%</b>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <section class="card" *ngIf="d.ratings">
+          <div class="card-h"><h2>Performance ratings</h2><span class="muted small" *ngIf="d.ratings.cycle">{{ d.ratings.cycle }}</span></div>
+          <p class="muted small" *ngIf="!d.ratings.rated">No ratings yet.</p>
+          <ng-container *ngIf="d.ratings.rated">
+            <p class="small">{{ d.ratings.rated }} rated · average <b>{{ d.ratings.avg | number:'1.1-2' }}</b> of 5</p>
+            <div class="rdist" role="list" aria-label="Rating distribution">
+              <button type="button" role="listitem" class="rcol" *ngFor="let r of d.ratings.rows" [disabled]="!r.count"
+                      (click)="drill('rating_dist', 'Rated ' + r.rating, {cycle: d.ratings.cycle_id, rating: r.rating})"
+                      [attr.aria-label]="r.count + ' rated ' + r.rating">
+                <span class="rv">{{ r.count }}</span>
+                <span class="rbar"><i [style.height.%]="r.count * 100 / ratingMax"></i></span>
+                <span class="rk">{{ r.rating }}</span>
+              </button>
+            </div>
+            <p class="muted small">1 = below expectations · 5 = outstanding</p>
+          </ng-container>
+        </section>
+      </div>
+
       <!-- HR only -->
       <div class="grid g-2" *ngIf="d.payroll">
         <section class="card">

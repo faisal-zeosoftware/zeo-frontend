@@ -419,7 +419,7 @@
                         *ngFor="let fn of FunctionsOperators"
                         (click)="insertComponentToFormula(fn, formulaTextArea)"
                       >
-                        {{ fn }}
+                        <span [title]="fxLabel(fn)">{{ fn }}</span>
                       </li>
                     </ul>
                   </div>
@@ -446,7 +446,7 @@
                           insertComponentToFormula(vars, formulaTextArea)
                         "
                       >
-                        {{ vars }}
+                        <span [title]="fxLabel(vars)">{{ vars }}</span>
                       </li>
                     </ul>
                   </div>
@@ -514,6 +514,25 @@
                     [ngModelOptions]="{ standalone: true }"
                     rows="6"
                   ></textarea>
+
+                  <!-- v1.11.0: check the formula before saving -->
+                  <div class="fx-check">
+                    <select class="form-control" [(ngModel)]="fxEmp" [ngModelOptions]="{ standalone: true }" aria-label="Employee for the sample">
+                      <option [ngValue]="null">Sample employee…</option>
+                      <option *ngFor="let e of employees" [ngValue]="e.id">{{ e.emp_first_name }} ({{ e.emp_code }})</option>
+                    </select>
+                    <button type="button" class="btn btn-primary" [disabled]="fxBusy || !(formula)" (click)="checkFormula(formula, code, name)">{{ fxBusy ? 'Checking…' : 'Check formula' }}</button>
+                  </div>
+                  <div class="fx-result" *ngIf="fxResult" [class.bad]="!fxResult.ok || fxResult.error">
+                    <ng-container *ngIf="fxResult.ok && !fxResult.error">
+                      <b>OK</b><span *ngIf="fxResult.employee"> – {{ fxResult.employee }}, {{ fxResult.period }}: <b>{{ fxResult.value }}</b></span>
+                      <div class="fx-used" *ngIf="usedList(fxResult)">{{ usedList(fxResult) }}</div>
+                      <div *ngFor="let w of fxResult.warnings">Note: {{ w }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="!fxResult.ok || fxResult.error">
+                      <div *ngFor="let p of fxResult.problems">{{ p }}</div><div *ngIf="fxResult.error">{{ fxResult.error }}</div>
+                    </ng-container>
+                  </div>
 
                   <div class="row">
                     <div class="col-md-6"></div>
@@ -879,7 +898,7 @@
                             insertComponentToFormula(fn, formulaTextArea)
                           "
                         >
-                          {{ fn }}
+                          <span [title]="fxLabel(fn)">{{ fn }}</span>
                         </li>
                       </ul>
                     </div>
@@ -909,7 +928,7 @@
                             insertComponentToFormula(vars, formulaTextArea)
                           "
                         >
-                          {{ vars }}
+                          <span [title]="fxLabel(vars)">{{ vars }}</span>
                         </li>
                       </ul>
                     </div>
@@ -982,6 +1001,25 @@
                       [ngModelOptions]="{ standalone: true }"
                       rows="6"
                     ></textarea>
+
+                  <!-- v1.11.0: check the formula before saving -->
+                  <div class="fx-check">
+                    <select class="form-control" [(ngModel)]="fxEmp" [ngModelOptions]="{ standalone: true }" aria-label="Employee for the sample">
+                      <option [ngValue]="null">Sample employee…</option>
+                      <option *ngFor="let e of employees" [ngValue]="e.id">{{ e.emp_first_name }} ({{ e.emp_code }})</option>
+                    </select>
+                    <button type="button" class="btn btn-primary" [disabled]="fxBusy || !(editAsset.formula)" (click)="checkFormula(editAsset.formula, editAsset.code, editAsset.name)">{{ fxBusy ? 'Checking…' : 'Check formula' }}</button>
+                  </div>
+                  <div class="fx-result" *ngIf="fxResult" [class.bad]="!fxResult.ok || fxResult.error">
+                    <ng-container *ngIf="fxResult.ok && !fxResult.error">
+                      <b>OK</b><span *ngIf="fxResult.employee"> – {{ fxResult.employee }}, {{ fxResult.period }}: <b>{{ fxResult.value }}</b></span>
+                      <div class="fx-used" *ngIf="usedList(fxResult)">{{ usedList(fxResult) }}</div>
+                      <div *ngFor="let w of fxResult.warnings">Note: {{ w }}</div>
+                    </ng-container>
+                    <ng-container *ngIf="!fxResult.ok || fxResult.error">
+                      <div *ngFor="let p of fxResult.problems">{{ p }}</div><div *ngIf="fxResult.error">{{ fxResult.error }}</div>
+                    </ng-container>
+                  </div>
 
                     <div class="row">
                       <div class="col-md-6"></div>

@@ -83,6 +83,9 @@ export class ManagerDashboardComponent implements OnInit {
   get payExtra(): string[] { return (this.d?.payroll || []).map((x: any) => `gross ${Math.round(x.gross).toLocaleString()} · deductions ${Math.round(x.deductions).toLocaleString()}`); }
   pickPay(i: number): void { const r = this.d.payroll[i]; this.drill('payroll_run', `Payslips – ${r.label}`, { run: r.run_id }); }
 
+  get otMax(): number { return Math.max(1, ...((this.d?.overtime?.top || []).map((t: any) => t.hours))); }
+  get ratingMax(): number { return Math.max(1, ...((this.d?.ratings?.rows || []).map((r: any) => r.count))); }
+
   get sumOpen(): number { return (this.d?.team_open_requests || []).reduce((a: number, r: any) => a + r.count, 0); }
 
   get apprMax(): number { return Math.max(1, ...((this.d?.approvals?.by_module || []).map((r: any) => r.count))); }

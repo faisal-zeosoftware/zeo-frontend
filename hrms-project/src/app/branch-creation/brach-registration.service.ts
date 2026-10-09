@@ -30,7 +30,7 @@ export class BrachRegistrationService {
    
 
     
-    const apiUrl = `http://${selectedSchema}.localhost:8000/organisation/api/Branch/`;
+    const apiUrl = `${environment.apiBaseUrl}/organisation/api/Branch/?schema=${selectedSchema}`;
 
     
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

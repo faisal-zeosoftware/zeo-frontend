@@ -83,6 +83,12 @@ export class EssDashboardComponent implements OnInit {
 
   newRequest(module: string): void { this.go({ module, kind: 'request' }); }
 
+  /** A task opens its page (project tasks / the record a to-do was planned on); in the ESS portal the list of all tasks. */
+  openTask(t: any): void {
+    if (this.inPortal || !t?.link) { this.drill('my_tasks', 'My tasks and to-dos'); return; }
+    this.router.navigateByUrl(t.link);
+  }
+
   docClass(x: any): string { return x.state === 'expired' ? 'pill bad' : x.state === 'expiring' ? 'pill warn' : 'pill good'; }
   reqClass(s: string): string { return s === 'pending' ? 'pill warn' : s === 'rejected' ? 'pill bad' : 'pill good'; }
 }

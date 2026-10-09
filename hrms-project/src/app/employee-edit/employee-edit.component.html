@@ -103,6 +103,13 @@
        
        <div *ngIf="registerButtonClicked && !emp_last_name" class="error-message">Department Name is required.</div>
     </div>
+
+    <!-- v1.13.0: middle name, title, name in Arabic, preferred name -->
+    <div class="col-md-6">
+        <label for="emp_middle_name">Middle Name</label>
+        <input type="text" class="form-control" id="emp_middle_name" name="emp_middle_name" [(ngModel)]="Emp.emp_middle_name" placeholder="Enter Middle Name" [ngModelOptions]="{standalone: true}">
+    </div>
+    <z-emp-profile-fields #profileFields [employeeId]="data.employeeId"></z-emp-profile-fields>
     
     
     <div class="col-md-6" >
@@ -186,6 +193,9 @@
                     
 
     </div>
+
+    <!-- v1.12.0: organisation fields switched on in Organisation settings -->
+    <z-emp-org-fields #orgFields [employeeId]="data.employeeId" [departmentId]="Emp?.emp_dept_id" [designationId]="Emp?.emp_desgntn_id" [branchId]="Emp?.emp_branch_id"></z-emp-org-fields>
         
    
    
@@ -208,7 +218,7 @@
     </div>
         
 
-    <div class="col-md-6">
+    <div class="col-md-6" *zIfOrg="'employee_categories'"><!-- v1.12.0: hidden when employee categories are off -->
 
 
         <div class="custom-sel">
@@ -236,6 +246,11 @@
         <option value="manual">Manual Attendance</option>
         <option value="biometric">Biometric Attendance</option>
     </select>
+</div>
+
+<div class="col-md-6">
+    <label>Attendance Card / Barcode</label>
+    <input type="text" class="form-control" [(ngModel)]="Emp.barcode_number" [ngModelOptions]="{standalone: true}" placeholder="Card or barcode number used at the attendance device">
 </div>
 
 
@@ -424,6 +439,26 @@
                         [ngModelOptions]="{standalone: true}" [ngClass]="{'error-field': registerButtonClicked && !emp_city}">
                        
                        <div *ngIf="registerButtonClicked && !emp_city" class="error-message">Description is required.</div>
+                    </div>
+
+                    <!-- v1.13.0: country and state are saved again -->
+                    <div class="col-md-6">
+                        <div class="custom-sel">
+                            <label for="edit_emp_country">Country</label>
+                            <select class="form-control" id="edit_emp_country" [(ngModel)]="Emp.emp_country_id" (change)="onCountryChange()" [ngModelOptions]="{standalone: true}">
+                                <option [ngValue]="null">Select</option>
+                                <option *ngFor="let c of countries" [ngValue]="c.id">{{ c.country_name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6" *ngIf="states && states.length > 0">
+                        <div class="custom-sel">
+                            <label for="edit_emp_state">{{ state_label || 'State' }}</label>
+                            <select class="form-control" id="edit_emp_state" [(ngModel)]="Emp.emp_state_id" [ngModelOptions]="{standalone: true}">
+                                <option [ngValue]="null">Select</option>
+                                <option *ngFor="let st of states" [ngValue]="st.id">{{ st.state_name }}</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="col-md-6" >
@@ -694,7 +729,7 @@
 
 
                             <!-- v1.7.0: custom fields in the designer's order and sections, every field type -->
-                            <z-emp-fields [fields]="editCustom" valueKey="value" [minWidth]="260"></z-emp-fields>
+                            <z-emp-fields [fields]="editCustom" valueKey="value" context="edit" [minWidth]="260"></z-emp-fields>
 
 
 

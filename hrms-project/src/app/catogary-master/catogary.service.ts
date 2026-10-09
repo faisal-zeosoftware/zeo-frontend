@@ -14,7 +14,7 @@ export class CatogaryService {
  
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
-  private baseUrl = 'http://80.65.208.178:8000/organisation/api';
+  private baseUrl = `${environment.apiBaseUrl}/organisation/api`;
 
 
   private copiedCategoryData: { title: string; code: string; description: string } | null = null;

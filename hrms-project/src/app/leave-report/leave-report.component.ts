@@ -1,6 +1,7 @@
 
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild  } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { OrgSettingsService } from '../org-structure/org-settings.service';   // v1.12.0
 import { AuthenticationService } from '../login/authentication.service';
 import { SessionService } from '../login/session.service';
 import { LeaveService } from '../leave-master/leave.service';
@@ -74,7 +75,8 @@ activeFilters: { [key: string]: { [val: string]: boolean } } = {};
 // 1. Define which fields you want to show filters for
 // Update these in your TS class
 // Define fields specifically for Leave Reports
-filterFields: string[] = ['emp_branch_id', 'leave_type', 'status', 'emp_dept_id','emp_desgntn_id','emp_ctgry_id','document_number'];
+filterFields: string[] = ['emp_branch_id', 'leave_type', 'status', 'emp_dept_id','emp_desgntn_id','emp_ctgry_id','document_number']
+  .filter(f => f !== 'emp_ctgry_id' || inject(OrgSettingsService).categoriesOn());   // v1.12.0: no Category filter when categories are off
 
 // Use 'start_date' or 'applied_on' from your JSON for the date range filter
 dateField: string = 'start_date';

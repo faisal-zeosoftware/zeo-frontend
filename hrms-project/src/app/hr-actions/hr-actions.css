@@ -1,0 +1,77 @@
+/* v1.11.0 HR actions (employee transfer, return from leave) – used together with ../leave-policy/leave-policy.css */
+:host { display: block; max-width: 100%; }
+.ha-wrap input, .ha-wrap select, .ha-wrap textarea { max-width: 100%; min-width: 0; box-sizing: border-box; }
+
+/* status / gap tags */
+.ha-tag { display: inline-block; font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 9px; white-space: nowrap; background: #f1f2f6; color: #4a4f63; }
+.ha-tag.sched { background: #efedff; color: #4338ca; }
+.ha-tag.done, .ha-tag.ontime { background: #ecfdf3; color: #1f7a4d; }
+.ha-tag.cancel { background: #f1f2f6; color: #6b7185; text-decoration: line-through; }
+.ha-tag.late { background: #fff5f5; color: #b42318; }
+.ha-tag.early { background: #eef6ff; color: #1d4ed8; }
+
+.ha-move { white-space: normal; word-break: break-word; }
+.ha-move .arr { color: #5b4fe0; margin: 0 4px; font-weight: 700; }
+.ha-move small { display: block; color: #8a8fa3; font-size: 11.5px; }
+.ha-row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.ha-row-actions .lp-btn { height: 30px; padding: 0 10px; font-size: 12.5px; }
+.ha-click { cursor: pointer; }
+.ha-click:hover td { background: #f7f6ff; }
+
+/* new transfer / record panels */
+.ha-panel { border: 1px solid #e3e5ef; border-top: 3px solid #5b4fe0; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; background: #fff; }
+.ha-panel h2 { font-size: 15px; font-weight: 700; color: #1b1640; margin: 0 0 4px; }
+.ha-panel .lp-form { grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); }
+.ha-now { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); gap: 8px 14px; background: #f7f6ff; border: 1px solid #e4e1ff; border-radius: 10px; padding: 10px 12px; margin-top: 12px; font-size: 12.5px; }
+.ha-now span { display: block; color: #6b7185; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.ha-now b { font-weight: 600; color: #1d2033; word-break: break-word; }
+.ha-sub { font-size: 13px; font-weight: 600; color: #1f2433; margin: 16px 0 6px; }
+.ha-sal { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.ha-sal select { flex: 1 1 180px; height: 34px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 8px; font-size: 13px; background: #fff; }
+.ha-sal input { flex: 0 1 150px; width: 150px; height: 34px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font-size: 13px; }
+
+/* preview cards */
+.ha-plan { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 12px; margin-top: 16px; }
+.ha-card { border: 1px solid #e3e5ef; border-radius: 12px; padding: 12px 14px; background: #fff; min-width: 0; }
+.ha-card h3 { margin: 0 0 8px; font-size: 13.5px; font-weight: 700; color: #1b1640; display: flex; gap: 6px; align-items: center; }
+.ha-card ul { margin: 0; padding-left: 18px; font-size: 12.5px; color: #2b2f42; }
+.ha-card li { margin: 3px 0; word-break: break-word; }
+.ha-card.changes { border-color: #d9d4ff; }
+.ha-card.changes h3 { color: #4338ca; }
+.ha-card.warn { background: #fffaf0; border-color: #f5d9a8; }
+.ha-card.warn h3 { color: #9a5b00; }
+.ha-card.block { background: #fff5f5; border-color: #f3c3c3; }
+.ha-card.block h3 { color: #b42318; }
+.ha-card.stay h3 { color: #1f7a4d; }
+.ha-area { font-size: 11px; font-weight: 700; color: #5b4fe0; text-transform: uppercase; letter-spacing: .4px; margin: 8px 0 2px; }
+.ha-area:first-of-type { margin-top: 0; }
+.ha-chg { font-size: 12.5px; padding: 4px 0; border-bottom: 1px dashed #eceef5; word-break: break-word; }
+.ha-chg:last-child { border-bottom: 0; }
+.ha-chg b { font-weight: 600; color: #1d2033; }
+.ha-chg .from { color: #8a8fa3; }
+.ha-chg .arr { color: #5b4fe0; margin: 0 4px; font-weight: 700; }
+.ha-chg .to { color: #1d2033; }
+
+.ha-done { margin: 6px 0 0; padding-left: 18px; }
+.ha-done li { margin: 2px 0; word-break: break-word; }
+
+/* settle */
+.ha-opts { display: grid; gap: 8px; margin: 10px 0; }
+.ha-opt { display: flex; gap: 10px; align-items: flex-start; border: 1px solid #e3e5ef; border-radius: 10px; padding: 10px 12px; cursor: pointer; font-size: 13px; color: #2b2f42; }
+.ha-opt.on { border-color: #5b4fe0; background: #f7f6ff; }
+.ha-opt input[type=radio] { margin-top: 3px; accent-color: #5b4fe0; }
+.ha-opt b { display: block; font-weight: 600; color: #1d2033; }
+.ha-opt small { color: #6b7185; font-size: 12px; }
+.ha-opt select { margin-top: 6px; height: 32px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 8px; font-size: 13px; width: 100%; max-width: 320px; background: #fff; }
+.ha-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr)); gap: 8px 14px; font-size: 12.5px; margin-bottom: 8px; }
+.ha-facts span { display: block; color: #6b7185; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.ha-note { width: 100%; height: 34px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 10px; font-size: 13px; }
+.ha-plan-lines { margin: 10px 0 0; padding: 10px 12px 10px 28px; border-radius: 10px; background: #f7f6ff; border: 1px solid #e4e1ff; font-size: 13px; }
+.ha-plan-lines.bad { background: #fff5f5; border-color: #f3c3c3; color: #b42318; }
+
+@media (max-width: 640px) {
+  .ha-panel { padding: 12px; }
+  .lp-modal header, .lp-modal .body, .lp-modal footer { padding-left: 14px; padding-right: 14px; }
+  .ha-sal input { flex: 1 1 120px; width: auto; }
+  .lp-foot .lp-btn, .lp-modal footer .lp-btn { flex: 1 1 auto; justify-content: center; }
+}

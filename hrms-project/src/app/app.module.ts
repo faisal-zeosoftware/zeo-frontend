@@ -104,12 +104,16 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { EmployeeDashboardComponent } from './employee-dashboard/employee-dashboard.component';
 import { EssDashboardComponent } from './hr-modules/dashboards/ess-dashboard.component';
 import { ZListDirective } from './shared-ui/z-list.directive';
+import { ZAskComponent } from './shared-ui/z-ask.component';
 import { ZOrgPickDirective } from './shared-ui/z-org-pick.directive';
 import { ZModuleMenuComponent, ZAppTitleComponent } from './shared-ui/z-module-menu.component';
 import { ZDashDesignerComponent, ZDashOverviewComponent } from './shared-ui/z-dash.component';
 import { ZFieldDesignerComponent } from './shared-ui/z-field-designer.component';
 import { ZFieldInputComponent } from './shared-ui/z-field-input.component';
 import { ZEmpFieldsComponent } from './shared-ui/z-emp-fields.component';
+import { ZEmpOrgFieldsComponent } from './org-structure/z-emp-org-fields.component';   // v1.12.0 organisation fields
+import { ZIfOrgDirective } from './org-structure/z-if-org.directive';                     // v1.12.0
+import { EMPLOYEE_PROFILE_COMPONENTS } from './employee-profile/employee-profile.components';   // v1.13.0 employee master tabs / fields
 import { ZRecordService } from './shared-ui/z-record.service';
 import { ZRecordServiceToken } from './shared-ui/z-list.service';
 import { ZListRecorderInterceptor } from './shared-ui/z-list.service';
@@ -508,6 +512,7 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
   imports: [
     EssDashboardComponent,
     ZListDirective,
+    ZAskComponent,
     ZOrgPickDirective,
     ZModuleMenuComponent,
     ZDashDesignerComponent,
@@ -516,6 +521,9 @@ import { LeaveEncashmentComponent } from './leave-encashment/leave-encashment.co
     ZFieldInputComponent,
     ZEmpFieldsComponent,
     ZAppTitleComponent,
+    ZEmpOrgFieldsComponent,
+    ZIfOrgDirective,
+    EMPLOYEE_PROFILE_COMPONENTS,   // v1.13.0 (nested array)
     
     
     BrowserModule,

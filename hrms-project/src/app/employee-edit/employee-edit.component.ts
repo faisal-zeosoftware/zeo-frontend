@@ -1,4 +1,8 @@
-import { Component , ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
+import { Component , ElementRef, OnInit, Renderer2, ViewChild, inject} from '@angular/core';
+import { ZEmpOrgFieldsComponent } from '../org-structure/z-emp-org-fields.component';   // v1.12.0
+import { ZEmpProfileFieldsComponent } from '../employee-profile/z-emp-profile-fields.component';   // v1.13.0
+import { OrgSettingsService } from '../org-structure/org-settings.service';
+import { ZEmpFieldsComponent } from '../shared-ui/z-emp-fields.component';  // v1.12.0
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -24,6 +28,10 @@ import { DepartmentServiceService } from '../department-master/department-servic
   styleUrl: './employee-edit.component.css'
 })
 export class EmployeeEditComponent {
+  // v1.12.0: location / division / section / cost centre / grade / position / employment type (when switched on)
+  @ViewChild('orgFields') orgFields?: ZEmpOrgFieldsComponent;
+  @ViewChild('profileFields') profileFields?: ZEmpProfileFieldsComponent;   // v1.13.0
+  readonly orgSettings = inject(OrgSettingsService);
 
   @ViewChild('profileInput') profileInput!: ElementRef;
 
@@ -336,9 +344,19 @@ private appendFormData(formData: FormData, key: string, value: any): void {
  
 updateEmp(): void {
   // custom fields ticked "Mandatory" in the form designer
-  const missing = (this.editCustom || []).filter((f: any) => f.mandatory && (f.value === undefined || f.value === null || String(f.value).trim() === '' || f.value === false));
+  const missing = ZEmpFieldsComponent.missing(this.editCustom, 'value', 'edit');
   if (missing.length) {
-    alert('Please fill: ' + missing.map((f: any) => f.emp_custom_field).join(', '));
+    alert('Please fill: ' + missing.join(', '));
+    return;
+  }
+  const bad = ZEmpFieldsComponent.problems(this.editCustom, 'value', 'edit');
+  if (bad.length) {
+    alert('Please correct: ' + bad.join(' '));
+    return;
+  }
+  const orgMissing = this.orgFields?.problems() || [];   // v1.12.0 required organisation fields
+  if (orgMissing.length) {
+    alert('Please fill: ' + orgMissing.join(' '));
     return;
   }
   const formData = new FormData();
@@ -363,6 +381,7 @@ updateEmp(): void {
   // ✅ Append all fields safely
   safeAppend('emp_code', this.Emp.emp_code);
   safeAppend('emp_first_name', this.Emp.emp_first_name);
+  safeAppend('emp_middle_name', this.Emp.emp_middle_name);   // v1.13.0
   safeAppend('emp_last_name', this.Emp.emp_last_name);
   safeAppend('emp_gender', this.Emp.emp_gender);
   safeAppend('emp_date_of_birth', this.Emp.emp_date_of_birth);
@@ -377,11 +396,9 @@ updateEmp(): void {
   safeAppend('emp_marital_status', this.Emp.emp_marital_status);
   safeAppend('emp_father_name', this.Emp.emp_father_name);
   safeAppend('emp_mother_name', this.Emp.emp_mother_name);
-  safeAppend('emp_posting_location', this.Emp.emp_posting_location);
-
-  // safeAppend('emp_country_id', this.Emp.emp_country_id);
-  // safeAppend('emp_state_id', this.Emp.emp_state_id);
-  safeAppend('emp_company_id', this.Emp.emp_company_id);
+  // v1.13.0: country / state saved again; emp_posting_location and emp_company_id are not employee fields (no longer sent)
+  safeAppend('emp_country_id', this.Emp.emp_country_id);   // id, or the name (the server turns names back into ids)
+  safeAppend('emp_state_id', this.Emp.emp_state_id);
   safeAppend('emp_branch_id', this.Emp.emp_branch_id);
 
   safeAppend('emp_relegion', this.Emp.emp_relegion);
@@ -391,6 +408,7 @@ updateEmp(): void {
   safeAppend('emp_desgntn_id', this.Emp.emp_desgntn_id);
   safeAppend('emp_ctgry_id', this.Emp.emp_ctgry_id);
   safeAppend('attendance_source', this.Emp.attendance_source);
+  safeAppend('barcode_number', this.Emp.barcode_number);
 
   safeAppend('emp_date_of_confirmation', formatDate(this.Emp.emp_date_of_confirmation));
   safeAppend('emp_joined_date', formatDate(this.Emp.emp_joined_date));
@@ -420,7 +438,14 @@ updateEmp(): void {
       // window.location.reload();
 
     // save the custom fields first, then reload (a reload used to cancel these requests)
-    this.updateCustomFieldValues().then(() => window.location.reload());
+    // v1.12.0: the organisation fields are saved too; a problem keeps the form open
+    Promise.all([this.updateCustomFieldValues(), this.orgFields ? this.orgFields.save(this.data.employeeId) : Promise.resolve(''),
+                 this.profileFields ? this.profileFields.save(this.data.employeeId) : Promise.resolve('')])   // v1.13.0
+      .then(([, orgProblem, profileProblem]) => {
+        if (orgProblem) { alert('The employee was saved, but not the organisation details: ' + orgProblem); return; }
+        if (profileProblem) { alert('The employee was saved, but not the name in Arabic / title: ' + profileProblem); return; }
+        window.location.reload();
+      });
 
 // Open success dialog
 // this.dialog.open(SuccesModalComponent, {

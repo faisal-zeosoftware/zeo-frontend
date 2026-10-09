@@ -1638,6 +1638,7 @@
                             >
                               <option value="dropdown">Dropdown</option>
                               <option value="radio">Radio</option>
+                              <option value="text">Text Box</option>
                               <option value="date">Date</option>
                               <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                             </select>
@@ -1647,9 +1648,9 @@
                         <!-- Dropdown Values -->
                         <div
                           class="col-md-6"
-                          *ngIf="field.data_type === 'dropdown'"
+                          *ngIf="field.data_type === 'dropdown' || field.data_type === 'multiselect'"
                         >
-                          <label>Dropdown Values</label>
+                          <label>Options (comma separated)</label>
                           <input
                             type="text"
                             class="form-control"
@@ -1787,8 +1788,8 @@
                       </div>
 
                       <!-- Dropdown values input field, displayed only if "dropdown" is selected -->
-                      <div class="col-md-6" *ngIf="data_type === 'dropdown'">
-                        <label>Dropdown Values</label>
+                      <div class="col-md-6" *ngIf="data_type === 'dropdown' || data_type === 'multiselect'">
+                        <label>Options (comma separated)</label>
                         <input
                           type="text"
                           class="form-control"
@@ -2044,6 +2045,7 @@
                           >
                             <option value="dropdown">Dropdown</option>
                             <option value="radio">Radio</option>
+                            <option value="text">Text Box</option>
                             <option value="date">Date</option>
                             <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           </select>
@@ -2053,9 +2055,9 @@
                       <!-- Dropdown Values -->
                       <div
                         class="col-md-6"
-                        *ngIf="field.data_type === 'dropdown'"
+                        *ngIf="field.data_type === 'dropdown' || field.data_type === 'multiselect'"
                       >
-                        <label>Dropdown Values</label>
+                        <label>Options (comma separated)</label>
                         <input
                           type="text"
                           class="form-control"
@@ -2191,8 +2193,8 @@
                     </div>
 
                     <!-- Dropdown values input field, displayed only if "dropdown" is selected -->
-                    <div class="col-md-6" *ngIf="data_type_fam === 'dropdown'">
-                      <label>Dropdown Values</label>
+                    <div class="col-md-6" *ngIf="data_type_fam === 'dropdown' || data_type_fam === 'multiselect'">
+                      <label>Options (comma separated)</label>
                       <input
                         type="text"
                         class="form-control"
@@ -2447,6 +2449,7 @@
                           >
                             <option value="dropdown">Dropdown</option>
                             <option value="radio">Radio</option>
+                            <option value="text">Text Box</option>
                             <option value="date">Date</option>
                             <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           </select>
@@ -2456,9 +2459,9 @@
                       <!-- Dropdown Values -->
                       <div
                         class="col-md-6"
-                        *ngIf="field.data_type === 'dropdown'"
+                        *ngIf="field.data_type === 'dropdown' || field.data_type === 'multiselect'"
                       >
-                        <label>Dropdown Values</label>
+                        <label>Options (comma separated)</label>
                         <input
                           type="text"
                           class="form-control"
@@ -2593,8 +2596,8 @@
                     </div>
 
                     <!-- Dropdown values input field, displayed only if "dropdown" is selected -->
-                    <div class="col-md-6" *ngIf="data_type_qual === 'dropdown'">
-                      <label>Dropdown Values</label>
+                    <div class="col-md-6" *ngIf="data_type_qual === 'dropdown' || data_type_qual === 'multiselect'">
+                      <label>Options (comma separated)</label>
                       <input
                         type="text"
                         class="form-control"
@@ -2948,6 +2951,7 @@
                           >
                             <option value="dropdown">Dropdown</option>
                             <option value="radio">Radio</option>
+                            <option value="text">Text Box</option>
                             <option value="date">Date</option>
                             <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                           </select>
@@ -2957,9 +2961,9 @@
                       <!-- Dropdown Values -->
                       <div
                         class="col-md-6"
-                        *ngIf="field.data_type === 'dropdown'"
+                        *ngIf="field.data_type === 'dropdown' || field.data_type === 'multiselect'"
                       >
-                        <label>Dropdown Values</label>
+                        <label>Options (comma separated)</label>
                         <input
                           type="text"
                           class="form-control"
@@ -3094,8 +3098,8 @@
                     </div>
 
                     <!-- Dropdown values input field, displayed only if "dropdown" is selected -->
-                    <div class="col-md-6" *ngIf="data_type_job === 'dropdown'">
-                      <label>Dropdown Values</label>
+                    <div class="col-md-6" *ngIf="data_type_job === 'dropdown' || data_type_job === 'multiselect'">
+                      <label>Options (comma separated)</label>
                       <input
                         type="text"
                         class="form-control"
@@ -3382,6 +3386,7 @@
                             >
                               <option value="dropdown">Dropdown</option>
                               <option value="radio">Radio</option>
+                              <option value="text">Text Box</option>
                               <option value="date">Date</option>
                               <option value="checkbox">Checkbox (Yes / No)</option><option value="textarea">Long text</option><option value="integer">Whole number</option><option value="decimal">Decimal number</option><option value="currency">Amount (AED)</option><option value="percent">Percentage</option><option value="datetime">Date and time</option><option value="time">Time</option><option value="multiselect">Multi-select</option><option value="email">E-mail</option><option value="phone">Phone</option><option value="url">Web link</option><option value="rating">Rating (1–5)</option><option value="color">Colour</option>
                             </select>
@@ -3391,9 +3396,9 @@
                         <!-- Dropdown Values -->
                         <div
                           class="col-md-6"
-                          *ngIf="field.data_type === 'dropdown'"
+                          *ngIf="field.data_type === 'dropdown' || field.data_type === 'multiselect'"
                         >
-                          <label>Dropdown Values</label>
+                          <label>Options (comma separated)</label>
                           <input
                             type="text"
                             class="form-control"
@@ -3530,8 +3535,8 @@
                     </div>
 
                     <!-- Dropdown values input field, displayed only if "dropdown" is selected -->
-                    <div class="col-md-6" *ngIf="data_type_doc === 'dropdown'">
-                      <label>Dropdown Values</label>
+                    <div class="col-md-6" *ngIf="data_type_doc === 'dropdown' || data_type_doc === 'multiselect'">
+                      <label>Options (comma separated)</label>
                       <input
                         type="text"
                         class="form-control"

@@ -91,6 +91,16 @@ table.zl-table tr.zl-emptyrow > td { text-align: center; color: var(--zl-muted);
 .zl-menu-scroll { max-height: min(70vh, 560px); overflow: auto; padding: 2px; }
 .zl-menu-filters .zl-menu-scroll { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
 .zl-menu-filters .zl-custom, .zl-menu-filters [data-date] { grid-column: 1 / -1; }
+.zl-menu-filters .zl-favs { grid-column: 1 / -1; }
+.zl-favlist { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 4px 8px; }
+.zl-fav { display: inline-flex; align-items: center; border: 1px solid var(--zl-line); border-radius: 16px; background: #fff; overflow: hidden; }
+.zl-fav button { all: unset; cursor: pointer; padding: 4px 6px 4px 11px; font-size: 12.5px; color: var(--zl-ink); display: inline-flex; align-items: center; gap: 4px; }
+.zl-fav button svg { width: 13px; height: 13px; }
+.zl-fav button:hover { color: var(--zl-primary-ink); }
+.zl-fav .zl-favx { padding: 4px 10px 4px 4px; color: var(--zl-muted); }
+.zl-favname { flex: 1; min-width: 160px; text-transform: none !important; }
+.zl-favname::placeholder { text-transform: none !important; }
+.zl-apply:disabled, .zl-favname:disabled { opacity: .5; cursor: default; }
 .zl-sec { padding: 6px 4px 8px; border-bottom: 1px solid #f0f1f6; }
 .zl-sec-h { font-size: 11.5px; font-weight: 600; color: var(--zl-muted); margin: 2px 4px 6px; letter-spacing: .2px; }
 .zl-opts { max-height: 190px; overflow: auto; }

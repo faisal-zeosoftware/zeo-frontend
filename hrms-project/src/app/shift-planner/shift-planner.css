@@ -1,0 +1,73 @@
+/* v1.12.0 Shift planner – used together with ../leave-policy/leave-policy.css (lp-* buttons, forms, modal, tables) */
+:host { display: block; max-width: 100%; }
+.sp-wrap input, .sp-wrap select, .sp-wrap textarea { max-width: 100%; min-width: 0; box-sizing: border-box; }
+.sp-tag { display: inline-block; font-size: 11.5px; font-weight: 600; border-radius: 10px; padding: 2px 9px; white-space: nowrap; background: #f1f2f6; color: #4a4f63; }
+.sp-tag.draft, .sp-tag.peer { background: #f1f2f6; color: #4a4f63; }
+.sp-tag.submitted, .sp-tag.pending { background: #fff4e5; color: #9a5b00; }
+.sp-tag.approved, .sp-tag.filled { background: #efedff; color: #4338ca; }
+.sp-tag.published, .sp-tag.open { background: #ecfdf3; color: #1f7a4d; }
+.sp-tag.rejected, .sp-tag.declined, .sp-tag.cancelled { background: #fff5f5; color: #b42318; }
+.sp-tag.withdrawn { background: #f1f2f6; color: #6b7185; text-decoration: line-through; }
+.sp-row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.sp-row-actions .lp-btn { height: 30px; padding: 0 10px; font-size: 12.5px; }
+.sp-panel { border: 1px solid #e3e5ef; border-top: 3px solid #5b4fe0; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; background: #fff; }
+.sp-panel h2 { font-size: 15px; font-weight: 700; color: #1b1640; margin: 0 0 4px; }
+.sp-err { color: #b42318; font-size: 11.5px; font-weight: 500; }
+.sp-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.sp-bar select, .sp-bar input { height: 34px; border: 1px solid #dcdfea; border-radius: 8px; padding: 0 8px; font-size: 13px; background: #fff; }
+.sp-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+.sp-click { cursor: pointer; } .sp-click:hover td { background: #f7f6ff; }
+
+/* roster grid */
+.sp-grid-wrap { overflow-x: auto; border: 1px solid #e3e5ef; border-radius: 10px; }
+.sp-grid { border-collapse: separate; border-spacing: 0; font-size: 12px; min-width: 100%; }
+.sp-grid th, .sp-grid td { border-bottom: 1px solid #f0f1f6; border-right: 1px solid #f4f5f9; padding: 0; height: 40px; min-width: 54px; text-align: center; }
+.sp-grid thead th { background: #fafafd !important; color: #4a4f63; font-weight: 600; font-size: 11px; position: sticky; top: 0; z-index: 2; line-height: 1.2; }
+.sp-grid thead th.we { background: #f3f4f8 !important; }
+.sp-grid .who { position: sticky; left: 0; background: #fff; z-index: 1; text-align: left; padding: 0 10px; min-width: 190px; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-grid thead .who { z-index: 3; }
+.sp-grid .who small { display: block; color: #8a8fa3; font-size: 11px; }
+.sp-cell { position: relative; width: 100%; height: 100%; min-height: 40px; border: 0; background: transparent; cursor: pointer; font: inherit; padding: 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; }
+.sp-cell:disabled { cursor: default; }
+.sp-cell .code { font-weight: 700; font-size: 11.5px; border-radius: 5px; padding: 1px 6px; color: #fff; }
+.sp-cell .off { color: #8a8fa3; font-size: 11px; }
+.sp-cell .time { font-size: 10px; color: #6b7185; }
+.sp-cell.hol { background: #fff4e5; } .sp-cell.leave { background: repeating-linear-gradient(135deg, #eef6ff 0 5px, #fff 5px 10px); }
+.sp-cell .flag { position: absolute; top: 2px; right: 3px; font-size: 10px; font-weight: 700; }
+.sp-cell .flag.error { color: #b42318; } .sp-cell .flag.warning { color: #c27c00; } .sp-cell .flag.info { color: #4338ca; }
+.sp-cell .chg { position: absolute; bottom: 2px; right: 3px; width: 6px; height: 6px; border-radius: 50%; background: #5b4fe0; }
+.sp-cell:focus-visible { outline: 2px solid #1b1640; outline-offset: -2px; }
+.sp-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: #4a4f63; margin: 8px 0; }
+.sp-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.sp-legend i { width: 14px; height: 10px; border-radius: 3px; display: inline-block; border: 1px solid #e3e5ef; }
+.sp-problems { margin-top: 12px; max-height: 260px; overflow: auto; border: 1px solid #f5d9a8; background: #fffaf0; border-radius: 10px; padding: 8px 12px; font-size: 12.5px; }
+.sp-problems li { margin: 3px 0; } .sp-problems .error { color: #b42318; } .sp-problems .info { color: #4338ca; }
+
+/* my schedule (mobile first) */
+.sp-days { display: grid; gap: 8px; }
+.sp-day { display: grid; grid-template-columns: 74px 1fr auto; gap: 10px; align-items: center; border: 1px solid #e3e5ef; border-left: 5px solid #5b4fe0; border-radius: 10px; padding: 10px 12px; background: #fff; }
+.sp-day.off { border-left-color: #c9ccd8; background: #fafafd; }
+.sp-day.leave { border-left-color: #1d4ed8; background: #f4f8ff; }
+.sp-day.hol { border-left-color: #d97706; background: #fffaf0; }
+.sp-day .when b { display: block; font-size: 15px; color: #1b1640; } .sp-day .when small { color: #6b7185; font-size: 11.5px; }
+.sp-day .what b { font-size: 13.5px; color: #1d2033; } .sp-day .what div { font-size: 12px; color: #4a4f63; margin-top: 2px; }
+.sp-day .what .note { color: #1d4ed8; } .sp-day .what .pend { color: #9a5b00; }
+.sp-day .acts { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.sp-day .acts .lp-btn { height: 30px; padding: 0 9px; font-size: 12px; }
+.sp-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 10px; }
+.sp-card { border: 1px solid #e3e5ef; border-radius: 10px; padding: 10px 12px; background: #fff; font-size: 12.5px; }
+.sp-card h3 { margin: 0 0 4px; font-size: 13.5px; font-weight: 700; color: #1b1640; }
+.sp-notice { border-bottom: 1px dashed #eceef5; padding: 6px 0; font-size: 12.5px; } .sp-notice.unread b { color: #4338ca; }
+.sp-h { font-size: 14px; font-weight: 700; color: #1f2433; margin: 20px 0 8px; }
+
+@media (max-width: 640px) {
+  .sp-panel { padding: 12px; }
+  .sp-day { grid-template-columns: 62px 1fr; }
+  .sp-day .acts { grid-column: 1 / -1; justify-content: flex-start; }
+  .lp-modal footer .lp-btn { flex: 1 1 auto; justify-content: center; }
+  table.sp-grid thead { display: table-header-group !important; } table.sp-grid tbody { display: table-row-group !important; }
+  table.sp-grid tbody tr { display: table-row !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: transparent !important; }
+  table.sp-grid tbody tr td { display: table-cell !important; padding: 0 !important; }
+  table.sp-grid tbody td::before { content: none !important; display: none !important; }
+  .sp-grid .who { min-width: 120px; max-width: 130px; }
+}

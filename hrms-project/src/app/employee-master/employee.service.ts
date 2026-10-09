@@ -50,7 +50,7 @@ updateSchemaAndBranches(schema: string, branchIds: number[]) {
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
 
-  private baseUrl = 'http://localhost:8000/employee/api';
+  private baseUrl = `${environment.apiBaseUrl}/employee/api`;
 
   private hideButtonSubject = new BehaviorSubject<boolean>(false);
   hideButton$ = this.hideButtonSubject.asObservable();
@@ -2522,7 +2522,7 @@ deleteSalarySrt(id: number): Observable<any> {
       return throwError('No schema selected.'); // Return an error observable if no schema is selected
     }
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/${departmentId}/emp_family/`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/Employee/${departmentId}/emp_family/?schema=${selectedSchema}`;
 
     return this.http.get(apiUrl);
   }
@@ -2689,7 +2689,7 @@ deleteSalarySrt(id: number): Observable<any> {
       return throwError('No schema selected.'); // Return an error observable if no schema is selected
     }
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/${employeeId}/emp_family/`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/Employee/${employeeId}/emp_family/?schema=${selectedSchema}`;
 
     return this.http.get(apiUrl);
   }
@@ -2708,7 +2708,7 @@ deleteSalarySrt(id: number): Observable<any> {
       return throwError('No schema selected.'); // Return an error observable if no schema is selected
     }
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/${employeeId}/EmployeeSkill/`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/Employee/${employeeId}/EmployeeSkill/?schema=${selectedSchema}`;
 
     return this.http.get(apiUrl);
   }
@@ -3167,7 +3167,7 @@ getSalaryRevisions(
       return throwError('No schema selected.'); // Return an error observable if no schema is selected
     }
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/${employeeId}/custom_fields`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/Employee/${employeeId}/custom_fields?schema=${selectedSchema}`;
 
     return this.http.get(apiUrl);
   }
@@ -3208,7 +3208,7 @@ getSalaryRevisions(
 
 
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/emp-Family/`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/emp-Family/?schema=${selectedSchema}`;
 
     // const url = `${this.baseUrl}/emp-Family/`; // Adjust the URL if needed
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
@@ -3338,7 +3338,7 @@ updateFamilyCustomField(customFieldValId: number, payload: any): Observable<any>
 
 
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/emp-Qualification/`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/emp-Qualification/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.post(apiUrl, companyData, { headers }).pipe(
@@ -3402,7 +3402,7 @@ updateFamilyCustomField(customFieldValId: number, payload: any): Observable<any>
 
 
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/emp-JobHistory/`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/emp-JobHistory/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.post(apiUrl, companyData, { headers }).pipe(
@@ -3441,7 +3441,7 @@ updateFamilyCustomField(customFieldValId: number, payload: any): Observable<any>
       return throwError('No schema selected.');
     }
 
-    const apiUrl = `http://${selectedSchema}.localhost:8000/employee/api/Employee/${employeeId}/emp_documents/`;
+    const apiUrl = `${environment.apiBaseUrl}/employee/api/Employee/${employeeId}/emp_documents/?schema=${selectedSchema}`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.http.post(apiUrl, formData, { headers }).pipe(

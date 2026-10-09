@@ -62,7 +62,7 @@ export class DesignationService {
   getPermissionByRoleGrouping(selectedSchema: string): Observable<any> {
     // const url = `${this.baseUrl}/permissions/`;
     // return this.http.get(url);
-    const apiUrl = `http://${selectedSchema}.localhost:8000/organisation/api/perm/`;
+    const apiUrl = `${environment.apiBaseUrl}/organisation/api/perm/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);

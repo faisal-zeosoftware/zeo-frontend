@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { recordUrl } from './z-nav';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { ZRecordService } from './z-record.service';
@@ -134,18 +135,18 @@ export class ZDashDesignerComponent implements OnInit, OnDestroy {
           <header><mat-icon>event_available</mat-icon><h3>My leave</h3><a class="zr-link" routerLink="/main-sidebar/leave-options/leave-request">Requests</a></header>
           <p class="zr-muted" *ngIf="!me.leave_balances?.length">No leave balance yet.</p>
           <div class="zdo-row" *ngFor="let b of me.leave_balances?.slice(0, 4)"><span>{{ b.name }}</span><b>{{ b.balance | number:'1.0-1' }} <small>days</small></b></div>
-          <p class="zdo-note" *ngIf="me.next_leave">Next: {{ me.next_leave.type }} from {{ me.next_leave.from | date:'d MMM' }} ({{ me.next_leave.status }})</p>
+          <p class="zdo-note zdo-go" *ngIf="me.next_leave" (click)="open(me.next_leave)">Next: {{ me.next_leave.type }} from {{ me.next_leave.from | date:'d MMM' }} ({{ me.next_leave.status }})</p>
         </article>
         <article class="zdo-card" data-widget="me-assets" data-widget-title="My assets">
           <header><mat-icon>inventory_2</mat-icon><h3>My assets</h3><span class="zdo-n">{{ me.assets?.length || 0 }}</span></header>
           <p class="zr-muted" *ngIf="!me.assets?.length">No company assets with you.</p>
-          <div class="zdo-row" *ngFor="let a of me.assets?.slice(0, 5)"><span>{{ a.name }}<small *ngIf="a.serial"> · {{ a.serial }}</small></span><b><small>since {{ a.since | date:'d MMM y' }}</small></b></div>
+          <div class="zdo-row zdo-go" *ngFor="let a of me.assets?.slice(0, 5)" (click)="open(a)" role="link" tabindex="0" (keydown.enter)="open(a)"><span>{{ a.name }}<small *ngIf="a.serial"> · {{ a.serial }}</small></span><b><small>since {{ a.since | date:'d MMM y' }}</small></b></div>
         </article>
         <article class="zdo-card" data-widget="me-pay" data-widget-title="My pay">
           <header><mat-icon>payments</mat-icon><h3>My pay</h3></header>
           <ng-container *ngIf="me.payslip; else noPay">
             <p class="zr-muted">{{ me.payslip.period }}</p>
-            <p class="zdo-big">AED {{ me.payslip.net | number:'1.0-0' }} <small>net</small></p>
+            <p class="zdo-big zdo-go" (click)="open(me.payslip)" role="link" tabindex="0" (keydown.enter)="open(me.payslip)">AED {{ me.payslip.net | number:'1.0-0' }} <small>net</small></p>
           </ng-container>
           <ng-template #noPay><p class="zr-muted">No payslip yet.</p></ng-template>
           <div class="zdo-row" *ngIf="me.loans?.count"><span>Loan balance</span><b>AED {{ me.loans.outstanding | number:'1.0-0' }}</b></div>
@@ -154,13 +155,13 @@ export class ZDashDesignerComponent implements OnInit, OnDestroy {
         <article class="zdo-card" data-widget="me-docs" data-widget-title="My documents">
           <header><mat-icon>description</mat-icon><h3>My documents</h3></header>
           <p class="zr-muted" *ngIf="!me.documents?.length">No documents with an expiry date.</p>
-          <div class="zdo-row" *ngFor="let d of me.documents?.slice(0, 4)"><span>{{ d.type }}</span>
+          <div class="zdo-row zdo-go" *ngFor="let d of me.documents?.slice(0, 4)" (click)="open(d)" role="link" tabindex="0" (keydown.enter)="open(d)"><span>{{ d.type }}</span>
             <b [class]="'zdo-pill ' + d.state">{{ d.state === 'expired' ? 'Expired' : d.state === 'expiring' ? d.days + ' days' : (d.expiry | date:'MMM y') }}</b></div>
         </article>
         <article class="zdo-card" data-widget="me-requests" data-widget-title="My requests">
           <header><mat-icon>assignment</mat-icon><h3>My requests</h3></header>
           <p class="zr-muted" *ngIf="!me.requests?.recent?.length">No requests yet.</p>
-          <div class="zdo-row" *ngFor="let r of me.requests?.recent?.slice(0, 4)"><span>{{ r.module_label }}<small> · {{ r.summary || r.document_number }}</small></span><b [class]="'zdo-pill ' + r.status_key">{{ r.status }}</b></div>
+          <div class="zdo-row zdo-go" *ngFor="let r of me.requests?.recent?.slice(0, 4)" (click)="open(r)" role="link" tabindex="0" (keydown.enter)="open(r)"><span>{{ r.module_label }}<small> · {{ r.summary || r.document_number }}</small></span><b [class]="'zdo-pill ' + r.status_key">{{ r.status }}</b></div>
         </article>
       </div>
     </ng-container>
@@ -172,12 +173,13 @@ export class ZDashDesignerComponent implements OnInit, OnDestroy {
         <article class="zdo-card" *ngFor="let c of data.cards" [attr.data-widget]="'ov-' + c.key" [attr.data-widget-title]="c.title">
           <header><mat-icon>{{ c.icon }}</mat-icon><h3>{{ c.title }}</h3><a class="zr-link" [routerLink]="c.route">Open</a></header>
           <div class="zdo-kpis">
-            <div *ngFor="let k of c.kpis" [class]="'zdo-kpi ' + (k.tone && k.value ? k.tone : '') + (k.money ? ' wide' : '')">
-              <b>{{ k.money ? ('AED ' + (k.value | number:'1.0-0')) : (k.value | number:'1.0-0') }}</b><span>{{ k.label }}{{ k.suffix ? ' ' + k.suffix : '' }}</span></div>
+            <button type="button" *ngFor="let k of c.kpis" [class]="'zdo-kpi ' + (k.tone && k.value ? k.tone : '') + (k.money ? ' wide' : '') + (k.link ? ' zdo-go' : '')"
+                    [disabled]="!k.link" (click)="go(k.link)" [title]="k.link ? 'Show what makes up this figure' : ''">
+              <b>{{ k.money ? ('AED ' + (k.value | number:'1.0-0')) : (k.value | number:'1.0-0') }}</b><span>{{ k.label }}{{ k.suffix ? ' ' + k.suffix : '' }}</span></button>
           </div>
           <ng-container *ngIf="c.items?.length">
             <div class="zdo-sub">{{ c.note }}</div>
-            <div class="zdo-row" *ngFor="let i of c.items"><span>{{ i.label }}</span><b>{{ i.value }}</b></div>
+            <div class="zdo-row" *ngFor="let i of c.items" [class.zdo-go]="i.link" (click)="go(i.link)" [attr.role]="i.link ? 'link' : null" [attr.tabindex]="i.link ? 0 : null" (keydown.enter)="go(i.link)"><span>{{ i.label }}</span><b>{{ i.value }}</b></div>
           </ng-container>
         </article>
       </div>
@@ -187,7 +189,10 @@ export class ZDashDesignerComponent implements OnInit, OnDestroy {
 })
 export class ZDashOverviewComponent implements OnInit {
   data: any = null; me: any = null; error = '';
-  constructor(private http: HttpClient, private rec: ZRecordService, private cd: ChangeDetectorRef) {}
+  constructor(private http: HttpClient, private rec: ZRecordService, private cd: ChangeDetectorRef, private router: Router) {}
+  /** v1.8.1: every figure opens the rows behind it, every line its record. */
+  go(link?: string | null): void { if (link) { this.router.navigateByUrl(link); } }
+  open(x: any): void { if (x?._m) { this.router.navigateByUrl(recordUrl(x._m, x._id)); } }
   async ngOnInit(): Promise<void> {
     const s = localStorage.getItem('selectedSchema') || '';
     try {

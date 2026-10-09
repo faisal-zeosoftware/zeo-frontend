@@ -111,6 +111,7 @@ export class SalaryComponent {
   ) { }
 
   ngOnInit(): void {
+    this.loadFormulaHelp();
 
 this.loadDeparmentBranch();
 
@@ -679,15 +680,45 @@ mapBranchNameToId() {
   VariablesdropdownOpen: boolean = false;
 
 
-  logicalOperators: string[] = ['<', '>', '>=', '<=', '==', '!=', 'AND', 'OR', 'NOT']; // Add more if needed
+  logicalOperators: string[] = ['<', '>', '>=', '<=', '==', '!=', 'and', 'or', 'not']; // v1.11.0: lower case – the engine reads these
 
   arithmeticOperators: string[] = ['+', '-', '*', '/', '%'];
 
-  FunctionsOperators: string[] = ['WORKHOURS()', 'MAX()', 'MIN()', 'ROUND()', 'SUM()', 'AVG()', 'ABS()', 'INT()',];
+  FunctionsOperators: string[] = ['IF(, , )', 'MAX()', 'MIN()', 'ROUND(, 2)', 'SUM()', 'AVG()', 'ABS()', 'INT()', 'FLOOR()', 'CEIL()', 'WORKHOURS()'];
+  // v1.11.0: names, labels and the check come from the server (PayrollManagement/formula.py)
+  fxLabels: Record<string, string> = {};
+  fxEmp: any = null;
+  fxResult: any = null;
+  fxBusy = false;
 
   VariablesOperators: string[] = ['calendar_days', 'working_days', 'fixed_days', 'standard_hours', 'ot_hours', 'years_of_service', 'normal_ot_hours', 'weekend_ot_hours',
     'holiday_ot_hours', 'ot_normal_rate', 'ot_weekend_rate', 'ot_holiday_rate', 'encashed_days'];
 
+
+  loadFormulaHelp(): void {
+    const schema = localStorage.getItem('selectedSchema') || '';
+    this.http.get<any>(`${this.apiUrl}/payroll/api/salarycomponent/formula-help/?schema=${schema}`).subscribe({
+      next: (h) => {
+        this.VariablesOperators = [...h.variables, ...h.leave_balances].map((v: any) => v.name);
+        this.FunctionsOperators = h.functions.map((f: any) => f.name === 'IF' ? 'IF(, , )' : f.name === 'ROUND' ? 'ROUND(, 2)' : `${f.name}()`);
+        for (const v of [...h.variables, ...h.leave_balances, ...h.components, ...h.functions]) { this.fxLabels[v.name] = v.label; }
+      },
+      error: () => { /* keep the built-in lists */ },
+    });
+  }
+
+  fxLabel(x: string): string { return this.fxLabels[x.replace(/\(.*$/, '')] || ''; }
+
+  checkFormula(formula: string, code?: string, name?: string): void {
+    const schema = localStorage.getItem('selectedSchema') || '';
+    this.fxBusy = true; this.fxResult = null;
+    const emp = this.fxEmp || (this.employees[0] && this.employees[0].id) || null;
+    this.http.post<any>(`${this.apiUrl}/payroll/api/salarycomponent/check-formula/?schema=${schema}`, { formula, code, name, employee: emp }).subscribe({
+      next: (r) => { this.fxResult = r; this.fxBusy = false; },
+      error: (e) => { this.fxResult = { ok: false, problems: [e?.error?.detail || 'The formula could not be checked.'] }; this.fxBusy = false; },
+    });
+  }
+  usedList(r: any): string { return Object.entries(r?.used || {}).map(([k, v]) => `${k} = ${v}`).join(', '); }
 
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;

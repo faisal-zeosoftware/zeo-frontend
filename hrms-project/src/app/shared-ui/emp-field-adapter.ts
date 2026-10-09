@@ -20,19 +20,32 @@ export function empFieldAdapter(http: HttpClient, api: string, kind: string): De
     id: r.id, name: r.emp_custom_field, label: r.emp_custom_field, field_type: r.data_type || 'text',
     options: r.dropdown_values || r.radio_values || [], required: !!r.mandatory, section: r.section || '',
     order: r.order ?? r.id * 10, help_text: r.help_text || '', placeholder: r.placeholder || '', active: true,
+    rules: { ...(r.rules || {}) }, default: (r.rules || {}).default ?? '',
   });
   const toBody = (f: any) => {
     const t = f.field_type || 'text';
     const opts = (f.options || []).filter((o: string) => o);
+    // v1.12.0: rules (default, lowest / highest, length, pattern, show on, show only if, read-only for employees)
+    const rules: any = { ...(f.rules || {}) };
+    if (f.default !== undefined) { rules.default = f.default; }
+    for (const k of Object.keys(rules)) { if (rules[k] === '' || rules[k] === null || (Array.isArray(rules[k]) && !rules[k].length)) { delete rules[k]; } }
+    if (rules.show_if && !rules.show_if.field) { delete rules.show_if; }
     return {
       emp_custom_field: String(f.label || '').trim(), data_type: t,
       dropdown_values: t === 'dropdown' || t === 'multiselect' ? opts : null,
       radio_values: t === 'radio' ? opts : null,
       ...(t === 'checkbox' ? { checkbox_values: ['Yes', 'No'] } : {}),
       mandatory: !!f.required, section: f.section || '', order: f.order ?? 0, help_text: f.help_text || '', placeholder: f.placeholder || '',
+      rules, ...(f.confirm ? { confirm: true } : {}),
     };
   };
-  const msg = (e: any) => { const d = e?.error; throw { error: { detail: d?.detail || d?.error || (d && typeof d === 'object' ? Object.values(d).flat().join(' ') : '') || 'Not saved.' } }; };
+  const msg = (e: any) => {
+    const d = e?.error;
+    if (d && d.confirm) {   // the change does not fit values already entered: the designer asks first
+      throw { error: { detail: [].concat(d.confirm).join(' '), needs_confirm: true, affected: d.affected || [] } };
+    }
+    throw { error: { detail: d?.detail || d?.error || (d && typeof d === 'object' ? Object.values(d).flat().join(' ') : '') || 'Not saved.' } };
+  };
   return {
     title: `${k.title} form`,
     rich: false,

@@ -1,4 +1,6 @@
-import { AfterViewInit, Directive, ElementRef, NgZone, OnDestroy } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, NgZone, OnDestroy, inject } from '@angular/core';
+import { ORG_KEYS$, orgKeys } from './z-org-keys';
+import { OrgSettingsService } from '../org-structure/org-settings.service';
 import { Subscription } from 'rxjs';
 import { DirEmp, ZListService } from './z-list.service';
 import { exportCsv, exportExcel, exportPdf, readSheet } from './z-export';
@@ -22,21 +24,17 @@ import { VCol, VIEW_LABEL, ViewKind, ViewState, availableViews, calendarHtml, de
 type Kind = 'text' | 'number' | 'date';
 interface Col { idx: number; label: string; kind: Kind; skip: boolean; facet: boolean; org?: OrgKey; }
 interface Row { el: HTMLTableRowElement; seq: number; cells: string[]; emp?: DirEmp | null; }
-type OrgKey = 'branch' | 'department' | 'designation' | 'category';
+type OrgKey = string;   // v1.12.0: branch, department, designation, category + the org fields switched on (see z-org-keys.ts)
 interface Chip { type: 'search' | 'filter' | 'custom' | 'date'; key: string; label: string; values?: string[]; col?: number; op?: string; text?: string; from?: string; to?: string; }
 
-const ORG: { key: OrgKey; label: string; re: RegExp }[] = [
-  { key: 'branch', label: 'Branch', re: /^(branch|branches|branch name|work location|location)$/i },
-  { key: 'department', label: 'Department', re: /^(department|dept|departments|department name)$/i },
-  { key: 'designation', label: 'Designation', re: /^(designation|job title|position|designations)$/i },
-  { key: 'category', label: 'Category', re: /^(category|employee category|categories)$/i },
-];
+// v1.12.0: the org filters (Branch / Department / Designation / Category + switched-on org fields) come from orgKeys()
 const SKIP_HEAD = /^(actions?|action buttons?|edit|delete|select|options?|#|no\.?|s\.?\s?no\.?|sl\.?\s?no\.?|sr\.?\s?no\.?|view|operations?|)$/i;
 const EMP_HEAD = /(employee|^emp\b|emp code|emp id|staff|^name$|employee name|requested by|applicant)/i;
 const SIZES = [50, 100, 500, 1000];
 const EXCLUDE = '.modal, .modal-content, .modal-dialog, mat-dialog-container, .cdk-overlay-pane, .zd-panel, .hr-modal, .hr-detail, .zl-modal, .payslip, .print-area, #print-section, .no-zlist, [zPlain], .fc, mat-calendar';
 
 const ICON: Record<string, string> = {
+  star: '<svg viewBox="0 0 24 24" width="13" height="13" fill="#f5b301" stroke="#d99a00" stroke-width="1.5"><path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1.1 6.2L12 17.4l-5.6 2.9 1.1-6.2L3 9.7l6.2-.9z"/></svg>',
   search: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
   filter: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18l-7 8v5l-4 2v-7z"/></svg>',
   group: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h13M10 18h10"/></svg>',
@@ -120,11 +118,16 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   private view: ViewKind = 'list';
   private vst: ViewState = {};
   private hideCols = new Set<string>();
+  private hasLayout = false;   // v1.13.0: a saved column layout exists
+  private optDone = false;     // v1.13.0: optional columns hidden once
+  private favs: { name: string; chips: Chip[]; groupBy: string[] }[] = [];   // v1.8.0 saved filters
   private viewEl?: HTMLElement;
   private layoutKey = '';
   private saveTimer: any;
   private extra: { endpoint: string; fields: any[]; values: Record<string, Record<string, any>>; ids: Map<HTMLTableRowElement, string> } | null = null;
   private extraSig = '';
+
+  private orgSettings = inject(OrgSettingsService);   // v1.12.0: loads the org fields for the filters
 
   constructor(private host: ElementRef<HTMLTableElement>, private zone: NgZone, private z: ZListService, private rec: ZRecordService) {}
 
@@ -169,17 +172,27 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     if (this.anchor.contains(this.anchor.querySelector('table table'))) { this.anchor = t; }
     this.active = true;
     t.classList.add('zl-table');
+    // tablets and narrow windows: wide tables scroll sideways inside their own box, not the page
+    (this.anchor === t ? t.parentElement : this.anchor)?.classList.add('zl-scroll');
     const key = 'zl-size:' + location.pathname;
     try { const v = Number(localStorage.getItem(key)); if (SIZES.includes(v)) { this.size = v; } } catch { /* storage off */ }
     this.buildBar();
     this.buildFoot();
     this.loadLayout();
+    // v1.8.1: opened from a drill-down ("Open in <screen>"): search for the record straight away
+    const zq = new URLSearchParams(location.search).get('zq');
+    if (zq && !this.chips.some(c => c.type === 'search') && Array.from(document.querySelectorAll('table.zl-table')).indexOf(t) === 0) {
+      this.chips.push({ type: 'search', key: 'all', label: 'Search', text: zq, col: -1 });
+    }
     this.subs.push(this.z.permissions().subscribe(a => {
       // employees without HR rights (ESS) export their own rows but do not import
       const imp = this.bar?.querySelector('[data-menu=import]') as HTMLElement | null;
       if (imp) { imp.style.display = !a.admin && a.codes.size === 0 ? 'none' : ''; }
     }));
     this.hideOwnControls();
+    let orgFirst = true;   // v1.12.0: org filters follow Organisation settings
+    this.subs.push(ORG_KEYS$.subscribe(() => { if (orgFirst) { orgFirst = false; return; } this.schedule(0); }));
+    this.orgSettings.load().subscribe();
     this.subs.push(this.z.directory().subscribe(list => {
       this.dir = list || [];
       this.dirByCode.clear(); this.dirByName.clear();
@@ -280,6 +293,10 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     this.ownGroups = false;
     this.quiet(() => this.addExtraCells());
     const trs = this.dataRows();
+    // phones show each row as a card: every cell needs its column name (data-label) for that
+    this.quiet(() => trs.forEach(tr => Array.from(tr.cells).filter(c => !c.classList.contains('zl-selcell')).forEach((c, i) => {
+      if (!c.getAttribute('data-label') && labels[i]) { c.setAttribute('data-label', labels[i]); }
+    })));
     this.rows = trs.map(tr => {
       if (!this.seqOf.has(tr)) { this.seqOf.set(tr, ++SEQ); }
       const cells = Array.from(tr.cells).filter(c => !c.classList.contains('zl-selcell')).map(c => this.cellText(c as HTMLElement));
@@ -297,11 +314,16 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       const skip = SKIP_HEAD.test(label) || label.length > 40;
       const distinct = new Set(vals.map(v => v.toLowerCase())).size;
       const avg = vals.length ? vals.reduce((a, v) => a + v.length, 0) / vals.length : 0;
-      const org = ORG.find(o => o.re.test(label))?.key;
+      const org = orgKeys().find(o => o.re.test(label))?.key;
       const facet = !skip && kind === 'text' && distinct >= 1 && distinct <= 40 && avg <= 32 && (distinct <= Math.max(3, vals.length * 0.6) || !!org);
       return { idx, label: label || `Column ${idx + 1}`, kind, skip, facet, org };
     });
     this.cols = cols;
+    // v1.13.0: <th data-zl-optional> columns start hidden until the user shows them under Columns (only without a saved layout)
+    if (!this.optDone && heads.length) {
+      this.optDone = true;
+      if (!this.hasLayout) { heads.forEach((h, i) => { if (h.hasAttribute('data-zl-optional') && cols[i]) { this.hideCols.add(cols[i].label); } }); }
+    }
     // employee link (for Branch / Department / Designation / Category)
     let empIdx = -1;
     if (this.dir.length) {
@@ -364,7 +386,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   }
 
   private facetLabel(key: string): string {
-    if (key.startsWith('o:')) { return ORG.find(o => o.key === key.slice(2))!.label; }
+    if (key.startsWith('o:')) { return orgKeys().find(o => o.key === key.slice(2))?.label || key.slice(2); }
     const c = this.cols[+key.slice(2)];
     return key.startsWith('m:') ? `${c?.label} (month)` : (c?.label || '');
   }
@@ -372,7 +394,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   /** Branch / Department / Designation / Category first, then status-like columns. */
   private facetKeys(): string[] {
     const keys: string[] = [];
-    for (const o of ORG) {
+    for (const o of orgKeys()) {
       const col = this.cols.find(c => c.org === o.key && !c.skip);
       if (col || this.hasEmp) { keys.push('o:' + o.key); }
     }
@@ -535,7 +557,9 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         tr.innerHTML = `<td colspan="${span}"><button type="button" class="zl-gbtn" data-act="toggle" data-path="${esc(path)}" style="padding-left:${8 + lvl * 22}px">
           <span class="zl-caret">${ICON['caret']}</span><span class="zl-gname">${esc(this.facetLabel(g))}: <b>${esc(v)}</b></span>
           <span class="zl-gcount">${members.length}</span>${sums}</button></td>`;
-        tb.insertBefore(this.wrap(tr, multi), this.unit(r));
+        const unit = this.unit(r);
+        // rows can sit in another tbody than the first (reports with their own grouping markup)
+        if (unit.parentNode) { unit.parentNode.insertBefore(this.wrap(tr, multi), unit); } else { (multi ? tb.parentNode || tb : tb).appendChild(this.wrap(tr, multi)); }
       }
     }
   }
@@ -626,7 +650,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         <button type="button" class="zl-btn" data-menu="columns">${ICON['cols']}<span>Columns</span></button>
         <span class="zl-sep"></span>
         <button type="button" class="zl-btn" data-menu="export">${ICON['down']}<span>Export</span></button>
-        <button type="button" class="zl-btn" data-menu="import">${ICON['up']}<span>Import</span></button>
+        ${/\/report-options\//.test(location.pathname) ? '' : `<button type="button" class="zl-btn" data-menu="import">${ICON['up']}<span>Import</span></button>`}
       </div>`;
     this.quiet(() => this.anchor.parentElement!.insertBefore(bar, this.anchor));
     this.bar = bar;
@@ -662,7 +686,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       opts.push(`<button type="button" class="zl-sug" data-act="search" data-col="${c.idx}">Search <b>${esc(c.label)}</b> for: <i>${esc(t)}</i></button>`);
     }
     if (this.hasEmp) {
-      for (const o of ORG) {
+      for (const o of orgKeys()) {
         if (!this.cols.some(c => c.org === o.key)) {
           opts.push(`<button type="button" class="zl-sug" data-act="search" data-org="${o.key}">Search <b>${o.label}</b> for: <i>${esc(t)}</i></button>`);
         }
@@ -684,7 +708,7 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       if (!t) { return; }
       const org = el.dataset['org'];
       const col = Number(el.dataset['col'] ?? -1);
-      const label = org ? ORG.find(o => o.key === org)!.label : col >= 0 ? this.cols[col].label : 'Search';
+      const label = org ? (orgKeys().find(o => o.key === org)?.label || org) : col >= 0 ? this.cols[col].label : 'Search';
       this.chips.push({ type: 'search', key: org ? 'o:' + org : col >= 0 ? 'c:' + col : 'all', label, text: t, col });
       input.value = ''; this.suggestText = ''; this.paintSuggest(); this.page = 1; this.render();
     } else if (act === 'chip-x') {
@@ -784,13 +808,36 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         <div class="zl-range"><input type="date" data-from aria-label="From"><span>to</span><input type="date" data-to aria-label="To"><button type="button" class="zl-apply" data-range>Apply</button></div></div>`);
     }
     const colOpts = this.cols.filter(c => !c.skip).map(c => `<option value="c:${c.idx}">${esc(c.label)}</option>`).join('')
-      + (this.hasEmp ? ORG.filter(o => !this.cols.some(c => c.org === o.key)).map(o => `<option value="o:${o.key}">${o.label}</option>`).join('') : '');
+      + (this.hasEmp ? orgKeys().filter(o => !this.cols.some(c => c.org === o.key)).map(o => `<option value="o:${o.key}">${o.label}</option>`).join('') : '');
     sections.push(`<div class="zl-sec zl-custom"><div class="zl-sec-h">Custom filter</div>
       <div class="zl-cf"><select data-cf-col>${colOpts}</select>
       <select data-cf-op><option value="contains">contains</option><option value="not">does not contain</option><option value="is">is equal to</option>
         <option value="gt">is greater than</option><option value="lt">is less than</option><option value="set">is set</option><option value="empty">is not set</option></select>
       <input data-cf-val placeholder="Value"><button type="button" class="zl-apply" data-cf>Add</button></div></div>`);
+    // v1.8.0: favourites – the current filters and grouping saved under a name, per user and screen
+    const canSave = this.chips.length > 0 || this.groupBy.length > 0;
+    sections.unshift(`<div class="zl-sec zl-favs"><div class="zl-sec-h">Favourites</div>
+      ${this.favs.length ? `<div class="zl-favlist">${this.favs.map((f, i) => `<span class="zl-fav"><button type="button" data-fav="${i}" title="Apply">${ICON['star'] || '★'} ${esc(f.name)}</button><button type="button" class="zl-favx" data-favx="${i}" aria-label="Delete ${esc(f.name)}">×</button></span>`).join('')}</div>` : '<p class="zl-muted">No favourites yet. Pick filters or a grouping, then save them here.</p>'}
+      <div class="zl-range"><input class="zl-favname" data-favname placeholder="Name of this favourite"><button type="button" class="zl-apply" data-favsave ${canSave ? '' : 'disabled'}>Save current filters</button></div></div>`);
     m.innerHTML = `<div class="zl-menu-scroll">${sections.join('') || '<p class="zl-muted">Nothing to filter yet.</p>'}</div>`;
+    const favState = () => setTimeout(() => { const sv = m.querySelector('[data-favsave]') as HTMLButtonElement | null; if (sv) { sv.disabled = !(this.chips.length || this.groupBy.length); } });
+    m.addEventListener('change', favState); m.addEventListener('click', favState);
+    m.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button') as HTMLElement | null;
+      if (!b) { return; }
+      if (b.dataset['fav'] !== undefined) {
+        const f = this.favs[+b.dataset['fav']!];
+        if (f) { this.chips = JSON.parse(JSON.stringify(f.chips)); this.groupBy = [...(f.groupBy || [])]; this.collapsed.clear(); this.page = 1; this.closeMenu(); this.render(); }
+      } else if (b.dataset['favx'] !== undefined) {
+        this.favs.splice(+b.dataset['favx']!, 1); this.saveLayout(); this.closeMenu(); this.openMenu('filters', this.bar!.querySelector('[data-menu="filters"]') as HTMLElement);
+      } else if (b.hasAttribute('data-favsave')) {
+        const inp = m.querySelector('[data-favname]') as HTMLInputElement;
+        const name = (inp.value || '').trim() || `Favourite ${this.favs.length + 1}`;
+        this.favs = this.favs.filter(f => f.name.toLowerCase() !== name.toLowerCase());
+        this.favs.push({ name, chips: JSON.parse(JSON.stringify(this.chips)), groupBy: [...this.groupBy] });
+        this.saveLayout(); this.closeMenu(); this.openMenu('filters', this.bar!.querySelector('[data-menu="filters"]') as HTMLElement);
+      }
+    });
     m.addEventListener('change', (e) => {
       const cb = e.target as HTMLInputElement;
       if (cb.type !== 'checkbox') { return; }
@@ -867,8 +914,10 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
   }
 
   private exportData(selectedOnly: boolean): { headers: string[]; rows: string[][] } {
-    const cols = this.cols.filter(c => !c.skip && !this.hideCols.has(c.label));
-    const extra = this.hasEmp ? ORG.filter(o => !this.cols.some(c => c.org === o.key)) : [];
+    // v1.12.0: designer fields not ticked "Export" in the form designer stay out of exports
+    const noExport = new Set<string>((this.extra?.fields || []).filter((f: any) => f.show_in_export === false).map((f: any) => f.label));
+    const cols = this.cols.filter(c => !c.skip && !this.hideCols.has(c.label) && !noExport.has(c.label));
+    const extra = this.hasEmp ? orgKeys().filter(o => !this.cols.some(c => c.org === o.key)) : [];
     const src = selectedOnly ? this.visible.filter(r => this.selected.has(r.el)) : this.visible;
     return {
       headers: [...cols.map(c => c.label), ...extra.map(o => o.label)],
@@ -919,6 +968,8 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
         <button type="button" class="zl-item" data-i="tpl-csv"><b>Download template (CSV)</b><span>Same columns as plain CSV</span></button>
         <button type="button" class="zl-item" data-i="upload"><b>Import a file…</b><span>Excel or CSV – rows are checked before anything is saved</span></button>`);
     }
+    const std = this.standardKind();
+    if (std) { parts.push(`<button type="button" class="zl-item" data-i="std"><b>Load the standard list…</b><span>Adds the usual UAE ${std}s that are missing; nothing is changed or removed</span></button>`); }
     if (own) { parts.push(`<button type="button" class="zl-item" data-i="own"><b>This screen's own upload</b><span>Opens the existing bulk upload of this screen</span></button>`); }
     if (!parts.length) { parts.push('<p class="zl-muted">This list is filled by the system (for example from requests or payroll), so it cannot be imported here.</p>'); }
     m.innerHTML = parts.join('');
@@ -930,6 +981,35 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
       if (what === 'own') { this.zone.run(() => own?.click()); return; }
       if (what === 'tpl-xlsx' || what === 'tpl-csv') { this.downloadTemplate(what === 'tpl-csv'); return; }
       if (what === 'upload') { this.openImport(); }
+      if (what === 'std' && std) { this.loadStandard(std); }
+    });
+  }
+
+  /** Department, Designation and Category lists offer the standard list. */
+  private standardKind(): string | null {
+    const e = this.endpoint || '';
+    if (/\/organisation\/api\/Department\//i.test(e)) { return 'department'; }
+    if (/\/organisation\/api\/Designation\//i.test(e)) { return 'designation'; }
+    if (/\/organisation\/api\/Catogory\//i.test(e)) { return 'category'; }
+    return null;
+  }
+
+  private loadStandard(kind: string): void {
+    this.z.standardList(kind).subscribe({
+      next: (r: any) => {
+        const missing = (r.items || []).filter((i: any) => !i.exists);
+        if (!missing.length) { this.toast(`Every standard ${kind} is already in the list.`); return; }
+        const names = missing.map((i: any) => '• ' + i.name).join('\n');
+        if (!confirm(`Add these ${missing.length} ${kind}s to the list?\n\n${names}\n\nThey are linked to your branches. Existing ${kind}s are not changed.`)) { return; }
+        this.z.loadStandardList(kind).subscribe({
+          next: (res: any) => {
+            this.toast(`${res.created?.length || 0} ${kind}s added.`);
+            setTimeout(() => location.reload(), 1200);
+          },
+          error: (e: any) => this.toast(e?.error?.detail || 'The standard list could not be loaded.', true),
+        });
+      },
+      error: (e: any) => this.toast(e?.error?.detail || 'The standard list could not be loaded.', true),
     });
   }
 
@@ -1140,10 +1220,12 @@ export class ZListDirective implements AfterViewInit, OnDestroy {
     if (d.view && VIEW_LABEL[d.view as ViewKind]) { this.view = d.view; }
     if (d.vst) { this.vst = d.vst; }
     this.hideCols = new Set(Array.isArray(d.hide) ? d.hide : []);
+    this.hasLayout = true;
+    if (Array.isArray(d.fav)) { this.favs = d.fav.filter((f: any) => f && f.name && Array.isArray(f.chips)); }
   }
 
   private saveLayout(): void {
-    const data = { view: this.view, vst: this.vst, hide: [...this.hideCols] };
+    const data = { view: this.view, vst: this.vst, hide: [...this.hideCols], fav: this.favs };
     try { localStorage.setItem('zl-layout:' + this.layoutKey, JSON.stringify(data)); } catch { /* ignore */ }
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => this.rec.saveLayout('list', this.layoutKey, data).subscribe({ error: () => { /* offline */ } }), 800);

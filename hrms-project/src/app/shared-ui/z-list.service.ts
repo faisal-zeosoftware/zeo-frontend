@@ -124,6 +124,15 @@ export class ZListService {
     return this.http.get(`${this.api}/tools/api/fields/?endpoint=${encodeURIComponent(endpoint)}&schema=${this.schema}`);
   }
 
+  /** Standard departments / designations / categories (v1.7.2). */
+  standardList(kind: string): Observable<any> {
+    return this.http.get(`${this.api}/organisation/api/masters/standard/?kind=${kind}&schema=${this.schema}`);
+  }
+
+  loadStandardList(kind: string): Observable<any> {
+    return this.http.post(`${this.api}/organisation/api/masters/standard/?schema=${this.schema}`, { kind });
+  }
+
   importRows(endpoint: string, rows: any[], dryRun: boolean): Observable<any> {
     return this.http.post(`${this.api}/tools/api/import/?schema=${this.schema}`, { endpoint, rows, dry_run: dryRun });
   }
@@ -151,7 +160,7 @@ export class ZListRecorderInterceptor implements HttpInterceptor {
     if (req.method !== 'GET') {
       const forms = rec && ['POST', 'PUT', 'PATCH'].includes(req.method) ? rec.formsFor(req.method, req.url) : [];
       for (const f of forms) {
-        const errs = f.fields.map((d: any) => checkValue(d, f.values[d.name])).filter(Boolean);
+        const errs: string[] = f.check ? f.check() : f.fields.map((d: any) => checkValue(d, f.values[d.name])).filter(Boolean);
         if (errs.length) {
           f.onError(errs.join(' '));
           const err = new HttpErrorResponse({ status: 400, url: req.url, error: { detail: errs.join(' ') } });
@@ -160,6 +169,48 @@ export class ZListRecorderInterceptor implements HttpInterceptor {
         }
       }
       const snap = forms.map((f: any) => ({ f, values: { ...f.values } }));
+      // v1.12.0: the server checks the extra fields BEFORE the screen's record is saved
+      // (so a wrong extra value no longer leaves a half-saved record behind)
+      if (snap.length) {
+        return from(this.preCheck(rec, req, snap)).pipe(concatMap(msg => {
+          if (msg) {
+            snap.forEach((x: any) => x.f.onError(msg));
+            const err = new HttpErrorResponse({ status: 400, url: req.url, error: { detail: msg } });
+            this.notify(err, true);
+            return throwError(() => err);
+          }
+          return this.send(rec, req, next, snap);
+        }));
+      }
+      return this.send(rec, req, next, snap);
+    }
+    return next.handle(req).pipe(tap(ev => {
+      if (ev instanceof HttpResponse) {
+        try { this.z.record(req.urlWithParams, ev.body); } catch { /* never break the screen */ }
+        try { rec?.seen('GET', req.url, ev.body, true); } catch { /* never break the screen */ }
+      }
+    }));
+  }
+
+  /** Server check of the extra fields; returns the problems as one message, or '' (also when the check is not available). */
+  private async preCheck(rec: any, req: HttpRequest<any>, snap: { f: any; values: any }[]): Promise<string> {
+    const path = req.url.replace(this.z.api, '').split('?')[0];
+    const m = /^(.*\/)(\d+)\/?$/.exec(path);
+    const endpoint = m ? m[1] : (path.endsWith('/') ? path : path + '/');
+    const msgs: string[] = [];
+    for (const { values } of snap) {
+      const send: Record<string, any> = {};
+      for (const [k, v] of Object.entries(values)) { send[k] = v && typeof v === 'object' && (v as any).pending instanceof File ? { pending: true, name: (v as any).name } : v; }
+      try {
+        await new Promise((res, rej) => rec.checkValues(endpoint, m ? m[2] : null, send).subscribe({ next: res, error: rej }));
+      } catch (e: any) {
+        if (e?.status === 400 && e?.error?.errors) { msgs.push(...e.error.errors); }
+      }
+    }
+    return msgs.join(' ');
+  }
+
+  private send(rec: any, req: HttpRequest<any>, next: HttpHandler, snap: { f: any; values: any }[]): Observable<HttpEvent<any>> {
       return next.handle(req).pipe(
         tap(ev => {
           if (ev instanceof HttpResponse && rec) {
@@ -174,13 +225,6 @@ export class ZListRecorderInterceptor implements HttpInterceptor {
           if (err instanceof HttpErrorResponse && !req.url.includes('/tools/api/') && !req.url.includes('/chatter/api/')) { this.notify(err); }
           return throwError(() => err);
         }));
-    }
-    return next.handle(req).pipe(tap(ev => {
-      if (ev instanceof HttpResponse) {
-        try { this.z.record(req.urlWithParams, ev.body); } catch { /* never break the screen */ }
-        try { rec?.seen('GET', req.url, ev.body, true); } catch { /* never break the screen */ }
-      }
-    }));
   }
 
   /** After the screen saved its record: store the extra field values of the form(s) that belong to it. */
@@ -201,13 +245,14 @@ export class ZListRecorderInterceptor implements HttpInterceptor {
         if (ids.length) { id = String(Math.max(...ids)); }
       } catch { /* leave it */ }
     }
+    const create = !m;
     for (const { f, values } of snap) {
       if (!id) { this.toastMsg('The extra fields could not be saved: the screen did not return the new record.', true); return; }
       const has = Object.values(values).some(v => v !== null && v !== undefined && v !== '' && !(Array.isArray(v) && !v.length));
       try {
-        if (has) {
+        if (has || create) {   // a new record: the server also fills in defaults (v1.12.0)
           const ready = await rec.resolveFiles(endpoint, id, values);
-          await new Promise((res, rej) => rec.saveValues(endpoint, id, ready).subscribe({ next: res, error: rej }));
+          await new Promise((res, rej) => rec.saveValues(endpoint, id, ready, create).subscribe({ next: res, error: rej }));
         }
         f.onSaved(endpoint, id);
       } catch (e: any) {

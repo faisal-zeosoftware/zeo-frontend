@@ -293,8 +293,11 @@
             <th>Name</th>
             <th>Branch</th>
             <th>Department</th>
-            <th>Category</th>
+            <th *zIfOrg="'employee_categories'">Category</th>
             <th>Designation</th>
+            <th *ngFor="let c of orgCols.cols">{{ c.label }}</th>
+            <!-- v1.13.0: optional columns (start hidden – show them under Columns) -->
+            <th data-zl-optional *ngFor="let c of profileCols.cols">{{ c.label }}</th>
             <th>Active</th>
             <th *ngIf="showEditBtn">Actions</th>
           </tr>
@@ -314,10 +317,12 @@
             <td data-label="Name">{{ emp.emp_first_name }} {{ emp.emp_last_name }}</td>
             <td data-label="Branch">{{ emp.emp_branch_id }}</td>
             <td data-label="Department">{{ emp.emp_dept_id }}</td>
-            <td data-label="Category">{{ emp.emp_ctgry_id }}</td>
+            <td data-label="Category" *zIfOrg="'employee_categories'">{{ emp.emp_ctgry_id }}</td>
             <td data-label="Designation">{{ emp.emp_desgntn_id }}</td>
+            <td *ngFor="let c of orgCols.cols" [attr.data-label]="c.label">{{ orgCols.value(emp.id, c.field) }}</td>
+            <td *ngFor="let c of profileCols.cols" [attr.data-label]="c.label">{{ profileCols.value(emp.id, c.field) }}</td>
             <td data-label="Is Active">{{ emp.is_active ? 'Yes' : 'No' }}</td>
-            <td data-label="Ation" *ngIf="showEditBtn">
+            <td data-label="Actions" *ngIf="showEditBtn">
             <button
             mat-fab
             color="primary"

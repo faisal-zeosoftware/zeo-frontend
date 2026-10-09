@@ -34,7 +34,7 @@
                 <div class="custom-sel">
                   <select class="form-control" id="unit" name="unit" [(ngModel)]="unit" [ngModelOptions]="{standalone: true}">
                     <option>days</option>
-                    <option>hours</option>
+                    <!-- v1.11.0: hours hidden – leave requests are counted in days -->
                   </select>
                 </div>
               </div>

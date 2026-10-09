@@ -28,10 +28,61 @@ export const TYPE_BY_VALUE: Record<string, FieldType> = Object.fromEntries(FIELD
 export const typeLabel = (v: string) => TYPE_BY_VALUE[v]?.label || v;
 export const hasOptions = (v: string) => !!TYPE_BY_VALUE[v]?.options;
 
+/** v1.12.0: rules of a designer field (same keys on the server, DataTools/fieldrules.py). */
+export interface FieldRules {
+  default?: any; min?: number | string | null; max?: number | string | null; min_length?: number | null; max_length?: number | null;
+  regex?: string; regex_message?: string;
+  /** where the field shows: create, edit, view, list, export, ess (empty: everywhere) */
+  visible_on?: string[];
+  show_if?: { field: string; op: 'eq' | 'ne' | 'in' | 'filled' | 'empty'; value?: any } | null;
+  ess_read_only?: boolean;
+}
+export const VISIBLE_PLACES: { value: string; label: string }[] = [
+  { value: 'create', label: 'New record form' }, { value: 'edit', label: 'Edit form' }, { value: 'view', label: 'Details page' },
+  { value: 'list', label: 'List column' }, { value: 'export', label: 'Export' }, { value: 'ess', label: 'Employee self service' },
+];
+export const SHOW_OPS: { value: string; label: string }[] = [
+  { value: 'eq', label: 'is' }, { value: 'ne', label: 'is not' }, { value: 'in', label: 'is one of (comma separated)' },
+  { value: 'filled', label: 'is filled in / ticked' }, { value: 'empty', label: 'is empty / not ticked' },
+];
+const NUMERIC = ['integer', 'decimal', 'currency', 'percent', 'rating'];
+const TEXTUAL = ['text', 'textarea', 'email', 'phone', 'url'];
+/** Which rule inputs make sense for a type. */
+export const ruleKinds = (t: string) => ({
+  range: NUMERIC.includes(t) || ['date', 'datetime', 'time', 'multiselect'].includes(t),
+  length: TEXTUAL.includes(t),
+  rangeInput: NUMERIC.includes(t) || t === 'multiselect' ? 'number' : t === 'date' ? 'date' : t === 'datetime' ? 'datetime-local' : t === 'time' ? 'time' : 'text',
+});
+
 /** A field as the input component needs it (both designers map to this). */
 export interface DesignField {
   name: string; label: string; field_type: string; options?: string[]; required?: boolean;
   section?: string; order?: number; help_text?: string; placeholder?: string; default?: string; id?: number;
+  rules?: FieldRules;
+}
+
+const empty = (v: any) => v === null || v === undefined || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && !v.length);
+const FALSE_TEXT = ['0', 'false', 'no', 'n', 'off'];
+
+/** Is the field shown for these values ({name or label: value})? (the "show only if" rule) */
+export function showIfOk(rules: FieldRules | undefined | null, values: Record<string, any>): boolean {
+  const si = rules?.show_if;
+  if (!si || !si.field) { return true; }
+  const key = Object.keys(values || {}).find(k => k.toLowerCase() === String(si.field).toLowerCase());
+  const v = key !== undefined ? values[key] : undefined;
+  if (si.op === 'filled') { return !empty(v) && v !== false && !FALSE_TEXT.includes(String(v).toLowerCase()); }
+  if (si.op === 'empty') { return empty(v) || v === false || FALSE_TEXT.includes(String(v).toLowerCase()); }
+  const norm = (x: any) => { const s = String(x ?? '').trim().toLowerCase(); return ({ true: 'yes', '1': 'yes', false: 'no', '0': 'no' } as any)[s] || s; };
+  const have = typeof v === 'boolean' ? [v ? 'yes' : 'no'] : (Array.isArray(v) ? v : String(v ?? '').split(',')).map(norm);
+  const want = (Array.isArray(si.value) ? si.value : si.op === 'in' ? String(si.value ?? '').split(',') : [si.value]).map(norm);
+  const hit = want.some(w => have.includes(w));
+  return si.op === 'ne' ? !hit : hit;
+}
+
+/** Is the field shown at this place (create, edit, view, list, export, ess)? */
+export function visibleOn(rules: FieldRules | undefined | null, where: string): boolean {
+  const v = rules?.visible_on;
+  return !v || !v.length || v.includes(where);
 }
 
 /** Text shown in lists, exports and history for a stored value. */
@@ -45,16 +96,50 @@ export function showValue(v: any): string {
 
 /** Browser-side check before saving (the server checks again). Returns an error message or ''. */
 export function checkValue(f: DesignField, v: any): string {
-  const empty = v === null || v === undefined || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && !v.length);
-  if (empty) { return f.required ? `${f.label} is required.` : ''; }
+  if (f.field_type === 'checkbox') {
+    const on = v === true || ['yes', 'true', '1', 'on'].includes(String(v).toLowerCase());
+    return f.required && !on ? `${f.label} must be ticked.` : '';
+  }
+  if (empty(v)) { return f.required ? `${f.label} is required.` : ''; }
   const s = String(v).trim();
+  const r = f.rules || {};
+  let n = NaN;
   switch (f.field_type) {
-    case 'integer': return /^-?\d+$/.test(s.replace(/,/g, '')) ? '' : `${f.label}: enter a whole number.`;
-    case 'decimal': case 'currency': return isNaN(Number(s.replace(/,/g, ''))) ? `${f.label}: enter a number.` : '';
-    case 'percent': { const n = Number(s.replace('%', '')); return isNaN(n) || n < 0 || n > 100 ? `${f.label}: enter 0 to 100.` : ''; }
-    case 'email': return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s) ? '' : `${f.label}: enter a valid e-mail address.`;
-    case 'phone': return /^[+0-9 ()-]{6,20}$/.test(s) ? '' : `${f.label}: enter a valid phone number.`;
-    case 'url': return /^(https?:\/\/)?[^\s/$.?#].[^\s]*$/i.test(s) ? '' : `${f.label}: enter a valid web link.`;
+    case 'integer': if (!/^-?\d+$/.test(s.replace(/,/g, ''))) { return `${f.label}: enter a whole number.`; } n = Number(s.replace(/,/g, '')); break;
+    case 'decimal': case 'currency': n = Number(s.replace(/,/g, '')); if (isNaN(n)) { return `${f.label}: enter a number.`; } break;
+    case 'percent': n = Number(s.replace('%', '')); if (isNaN(n) || n < 0 || n > 100) { return `${f.label}: enter 0 to 100.`; } break;
+    case 'rating': n = Number(s); if (!/^[1-5]$/.test(s)) { return `${f.label}: choose 1 to 5 stars.`; } break;
+    case 'email': if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s)) { return `${f.label}: enter a valid e-mail address.`; } break;
+    case 'phone': if (!/^[+0-9 ()-]{6,20}$/.test(s)) { return `${f.label}: enter a valid phone number.`; } break;
+    case 'url': if (!/^(https?:\/\/)?[^\s/$.?#].[^\s]*$/i.test(s)) { return `${f.label}: enter a valid web link.`; } break;
+    case 'color': if (!/^#[0-9a-f]{6}$/i.test(s)) { return `${f.label}: choose a colour.`; } break;
+    case 'time': if (!/^\d{1,2}:\d{2}/.test(s)) { return `${f.label}: enter a time (HH:MM).`; } break;
+    case 'datetime': if (isNaN(Date.parse(s))) { return `${f.label}: enter a date and time.`; } break;
+    case 'dropdown': case 'radio': if ((f.options || []).length && !(f.options || []).some(o => o.toLowerCase() === s.toLowerCase())) { return `${f.label}: choose one of ${(f.options || []).join(', ')}.`; } break;
+    case 'multiselect': {
+      const items = Array.isArray(v) ? v : s.split(/[;,]/).map(x => x.trim()).filter(Boolean);
+      const bad = items.find((x: string) => !(f.options || []).some(o => o.toLowerCase() === String(x).toLowerCase()));
+      if (bad) { return `${f.label}: “${bad}” is not one of the options.`; }
+      n = items.length;
+      if (r.min != null && r.min !== '' && n < Number(r.min)) { return `${f.label}: choose at least ${r.min}.`; }
+      if (r.max != null && r.max !== '' && n > Number(r.max)) { return `${f.label}: choose at most ${r.max}.`; }
+      return '';
+    }
+  }
+  if (!isNaN(n)) {
+    if (r.min != null && r.min !== '' && n < Number(r.min)) { return `${f.label}: enter ${r.min} or more.`; }
+    if (r.max != null && r.max !== '' && n > Number(r.max)) { return `${f.label}: enter ${r.max} or less.`; }
+  }
+  if (['date', 'datetime', 'time'].includes(f.field_type) && (r.min || r.max)) {
+    const dm = /^(\d{2})[-/](\d{2})[-/](\d{4})/.exec(s);
+    const iso = f.field_type === 'date' ? (dm ? `${dm[3]}-${dm[2]}-${dm[1]}` : s.slice(0, 10)) : f.field_type === 'datetime' ? s.replace(' ', 'T').slice(0, 16) : s.slice(0, 5).padStart(5, '0');
+    if (r.min && iso < String(r.min)) { return `${f.label}: enter ${r.min} or later.`; }
+    if (r.max && iso > String(r.max)) { return `${f.label}: enter ${r.max} or earlier.`; }
+  }
+  if (TEXTUAL.includes(f.field_type)) {
+    if (r.min_length != null && s.length < r.min_length) { return `${f.label}: enter at least ${r.min_length} characters.`; }
+    if (r.max_length != null && s.length > r.max_length) { return `${f.label}: enter at most ${r.max_length} characters.`; }
+    if (r.regex) { try { if (!new RegExp('^(?:' + r.regex + ')$').test(s)) { return `${f.label}: ${r.regex_message || 'the value is not in the expected format.'}`; } } catch { /* the server checks it */ } }
   }
   return '';
 }

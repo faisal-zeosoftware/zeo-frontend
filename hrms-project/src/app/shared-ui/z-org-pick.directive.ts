@@ -2,17 +2,14 @@ import { AfterViewInit, Directive, NgZone, OnDestroy, Optional, Self } from '@an
 import { MatSelect } from '@angular/material/select';
 import { Subscription } from 'rxjs';
 import { DirEmp, ZListService } from './z-list.service';
+import { orgKeys } from './z-org-keys';
 
 /**
  * Adds "Pick by Branch / Department / Designation / Category" to every multi-select
  * dropdown that lists employees (assign shift, policy, calendar, allocation, members ...).
  * It only ticks options in the dropdown, so each screen saves exactly as before.
  */
-type Org = 'branch' | 'department' | 'designation' | 'category';
-const ORGS: { key: Org; label: string }[] = [
-  { key: 'branch', label: 'Branch' }, { key: 'department', label: 'Department' },
-  { key: 'designation', label: 'Designation' }, { key: 'category', label: 'Category' },
-];
+type Org = string;   // v1.12.0: branch, department, designation, category + the org fields switched on (z-org-keys.ts)
 
 function esc(s: any): string {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as any)[c]);
@@ -65,7 +62,7 @@ export class ZOrgPickDirective implements AfterViewInit, OnDestroy {
     const values = (k: Org) => Array.from(new Set(present.map(e => (e as any)[k]).filter(Boolean))).sort();
     const bar = document.createElement('div');
     bar.className = 'zo-bar';
-    bar.innerHTML = `<div class="zo-h">Pick employees by</div><div class="zo-grid">${ORGS.map(o => `
+    bar.innerHTML = `<div class="zo-h">Pick employees by</div><div class="zo-grid">${orgKeys().map(o => `
       <label><span>${o.label}</span><select data-k="${o.key}"><option value="">Any</option>${values(o.key).map(v => `<option>${esc(v)}</option>`).join('')}</select></label>`).join('')}</div>
       <div class="zo-act"><span class="zo-n"></span><button type="button" data-add>Add matching</button><button type="button" data-only>Only matching</button><button type="button" data-none>Clear</button></div>`;
     panel.insertBefore(bar, panel.firstChild);

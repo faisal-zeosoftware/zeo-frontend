@@ -141,6 +141,29 @@ todayDate: string = '';
 
   isMenuOpen: boolean = true;
 
+  /** v1.13.0: links from the portal to the self-service pages of the main app. */
+  essLinks: { label: string; link: string; icon: string }[] = [
+    { label: 'Self service home', link: '/main-sidebar/self-service/home', icon: 'bi-grid' },
+    { label: 'My profile', link: '/main-sidebar/self-service/profile', icon: 'bi-person-badge' },
+    { label: 'My change requests', link: '/main-sidebar/self-service/my-requests', icon: 'bi-hourglass-split' },
+    { label: 'My leave', link: '/main-sidebar/self-service/leave', icon: 'bi-calendar-x' },
+    { label: 'My attendance', link: '/main-sidebar/attendance-plus/my-attendance', icon: 'bi-fingerprint' },
+    { label: 'Corrections', link: '/main-sidebar/attendance-plus/corrections', icon: 'bi-pencil-square' },
+    { label: 'My schedule', link: '/main-sidebar/shift-planner/my-schedule', icon: 'bi-calendar-week' },
+    { label: 'Payslips', link: '/main-sidebar/self-service/payslips', icon: 'bi-receipt' },
+    { label: 'Expenses', link: '/main-sidebar/expense-options/expenses', icon: 'bi-wallet2' },
+    { label: 'Claims and requests', link: '/main-sidebar/self-service/claims', icon: 'bi-cash-stack' },
+    { label: 'My documents', link: '/main-sidebar/self-service/documents', icon: 'bi-folder2-open' },
+    { label: 'My letters', link: '/main-sidebar/self-service/letters', icon: 'bi-file-earmark-text' },
+    { label: 'My goals', link: '/main-sidebar/performance-options/goal-setting', icon: 'bi-flag' },
+    { label: 'Self appraisal', link: '/main-sidebar/performance-options/self-appraisal', icon: 'bi-star-half' },
+    { label: 'Learning', link: '/main-sidebar/learning-options/my-learning', icon: 'bi-mortarboard' },
+    { label: 'My policies', link: '/main-sidebar/my-policies', icon: 'bi-shield-check' },
+    { label: 'My assets', link: '/main-sidebar/asset-plus/my-assets', icon: 'bi-laptop' },
+    { label: 'Complaints', link: '/main-sidebar/self-service/complaints', icon: 'bi-megaphone' },
+    { label: 'Announcements', link: '/main-sidebar/self-service/announcements', icon: 'bi-bell' },
+  ];
+
    toggleSidebarMenu(): void {
   this.isMenuOpen = !this.isMenuOpen;
 }
@@ -152,7 +175,11 @@ todayDate: string = '';
   //   this.marginLeftValue = this.isMenuOpen ? '200px' : '0px';
   // 
   ngOnInit(): void {
-
+    // v1.13.0: the portal was reachable without a login (no AuthGuard on the route) – send anonymous visitors to the login page
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
 
     
 

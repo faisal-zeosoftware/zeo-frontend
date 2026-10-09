@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ElementRef, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { ZListService } from './z-list.service';
+import { OrgSettingsService } from '../org-structure/org-settings.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
@@ -21,9 +23,10 @@ interface Node { id: number; code: string; name: string; designation: string; de
         <label class="zo-search"><mat-icon>search</mat-icon><input [value]="q" (input)="search($any($event.target).value)" placeholder="Find an employee" aria-label="Find an employee"></label>
         <select class="zr-in" (change)="branch = $any($event.target).value; build()" aria-label="Branch"><option value="">All branches</option><option *ngFor="let b of branches" [value]="b">{{ b }}</option></select>
         <select class="zr-in" (change)="dept = $any($event.target).value; build()" aria-label="Department"><option value="">All departments</option><option *ngFor="let d of depts" [value]="d">{{ d }}</option></select>
+        <select class="zr-in" *ngIf="units.length" (change)="unit = $any($event.target).value; build()" aria-label="Organisation unit"><option value="">All units</option><option *ngFor="let u of units" [value]="u.key">{{ u.label }}</option></select>
         <button type="button" class="zr-btn" (click)="all(true)">Expand all</button>
         <button type="button" class="zr-btn" (click)="all(false)">Collapse</button>
-        <span class="zo-zoom"><button type="button" class="zr-ic" (click)="zoom = Math.max(.4, zoom - .1)" aria-label="Zoom out"><mat-icon>remove</mat-icon></button>{{ (zoom * 100) | number:'1.0-0' }}%<button type="button" class="zr-ic" (click)="zoom = Math.min(1.4, zoom + .1)" aria-label="Zoom in"><mat-icon>add</mat-icon></button></span>
+        <span class="zo-zoom"><button type="button" class="zr-ic" (click)="zoom = Math.max(.3, zoom - .1)" aria-label="Zoom out"><mat-icon>remove</mat-icon></button>{{ (zoom * 100) | number:'1.0-0' }}%<button type="button" class="zr-ic" (click)="zoom = Math.min(1.4, zoom + .1)" aria-label="Zoom in"><mat-icon>add</mat-icon></button></span>
         <button type="button" class="zr-btn" (click)="print()"><mat-icon>print</mat-icon>Print</button>
       </div>
     </header>
@@ -38,7 +41,7 @@ interface Node { id: number; code: string; name: string; designation: string; de
       <li *ngFor="let n of nodes">
         <div class="zo-card" [class.hit]="n.hit" [class.mute]="q && !n.hit">
           <span class="zo-av" [style.background]="color(n.department)"><img *ngIf="n.photo" [src]="photo(n.photo)" alt="">{{ n.photo ? '' : initials(n.name) }}</span>
-          <div class="zo-txt"><b>{{ n.name }}</b><span>{{ n.designation || '—' }}</span><small>{{ n.department }}{{ n.branch ? ' · ' + n.branch : '' }}</small><small class="zo-code">{{ n.code }}</small></div>
+          <div class="zo-txt"><b>{{ n.name }}</b><span>{{ n.designation || '—' }}</span><small>{{ n.department }}{{ n.branch ? ' · ' + n.branch : '' }}</small><small *ngIf="extra(n)">{{ extra(n) }}</small><small class="zo-code">{{ n.code }}</small></div>
           <button type="button" class="zo-tog" *ngIf="n.kids.length" (click)="n.open = !n.open" [attr.aria-expanded]="n.open" [attr.aria-label]="(n.open ? 'Hide ' : 'Show ') + n.size + ' reports'">{{ n.open ? '−' : n.size }}</button>
         </div>
         <ul *ngIf="n.kids.length && n.open"><ng-container *ngTemplateOutlet="level; context: { $implicit: n.kids }"></ng-container></ul>
@@ -94,9 +97,15 @@ export class ZOrgChartComponent implements OnInit {
   roots: Node[] = [];
   branches: string[] = []; depts: string[] = [];
   branch = ''; dept = ''; q = ''; zoom = 1; total = 0;
+  // v1.12.0: filter by a switched-on org unit (division, section, location …) and show the job position / grade on the card
+  unit = ''; units: { key: string; label: string }[] = [];
+  private orgDir = new Map<string, any>();
+  private orgFields: { field: string; label: string }[] = [];
+  private zl = inject(ZListService);
+  private orgSettings = inject(OrgSettingsService);
   loading = true; error = '';
 
-  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef) {}
+  constructor(private rec: ZRecordService, private cd: ChangeDetectorRef, private host: ElementRef<HTMLElement>) {}
 
   async ngOnInit(): Promise<void> {
     try {
@@ -104,13 +113,42 @@ export class ZOrgChartComponent implements OnInit {
       this.nodes = rows.map(r => ({ ...r, kids: [], open: true, hit: false, size: 0 }));
       this.branches = Array.from(new Set(this.nodes.map(n => n.branch).filter(Boolean))).sort();
       this.depts = Array.from(new Set(this.nodes.map(n => n.department).filter(Boolean))).sort();
+      await this.loadOrgUnits();
       this.build();
     } catch (e: any) { this.error = e?.error?.detail || 'The chart could not be loaded.'; }
     this.loading = false; this.cd.detectChanges();
   }
 
+  private async loadOrgUnits(): Promise<void> {
+    try {
+      const st = await firstValueFrom(this.orgSettings.load());
+      this.orgFields = this.orgSettings.activeFields(st).map(f => ({ field: f.field, label: f.label }));
+      if (!this.orgFields.length) { return; }
+      const dir = await firstValueFrom(this.zl.directory());
+      this.orgDir = new Map((dir || []).map((e: any) => [String(e.code), e]));
+      const out: { key: string; label: string }[] = [];
+      for (const f of this.orgFields.filter(x => x.field !== 'job_position')) {
+        const vals = Array.from(new Set((dir || []).map((e: any) => e[f.field]).filter(Boolean))).sort() as string[];
+        vals.forEach(v => out.push({ key: f.field + '|' + v, label: `${f.label}: ${v}` }));
+      }
+      this.units = out;
+    } catch { this.units = []; }
+  }
+
+  extra(n: Node): string {
+    const e = this.orgDir.get(String(n.code));
+    if (!e) { return ''; }
+    return [e.job_position, e.grade && 'Grade ' + e.grade].filter(Boolean).join(' · ');
+  }
+
+  private inUnit(n: Node): boolean {
+    if (!this.unit) { return true; }
+    const [f, v] = [this.unit.slice(0, this.unit.indexOf('|')), this.unit.slice(this.unit.indexOf('|') + 1)];
+    return this.orgDir.get(String(n.code))?.[f] === v;
+  }
+
   build(): void {
-    const keep = this.nodes.filter(n => (!this.branch || n.branch === this.branch) && (!this.dept || n.department === this.dept));
+    const keep = this.nodes.filter(n => (!this.branch || n.branch === this.branch) && (!this.dept || n.department === this.dept) && this.inUnit(n));
     const ids = new Map(keep.map(n => [n.id, n]));
     keep.forEach(n => { n.kids = []; });
     const roots: Node[] = [];
@@ -128,6 +166,18 @@ export class ZOrgChartComponent implements OnInit {
     this.total = keep.length;
     if (keep.length > 60) { this.roots.forEach(r => r.kids.forEach(k => k.open = false)); }
     this.search(this.q);
+    this.fit();
+  }
+
+  /** Phones and tablets: start zoomed out so the whole chart fits the screen width. */
+  private fit(): void {
+    if (window.innerWidth > 991) { return; }
+    const tree = this.host.nativeElement.querySelector('.zo-tree') as HTMLElement | null;
+    const box = tree?.parentElement;
+    if (!tree || !box || !tree.scrollWidth) { return; }
+    const z = Math.floor(Math.min(1, (box.clientWidth - 8) / tree.scrollWidth) * 10) / 10;
+    this.zoom = Math.max(.6, z);
+    this.cd.detectChanges();
   }
 
   private isAbove(n: Node, m: Node, ids: Map<number, Node>): boolean {

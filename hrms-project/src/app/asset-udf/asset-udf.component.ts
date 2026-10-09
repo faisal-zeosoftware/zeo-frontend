@@ -251,6 +251,8 @@ CreateEmployeeFeildFam(): void {
       data_type: this.data_type_fam,
       dropdown_values: dropdownValuesArray,
       radio_values: radio_valuesArray,
+      // v1.12.0: a Yes / No field needs no option list of its own
+      ...(this.data_type_fam === 'checkbox' ? { checkbox_values: ['Yes', 'No'] } : {}),
       asset_type: this.asset_type,
 
       // mandatory: this.mandatory  // Capture the mandatory field status
@@ -301,6 +303,7 @@ updateCustomField(field: any): void {
       : field.radio_values
       ? field.radio_values.split(',').map((value: any) => value.trim())
       : null,
+    ...(field.data_type === 'checkbox' && !(field.checkbox_values || []).length ? { checkbox_values: ['Yes', 'No'] } : {}),  // v1.12.0
   };
 
   this.EmployeeService.updateEmpCustomFieldAsset(updatedField).subscribe(

@@ -1,4 +1,6 @@
-import { Component,OnInit, ElementRef, Renderer2, ViewChild,  EventEmitter, Output } from '@angular/core';
+import { Component,OnInit, ElementRef, Renderer2, ViewChild,  EventEmitter, Output, inject } from '@angular/core';
+import { EmpOrgColumnsService } from '../org-structure/emp-org-columns.service';   // v1.12.0
+import { EmpProfileColumnsService } from '../employee-profile/emp-profile-columns.service';   // v1.13.0
 import { CountryService } from '../country.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -25,6 +27,10 @@ import * as FileSaver from 'file-saver';
   styleUrl: './employee-master.component.css'
 })
 export class EmployeeMasterComponent {
+  // v1.12.0: location / division / section / cost centre / grade / position / employment type columns (when switched on)
+  readonly orgCols = inject(EmpOrgColumnsService);
+  // v1.13.0: optional passport / visa / Emirates ID expiry, employment status, probation end, manager columns
+  readonly profileCols = inject(EmpProfileColumnsService);
 
 
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
@@ -606,15 +612,16 @@ exportEmployeesToExcel() {
           'Marital Status': emp.emp_marital_status,
           'Father Name': emp.emp_father_name,
           'Mother Name': emp.emp_mother_name,
-          'Posting Location': emp.emp_posting_location,
+          'Middle Name': emp.emp_middle_name,   // v1.13.0 (Posting Location / Company were not employee fields)
+          'Work Location': emp.work_location,
           'Country': emp.emp_country_id,
           'State': emp.emp_state_id,
-          'Company': emp.emp_company_id,
           'Branch': emp.emp_branch_id,
           'Department': emp.emp_dept_id,
           'Designation': emp.emp_desgntn_id,
-          'Category': emp.emp_ctgry_id,
-          'Languages': emp.emp_languages,
+          ...(this.orgCols.categoriesOn ? { 'Category': emp.emp_ctgry_id } : {}),   // v1.12.0
+          ...Object.fromEntries(this.orgCols.cols.map(c => [c.label, this.orgCols.value(emp.id, c.field)])),
+          ...Object.fromEntries(this.profileCols.cols.map(c => [c.label, this.profileCols.value(emp.id, c.field)])),   // v1.13.0
           'Date Of Confirmation': emp.emp_date_of_confirmation,
           'Joined Date': emp.emp_joined_date,
           'ESS User': emp.is_ess ? 'Yes' : 'No',

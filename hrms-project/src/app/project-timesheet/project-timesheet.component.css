@@ -433,3 +433,11 @@ input:focus-visible {
   border-bottom: solid 3px navy;
 }
 }
+
+/* approval status (ProjectControl) */
+.ts-appr { display: inline-block; font-size: 11px; font-weight: 600; border-radius: 10px; padding: 2px 8px; background: #f3f1ff; color: #4338ca; white-space: nowrap; }
+.ts-appr:empty { display: none; }
+.ts-appr.submitted { background: #fff4e0; color: #b45309; }
+.ts-appr.approved { background: #e6f6ec; color: #1f7a4d; }
+.ts-appr.rejected { background: #fdecec; color: #b42318; }
+.ts-reason { font-size: 11.5px; color: #b42318; margin-top: 2px; }

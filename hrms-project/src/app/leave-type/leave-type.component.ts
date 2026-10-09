@@ -23,7 +23,7 @@ export class LeaveTypeComponent {
   name:any='';
   code:any='';
   type:any='';
-  unit:any='';
+  unit:any='days';   // v1.11.0: days is the only unit
   valid_to:any='';
   valid_from:any='';
 

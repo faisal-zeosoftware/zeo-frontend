@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';   // v1.13.1
 // api.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
@@ -49,7 +50,7 @@ export class ApiService {
       console.error('No schema selected.');
       return throwError('No schema selected.');
     }
-    const url = `http://${selectedSchema}.localhost:8000/employee/api/emp-report/select_employee_fields/`;
+    const url = `${environment.apiBaseUrl}/employee/api/emp-report/select_employee_fields/?schema=${selectedSchema}`;
 
     const token = localStorage.getItem('authToken'); // Use appropriate token logic
     const headers = new HttpHeaders({
@@ -78,7 +79,7 @@ export class ApiService {
       console.error('No schema selected.');
       return throwError('No schema selected.');
     }
-    const url = `http://${selectedSchema}.localhost:8000/employee/api/doc-report/select_document_fields/`;
+    const url = `${environment.apiBaseUrl}/employee/api/doc-report/select_document_fields/?schema=${selectedSchema}`;
 
     const token = localStorage.getItem('authToken'); // Use appropriate token logic
     const headers = new HttpHeaders({
@@ -103,7 +104,7 @@ export class ApiService {
       console.error('No schema selected.');
       return throwError('No schema selected.');
     }
-    const url = `http://${selectedSchema}.localhost:8000/employee/api/report-general-request/select_generalreport_fields/`;
+    const url = `${environment.apiBaseUrl}/employee/api/report-general-request/select_generalreport_fields/?schema=${selectedSchema}`;
 
     const token = localStorage.getItem('authToken'); // Use appropriate token logic
     const headers = new HttpHeaders({

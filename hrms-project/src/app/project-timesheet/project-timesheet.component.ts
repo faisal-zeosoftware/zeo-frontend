@@ -658,6 +658,13 @@ fetchEmployees(schema: string, branchIds: number[]): void {
     isEditModalOpen: boolean = false;
 editProjectTime: any = {}; // holds the asset being edited
 
+/** Approval status of an entry (ProjectControl): Draft / Waiting approval / Approved / Rejected, timer running. */
+approvalLabel(t: any): string {
+  if (t?.running) return 'Timer running';
+  const m: Record<string, string> = { draft: 'Draft', submitted: 'Waiting approval', approved: 'Approved', rejected: 'Rejected' };
+  return m[t?.approval_status] ?? '';
+}
+
 openEditModal(asset: any): void {
 
   this.editProjectTime = { ...asset };

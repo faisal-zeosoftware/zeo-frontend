@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';   // v1.13.1
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -297,7 +298,7 @@ uploadEmployeeDocument(): void {
   }
  
 
-  this.http.post(`http://${selectedSchema}.localhost:8000/employee/api/emp-Documents/`, formData)
+  this.http.post(`${environment.apiBaseUrl}/employee/api/emp-Documents/?schema=${selectedSchema}`, formData)
     .subscribe((response) => {
       // Handle successful upload
       console.log('Document upload successful', response);

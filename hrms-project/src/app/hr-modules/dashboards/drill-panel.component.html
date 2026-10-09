@@ -12,6 +12,7 @@
         <div>
           <h3>{{ person.employee.name }}</h3>
           <p class="muted">{{ person.employee.code }} · {{ person.employee.designation }} · {{ person.employee.department }}</p>
+          <button type="button" class="zbtn ghost" (click)="employeePage()">Open employee record</button>
           <p class="muted small">Joined {{ person.employee.joined | date:'dd/MM/yyyy' }}<span *ngIf="person.employee.manager"> · reports to {{ person.employee.manager }}</span><span *ngIf="person.employee.nationality"> · {{ person.employee.nationality | titlecase }}</span></p>
         </div>
       </div>
@@ -41,7 +42,7 @@
       <section class="p-sec" *ngIf="person.requests?.length">
         <h4>Requests</h4>
         <table class="zt compact">
-          <tr *ngFor="let r of person.requests"><td>{{ r.module_label }}</td><td>{{ r.summary }}</td><td>{{ r.date | date:'dd/MM' }}</td><td><span [class]="statusClass(r.status)">{{ r.status | lowercase }}</span></td></tr>
+          <tr *ngFor="let r of person.requests" [class.clickable]="r._m" (click)="record(r)"><td>{{ r.module_label }}</td><td>{{ r.summary }}</td><td>{{ r.date | date:'dd/MM' }}</td><td><span [class]="statusClass(r.status)">{{ r.status | lowercase }}</span></td></tr>
         </table>
       </section>
 
@@ -95,9 +96,9 @@
       <p class="err" *ngIf="error">{{ error }}</p>
       <p class="muted" *ngIf="!loading && !error && !rows.length">Nothing here right now.</p>
       <table class="zt" *ngIf="!loading && rows.length">
-        <thead><tr><th *ngFor="let c of columns" [class.num]="c.type === 'number' || c.type === 'money' || c.type === 'days'">{{ c.label }}</th><th *ngIf="rows[0]?.module"></th></tr></thead>
+        <thead><tr><th *ngFor="let c of columns" [class.num]="c.type === 'number' || c.type === 'money' || c.type === 'days'">{{ c.label }}</th><th *ngIf="rows[0]?.module || rows[0]?._m"></th></tr></thead>
         <tbody>
-          <tr *ngFor="let r of filtered" (click)="rowClick(r)" [class.clickable]="(r.employee_id && canOpenEmployee) || r.module" tabindex="0" (keydown.enter)="rowClick(r)">
+          <tr *ngFor="let r of filtered" (click)="rowClick(r)" [class.clickable]="(r.employee_id && canOpenEmployee) || r.module || r._m" tabindex="0" (keydown.enter)="rowClick(r)">
             <td *ngFor="let c of columns" [ngSwitch]="c.type" [class.num]="c.type === 'number' || c.type === 'money' || c.type === 'days'">
               <span *ngSwitchCase="'date'">{{ r[c.key] | date:'dd/MM/yyyy' }}</span>
               <span *ngSwitchCase="'money'">{{ r[c.key] | number:'1.0-0' }}</span>
@@ -106,7 +107,9 @@
               <span *ngSwitchCase="'time'">{{ r[c.key] ? (r[c.key] | slice:0:5) : '–' }}</span>
               <span *ngSwitchDefault>{{ r[c.key] ?? '–' }}</span>
             </td>
-            <td *ngIf="rows[0]?.module" class="num"><button type="button" class="zbtn link" (click)="open(r, $event)">Open</button></td>
+            <td *ngIf="rows[0]?.module || rows[0]?._m" class="num nowrap">
+              <button type="button" class="zbtn link" *ngIf="r._m" (click)="record(r, $event)">Record</button>
+              <button type="button" class="zbtn link" *ngIf="r.module && request?.metric === 'approvals'" (click)="open(r, $event)">Approve</button></td>
           </tr>
         </tbody>
       </table>

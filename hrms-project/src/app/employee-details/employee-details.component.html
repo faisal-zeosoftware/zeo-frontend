@@ -57,13 +57,14 @@
                     <div class="text-data text-center mt-3">
                       <!-- View Mode Name -->
                       <div *ngIf="!isEditMode">
-                        <span class="name">{{ employee.emp_first_name }} {{ employee.emp_last_name }}</span>
+                        <span class="name">{{ employee.emp_first_name }} {{ employee.emp_middle_name || '' }} {{ employee.emp_last_name }}</span>
                       </div>
           
                       <!-- Edit Mode Name Fields -->
                       <div *ngIf="isEditMode" class="d-flex gap-2 justify-content-center mb-2 px-3">
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="employee.emp_first_name" placeholder="First Name">
-                        <input type="text" class="form-control form-control-sm" [(ngModel)]="employee.emp_last_name" placeholder="Last Name">
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="employee.emp_first_name" placeholder="First Name" aria-label="First name">
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="employee.emp_middle_name" placeholder="Middle Name" aria-label="Middle name"><!-- v1.13.0 -->
+                        <input type="text" class="form-control form-control-sm" [(ngModel)]="employee.emp_last_name" placeholder="Last Name" aria-label="Last name">
                       </div>
           
                       <span class="job">{{ employee.emp_desgntn_id }}</span>
@@ -84,7 +85,7 @@
   
         <div class="col-md-4">
           <h2>Is ESS</h2>
-          <h3 *ngIf="!isEditMode">{{ employee.is_ess }}</h3>
+          <h3 *ngIf="!isEditMode">{{ employee.is_ess ? 'Yes' : 'No' }}</h3>
           <div *ngIf="isEditMode" class="form-check mt-1">
             <input type="checkbox" class="form-check-input" id="is_ess_check" [(ngModel)]="employee.is_ess">
             <label class="form-check-label" for="is_ess_check">Enable ESS User</label>
@@ -103,7 +104,7 @@
       </div>
   
       <div class="row mt-4">
-        <div class="col-md-3">
+        <div class="col-md-3" *zIfOrg="'employee_categories'"><!-- v1.12.0: hidden when employee categories are off -->
           <h2>{{catFieldName}}</h2>
           <h3 *ngIf="!isEditMode">{{ employee.emp_ctgry_id }}</h3>
           <!-- Changed [value] to [ngValue] -->
@@ -132,6 +133,13 @@
             <option *ngFor="let branch of branches" [ngValue]="branch.id">{{ branch.branch_name }}</option>
           </select>
         </div>
+      </div>
+
+      <!-- v1.12.0: organisation fields switched on in Organisation settings -->
+      <div class="row mt-4">
+        <z-emp-org-fields *ngIf="!isEditMode" mode="view" layout="details" colClass="col-md-4" [employeeId]="employee?.id"></z-emp-org-fields>
+        <z-emp-org-fields *ngIf="isEditMode" #orgFields colClass="col-md-4" [employeeId]="employee?.id" [departmentId]="employee?.emp_dept_id"
+                          [designationId]="employee?.emp_desgntn_id" [branchId]="employee?.emp_branch_id"></z-emp-org-fields>
       </div>
   
       <div class="row mt-4">
@@ -179,6 +187,12 @@
                                       <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_first_name" placeholder="Enter first name">
                                     </div>
                               
+                                    <div class="col-md-3"><!-- v1.13.0 -->
+                                      <label class="emp-label">Middle Name</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_middle_name || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_middle_name" placeholder="Enter middle name">
+                                    </div>
+
                                     <div *ngIf="!hid('isLasstNameFieldHidden')" class="col-md-3">
                                       <label class="emp-label">{{lastNameFieldName || 'Last Name'}}</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_last_name || '-' }}</p>
@@ -275,20 +289,53 @@
                                     <div *ngIf="!hid('isMaritalFieldHidden')" class="col-md-3">
                                       <label class="emp-label">{{maritalFieldName || 'Marital Status'}}</label>
                                       <p *ngIf="!isEditMode" class="emp-value">
-                                        {{ employee.emp_marital_status === 'S' ? 'Single' : employee.emp_marital_status === 'M' ? 'Married' : employee.emp_marital_status === 'D' ? 'Divorced' : employee.emp_marital_status === 'W' ? 'Widowed' : '-' }}
+                                        {{ employee.emp_marital_status === 'S' ? 'Single' : employee.emp_marital_status === 'M' ? 'Married' : (employee.emp_marital_status === 'D' || employee.emp_marital_status === 'divorced') ? 'Divorced' : (employee.emp_marital_status === 'W' || employee.emp_marital_status === 'widow') ? 'Widowed' : '-' }}
                                       </p>
                                       <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.emp_marital_status">
                                         <option value="S">Single</option>
                                         <option value="M">Married</option>
-                                        <option value="D">Divorced</option>
-                                        <option value="W">Widowed</option>
+                                        <option value="divorced">Divorced</option>
+                                        <option value="widow">Widowed</option>
                                       </select>
                                     </div>
                               
                                     <div class="col-md-3">
-                                      <label class="emp-label">{{joinFieldName || 'Joined Date'}}</label>
+                                      <label class="emp-label">Joining Date</label>
                                       <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_joined_date || '-' }}</p>
                                       <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="employee.emp_joined_date">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                      <label class="emp-label">{{joinFieldName || 'Confirmation Date'}}</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_date_of_confirmation || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="date" class="form-control" [(ngModel)]="employee.emp_date_of_confirmation">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Father Name</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_father_name || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_father_name">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Mother Name</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.emp_mother_name || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.emp_mother_name">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Attendance Source</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.attendance_source === 'biometric' ? 'Biometric' : employee.attendance_source === 'manual' ? 'Manual' : '-' }}</p>
+                                      <select *ngIf="isEditMode" class="form-select" [(ngModel)]="employee.attendance_source">
+                                        <option value="manual">Manual</option>
+                                        <option value="biometric">Biometric</option>
+                                      </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                      <label class="emp-label">Attendance Card / Barcode</label>
+                                      <p *ngIf="!isEditMode" class="emp-value">{{ employee.barcode_number || '-' }}</p>
+                                      <input *ngIf="isEditMode" type="text" class="form-control" [(ngModel)]="employee.barcode_number">
                                     </div>
                               
                                     <div class="col-md-3">
@@ -344,6 +391,19 @@
                               
                                 </div>
                               </mat-tab>
+                              <!-- v1.13.0: employee master extras (EmployeeProfile) -->
+                              <mat-tab label="UAE identity">
+                                <div class="tab_content mt-3">
+                                  <z-emp-completeness [employeeId]="employee?.id"></z-emp-completeness>
+                                  <z-emp-identity [employeeId]="employee?.id"></z-emp-identity>
+                                </div>
+                              </mat-tab>
+                              <mat-tab label="Emergency contacts">
+                                <div class="tab_content mt-3"><z-emp-emergency [employeeId]="employee?.id"></z-emp-emergency></div>
+                              </mat-tab>
+                              <mat-tab label="Employment">
+                                <div class="tab_content mt-3"><z-emp-employment [employeeId]="employee?.id"></z-emp-employment></div>
+                              </mat-tab>
                               <mat-tab label="Employee Family">
                                 <div class="tab_content mt-3" *ngFor="let member of emp_family_details; let i = index">        
                                     <div class="row">
@@ -383,6 +443,8 @@
                                 <div class="mt-5" *ngIf="!isEditMode">
                                   <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('family')">Add Family</button>
                                 </div>
+                                <!-- v1.13.0: dependant passport / Emirates ID / visa / insurance -->
+                                <div class="mt-4" *ngIf="!isEditMode"><z-emp-extras kind="dependents" [employeeId]="employee?.id" [refresh]="emp_family_details.length"></z-emp-extras></div>
                               </mat-tab>
 
 
@@ -421,6 +483,8 @@
     <div class="mt-5" *ngIf="!isEditMode">
         <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('qualification')">Add Qualification</button>
     </div>
+    <!-- v1.13.0: attestation -->
+    <div class="mt-4" *ngIf="!isEditMode"><z-emp-extras kind="qualifications" [employeeId]="employee?.id" [refresh]="Qualifications?.length || 0"></z-emp-extras></div>
 </mat-tab>
 
                             <!-- --------------------------------------------------------->
@@ -467,6 +531,8 @@
     <div class="mt-5" *ngIf="!isEditMode">
         <button type="button" class="btn-Edit btn-info btn d-block mx-auto" (click)="employeefamAdd('bank')">Add Bank</button>
     </div>
+    <!-- v1.13.0: WPS agent / payment mode and the IBAN check -->
+    <div class="mt-4" *ngIf="!isEditMode"><z-emp-extras kind="bank" [employeeId]="employee?.id" [refresh]="emp_bank_details?.length || 0"></z-emp-extras></div>
 </mat-tab>
 
 
@@ -1287,7 +1353,7 @@
                                 <div class="tab_content  mt-3" *ngFor="let member of emp_anc_details">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <h2> Tittle</h2>
+                                            <h2> Title</h2>
                                             <h3>{{ member.title }} </h3>
                                         </div>
 
@@ -1310,7 +1376,13 @@
                                
                             </mat-tab>
 
-                            
+                            <!-- v1.13.0: skills (Learning Plus + older skills) and one history timeline -->
+                            <mat-tab label="Skills">
+                                <div class="tab_content mt-3"><z-emp-skills [employeeId]="employee?.id"></z-emp-skills></div>
+                            </mat-tab>
+                            <mat-tab label="History">
+                                <div class="tab_content mt-3"><z-emp-history [employeeId]="employee?.id"></z-emp-history></div>
+                            </mat-tab>
 
                         </mat-tab-group>
 

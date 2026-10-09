@@ -301,6 +301,12 @@
   </a>     
  </li>
 
+ <!-- v1.13.0: self-service pages of the main app (one ESS place) -->
+ <li class="nav-item ess-links-title"><span class="nav-link" style="opacity:.7;font-size:12px;text-transform:uppercase;letter-spacing:.4px;cursor:default">Self service</span></li>
+ <li class="nav-item" *ngFor="let l of essLinks">
+   <a class="nav-link" [routerLink]="l.link"><i class="bi {{ l.icon }} me-2"></i><span>{{ l.label }}</span></a>
+ </li>
+
 
         
 
@@ -685,7 +691,7 @@
                         </div>
 
 
-                        <div class="col-md-3">
+                        <div class="col-md-3" *zIfOrg="'employee_categories'"><!-- v1.12.0: hidden when employee categories are off -->
 
                           <div class="d-flex align-items-center mt-2">
                             <strong>Categary</strong>
@@ -708,6 +714,9 @@
                           </div>
                           <small class="text-center">{{ employeesec.emp_branch_id }}</small>
                         </div>
+
+                        <!-- v1.12.0: my location / division / section / cost centre / grade / position / employment type (read only) -->
+                        <z-emp-org-fields mode="view" layout="ess" [mine]="true"></z-emp-org-fields>
                       </div>
                     </div>
                   </div>

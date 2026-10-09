@@ -39,6 +39,14 @@
           <span class="t-k">My open requests</span>
           <b>{{ d.requests.counts.pending || 0 }}</b>
         </button>
+        <button type="button" class="t-item" *ngIf="d.tasks" (click)="drill('my_tasks', 'My tasks and to-dos')">
+          <span class="t-k">My open tasks</span>
+          <b>{{ d.tasks.open }}<small *ngIf="d.tasks.overdue" class="bad-text"> · {{ d.tasks.overdue }} overdue</small></b>
+        </button>
+        <button type="button" class="t-item" *ngIf="d.overtime?.hours" (click)="drill('my_attendance', 'My attendance – last 30 days')">
+          <span class="t-k">Overtime · {{ d.overtime.month_label }}</span>
+          <b>{{ d.overtime.hours | number:'1.0-1' }} h <small>{{ d.overtime.approved | number:'1.0-1' }} approved</small></b>
+        </button>
         <button type="button" class="t-item" *ngIf="d.approvals.total" (click)="drill('approvals', 'Waiting for my approval')">
           <span class="t-k">Waiting for my approval</span>
           <b class="accent-text">{{ d.approvals.total }}</b>
@@ -146,6 +154,26 @@
           <p class="small" *ngFor="let a of d.assets">{{ a.name }} <span class="muted">· since {{ a.since | date:'MMM y' }}</span></p>
         </section>
       </div>
+
+      <section data-widget="ess-tasks" data-widget-title="My tasks" class="card" *ngIf="d.tasks">
+        <div class="card-h">
+          <h2>My tasks <span class="muted small">{{ d.tasks.open }} open<span *ngIf="d.tasks.overdue" class="bad-text"> · {{ d.tasks.overdue }} overdue</span><span *ngIf="d.tasks.due_week"> · {{ d.tasks.due_week }} due this week</span></span></h2>
+          <span>
+            <button type="button" class="zbtn link" *ngIf="d.tasks.overdue" (click)="drill('my_tasks', 'Overdue tasks', {state: 'overdue'})">Overdue</button>
+            <button type="button" class="zbtn link" (click)="drill('my_tasks', 'My tasks and to-dos')" *ngIf="d.tasks.open">&nbsp;· See all</button>
+          </span>
+        </div>
+        <p class="muted small" *ngIf="!d.tasks.open">Nothing open. Project tasks you are a member of and to-dos planned for you appear here.</p>
+        <ul class="rlist">
+          <li *ngFor="let t of d.tasks.items" class="task-row" [class.overdue]="t.overdue" (click)="openTask(t)" (keydown.enter)="openTask(t)" tabindex="0">
+            <div><b>{{ t.title }}</b><p class="small muted">{{ t.kind_label }}<span *ngIf="t.project"> · {{ t.project }}</span></p></div>
+            <div class="r-end">
+              <small [class.bad-text]="t.overdue">{{ t.due ? (t.due | date:'d MMM') : 'no due date' }}</small>
+              <span [class]="t.overdue ? 'pill bad' : 'pill'">{{ t.overdue ? 'overdue' : t.status }}</span>
+            </div>
+          </li>
+        </ul>
+      </section>
 
       <div class="grid" [class.g-2]="d.approvals.total">
         <section data-widget="ess-approvals" data-widget-title="Waiting for my approval" class="card" *ngIf="d.approvals.total">

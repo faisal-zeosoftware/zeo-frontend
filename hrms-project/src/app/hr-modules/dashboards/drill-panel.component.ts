@@ -1,6 +1,8 @@
 import { Component, EventEmitter, HostListener, Input, OnChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { employeeUrl, recordUrl } from '../../shared-ui/z-nav';
 import { DashboardService, DrillColumn, DrillRequest } from './dashboard.service';
 
 /**
@@ -30,7 +32,7 @@ export class DrillPanelComponent implements OnChanges {
   person: any = null;      // employee 360
   personLoading = false;
 
-  constructor(private svc: DashboardService) {}
+  constructor(private svc: DashboardService, private router: Router) {}
 
   ngOnChanges(): void {
     this.person = null;
@@ -63,14 +65,28 @@ export class DrillPanelComponent implements OnChanges {
         next: p => { this.person = p; this.personLoading = false; },
         error: e => { this.error = e?.error?.detail || 'You cannot open this employee.'; this.personLoading = false; },
       });
+    } else if (r._m) {
+      this.record(r);
     } else if (r.module) {
       this.navigate.emit({ module: r.module, kind: this.request?.metric === 'approvals' ? 'approval' : 'request' });
     }
   }
 
+  /** Approvals open the approval screen (to act on them); the record button opens the request itself. */
   open(r: any, ev: Event): void {
     ev.stopPropagation();
     this.navigate.emit({ module: r.module, kind: this.request?.metric === 'approvals' ? 'approval' : 'request' });
+  }
+
+  /** v1.8.1: the record behind a row. */
+  record(r: any, ev?: Event): void {
+    ev?.stopPropagation();
+    if (r?._m) { this.closed.emit(); this.router.navigateByUrl(recordUrl(r._m, r._id)); }
+  }
+
+  employeePage(): void {
+    const id = this.person?.employee?.id ?? this.person?.employee?.employee_id;
+    if (id) { this.closed.emit(); this.router.navigateByUrl(employeeUrl(id)); }
   }
 
   statusClass(v: any): string {

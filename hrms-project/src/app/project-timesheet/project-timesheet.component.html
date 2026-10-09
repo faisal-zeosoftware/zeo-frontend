@@ -425,6 +425,9 @@
                 <th> project</th>
                 <th>Task  </th>
                 <th>Employee</th>
+                <th>Hours</th>
+                <th>Billable</th>
+                <th>Approval</th>
           
                
              
@@ -445,6 +448,12 @@
                 <td data-label="Project">{{ docs.project }}</td>
                 <td data-label="Task">{{ docs.task }}</td>
                 <td data-label="Employee">{{ docs.employee }}</td>
+                <td data-label="Hours">{{ docs.hours ?? '' }}</td>
+                <td data-label="Billable">{{ docs.billable === undefined ? '' : (docs.billable ? 'Yes' : 'No') }}</td>
+                <td data-label="Approval">
+                  <span class="ts-appr" [ngClass]="docs.approval_status" [title]="docs.rejection_reason || ''">{{ approvalLabel(docs) }}</span>
+                  <div class="ts-reason" *ngIf="docs.approval_status === 'rejected' && docs.rejection_reason">{{ docs.rejection_reason }}</div>
+                </td>
 
                       <!-- Dynamic custom field values -->
             
@@ -454,12 +463,12 @@
 
                     color="primary"
                     aria-label="Edit icon"
-                    *ngIf="showEditBtn"
+                    *ngIf="showEditBtn && !docs.locked && !docs.running"
                     (click)="openEditModal(docs)"
                   >
                     <mat-icon style="color: white;">draw</mat-icon>
                   </button>
-                  <mat-checkbox *ngIf="Delete" [(ngModel)]="docs.selected"></mat-checkbox>
+                  <mat-checkbox *ngIf="Delete && !docs.locked && !docs.running" [(ngModel)]="docs.selected"></mat-checkbox>
                 </td>
               </tr>
             </tbody>

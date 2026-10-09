@@ -90,6 +90,14 @@
   
   </div>
         </div>
+      <div class="row">
+        <div class="col-md-12 mt-3">
+          <label class="d-inline-flex align-items-center gap-2" style="cursor:pointer">
+            <input type="checkbox" [(ngModel)]="department.dept_is_active" [ngModelOptions]="{standalone: true}">
+            Active <span class="text-muted" style="font-weight:400">– inactive departments are not offered for new employees</span>
+          </label>
+        </div>
+      </div>
     </form>
 
     <div class="row">

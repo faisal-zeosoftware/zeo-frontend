@@ -11,6 +11,8 @@ export interface RecordCtx { endpoint: string; id: string | null; at: number; so
 export interface PendingForm {
   key: number; endpoint: string | null; id: string | null; fields: DesignField[]; values: Record<string, any>;
   visible: () => boolean; onError: (msg: string) => void; onSaved: (endpoint: string, id: string) => void;
+  /** v1.12.0: problems of the shown fields (show on / show only if / read-only respected). */
+  check?: () => string[];
 }
 
 const API_RE = /\/api\//;
@@ -201,8 +203,13 @@ export class ZRecordService {
   addField(body: any): Observable<any> { return this.http.post(this.url('fields/'), body); }
   saveField(body: any): Observable<any> { return this.http.put(this.url('fields/'), body); }
   deleteField(id: number): Observable<any> { return this.http.delete(this.url('fields/', `&id=${id}`)); }
-  saveValues(endpoint: string, id: string, values: Record<string, any>): Observable<any> {
-    return this.http.put(this.url('values/'), { endpoint, id, values });
+  /** create: a new record – the server applies defaults and checks every required field (v1.12.0). */
+  saveValues(endpoint: string, id: string, values: Record<string, any>, create = false): Observable<any> {
+    return this.http.put(this.url('values/'), { endpoint, id, values, ...(create ? { create: true } : {}) });
+  }
+  /** Check extra field values on the server before the screen saves its record (nothing is stored). */
+  checkValues(endpoint: string, id: string | null, values: Record<string, any>): Observable<any> {
+    return this.http.post(this.url('values/check/'), { endpoint, id: id || '', values });
   }
   listValues(endpoint: string, ids: string[]): Observable<any> {
     return this.http.get(this.url('values/', `&endpoint=${encodeURIComponent(endpoint)}&ids=${ids.join(',')}`));

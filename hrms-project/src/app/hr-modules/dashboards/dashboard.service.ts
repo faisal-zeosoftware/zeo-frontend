@@ -47,6 +47,16 @@ export class DashboardService {
     return this.api.get(`/dashboard/api/employee/${id}/`);
   }
 
+  /** v1.12 – executive dashboard (company admins / view_ceo_dashboard). */
+  ceo(params: { from?: string; to?: string; branch?: string } = {}): Observable<any> {
+    return this.api.get('/dashboard/api/ceo/', params);
+  }
+
+  /** v1.12 – unified calendar over every module. */
+  calendar(params: { from: string; to: string; layers?: string; scope?: string; branch?: string }): Observable<any> {
+    return this.api.get('/dashboard/api/calendar/', params);
+  }
+
   departments(): Observable<any[]> {
     return this.api.list('/organisation/api/Department/');
   }

@@ -1,4 +1,6 @@
 import { Component,OnInit, ElementRef, Renderer2, ViewChild,  EventEmitter, Output, Input  } from '@angular/core';
+import { ZEmpOrgFieldsComponent } from '../org-structure/z-emp-org-fields.component';   // v1.12.0
+import { ZEmpFieldsComponent } from '../shared-ui/z-emp-fields.component';  // v1.12.0
 import { CountryService } from '../country.service';
 import { HttpClient } from '@angular/common/http';
 import { CompanyRegistrationService } from '../company-registration.service';
@@ -31,6 +33,8 @@ import { environment } from '../../environments/environment';
   styleUrl: './employee-details.component.css'
 })
 export class EmployeeDetailsComponent implements OnInit {
+  // v1.12.0: location / division / section / cost centre / grade / position / employment type (edit mode)
+  @ViewChild('orgFields') orgFields?: ZEmpOrgFieldsComponent;
   /** v1.7.0: fields hidden in the form designer are hidden on the details page too. */
   hid(key: string): boolean { try { return JSON.parse(localStorage.getItem(key) || 'false') === true; } catch { return false; } }
 
@@ -57,7 +61,7 @@ export class EmployeeDetailsComponent implements OnInit {
       for (const row of ((this as any)[c.list] || [])) {
         const list: any[] = row[c.key] = row[c.key] || [];
         for (const d of defs) {
-          const props = { data_type: d.data_type, dropdown_values: d.dropdown_values, radio_values: d.radio_values, mandatory: d.mandatory, section: d.section, order: d.order, help_text: d.help_text, placeholder: d.placeholder };
+          const props = { data_type: d.data_type, dropdown_values: d.dropdown_values, radio_values: d.radio_values, mandatory: d.mandatory, section: d.section, order: d.order, help_text: d.help_text, placeholder: d.placeholder, rules: d.rules || {} };
           const have = list.find(x => String(x.emp_custom_field).toLowerCase() === String(d.emp_custom_field).toLowerCase());
           if (have) { Object.assign(have, props); } else { list.push({ emp_custom_field: d.emp_custom_field, field_value: '', _new: true, ...props }); }
         }
@@ -1235,9 +1239,19 @@ loadDetailCustomFields(): void {
 
 saveEmployee(): void {
   // custom fields ticked "Mandatory" in the form designer
-  const missing = (this.detailCustom || []).filter((f: any) => f.mandatory && (f.value === undefined || f.value === null || String(f.value).trim() === '' || f.value === false));
+  const missing = ZEmpFieldsComponent.missing(this.detailCustom, 'value', 'edit');
   if (missing.length) {
-    alert('Please fill: ' + missing.map((f: any) => f.emp_custom_field).join(', '));
+    alert('Please fill: ' + missing.join(', '));
+    return;
+  }
+  const bad = ZEmpFieldsComponent.problems(this.detailCustom, 'value', 'edit');
+  if (bad.length) {
+    alert('Please correct: ' + bad.join(' '));
+    return;
+  }
+  const orgMissing = this.orgFields?.problems() || [];   // v1.12.0 required organisation fields
+  if (orgMissing.length) {
+    alert('Please fill: ' + orgMissing.join(' '));
     return;
   }
   const formData = new FormData();
@@ -1322,7 +1336,8 @@ const getPkValue = (val: any, list: any[] = []): string => {
     }
   }
 
-  return '';
+  // not in the list: send the name, the server finds the record by name (sending '' cleared the field)
+  return typeof val === 'string' ? val.trim() : '';
 };
 
 
@@ -1345,6 +1360,7 @@ const getPkValue = (val: any, list: any[] = []): string => {
   // --- Regular Text Fields ---
   safeAppend('emp_code', this.employee.emp_code);
   safeAppend('emp_first_name', this.employee.emp_first_name);
+  safeAppend('emp_middle_name', this.employee.emp_middle_name);   // v1.13.0
   safeAppend('emp_last_name', this.employee.emp_last_name);
   safeAppend('emp_gender', this.employee.emp_gender);
   safeAppend('emp_date_of_birth', formatDate(this.employee.emp_date_of_birth));
@@ -1359,7 +1375,7 @@ const getPkValue = (val: any, list: any[] = []): string => {
   safeAppend('emp_marital_status', this.employee.emp_marital_status);
   safeAppend('emp_father_name', this.employee.emp_father_name);
   safeAppend('emp_mother_name', this.employee.emp_mother_name);
-  safeAppend('emp_posting_location', this.employee.emp_posting_location);
+  // v1.13.0: emp_posting_location / emp_company_id are not employee fields (work_location / branch are) – no longer sent
 // Work/Visa Location
 safeAppend(
   'work_location',
@@ -1372,13 +1388,13 @@ safeAppend(
 );
   safeAppend('attendance_source', this.employee.attendance_source);
   safeAppend('person_id', this.employee.person_id);
+  safeAppend('barcode_number', this.employee.barcode_number);
 
   // --- Dates ---
   safeAppend('emp_date_of_confirmation', formatDate(this.employee.emp_date_of_confirmation));
   safeAppend('emp_joined_date', formatDate(this.employee.emp_joined_date));
 
   // --- Foreign Keys (Converted to PK Integers) ---
-  safeAppend('emp_company_id', getPkValue(this.employee.emp_company_id));
   safeAppend('emp_branch_id', getPkValue(this.employee.emp_branch_id, this.branchList));
   safeAppend('emp_relegion', getPkValue(this.employee.emp_relegion, this.religionList));
   safeAppend('emp_nationality', getPkValue(this.employee.emp_nationality, this.nationalityList));
@@ -1404,7 +1420,12 @@ safeAppend(
     next: (response) => {
       // save family, qualification, bank, job history, documents and custom fields next;
       // the page reloads only when all of them are done (an immediate reload used to cancel them)
-      this.saveAllSections();
+      // v1.12.0: the organisation fields first (the sections reload the page when done)
+      const orgSave = this.orgFields ? this.orgFields.save(this.employee.id) : Promise.resolve('');
+      orgSave.then(problem => {
+        if (problem) { alert('The employee was saved, but not the organisation details: ' + problem); }
+        this.saveAllSections();
+      });
       this.isEditMode = false;
       this.selectedFile = null;
     },

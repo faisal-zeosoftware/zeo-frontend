@@ -12,7 +12,7 @@ export class UserMasterService {
  
   // private baseUrl = 'http://127.0.0.1:8000/users/api';
 
-  private baseUrl = 'http://80.65.208.178:8000/users/api';
+  private baseUrl = `${environment.apiBaseUrl}/users/api`;
   
   private apiUrl = `${environment.apiBaseUrl}`; // Use the correct `apiBaseUrl` for live and local
 
@@ -186,7 +186,7 @@ export class UserMasterService {
   }
 
   getDesignations(selectedSchema: string): Observable<any> {
-    const apiUrl = `http://${selectedSchema}.localhost:8000/organisation/api/Designation/`;
+    const apiUrl = `${environment.apiBaseUrl}/organisation/api/Designation/?schema=${selectedSchema}`;
   
     // Fetch employees from the API
     return this.http.get(apiUrl);
