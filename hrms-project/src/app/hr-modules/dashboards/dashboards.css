@@ -181,8 +181,8 @@ button:focus-visible, li:focus-visible, tr:focus-visible, select:focus-visible, 
 .p-stats b { font-size: 22px; font-weight: 500; color: var(--ink); }
 .p-stats span { color: var(--muted); font-size: 12px; }
 
-/* stand-alone route inside main-sidebar: clear the fixed top bar and the 235px menu */
-.zdash.page { margin: 64px 0 0 235px; min-height: calc(100vh - 64px); }
+/* stand-alone route inside main-sidebar: clear the fixed top bar and follow open/folded width */
+.zdash.page { margin: 64px 0 0 var(--zm-sidebar-w, 35px); min-height: calc(100vh - 64px); transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 @media (max-width: 991.98px) { .zdash.page { margin: 54px 0 0 0; padding: 14px 14px 32px; } }
 /* beat the global "table thead th" rule (purple !important) so drill lists read as quiet headers */
 .zt thead { display: table-header-group !important; }

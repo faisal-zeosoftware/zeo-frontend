@@ -321,7 +321,7 @@ input:focus-visible {
     border-spacing: 0 10px;
     width: 100%;
     font-family: 'Segoe UI', sans-serif;
-    background: whitesmoke !important;
+    /* background: whitesmoke !important; */
       color: #555;
       text-transform: uppercase;
   }

@@ -134,8 +134,9 @@ const P_STEPS = ['#5B4FE0', '#8B82EA', '#B5AFF2', '#DCD9FA'];   // one hue, dark
     </ng-container>
   </div>`,
   styles: [`
-    :host { display: block; --ink: #1B1640; --muted: #6B7185; --line: #E3E5EE; --page: #F4F5FA; --p: #5B4FE0; --pw: #ECEAFD; --bad: #A32626; }
-    .ceo { padding: 20px 24px 40px; background: var(--page); min-height: 100%; color: #262A3D; font-size: 14px; }
+    :host { display: block; margin-top: 64px; margin-left: var(--zm-sidebar-w, 35px); transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1); --ink: #1B1640; --muted: #6B7185; --line: #E3E5EE; --page: #F4F5FA; --p: #5B4FE0; --pw: #ECEAFD; --bad: #A32626; }
+    @media (max-width: 991.98px) { :host { margin-top: 54px; margin-left: 0; } }
+    .ceo { padding: 20px 24px 40px; background: var(--page); min-height: calc(100vh - 64px); color: #262A3D; font-size: 14px; }
     .ceo-h { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
     .eyebrow { margin: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--p); font-weight: 600; }
     h1 { margin: 2px 0; font-size: 26px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; }
@@ -205,7 +206,19 @@ export class CeoDashboardComponent implements OnInit {
 
   constructor(private svc: DashboardService, private router: Router) {}
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    // #region agent log
+    requestAnimationFrame(() => {
+      const el = document.querySelector('.ceo') as HTMLElement | null;
+      const sidebar = document.getElementById('sidebarMenu');
+      const cr = el?.getBoundingClientRect();
+      const sr = sidebar?.getBoundingClientRect();
+      const cs = el ? getComputedStyle(el) : null;
+      fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId:'B',location:'ceo-dashboard.component.ts:ngOnInit',message:'ceo-dashboard layout',data:{contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,sidebarRight:sr?.right,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,sidebarOpen:sidebar?.classList.contains('menu-open'),cssVar:getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim()},timestamp:Date.now()})}).catch(()=>{});
+    });
+    // #endregion
+    this.load();
+  }
 
   load(): void {
     this.loading = true;

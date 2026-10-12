@@ -95,6 +95,16 @@ approvalFilter: string = '';
   }
 
    ngOnInit(): void {
+    // #region agent log
+    requestAnimationFrame(() => {
+      const el = document.querySelector('app-dashboard-contents .comapny_section, app-dashboard-contents .container') as HTMLElement | null;
+      const sidebar = document.getElementById('sidebarMenu');
+      const cr = el?.getBoundingClientRect();
+      const sr = sidebar?.getBoundingClientRect();
+      const cs = el ? getComputedStyle(el) : null;
+      fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId:'C',location:'dashboard-contents.component.ts:ngOnInit',message:'dashboard-contents layout',data:{cls:(el?.className||'').toString().slice(0,80),contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,marginTop:cs?.marginTop,sidebarRight:sr?.right,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,cssVar:getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim()},timestamp:Date.now()})}).catch(()=>{});
+    });
+    // #endregion
 
       this.dataSubscription = combineLatest([
     this.EmployeeService.selectedSchema$,

@@ -99,11 +99,35 @@ export class MainSidebarComponent implements OnDestroy {
   toggleFold(): void {
     this.isMenuOpen = !this.isMenuOpen;
     try { localStorage.setItem('zeo-main-menu', this.isMenuOpen ? 'open' : 'folded'); } catch { /* storage off */ }
+    this.syncSidebarOffset();
+    // #region agent log
+    requestAnimationFrame(() => this.debugSidebarAlign('toggleFold', 'E'));
+    // #endregion
   }
+
+  /** Keep page content flush with the real main-sidebar width (open 235px, folded 35px, overlay 0). */
+  private syncSidebarOffset(): void {
+    const w = window.innerWidth <= 991.98 ? '0px' : (this.isMenuOpen ? '235px' : '35px');
+    document.documentElement.style.setProperty('--zm-sidebar-w', w);
+  }
+
+  // #region agent log
+  private debugSidebarAlign(from: string, hypothesisId: string): void {
+    const sidebar = document.getElementById('sidebarMenu');
+    const el = document.querySelector('.zdash, .ceo, .uc, .zt, .comapny_section') as HTMLElement | null;
+    const sr = sidebar?.getBoundingClientRect();
+    const cr = el?.getBoundingClientRect();
+    const cs = el ? getComputedStyle(el) : null;
+    const scs = sidebar ? getComputedStyle(sidebar) : null;
+    const cssVar = getComputedStyle(document.documentElement).getPropertyValue('--zm-sidebar-w').trim();
+    fetch('http://127.0.0.1:7715/ingest/d008ca37-75f3-497d-82e3-582e49e6f284',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'842d31'},body:JSON.stringify({sessionId:'842d31',runId:'post-fix',hypothesisId,location:'main-sidebar.component.ts:'+from,message:'sidebar vs content alignment',data:{from,url:this.router.url,isMenuOpen:this.isMenuOpen,cssVar,sidebarClass:sidebar?.className,sidebarW:sr?.width,sidebarRight:sr?.right,sidebarComputedW:scs?.width,contentTag:el?.tagName,contentClass:(el?.className||'').toString().slice(0,120),contentLeft:cr?.left,contentTop:cr?.top,marginLeft:cs?.marginLeft,paddingLeft:cs?.paddingLeft,paddingTop:cs?.paddingTop,gap:(cr&&sr)?Math.round(cr.left-sr.right):null,vw:innerWidth},timestamp:Date.now()})}).catch(()=>{});
+  }
+  // #endregion
 
   /** A module was picked: its own menu opens, so the main menu folds (mobile: the drawer closes). */
   modulePicked(): void {
     if (this.isMenuOpen) { this.isMenuOpen = false; this.unlockBodyScroll(); }
+    this.syncSidebarOffset();
   }
 
   toggleSidebarMenu(): void {
@@ -121,6 +145,7 @@ export class MainSidebarComponent implements OnDestroy {
     // Close any open mobile dropdowns when toggling sidebar
     this.isMobileNotificationOpen = false;
     this.isMobileCompanyDropdownOpen = false;
+    this.syncSidebarOffset();
   }
 
   onToolbarMenuToggle() {
@@ -132,6 +157,7 @@ export class MainSidebarComponent implements OnDestroy {
       this.isMenuOpen = false;
       this.unlockBodyScroll();
     }
+    this.syncSidebarOffset();
   }
 
   // ============================================================
@@ -193,6 +219,7 @@ export class MainSidebarComponent implements OnDestroy {
       this.isMobileCompanyDropdownOpen = false;
       this.unlockBodyScroll();
     }
+    this.syncSidebarOffset();
   }
 
   // ============================================================
@@ -207,6 +234,7 @@ export class MainSidebarComponent implements OnDestroy {
   // ============================================================
 
   ngOnInit(): void {
+    this.syncSidebarOffset();
     this.zlist.permissions().subscribe(a => { this.menuAccess = a; this.buildMenu(); });
     this.selectedBranchIds = JSON.parse(
       localStorage.getItem('selectedBranchIds') || '[]'
@@ -237,8 +265,14 @@ export class MainSidebarComponent implements OnDestroy {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.markApp();
+        // #region agent log
+        requestAnimationFrame(() => this.debugSidebarAlign('NavigationEnd', 'A'));
+        // #endregion
       }
     });
+    // #region agent log
+    requestAnimationFrame(() => this.debugSidebarAlign('ngOnInit', 'A'));
+    // #endregion
 
     const selectedSchema = this.authService.getSelectedSchema();
     const selectedSchemaId = this.authService.getSelectedSchemaId();
